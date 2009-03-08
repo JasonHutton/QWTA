@@ -1,0 +1,58 @@
+This is very improvised for the moment. Damn harddrive failure wiped out the SVN comments. So I'll start keeping notes in here. >.>
+
+
+Dark Matter Cannon now has Quake 4-style Dark Matter Gun visuals and gravity pull behavior.
+(Needs work still; use get bounds entities to grab pull targets, not a damagedef hack!. Pull through walls! Also don't detonate on impact with players/vehicles. Could stand 'dust suction' effects too?)
+
+All vehicles may be airdropped in now.
+Hog/Tormentor teleport-drop in. (Needs work still, to do proper allowed checks.) Probably get the heavy airlift for the titan and trojan maybe. Look into stopping parachute 'drift' too.
+
+vehicle proficiency level 1(vehicle drops) given freely to all players
+
+Jupiter Assault Tank added. (Using the Titan model still.) Fires BFG10k projectiles. Needs work still, remove the upper machinegun?
+BFG10k projectiles need work still. Should target more than 8 targets.
+
+vehicle teleport-drop option added.
+
+Hyperblaster(Infantry, and Vehicle(Tormentor/Desecrator/Hog) versions.) now has Quake 4-style Nailgun behavior.
+Needs work still: faster lockon, I think it still triggers the target lock alarm... It shouldn't, and flares should never work on it.
+Non-instant-hit projectiles, slower firing rate, splash damage, lockons, higher damage. (Change sound effect to classic nailgun sound? What to use for the nailgun sound then?)
+
+
+Shogun and Nailgun basic behavior returned to ETQW v1.2 style behavior: fires slower but fires more pellets per shot, and can do damage farther away, lessenned spread, more damage.
+
+Blood hit effects for gunshot wounds and knife stabs.
+Corpses now bleed like living bodies when injured. (BaseETQW bugfix)
+
+Removed minedots.
+Removed "mine triggered" HUD warning.
+Removed "anti-personell lock" HUD warning.
+Removed basedefence anti-personell HUD warning.
+
+Class number limits added. (Needs work still, for when conditions change, for bots in particular. Force players back to limbo when they're killed when on a class that has too many players on it... Get bots to switch too.)
+
+Screen fades to red when unconscious.
+Screen fades to black when dead. (Look into getting blurring working properly with these... Why does it disable one or the other when they're tinted+blurred but not when one or the other?)
+
+all vehicle drops added to quickchat menus
+
+"Hammer/Dark Matter Cannon" HUD warning text messages removed.
+
+3rd Eye camera now updates its radar origin when moved(such as when attached to a vehicle), so it can be a mobile radar now. (BaseETQW bugfix.)
+
+Vehicle spawnpoints within maps removed. You must vehicle drop a vehicle to get one.
+
+Vehicle credit charge bar now always starts at 0 and charges up slowly. Vehicles have different costs. Vehicledrop quickchat menu reflects which vehicles are purchasable at which time. (Needs work, seems to have a slight loading lag when initially entering that menu. Precache somehow?)
+
+Slight magog script fix to make dropping vehicles less glitchy.
+
+strogg vehicle drops have a momentary bounciness disable on them. Might want to remove that as unneccessary with the teledrop?
+
+Bots understand vehicle drops(In a retarded way, needs work.), and class number limits(Definitely needs more work too.).
+
+pm_realisticMovement cvar added. Controls if strafejumping works or not.
+
+raduspull functions need work...
+new script functions added...
+
+
