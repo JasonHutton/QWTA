@@ -1,0 +1,665 @@
+
+vehicleDef hornet {
+	engineSoundDef {
+		sound					"snd_hover"			// sound shader
+		low						-5000				// starting speed of mover units/sec
+		high					0					// end speed of mover units/sec
+		volumeMin				-5					// volume @ FadeIn in dB (default -25)
+		volumeMax				-2					// volume @ FadeOut in dB (default 0)
+		fadeIn					0					// fade in @ speed (low + fadeIn)
+		fadeOut					0					// fade out @ speed (high - fadeOut)
+		lowFrequency			1					// freq multiplier @ low + frequencyChangeStart
+		highFrequency			1					// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0					// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		0					// pitch change ends @ low + frequencyChangeStop
+	}
+
+	engineSoundDef {
+		sound					"snd_engine_start"		// sound shader
+		low						-5000				// starting speed of mover units/sec
+		high					0					// end speed of mover units/sec
+		volumeMin				-7					// volume @ FadeIn in dB (default -25)
+		volumeMax				-3					// volume @ FadeOut in dB (default 0)
+		fadeIn					0					// fade in @ speed (low + fadeIn)
+		fadeOut					0					// fade out @ speed (high - fadeOut)
+		lowFrequency			2					// freq multiplier @ low + frequencyChangeStart
+		highFrequency			2					// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0					// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		0					// pitch change ends @ low + frequencyChangeStop
+	}
+	// Forward
+	engineSoundDef {
+		sound					"snd_engine_start"		// sound shader
+		low						0					// starting speed of mover units/sec
+		high					5000				// end speed of mover units/sec
+		volumeMin				-5					// volume @ FadeIn in dB (default -25)
+		volumeMax				-2					// volume @ FadeOut in dB (default 0)
+		fadeIn					0					// fade in @ speed (low + fadeIn)
+		fadeOut					0					// fade out @ speed (high - fadeOut)
+		lowFrequency			2					// freq multiplier @ low + frequencyChangeStart
+		highFrequency			6					// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0					// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		2000				// pitch change ends @ low + frequencyChangeStop
+	}
+
+	engineSoundDef {
+		sound					"snd_hover"			// sound shader
+		low						0					// starting speed of mover units/sec
+		high					5000				// end speed of mover units/sec
+		volumeMin				-5					// volume @ FadeIn in dB (default -25)
+		volumeMax				-2					// volume @ FadeOut in dB (default 0)
+		fadeIn					0					// fade in @ speed (low + fadeIn)
+		fadeOut					0					// fade out @ speed (high - fadeOut)
+		lowFrequency			1					// freq multiplier @ low + frequencyChangeStart
+		highFrequency			3					// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0					// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		2000				// pitch change ends @ low + frequencyChangeStop
+	}
+
+	// main body
+	part {
+		"mins"						"-185 -130 96"
+		"maxs"						"100 130 230"
+		"mass"						"3000"
+		"health"					"-1"
+
+		"contactFriction"			"0.4 0.4 0.4"
+	}
+	// front body
+	part {
+		"mins"						"100 -50 80"
+		"maxs"						"230 50 200"
+		"mass"						"1000"
+		"health"					"-1"
+
+		"contactFriction"			"0.4 0.4 0.4"
+	}
+
+	// hurtzone to stop players penetrating the vehicle
+	hurtzone {
+		"mins"						"-180 -140 16"
+		"maxs"						"140 140 96"
+	}
+
+
+	rotor {
+		"health"					"-1"
+
+		"joint"						"main"
+
+		"rotortype"					"main"
+		"lift"						"1000"
+
+		"cyclicPitchRate"			"500000"
+		"cyclicBankRate"			"200000"
+
+		// dead zone
+		"maxPitchDeflect"			"5"
+		"maxYawDeflect"				"5"
+	}
+
+	rotor {
+		"health"					"-1"
+
+		"joint"						"rear"
+
+		"rotortype"					"tail"
+		"lift"						"-8000000"
+		"z_offset"					"-64"
+	}
+
+	suspension {
+		"joint"						"rear_right_leg_placement"
+		"startJoint"				"rear_right_leg_1"
+
+		"suspension"				"vehicle_hornet_rear_right_suspension"
+
+		"radius"					"6"
+		"suspensionKCompress"		"500000"
+		"suspensionDamping"			"500"
+		"suspensionVelocityScale"	"12"
+
+		"contactFriction"			"0.9 0.9 0"
+		"aggressiveDampening"		"1"
+	}
+
+	suspension {
+		"joint"						"rear_left_leg_placement"
+		"startJoint"				"rear_left_leg_1"
+
+		"suspension"				"vehicle_hornet_rear_left_suspension"
+
+		"radius"					"6"
+		"suspensionKCompress"		"500000"
+		"suspensionDamping"			"500"
+		"suspensionVelocityScale"	"12"
+
+		"contactFriction"			"0.9 0.9 0"
+		"aggressiveDampening"		"1"
+	}
+
+	suspension {
+		"joint"						"front_left_leg_placement"
+		"startJoint"				"front_left_leg_1"
+
+		"suspension"				"vehicle_hornet_front_left_suspension"
+
+		"radius"					"6"
+		"suspensionKCompress"		"500000"
+		"suspensionDamping"			"500"
+		"suspensionVelocityScale"	"12"
+
+		"contactFriction"			"0.9 0.9 0"
+		"aggressiveDampening"		"1"
+	}
+
+	suspension {
+		"joint"						"front_right_leg_placement"
+		"startJoint"				"front_right_leg_1"
+
+		"suspension"				"vehicle_hornet_front_right_suspension"
+
+		"radius"					"6"
+		"suspensionKCompress"		"500000"
+		"suspensionDamping"			"500"
+		"suspensionVelocityScale"	"12"
+
+		"contactFriction"			"0.9 0.9 0"
+		"aggressiveDampening"		"1"
+	}
+
+
+
+
+	positionDef {
+		name				"guis/vehicles/hornet_driver"
+		hudname				"guis/vehicles/hornet_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"nose"
+			"player_anim"			"VehicleHornetPilot"
+			"show_player"			"0"
+			"cockpit"				"main"
+			"stat_name"				"hornet_driver"
+			"joint_icon"			"carrier_driver"
+		}
+
+		// first-person + cockpit
+		view {
+			eyeJoint			"camera"
+			sensitivityPitch	"m_helicopterPitch"
+			sensitivityYaw		"m_helicopterYaw"
+			sensitivityPitchScale	"m_helicopterPitchScale"
+			sensitivityYawScale		"m_helicopterYawScale"
+			hidevehicle
+			tophatRequired
+			showCockpit
+			autoCenter
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+			foliageDepthHack 100
+
+			clamp pitch {
+				min		-50
+				max		40
+			}
+
+			clamp yaw {
+				min		-40
+				max		40
+			}
+		}
+
+		view {
+			eyeJoint			"main"
+			sensitivityPitch	"m_helicopterPitch"
+			sensitivityYaw		"m_helicopterYaw"
+			sensitivityPitchScale	"m_helicopterPitchScale"
+			sensitivityYawScale		"m_helicopterYawScale"
+			cameraDistance 		600
+			cameraHeight		200
+			cameraFocusHeight	200
+			thirdperson
+			tophatRequired
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+
+			clamp pitch {
+				min		-60
+				max		60
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_hornet_weapon2"
+			type			"sdVehicleWeaponLocked"
+		}
+
+		weapon {
+			weapon			"vehicle_hornet_weapon1"
+			type			"sdVehicleWeaponLocked"
+		}
+
+		// these two IK thingies serve to keep the weapon aim accurate regardless
+		// of the animations that are affecting the different joints
+		ik {
+			type			"sdVehicleJointAimer"
+
+			parms {
+				"joint"				"missile_1"
+				"weapon"			"plasmacannon"
+				"weapon2"			"strockets"
+			}
+			clamp yaw {
+				min		-8
+				max		8
+			}
+			clamp pitch {
+				min		-8
+				max		8
+			}
+		}
+
+		ik {
+			type			"sdVehicleJointAimer"
+
+			parms {
+				"joint"				"missile_2"
+				"weapon"			"plasmacannon"
+				"weapon2"			"strockets"
+			}
+			clamp yaw {
+				min		-8
+				max		8
+			}
+			clamp pitch {
+				min		-8
+				max		8
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/hornet_gunner"
+		hudname				"guis/vehicles/hornet_gunner"
+
+		data {
+			"cockpit"				"gunner"
+			"stat_name"				"hornet_gunner"
+			"joint_icon"			"carrier_gunner1"
+		}
+
+		view {
+			type				"freepivot"
+			eyeJoint			"gun_cam"
+			cameraDistance 		0
+			cameraHeight		0
+			followyaw
+			showcockpit
+			//thirdperson
+			hideDecoyInfo
+			showTargetingInfo
+
+
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+
+			clamp pitch {
+				min		0
+				max		65
+			}
+
+		}
+
+		view {
+			eyeJoint		"gun_cam"
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+			thirdperson
+			cameraDistance 		600
+			cameraHeight		150
+
+			clamp pitch {
+				min		0
+				max		65
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_hornet_weapon3"
+			type			"sdVehicleWeaponFixedMinigun"
+		}
+	}
+
+	exitDef {
+		joint				"rear_right_exit"
+	}
+
+	exitDef {
+		joint				"rear_left_exit"
+	}
+
+	thruster {
+		"direction"				"1 0 0"
+		"origin"				"-6 64 152"
+		"force"					"400000"
+		"reverse_scale"			"0.1"
+		"name"					"left_thruster"
+	}
+
+	thruster {
+		"direction"				"1 0 0"
+		"origin"				"-6 -64 152"
+		"force"					"400000"
+		"reverse_scale"			"0.1"
+		"name"					"right_thruster"
+	}
+
+	vtol {
+		"joint"					"front_left_thruster_1"
+		"elbowJoint"			"front_left_thruster_2"
+		"effectJoint"			"front_left_thruster_effects"
+		"shoulderBounds"		"-30 30"
+		"elbowBounds"			"-30 30"
+		"effect"				"fx_engines"
+		"elbowAngleScale"		"1"
+		"shoulderAngleScale"	"-1"
+	}
+
+	vtol {
+		"joint"					"front_right_thruster_1"
+		"elbowJoint"			"front_right_thruster_2"
+		"effectJoint"			"front_right_thruster_effects"
+		"shoulderBounds"		"-30 30"
+		"elbowBounds"			"-30 30"
+		"effect"				"fx_engines"
+		"elbowAngleScale"		"-1"
+		"shoulderAngleScale"	"-1"
+	}
+
+	vtol {
+		"joint"					"rear_left_thruster_1"
+		"elbowJoint"			"rear_left_thruster_2"
+		"effectJoint"			"rear_left_thruster_effects"
+		"shoulderBounds"		"-30 30"
+		"elbowBounds"			"-30 30"
+		"effect"				"fx_engines"
+		"elbowAngleScale"		"1"
+		"shoulderAngleScale"	"-1"
+	}
+
+	vtol {
+		"joint"					"rear_right_thruster_1"
+		"elbowJoint"			"rear_right_thruster_2"
+		"effectJoint"			"rear_right_thruster_effects"
+		"shoulderBounds"		"-30 30"
+		"elbowBounds"			"-30 30"
+		"effect"				"fx_engines"
+		"elbowAngleScale"		"-1"
+		"shoulderAngleScale"	"-1"
+	}
+
+	simplePart {
+		"name"				"front_left_leg"
+		"joint"				"front_left_leg_1"
+		"def_brokenPart"	"part_vehicle_hornet_front_left_leg"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"main body"
+		"joint"				"main"
+		"def_brokenPart"	"part_vehicle_hornet_main"
+		"health" 			"0"
+		"flip_master"		"1"
+		"flip_power"		"30"
+	}
+
+
+	simplePart {
+		"name"				"cockpit"
+		"joint"				"cockpit"
+		"def_brokenPart"	"part_vehicle_hornet_cockpit"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"rockets1"
+		"joint"				"main"
+		"def_brokenPart"	"part_vehicle_hornet_rocket1"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"rockets2"
+		"joint"				"main"
+		"def_brokenPart"	"part_vehicle_hornet_rocket2"
+		"health" 			"0"
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_hornet_cockpit"
+		"scriptobject"		"vehicle_basic_cockpit"
+	}
+
+	cockpit gunner {
+		"def_cockpit"		"vehicle_hornet_cockpit_gunner"
+		"scriptobject"		"vehicle_gpmg_cockpit"
+	}
+}
+
+entityDef part_vehicle_hornet_front_left_leg {
+	useTemplate templates/vehicles/destroyedParts <
+		"models/vehicles/strogg_hornet/parts/foot.lwo",
+		"500 1000 1000"
+	>
+		"gravity"			"700"
+		
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hornet_main {
+	useTemplate templates/vehicles/destroyedParts <
+		"models/vehicles/strogg_hornet/parts/m_main.lwo",
+			"0 0 2000",
+			"0 10 20",
+			"vehicles/misc/debris/metal_large",
+			"0.25",
+			"0.5",
+			"0.01",
+			"effects/vehicles/generic_debris_large"
+		>
+
+	"fx_firstbounce"	"effects/vehicles/anansi_explosion_impact"
+	"gravity"			"600"
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_hornet_cockpit {
+	useTemplate templates/vehicles/destroyedParts <
+		"models/vehicles/strogg_hornet/parts/m_cockpit.lwo",
+		"2000 0 2000",
+		"10 10 10",
+		"vehicles/misc/debris/metal_large"
+	>
+		"gravity"			"700"
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_hornet_rocket1 {
+	useTemplate templates/vehicles/destroyedParts <
+		"models/vehicles/strogg_hornet/parts/m_rocket_launcher1.lwo",
+		"1000 -300 1000",
+		"-20 0 0"
+	>
+		"gravity"			"600"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_hornet_rocket2 {
+	useTemplate templates/vehicles/destroyedParts <
+		"models/vehicles/strogg_hornet/parts/m_rocket_launcher2.lwo",
+		"1000 300 1000",
+		"0 20 0",
+		"vehicles/misc/debris/metal_med"
+	>
+		"gravity"			"600"
+
+	"priority"						"0"
+}
+
+stringMap vehicle_hornet_rear_right_suspension {
+	"type"					"2jointleg"
+	"joint"					"rear_right_leg_3"
+	"joint_knee"			"rear_right_leg_2"
+	"joint_hip"				"rear_right_leg_1"
+	"dir_hip"				"1 0 0"
+}
+
+stringMap vehicle_hornet_rear_left_suspension {
+	"type"					"2jointleg"
+	"joint"					"rear_left_leg_3"
+	"joint_knee"			"rear_left_leg_2"
+	"joint_hip"				"rear_left_leg_1"
+	"dir_hip"				"1 0 0"
+}
+
+stringMap vehicle_hornet_front_right_suspension {
+	"type"					"2jointleg"
+	"joint"					"front_right_leg_3"
+	"joint_knee"			"front_right_leg_2"
+	"joint_hip"				"front_right_leg_1"
+	//k"dir_hip"			"-0.79367033 -0.71986699 -0.024760315"
+	"dir_hip"				"-1 1 0"
+
+}
+
+stringMap vehicle_hornet_front_left_suspension {
+	"type"					"2jointleg"
+	"joint"					"front_left_leg_3"
+	"joint_knee"			"front_left_leg_2"
+	"joint_hip"				"front_left_leg_1"
+	//"dir_hip"				"-0.79367033 0.71986699 -0.024760315"
+	"dir_hip"				"-1 -1 0"
+}
+
+stringMap vehicle_hornet_weapon1 {
+	"gunName"					"game/weapons/plasma_cannon"
+	"weapon_name"				"plasmacannon"
+
+	"charge_max"				"10"
+	"charge_per_use"			"21"
+	"overheat_penalty"			"2"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"missile_1"
+
+	"muzzle_left"				"missile_1"
+	"muzzle_right"				"missile_2"
+	"muzzle_flash"				"fx_cannon_muzzle"
+	"muzzle_flash_local"		"fx_cannon_muzzle_local"
+	"muzzle_sound"				"fx_cannon_fire"
+	"muzzle_sound_local"		"fx_cannon_fire_local"
+
+	"canaim_joint_1"			"missile_1"
+	"canaim_joint_2"			"missile_2"
+
+	"feedback"					"0"
+	"velocity"					"4000 0 0"
+	"fire_rate"					"0.5"
+	"spread"					"0"
+	"scriptobject"				"vehicle_weapon_cannon_twin"
+	"def_projectile"			"projectile_plasmacannon_small"
+
+	"crosshair"					"explosive"
+
+//	"no_tophat_crosshair"		"1"
+}
+
+
+stringMap vehicle_hornet_weapon2 {
+	"gunName"					"game/weapons/strockets"
+	"weapon_name"				"strockets"
+
+	"charge_max"				"2"
+	"charge_per_use"			"100"
+	"overheat_penalty"			"0"
+	"use_heat_bar"				"0"
+
+	"lock_enabled"				"1"
+	"lock_distance"				"8192"
+	"lock_filter"				"target_lock_filter"
+
+	"lock_clamp_pitch_min"		"-50"
+	"lock_clamp_pitch_max"		"40"
+
+	"lock_clamp_yaw_min"		"-40"
+	"lock_clamp_yaw_max"		"40"
+			
+	"snd_target_locking"		"sounds/weapons/misc/target_track_short"
+	"snd_target_locked"			"sounds/weapons/misc/target_lock"
+
+	"weapon1_muzzle"			"missile_1"
+	"weapon2_muzzle"			"missile_2"
+
+	"canaim_joint_1"			"missile_1"
+	"canaim_joint_2"			"missile_2"
+
+	"missile_pos0"				"missile_1"
+	"missile_pos1"				"missile_2"
+
+	"muzzle_flash"				"fx_strockets_muzzle"
+	"muzzle_sound"				"fx_cannon_fire"
+	"muzzle_sound_local"		"fx_cannon_fire_local"
+
+	"velocity"					"1000 0 0"
+	"fire_rate"					"2"
+	"scriptobject"				"vehicle_weapon_law"
+	"def_projectile"			"projectile_strocket"
+	"requires_consent"			"1"
+
+//	"no_tophat_crosshair"		"1"
+
+	"crosshair"					"explosive"
+	"num_missiles"				"2"
+}
+
+stringMap vehicle_hornet_weapon3 {
+	"gunName"					"game/weapons/hyperblaster"
+	"weapon_name"				"hyperblaster"
+
+	"surface_name"				"gunarm2_mesh, gunarm1_mesh, gunarm_base"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"gun_muzzle"
+	"gunJointYaw"				"gunbase"
+	"gunJointPitch"				"gunarm2"
+
+	"invert_pitch"				"1"
+
+	"muzzle"					"gun_muzzle"
+	"muzzle_tracer"				"fx_hyperblaster_tracer"
+	"muzzle_flash"				"fx_hyperblaster_muzzle"
+	"muzzle_sound"				"fx_hyperblaster_fire"
+	"muzzle_sound_local"		"fx_hyperblaster_fire"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08"
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_gpmg"
+	"def_projectile"			"projectile_hyperblaster_hornet"
+	"client_projectile"			"projectile_hyperblaster_hornet"
+	"requires_consent"			"1"
+
+	"crosshair"					"nospread"
+}

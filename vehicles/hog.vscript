@@ -1,0 +1,681 @@
+
+table hog_gear_speedtable {
+	clamp
+	{
+		20, 40, 60, 82
+	}
+}
+
+table hog_gear_forcetable {
+	clamp
+	{
+		1200000, 800000, 400000, 300000
+	}
+}
+
+template templates/vehicles/hog/wheel_behavior {
+	parameters< FrontBackParm, LeftRightParm >
+	text {
+		"name"							"FrontBackParm LeftRightParm Wheel"
+		"joint"							"FrontBackParm_LeftRightParm_wheel"
+		"suspension"					"vehicle_hog_FrontBackParm_LeftRightParm_suspension"
+		"surface1"						"mesh_hog_FrontBackParm_LeftRightParm_wheel"
+		"surface2"						"s_FrontBackParm_LeftRightParm_wheel"
+		"def_brokenPart"				"part_vehicle_hog_FrontBackParm_LeftRightParm_wheel"
+
+		"drive"							"1"
+		"health"						"100"
+		"slowonLeftRightParm"			"1"
+
+		"wheelSpinForceThreshhold"		"700000"
+		"wheelSpinForceMultiplier"		"0.5"
+
+		"radius"						"20"
+
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"0.08"
+		"suspensionVelocityScale"		"200"
+		"suspensionBase"				"150000"
+		"suspensionRange"				"15"
+
+		"brakingForce"					"500000"
+		"maxSlip"						"400"
+
+		"contactFriction"				"0 0.8 0"
+
+		useTemplate templates/vehicles/hog/wheel_FrontBackParm< "LeftRightParm" >
+	}
+}
+
+template templates/vehicles/hog/wheel_front {
+	parameters< LeftRightParm >
+	text {
+		"turn"							"1"
+
+		"footprint"						"10"
+
+		"suspensionUpTrace"				"15"
+		"suspensionDownTrace"			"31"
+	}
+}
+
+template templates/vehicles/hog/wheel_rear {
+	parameters< LeftRightParm >
+	text {
+		"footprint"						"20"
+
+		"suspensionUpTrace"				"20"
+		"suspensionDownTrace"			"26"
+
+		"hasHandbrake"					"1"
+		"handBrakeSlipScale"			"10"
+	}
+}
+
+vehicleDef hog {
+	engineSoundDef {
+		sound					"snd_engine_idle"
+		low						-2000
+		high					-1
+		volumeMin				-10
+		volumeMax				-3
+		fadeIn					0
+		fadeOut					100
+	 	lowFrequency			3
+		highFrequency			1
+		frequencyChangeStart	0
+		frequencyChangeStop		2000
+	}
+
+	engineSoundDef {
+		sound					"snd_engine_idle"	// sound shader
+		low						-10					// starting speed of mover units/sec
+		high					3000				// end speed of mover units/sec
+		volumeMin				-10					// volume @ FadeIn in dB (default -25)
+		volumeMax				-3
+		fadeIn					0					// fade in @ speed (low + fadeIn)
+		fadeOut					0					// fade out @ speed (high - fadeOut)
+		lowFrequency			1					// freq multiplier @ low + frequencyChangeStart
+		highFrequency			5					// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0					// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		3000				// pitch change ends @ high + frequencyChangeStop
+	}
+
+
+	part {
+		"cm_model"		"models/vehicles/strogg_hog/parts/collision.lwo"
+		"offset"			"0 0 0"
+		"mass"				"0.1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.1"
+	}
+	part {
+		"cm_model"		"models/vehicles/strogg_hog/parts/collision2.lwo"
+		"offset"			"0 0 0"
+		"mass"				"0.1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.1"
+	}
+	part {
+		"cm_model"		"models/vehicles/strogg_hog/parts/collision3.lwo"
+		"offset"			"0 0 0"
+		"mass"				"0.1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.1"
+	}
+	part {
+		"cm_model"		"models/vehicles/strogg_hog/parts/collision4.lwo"
+		"offset"			"-5 0 4"
+		"mass"				"0.1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.1"
+	}
+
+	hurtZone {
+		"mins"				"-128 -70 -4"
+		"maxs"				"96 70 36"
+	}
+
+	mass {
+		"origin"				"-14.32 0 10.8"
+		"mass"					"5000"
+	}
+
+
+	// front left wheel
+	wheel {
+		useTemplate templates/vehicles/hog/wheel_behavior< "front", "left" >
+
+		"control_steering"				"1"
+
+		"base_org_offset"				"0 19 0"
+	}
+
+	// front right wheel
+	wheel {
+		useTemplate templates/vehicles/hog/wheel_behavior< "front", "right" >
+
+		"base_org_offset"				"0 -19 0"
+	}
+
+	// back left wheel
+	wheel {
+		useTemplate templates/vehicles/hog/wheel_behavior< "rear", "left" >
+
+		"base_org_offset"				"15 -16 0"
+	}
+
+	// back right wheel
+	wheel {
+		useTemplate templates/vehicles/hog/wheel_behavior< "rear", "right" >
+
+		"base_org_offset"				"15 16 0"
+	}
+
+	positionDef {
+		name			"guis/vehicles/hog_driver"
+		hudname			"guis/vehicles/hog_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"show_player"			"0"
+			"cockpit"				"driver"
+			"stat_name"				"hog_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+		}
+
+		// first-person + cockpit
+		view {
+			eyeJoint		"pilot_cam"
+			autoCenter
+			hidevehicle
+			showCockpit
+			foliageDepthHack 150
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+
+			clamp pitch {
+				min		-20
+				max		20
+			}
+
+			clamp yaw {
+				min		-60
+				max		60
+			}
+		}
+
+		view {
+			eyeJoint		"gun_root"
+			type			"smooth_locked"
+			cameraDistance	300
+			cameraHeight	75
+			dampSpeed		0.15
+			thirdPerson
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/hog_gunner"
+		hudname				"guis/vehicles/hog_gunner"
+
+		data {
+			"cockpit"				"gunner"
+			"stat_name"				"hog_gunner"
+			"joint_icon"			"carrier_gunner1"
+		}
+
+		view {
+			eyeJoint		"gun_cam"
+			eyeJointPivot	"gun_root"
+			type			"freepivot"
+			followYaw
+			followPitch
+			hidevehicle
+			//showCockpit
+			hideDecoyInfo
+			showTargetingInfo
+
+			clamp pitch {
+				min		-50
+				max		10
+			}
+		}
+
+		view {
+			eyeJoint		"gun_root"
+			type			"smooth_free"
+			cameraHeight	100
+			cameraDistance	300
+			thirdPerson
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-50
+				max		10
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_hog_weapon1"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min		-50
+				max		10
+			}
+		}
+	}
+
+	exitDef {
+		joint			"exit_point_01"
+	}
+
+	exitDef {
+		joint			"exit_point_02"
+	}
+
+	exitDef {
+		joint			"exit_point_03"
+	}
+
+	exitDef {
+		joint			"exit_point_04"
+	}
+
+	exitDef {
+		joint			"exit_point_06"
+	}
+
+	exitDef {
+		joint			"exit_point_07"
+	}
+
+	exitDef {
+		joint			"exit_point_05"
+	}
+
+	exitDef {
+		joint			"exit_point_08"
+	}
+
+	simplePart {
+		"name"				"Hog Gun"
+		"surface1"			"mesh_hog_gun"
+		"joint"				"gun"
+		"def_brokenPart"	"part_vehicle_hog_gun"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Hog Gun Root"
+		"surface1"			"mesh_hog_gun_root"
+		"joint"				"gun_root"
+		"def_brokenPart"	"part_vehicle_hog_mesh_gun_root"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Hog Hull"
+		"surface1"			"mesh_hog_hull"
+		"joint"				"hull"
+		"def_brokenPart"	"part_vehicle_hog_hull"
+		"health" 			"0"
+		"flip_power"		"20"
+		"flip_master"		"1"
+	}
+
+	simplePart {
+		"name"				"Front Left Elbow"
+		"surface1"			"mesh_hog_front_left_elbow"
+		"joint"				"front_left_elbow"
+		"def_brokenPart"	"part_vehicle_hog_front_left_elbow"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Front Left Shoulder"
+		"surface1"			"mesh_hog_front_left_shoulder"
+		"joint"				"front_left_shoulder"
+		"def_brokenPart"	"part_vehicle_hog_front_left_shoulder"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Front Right Elbow"
+		"surface1"			"mesh_hog_front_right_elbow"
+		"joint"				"hull"
+		"def_brokenPart"	"part_vehicle_hog_front_right_elbow"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Front Right Shoulder"
+		"surface1"			"mesh_hog_front_right_shoulder"
+		"joint"				"front_right_shoulder"
+		"def_brokenPart"	"part_vehicle_hog_front_right_shoulder"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Rear Left Knee"
+		"surface1"			"mesh_hog_rear_left_knee"
+		"joint"				"left_hip"
+		"def_brokenPart"	"part_vehicle_hog_rear_left_knee"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Rear Right Knee"
+		"surface1"			"mesh_hog_rear_right_knee"
+		"joint"				"right_hip"
+		"def_brokenPart"	"part_vehicle_hog_rear_right_knee"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Left Hip"
+		"surface1"			"mesh_hog_left_hip"
+		"joint"				"left_hip"
+		"def_brokenPart"	"part_vehicle_hog_left_hip"
+		"health" 			"0"
+	}
+
+
+	simplePart {
+		"name"				"Right Hip"
+		"surface1"			"mesh_hog_right_hip"
+		"joint"				"right_hip"
+		"def_brokenPart"	"part_vehicle_hog_right_hip"
+		"health" 			"0"
+	}
+
+	cockpit driver {
+		"def_cockpit"		"vehicle_hog_cockpit_driver"
+		"scriptobject"		"vehicle_hog_cockpit"
+	}
+
+
+	cockpit gunner {
+		"def_cockpit"		"vehicle_desecrator_cockpit_gunner"
+		"scriptobject"		"vehicle_strogg_cockpit"
+	}
+
+	lightDef {
+		joint 			"pilot_gun"
+		lightType 		"standard"
+		color			( 3 0 0 )
+		group			0
+		noSelfShadow
+		shader			"lights/headlights1"
+		right			( 0 960 0 )
+		up				( 0 0 640 )
+	}
+}
+
+entityDef part_vehicle_hog_gun {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/hog_gun.lwo",
+			"0 0 2000",
+			"10 20 30",
+			"vehicles/misc/debris/metal_med"
+		>
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_hog_mesh_gun_root {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/mesh_gun_root.lwo",
+			"0 0 1500",
+			"5 10 15",
+			"vehicles/misc/debris/metal_med"
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_hull {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/hull.lwo",
+			"0 0 10000",
+			"0 50 20",
+			"vehicles/misc/debris/metal_large"
+		>
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_hog_front_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/front_left_wheel.lwo",
+			"800 -500 500",
+			"200 10 0",
+			"vehicles/misc/debris/metal_med"
+		>
+
+		"fx_explode"					"effects/vehicles/wheel_explode"
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_hog_front_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/front_right_wheel.lwo",
+			"800 500 500",
+			"200 10 0",
+			"vehicles/misc/debris/metal_med"
+		>
+
+		"fx_explode"					"effects/vehicles/wheel_explode"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_hog_rear_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/rear_left_wheel.lwo",
+			"-800 -500 500",
+			"200 10 0",
+			"vehicles/misc/debris/metal_med"
+		>
+
+		"fx_explode"					"effects/vehicles/wheel_explode"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_hog_rear_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/rear_right_wheel.lwo",
+			"-800 500 500",
+			"200 10 0",
+			"vehicles/misc/debris/metal_med"
+		>
+
+		"fx_explode"					"effects/vehicles/wheel_explode"
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_hog_front_left_elbow {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_front_left_elbow.lwo"
+			"600 -500 500",
+			"200 10 0",
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_front_left_shoulder {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_front_left_shoulder.lwo"
+			"500 -100 500",
+			"200 10 0",
+		>
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_hog_front_right_elbow {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_front_right_elbow.lwo"
+			"600 500 500",
+			"200 10 0",
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_front_right_shoulder {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_front_right_shoulder.lwo"
+			"500 100 500",
+			"200 10 0",
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_rear_left_knee {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_rear_left_knee.lwo"
+			"-800 -300 500",
+			"200 10 0",
+		>
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_hog_rear_right_knee {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_rear_right_knee.lwo"
+			"-800 300 500",
+			"200 10 0",
+		>
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_hog_left_hip {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_front_left_elbow.lwo"
+			"0 -500 500",
+			"200 10 0",
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_right_hip {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/leg_front_left_elbow.lwo"
+			"0 500 500",
+			"200 10 0",
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_left_blade {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/left_blade.lwo",
+			"200 -1500 500",
+			"10 10 0"
+		>
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_hog_right_blade {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/strogg_hog/parts/right_blade.lwo",
+			"200 1500 500",
+			"10 10 0"
+		>
+
+	"priority"						"0"
+}
+
+stringMap vehicle_hog_front_right_suspension {
+	"type"			"pivot"
+	"joint"			"front_right_elbow"
+	"lerp_scale"	"1"
+}
+
+stringMap vehicle_hog_front_left_suspension {
+	"type"			"pivot"
+	"joint"			"front_left_elbow"
+	"lerp_scale"	"1"
+}
+
+stringMap vehicle_hog_rear_right_suspension {
+	"type"			"2jointleg"
+	"joint_knee"	"rear_right_knee"
+	"joint_hip"		"right_hip"
+	"lerp_scale"	"0.5"
+	"reverse"		"1"
+}
+
+stringMap vehicle_hog_rear_left_suspension {
+	"type"			"2jointleg"
+	"joint_knee"	"rear_left_knee"
+	"joint_hip"		"left_hip"
+	"lerp_scale"	"0.5"
+	"reverse"		"1"
+}
+
+stringMap vehicle_hog_weapon1 {
+	"gunName"					"game/weapons/hyperblaster" // "HyperBlaster"
+	"weapon_name"				"hyperblaster"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"gun_muzzle"
+	"gunJointYaw"				"gun_root"
+	"gunJointPitch"				"gun"
+
+	"muzzle"					"gun_muzzle"
+	"muzzle_tracer"				"fx_hyperblaster_tracer"
+	"muzzle_flash"				"fx_hyperblaster_muzzle"
+	"muzzle_sound"				"fx_hyperblaster_fire"
+	"muzzle_sound_local"		"fx_hyperblaster_fire"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08"
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_gpmg"
+	"def_projectile"			"projectile_hyperblaster_hog"
+	"client_projectile"			"projectile_hyperblaster_hog"
+
+	"crosshair"					"nospread"
+}
+
+entityDef vehicle_hog_cockpit_gunner {
+	"model" "vehicle_hog_cockpit_gunner"
+	"joint_attach" "camera"
+}
+
+entityDef vehicle_hog_cockpit_driver {
+	"model"			"models/vehicles/strogg_hog/cockpit.lwo"
+	"joint_attach" 	"pilot_cam"
+	"weaponDepthHack"			"1"
+
+	"gui"						"guis/models/vehicles/hog/cockpit"
+	"gui2"						"guis/models/vehicles/hog/cockpit_center"
+	"offset"					"-12.5 0 0"
+	"largeFov"					"-7 0 0"
+	"ambientCubemap"			"strogg_cockpit01"
+}
