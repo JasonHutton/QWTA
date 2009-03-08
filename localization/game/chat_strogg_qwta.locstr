@@ -1,0 +1,38 @@
+// Original last: 0201288 in the original chat_strogg_bot.locstr file.
+// This file last: 0201293
+
+/*
+==================
+ Strogg Vehicles
+==================
+*/
+
+/*
+ * From original chat_strogg.locstr:
+locString strogg/quickchat/vehicles/needvehicle  {
+	text "#str_0201101" // "Request Icarus"
+}*/
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_icarus  {
+	text "#str_0201101" // "Request Icarus"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_hog  {
+	text "#str_0201289" // "Request Hog"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_desecrator  {
+	text "#str_0201290" // "Request Desecrator"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_cyclops  {
+	text "#str_0201291" // "Request Cyclops"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_tormentor  {
+	text "#str_0201292" // "Request Tormentor"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops  {
+	text "#str_0201293" // "Vehicle Drops"
+}

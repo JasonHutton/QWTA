@@ -35,7 +35,7 @@ object projectile_landmine : projectile_armable {
 	void		CheckTrapAgainst( entity triggerer );
 
 	void		OnModeChanged();
-	
+
 	void		BotOnExplode();
 
 	float		vGetPliersProgressBarValue( float action );
@@ -56,7 +56,7 @@ object projectile_landmine : projectile_armable {
 	void		UpdateFlag();
 	void		ShowIcon();
 	void		HideIcon();
-	
+
 	void		Trigger( boolean newState );
 
 	float		OnCollide( object traceObject, vector velocity, float bodyId );
@@ -67,9 +67,9 @@ object projectile_landmine : projectile_armable {
 
 	void		DisarmFizzleThread();
 	void		KillDisarmFizzleThread();
-	
-	void		SetupWorldIcon();
-	boolean		worldIconSet;
+
+	//void		SetupWorldIcon();
+	//boolean		worldIconSet;
 
 	float		disarmProficiency;
 
@@ -97,13 +97,13 @@ object projectile_landmine : projectile_armable {
 
 	float		creationTime;
 	float		vGetMineCreationTime() { return creationTime; }
-	
+
 	boolean		allowTripmine;
 
 	boolean		playTriggerEffect;
 
 	float		detonateDelay;
-	
+
 	float		disableProficiency;
 
 	float		selfArmDelay;
@@ -156,7 +156,7 @@ void projectile_landmine::destroy() {
 		freeBeam( beamHandle );
 		beamHandle = -1;
 	}
-	
+
 	if ( owner != $null_entity ) {
 		owner.binRemove( self );
 	}
@@ -185,6 +185,7 @@ void projectile_landmine::OnModeChanged() {
 	}
 }
 
+/*
 void projectile_landmine::SetupWorldIcon() {
 	if ( mode == LM_PROX && !worldIconSet ) {
 		if ( g_drawMineIcons.getBoolValue() && g_allowMineIcons.getBoolValue() ) {
@@ -202,6 +203,7 @@ void projectile_landmine::SetupWorldIcon() {
 		}
 	}
 }
+*/
 
 void projectile_landmine::OnTriggerTimeChanged() {
 	if ( triggerTime != 0 ) {
@@ -212,16 +214,16 @@ void projectile_landmine::OnTriggerTimeChanged() {
 				playEffect( "fx_trigger", "", false );
 				playTriggerEffect = false;
 
-				player lPlayer = sys.getLocalViewPlayer();
-				if ( lPlayer != $null_entity ) {
-					vector dir = lPlayer.getWorldOrigin() - getWorldOrigin();
-					if ( sys.vecLength( dir ) < range * 1.3 ) {
-						lPlayer.vMineWarning( self );
-					}
-				}
+				//player lPlayer = sys.getLocalViewPlayer();
+				//if ( lPlayer != $null_entity ) {
+				//	vector dir = lPlayer.getWorldOrigin() - getWorldOrigin();
+				//	if ( sys.vecLength( dir ) < range * 1.3 ) {
+				//		lPlayer.vMineWarning( self );
+				//	}
+				//}
 			}
 		 } else {
-			// 
+			//
 		 }
 	} else {
 		// stop beeping sound
@@ -234,10 +236,10 @@ void projectile_landmine::Trigger( boolean newState ) {
 	} else {
 		triggerTime = 0;
 	}
-	
+
 	OnTriggerTimeChanged();
 }
-	
+
 void projectile_landmine::ShowIcon() {
 	player lPlayer;
 	object team;
@@ -286,7 +288,7 @@ void projectile_landmine::UpdateFlag() {
 	} else {
 		showBeam = true;
 		show();
-		
+
 		if ( isFriend || ( sys.getTime() - lastSpotTime ) < 1.f ) {
 			ShowIcon();
 		} else {
@@ -294,8 +296,8 @@ void projectile_landmine::UpdateFlag() {
 		}
 
 		setSkin( "" );
-		
-		SetupWorldIcon();
+
+		//SetupWorldIcon();
 	}
 
 	if( oldShowBeam != showBeam ) {
@@ -316,7 +318,7 @@ void projectile_landmine::UpdateFlag() {
 
 			vector beamDir		= getWorldAxis( 2 );
 			vector beamStartPos = getWorldOrigin() + ( beamDir * BEAM_START_OFFSET );
-			
+
 			vector beamColor;
 			if ( isFriend ) {
 				beamColor = g_colorGreen;
@@ -358,19 +360,19 @@ void projectile_landmine::ArmEffects() {
 			} else {
 				beamLength = fraction * beamRange;
 			}
-			
+
 			activateTime = sys.getTime() + 2.f;
 			setCanCollideWithTeam( 1.f );
 		}
 	}
-	
-	SetupWorldIcon();
+
+	//SetupWorldIcon();
 }
 
 float projectile_landmine::EnemyCount() {
 	entitiesInRadius( g_vectorZero, range, -1, 0 );
 	filterEntitiesByFilter( damageFilterIndex, 1 );
-	
+
 	float aliveCount = 0;
 	float count = filterEntitiesByDisguiseAllegiance( TA_FLAG_ENEMY, 1 );
 	float index;
@@ -379,7 +381,7 @@ float projectile_landmine::EnemyCount() {
 		if ( e.getHealth() <= 0 ) {
 			continue;
 		}
-		
+
 		// don't have empty vehicles set off mines
 		vehicle_base v = e;
 		if ( v != $null_entity ) {
@@ -387,17 +389,17 @@ float projectile_landmine::EnemyCount() {
 				continue;
 			}
 		}
-		
+
 		aliveCount++;
 	}
-	
+
 	return aliveCount;
 }
 
 float projectile_landmine::EnemyInFrontCount() {
 	entitiesInRadius( g_vectorZero, range, -1, 0 );
 	filterEntitiesByFilter( damageFilterIndex, 1 );
-	
+
 	float aliveCount = 0;
 	float count = filterEntitiesByDisguiseAllegiance( TA_FLAG_ENEMY, 1 );
 	float index;
@@ -406,7 +408,7 @@ float projectile_landmine::EnemyInFrontCount() {
 		if ( e.getHealth() <= 0 ) {
 			continue;
 		}
-		
+
 		// don't have empty vehicles set off mines
 		vehicle_base v = e;
 		if ( v != $null_entity ) {
@@ -425,7 +427,7 @@ float projectile_landmine::EnemyInFrontCount() {
 
 		aliveCount++;
 	}
-	
+
 	return aliveCount;
 }
 
@@ -451,7 +453,7 @@ void projectile_landmine::CheckDetonate() {
 	if ( triggerTime == 0 ) {
 		return;
 	}
-	
+
 	if ( mode == LM_PROX ) {
 		if ( ( sys.getTime() - triggerTime  ) < detonateDelay ) {
 			return;
@@ -471,7 +473,7 @@ void projectile_landmine::CheckDetonate() {
 		setCanCollideWithTeam( 0.f );
 		float count = entitiesInBounds( beamStartPos, beamStartPos + ( beamDir * beamLength ), CONTENTS_MONSTER | CONTENTS_VEHICLECLIP | CONTENTS_BODY | CONTENTS_SLIDEMOVER, 1.f );
 		setCanCollideWithTeam( 1.f );
-		
+
 		float i;
 		for ( i = 0; i < count; i++ ) {
 			CheckTrapAgainst( getBoundsCacheEntity( i ) );
@@ -499,13 +501,13 @@ void projectile_landmine::CheckTrapAgainst( entity triggerer ) {
 			}
 		}
 	}
-	
+
 	if ( allegiance == TA_ENEMY && disguiseAllegiance == TA_ENEMY ) {
 		Explode( $null_entity, $null_entity );
 
 		Trigger( false );
 	}
-}	
+}
 
 void projectile_landmine::OnArmed( entity p ) {
 	stopSound( SND_ITEM );
@@ -549,7 +551,7 @@ void projectile_landmine::OnSelfArmed( entity p ) {
 
 void projectile_landmine::OnDisarmed( entity p ) {
 	ProjectileArmable_OnDisarmed( p );
-	
+
 	if ( getEntityAllegiance( p ) == TA_ENEMY ) {
 		p.giveProficiency( disarmProficiency, 1.f, $null, "disarmed mine" );
 	}
@@ -583,14 +585,14 @@ float projectile_landmine::vGetPliersProgressBarValue( float action ) {
 		}
 		return countCurrent / targetCount;
 	}
-	
+
 	if ( action == AC_DISARM ) {
 		if ( disarmTime != 0 ) {
 			return 1.f;
 		}
 		return countCurrent / targetCount;
 	}
-	
+
 	return 0.f;
 }
 
@@ -599,10 +601,10 @@ boolean projectile_landmine::vRepairDroneIgnoreHidden() {
 }
 
 void projectile_landmine::vApplyEmpDamage( entity attacker, float time, float weaponTime ) {
-	if ( armTime != 0 ) {		
+	if ( armTime != 0 ) {
 		if ( disableProficiency != -1 ) {
 			attacker.giveProficiency( disableProficiency, 1.f, $null, "emp on mine" );
-		}		
+		}
 	}
 
 	OnDisarmed( $null_entity );
@@ -622,7 +624,7 @@ float projectile_landmine::OnUpdateCrosshairInfo( entity p ) {
 
 	chSetNumLines( 0 );
 	float index;
-	
+
 	if ( p != $null_entity ) {
 		// see if theres a valid action to perform
 		float code = GetActivateCode( p, distance );
@@ -636,7 +638,7 @@ float projectile_landmine::OnUpdateCrosshairInfo( entity p ) {
 			CheckContextToolTip( allegiance, code, p );
 		}
 	}
-	
+
 	index = chAddLine();
 	if ( selfArmIsArming ) {
 		if ( mode == LM_TRAP ) {
@@ -699,7 +701,7 @@ void projectile_landmine::DoRadiusDamage() {
 
 void projectile_landmine::vSetOwner( entity other ) {
 	owner = other;
-	
+
 	if ( owner == $null_entity ) {
 		Fizzle();
 	}
@@ -719,7 +721,7 @@ boolean projectile_landmine::vGetIsSelfArm() {
 			}
 		}
 	}
-	
+
 	return false;
 }
 
@@ -736,7 +738,7 @@ void projectile_landmine::OnStick( entity collisionEnt, vector collisionNormal, 
 		if ( vGetIsSelfArm() ) {
 			thread OnSelfArmed( owner );
 		}
-		
+
 		setClipOriented( true );
 	}
 }
@@ -749,7 +751,7 @@ float projectile_landmine::OnActivate( entity p, float distance ) {
 	if ( code == AK_NONE ) {
 		return 0.0f;
 	}
-	
+
 	p.vSelectActionItem( code );
 	return 1.f;
 }
@@ -805,20 +807,20 @@ float projectile_landmine::OnCollide( object traceObject, vector velocity, float
 	if ( collisionEnt.vDisablePlantCharge() ) {
 		return false;
 	}
-	
+
 	// push the view out of the surface a bit
 	vector normal = traceObject.getTraceNormal();
-	
+
 	// align to the surface normal
 	alignToAxis( normal, Z_AXIS );
-	
+
 	// move to surface
 	setWorldOrigin( traceObject.getTracePoint() );
 
 	if ( !sys.isClient() ) {
 		OnStick( collisionEnt, normal, traceObject.getTraceSurfaceType(), traceObject.getTraceJoint() );
 	}
-	
+
 	return true;
 }
 

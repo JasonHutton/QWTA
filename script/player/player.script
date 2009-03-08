@@ -26,7 +26,7 @@ object player {
 	void		init();
 	void		destroy();
 	void		syncFields();
-	
+
 				// Gamecode callbacks
 	void		OnProficiencyChanged( float type, float oldLevel, float newLevel );
 	void 		OnSpawn( boolean isRevived, boolean parachute );
@@ -55,7 +55,7 @@ object player {
 	void		OnWeaponFired();
 	void		OnSendingVoice( boolean sending );
 	void		OnNewTask( entity newTask, boolean isMission );
-	
+
 	boolean		NeedsParachute();
 
 	boolean		vCheckActionCode( entity p, float actionCode );
@@ -67,7 +67,7 @@ object player {
 	boolean		vRevive( entity p, float healthScale );
 	void		vForceRespawn();
 	void		vOnSpawnWavePassed();
-	
+
 	void		vGiveSpotProficiency();
 
 	void		LocalViewerUpdate();
@@ -89,7 +89,7 @@ object player {
 	void		InitReviveTask();
 	void		FreeReviveTask();
 	void		CompleteReviveTask( entity p );
-	
+
 	void		RegenThread();
 	void		KillRegenThread();
 	void		vStartRegenThread();
@@ -103,10 +103,10 @@ object player {
 	void		FreeCommandMapIcons();
 	void		SetupMedicIcon();
 	void		FreeMedicIcon();
-	
+
 	void		SetupRequestIcon( string key, string requirement );
 	void		FreeRequestIcon();
-	
+
 	void		AllocHealTask();
 	void		AllocSupplyTask();
 	void		AllocPickupTask();
@@ -117,10 +117,10 @@ object player {
 
 	void		AllocKillTask();
 	void		FreeEnemyRequestTask();
-	
+
 
 	boolean		HasSpawnHostTask();
-	
+
 	void		vOnContextSpawnHost( entity p );
 	void		vOnContextKill( entity p );
 
@@ -138,7 +138,7 @@ object player {
 
 	boolean		CanStab( entity stabbee );
 	object 		GetDisguisedTeam();
-	
+
 	boolean		IsReviveTask( task t );
 	boolean		IsHealTask( task t );
 	boolean		IsSupplyTask( task t );
@@ -154,7 +154,7 @@ object player {
 	void		vUseVehicleCredit( float fraction );
 
 	void		NewRankVOThread( float rank );
-	
+
 	void		SetTargetingItem( deployable_base item );
 
 	void		ObjectiveFlashThread();
@@ -164,7 +164,7 @@ object player {
 	void		vTargetLockAlarm( entity other );
 	void		vStopTargetLockAlarm( entity other );
 	void		vTargetLockAttack( entity other );
-	void		vMineWarning( entity other );
+	//void		vMineWarning( entity other );
 
 	float		reviveQuickChat; 				// FIXME: Move to team
 	float		reviveQuickChatAck;
@@ -174,20 +174,20 @@ object player {
 
 	task		enemyRequestTask;
 	player		killTaskRequestee;
-	
+
 	task		requestTask;
-	
+
 	task		spawnHostTask;
-	
+
 	boolean		playingReviveMeAnimLegs;
 	boolean		playingReviveMeAnimTorso;
 
 	boolean		playingReviveAnimLegs;
 	boolean		playingReviveAnimTorso;
-	
+
 	boolean		proxyFiringWeapon;
 	boolean		proxyFiringWeaponStart;
-	
+
 	boolean		targetingPointValid;
 	vector		lastValidTarget;
 
@@ -205,19 +205,19 @@ object player {
 
 	float 		stroyentPerTransfer;
 	float		healthPerTransfer;
-	
+
 	float		fireTeamLeaderToolTip;
-	
+
 	float		complaintCount;
-	
+
 	float		lastRespawnTime;
-	
+
 	float		nextDeploymentTime;
-	
+
 	deployable_base targetingItem;
-	
+
 	boolean		respawningChute;
-	
+
 	void		BreatheThread();
 	void		KillBreatheThread();
 	void		CreateBreatheThread();
@@ -225,62 +225,65 @@ object player {
 	void		FallSoundThread( boolean create );
 	void		KillFallSoundThread();
 	void		CreateFallSoundThread();
-	
+
 	void		ShowProgressBar( entity target, float action );
 	float		progressBarHideTime;
-	
+
 	boolean		spawnHostSpawned;
 	void		vSetSpawnHostSpawned() { spawnHostSpawned = true; }
-	
+
 	boolean		vBlockVehicleSpawn() { return true; }
-	
+
 	parachute_base	GetParachute();
-	
+
 	void		vPlayFFWarning( string sound, float nextTime );
 
 	void		FlashCMIcon( entity p, float requiredTeam, float flashTime );
 
 	float		reviveCount;
-	
+
 	float		nextFFWarningTime;
-	
+
 	boolean		sniperScopeUp;
 	void		SetSniperScopeUp( boolean up );
 	boolean		IsSniperScopeUp() { return sniperScopeUp; }
-	
+
 	boolean 	isPanting;
 	boolean  	PlayerIsPanting() { return isPanting; }
-	
+
 	boolean		ironSightUp;
 	void		SetIronSightUp( boolean up );
 	boolean		IsIronSightUp() { return ironSightUp; }
-	
+
 	float		CalcTooltipWait();
-	
+
 	boolean		waitedForRevive;
-	
+
 	float		nextStroyentTransferTime;
-	
-	float		vehicleCreditTimer;
-	float		vehicleCreditChargeTime;
-	
+
+	//float		vehicleCreditTimer;
+	//float		vehicleCreditChargeTime;
+
 	boolean		vTriggerTripmine() { return true; }
 
 	void		RemoveOldestMine();
-	
+
 	float		parachuteSpeed;
 
 	float		fallSoundThreadId;
 	boolean		playingFallSound;
 
 	float		hudObjectiveFlashThread;
-	
+
 	float		gatlingSpeed;
 	boolean		teleportSucceeded;
 
 	float		missionToolTipThreadId;
 
 	float		targetLockCount;
+
+	float		unconsciousTime;
+	float		deadTime;
 }
 
 /*
@@ -335,22 +338,22 @@ void player::SetupCommandMapIcons( boolean useViewPlayer ) {
 		sys.setCMIconDrawMode( commandMapRoleInfo, DM_ROTATED_MATERIAL );
 		sys.setCMIconSize( commandMapRoleInfo, 16.0f );
 		sys.setCMIconFlag( commandMapRoleInfo, CMF_FOLLOWROTATION | CMF_PLAYERROTATIONONLY );
-		
+
 		commandMapArcInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_self_arc_cm" ) );
 		sys.setCMIconUnknownMaterial( commandMapArcInfo, GetMaterial( getKey( "mtr_commandmapicon_self_arc" ) ) );
 		sys.setCMIconMaterial( commandMapArcInfo, GetMaterial( getKey( "mtr_commandmapicon_self_arc" ) ) );
 		sys.setCMIconDrawMode( commandMapArcInfo, DM_ROTATED_MATERIAL );
 		sys.setCMIconSize( commandMapArcInfo, 96.0f );
 		sys.setCMIconFlag( commandMapArcInfo, CMF_FOLLOWROTATION | CMF_FOLLOWREMOTECAMERAORIGIN );
-		
+
 		commandMapTrackingIcon = sys.allocCMIcon( self, getFloatKey( "icon_sort_self_cm" ) );
 		sys.setCMIconDrawMode( commandMapTrackingIcon, DM_CROSSHAIR );
 		sys.setCMIconFlag( commandMapTrackingIcon, CMF_ONLYSHOWONFULLVIEW );
 		sys.setCMIconMaterial( commandMapTrackingIcon, GetMaterial( getKey( "mtr_commandmapicon_tracking" ) ) );
-		sys.setCMIconColor( commandMapTrackingIcon, g_colorYellow, 0.5 );		
+		sys.setCMIconColor( commandMapTrackingIcon, g_colorYellow, 0.5 );
 	} else {
 		float allegiance = getEntityAllegiance( localPlayer );
-		
+
 		boolean showIcon = true;
 		if ( allegiance == TA_ENEMY && !isDisguised() ) { // we always want to show the icon if they are disguised, otherwise it'd give them away
 			team_base otherTeam = getGameTeam();
@@ -367,7 +370,7 @@ void player::SetupCommandMapIcons( boolean useViewPlayer ) {
 			if ( allegiance == TA_FRIEND || disguiseClient == $null_entity ) {
 				classEntity = self;
 			}
-		
+
 			commandMapRoleInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
 			sys.setCMIconUnknownMaterial( commandMapRoleInfo, GetMaterial( classEntity.getClassKey( "mtr_cm_icon" ) ) );
 			sys.setCMIconMaterial( commandMapRoleInfo, GetMaterial( classEntity.getClassKey( "mtr_cm_icon" ) ) );
@@ -399,7 +402,7 @@ void player::SetupCommandMapIcons( boolean useViewPlayer ) {
 				sys.setCMIconFlag( commandMapFireTeamInfo, CMF_ALWAYSKNOWN );
 			}
 		}
-		
+
 		if ( getVehicle() != $null_entity ) {
 			if ( commandMapRoleInfo != -1 ) {
 				sys.hideCMIcon( commandMapRoleInfo );
@@ -424,22 +427,22 @@ void player::FreeCommandMapIcons() {
 		sys.freeCMIcon( self, commandMapRoleInfo );
 		commandMapRoleInfo = -1;
 	}
-	
+
 	if( commandMapArcInfo != -1 ) {
 		sys.freeCMIcon( self, commandMapArcInfo );
 		commandMapArcInfo = -1;
 	}
-	
+
 	if ( commandMapFireTeamInfo != -1 ) {
 		sys.freeCMIcon( self, commandMapFireTeamInfo );
 		commandMapFireTeamInfo = -1;
 	}
-	
+
 	if ( commandMapTrackingIcon != -1 ) {
 		sys.freeCMIcon( self, commandMapTrackingIcon );
 		commandMapTrackingIcon = -1;
 	}
-	
+
 	FreeRequestIcon();
 }
 
@@ -448,11 +451,11 @@ void player::FreeCommandMapIcons() {
 player::SetupRequestIcon
 =====================
 */
-void player::SetupRequestIcon( string key, string requirement ) {	
+void player::SetupRequestIcon( string key, string requirement ) {
 	FreeRequestIcon();
-	
+
 	commandMapRequest = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm_request" ) );
-	
+
 	sys.setCMIconMaterial( commandMapRequest, GetMaterial( getClassKey( key ) ) );
 	sys.setCMIconUnknownMaterial( commandMapRequest, GetMaterial( getClassKey( key ) ) );
 	sys.addCMIconRequirement( commandMapRequest, getClassKey( requirement ) );
@@ -525,7 +528,7 @@ player::syncFields
 */
 void player::syncFields() {
 	sync( "reviveCount" );
-	
+
 	syncBroadcast( "AI_HOLD_WEAPON" );
 	syncBroadcast( "sniperScopeUp" );
 	syncCallback( "sniperScopeUp", "OnScopeStateChanged" );
@@ -542,24 +545,24 @@ player::preinit
 */
 void player::preinit() {
 	targetingPointValid 	= false;
-	
+
 	commandMapRoleInfo 		= -1;
 	commandMapTrackingIcon	= -1;
 	commandMapArcInfo		= -1;
-	
+
 	commandMapFireTeamInfo	= -1;
 	commandMapMedicIcon 	= -1;
 	commandMapRequest 		= -1;
-	
+
 	reviveQuickChat			= -1;
 	reviveQuickChatAck		= -1;
 	declinedQuickChat 		= -1;
-	vehicleWarningQuickChat = -1;	
+	vehicleWarningQuickChat = -1;
 	spawnHostSpawned		= false;
 	chargeTimer				= -1;
-	vehicleCreditTimer		= sys.allocTargetTimer( VEHICLECREDIT_TIMER_NAME );
-	vehicleCreditChargeTime		= GetGlobalFloat( VEHICLECREDIT_TIMER_NAME + "_time" );
-	
+	//vehicleCreditTimer		= sys.allocTargetTimer( VEHICLECREDIT_TIMER_NAME );
+	//vehicleCreditChargeTime		= GetGlobalFloat( VEHICLECREDIT_TIMER_NAME + "_time" );
+
 	fireTeamLeaderToolTip		= GetToolTip( getKey( "tt_fireteam_become_leader" ) );
 
 	parachuteSpeed				= getFloatKey( "parachute_speed" );
@@ -578,6 +581,9 @@ void player::preinit() {
 	} else {
 		hudObjectiveFlashThread = -1;
 	}
+
+	unconsciousTime			= -1;
+	deadTime				= -1;
 }
 
 /*
@@ -612,7 +618,7 @@ player::OnWeaponChanged
 */
 void player::OnWeaponChanged() {
 	entity w = getWeaponEntity();
-	
+
 	string energyKey = w.getKeyWithDefault( "timer_charge", "energy_timer" );
 	chargeTimer = sys.allocTargetTimer( energyKey );
 	energyChargeTime = GetGlobalFloat( energyKey + "_time" );
@@ -666,7 +672,7 @@ object player::FindWaypointObject() {
 			return waypoint;
 		}
 	}
-	
+
 	return $null;
 }
 
@@ -712,12 +718,12 @@ void player::CompleteReviveTask( entity p ) {
 		if ( reviveReward ) {
 			team_base team = getGameTeam();
 			team.GiveReviveProficiency( p );
-			
+
 			if ( waitedForRevive ) {
 				team.GiveReviveWaitProficiency( self );
 			}
 		}
-		
+
 		requestTask.complete();
 		requestTask.free();
 		requestTask = $null;
@@ -746,7 +752,7 @@ boolean player::vNeedsRevive( entity p ) {
 	if ( !needsRevive() ) {
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -759,16 +765,16 @@ boolean player::vRevive( entity p, float healthScale ) {
 	if ( !vNeedsRevive( p ) ) {
 		return false;
 	}
-	
+
 	float count = 1;
 
 	team_base team = p.getGameTeam();
 	if ( team.HasFastRevive( p ) ) {
 		count = count * 1.25f;
 	}
-	
+
 	reviveCount = reviveCount + count;
-	
+
 	if ( reviveCount < team.GetMaxReviveCount() ) {
 		return false;
 	}
@@ -783,12 +789,12 @@ boolean player::vRevive( entity p, float healthScale ) {
 		}
 
 		CompleteReviveTask( p );
-		
+
 		if ( p != $null_entity ) {
 			sys.increaseStatInt( sys.allocStatInt( team.getName() + "_revive_uses" ), p.getEntityNumber(), 1 );
 			sys.increaseStatInt( sys.allocStatInt( team.getName() + "_players_revived" ), p.getEntityNumber(), 1 );
 		}
-		
+
 //		objManager.PushCPrintString( p.getUserName() );
 //		objManager.CPrintEvent( sys.localizeString( "game/revive/completed" ) );
 
@@ -816,7 +822,7 @@ void player::init() {
 			entity other = getBoundsCacheEntity( index );
 			other.vOnDeploy();
 		}
-		
+
 		objManager.RefreshObjectiveEntity();
 	}
 }
@@ -917,16 +923,16 @@ void player::OnProficiencyChanged( float type, float oldLevel, float newLevel ) 
 	if ( team != $null_entity ) {
 		team.OnProficiencyUpgrade( self, type, oldLevel, newLevel );
 	}
-	
+
 	entity weapon = getWeaponEntity();
 	if ( weapon != $null_entity ) {
 		weapon.vCheckProficiency();
 	}
-	
+
 	if ( targetingItem != $null_entity ) {
 		targetingItem.vCheckProficiency();
 	}
-	
+
 	entity vehicle = getVehicle();
 	if ( vehicle != $null_entity ) {
 		vehicle.vCheckProficiency();
@@ -948,7 +954,7 @@ void player::OnRankChanged( float rankLevel ) {
 	if( self == sys.getLocalViewPlayer() && getGameTeam() != $null_entity ) {
 		if ( rankLevel > 0 ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.newRank", 0 );
-			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.newRank", 1 );	
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.newRank", 1 );
 			thread NewRankVOThread( rankLevel );
 		}
 	}
@@ -966,7 +972,7 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 
 	playingReviveMeAnimTorso = false;
 	playingReviveMeAnimLegs = false;
-	
+
 	if ( spawnHostSpawned || isRevived ) {
 		makeInvulnerable( 2.f );
 	} else if ( parachute ) {
@@ -975,7 +981,7 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 		makeInvulnerable( 5.f );
 	}
 	spawnHostSpawned = false;
-	
+
 	FreeReviveTask();
 	FreeMedicIcon();
 	SetupCommandMapIcons( true );
@@ -984,7 +990,7 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 	if ( team != $null_entity ) {
 		string teamName = team.getName();
 		//playOriginEffect( "fx_spawn_" + teamName, "", getJointPos( getJointHandle( "origin" ) ), getWorldAxis( 2 ), 0 );
-	
+
 		reviveQuickChat		= GetQuickChat( "qc_" + teamName + "_" + getClassName() + "_" + getKey( "qc_revive" ) );
 		reviveQuickChatAck	= GetQuickChat( "qc_" + teamName + "_" + getClassName() + "_" + getKey( "qc_revive_ack" ) );
 		declinedQuickChat	= GetQuickChat( teamName + "/quickchat/responses/declined" );
@@ -1006,7 +1012,7 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 			setMaxHealth( baseHealth + boost );
 			setHealth( baseHealth + boost );
 		}
-		
+
 		if ( g_maxProficiency.getBoolValue() ) {
 			giveProficiency( GetProficiency( "pro_soldier_test" ), 15.f, $null, "MAX PROFICIENCY" );
 			giveProficiency( GetProficiency( "pro_medic_test" ), 15.f, $null, "MAX PROFICIENCY" );
@@ -1018,9 +1024,9 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 			giveProficiency( GetProficiency( "pro_battlesense_test" ), 15.f, $null, "MAX PROFICIENCY" );
 		}
 	}
-	
+
 	if( !sys.isClient() ) {
-		if ( parachute ) {		
+		if ( parachute ) {
 			respawningChute = true;
 			if ( !NeedsParachute() ) {
 				sys.print( "failed\n" );
@@ -1029,19 +1035,19 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 		}
 	}
 
-	if ( team != $null_entity ) {	
+	if ( team != $null_entity ) {
 		CreateBreatheThread();
 	}
-	
+
 	progressBarHideTime = 0.0f;
-		
+
 	if( self == sys.getLocalPlayer() ) {
-		float hudHandle = getGUI( "hud" );	
+		float hudHandle = getGUI( "hud" );
 		if ( hudHandle != GUI_INVALID ) {
 			sys.guiPostNamedEvent( hudHandle, "", "OnSpawn" );
 		}
 	}
-		
+
 	sniperScopeUp = false;
 
 	if ( team != $null_entity ) {
@@ -1054,6 +1060,9 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags", CF_CROSSHAIR | CF_PLAYER_ICONS | CF_TASKS | CF_OBJ_MIS  );
 		}
 	}
+
+	unconsciousTime = -1;
+	deadTime = -1;
 }
 
 /*
@@ -1074,7 +1083,7 @@ void player::OnKilled( entity inflictor, entity attacker, float damage, vector d
 	FreeRequestTask();
 	FreeEnemyRequestTask();
 
-	reviveReward = getEntityAllegiance( inflictor ) != TA_FRIEND;	
+	reviveReward = getEntityAllegiance( inflictor ) != TA_FRIEND;
 	reviveCount = 0;
 
 	entity other;
@@ -1160,7 +1169,7 @@ void player::OnKilled( entity inflictor, entity attacker, float damage, vector d
 		other = getBoundsCacheEntity( index );
 		other.vOnPlayerKilled( self );
 	}
-	
+
 	other = GetParachute();
 	if ( other != $null_entity ) {
 		other.vCancel();
@@ -1169,9 +1178,11 @@ void player::OnKilled( entity inflictor, entity attacker, float damage, vector d
 	if ( !spectating ) {
 		team.OnPlayerDied( self );
 	}
-	
+
 	KillBreatheThread();
 	isPanting = false;
+
+	unconsciousTime = sys.getTime();
 }
 
 /*
@@ -1236,7 +1247,7 @@ float player::OnUpdateCrosshairInfo( entity p ) {
 
 	chSetNumLines( 0 );
 	float index;
-	
+
 	index = chAddLine();
 	chSetLineText( index, GetDisguisedTitle( p ) );
 	chSetLineColor( index, color, 1.f );
@@ -1280,7 +1291,7 @@ float player::OnUpdateCrosshairInfo( entity p ) {
 	chSetLineColor( index, color, 1.f );
 	chSetLineType( index, CI_TEXT );
 	chSetLineSize( index, 0, 0 );
-	
+
 	team_base team = getGameTeam();
 
 	if ( p != $null_entity ) {
@@ -1323,7 +1334,7 @@ float player::OnUpdateCrosshairInfo( entity p ) {
 			}
 		}
 	}
-	
+
 	return 1.f;
 }
 
@@ -1336,7 +1347,7 @@ wstring player::GetDisguisedTitle( entity p ) {
 	if ( isDisguised() && getEntityAllegiance( p ) == TA_ENEMY ) {
 		return getCrosshairTitle( true );
 	}
-	
+
 	return getCrosshairTitle( false );
 }
 
@@ -1362,9 +1373,22 @@ void player::LocalViewerUpdate() {
 	} else {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockCountDeployable", targetLockCount );
 	}
-	
+
 	if( targetingItem != $null_entity ) {
-		targetingItem.vUpdateFiringStatusObject( self );		
+		targetingItem.vUpdateFiringStatusObject( self );
+	}
+
+	if ( unconsciousTime > -1.f ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.unconsciousTime", sys.getTime() - unconsciousTime );
+	}
+	else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.unconsciousTime", unconsciousTime );
+	}
+	if ( deadTime > -1.f ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.deadTime", sys.getTime() - deadTime );
+	}
+	else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.deadTime", deadTime );
 	}
 }
 
@@ -1377,7 +1401,7 @@ void player::ScanForMines() {
 	entitiesOfCollection( "mine" );
 	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
 	float count = filterEntitiesByRadius( getWorldOrigin(), 512.f, 1 );
-	
+
 	float time = sys.getTime();
 	float index;
 	for ( index = 0; index < count; index++ ) {
@@ -1394,11 +1418,11 @@ LocalPlayerUpdateThread
 void LocalPlayerUpdateThread() {
 	player viewer;
 	player localPlayer;
-	boolean needsParachute;	
+	boolean needsParachute;
 	boolean usingParachute;
 	boolean useParachuteToolTip;
 	team_base team;
-	
+
 	sys.threadName( "LocalPlayerUpdateThread" );
 
 	while( true ) {
@@ -1425,7 +1449,7 @@ void LocalPlayerUpdateThread() {
 
 		if ( localPlayer != $null_entity ) {
 			if ( localPlayer == viewer ) {
-				needsParachute = localPlayer.NeedsParachute();			
+				needsParachute = localPlayer.NeedsParachute();
 			}
 
 			if ( localPlayer.getProficiency( g_proficiencyBattleSense ) >= 3 ) {
@@ -1445,7 +1469,7 @@ void LocalPlayerUpdateThread() {
 				}
 			}
 		}
-		
+
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.needsParachute", needsParachute );
 		if ( team == $null_entity && viewer == localPlayer ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.spectatingRespawnTime", 0 );
@@ -1597,6 +1621,8 @@ void player::OnFullyKilled() {
 	if ( team != $null_entity ) {
 		team.OnPlayerTapOut( self );
 	}
+
+	deadTime = sys.getTime();
 }
 
 /*
@@ -1623,7 +1649,7 @@ player::DestroyBinObjects
 void player::DestroyBinObjects() {
 	float i;
 	float num = binGetSize();
-	
+
 	for ( i = 0; i < num; i++ ) {
 		entity other = binGet( i );
 		if ( other != $null_entity ) {
@@ -1639,7 +1665,7 @@ player::OnClassChanged
 */
 void player::OnClassChanged() {
 	if ( sys.isClient() ) {
-		return;	
+		return;
 	}
 
 	float count = entitiesOfCollection( "deliver" );
@@ -1648,12 +1674,12 @@ void player::OnClassChanged() {
 		entity e = getBoundsCacheEntity( i );
 		e.vCancelDeployForPlayer( getEntityNumber() );
 	}
-	
+
 	if ( targetingItem != $null_entity ) {
 		targetingItem.vDismantle( self );
 		SetTargetingItem( $null_entity );
 	}
-	
+
 	sys.clearDeployRequest( getEntityNumber() );
 
 	entity other;
@@ -1679,7 +1705,7 @@ void player::OnSetTeam( object oldTeam, object newTeam ) {
 	FreeEnemyRequestTask();
 	DestroyBinObjects();
 	DestroyMines();
-	
+
 	if ( targetingItem != $null_entity ) {
 		targetingItem.vDismantle( self );
 		SetTargetingItem( $null_entity );
@@ -1689,7 +1715,7 @@ void player::OnSetTeam( object oldTeam, object newTeam ) {
 	if ( team != $null_entity ) {
 		team.OnPlayerJoined( self );
 	}
-	
+
 	if ( isLocalPlayer() ) {
 		// Gordon: certain things are based on the local player's team
 		float index;
@@ -1719,7 +1745,7 @@ float player::OnActivate( entity p, float distance ) {
 			return 1.f;
 		}
 	}
-	
+
 	return 0.f;
 }
 
@@ -1751,7 +1777,7 @@ boolean player::CanStab( entity stabbee ) {
 	if ( team == $null ) {
 		return false;
 	}
-	
+
 	if ( !team.CanStab( self ) ) {
 		return false;
 	}
@@ -1776,7 +1802,7 @@ boolean player::CanStab( entity stabbee ) {
 	} else {
 		myAngles = getViewAngles();
 	}
-	
+
 	stabAngles = stabbee.getViewAngles();
 
 	// ignore pitch
@@ -1785,10 +1811,10 @@ boolean player::CanStab( entity stabbee ) {
 
 	vector myForwards = sys.angToForward( myAngles );
 	vector stabForwards = sys.angToForward( stabAngles );
-	
+
 	vector delta = stabbee.getWorldOrigin() - getWorldOrigin();
 	if ( myForwards * delta > 0.0f && myForwards * stabForwards > 0.174f ) {
-		if ( sys.vecLength( delta ) < 64.0f ) { 
+		if ( sys.vecLength( delta ) < 64.0f ) {
 			return true;
 		}
 	}
@@ -1812,7 +1838,7 @@ float player::GetActivateCode( entity p, float distance ) {
 
 	team_base team = p.getGameTeam();
 	float allegiange = getEntityAllegiance( p );
-	
+
 	if ( distance < 128.f ) {
 		if ( needsRevive() ) {
 			if ( allegiange == TA_FRIEND ) {
@@ -1830,7 +1856,7 @@ float player::GetActivateCode( entity p, float distance ) {
 			}
 		}
 	}
-	
+
 	if ( distance < 128.f ) {
 		if ( allegiange == TA_ENEMY ) {
 			if ( !isDisguised() ) {
@@ -1852,7 +1878,7 @@ player::OnDisguised
 */
 void player::OnDisguised( entity p ) {
 	SetupCommandMapIcons( true );
-	
+
 	team_base team = getGameTeam();
 	if ( team != $null ) {
 		team.UpdateStealth( self );
@@ -1887,7 +1913,7 @@ void player::OnConsumeHealth() {
 	}
 
 	float healthAmount = refillAmount * healthPerTransfer / stroyentPerTransfer;
-	
+
 	refillAmount *= 0.8f;
 
 	if ( health >= healthAmount + 1 && stroySauce < maxStroy ) {
@@ -1923,9 +1949,9 @@ void player::OnConsumeStroyent() {
 	if ( healAmount > healthPerTransfer ) {
 		healAmount = healthPerTransfer;
 	}
-	
+
 	float stroy = healAmount * stroyentPerTransfer / healthPerTransfer;
-	
+
 	healAmount *= 0.8f;
 
 	if ( stroySauce >= stroy && health < maxHealth ) {
@@ -1953,7 +1979,7 @@ boolean player::vCheckActionCode( entity p, float actionCode ) {
 
 		return true;
 	}
-	
+
 	return false;
 }
 
@@ -1971,7 +1997,7 @@ boolean player::vSelectActionItem( float code ) {
 	if ( team != $null_entity ) {
 		return team.SelectActionItem( self, code );
 	}
-	
+
 	return false;
 }
 
@@ -1989,7 +2015,7 @@ boolean player::vHasActionItem( float code ) {
 		return false;
 	}
 
-	team_base team = getGameTeam();		
+	team_base team = getGameTeam();
 	if ( team != $null_entity ) {
 		return team.HasActionItem( self, code );
 	}
@@ -2020,12 +2046,12 @@ string player::vGetActionIcon( float code ) {
 	if ( getHealth() <= 0 ) {
 		return "";
 	}
-	
+
 	team_base team = getGameTeam();
 	if ( team != $null_entity ) {
 		return team.GetActionIcon( self, code );
 	}
-	
+
 	return "";
 }
 
@@ -2042,7 +2068,7 @@ parachute_base player::GetParachute() {
 			return p;
 		}
 	}
-	
+
 	return $null_entity;
 }
 
@@ -2055,16 +2081,16 @@ boolean player::NeedsParachute() {
 	if ( getProxyEntity() != $null_entity ) {
 		return false;
 	}
-	
+
 	if ( getHealth() <= 0 ) {
 		return false;
 	}
-	
+
 	team_base team = getGameTeam();
 	if ( team == $null ) {
 		return false;
 	}
-	
+
 	if ( GetParachute() != $null_entity ) {
 		if ( respawningChute ) {
 			sys.print( "eep!\n" );
@@ -2080,7 +2106,7 @@ boolean player::NeedsParachute() {
 	if ( linearVelocity_z > -parachuteSpeed ) {
 		return false;
 	}
-	
+
 	// check if theres enough space below the owner to spawn a parachute
 	// ie, if the player has a fair way to fall
 	// use a vector that accounts for some of the forward velocity
@@ -2090,11 +2116,11 @@ boolean player::NeedsParachute() {
 	direction = direction * parachuteHeight * 0.5f;
 	direction_z = -parachuteHeight;
 	vector origin = getWorldOrigin();
-	
+
 	if ( sys.tracePoint( origin, origin + direction, MASK_PLAYERSOLID, self ) < 1.0f ) {
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -2107,7 +2133,7 @@ void player::OnHitActivate() {
 	if ( sys.isClient() ) {
 		return;
 	}
-	
+
 	if ( !NeedsParachute() ) {
 		return;
 	}
@@ -2155,16 +2181,16 @@ void player::BreatheThread() {
 	isPanting = false;
 	while( true ) {
 		float oldBreathing = breathing;
-		
+
 		//
 		// Logic for adjusting the breathing "bar"
 		//
-		
+
 		float increase = 0.0f;
 		float decrease = 0.0f;
 		float frameTime = sys.getFrameTime();
 		boolean fiftyLimit = false;
-		
+
 		vector velocity = getLinearVelocity();
 		velocity_z = 0.0f;
 		boolean moving = false;
@@ -2172,7 +2198,7 @@ void player::BreatheThread() {
 		if ( speed > 10.0f ) {
 			moving = true;
 		}
-		
+
 		// TODO: Move all the increase/decrease timing values into the defs, or at least precalculate them.
 		if ( AI_JUMP ) {
 			increase = 0.1f;
@@ -2196,7 +2222,7 @@ void player::BreatheThread() {
 				decrease = ( 1.0f / 5.0f ) * frameTime;
 			}
 		}
-		
+
 		breathing = breathing + increase - decrease;
 		if ( fiftyLimit && breathing > 0.5f ) {
 			breathing = 0.5f;
@@ -2207,19 +2233,19 @@ void player::BreatheThread() {
 		if ( breathing > 1.0f ) {
 			breathing = 1.0f;
 		}
-		
+
 		//
 		// Sound hookups
-		// 
+		//
 		float time = sys.getTime();
 		string sound = "";
 		if ( breathing >= 0.6f && breathing <= 0.8f ) {
 			sound = "snd_breathe";
 		} else if ( breathing > 0.8f ) {
 			sound = "snd_breathe_heavy";
-			isPanting = true;	
+			isPanting = true;
 		}
-		
+
 		if ( sound != "" && time > soundEndTime ) {
 			object team = getGameTeam();
 			if ( team != $null_entity ) {
@@ -2228,7 +2254,7 @@ void player::BreatheThread() {
 				soundEndTime = time + lastSoundLength;
 			}
 		}
-		
+
 		sys.waitFrame();
 	}
 }
@@ -2242,7 +2268,7 @@ void player::ShowProgressBar( entity target, float action ) {
 	float value;
 	if ( sys.getLocalViewPlayer() == self ) {
 		value = target.vGetPliersProgressBarValue( action );
-		
+
 		handle text = invalid_handle;
 		if ( action == AC_HACK ) {
 			text = g_locStr_Hacking;
@@ -2274,13 +2300,13 @@ void player::ShowProgressBar( entity target, float action ) {
 		if ( action == AC_REVIVE ) {
 			value = target.vGetPliersProgressBarValue( action );
 			sys.pushLocString( sys.toWStr( getUserName() ) );
-			
+
 			sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", sys.localizeStringArgs( "game/revive_by" ) );
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "progressBar.percent", value );
-			SetProgressBarVisible( true );	
-		}	
+			SetProgressBarVisible( true );
+		}
 	}
-	
+
 	progressBarHideTime = sys.getTime() + 0.25f;
 }
 
@@ -2316,10 +2342,10 @@ object player::GetDisguisedTeam() {
 	if ( !isDisguised() ) {
 		return team;
 	}
-	
+
 	if ( team == gdfTeam ) {
 		return stroggTeam;
-	} 
+	}
 
 	return gdfTeam;
 }
@@ -2335,7 +2361,7 @@ player::OnFireTeamJoined
 */
 void player::OnFireTeamJoined() {
 	SetupCommandMapIcons( true );
-	
+
 	entitiesOfClass( sys.getTypeHandle( "idPlayer" ), 0 );
 	float count = filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
 
@@ -2489,7 +2515,7 @@ void player::AllocSpawnHostTask() {
 	if ( sys.isClient() ) {
 		return;
 	}
-	
+
 	if ( HasSpawnHostTask() ) {
 		return;
 	}
@@ -2688,7 +2714,7 @@ float player::vGetPliersProgressBarValue( float action ) {
 		team_base team = getGameTeam();
 		return reviveCount / team.GetMaxReviveCount();
 	}
-	
+
 	return 0.f;
 }
 
@@ -2699,10 +2725,10 @@ player::RegenThread
 */
 void player::RegenThread() {
 	team_base team = getGameTeam();
-	
+
 	while ( true ) {
 		team.RegenPulse( self );
-	
+
 		sys.wait( 5.f );
 	}
 }
@@ -2810,12 +2836,16 @@ player::vGetVehicleCredit
 =====================
 */
 float player::vGetVehicleCredit() {
+	return self.getVehicleCredit();
+/*
 	float chargeUsed = sys.getTargetTimerValue( vehicleCreditTimer, self ) - sys.getTime();
+
 	if ( chargeUsed < 0 ) {
 		return 1.f;
 	}
 
 	return 1 - ( chargeUsed / vehicleCreditChargeTime );
+*/
 }
 
 /*
@@ -2824,12 +2854,15 @@ player::vUseVehicleCredit
 =====================
 */
 void player::vUseVehicleCredit( float fraction ) {
+	self.useVehicleCredit( fraction );
+/*
 	float newFrac = vGetVehicleCredit() - fraction;
 	if ( newFrac < 0.f ) {
 		newFrac = 0.f;
 	}
 
 	sys.setTargetTimerValue( vehicleCreditTimer, self, sys.getTime() + ( ( 1 - newFrac ) * vehicleCreditChargeTime ) );
+*/
 }
 
 
@@ -3063,16 +3096,16 @@ player::vTargetLockAlarm
 void player::vTargetLockAlarm( entity other ) {
 	if ( targetLockCount == 0 ) {
 		if ( isLocalPlayer() ) {
-			if ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) {
+			//if ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) {
 				sys.startSoundDirect( getKey( "snd_target_lock_alarm" ), SND_PLAYER_ALARM );
-			}
+			//}
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockDeployableAttack", 0.0f );
 		}
 	}
 
-	if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
+	//if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
 		targetLockCount++;
-	}
+	//}
 }
 
 /*
@@ -3110,8 +3143,8 @@ void player::vTargetLockAttack( entity other ) {
 player::vMineWarning
 =====================
 */
-void player::vMineWarning( entity other ) {
-	if ( isLocalPlayer() ) {
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.mineWarningTime", sys.getTime() );
-	}
-}
+//void player::vMineWarning( entity other ) {
+//	if ( isLocalPlayer() ) {
+//		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.mineWarningTime", sys.getTime() );
+//	}
+//}

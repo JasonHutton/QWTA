@@ -1,0 +1,904 @@
+/***********************************************************************
+
+projectile_bfg.script
+
+***********************************************************************/
+
+#define BFG_BEAM_RANGE 1024
+#define BFG_EFFECT_RANGE 8192
+
+object projectile_bfg : projectile_missile {
+
+	void			preinit();
+	void			destroy();
+
+	void			UpdateBeams();
+	void			OnPostThink();
+	void			ClearBadBeams( boolean bForceClear );
+	void			FindGoodBeams();
+	void			DoBeamDamage();
+	void			BeginBeamEffects();
+	void			EndBeamEffects();
+	void			UpdateBeamEffects();
+	void			AssignBeamTarget( entity target );
+	vector			GetTargetPos( entity target );
+	boolean			TargetValid( entity target, vector targetOrg );
+	boolean			AlreadyTarget( entity target );
+	boolean			DoBeamTrace( vector endOrg );
+	boolean 		TargetIsValid( entity targetEnt );
+
+	void			destroyEffects();
+	void			destroyEffects2();
+	void			destroyTargets();
+
+	void			DoExplodeEffect_bfg( entity collisionEnt );
+	void			DoExplodeEffect( entity collisionEnt ) {
+						DoExplodeEffect_bfg( collisionEnt );
+					}
+	void			DoBFGEffect();
+
+	void			AssignBlastEffect( vector pos );
+
+	float			beamIndex;
+	float			bfgEffectIndex;
+
+	object			beamEffect0;
+	object			beamEffect1;
+	object			beamEffect2;
+	object			beamEffect3;
+	object			beamEffect4;
+	object			beamEffect5;
+	object			beamEffect6;
+	object			beamEffect7;
+
+	object			impactEffect0;
+	object			impactEffect1;
+	object			impactEffect2;
+	object			impactEffect3;
+	object			impactEffect4;
+	object			impactEffect5;
+	object			impactEffect6;
+	object			impactEffect7;
+
+	object			blastEffect0;
+	object			blastEffect1;
+	object			blastEffect2;
+	object			blastEffect3;
+	object			blastEffect4;
+	object			blastEffect5;
+	object			blastEffect6;
+	object			blastEffect7;
+
+	entity			beamTarget0;
+	entity			beamTarget1;
+	entity			beamTarget2;
+	entity			beamTarget3;
+	entity			beamTarget4;
+	entity			beamTarget5;
+	entity			beamTarget6;
+	entity			beamTarget7;
+
+	float			bfg_effect_delay;
+	boolean			bBeamsOn;
+
+	float			BFGEffectTime;
+	boolean			bBFGEffectDone;
+}
+
+void projectile_bfg::preinit() {
+	beamIndex	= GetDamage( getKey( "dmg_beam_damage" ) );
+	bfgEffectIndex = GetDamage( getKey( "dmg_bfg_effect" ) );
+	bfg_effect_delay = 0.5;
+	bBeamsOn = true;
+}
+
+void projectile_bfg::destroy() {
+	destroyEffects();
+	destroyEffects2();
+	destroyTargets();
+}
+
+void projectile_bfg::destroyEffects2() {
+	if ( blastEffect0 != $null_entity ) {
+		blastEffect0.remove();
+		blastEffect0 = $null_entity;
+	}
+	if ( blastEffect1 != $null_entity ) {
+		blastEffect1.remove();
+		blastEffect1 = $null_entity;
+	}
+	if ( blastEffect2 != $null_entity ) {
+		blastEffect2.remove();
+		blastEffect2 = $null_entity;
+	}
+	if ( blastEffect3 != $null_entity ) {
+		blastEffect3.remove();
+		blastEffect3 = $null_entity;
+	}
+	if ( blastEffect4 != $null_entity ) {
+		blastEffect4.remove();
+		blastEffect4 = $null_entity;
+	}
+	if ( blastEffect5 != $null_entity ) {
+		blastEffect5.remove();
+		blastEffect5 = $null_entity;
+	}
+	if ( blastEffect6 != $null_entity ) {
+		blastEffect6.remove();
+		blastEffect6 = $null_entity;
+	}
+	if ( blastEffect7 != $null_entity ) {
+		blastEffect7.remove();
+		blastEffect7 = $null_entity;
+	}
+}
+
+void projectile_bfg::destroyEffects() {
+	if ( beamEffect0 != $null_entity ) {
+		beamEffect0.remove();
+		beamEffect0 = $null_entity;
+		if ( impactEffect0 != $null_entity ) {
+			impactEffect0.remove();
+			impactEffect0 = $null_entity;
+		}
+	}
+	if ( beamEffect1 != $null_entity ) {
+		beamEffect1.remove();
+		beamEffect1 = $null_entity;
+		if ( impactEffect1 != $null_entity ) {
+			impactEffect1.remove();
+			impactEffect1 = $null_entity;
+		}
+	}
+	if ( beamEffect2 != $null_entity ) {
+		beamEffect2.remove();
+		beamEffect2 = $null_entity;
+		if ( impactEffect2 != $null_entity ) {
+			impactEffect2.remove();
+			impactEffect2 = $null_entity;
+		}
+	}
+	if ( beamEffect3 != $null_entity ) {
+		beamEffect3.remove();
+		beamEffect3 = $null_entity;
+		if ( impactEffect3 != $null_entity ) {
+			impactEffect3.remove();
+			impactEffect3 = $null_entity;
+		}
+	}
+	if ( beamEffect4 != $null_entity ) {
+		beamEffect4.remove();
+		beamEffect4 = $null_entity;
+		if ( impactEffect4 != $null_entity ) {
+			impactEffect4.remove();
+			impactEffect4 = $null_entity;
+		}
+	}
+	if ( beamEffect5 != $null_entity ) {
+		beamEffect5.remove();
+		beamEffect5 = $null_entity;
+		if ( impactEffect5 != $null_entity ) {
+			impactEffect5.remove();
+			impactEffect5 = $null_entity;
+		}
+	}
+	if ( beamEffect6 != $null_entity ) {
+		beamEffect6.remove();
+		beamEffect6 = $null_entity;
+		if ( impactEffect6 != $null_entity ) {
+			impactEffect6.remove();
+			impactEffect6 = $null_entity;
+		}
+	}
+	if ( beamEffect7 != $null_entity ) {
+		beamEffect7.remove();
+		beamEffect7 = $null_entity;
+		if ( impactEffect7 != $null_entity ) {
+			impactEffect7.remove();
+			impactEffect7 = $null_entity;
+		}
+	}
+}
+
+void projectile_bfg::destroyTargets() {
+	if ( beamTarget0 != $null_entity ) {
+		beamTarget0 = $null_entity;
+	}
+	if ( beamTarget1 != $null_entity ) {
+		beamTarget1 = $null_entity;
+	}
+	if ( beamTarget2 != $null_entity ) {
+		beamTarget2 = $null_entity;
+	}
+	if ( beamTarget3 != $null_entity ) {
+		beamTarget3 = $null_entity;
+	}
+	if ( beamTarget4 != $null_entity ) {
+		beamTarget4 = $null_entity;
+	}
+	if ( beamTarget5 != $null_entity ) {
+		beamTarget5 = $null_entity;
+	}
+	if ( beamTarget6 != $null_entity ) {
+		beamTarget6 = $null_entity;
+	}
+	if ( beamTarget7 != $null_entity ) {
+		beamTarget7 = $null_entity;
+	}
+}
+
+
+void projectile_bfg::OnPostThink() {
+	UpdateBeams();
+}
+
+void projectile_bfg::UpdateBeams() {
+	if ( bBeamsOn ) {
+		ClearBadBeams( false );
+		FindGoodBeams();
+	}
+	else {
+		ClearBadBeams( true );
+		if ( !bBFGEffectDone && sys.getTime() > BFGEffectTime ) {
+			DoBFGEffect();
+		}
+	}
+
+	BeginBeamEffects();
+	UpdateBeamEffects();
+	EndBeamEffects();
+
+	DoBeamDamage();
+}
+
+void projectile_bfg::DoBeamDamage() {
+	if( beamTarget0 != $null_entity ) {
+		beamTarget0.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget0.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget1 != $null_entity ) {
+		beamTarget1.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget1.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget2 != $null_entity ) {
+		beamTarget2.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget2.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget3 != $null_entity ) {
+		beamTarget3.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget3.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget4 != $null_entity ) {
+		beamTarget4.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget4.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget5 != $null_entity ) {
+		beamTarget5.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget5.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget6 != $null_entity ) {
+		beamTarget6.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget6.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+	if( beamTarget7 != $null_entity ) {
+		beamTarget7.applyDamage( self, getOwner(), sys.vecNormalize( beamTarget7.getWorldOrigin() - getWorldOrigin() ), beamIndex, 1.0f, $null_entity );
+	}
+}
+
+void projectile_bfg::BeginBeamEffects() {
+	if ( beamTarget0 != $null_entity && beamEffect0 == $null_entity ) {
+		beamEffect0 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect0 != $null_entity ) {
+			beamEffect0.setEffectLooping( 1 );
+		}
+		if ( impactEffect0 == $null_entity ) {
+			impactEffect0 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect0 != $null_entity ) {
+				impactEffect0.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget1 != $null_entity && beamEffect1 == $null_entity ) {
+		beamEffect1 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect1 != $null_entity ) {
+			beamEffect1.setEffectLooping( 1 );
+		}
+		if ( impactEffect1 == $null_entity ) {
+			impactEffect1 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect1 != $null_entity ) {
+				impactEffect1.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget2 != $null_entity && beamEffect2 == $null_entity ) {
+		beamEffect2 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect2 != $null_entity ) {
+			beamEffect2.setEffectLooping( 1 );
+		}
+		if ( impactEffect2 == $null_entity ) {
+			impactEffect2 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect2 != $null_entity ) {
+				impactEffect2.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget3 != $null_entity && beamEffect3 == $null_entity ) {
+		beamEffect3 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect3 != $null_entity ) {
+			beamEffect3.setEffectLooping( 1 );
+		}
+		if ( impactEffect3 == $null_entity ) {
+			impactEffect3 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect3 != $null_entity ) {
+				impactEffect3.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget4 != $null_entity && beamEffect4 == $null_entity ) {
+		beamEffect4 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect4 != $null_entity ) {
+			beamEffect4.setEffectLooping( 1 );
+		}
+		if ( impactEffect4 == $null_entity ) {
+			impactEffect4 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect4 != $null_entity ) {
+				impactEffect4.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget5 != $null_entity && beamEffect5 == $null_entity ) {
+		beamEffect5 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect5 != $null_entity ) {
+			beamEffect5.setEffectLooping( 1 );
+		}
+		if ( impactEffect5 == $null_entity ) {
+			impactEffect5 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect5 != $null_entity ) {
+				impactEffect5.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget6 != $null_entity && beamEffect6 == $null_entity ) {
+		beamEffect6 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect6 != $null_entity ) {
+			beamEffect6.setEffectLooping( 1 );
+		}
+		if ( impactEffect6 == $null_entity ) {
+			impactEffect6 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect6 != $null_entity ) {
+				impactEffect6.setEffectLooping( 1 );
+			}
+		}
+	}
+	if ( beamTarget7 != $null_entity && beamEffect7 == $null_entity ) {
+		beamEffect7 = spawnClientEffect( "fx_beam" );
+		if ( beamEffect7 != $null_entity ) {
+			beamEffect7.setEffectLooping( 1 );
+		}
+		if ( impactEffect7 == $null_entity ) {
+			impactEffect7 = spawnClientEffect( "fx_beam_impact" );
+			if ( impactEffect7 != $null_entity ) {
+				impactEffect7.setEffectLooping( 1 );
+			}
+		}
+	}
+}
+
+// This is kind've a shitty way to do things, but...
+void projectile_bfg::UpdateBeamEffects() {
+	vector endPos;
+	vector normal;
+
+	if ( beamTarget0 != $null_entity && beamEffect0 != $null_entity ) {
+		beamEffect0.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget0 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect0 != $null_entity ) {
+				 impactEffect0.setOrigin( endPos );
+				 impactEffect0.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect0.setEffectEndOrigin( endPos );
+		beamEffect0.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget1 != $null_entity && beamEffect1 != $null_entity ) {
+		beamEffect1.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget1 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect1 != $null_entity ) {
+				 impactEffect1.setOrigin( endPos );
+				 impactEffect1.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect1.setEffectEndOrigin( endPos );
+		beamEffect1.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget2 != $null_entity && beamEffect2 != $null_entity ) {
+		beamEffect2.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget2 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect2 != $null_entity ) {
+				 impactEffect2.setOrigin( endPos );
+				 impactEffect2.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect2.setEffectEndOrigin( endPos );
+		beamEffect2.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget3 != $null_entity && beamEffect3 != $null_entity ) {
+		beamEffect3.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget3 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect3 != $null_entity ) {
+				 impactEffect3.setOrigin( endPos );
+				 impactEffect3.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect3.setEffectEndOrigin( endPos );
+		beamEffect3.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget4 != $null_entity && beamEffect4 != $null_entity ) {
+		beamEffect4.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget4 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect4 != $null_entity ) {
+				 impactEffect4.setOrigin( endPos );
+				 impactEffect4.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect4.setEffectEndOrigin( endPos );
+		beamEffect4.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget5 != $null_entity && beamEffect5 != $null_entity ) {
+		beamEffect5.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget5 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect5 != $null_entity ) {
+				 impactEffect5.setOrigin( endPos );
+				 impactEffect5.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect5.setEffectEndOrigin( endPos );
+		beamEffect5.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget6 != $null_entity && beamEffect6 != $null_entity ) {
+		beamEffect6.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget6 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect6 != $null_entity ) {
+				 impactEffect6.setOrigin( endPos );
+				 impactEffect6.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect6.setEffectEndOrigin( endPos );
+		beamEffect6.setAngles( sys.vecToAngles( normal ) );
+	}
+	if ( beamTarget7 != $null_entity && beamEffect7 != $null_entity ) {
+		beamEffect7.setOrigin( getWorldOrigin() );
+		endPos = GetTargetPos( beamTarget7 );
+		normal = sys.vecNormalize( endPos - getWorldOrigin() );
+		if ( DoBeamTrace( endPos ) ) {
+			 if ( impactEffect7 != $null_entity ) {
+				 impactEffect7.setOrigin( endPos );
+				 impactEffect7.setAngles( sys.vecToAngles( normal ) );
+			 }
+		}
+		beamEffect7.setEffectEndOrigin( endPos );
+		beamEffect7.setAngles( sys.vecToAngles( normal ) );
+	}
+}
+
+void projectile_bfg::EndBeamEffects() {
+	if ( beamTarget0 == $null_entity && beamEffect0 != $null_entity ) {
+		beamEffect0.remove();
+		beamEffect0 = $null_entity;
+		if ( impactEffect0 != $null_entity ) {
+			impactEffect0.remove();
+			impactEffect0 = $null_entity;
+		}
+	}
+	if ( beamTarget1 == $null_entity && beamEffect1 != $null_entity ) {
+		beamEffect1.remove();
+		beamEffect1 = $null_entity;
+		if ( impactEffect1 != $null_entity ) {
+			impactEffect1.remove();
+			impactEffect1 = $null_entity;
+		}
+	}
+	if ( beamTarget2 == $null_entity && beamEffect2 != $null_entity ) {
+		beamEffect2.remove();
+		beamEffect2 = $null_entity;
+		if ( impactEffect2 != $null_entity ) {
+			impactEffect2.remove();
+			impactEffect2 = $null_entity;
+		}
+	}
+	if ( beamTarget3 == $null_entity && beamEffect3 != $null_entity ) {
+		beamEffect3.remove();
+		beamEffect3 = $null_entity;
+		if ( impactEffect3 != $null_entity ) {
+			impactEffect3.remove();
+			impactEffect3 = $null_entity;
+		}
+	}
+	if ( beamTarget4 == $null_entity && beamEffect4 != $null_entity ) {
+		beamEffect4.remove();
+		beamEffect4 = $null_entity;
+		if ( impactEffect4 != $null_entity ) {
+			impactEffect4.remove();
+			impactEffect4 = $null_entity;
+		}
+	}
+	if ( beamTarget5 == $null_entity && beamEffect5 != $null_entity ) {
+		beamEffect5.remove();
+		beamEffect5 = $null_entity;
+		if ( impactEffect5 != $null_entity ) {
+			impactEffect5.remove();
+			impactEffect5 = $null_entity;
+		}
+	}
+	if ( beamTarget6 == $null_entity && beamEffect6 != $null_entity ) {
+		beamEffect6.remove();
+		beamEffect6 = $null_entity;
+		if ( impactEffect6 != $null_entity ) {
+			impactEffect6.remove();
+			impactEffect6 = $null_entity;
+		}
+	}
+	if ( beamTarget7 == $null_entity && beamEffect7 != $null_entity ) {
+		beamEffect7.remove();
+		beamEffect7 = $null_entity;
+		if ( impactEffect7 != $null_entity ) {
+			impactEffect7.remove();
+			impactEffect7 = $null_entity;
+		}
+	}
+}
+
+
+void projectile_bfg::ClearBadBeams( boolean bForceClear ) {
+	if( beamTarget0 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget0, GetTargetPos( beamTarget0 ) ) ) {
+			beamTarget0 = $null_entity;
+		}
+	}
+	if( beamTarget1 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget1, GetTargetPos( beamTarget1 ) ) ) {
+			beamTarget1 = $null_entity;
+		}
+	}
+	if( beamTarget2 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget2, GetTargetPos( beamTarget2 ) ) ) {
+			beamTarget2 = $null_entity;
+		}
+	}
+	if( beamTarget3 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget3, GetTargetPos( beamTarget3 ) ) ) {
+			beamTarget3 = $null_entity;
+		}
+	}
+	if( beamTarget4 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget4, GetTargetPos( beamTarget4 ) ) ) {
+			beamTarget4 = $null_entity;
+		}
+	}
+	if( beamTarget5 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget5, GetTargetPos( beamTarget5 ) ) ) {
+			beamTarget5 = $null_entity;
+		}
+	}
+	if( beamTarget6 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget6, GetTargetPos( beamTarget6 ) ) ) {
+			beamTarget6 = $null_entity;
+		}
+	}
+	if( beamTarget7 != $null_entity ) {
+		if( bForceClear || !TargetValid( beamTarget7, GetTargetPos( beamTarget7 ) ) ) {
+			beamTarget7 = $null_entity;
+		}
+	}
+}
+
+void projectile_bfg::FindGoodBeams() {
+	float count = entitiesInRadius( g_vectorZero, BFG_BEAM_RANGE, -1, 0 );
+
+	float index = 0;
+
+	for ( index = 0; index < count; index++ ) {
+		entity ent = getBoundsCacheEntity( index );
+
+		if ( !TargetIsValid( ent ) ) {
+			continue;
+		}
+
+		if ( !AlreadyTarget( ent ) ) {
+			if( ent != $null_entity ) {
+				if( TargetValid( ent, GetTargetPos( ent ) ) ) {
+					AssignBeamTarget( ent );
+				}
+			}
+		}
+	}
+}
+
+boolean projectile_bfg::TargetIsValid( entity targetEnt ) {
+	player testPlayer = targetEnt;
+
+	if ( targetEnt == $null_entity ) {
+		return false;
+	}
+
+	if ( targetEnt == self) {
+		return false;
+	}
+
+	if ( targetEnt == self.getOwner() ) {
+		return false;
+	}
+
+	if ( targetEnt.getHealth() <= 0 ) {
+		return false;
+	}
+
+	if ( targetEnt == self.getOwner().getVehicle() ) {
+		return false;
+	}
+
+	if ( getEntityAllegiance( targetEnt ) != TA_ENEMY ) {
+		return false;
+	}
+
+	if ( testPlayer != $null_entity ) {
+		if ( testPlayer.isInvulnerable() ) {
+			return false;
+		}
+
+		if ( testPlayer.isDisguised() ) {
+			return false;
+		}
+
+		if ( getEntityAllegiance( testPlayer ) != TA_ENEMY ) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+void projectile_bfg::AssignBeamTarget( entity target ) {
+	if ( beamTarget0 == $null_entity ) {
+		beamTarget0 = target;
+	}
+	else if ( beamTarget1 == $null_entity ) {
+		beamTarget1 = target;
+	}
+	else if ( beamTarget2 == $null_entity ) {
+		beamTarget2 = target;
+	}
+	else if ( beamTarget3 == $null_entity ) {
+		beamTarget3 = target;
+	}
+	else if ( beamTarget4 == $null_entity ) {
+		beamTarget4 = target;
+	}
+	else if ( beamTarget5 == $null_entity ) {
+		beamTarget5 = target;
+	}
+	else if ( beamTarget6 == $null_entity ) {
+		beamTarget6 = target;
+	}
+	else if ( beamTarget7 == $null_entity ) {
+		beamTarget7 = target;
+	}
+}
+
+boolean projectile_bfg::AlreadyTarget( entity target ) {
+	if ( target == beamTarget0 ) {
+		return true;
+	}
+	if ( target == beamTarget1 ) {
+		return true;
+	}
+	if ( target == beamTarget2 ) {
+		return true;
+	}
+	if ( target == beamTarget3 ) {
+		return true;
+	}
+	if ( target == beamTarget4 ) {
+		return true;
+	}
+	if ( target == beamTarget5 ) {
+		return true;
+	}
+	if ( target == beamTarget6 ) {
+		return true;
+	}
+	if ( target == beamTarget7 ) {
+		return true;
+	}
+
+	return false;
+}
+
+vector projectile_bfg::GetTargetPos( entity target ) {
+	// Warning, calling this will a null target does bad things.
+	vector absMins = target.getVectorKeyWithDefault( "selection_mins", target.getMins() );
+	vector absMaxs = target.getVectorKeyWithDefault( "selection_maxs", target.getMaxs() );
+	absMins = sys.toWorldSpace( absMins, target );
+	absMaxs = sys.toWorldSpace( absMaxs, target );
+
+	return ( absMins + absMaxs ) * 0.5f;
+}
+
+boolean projectile_bfg::TargetValid( entity target, vector targetOrg ) {
+	if ( target == $null_entity ) {
+		return false;
+	}
+
+	vector line = targetOrg - getWorldOrigin();
+	if ( sys.vecLength( line ) > BFG_BEAM_RANGE ) {
+		return false;
+	}
+
+	sys.tracePoint( getWorldOrigin(), targetOrg, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, self );
+
+	if ( sys.getTraceFraction() == 1.0f ) {
+		return false;
+	}
+	entity traceEnt = sys.getTraceEntity();
+	if ( traceEnt == $null_entity ) {
+		return false;
+	}
+
+	if ( traceEnt != target ) {
+		return false;
+	}
+
+	return true;
+}
+
+boolean projectile_bfg::DoBeamTrace( vector endOrg ) {
+	sys.tracePoint( getWorldOrigin(), endOrg, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, self );
+
+	if ( sys.getTraceFraction() == 1.0f ) {
+		return false;
+	}
+	entity traceEnt = sys.getTraceEntity();
+	if ( traceEnt == $null_entity ) {
+		return false;
+	}
+
+	return true;
+}
+
+void projectile_bfg::DoExplodeEffect_bfg( entity collisionEnt ) {
+	float removeDelay;
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+	bBeamsOn = false;
+
+	DoRadiusDamage();
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+	ScheduleRemoval( removeDelay );
+
+	BFGEffectTime = sys.getTime() + 0.4f;
+	bBFGEffectDone = false;
+}
+
+void projectile_bfg::DoBFGEffect() {
+	float count = entitiesInRadius( g_vectorZero, BFG_EFFECT_RANGE, -1, 0 );
+
+	float index = 0;
+
+	for ( index = 0; index < count; index++ ) {
+		entity ent = getBoundsCacheEntity( index );
+
+		if ( !TargetIsValid( ent ) ) {
+			continue;
+		}
+
+		vector line = GetTargetPos( ent ) - getWorldOrigin();
+		if ( sys.vecLength( line ) > BFG_EFFECT_RANGE ) {
+			continue;
+		}
+
+		sys.tracePoint( getWorldOrigin(), GetTargetPos( ent ), MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, self );
+
+		if ( sys.getTraceFraction() == 1.0f ) {
+			continue;
+		}
+
+		entity traceEnt = sys.getTraceEntity();
+		if ( traceEnt == $null_entity ) {
+			continue;
+		}
+		if ( traceEnt != ent ) {
+			continue;
+		}
+
+		vehicle_base vehOwner = self.getOwner().getVehicle();
+		if( vehOwner == $null_entity ) {
+			continue;
+		}
+
+		sys.tracePoint( getWorldOrigin(), GetTargetPos( vehOwner ), MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, $null_entity);
+
+		if ( sys.getTraceFraction() == 1.0f ) {
+			continue;
+		}
+
+		entity traceEnt2 = sys.getTraceEntity();
+		if ( traceEnt2 == $null_entity ) {
+			continue;
+		}
+		if ( traceEnt2 != vehOwner ) {
+			continue;
+		}
+
+		AssignBlastEffect( GetTargetPos( ent ) );
+
+		ent.applyDamage( self, getOwner(), sys.vecNormalize( GetTargetPos( ent ) - getWorldOrigin() ), bfgEffectIndex, 1.0f, $null_entity );
+	}
+
+	bBFGEffectDone = true;
+}
+
+void projectile_bfg::AssignBlastEffect( vector pos ) {
+	if ( blastEffect0 == $null_entity ) {
+		blastEffect0 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect0 != $null_entity ) {
+			blastEffect0.setOrigin( pos );
+			blastEffect0.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect1 == $null_entity ) {
+		blastEffect1 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect1 != $null_entity ) {
+			blastEffect1.setOrigin( pos );
+			blastEffect1.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect2 == $null_entity ) {
+		blastEffect2 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect2 != $null_entity ) {
+			blastEffect2.setOrigin( pos );
+			blastEffect2.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect3 == $null_entity ) {
+		blastEffect3 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect3 != $null_entity ) {
+			blastEffect3.setOrigin( pos );
+			blastEffect3.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect4 == $null_entity ) {
+		blastEffect4 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect4 != $null_entity ) {
+			blastEffect4.setOrigin( pos );
+			blastEffect4.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect5 == $null_entity ) {
+		blastEffect5 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect5 != $null_entity ) {
+			blastEffect5.setOrigin( pos );
+			blastEffect5.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect6 == $null_entity ) {
+		blastEffect6 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect6 != $null_entity ) {
+			blastEffect6.setOrigin( pos );
+			blastEffect6.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+	else if ( blastEffect7 == $null_entity ) {
+		blastEffect7 = spawnClientEffect( "fx_bfg_effect" );
+		if ( blastEffect7 != $null_entity ) {
+			blastEffect7.setOrigin( pos );
+			blastEffect7.setAngles( sys.vecToAngles( vec3_up ) );
+		}
+	}
+}

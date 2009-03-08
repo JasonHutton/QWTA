@@ -1,0 +1,14 @@
+// Original last: 00015057 in the original guis/game.locstr file.
+// This file last: 00015060
+
+locString guis/vehicles/jupiter_driver { 
+	text "#str_00015058" // "Jupiter Driver"
+}
+
+locString guis/vehicles/jupiter_gunner { 
+	text "#str_00015059" // "Jupiter Gunner"
+}
+
+locString guis/vehicles/jupiter_passenger { 
+	text "#str_00015060" // "Jupiter Passenger"
+}

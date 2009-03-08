@@ -245,10 +245,15 @@ entityDef projectile_deployable_ssg {
 	"maxs"							"24 24 150"
 	"model"							""
 
-	"scriptObject"					"projectile_ssm"
+	//"scriptObject"					"projectile_ssm"
+	"scriptObject"					"projectile_ssg"
 
 	"dmg_damage"					"damage_ssg"
 	"dmg_splash_damage"				"damage_ssg_splash"
+	// QWTA
+	"dmg_splash_damage_push"			"damage_ssg_splash_push"
+	"dmg_splash_damage_pull"			"damage_ssg_splash_pull"
+	"dmg_splash_damage_prox_burn"			"damage_ssg_prox_burn"
 
 	"health"						"400"
 	"velocity"						"0 0 0"
@@ -262,20 +267,25 @@ entityDef projectile_deployable_ssg {
 	"detonate_on_fuse"				"0"
 	"detonate_on_death"				"1"
 	"detonate_on_world"				"1"
-	"detonate_on_actor"				"1"
+	//"detonate_on_actor"				"1"
+	"detonate_on_actor"				"0"
 
 	"face_velocity"					"1"
 
-	"detonate_upwards"			"1"
+	//"detonate_upwards"			"1"
+	"detonate_upwards"			"0"
 
 	"snd_launch"					"sounds/deployables/ssm/launch"
-	"fx_trail"						"effects/deployables/ssg_trail"
-	"fx_explode"					"effects/deployables/ssg_explode"
+	//"fx_trail"						"effects/deployables/ssg_trail"
+	"fx_trail"						"effects/weapons/dmg/fly"
+	//"fx_explode"					"effects/deployables/ssg_explode"
+	"fx_explode"					"effects/weapons/dmg/explode"
 	"fx_explode_water"				"effects/water/explosion"
 	"fx_explode_water_interior"		"effects/water/explosion_interior"
 
 	"use_air_burst"					"1"
-	"fx_airburst"					"effects/deployables/ssg_explode_air"
+	//"fx_airburst"					"effects/deployables/ssg_explode_air"
+	"fx_airburst"					"effects/weapons/dmg/explode_air"
 
 	"ti_target_info"				"target_beacon"
 
@@ -286,6 +296,9 @@ entityDef projectile_deployable_ssg {
 	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
 
 	"prof_destroy"					"pro_engineer_antimissile_ssg"
+	
+	// QWTA
+	"has_postthink"					"1"
 }
 
 damageDef damage_ssg {
@@ -328,5 +341,69 @@ damageFilter damage_ssg {
 	type {
 		target	"target_explodable"
 		damage	1000
+	}
+}
+
+damageDef damage_ssg_splash_push {
+	damage							"damage_ssg"
+	//radius							2048
+	radius							3072
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+	
+	knockback						4000
+	push							100000000
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssg"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+}
+
+damageDef damage_ssg_splash_pull{
+	damage							"damage_ssg"
+	//radius							2048
+	radius							2048
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+	
+	knockback						800
+	push							80000000
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssg"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+}
+
+damageDef damage_ssg_prox_burn{
+	damage							"damage_ssg_burn"
+	//radius						2048
+	radius							2048
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+	
+	tt_obituary						"tooltips/killmsgs/weapons/ssg"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+}
+
+damageFilter damage_ssg_burn {
+	type {
+		target	"target_all"
+		damage	1
 	}
 }

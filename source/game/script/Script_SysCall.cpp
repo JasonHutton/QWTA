@@ -144,6 +144,8 @@ const idEventDef EV_Thread_GetDeclIndex( "getDeclIndex", 'd', DOC_TEXT( "Returns
 const idEventDef EV_Thread_GetDeclName( "getDeclName", 's', DOC_TEXT( "Returns the name of the $decl$ of the specified type and index." ), 2, "If either the type or index are invalid, the result will be an empty string.", "d", "type", "Index of the $decl$ type.", "d", "index", "Index of the $decl$." );
 const idEventDef EV_Thread_GetDeclCount( "getDeclCount", 'd', DOC_TEXT( "Returns the $decl$ count for a specified $decl$ type." ), 1, "If the $decl$ type is invalid, the result will be 0.", "d", "type", "Index of the $decl$ type." );
 const idEventDef EV_Thread_ApplyRadiusDamage( "applyRadiusDamage", '\0', DOC_TEXT( "Applies radius damage to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the damage.", "E", "attacker", "Entity responsible for the damage.", "E", "ignore", "Entity to not apply damage to.", "E", "pushIgnore", "Entity to not apply push to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by." );
+const idEventDef EV_Thread_ApplyRadiusPush( "applyRadiusPush", '\0', DOC_TEXT( "Applies radius push to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the push.", "E", "attacker", "Entity responsible for the push.", "E", "ignore", "Entity to not apply push to.", "E", "pushIgnore", "Entity to not apply push to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by." );
+const idEventDef EV_Thread_ApplyRadiusPull( "applyRadiusPull", '\0', DOC_TEXT( "Applies radius pull to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the pull.", "E", "attacker", "Entity responsible for the pull.", "E", "ignore", "Entity to not apply pull to.", "E", "pushIgnore", "Entity to not apply pull to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied pull by." );
 const idEventDef EV_Thread_FilterEntity( "filterEntity", 'b', DOC_TEXT( "Returns whether the entity is caught by a $decl:targetInfo$." ), 2, "If the $decl:targetInfo$ is invalid or the entity is $null$, the result will be true.", "d", "index", "Index of the $decl:targetInfo$.", "E", "entity", "The entity to check." );
 const idEventDef EV_Thread_GetTableCount( "getTableCount", 'd', DOC_TEXT( "Returns the number of entries in $decl:table$." ), 1, "If the $decl:table$ is invalid, then the result will be 0.", "d", "index", "Index of the $decl:table$." );
 const idEventDef EV_Thread_GetTableValue( "getTableValue", 'f', DOC_TEXT( "Returns an entry from a $decl:table$." ), 2, "This is the direct value from the table and does not do a lookup for interpolation, etc. To do that, use $event:getTableValueExact$.\nIf the index is -1, the result will be 0.\nIf the index is otherwise out of range, the game will likely crash or return garbage data.", "d", "index", "Index of the $decl:table$.", "d", "value", "Which value to look up." );
@@ -227,6 +229,8 @@ const idEventDef EV_Thread_FreeHudModule( "freeHudModule", '\0', DOC_TEXT( "Free
 
 const idEventDef EV_Thread_RequestDeployment( "requestDeployment", 'b', DOC_TEXT( "Tries to request deployment of an object at the given location, for a player, and returns whether the request succeeded or not." ), 5, "This does not check the deployment grid for a valid location, to do that, use $event:requestCheckedDeployment$.", "e", "player", "Player the request is for.", "d", "object", "Index of the $decl:deployObject$ to use.", "v", "porition", "Position to request deployment at.", "f", "yaw", "Angle to deploy the object at.", "f", "delay", "Extra delay in seconds to add to the deployment time." );
 const idEventDef EV_Thread_RequestCheckedDeployment( "requestCheckedDeployment", 'b', DOC_TEXT( "Tries to request deployment of an object at the location they are currently looking at, and returns whether the request succeeded or not." ), 4, NULL, "e", "player", "Player the request is for.", "d", "object", "Index of the $decl:deployObject$ to use.", "f", "yaw", "Angle to deploy the object at.", "f", "delay", "Extra delay in seconds to add to the deployment time." );
+const idEventDef EV_Thread_GetDeploymentCredit( "getDeploymentCredit", 'f', DOC_TEXT( "Returns the cost of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
+const idEventDef EV_Thread_GetDeploymentTitle( "getDeploymentTitle", 's', DOC_TEXT( "Returns the title of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 
 const idEventDef EV_Thread_GetWorldMins( "getWorldMins", 'v', DOC_TEXT( "Returns the mins of the world collision model." ), 0, NULL );
 const idEventDef EV_Thread_GetWorldMaxs( "getWorldMaxs", 'v', DOC_TEXT( "Returns the maxs of the world collision model." ), 0, NULL );
@@ -389,6 +393,8 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 	EVENT( EV_Thread_GetDeclName,					sdSysCallThread::Event_GetDeclName )
 	EVENT( EV_Thread_GetDeclCount,					sdSysCallThread::Event_GetDeclCount )
 	EVENT( EV_Thread_ApplyRadiusDamage,				sdSysCallThread::Event_ApplyRadiusDamage )
+	EVENT( EV_Thread_ApplyRadiusPush,				sdSysCallThread::Event_ApplyRadiusPush )
+	EVENT( EV_Thread_ApplyRadiusPull,				sdSysCallThread::Event_ApplyRadiusPull )
 	EVENT( EV_Thread_FilterEntity,					sdSysCallThread::Event_FilterEntity )
 	EVENT( EV_Thread_GetTableCount,					sdSysCallThread::Event_GetTableCount )
 	EVENT( EV_Thread_GetTableValue,					sdSysCallThread::Event_GetTableValue )
@@ -475,7 +481,8 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 
 	EVENT( EV_Thread_RequestDeployment,				sdSysCallThread::Event_RequestDeployment )
 	EVENT( EV_Thread_RequestCheckedDeployment,		sdSysCallThread::Event_RequestCheckedDeployment )
-
+	EVENT( EV_Thread_GetDeploymentCredit,			sdSysCallThread::Event_GetDeploymentCredit )
+	EVENT( EV_Thread_GetDeploymentTitle,			sdSysCallThread::Event_GetDeploymentTitle )
 
 	EVENT( EV_Thread_GetWorldMins,					sdSysCallThread::Event_GetWorldMins )
 	EVENT( EV_Thread_GetWorldMaxs,					sdSysCallThread::Event_GetWorldMaxs )
@@ -1770,6 +1777,42 @@ void sdSysCallThread::Event_ApplyRadiusDamage( const idVec3& origin, idEntity *i
 
 /*
 ================
+sdSysCallThread::Event_ApplyRadiusPush - QWTA
+================
+*/
+void sdSysCallThread::Event_ApplyRadiusPush( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale ) {
+	const sdDeclDamage *damageDecl = gameLocal.declDamageType[ damageIndex ];
+	if ( damageDecl == NULL ) {
+		gameLocal.Warning( "Event_ApplyRadiusPush: damageDecl is NULL" );
+		return;
+	}
+
+	float radius	= Max( 1.f, damageDecl->GetRadius() * radiusScale );
+
+	// push physics objects
+	gameLocal.RadiusPush( origin, radius, damageDecl, damagePower, attacker, ignorePush, 0, true );
+}
+
+/*
+================
+sdSysCallThread::Event_ApplyRadiusPull - QWTA
+================
+*/
+void sdSysCallThread::Event_ApplyRadiusPull( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale ) {
+	const sdDeclDamage *damageDecl = gameLocal.declDamageType[ damageIndex ];
+	if ( damageDecl == NULL ) {
+		gameLocal.Warning( "Event_ApplyRadiusPull: damageDecl is NULL" );
+		return;
+	}
+
+	float radius	= Max( 1.f, damageDecl->GetRadius() * radiusScale );
+
+	// push physics objects
+	gameLocal.RadiusPull( origin, radius, damageDecl, damagePower, attacker, ignorePush, 0, true );
+}
+
+/*
+================
 sdSysCallThread::Event_FilterEntity
 ================
 */
@@ -2708,6 +2751,37 @@ void sdSysCallThread::Event_RequestCheckedDeployment( idEntity* other, int deplo
 	sdProgram::ReturnBoolean( player->ServerDeploy( object, yaw, SEC2MS( extraDelay ) ) );
 }
 
+/*
+===============
+sdSysCallThread::Event_GetDeploymentCredit
+===============
+*/
+void sdSysCallThread::Event_GetDeploymentCredit( int deploymentObjectIndex ) {
+	const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( deploymentObjectIndex );
+	if ( !object ) {
+		gameLocal.Warning( "sdSysCallThread::Event_GetDeploymentCredit Deployment Object Index OOB" );
+		sdProgram::ReturnFloat( 1.1f );
+		return;
+	}
+
+	sdProgram::ReturnFloat( object->GetCreditRequired() );
+}
+
+/*
+===============
+sdSysCallThread::Event_GetDeploymentTitle
+===============
+*/
+void sdSysCallThread::Event_GetDeploymentTitle( int deploymentObjectIndex ) {
+	const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( deploymentObjectIndex );
+	if ( !object ) {
+		gameLocal.Warning( "sdSysCallThread::Event_GetDeploymentTitle Deployment Object Index OOB" );
+		sdProgram::ReturnString( NULL );
+		return;
+	}
+
+	sdProgram::ReturnString( object->GetTitle() );
+}
 
 /*
 ===============

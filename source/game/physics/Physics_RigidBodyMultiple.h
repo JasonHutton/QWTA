@@ -176,6 +176,7 @@ public:
 	void					SetBodyBuoyancy( int id, float buoyancy );
 	void					SetBodyWaterDrag( int id, float drag );
 	void					SetBouncyness( const float b );
+	float					GetBouncyness( void ) const { return bouncyness; }
 	void					SetWaterRestThreshold( float threshold );
 	void					SetFriction( const float linear, const float angular );
 	void					SetWaterFriction( const float linear, const float angular );

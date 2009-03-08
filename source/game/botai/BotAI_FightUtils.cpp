@@ -1435,7 +1435,6 @@ bool idBotAI::Bot_PickPostCombatGoal() {
 	}
 
 	//mal: slows the game down too much in ETQW.
-/*
 	if ( botThreadData.random.RandomInt( 100 ) > 80 && !LocationVis2Sky( botInfo->origin ) ) { //mal: sometimes, when indoors, take a sec to look around for more enemies.
 		nbgOrigin = enemyInfo.enemy_FS_Pos;
 		ROOT_AI_NODE = &idBotAI::Run_NBG_Node;		
@@ -1443,7 +1442,6 @@ bool idBotAI::Bot_PickPostCombatGoal() {
 		Bot_ResetEnemy();
 		return true;
 	}
-*/
 
 	return false;
 }

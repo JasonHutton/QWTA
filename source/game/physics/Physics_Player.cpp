@@ -180,39 +180,40 @@ Handles user intended acceleration
 ==============
 */
 void idPhysics_Player::Accelerate( const idVec3 &wishdir, const float wishspeed, const float accel ) {
-#if 1
-	// q2 style
-	float addspeed, accelspeed, currentspeed;
+	if(!pm_realisticMovement.GetBool()) {
+		// q2 style
+		float addspeed, accelspeed, currentspeed;
 
-	currentspeed = current.velocity * wishdir;
-	addspeed = wishspeed - currentspeed;
-	if (addspeed <= 0) {
-		return;
+		currentspeed = current.velocity * wishdir;
+		addspeed = wishspeed - currentspeed;
+		if (addspeed <= 0) {
+			return;
+		}
+		accelspeed = accel * frametime * wishspeed;
+		if (accelspeed > addspeed) {
+			accelspeed = addspeed;
+		}
+
+		current.velocity += accelspeed * wishdir;
 	}
-	accelspeed = accel * frametime * wishspeed;
-	if (accelspeed > addspeed) {
-		accelspeed = addspeed;
+	else {
+		// proper way (avoids strafe jump maxspeed bug), but feels bad
+		idVec3		wishVelocity;
+		idVec3		pushDir;
+		float		pushLen;
+		float		canPush;
+
+		wishVelocity = wishdir * wishspeed;
+		pushDir = wishVelocity - current.velocity;
+		pushLen = pushDir.Normalize();
+
+		canPush = accel * frametime * wishspeed;
+		if (canPush > pushLen) {
+			canPush = pushLen;
+		}
+
+		current.velocity += canPush * pushDir;
 	}
-
-	current.velocity += accelspeed * wishdir;
-#else
-	// proper way (avoids strafe jump maxspeed bug), but feels bad
-	idVec3		wishVelocity;
-	idVec3		pushDir;
-	float		pushLen;
-	float		canPush;
-
-	wishVelocity = wishdir * wishspeed;
-	pushDir = wishVelocity - current.velocity;
-	pushLen = pushDir.Normalize();
-
-	canPush = accel * frametime * wishspeed;
-	if (canPush > pushLen) {
-		canPush = pushLen;
-	}
-
-	current.velocity += canPush * pushDir;
-#endif
 }
 
 const idBounds	playerProneLegsBounds( idVec3( -13.5f, -13.5f, 0 ), idVec3( 13.5f, 13.5f, 10.4f ) );

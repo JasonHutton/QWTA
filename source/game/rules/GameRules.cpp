@@ -314,15 +314,87 @@ void sdGameRules::SetClass_f( const idCmdArgs &args ) {
 		classOption = atoi( classOptionStr );
 	}
 
+	// QWTA
+	idPlayer* botPlayer = NULL;
+	int classCount = botThreadData.GetNumClassOnTeam(pc->GetTeam()->GetBotTeam(), pc->GetPlayerClassNum());
+	int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), pc->GetTeam()->GetBotTeam());
+	if(limit >= 0 && classCount >= limit) {
+		for ( int i = 0; i < MAX_CLIENTS; i++ ) {
+			idPlayer* other = gameLocal.GetClient( i );
+			if ( other == NULL ) {
+				continue;
+			}
+
+			const sdInventory& inv = other->GetInventory();
+			const sdDeclPlayerClass* opc = inv.GetClass();
+			
+			if(!opc || stricmp(opc->GetName(), className) != 0) {
+				continue;
+			}
+
+			if ( !other->userInfo.isBot ) {
+				continue;
+			}
+
+			if ( botPlayer != NULL ) {
+				continue;
+			}
+
+			botPlayer = other;
+		}
+	}
+
+	idPlayer* lPlayer = gameLocal.GetLocalPlayer();
+	if(lPlayer) {
+		if(!lPlayer->CanGetClass(pc) && botPlayer == NULL) {
+			lPlayer->SendLocalisedMessage( declHolder.declLocStrType[ "teams/messages/toomanyofclass" ], idWStrList() );
+			return;
+		}
+	}
+	// QWTA
+
 	if ( gameLocal.isClient ) {
-		sdReliableClientMessage msg( GAME_RELIABLE_CMESSAGE_CLASSSWITCH );
-		msg.WriteLong( pc->Index() );
-		msg.WriteLong( classOption );
-		msg.Send();
+		if(botPlayer == NULL) {
+			// Normal change.
+			sdReliableClientMessage msg( GAME_RELIABLE_CMESSAGE_CLASSSWITCH );
+			msg.WriteLong( pc->Index() );
+			msg.WriteLong( classOption );
+			msg.Send();
+		}
+		else {
+			// Stealing a bot's slot.
+			sdReliableClientMessage msg( GAME_RELIABLE_CMESSAGE_CLASSSWITCH_UNCHECKED );
+			msg.WriteLong( pc->Index() );
+			msg.WriteLong( classOption );
+			msg.Send();
+		}
 	} else {
-		idPlayer* player = gameLocal.GetLocalPlayer();
-		if ( player != NULL ) {
-			player->ChangeClass( pc, classOption );
+		if ( lPlayer != NULL ) {
+			if(botPlayer == NULL) {
+				// A normal change.
+				lPlayer->ChangeClass( pc, classOption );
+			}
+			else {
+				// We're stealing a bot's slot.
+				lPlayer->ChangeClass( pc, classOption, true );
+			}
+		}
+	}
+
+	// QWTA
+	if ( botPlayer != NULL ) {
+		sdTeamInfo* newBotTeam = gameLocal.rules->FindNeedyTeam( botPlayer );
+		const sdDeclPlayerClass* newBotClass = gameLocal.rules->FindNeedyClassOnTeam( newBotTeam );
+		if( newBotClass != NULL ) {
+			// I think I'm doing something wrong here, but it seems to work, so I'm just going to leave it. -- Azuvector
+			botPlayer->SetGameTeam( newBotTeam );
+			botPlayer->ChangeClass( newBotClass, 0 );
+		}
+		else {
+			botPlayer->Kill( NULL );
+			botPlayer->SetGameTeam( newBotTeam );
+			botPlayer->SetWantSpectate( false );
+			botPlayer->ServerForceRespawn( false );
 		}
 	}
 }
@@ -1478,6 +1550,24 @@ sdTeamInfo* sdGameRules::FindNeedyTeam( idPlayer* ignore ) {
 
 /*
 ================
+sdGameRules::FindNeedyClassOnTeam - QWTA
+================
+*/
+const sdDeclPlayerClass* sdGameRules::FindNeedyClassOnTeam( sdTeamInfo* team, idPlayer* ignore )
+{
+	const sdDeclPlayerClass* bestClass = NULL;
+	sdTeamManagerLocal& manager = sdTeamManager::GetInstance();
+	if( manager.GetTeamSafe( "gdf" ) ) {
+		bestClass = gameLocal.declPlayerClassType[ "soldier" ];
+	}
+	else if( manager.GetTeamSafe( "strogg" ) ) {
+		bestClass = gameLocal.declPlayerClassType[ "aggressor" ];
+	}
+	return bestClass;
+}
+
+/*
+================
 sdGameRules::CheckRespawns
 ================
 */
@@ -2442,6 +2532,51 @@ int sdGameRules::NumReady( int& total ) {
 		}
 	}
 	return ready;
+}
+
+/*
+============
+sdGameRules::GetRoleLimitForTeam
+============
+*/
+
+int	sdGameRules::GetRoleLimitForTeam( playerClassTypes_t role, playerTeamTypes_t team ) {
+	int limit = -1;
+	int clients = NumActualClients(true, true);
+
+	if ( team == GDF || team == STROGG) {
+		switch(role) {
+			case SOLDIER:
+				limit = -1;
+				break;
+			case MEDIC:
+				limit = 1;
+				if(clients > 6*2) { limit = 2; }
+				if(clients > 10*2) { limit = 3; }
+				if(clients > 14*2) { limit = 4; }
+				break;
+			case ENGINEER:
+				limit = 2;
+				if(clients > 10*2) { limit = 4; }
+				break;
+			case FIELDOPS:
+				limit = 2;
+				if(clients > 10*2) { limit = 4; }
+				break;
+			case COVERTOPS:
+				limit = 1;
+				if(clients > 10*2) { limit = 2; }
+				break;
+			default:
+				gameLocal.Warning( "sdGameRules::GetRoleLimitForTeam Invalid role %i", role );
+				break;
+		}
+	}
+	else { // team == NOTEAM
+		gameLocal.Warning( "sdGameRules::GetRoleLimitForTeam Invalid team %i", team );
+	}
+
+	return limit;
 }
 
 /*

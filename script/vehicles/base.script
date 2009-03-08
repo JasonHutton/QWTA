@@ -35,11 +35,11 @@ object vehicle_base {
 	void			vSetDeployer( entity other );
 
 	void			OnSpotted( entity spotter );
-	
+
 	void			OnCollision_Base( object traceObject, float velocity, vector mins, vector maxs );
 
 	void			NotifyBoundEntitiesOfDestruction();
-	
+
 	void			vTargetLockAlarm( entity other );
 	void			vStopTargetLockAlarm( entity other );
 	float			vGetTargetLockCount();
@@ -51,9 +51,9 @@ object vehicle_base {
 	void			vOnContextRepair( entity p );
 	void			vOnContextKill( entity p );
 	void			vOnContextNeedPassenger( entity p );
-	
+
 	void			vOnRemovePlayersKillTask( player p );
-	
+
 	void			vOnEndGame();
 
 	void			CheckArmor();
@@ -64,7 +64,7 @@ object vehicle_base {
 	void			ShowDamageEffects( float oldHealth, float newHealth );
 
 	void			OnSetTeam( object oldTeam, object newTeam );
-	
+
 	void			InitRadarValues() { ; }
 
 	float			vGetPliersProgressBarValue( float action );
@@ -115,9 +115,9 @@ object vehicle_base {
 
 	void			OnTeleportEntityChanged( entity other );
 	void			OnLastRepairTimeChanged();
-	
+
 	void			CheckFireTeamInfo( boolean localExiting );
-	
+
 	void			DecoyUseCharge();
 	boolean			DecoyHasCharge();
 	float			CalcDecoyChargeUsed();
@@ -126,7 +126,7 @@ object vehicle_base {
 	void			DecoyChargeThread();
 
 	boolean			NeedGunner();
-	
+
 	string			vGetQuickChatString( entity p );
 
 	void			FlashCMIcon( entity p, float requiredTeam, float flashTime );
@@ -143,13 +143,13 @@ object vehicle_base {
 	float			decoyProjectileIndex;
 	boolean			decoyChargeThreadActive;
 	float			decoyChargePerUse;
-	
+
 	float			commandMapRequest;
 
 	task			destroyTask;
 	task			requestTask;
 	task			repairTask;
-	
+
 	player			killTaskRequestee;
 
 	string			jointEffectSmoke;
@@ -187,9 +187,9 @@ object vehicle_base {
 	boolean			vCustomOrbitRadius();
 	float			vGetOrbitRadius();
 	boolean			vOrbitUnderneath();
-	
+
 	void			SetArmorBonus( boolean value );
-	
+
 	entity			deployer;
 
 	boolean			hasArmorBonus;
@@ -198,32 +198,32 @@ object vehicle_base {
 
 	float			toolTipVehicle_enter;
 	float			lastTooltipTime;
-	
+
 	float			toolTipCannotRepair;
 	float			toolTipNoEntry;
-	
+
 	boolean			playingKlaxon;
 	float			klaxonThreshold;
 
 	float			drownHeight;
 
 	float			maxEnterDistance;
-	
+
 	float			nextCollisionEffectTime;
-	
+
 	float			spiralHealthFrac;
 
 	boolean			EnemyHasLockedOnPlayer() { return ( targetLockCount > 0 ); }
 
 	float			empEffectThreadId;
 	float			empJointHandle;
-	
+
 	boolean			spawnInvulnerable;
 	void			OnSpawnInvulnerableChanged();
 	boolean			normallyHaveKnockback;
-	
+
 	cvar			g_drawVehicleIcons;
-	
+
 	entity			lastRepairer;
 	float			lastRepairTime;
 }
@@ -250,12 +250,12 @@ void vehicle_base::preinit() {
 	damageLevel1			= getFloatKey( "damage_level1" ) / 100;
 	damageLevel2			= getFloatKey( "damage_level2" ) / 100;
 	damageLevel3			= getFloatKey( "damage_level3" ) / 100;
-	
+
 	disableProficiency		= GetProficiency( getKey( "prof_disable" ) );
-	
+
 	toolTipCannotRepair		= GetToolTip( getKey( "tt_cannot_repair" ) );
 	toolTipNoEntry			= GetToolTip( getKey( "tt_noentry" ) );
-	
+
 	repairMultiplier		= getFloatKeyWithDefault( "repair_multiplier", 1.f );
 
 	jointEffectSmoke		= getKey( "joint_damage_smoke" );
@@ -275,7 +275,7 @@ void vehicle_base::preinit() {
 	SetupCommandMap();
 
 	if ( commandMapFireTeamInfo != -1 ) {
-		sys.hideCMIcon( commandMapFireTeamInfo ); 
+		sys.hideCMIcon( commandMapFireTeamInfo );
 	}
 
 	orbitUnderneath			= getFloatKey( "drone_orbit_underneath" );
@@ -300,9 +300,9 @@ void vehicle_base::preinit() {
 	} else {
 		healthBarLength = 75.f;
 	}
-	
+
 	g_drawVehicleIcons	= sys.getCVar( "g_drawVehicleIcons", "1" );
-	
+
 	normallyHaveKnockback = true;
 }
 
@@ -315,7 +315,7 @@ void vehicle_base::OnDecoyLaunched() {
 	if ( driver != $null_entity ) {
 		if ( driver == sys.getLocalViewPlayer() ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyLaunchedTime", sys.getTime() );
-			
+
 			StartDecoyChargeThread();
 		}
 	}
@@ -335,7 +335,7 @@ void vehicle_base::SetupCommandMap() {
 
 	sys.setCMIconFlag( commandMapHandle, CMF_FOLLOWROTATION );
 	sys.setCMIconFlag( commandMapHandle, CMF_FIRETEAMCOLORING );
-	
+
 	// fire team ring
 	/*
 	commandMapFireTeamInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm_ft_ring" ) );
@@ -410,7 +410,7 @@ void vehicle_base::FreeRequestIcon() {
 void vehicle_base::RequestIconThread( float timeout ) {
 	sys.wait( timeout );
 	FreeRequestIcon();
-	
+
 }
 
 void vehicle_base::InitDestroyTask( boolean highCommand ) {
@@ -643,7 +643,7 @@ void vehicle_base::OnUsed( entity user ) {
 	if ( team == $null_entity ) {
 		return;
 	}
-	
+
 	if ( getHealth() <= 0 ) {
 		if ( user == sys.getLocalViewPlayer() ) {
 			user.sendToolTip( toolTipNoEntry );
@@ -657,7 +657,7 @@ void vehicle_base::OnUsed( entity user ) {
 			sys.broadcastToolTip( toolTipIndex, user, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
 			return;
 		}
-	
+
 		user.enter( self );
 		return;
 	}
@@ -681,10 +681,10 @@ void vehicle_base::OnKilledRemove( entity inflictor, entity attacker, float dama
 	stopEffectHandle( damageSmokeEffectHandle );
 	damageEffectHandle = 0;
 	damageSmokeEffectHandle = 0;
-	
+
 	float water = isInWater();
 	if( water == 1.0f ) {
-		playOriginEffect( "fx_destroy_submerged", "", getWorldOrigin() , '0 0 1', 0 );		
+		playOriginEffect( "fx_destroy_submerged", "", getWorldOrigin() , '0 0 1', 0 );
 	} else if( water > 0.5f ) {
 		playOriginEffect( "fx_destroy_water", "", getWorldOrigin() , '0 0 1', 0 );
 	} else {
@@ -706,7 +706,7 @@ void vehicle_base::OnPostDamage( entity attacker, float oldHealth, float newHeal
 
 void vehicle_base::ShowDamageEffects( float oldHealth, float newHealth ) {
 	float newDamageEffectLevel;
-	
+
 	// Figure out damage level
 	if ( isInWater() < 0.5f && newHealth > 0.f ) {
 		if ( newHealth > damageLevelSmoke ) {
@@ -723,12 +723,12 @@ void vehicle_base::ShowDamageEffects( float oldHealth, float newHealth ) {
 	} else {
 		newDamageEffectLevel = 0;
 	}
-	
+
 	// Apply if it changed
 	if ( damageEffectLevel != newDamageEffectLevel ) {
 		stopEffectHandle( damageEffectHandle );
 		damageEffectHandle = 0;
-		
+
 		if ( newDamageEffectLevel != 0 ) {
 			if ( !damageSmokeEffectHandle ) {
 				damageSmokeEffectHandle = playEffect( "fx_damage_level_smoke", jointEffectFire, 1 );
@@ -737,7 +737,7 @@ void vehicle_base::ShowDamageEffects( float oldHealth, float newHealth ) {
 			stopEffectHandle( damageSmokeEffectHandle );
 			damageSmokeEffectHandle = 0;
 		}
-		
+
 		if ( newDamageEffectLevel == 2 ) {
 			damageEffectHandle = playEffect( "fx_damage_level1", jointEffectFire, 1 );
 		} else if ( newDamageEffectLevel == 3 ) {
@@ -778,15 +778,15 @@ void vehicle_base::DamageEffectThread( ) {
 			speed = 400;
 		}
 		float attenuation = speed / 400;
-				
+
 		if ( damageEffectHandle ) {
 			setEffectAttenuation( damageEffectHandle, attenuation );
 		}
-		
+
 		if ( damageSmokeEffectHandle ) {
 			setEffectAttenuation( damageSmokeEffectHandle, attenuation );
 		}
-		
+
 		float newWaterLevel = isInWater();
 		if ( newWaterLevel != oldWaterLevel ) {
 			float health = getHealth() / getMaxHealth();
@@ -803,7 +803,7 @@ float vehicle_base::vGetPliersProgressBarValue( float action ) {
 		float minHealth = getMinDisplayHealth();
 		return ( getHealth() - minHealth ) / ( getMaxHealth() - minHealth );
 	}
-	
+
 	return 0.f;
 }
 
@@ -825,10 +825,10 @@ void vehicle_base::vTargetLockAlarm( entity other ) {
 			}
 		}
 	}
-	
-	if ( isBaseDefence == false || ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) ) {
+
+	//if ( isBaseDefence == false || ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) ) {
 		setLockAlarmActive( true );
-	}
+	//}
 }
 
 void vehicle_base::vStopTargetLockAlarm( entity other ) {
@@ -865,13 +865,13 @@ boolean vehicle_base::vCheckActionCode( entity p, float actionCode ) {
 
 void vehicle_base::vRepair( float count, entity other ) {
 	count = count * repairMultiplier;
-	
+
 	player p = other;
 	team_base team;
 	if ( p != $null_entity ) {
 		team = p.getGameTeam();
 	}
-	
+
 	if ( team != $null_entity ) {
 		if ( team.HasConstructionBonus( p ) ) {
 			count = count * 1.25f;
@@ -888,11 +888,11 @@ void vehicle_base::vRepair( float count, entity other ) {
 
 	float maxHealth = getMaxHealth();
 	float newHealth = getHealth();
-	
+
 	float teamDamageCount = getTeamDamageDone();
 
 	float diff = newHealth - oldHealth;
-	
+
 	float repairCount = diff - teamDamageCount;
 	if ( repairCount > 0 ) {
 		if ( team != $null_entity ) {
@@ -904,7 +904,7 @@ void vehicle_base::vRepair( float count, entity other ) {
 	setTeamDamageDone( teamDamageCount - diff );
 
 	UpdateHealth( oldHealth / maxHealth, newHealth / maxHealth );
-	
+
 	lastRepairer = other;
 	lastRepairTime = sys.getTime();
 
@@ -946,7 +946,7 @@ void vehicle_base::ApplyEmpDamage_Base( entity attacker, float time, float weapo
 		}
 		empEffectThreadId = thread EMPEffectThread( time );
 
-		player playerAttacker = attacker;	
+		player playerAttacker = attacker;
 		if ( playerAttacker != $null_entity ) {
 			team_base team = attacker.getGameTeam();
 			if ( team != $null ) {
@@ -970,7 +970,7 @@ void vehicle_base::OnPlayerEntered_Base( entity p, float position ) {
 	if ( p.isDisguised() ) {
 		p.disguise( $null_entity );
 	}
-	
+
 	if ( p == sys.getLocalViewPlayer() ) {
 		if ( !p.isSinglePlayerToolTipPlaying() ) {
 			p.cancelToolTips();
@@ -980,12 +980,12 @@ void vehicle_base::OnPlayerEntered_Base( entity p, float position ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
-		
+
 		if ( position == 0 ) {
 			if ( CalcDecoyChargeUsed() > 0 ) {
 				StartDecoyChargeThread();
 			} else {
-				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );	
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );
 			}
 		}
 
@@ -995,10 +995,10 @@ void vehicle_base::OnPlayerEntered_Base( entity p, float position ) {
 			playingKlaxon = true;
 		}
 	}
-	
+
 	vCheckProficiency();
 	CheckFireTeamInfo( false );
-	
+
 	if ( spawnInvulnerable ) {
 		spawnInvulnerable = false;
 		OnSpawnInvulnerableChanged();
@@ -1016,17 +1016,17 @@ void vehicle_base::OnPlayerExited_Base( entity p, float position ) {
 		}
 
 		StopDecoyChargeThread();
-			
+
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );
-		
+
 		sys.startSoundDirect( "", SND_VEHICLE_INTERIOR_LOWHEALTH );
 		playingKlaxon = false;
 	}
-	
+
 	vCheckProficiency();
-	
+
 	if ( p == sys.getLocalPlayer() ) {
 		CheckFireTeamInfo( true );
 	} else {
@@ -1039,10 +1039,10 @@ float vehicle_base::vGetTargetLockCount() {
 }
 
 float vehicle_base::vGetTargetLockCountBasedefence() {
-	if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
+	//if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
 		return targetLockCountBasedefence;
-	}
-	return 0;
+	//}
+	//return 0;
 }
 
 void vehicle_base::DestroyThread() {
@@ -1052,10 +1052,10 @@ void vehicle_base::DestroyThread() {
 	float water = isInWater();
 	if( water < 1.0f ) {
 		vector middle = ( getMins() + getMaxs() ) * 0.5f;
-		middle = sys.toWorldSpace( middle, self );		
+		middle = sys.toWorldSpace( middle, self );
 		sys.applyRadiusDamage( middle, self, self, $null_entity, self, GetDamage( "damage_vehicle_explode" ), 1.f, 1.f );
 	}
-	
+
 	if( !sys.isClient() ) {
 		remove();
 	}
@@ -1108,8 +1108,8 @@ void vehicle_base::UpdateHealth( float oldHealth, float newHealth ) {
 
 void vehicle_base::VehicleBase_UpdateHealth( float oldHealth, float newHealth ) {
 	ShowDamageEffects( oldHealth, newHealth );
-	
-	
+
+
 	if ( newHealth < klaxonThreshold ) {
 		if ( !playingKlaxon ) {
 			player p = sys.getLocalPlayer();
@@ -1151,7 +1151,7 @@ void vehicle_base::FireDecoy( entity p ) {
 				projectileEntity.vSetOwner( self );
 				DecoyUseCharge();
 			}
-			
+
 			team_base team = p.getGameTeam();
 			if ( team != $null && team.HasEfficientDecoys( p ) ) {
 				nextDecoyTime = sys.getTime() + decoyFireRate * FASTER_DECOY_SCALE;
@@ -1199,15 +1199,15 @@ void vehicle_base::StopDecoyChargeThread() {
 void vehicle_base::DecoyChargeThread() {
 	while ( true ) {
 		float used = CalcDecoyChargeUsed();
-		
+
 		float frac = ( decoyChargeMax - used ) / decoyChargeMax;
-		
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", frac );		
-		
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", frac );
+
 		if ( used == 0 ) {
 			break;
 		}
-		
+
 		sys.waitFrame();
 	}
 
@@ -1220,7 +1220,7 @@ boolean vehicle_base::NeedGunner() {
 	for ( index = 0; index < numWeapons; index++ ) {
 		vehicle_weapon_base weapon = getVehicleWeapon( index );
 		player user = weapon.getPlayer();
-		
+
 		if ( user == $null_entity ) {
 			return true;
 		}
@@ -1243,7 +1243,7 @@ float vehicle_base::GetActivateCode( entity p, float distance ) {
 	}
 
 	float allegiance = getEntityAllegiance( p );
-	
+
 
 	if ( allegiance == TA_FRIEND ) {
 		if ( distance < DISTANCE_FOR_ACTION ) {
@@ -1256,7 +1256,7 @@ float vehicle_base::GetActivateCode( entity p, float distance ) {
 				}
 			}
 		}
-		
+
 		if ( distance < maxEnterDistance ) {
 			float spots = getNumPositions();
 			float usedSpots = getNumOccupiedPositions();
@@ -1265,7 +1265,7 @@ float vehicle_base::GetActivateCode( entity p, float distance ) {
 			}
 		}
 	}
-	
+
 	return AK_NONE;
 }
 
@@ -1280,7 +1280,7 @@ float vehicle_base::VehicleBase_OnActivate( entity p, float distance ) {
 			return 1.f;
 		}
 	}
-	
+
 	return 0.f;
 }
 
@@ -1294,7 +1294,7 @@ void vehicle_base::OnSetTeam( object oldTeam, object newTeam ) {
 
 void vehicle_base::vSetDeployer( entity other ) {
 	deployer = other;
-	
+
 	if ( g_noVehicleSpawnInvulnerability.getBoolValue() == false ) {
 		spawnInvulnerable = other.getFloatKey( "spawn_invulnerable" );
 		OnSpawnInvulnerableChanged();
@@ -1310,19 +1310,19 @@ void vehicle_base::CheckArmor() {
 		if ( p == $null_entity ) {
 			continue;
 		}
-		
+
 		if ( team.HasVehicleArmorBonus( p ) ) {
 			SetArmorBonus( true );
 			return;
 		}
 	}
-	
+
 	SetArmorBonus( false );
 }
 
 void vehicle_base::vCheckProficiency() {
 	CheckArmor();
-	
+
 	decoyChargePerUse = baseDecoyChargePerUse;
 
 	entity driver = getDriver();
@@ -1347,9 +1347,9 @@ void vehicle_base::SetArmorBonus( boolean value ) {
 	if ( hasArmorBonus == value ) {
 		return;
 	}
-	
+
 	hasArmorBonus = value;
-	
+
 	if ( hasArmorBonus ) {
 		setArmor( getArmor() + 0.1f );
 	} else {
@@ -1430,7 +1430,7 @@ void vehicle_base::OnRouteKickPlayer() {
 	if ( driver != $null_entity ) {
 		float toolTipIndex = GetToolTip( getKey( "tt_player_kicked" ) );
 		sys.broadcastToolTip( toolTipIndex, driver, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
-	
+
 		kickPlayer( 0, 0 );
 		banPlayer( driver, 30.f );
 	}
@@ -1441,7 +1441,7 @@ void vehicle_base::CheckFireTeamInfo( boolean localExiting ) {
 	if ( localPlayer == $null_entity ) {
 		return;
 	}
-	
+
 	boolean showMapFireTeamInfo = false;
 	float index;
 	for ( index = 0; index < getNumPositions(); index++ ) {
@@ -1449,11 +1449,11 @@ void vehicle_base::CheckFireTeamInfo( boolean localExiting ) {
 		if ( other == $null_entity ) {
 			continue;
 		}
-		
+
 		if ( other == localPlayer ) {
 			continue;
 		}
-		
+
 		if ( other.sameFireTeam( localPlayer ) ) {
 			showMapFireTeamInfo = true;
 			break;
@@ -1463,14 +1463,14 @@ void vehicle_base::CheckFireTeamInfo( boolean localExiting ) {
 	if ( localExiting || localPlayer.getVehicle() != self ) {
 		if ( showMapFireTeamInfo ) {
 			if ( commandMapFireTeamInfo != -1 ) {
-				sys.showCMIcon( commandMapFireTeamInfo ); 
+				sys.showCMIcon( commandMapFireTeamInfo );
 				return;
 			}
 		}
 	}
 
-	if ( commandMapFireTeamInfo != -1 ) { 
-		sys.hideCMIcon( commandMapFireTeamInfo ); 
+	if ( commandMapFireTeamInfo != -1 ) {
+		sys.hideCMIcon( commandMapFireTeamInfo );
 	}
 }
 
@@ -1557,7 +1557,7 @@ void vehicle_base::OnSpawnInvulnerableChanged() {
 		setTakesDamage( false );
 		disableCollisionPush();
 		disableKnockback();
-		
+
 		if ( g_drawVehicleIcons.getBoolValue() ) {
 			// enable the icon
 			float size = getFloatKeyWithDefault( "world_icon_size", 16 );
@@ -1573,7 +1573,7 @@ void vehicle_base::OnSpawnInvulnerableChanged() {
 	} else {
 		// no longer invulnerable
 		setTakesDamage( true );
-		
+
 		// disable the icon
 		setIconEnabled( false );
 

@@ -399,6 +399,7 @@ public:
 
 
 	virtual bool						DoRadiusPush( void ) const { return !vehicleFlags.disableKnockback; }
+	virtual bool						DoRadiusPull( void ) const { return !vehicleFlags.disableKnockback; }
 
 	virtual bool						WantsToThink( void );
 

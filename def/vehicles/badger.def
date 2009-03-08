@@ -297,6 +297,9 @@ entityDef vehicle_badger {
 	"wake_point_1"					"100 -40 0"
 	"wake_point_2"					"-80 -30 0"
 	"wake_point_3"					"-80 30 0"
+	
+	"always_drop"					"1"
+	"parachute_deploy_delay"		"2.7"
 
 // DECOY STUFF
 

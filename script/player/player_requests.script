@@ -1,11 +1,22 @@
 object player {
 	void		RequestDeployment( string objectName );
-	
-	void		RequestHusky();	
+
+	void		RequestHusky();
+	void		RequestArmadillo();
+	void		RequestTrojan();
+	void		RequestTitan();
+	void		RequestJupiter();
+	void		RequestAnansi();
+	void		RequestBumblebee();
+	void		RequestPlatypus();
 	void		RequestIcarus();
-	
+	void		RequestHog();
+	void		RequestDesecrator();
+	void		RequestCyclops();
+	void		RequestTormentor();
+
 	void		RequestRepair();
-	
+
 	void		RequestIconThread( float timeout );
 	void		DeploymentFeedbackThread( boolean allow );
 
@@ -24,7 +35,7 @@ player::DeploymentFeedbackThread
 */
 void player::DeploymentFeedbackThread( boolean allow ) {
 	sys.wait( 2.f );
-	
+
 	if ( !allow ) {
 		sys.sendQuickChat( $null_entity, declinedQuickChat, self );
 	} else {
@@ -47,7 +58,7 @@ void player::RequestDeployment( string objectName ) {
 	if ( !CheckCanRequestVehicle( objectName ) ) {
 		allowDeploy = false;
 	}
-	
+
 	if ( allowDeploy ) {
 		vector angles = getViewAngles();
 		vector pos = CalcDropPosition();
@@ -55,9 +66,7 @@ void player::RequestDeployment( string objectName ) {
 	}
 
 	if ( allowDeploy ) {
-		if ( objectName == "deployobject_husky" || objectName == "deployobject_icarus" ) {
-			vUseVehicleCredit( 0.1f );
-		}
+		vUseVehicleCredit( sys.getDeploymentCredit( GetDeployObject( objectName ) ) );
 	}
 
 	thread DeploymentFeedbackThread( allowDeploy );
@@ -72,8 +81,100 @@ void player::RequestHusky() {
 	if ( !IsGDF() ) {
 		return;
 	}
-	
+
 	RequestDeployment( "deployobject_husky" );
+}
+
+/*
+================
+player::RequestArmadillo
+================
+*/
+void player::RequestArmadillo() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_badger" );
+}
+
+/*
+================
+player::RequestTrojan
+================
+*/
+void player::RequestTrojan() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_trojan" );
+}
+
+/*
+================
+player::RequestTitan
+================
+*/
+void player::RequestTitan() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_titan" );
+}
+
+/*
+================
+player::RequestJupiter
+================
+*/
+void player::RequestJupiter() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_jupiter" );
+}
+
+
+/*
+================
+player::RequestAnansi
+================
+*/
+void player::RequestAnansi() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_anansi" );
+}
+
+/*
+================
+player::RequestBumblebee
+================
+*/
+void player::RequestBumblebee() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_bumblebee" );
+}
+
+/*
+================
+player::RequestPlatypus
+================
+*/
+void player::RequestPlatypus() {
+	if ( !IsGDF() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_platypus" );
 }
 
 /*
@@ -86,7 +187,59 @@ void player::RequestIcarus() {
 		return;
 	}
 
-	RequestDeployment( "deployobject_icarus" );	
+	RequestDeployment( "deployobject_icarus" );
+}
+
+/*
+================
+player::RequestHog
+================
+*/
+void player::RequestHog() {
+	if ( !IsStrogg() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_hog" );
+}
+
+/*
+================
+player::RequestDesecrator
+================
+*/
+void player::RequestDesecrator() {
+	if ( !IsStrogg() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_desecrator" );
+}
+
+/*
+================
+player::RequestCyclops
+================
+*/
+void player::RequestCyclops() {
+	if ( !IsStrogg() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_goliath" );
+}
+
+/*
+================
+player::RequestTormentor
+================
+*/
+void player::RequestTormentor() {
+	if ( !IsStrogg() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_hornet" );
 }
 
 /*
@@ -97,7 +250,7 @@ player::RequestIconThread
 void player::RequestIconThread( float timeout ) {
 	sys.wait( timeout );
 	FreeRequestIcon();
-	
+
 }
 
 /*
@@ -118,20 +271,20 @@ player::CalcDropPosition
 vector player::CalcDropPosition() {
 	// TODO: if we reinstate vehicle drops for anything other than a husky or icarus, we'll need to change this
 	float dropDist = 112;
-	
+
 	vector pos = getWorldOrigin();
 	pos_z += 32.f;
-	
+
 	vector forward = sys.angToForward( getViewAngles() );
 	forward_z = 0;
 	forward = sys.vecNormalize( forward );
 	vector targetPos = pos + ( forward * dropDist );
-	
+
 	if ( sys.tracePoint( pos, targetPos, MASK_VEHICLESOLID | MASK_SHOT_RENDERMODEL | CONTENTS_MONSTER, self ) < 1.f ) {
 		// failed, default to the player's position
 		return pos;
-	} 
-	
+	}
+
 	return targetPos;
 }
 
@@ -147,7 +300,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	team_base team = getGameTeam();
 
 	float credit = vGetVehicleCredit();
-	float creditRequired = 0.1f;
+	float creditRequired = sys.getDeploymentCredit( GetDeployObject( objectName ) );
 
 	entity proxy = getProxyEntity();
 
@@ -172,9 +325,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 		for ( i = 0; i < num; i++ ) {
 			vehicle_base other = binGet( i );
 			if ( other != $null_entity ) {
-				if ( other.inCollection( "husky" ) ) {
-					return false;
-				} else if ( other.inCollection( "icarus" ) ) {
+				if ( other.inCollection( sys.getDeploymentTitle( GetDeployObject( objectName ) ) ) ) {
 					return false;
 				}
 			}
@@ -184,7 +335,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 		vector pos = CalcDropPosition();
 		vector skyPos = pos + '0 0 65535';
 		sys.tracePoint( pos, skyPos, MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, self );
-		
+
 		if ( sys.getTraceFraction() == 1.f ) {
 			return false;
 		} else if ( !( sys.getTraceSurfaceFlags() & SURF_NOIMPACT ) ) {

@@ -1,0 +1,16 @@
+material textures/effects/large_explosion_shockwave
+{
+	qer_editorimage textures/particles/vpring2.tga
+	sort postprocess
+	nonsolid
+	translucent
+
+	{
+		program heatHazeWithMask
+		deformScroll 0
+		deformMagnitude 18
+		bumpMap textures/particles/vpring2
+		mask textures/particles/vpring1_alpha.tga
+		maskAlpha
+	}
+}

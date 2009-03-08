@@ -319,6 +319,33 @@ void sdUserInterfaceLocal::Script_GetRoleCountForTeam( sdUIFunctionStack& stack 
 
 /*
 ============
+sdUserInterfaceLocal::Script_GetRoleLimitForTeam
+============
+*/
+void sdUserInterfaceLocal::Script_GetRoleLimitForTeam( sdUIFunctionStack& stack ) {
+	idStr teamName;
+	idStr roleName;
+	stack.Pop( teamName );
+	stack.Pop( roleName );
+
+	sdTeamInfo* team = sdTeamManager::GetInstance().GetTeamSafe( teamName );
+	if( !team ) {
+		gameLocal.Warning( "sdUserInterfaceLocal::Script_GetRoleLimitForTeam: '%s' Unknown team '%s'", GetName(), teamName.c_str() );
+		return;
+	}
+
+	int limit = -1;
+
+	const sdDeclPlayerClass* pc = gameLocal.declPlayerClassType[ roleName ];
+	if( pc ) {
+		limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), GDF); // QWTA fixme
+	}
+	
+	stack.Push( limit );
+}
+
+/*
+============
 sdUserInterfaceLocal::Script_GetEquivalentClass
 ============
 */

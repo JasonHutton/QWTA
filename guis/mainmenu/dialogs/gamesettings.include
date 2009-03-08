@@ -579,37 +579,38 @@ _dialog( GameSettings, localize( "guis/mainmenu/gamesettings" ), PADDING, 44, ( 
 				_end_label
 
 				_scrollable_container( HUD, 0, 0, _fill_to_right_of( lytGameSettings_Crosshair ) + PADDING, _fill_to_bottom_of( lytGameSettings_Crosshair ) )
-					_dropdown( GameSettings_APT_Warning, localize( "guis/mainmenu/apt_warning_dropdown" ), 0, 0, GS_SLIDER_LABEL_WIDTH, 103, $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
-						properties {
-							float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
-						}
-						events {
-							onCreate {
-								insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
-								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_off'>" ), -1, 0 );
-								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on_visual'>" ), -1, 0 );
-								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on_beep'>" ), -1, 0 );
-								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on'>" ), -1, 0 );
-								currentSelection = gui.getCVarInt( "g_aptWarning" );
-							}
-							onCVarChanged "g_aptWarning" {
-								currentSelection = gui.getCVarInt( "g_aptWarning" );
-							}
-							onNamedEvent "resetCVar" {
-								gui.resetCVar( "g_aptWarning" );
-							}
-							onPropertyChanged "currentSelection" {
-							    callSuper();
-							    if( currentSelection >= 0 ) {
-							    	gui.setCVarInt( "g_aptWarning", currentSelection );
-								}
-							}
-						}
-					_end_dropdown
+					//_dropdown( GameSettings_APT_Warning, localize( "guis/mainmenu/apt_warning_dropdown" ), 0, 0, GS_SLIDER_LABEL_WIDTH, 103, $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+					//	properties {
+					//		float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					//	}
+					//	events {
+					//		onCreate {
+					//			insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+					//			insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_off'>" ), -1, 0 );
+					//			insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on_visual'>" ), -1, 0 );
+					//			insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on_beep'>" ), -1, 0 );
+					//			insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on'>" ), -1, 0 );
+					//			currentSelection = gui.getCVarInt( "g_aptWarning" );
+					//		}
+					//		onCVarChanged "g_aptWarning" {
+					//			currentSelection = gui.getCVarInt( "g_aptWarning" );
+					//		}
+					//		onNamedEvent "resetCVar" {
+					//			gui.resetCVar( "g_aptWarning" );
+					//		}
+					//		onPropertyChanged "currentSelection" {
+					//		    callSuper();
+					//		    if( currentSelection >= 0 ) {
+					//		    	gui.setCVarInt( "g_aptWarning", currentSelection );
+					//			}
+					//		}
+					//	}
+					//_end_dropdown
 
-					_check( GameSettings_Mine_Warning, localize( "guis/mainmenu/mine_warning" ), 0, 2, 120 )
-					_cvar_bool( g_mineTriggerWarning )
-					_end_check
+					//_check( GameSettings_Mine_Warning, localize( "guis/mainmenu/mine_warning" ), 0, 2, 120 )
+					//_cvar_bool( g_mineTriggerWarning )
+					//_end_check
+					
 					
 					_check( GameSettings_ShowWaypoints, localize( "guis/mainmenu/showwaypoints" ), 0, 2, 120 )
 					_cvar_bool( g_showWaypoints )

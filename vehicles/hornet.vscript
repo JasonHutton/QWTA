@@ -653,13 +653,23 @@ stringMap vehicle_hornet_weapon3 {
 	"muzzle_sound"				"fx_hyperblaster_fire"
 	"muzzle_sound_local"		"fx_hyperblaster_fire"
 
-	"velocity"					"1 0 0"
-	"fire_rate"					"0.08"
+	//"velocity"					"1 0 0"
+	"velocity"					"2500 0 0"
+	"fire_rate"					"0.16"
 	"spread"					"1"
-	"scriptobject"				"vehicle_weapon_gpmg"
+	//"scriptobject"				"vehicle_weapon_gpmg"
+	//"scriptobject"				"vehicle_weapon_sbc"
+	"scriptobject"				"vehicle_weapon_vrof"
 	"def_projectile"			"projectile_hyperblaster_hornet"
-	"client_projectile"			"projectile_hyperblaster_hornet"
+	//"client_projectile"			"projectile_hyperblaster_hornet"
 	"requires_consent"			"1"
+	
+	"lock_enabled"				"1"
+	"lock_distance"					"4096"
+	"lock_filter"					"hyperblaster_lock_filter"
+
+	"snd_target_locking"				"sounds/weapons/misc/target_track_short"
+	"snd_target_locked"				"sounds/weapons/misc/target_lock"
 
 	"crosshair"					"nospread"
 }

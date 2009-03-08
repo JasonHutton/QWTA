@@ -313,8 +313,10 @@ public:
 	virtual void			UpdateChangeableSpawnArgs( const idDict *source );
 
 	virtual bool			DoRadiusPush( void ) const { return !fl.noknockback; }
+	virtual bool			DoRadiusPull( void ) const { return !fl.noknockback; }
 	virtual float			GetRadiusPushScale( void ) const { return 1.0f; }
 	virtual void			ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius );
+	virtual void			ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius );
 
 	virtual idScriptObject*	GetScriptObject( void ) const { return this ? scriptObject : NULL; }
 
@@ -982,6 +984,9 @@ protected:
 	void					Event_GetJointHandle( const char *jointname );
 	void					Event_GetDefaultSurfaceType( void );
 	void					Event_ForceRunPhysics( void );
+
+	void					Event_SetBouncyness( float bouncyness );
+	float					Event_GetBouncyness( void );
 
 private:
 	void					FilterEntitiesByAllegiance( int mask, bool inclusive, bool ignoreDisguise );

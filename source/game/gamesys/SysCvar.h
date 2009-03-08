@@ -206,6 +206,8 @@ extern idCVar	pm_deathThirdPersonAngle;
 
 extern idCVar	pm_waterSpeed;
 
+extern idCVar	pm_realisticMovement;
+
 extern idCVar	pm_slidevelocity;
 extern idCVar	pm_powerslide;
 

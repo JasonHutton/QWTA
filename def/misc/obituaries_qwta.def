@@ -1,0 +1,73 @@
+/*
+==================
+GDF Weapons
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/bfg10k {
+	text "game/obit/bfg10k"
+}
+
+/*
+==================
+GDF Weapons Suicides
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/bfg10k/self {
+	text "game/obit/bfg10k_self"
+}
+
+tooltip tooltips/killmsgs/weapons/bfg10k/unknown {
+	text "game/obit/bfg10k_unknown"
+}
+
+/*
+==================
+GDF Weapons Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/bfg10k/teamkill {
+	text "game/obit/bfg10k_team"
+}
+
+/*
+==================
+Strogg Weapons
+==================
+*/
+
+/*
+ * From original obituaries.def:
+tooltip tooltips/killmsgs/weapons/hyperblaster {
+	text "game/obit/hyper"
+}
+*/
+
+/*
+==================
+Strogg Weapons Suicides
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/hyperblaster/self {
+	text "game/obit/hyper_self"
+}
+
+tooltip tooltips/killmsgs/weapons/hyperblaster/unknown {
+	text "game/obit/hyper_unknown"
+}
+
+/*
+==================
+Strogg Weapons Teamkills
+==================
+*/
+
+/*
+ * From original obituaries.def:
+tooltip tooltips/killmsgs/weapons/hyperblaster/teamkill {
+	text "game/obit/hyper_team"
+}
+*/

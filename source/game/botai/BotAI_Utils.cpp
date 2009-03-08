@@ -3904,6 +3904,11 @@ bool idBotAI::Bot_ShouldUseVehicleForAction( int actionNumber, bool ignoreArmor 
 	if ( vehicleNum != -1 ) {
 		return true;
 	}
+	else {
+		if(CallForNewVehicle( botThreadData.botActions[ actionNumber ]->GetActionVehicleType() )) {
+			return true;
+		}
+	}
 
 	return false;
 }

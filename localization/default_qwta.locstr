@@ -1,0 +1,20 @@
+// Original last: 00016301 in the original default.locstr file.
+// This file last: 00016304
+
+/*
+=================
+ game code messages
+=================
+*/
+
+locString teams/messages/toomanyofclass {
+	text "#str_00016302"
+}
+
+locString game/vec/jupiter {
+	text "#str_00016303"
+}
+
+locString game/weapons/bfg10k {
+	text "#str_00016304" // "BFG10k"
+}

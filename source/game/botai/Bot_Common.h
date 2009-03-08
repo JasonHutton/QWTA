@@ -65,6 +65,26 @@ enum playerVehicleTypes_t {	//mal: keep adding more as we support them!
 #define AVT								16
 #define RADAR							32
 #define AIT								64
+#define VDEPLOY							128 // A generic vehicle.
+
+typedef enum vDeployType_t
+{
+	VD_NONE = -1,
+	VD_HUSKY,
+	VD_ARMADILLO,
+	VD_TROJAN,
+	VD_TITAN,
+	VD_JUPITER,
+	VD_ANANSI,
+	VD_BUMBLEBEE,
+	VD_PLATYPUS,
+	VD_ICARUS,
+	VD_HOG,
+	VD_DESECRATOR,
+	VD_CYCLOPS,
+	VD_TORMENTOR,
+	VD_MAX
+};
 
 //mal: vehicles can have multiple flags ( ex: icarus can be a personal vehicle, as well as an air one, trojan can be a big ground, and a water ).
 #define NO_VEHICLE						-1

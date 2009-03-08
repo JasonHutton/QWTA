@@ -75,6 +75,7 @@ public:
 	void					SetFriction( const float linear, const float angular, const float contact );
 	void					SetWaterFriction( const float linear, const float angular );
 	void					SetBouncyness( const float b );
+	float					GetBouncyness( void ) const { return bouncyness; };
 	void					SetBuoyancy( float b );
 							// same as above but drop to the floor first
 	void					DropToFloor( void );

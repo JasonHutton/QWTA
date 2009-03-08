@@ -184,6 +184,7 @@ void sdProficiencyTable::Clear( bool all ) {
 	}
 
 	UpdateRank();
+	UpdateLevels(); // We do this for QWTA so it'll notice the 0-cost of Vehicle Drops. A better solution will be good in future. -- Azuvector
 }
 
 /*
@@ -220,7 +221,8 @@ void sdProficiencyTable::UpdateLevel( int index ) {
 	if ( levels[ index ] != oldLevel ) {
 		idPlayer* player = gameLocal.GetClient( clientNum );
 		if ( player == NULL ) {
-			assert( false );
+//			assert( false );
+			gameLocal.Warning( "sdProficiencyTable::UpdateLevel: player %i is null, not a server or client", clientNum );
 		} else {
 			player->OnProficiencyLevelGain( type, oldLevel, levels[ index ] );
 		}

@@ -191,7 +191,7 @@ const int MAX_BATTLESENSE_RANKS = 5;
 #endif
 
 // the "gameversion" client command will print this plus compile date
-#define	GAME_VERSION		"baseETQW-1"
+#define	GAME_VERSION		"QWTA-1"
 
 const int NUM_RENDER_PORTAL_BITS	= idMath::BitsForInteger( PS_BLOCK_ALL );
 
@@ -1191,8 +1191,11 @@ public:
 	void							KillBox( idEntity *ent );
 	void							RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEntity *attacker, idEntity *ignoreDamage, idEntity *ignorePush, const sdDeclDamage* damage, float dmgPower = 1.f, float radiusScale = 1.f );
 	void							RadiusPush( const idVec3 &origin, float radius, const sdDeclDamage* damageDecl, float pushScale, const idEntity *inflictor, const idEntity *ignore, int flags, bool saveEvent );
+	void							RadiusPull( const idVec3 &origin, float radius, const sdDeclDamage* damageDecl, float pushScale, const idEntity *inflictor, const idEntity *ignore, int flags, bool saveEvent );
 	void							RadiusPushClipModel( const idVec3 &origin, const float push, const idClipModel *clipModel );
+	void							RadiusPullClipModel( const idVec3 &origin, const float push, const idClipModel *clipModel );
 	void							RadiusPushEntities( const idVec3& origin, float force, float radius );
+	void							RadiusPullEntities( const idVec3& origin, float force, float radius );
 
 	void							ProjectDecal( const idVec3 &origin, const idVec3 &dir, float depth, bool parallel, float size, const char *material, float angle = 0 );
 	void							CreateProjectedDecal( const idVec3 &origin, const idVec3 &dir, float depth, bool parallel, float width, float height, float angle, const idVec4& color, idRenderModel* model );

@@ -228,6 +228,7 @@ gui hud {
 		"ammo_bottom_line_tl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 221, 12, 4 ), flipY"
 		"ammo_bottom_line_t"						"guis/assets/mainmenu/sheet_fill, rect( 225, 223, 1, 4 ), flipY"
 		"ammo_bottom_line_tr"						"guis/assets/mainmenu/sheet_fill, rect( 223, 221, 12, 4 ), flipX, flipY"
+		//"death_blur"							"textures/sfx/deathblur"
 	}
 
 	events {
@@ -293,7 +294,7 @@ gui hud {
 			globals.gameHud.wantAdmin						= 0;
 			globals.gameHud.wantVote						= 0;
 			
-			globals.gameHud.mineWarningTime					= 0;
+			//globals.gameHud.mineWarningTime					= 0;
 
 			globals.gameHud.bumpNotifyIcon					= "";
 			globals.gameHud.flyerhiveEndTime				= 0;
@@ -773,27 +774,139 @@ gui hud {
 			}
 		}
 	}
-	windowDef mineTriggerWarning {
+	//windowDef mineTriggerWarning {
+	//	properties {
+	//		handle	localizedText = localize( "guis/hud/mine_trigger_warning" );
+	//		color	foreColor = 1, 0, 0, 0;
+	//		float	fontSize = 16;
+	//		rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 8, 64, 12;
+	//		float	showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+	//		float	visible = gui.targetLockIndicator.visible == false && showTrigger;
+	//	}
+	//
+	//	events {
+	//		onCVarChanged "g_mineTriggerWarning" {
+	//			showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+	//		}
+	//		onPropertyChanged "globals.gameHud.mineWarningTime" {
+	//			if ( globals.gameHud.mineWarningTime > 0 ) {
+	//				foreColor = transition( "1, 0, 0, 1", "0.6, 0, 0, 0", 1000, "0.1, 0.9" );
+	//			}
+	//		}
+	//	}
+	//}
+	
+	windowDef unconsciousFading {
 		properties {
-			handle	localizedText = localize( "guis/hud/mine_trigger_warning" );
-			color	foreColor = 1, 0, 0, 0;
-			float	fontSize = 16;
-			rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 8, 64, 12;
-			float	showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
-			float	visible = gui.targetLockIndicator.visible == false && showTrigger;
+			color	foreColor		= COLOR_RED;
+			rect	rect			= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float	selfUnconscious		= player.dead && player.spectator == false;
+			float	specUnconscious		= player.localView == false && player.viewDead;
+			float	selfDead		= player.limbo && player.spectator == false;
+			float	unconsciousTime		= globals.gameHud.unconsciousTime;
+			float	conditionals		= player.scoreboardActive == false && player.endGame == false && player.endGameCamera == false;
+			float	visible 		= (selfUnconscious || specUnconscious || selfDead) && conditionals;
+			float	tempValue		= 0;
 		}
-
 		events {
-			onCVarChanged "g_mineTriggerWarning" {
-				showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+			onCreate {
+				foreColor.a = 0;
 			}
-			onPropertyChanged "globals.gameHud.mineWarningTime" {
-				if ( globals.gameHud.mineWarningTime > 0 ) {
-					foreColor = transition( "1, 0, 0, 1", "0.6, 0, 0, 0", 1000, "0.1, 0.9" );
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, foreColor );
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "unconsciousTime" {
+				if(unconsciousTime > -1) {
+					tempValue = unconsciousTime/2.0;
+					if(tempValue < 0.7) {
+						foreColor.a = tempValue;
+					}
+					else {
+						foreColor.a = 0.7;
+					}
+				}
+				else {
+					foreColor.a = 0;
 				}
 			}
 		}
 	}
+	
+	windowDef deadFading {
+		properties {
+			color	foreColor		= COLOR_BLACK;
+			rect	rect 			= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float	selfDead		= player.limbo && player.spectator == false;
+			// Don't need to check for specDead. Can't spec the dead.
+			float	deadTime		= globals.gameHud.deadTime;
+			float	conditionals		= player.scoreboardActive == false && player.endGame == false && player.endGameCamera == false;
+			float	visible 		= selfDead && conditionals;
+			float	tempValue		= 0;
+		}
+		events {
+			onCreate {
+				foreColor.a = 0;
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, foreColor );
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "deadTime" {
+				if(deadTime > -1) {
+					tempValue = deadTime;
+					if(tempValue < 1.0) {
+						foreColor.a = tempValue;
+					}
+					else {
+						foreColor.a = 1.0;
+					}
+				}
+				else {
+					foreColor.a = 0;
+				}
+			}
+		}
+	}
+	
+	/*
+	windowDef deathBlur {
+		properties {
+			color	backColor		= 1, 1, 1, 0;
+			rect	rect			= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float	selfUnconscious		= player.dead && player.spectator == false;
+			float	specUnconscious		= player.localView == false && player.viewDead;
+			float	selfDead		= player.limbo && player.spectator == false;
+			float	unconsciousTime		= globals.gameHud.unconsciousTime;
+			float	deadTime		= globals.gameHud.deadTime;
+			float	conditionals		= player.scoreboardActive == false && player.endGame == false && player.endGameCamera == false;
+			float	visible 		= (selfUnconscious || specUnconscious || selfDead) && conditionals;
+			float	tempValue		= 0;
+			string	material		= "death_blur";
+		}
+		events {
+			onCreate {
+				backColor.a = 0;
+			}
+			onPropertyChanged "unconsciousTime" {
+				if(unconsciousTime > -1) {
+					tempValue = unconsciousTime/2.0;
+					if(tempValue < 1.0) {
+						backColor.a = tempValue;
+					}
+					else {
+						backColor.a = 1.0;
+					}
+				}
+				else {
+					backColor.a = 0;
+				}
+			}
+		}
+	}
+	*/
 	
 	windowDef selectedTaskNotifier {
 		properties {

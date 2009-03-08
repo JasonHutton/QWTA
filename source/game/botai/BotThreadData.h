@@ -148,6 +148,7 @@ struct gameLocalInfo_t {
 
 //mal: constants
 	int						chargeExplodeTime;		// how long until a HE/Plasma charge explodes
+	int						vehicleCreditChargeTime;
 
 	int						gameTimeInMinutes;
 
@@ -246,6 +247,7 @@ struct scriptHandlers_t {
 	qhandle_t				deviceTimer;
 	qhandle_t				supplyTimer;
 	qhandle_t				deployTimer;
+	qhandle_t				vehicleCreditTimer;
 
 	//mal_TODO: add more here as needed!
 };
@@ -392,6 +394,7 @@ struct clientInfo_t {
 	int						fireSupportChargedUsed;				//mal: set in idPlayer::Think - arty and airstrikes
 	int						deviceChargeUsed;					//mal: set in idPlayer::Think - landmines, etc.
 	int						deployChargeUsed;					//mal: set in idPlayer::Think - deployables.
+	float					vehicleCreditUsed;					
 
 	int						mountedGPMGEntNum;
 
@@ -422,6 +425,7 @@ struct clientInfo_t {
 	bool					repairTargetNeedsChat;
 
 	int						deployDelayTime;					//mal: how long til we can try to drop a new deployable.
+	int						vDeployDelayTime;
 
 	int						targetLockEntNum;					//mal: set in idPlayer::SetTargetEntity - this will be set whether client has target lock or not.
 	int						spectatorCounter;
@@ -555,6 +559,7 @@ struct botDeployInfo_t {
 	int						actionNumber;		 //mal: for debugging.
 	idVec3					location;
 	idVec3					aimPoint;
+	int						vehicleType; // For when deploying vehicles
 };
 
 struct botLocationRemap_t {
@@ -649,8 +654,9 @@ public:							// the following routines are called from the game thread
 	int							FindRouteByName( const char *routeName );
 
 	void						CheckCrossHairInfo( idEntity *bot, sdCrosshairInfo &botCrossHairInfo );
-	int							FindDeclIndexForDeployable( const playerTeamTypes_t team, int deployableNum );
+	int							FindDeclIndexForDeployable( const playerTeamTypes_t team, int deployableNum, vDeployType_t vehicleType );
 	bool						RequestDeployableAtLocation( int clientNum, bool& needPause );
+	vDeployType_t				GuessMostUsefulVDeploy(int clientNum, const playerTeamTypes_t team, int vehicleFlags );
 
 	void						InitClientInfo( int clientNum, bool resetAll, bool leaving );
 	void						UpdateState();

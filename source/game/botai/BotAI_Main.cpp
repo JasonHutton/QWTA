@@ -146,6 +146,7 @@ void idBotAI::BotAI_ResetUcmd () {
 	botUcmd->deployInfo.deployableType = NULL_DEPLOYABLE;
 	botUcmd->deployInfo.location.Zero();
 	botUcmd->deployInfo.actionNumber = ACTION_NULL;
+	botUcmd->deployInfo.vehicleType = NO_VEHICLE;
 	botUcmd->ackKillForClient = -1;
 	botUcmd->ackRepairForClient = -1;
 	isStrafeJumping = false;
@@ -1189,6 +1190,7 @@ void idBotAI::ClearBotUcmd( int clientNum ) {
 	output.deployInfo.deployableType = NULL_DEPLOYABLE;
 	output.deployInfo.location.Zero();
 	output.deployInfo.actionNumber = ACTION_NULL;
+	output.deployInfo.vehicleType = NO_VEHICLE;
 	output.viewType = VIEW_ORIGIN;
 	output.viewEntityNum = -1;
 	output.actionEntitySpawnID = -1;

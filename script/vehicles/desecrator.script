@@ -11,16 +11,32 @@ object vehicle_desecrator : vehicle_base {
 
 	void			UpdateSiegeTextThread();
 
+	void			vSetManualDeploy();
+	void			vOnDeploy();
+	void			DoBoundsDamageThread();
+
+	void			vSetDeployableOwner( entity p );
+	void			vRemoveObject();
+
 	float			threadId;
+
+	boolean			manualDeploy;
 }
 
 void vehicle_desecrator::preinit() {
 	float declTableIndex;
 	threadId = -1;
+	manualDeploy = false;
 }
 
 void vehicle_desecrator::init() {
 	setLightsEnabled( 0, false );
+	if ( !sys.isClient() ) {
+		if ( manualDeploy ) {
+			setTakesDamage( false );
+			thread DoBoundsDamageThread();
+		}
+	}
 }
 
 void vehicle_desecrator::OnCollision( object traceObject, float velocity, vector mins, vector maxs ) {
@@ -41,6 +57,35 @@ void vehicle_desecrator::vOnDeploy() {
 	vector origin = getWorldOrigin();
 	setWorldOrigin( origin + '0 0 32' );
 	setLinearVelocity( vec3_origin );
+	sys.killThread( "DoBoundsDamageThread_" + getName() );
+	setTakesDamage( true );
+}
+
+void vehicle_desecrator::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+void vehicle_desecrator::DoBoundsDamageThread() {
+	float dmgIndex = GetDamage( getKey( "dmg_falling" ) );
+
+	while ( true ) {
+		BoundsDamage( self, dmgIndex );
+		sys.waitFrame();
+	}
+}
+
+void vehicle_desecrator::vSetDeployableOwner( entity p ) {
+	if ( !sys.isClient() ) {
+		if ( p != $null_entity ) {
+			p.binAdd( self );
+		}
+	}
+}
+
+void vehicle_desecrator::vRemoveObject() {
+	if ( isEmpty() ) {
+		thread DecayThread();
+	}
 }
 
 void vehicle_desecrator::OnPlayerEntered( entity p, float position ) {

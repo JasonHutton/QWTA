@@ -51,7 +51,7 @@ deployObject deployobject_desecrator {
 	"title"							"Desecrator"
 	"wait_time"						"1000"
 	"def_deployable"				"vehicle_desecrator"
-	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"def_deployable_carrier"		"vehicle_strogg_drop_teleport"
 	"str_placement"					""
 	"mask"							"dm_default"
 	"object_radius"					"2048"

@@ -11,11 +11,20 @@ object vehicle_goliath : vehicle_base {
 
 	void			UpdateSiegeTextThread();
 
+	void			vSetManualDeploy();
+	void			vOnDeploy();
+	void			DoBoundsDamageThread();
+
+	void			vSetDeployableOwner( entity p );
+	void			vRemoveObject();
+
 	float			stampForce;
 	float			stampDamageScale;
 	float			stampRange;
 
 	float			threadId;
+
+	boolean			manualDeploy;
 }
 
 void vehicle_goliath::preinit() {
@@ -24,10 +33,18 @@ void vehicle_goliath::preinit() {
 	stampRange			= getFloatKeyWithDefault( "stamp_range", 512.f );
 
 	threadId = -1;
+
+	manualDeploy = false;
 }
 
 void vehicle_goliath::init() {
 	startSound( "snd_cockpit", SND_VEHICLE_INTERIOR );
+	if ( !sys.isClient() ) {
+		if ( manualDeploy ) {
+			setTakesDamage( false );
+			thread DoBoundsDamageThread();
+		}
+	}
 }
 
 void vehicle_goliath::Stamp() {
@@ -82,4 +99,39 @@ void vehicle_goliath::UpdateSiegeTextThread() {
 		sys.wait( 1.0f );
 	}
 	threadId = -1;
+}
+
+void vehicle_goliath::vOnDeploy() {
+	vector origin = getWorldOrigin();
+	setWorldOrigin( origin + '0 0 32' );
+	setLinearVelocity( vec3_origin );
+	sys.killThread( "DoBoundsDamageThread_" + getName() );
+	setTakesDamage( true );
+}
+
+void vehicle_goliath::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+void vehicle_goliath::DoBoundsDamageThread() {
+	float dmgIndex = GetDamage( getKey( "dmg_falling" ) );
+
+	while ( true ) {
+		BoundsDamage( self, dmgIndex );
+		sys.waitFrame();
+	}
+}
+
+void vehicle_goliath::vSetDeployableOwner( entity p ) {
+	if ( !sys.isClient() ) {
+		if ( p != $null_entity ) {
+			p.binAdd( self );
+		}
+	}
+}
+
+void vehicle_goliath::vRemoveObject() {
+	if ( isEmpty() ) {
+		thread DecayThread();
+	}
 }

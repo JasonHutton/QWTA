@@ -11,11 +11,11 @@ object weapon_fists : weapon_base {
 	void		init();
 
 	void		Idle();
-	
+
 	void		Punch();
-	
+
 	boolean		AllowActivate();
-	
+
 	void		ToolTipThread_Raise();
 
 	float		meleeDistance;
@@ -29,7 +29,7 @@ void weapon_fists::preinit() {
 
 void weapon_fists::init() {
 	meleeDistance = getFloatKey( "melee_distance" );
-	
+
 	if ( myPlayer.isLocalPlayer() ) {
 		thread ToolTipThread_Raise();
 	}
@@ -55,19 +55,19 @@ void weapon_fists::Idle() {
 		if ( myPlayer.AI_SPRINT ) {
 			weaponState( "Sprint", 4 );
 		}
-		
+
 		UpdateCharge();
 
 		sys.waitFrame();
 	}
 }
 
-void weapon_fists::Punch() {	
+void weapon_fists::Punch() {
 	fired();
 	playAnim( ANIMCHANNEL_ALL, "fire" );
 	string animname = getAnimatingOnChannel( ANIMCHANNEL_ALL );
 	sys.wait( 0.1 );
-	
+
 	melee( MASK_SHOT_RENDERMODEL | CONTENTS_BODY | CONTENTS_SLIDEMOVER | CONTENTS_WATER, meleeDistance, true, true );
 	player meleePlayer = getMeleeEntity();
 	string surface = getMeleeSurfaceType();
@@ -80,7 +80,7 @@ void weapon_fists::Punch() {
 	if ( meleePlayer != $null_entity ) {
 		backStab = myPlayer.CanStab( meleePlayer );
 	}
-	
+
 	float scale;
 	if ( backStab ) {
 		scale = -1.f;
@@ -95,22 +95,25 @@ void weapon_fists::Punch() {
 			team.GiveBackstabProficiency( myPlayer );
 		}
 	}
-	
+
 	// effects & sounds have to be done based on the trace, since the meleeAttack function returns false on clients
 	string sound = "snd_miss";
-	if ( fraction < 1.0f ) {	
+	if ( fraction < 1.0f ) {
 		sound = "snd_hit_" + surface;
-		
+
 		string fxName = getKey( "fx_hit_" + surface );
 		if ( fxName == "" ) {
-			fxName = getKey( "fx_hit" );
+			fxName = getKey( "fx_hit_" + ent.getDefaultSurfaceType() );
+			if ( fxName == "" ) {
+				fxName = getKey( "fx_hit" );
+			}
 		}
 		vector rot = getVectorKey( "rot_" + animname );
 		sys.playWorldEffectRotateAlign( fxName, g_colorWhite, origin, normal, rot, self );
 	}
-	
+
 	startSound( sound, SND_WEAPON_FIRE );
-				
+
 	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
 	weaponState( "Idle", 1 );
 }
@@ -118,12 +121,12 @@ void weapon_fists::Punch() {
 boolean weapon_fists::AllowActivate() {
 	melee( MASK_SHOT_RENDERMODEL | CONTENTS_BODY | CONTENTS_SLIDEMOVER, meleeDistance, true, true );
 	player meleePlayer = getMeleeEntity();
-	
+
 	boolean backStab = false;
 	if ( meleePlayer != $null_entity ) {
 		backStab = myPlayer.CanStab( meleePlayer );
 	}
-	
+
 	return backStab;
 }
 
@@ -140,7 +143,7 @@ void weapon_fists::ToolTipThread_Raise() {
 	} else {
 		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
 	}
-	
+
 	WAIT_FOR_TOOLTIP;
 	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
 }

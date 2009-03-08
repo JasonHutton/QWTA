@@ -68,9 +68,12 @@ stringMap climate_skins_temperate {
 stringMap climate_skins_area22 {
 	"skin_badger"				"skins/vehicles/gdf/badger/temperate"
 	"skin_husky"				"skins/vehicles/gdf/husky/temperate"
+	"skin_bumblebee"			"skins/vehicles/gdf/bumblebee/temperate"
 	"skin_anansi"				"skins/vehicles/gdf/anansi/temperate"
+	"skin_trojan"				"skins/vehicles/gdf/trojan/temperate"
 	"skin_titan"				"skins/vehicles/gdf/titan/temperate"
 	"skin_magog"				"skins/vehicles/gdf/magog/temperate"
+	"skin_mcp"				"skins/vehicles/gdf/mcp/temperate"
 
 	"skin_gdf"					"skins/players/gdf/temperate"
 
@@ -84,6 +87,7 @@ stringMap climate_skins_area22 {
 
 	"skin_body_strogg_fade"		"skins/strogg/players/body/fade"
 	
+	"skin_trojan_cockpit"			"skins/vehicles/gdf/trojan_cockpit/temperate"
 	"skin_badger_cockpit"			"skins/vehicles/gdf/badger_cockpit/temperate"
 	
 	"skin_deployable_aa"			"skins/structures/edf/deployables/weapons/anti_personnel_turret/turret"
@@ -102,6 +106,7 @@ stringMap climate_skins_ark {
 	"skin_trojan"				"skins/vehicles/gdf/trojan/arctic"
 	"skin_titan"				"skins/vehicles/gdf/titan/arctic"
 	"skin_magog"				"skins/vehicles/gdf/magog/arctic"
+	"skin_mcp"					"skins/vehicles/gdf/mcp/arctic"
 
 	"skin_gdf"					"skins/players/gdf/arctic"
 
@@ -134,7 +139,7 @@ stringMap climate_skins_island {
 	"skin_trojan"				"skins/vehicles/gdf/trojan/temperate"
 	"skin_titan"				"skins/vehicles/gdf/titan/temperate"
 	"skin_magog"				"skins/vehicles/gdf/magog/temperate"
-
+	"skin_mcp"				"skins/vehicles/gdf/mcp/temperate"
 	"skin_gdf"					"skins/players/gdf/temperate"
 
 	"skin_weapon_gdf"			"skins/characters/edf_player/gdf_arm"
@@ -161,9 +166,12 @@ stringMap climate_skins_island {
 stringMap climate_skins_quarry {
 	"skin_badger"				"skins/vehicles/gdf/badger/temperate"
 	"skin_husky"				"skins/vehicles/gdf/husky/temperate"
+	"skin_bumblebee"			"skins/vehicles/gdf/bumblebee/temperate"
 	"skin_anansi"				"skins/vehicles/gdf/anansi/temperate"
+	"skin_trojan"				"skins/vehicles/gdf/trojan/temperate"
 	"skin_titan"				"skins/vehicles/gdf/titan/temperate"
 	"skin_magog"				"skins/vehicles/gdf/magog/temperate"
+	"skin_mcp"				"skins/vehicles/gdf/mcp/temperate"
 
 	"skin_gdf"					"skins/players/gdf/temperate"
 
@@ -177,6 +185,7 @@ stringMap climate_skins_quarry {
 
 	"skin_body_strogg_fade"		"skins/strogg/players/body/fade"
 	
+	"skin_trojan_cockpit"			"skins/vehicles/gdf/trojan_cockpit/temperate"
 	"skin_badger_cockpit"			"skins/vehicles/gdf/badger_cockpit/temperate"
 	
 	"skin_deployable_aa"			"skins/structures/edf/deployables/weapons/anti_personnel_turret/turret"
@@ -190,11 +199,12 @@ stringMap climate_skins_quarry {
 stringMap climate_skins_refinery {
 	"skin_badger"				"skins/vehicles/gdf/badger/temperate"
 	"skin_husky"				"skins/vehicles/gdf/husky/temperate"
+	"skin_bumblebee"			"skins/vehicles/gdf/bumblebee/temperate"
 	"skin_anansi"				"skins/vehicles/gdf/anansi/temperate"
 	"skin_trojan"				"skins/vehicles/gdf/trojan/temperate"
 	"skin_titan"				"skins/vehicles/gdf/titan/temperate"
 	"skin_magog"				"skins/vehicles/gdf/magog/temperate"
-	"skin_mcp"					"skins/vehicles/gdf/mcp/temperate"
+	"skin_mcp"				"skins/vehicles/gdf/mcp/temperate"
 
 	"skin_gdf"					"skins/players/gdf/temperate"
 	
@@ -220,8 +230,14 @@ stringMap climate_skins_refinery {
 }
 
 stringMap climate_skins_salvage {
+	"skin_badger"				"skins/vehicles/gdf/badger/arctic"
 	"skin_husky"				"skins/vehicles/gdf/husky/arctic"
+	"skin_bumblebee"			"skins/vehicles/gdf/bumblebee/arctic"
+	"skin_anansi"				"skins/vehicles/gdf/anansi/arctic"
+	"skin_trojan"				"skins/vehicles/gdf/trojan/arctic"
+	"skin_titan"				"skins/vehicles/gdf/titan/arctic"
 	"skin_magog"				"skins/vehicles/gdf/magog/arctic"
+	"skin_mcp"					"skins/vehicles/gdf/mcp/arctic"
 	
 	"skin_gdf"					"skins/players/gdf/arctic"
 
@@ -234,6 +250,9 @@ stringMap climate_skins_salvage {
 	"skin_body_gdf_fade"		"skins/edf/players/body/fade/arctic"
 
 	"skin_body_strogg_fade"		"skins/strogg/players/body/fade"
+	
+	"skin_trojan_cockpit"			"skins/vehicles/gdf/trojan_cockpit/arctic"
+	"skin_badger_cockpit"			"skins/vehicles/gdf/badger_cockpit/arctic"
 
 	"skin_deployable_aa"			"skins/structures/edf/deployables/weapons/anti_personnel_turret/turret_arctic"
 	"skin_deployable_assm"			"skins/structures/edf/deployables/weapons/anti_ssm_turret/anti_ssm_arctic"
@@ -246,9 +265,12 @@ stringMap climate_skins_salvage {
 stringMap climate_skins_sewer {
 	"skin_badger"				"skins/vehicles/gdf/badger/temperate"
 	"skin_husky"				"skins/vehicles/gdf/husky/temperate"
+	"skin_bumblebee"			"skins/vehicles/gdf/bumblebee/temperate"
+	"skin_anansi"				"skins/vehicles/gdf/anansi/temperate"
 	"skin_trojan"				"skins/vehicles/gdf/trojan/temperate"
 	"skin_titan"				"skins/vehicles/gdf/titan/temperate"
 	"skin_magog"				"skins/vehicles/gdf/magog/temperate"
+	"skin_mcp"				"skins/vehicles/gdf/mcp/temperate"
 
 	"skin_gdf"					"skins/players/gdf/temperate"
 
@@ -274,8 +296,14 @@ stringMap climate_skins_sewer {
 }
 
 stringMap climate_skins_volcano {
+	"skin_badger"				"skins/vehicles/gdf/badger/temperate"
 	"skin_husky"				"skins/vehicles/gdf/husky/temperate"
+	"skin_bumblebee"			"skins/vehicles/gdf/bumblebee/temperate"
+	"skin_anansi"				"skins/vehicles/gdf/anansi/temperate"
+	"skin_trojan"				"skins/vehicles/gdf/trojan/temperate"
+	"skin_titan"				"skins/vehicles/gdf/titan/temperate"
 	"skin_magog"				"skins/vehicles/gdf/magog/temperate"
+	"skin_mcp"				"skins/vehicles/gdf/mcp/temperate"
 	
 	"skin_gdf"					"skins/players/gdf/temperate"
 
@@ -288,6 +316,9 @@ stringMap climate_skins_volcano {
 	"skin_body_gdf_fade"		"skins/edf/players/body/fade"
 
 	"skin_body_strogg_fade"		"skins/strogg/players/body/fade"
+	
+	"skin_trojan_cockpit"			"skins/vehicles/gdf/trojan_cockpit/temperate"
+	"skin_badger_cockpit"			"skins/vehicles/gdf/badger_cockpit/temperate"
 	
 	"skin_deployable_aa"			"skins/structures/edf/deployables/weapons/anti_personnel_turret/turret"
 	"skin_deployable_assm"			"skins/structures/edf/deployables/weapons/anti_ssm_turret/anti_ssm"

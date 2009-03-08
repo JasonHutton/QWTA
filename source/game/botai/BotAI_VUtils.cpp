@@ -123,6 +123,69 @@ bool idBotAI::VehicleIsValid( int entNum, bool skipSpeedCheck, bool addDriverChe
 	return true;
 }
 
+/*
+==================
+idBotAI::CallForNewVehicle
+
+We don't have a vehicle but we want one, so call one in.
+==================
+*/
+int idBotAI::CallForNewVehicle( int vehicleType ) {
+	if(!botWorld->gameLocalInfo.botsUseVehicles) {
+		return -1;
+	}
+
+	if(botVehicleInfo != NULL) {
+		return -1;
+	}
+
+	idPlayer* player = gameLocal.GetClient( botNum );
+			
+	if ( !player ) {
+		return -1;
+	}
+
+	if(botInfo->vDeployDelayTime > botWorld->gameLocalInfo.time) {
+		return -1;
+	}
+
+	botThreadData.GetGameWorldState()->clientInfo[ botNum ].vDeployDelayTime = botWorld->gameLocalInfo.time + 10000 + gameLocal.random.RandomInt(40000);
+
+	vDeployType_t desiredVehicle = botThreadData.GuessMostUsefulVDeploy( botNum, botThreadData.GetGameWorldState()->clientInfo[ botNum ].team, vehicleType );
+	if( desiredVehicle == VD_NONE ) {
+		return -1;
+	}
+
+	int index = botThreadData.FindDeclIndexForDeployable( botThreadData.GetGameWorldState()->clientInfo[ botNum ].team, VDEPLOY, desiredVehicle );
+
+	if ( index == -1 ) {
+		gameLocal.DWarning( "Can't find deployable type %i in \"CallForNewVehicle\"! ", botThreadData.GetGameOutputState()->botOutput[ botNum ].deployInfo.deployableType );
+		return -1;
+	}
+
+	const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( index );
+
+	if ( object == NULL ) {
+		gameLocal.DWarning( "Client %i tried to drop a deployable that doesn't exist!", botNum );
+		return -1;
+	}
+
+	float vCredit = player->GetVehicleCredit();//botThreadData.GetBotWorldState()->clientInfo[ botNum ].vehicleCreditUsed;
+	if(vCredit >= object->GetCreditRequired()) {
+		//gameLocal.Printf("DEBUG: %s: Can afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
+		if(gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 )) {
+			player->UseVehicleCredit(object->GetCreditRequired());
+			//gameLocal.Printf("Credit used: %f Remaining: %f\n", object->GetCreditRequired(), player->GetVehicleCredit());
+			return 1;
+		}
+	}
+/*	else {
+		gameLocal.Printf("DEBUG: %s: Can't afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
+	}*/
+
+	return -1;
+}
+
 
 /*
 ==================

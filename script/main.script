@@ -87,7 +87,7 @@ This is the main script that is loaded before any level scripts load.
 
 // projectiles
 #include "script/projectiles/missile.script"
-#include "script/projectiles/grenade.script" 
+#include "script/projectiles/grenade.script"
 #include "script/projectiles/armable.script"
 #include "script/projectiles/homingmissile.script"
 #include "script/projectiles/targetedmissile.script"
@@ -244,6 +244,18 @@ This is the main script that is loaded before any level scripts load.
 #include "script/maps/misctestmaps.script"
 #include "script/map.script"
 
+// QWTA stuff begins
+
+// Vehicles
+#include "script/vehicles/weapons/vrof.script"
+#include "script/projectiles/homingnail.script"
+#include "script/vehicles/strogg_drop_teleport.script"
+#include "script/vehicles/jupiter.script"
+#include "script/projectiles/bfg.script"
+#include "script/vehicles/weapons/chargeshot.script"
+
+// QWTA stuff ends
+
 void game_main() {
 	SetupColors();
 
@@ -305,7 +317,7 @@ void game_main() {
 	si_rules					= sys.getCVar( "si_rules", "" );
 	g_noVehicleSpawnInvulnerability	= sys.getCVar( "g_noVehicleSpawnInvulnerability", "" );
 	g_objectiveDecayTime		= sys.getCVar( "g_objectiveDecayTime", "5" );
-	g_aptWarning				= sys.getCVar( "g_aptWarning", "3" );
+	//g_aptWarning				= sys.getCVar( "g_aptWarning", "3" );
 
 	g_drawMineIcons				= sys.getCVar( "g_drawMineIcons", "" );
 	g_allowMineIcons			= sys.getCVar( "g_allowMineIcons", "" );

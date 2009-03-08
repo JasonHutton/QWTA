@@ -198,6 +198,7 @@ void idBotThreadData::InitClientInfo( int clientNum, bool resetAll, bool leaving
 	client.deployChargeUsed = 0;
 	client.bombChargeUsed = 0;
 	client.fireSupportChargedUsed = 0;
+	client.vehicleCreditUsed = 0.0f;
 
 	client.inPlayZone = true;
 
@@ -242,6 +243,7 @@ void idBotThreadData::InitClientInfo( int clientNum, bool resetAll, bool leaving
 	client.targetLockTime = 0;
 
 	client.deployDelayTime = 0;
+	client.vDeployDelayTime = 0;
 
 	client.proxyInfo.entNum = -1;
 	client.proxyInfo.time = 0;
@@ -274,6 +276,7 @@ void idBotThreadData::InitClientInfo( int clientNum, bool resetAll, bool leaving
 		client.scriptHandler.deviceTimer = gameLocal.AllocTargetTimer( "energy_device" );
 		client.scriptHandler.deployTimer = gameLocal.AllocTargetTimer( "energy_deployment" );
 		client.scriptHandler.supplyTimer = gameLocal.AllocTargetTimer( "energy_supply" );
+		//client.scriptHandler.vehicleCreditTimer = gameLocal.AllocTargetTimer( "vehiclecredit_timer" );
 	} else {
 		client.inGame = false;
 		client.isBot = false;
@@ -1411,6 +1414,7 @@ void idBotThreadData::LoadMap( const char* mapName, int randSeed ) {
 	GetGameWorldState()->gameLocalInfo.chargeExplodeTime = constants->dict.GetFloat( "charge_explode_time" );
 	GetGameWorldState()->gameLocalInfo.supplyTimerTime = constants->dict.GetFloat( "energy_supply_time" );
 	GetGameWorldState()->gameLocalInfo.deployTimerTime = constants->dict.GetFloat( "energy_deployment_time" );
+	GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime = constants->dict.GetFloat( "vehiclecredit_timer_time" );
 
 	if ( idStr::Icmp( mapName, "maps/area22.entities" ) == 0 ) {
 		GetGameWorldState()->gameLocalInfo.gameMap = AREA22;
@@ -4208,7 +4212,7 @@ void idBotThreadData::LoadTrainingBotNames() {
 idBotThreadData::FindDeclIndexForDeployable
 ================
 */
-int idBotThreadData::FindDeclIndexForDeployable( const playerTeamTypes_t team, int deployableNum ) {
+int idBotThreadData::FindDeclIndexForDeployable( const playerTeamTypes_t team, int deployableNum, vDeployType_t vehicleType ) {
 
 	const char* name;
 	int index;
@@ -4261,6 +4265,57 @@ int idBotThreadData::FindDeclIndexForDeployable( const playerTeamTypes_t team, i
 		} else {
 			name = "deployobject_amt_gdf";
 		}
+	} else if ( deployableNum == VDEPLOY ) {
+		if( team == STROGG ) {
+			switch(vehicleType) {
+				case VD_ICARUS:
+					name = "deployobject_icarus";
+					break;
+				case VD_HOG:
+					name = "deployobject_hog";
+					break;
+				case VD_DESECRATOR:
+					name = "deployobject_desecrator";
+					break;
+				case VD_CYCLOPS:
+					name = "deployobject_goliath";
+					break;
+				case VD_TORMENTOR:
+					name = "deployobject_hornet";
+					break;
+				default:
+					return -1;
+			}
+		} else {
+			switch(vehicleType) {
+				case VD_HUSKY:
+					name = "deployobject_husky";
+					break;
+				case VD_ARMADILLO:
+					name = "deployobject_badger";
+					break;
+				case VD_TROJAN:
+					name = "deployobject_trojan";
+					break;
+				case VD_TITAN:
+					name = "deployobject_titan";
+					break;
+				case VD_JUPITER:
+					name = "deployobject_jupiter";
+					break;
+				case VD_ANANSI:
+					name = "deployobject_anansi";
+					break;
+				case VD_BUMBLEBEE:
+					name = "deployobject_bumblebee";
+					break;
+				case VD_PLATYPUS:
+					name = "deployobject_platypus";
+					break;
+				default:
+					return -1;
+			}
+		}
 	} else {
 		gameLocal.DWarning( "Invalid deployable type passed to \"FindDeclIndexForDeployable\"!\n" );
 		return -1;
@@ -4270,6 +4325,142 @@ int idBotThreadData::FindDeclIndexForDeployable( const playerTeamTypes_t team, i
 	index = ( decl ) ? decl->Index() : -1;
 
 	return index;
+}
+
+/*
+================
+idBotThreadData::GuessMostUsefulVehicle
+================
+*/
+vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playerTeamTypes_t team, int vehicleFlags ) {
+	idPlayer* player = gameLocal.GetClient(clientNum);
+	clientInfo_t& botInfo = GetGameWorldState()->clientInfo[ clientNum ];
+
+	if(!player || vehicleFlags <= 0 ) {
+		return VD_NONE;
+	}
+//	gameLocal.Printf("VFlags[%s]: %i\n", player->userInfo.name.c_str(), vehicleFlags);
+
+	int vPref[VD_MAX];
+	int highCount = 0;
+	int highIndex = 0;
+
+	for(int i = 0;i < VD_MAX;i++) {
+		vPref[i] = 0;
+	}
+
+	if(team == STROGG) {
+		if(vehicleFlags & PERSONAL) {
+			vPref[VD_ICARUS] += gameLocal.random.RandomInt(2);
+			vPref[VD_HOG] += gameLocal.random.RandomInt(1);
+		}
+		if(vehicleFlags & GROUND) {
+			vPref[VD_ICARUS] += 1;
+			vPref[VD_HOG] += 1;
+			vPref[VD_DESECRATOR] += 1;
+			vPref[VD_CYCLOPS] += 1;
+		}
+		if(vehicleFlags & ARMOR) {
+			vPref[VD_DESECRATOR] += 1;
+			vPref[VD_CYCLOPS] += gameLocal.random.RandomInt(2);
+		}
+		if(vehicleFlags & AIR) {
+			vPref[VD_TORMENTOR] += gameLocal.random.RandomInt(3);
+			vPref[VD_DESECRATOR] += 1;
+			vPref[VD_ICARUS] += 1;
+		}
+		if(vehicleFlags & WATER) {
+			vPref[VD_DESECRATOR] += 1;
+		}
+		if(vehicleFlags & AIR_TRANSPORT) {
+			vPref[VD_DESECRATOR] += 1;
+			vPref[VD_TORMENTOR] += 1;
+		}
+		if(vehicleFlags & GROUND_TRANSPORT) {
+			vPref[VD_HOG] += 1;
+			vPref[VD_DESECRATOR] += 1;
+		}
+		if(vehicleFlags & ALL_VEHICLES_BUT_ICARUS) {
+			vPref[VD_ICARUS] -= 5;
+		}
+		if(botInfo.classType == SOLDIER) {
+			vPref[VD_ICARUS] -= gameLocal.random.RandomInt(2);
+		}
+		if(botInfo.classType == MEDIC) {
+			vPref[VD_ICARUS] -= gameLocal.random.RandomInt(2);
+		}
+		if(botInfo.classType == ENGINEER) {
+			vPref[VD_DESECRATOR] += gameLocal.random.RandomInt(1);
+			vPref[VD_CYCLOPS] += gameLocal.random.RandomInt(2);
+		}
+		if(botInfo.classType == FIELDOPS) {
+		}
+		if(botInfo.classType == COVERTOPS) {
+			vPref[VD_ICARUS] += gameLocal.random.RandomInt(2);
+		}
+	} else {
+		if(vehicleFlags & PERSONAL) {
+			vPref[VD_HUSKY] += 2;
+			vPref[VD_ARMADILLO] += gameLocal.random.RandomInt(1);
+		}
+		if(vehicleFlags & GROUND) {
+			vPref[VD_HUSKY] += 1;
+			vPref[VD_ARMADILLO] += 1;
+			vPref[VD_TROJAN] += 1;
+			vPref[VD_TITAN] += 1;
+			vPref[VD_JUPITER] += 1;
+		}
+		if(vehicleFlags & ARMOR) {
+			vPref[VD_TROJAN] += 1;
+			vPref[VD_TITAN] += gameLocal.random.RandomInt(2);
+			vPref[VD_JUPITER] += gameLocal.random.RandomInt(3);
+			vPref[VD_BUMBLEBEE] += 1;
+		}
+		if(vehicleFlags & AIR) {
+			vPref[VD_ANANSI] += 2;
+			vPref[VD_BUMBLEBEE] += 1;
+		}
+		if(vehicleFlags & WATER) {
+			vPref[VD_PLATYPUS] += 1;
+			vPref[VD_TROJAN] += 1;
+		}
+		if(vehicleFlags & AIR_TRANSPORT) {
+			vPref[VD_BUMBLEBEE] += 3;
+		}
+		if(vehicleFlags & GROUND_TRANSPORT) {
+			vPref[VD_TROJAN] += 3;
+		}
+		//if(vehicleFLags & ALL_VEHICLES_BUT_ICARUS) {
+		//}
+		if(botInfo.classType == SOLDIER) {
+			vPref[VD_ARMADILLO] += gameLocal.random.RandomInt(1);
+			vPref[VD_HUSKY] -= gameLocal.random.RandomInt(2);
+		}
+		if(botInfo.classType == MEDIC) {
+			vPref[VD_HUSKY] -= gameLocal.random.RandomInt(2);
+		}
+		if(botInfo.classType == ENGINEER) {
+			vPref[VD_TITAN] += gameLocal.random.RandomInt(2);
+			vPref[VD_JUPITER] += gameLocal.random.RandomInt(1);
+			vPref[VD_TROJAN] += gameLocal.random.RandomInt(1);
+		}
+		if(botInfo.classType == FIELDOPS) {
+			vPref[VD_JUPITER] += gameLocal.random.RandomInt(1);
+		}
+		if(botInfo.classType == COVERTOPS) {
+			vPref[VD_HUSKY] += gameLocal.random.RandomInt(2);
+			vPref[VD_BUMBLEBEE] += gameLocal.random.RandomInt(1);
+		}
+	}
+
+	for(int i = 0;i < VD_MAX;i++) {
+		if(vPref[i] > highCount) {
+			highIndex = i;
+			highCount = vPref[i];
+		}
+	}
+
+	return static_cast<vDeployType_t>(highIndex);
 }
 
 /*
@@ -4297,7 +4488,7 @@ bool idBotThreadData::RequestDeployableAtLocation( int clientNum, bool& needPaus
 		return false;
 	}
 
-	int index = FindDeclIndexForDeployable( GetGameWorldState()->clientInfo[ clientNum ].team, GetGameOutputState()->botOutput[ clientNum ].deployInfo.deployableType );
+	int index = FindDeclIndexForDeployable( GetGameWorldState()->clientInfo[ clientNum ].team, GetGameOutputState()->botOutput[ clientNum ].deployInfo.deployableType, VD_NONE );
 
 	if ( index == -1 ) {
 		gameLocal.DWarning( "Can't find deployable type %i in \"RequestDeployableAtLocation\"! ", GetGameOutputState()->botOutput[ clientNum ].deployInfo.deployableType );
@@ -5891,8 +6082,8 @@ void idBotThreadData::ManageBotClassesOnSmallServer() {
 
 			player->ChangeClass( pc, weaponLoadOut );
 					
-			if ( player->GetHealth() > 0 ) {
-			player->Kill( NULL ); //mal: hurry up and suicide, and get back into the game as our new class!
+			if ( player->GetHealth() > 0 && !gameLocal.rules->IsWarmup() ) {
+				player->Kill( NULL ); //mal: hurry up and suicide, and get back into the game as our new class!
 			}
 			playerInfo.lastClassChangeTime = gameLocal.time;
 			changedClass = true;

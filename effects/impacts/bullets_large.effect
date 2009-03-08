@@ -220,7 +220,7 @@ effect effects/impacts/bullets_large/impact_flesh
 				acceleration { box 0,-20,-20,0,20,20 }
 				friction { point 0.25,0,0 }
 				size { point 6,6 }
-				tint { point 0.74902,0.74902,0.74902 }
+				tint { point 0.501961,0.247059,0.247059 }
 				fade { point 0 }
 				rotate { box -0.25,0.25 }
 			}
@@ -236,7 +236,7 @@ effect effects/impacts/bullets_large/impact_flesh
 			end
 			{
 				size { line 12,12,20,20 }
-				tint { point 0.498039,0.498039,0.498039 }
+				tint { point 0.247059,0.0,0.0 }
 				fade { line 0.6,0.7 }
 				offset { line 5,0,0,30,0,0 }
 			}
@@ -262,6 +262,7 @@ effect effects/impacts/bullets_large/impact_flesh
 				position { point 10,0,0 cone }
 				velocity { box -10,-1,-1,-10,1,1 }
 				size { box 4,12 }
+				tint { point 0.501961,0.247059,0.247059 }
 				offset { point -10,0,0 }
 				length { box 5,0,0,10,0,0 }
 			}
@@ -276,6 +277,7 @@ effect effects/impacts/bullets_large/impact_flesh
 			end
 			{
 				size { box 6,20 }
+				tint { point 0.247059,0.0,0.0 }
 				length { box 40,-8,-8,60,8,8 }
 			}
 			lineHit
@@ -302,6 +304,7 @@ effect effects/impacts/bullets_large/impact_flesh
 				position { line 2,0,0,5,0,0 cone }
 				velocity { box 0,-10,-10,0,10,10 }
 				size { box 5,10 }
+				tint { point 1.0,0.0,0.0 }
 				offset { point -10,0,0 }
 				length { point 10,0,0 }
 			}

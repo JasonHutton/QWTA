@@ -106,9 +106,11 @@ $template _class_button( NameParm, TeamParm, XPos, YPos, ClassParm )
 			color	logoColor	= COLOR_CLASS_TEXT;
 			color	activeColor	= COLOR_BLACK;
 
-			wstring	countText	= toWStr( "0" );
+			string	countText	= "0";
 			float	count		= -1;
-			float	isCritical 	= compare( player.TeamParm##CriticalClass, #NameParm );			
+			string	limitText	= "0";
+			float	limit		= -1;
+			float	isCritical 	= compare( player.TeamParm##CriticalClass, #NameParm );
 		}
 		
 		events {
@@ -123,7 +125,15 @@ $template _class_button( NameParm, TeamParm, XPos, YPos, ClassParm )
 				drawCachedMaterial( gui.btnGradMaterial, absoluteRect, gradColor );
 				drawCachedMaterial( logoMaterial, logoRect,		logoColor );
 
-				drawText( countText, textRect, logoColor, 12, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
+				//drawText( countText, textRect, logoColor, 12, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
+				if( limit != 0 ) {
+					if( limit > -1 ) {
+						drawText( toWStr(countText + "/" + limitText), textRect, logoColor, 10, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
+					}
+					else {
+						drawText( toWStr(countText), textRect, logoColor, 10, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
+					}
+				}
 
 				drawCachedMaterial( gui.gradMaterial, absoluteRect, activeColor );
 				
@@ -193,7 +203,9 @@ $template _class_button( NameParm, TeamParm, XPos, YPos, ClassParm )
 		timeline {
 			onTime 0 {
 				count = gui.getRoleCountForTeam( #TeamParm, #NameParm );
-				countText = toWString( count, 0 );
+				limit = gui.getRoleLimitForTeam( #TeamParm, #NameParm );
+				countText = toString( count, 0 );
+				limitText = toString( limit, 0 );
 			}
 			onTime 500 {
 				resetTime( 0 );

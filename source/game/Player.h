@@ -481,6 +481,7 @@ public:
 	void					UpdatePlayZoneInfo( void );
 
 	virtual void			ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius );
+	virtual void			ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius );
 
 	void					SendUnLocalisedMessage( const wchar_t* message );
 	void					SendLocalisedMessage( const sdDeclLocStr* locStr, const idWStrList& parms );
@@ -588,6 +589,9 @@ public:
 	void					SetSpectateClient( idPlayer* player );
 	void					SetSpectateId( int id );
 	void					OnSetClientSpectatee( idPlayer* spectatee );
+
+	float					GetVehicleCredit( void );
+	void					UseVehicleCredit( float amount );
 
 	qhandle_t				GetUserGroup( void );
 	void					SetUserGroup( qhandle_t group );
@@ -838,11 +842,11 @@ public:
 
 	void					UpdateBriefingView();
 
-	bool					CanGetClass( const sdDeclPlayerClass* pc );
+	bool					CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked = false );
 
 	bool					Give( const char *statname, const char *value );
 	bool					GiveClass( const char* classname );
-	void					ChangeClass( const sdDeclPlayerClass* pc, int classOption );
+	void					ChangeClass( const sdDeclPlayerClass* pc, int classOption, const bool unchecked = false );
 	bool					GivePackage( const sdDeclItemPackage* package );
 	void					GiveClassProficiency( float count, const char* reason );
 
@@ -1389,6 +1393,8 @@ public:
 	void					Event_SetCarryingObjective( bool isCarrying );
 	void					Event_AddDamageEvent( int time, float angle, float damage, bool updateDirection );
 	void					Event_IsInLimbo( void );
+	void					Event_GetVehicleCredit( void );
+	void					Event_UseVehicleCredit( float amount );
 };
 
 #endif /* !__GAME_PLAYER_H__ */

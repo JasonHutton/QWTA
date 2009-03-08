@@ -1,0 +1,158 @@
+material textures/effects/weapons/darkmatter
+{
+	qer_editorimage textures/effects/weapons/darkmatteradd.tga
+	noatmosphere
+	translucent
+	noshadows
+	nonsolid
+	twosided
+	{
+		blend add
+		map clamp textures/effects/weapons/darkmatteradd.tga
+		vertexColor
+		rotate time * 0.6
+	}
+	{
+		blend filter
+		map clamp textures/effects/weapons/darkmatterfilter.tga
+		rotate time * -0.6
+	}
+}
+
+material textures/effects/weapons/darkmatter_haze
+{
+	noatmosphere
+	translucent
+	noshadows
+	nonsolid
+	twosided
+	{
+		blend	blend
+		map clamp textures/effects/weapons/darkmatter_haze.tga
+		vertexColor
+	}	
+}
+
+material textures/effects/weapons/darkmatter_ring
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend add
+		map textures/effects/weapons/darkmatter_ring.tga
+		vertexColor
+	}
+}
+
+material textures/effects/weapons/darkmatter_dot
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend	blend
+		map clamp textures/effects/weapons/darkmatter_dot
+		vertexColor
+	}	
+}
+
+material textures/effects/weapons/darkmatterbolt
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend add
+		map textures/effects/weapons/darkmatterbolt.tga
+		vertexColor
+	}
+}
+
+material textures/effects/particles_shapes/blend_sphere2
+{
+	{
+		blend blend
+		map makeAlpha(textures/effects/particles_shapes/add_sphere2.tga)
+		vertexColor
+		colored
+	}
+}
+
+material textures/effects/weapons/plasma1
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend add
+		map textures/effects/weapons/plasma1.tga
+		vertexColor
+	}
+}
+
+material textures/effects/weapons/darkmatter_exp1
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend blend
+		map clamp textures/effects/weapons/darkmatter_blend.tga
+		vertexColor
+		rotate time * -0.6
+	}
+}
+
+material textures/effects/weapons/darkmatter_exp2
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend add
+		map clamp textures/effects/weapons/darkmatteradd.tga
+		vertexColor
+		rotate time * 0.6
+	}
+}
+
+material textures/effects/energy_sparks/spark_blue
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+        {
+		blend	add
+		map clamp textures/effects/energy_sparks/spark_blue.tga
+		vertexColor   
+        }
+}
+
+material textures/effects/fire/fire5b
+{
+	noatmosphere
+	translucent
+	nonsolid
+	noshadows
+	twosided
+	{
+		blend add
+		map textures/effects/fire/fire5b.tga
+		vertexColor
+	}	
+}

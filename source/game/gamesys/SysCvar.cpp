@@ -337,6 +337,8 @@ idCVar pm_vehicleSoundLerpScale(	"pm_vehicleSoundLerpScale",	"10",			CVAR_GAME |
 
 idCVar pm_waterSpeed(				"pm_waterSpeed",			"400",			CVAR_GAME | CVAR_FLOAT | CVAR_RANKLOCKED, "speed player will be pushed up in water when totally under water" );
 
+idCVar pm_realisticMovement(		"pm_realisticMovement",		"1",			CVAR_GAME | CVAR_BOOL /*| CVAR_RANKLOCKED*/, "Which player movement physics to use: 0=Quake-style, 1=Realistic-style" );
+
 idCVar g_debugNetworkWrite(			"g_debugNetworkWrite",		"0",			CVAR_GAME | CVAR_BOOL, "" );
 idCVar g_debugProficiency(			"g_debugProficiency",		"0",			CVAR_GAME | CVAR_BOOL, "" );
 idCVar g_weaponSwitchTimeout(		"g_weaponSwitchTimeout",	"1.5",			CVAR_GAME | CVAR_PROFILE | CVAR_ARCHIVE | CVAR_FLOAT, "" );
@@ -410,7 +412,7 @@ idCVar bot_doObjectives(			"bot_doObjectives",				"1",		CVAR_GAME | CVAR_BOOL | 
 idCVar bot_ignoreGoals(				"bot_ignoreGoals",				"0",		CVAR_GAME | CVAR_INTEGER | CVAR_CHEAT,		"If set to 1, bots will ignore all map objectives. Useful for debugging bot behavior" );
 idCVar bot_useVehicles(				"bot_useVehicles",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots dont use vehicles, 1 = bots do use vehicles" );
 idCVar bot_stayInVehicles(			"bot_stayInVehicles",			"0",		CVAR_GAME | CVAR_BOOL,						"1 = bots will never leave their vehicle. Only useful for debugging. Default is 0" );
-idCVar bot_useStrafeJump(			"bot_useStrafeJump",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots can't strafe jump, 1 = bots CAN strafe jump to goal locations that are far away" );
+idCVar bot_useStrafeJump(			"bot_useStrafeJump",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots can't strafe jump, 1 = bots CAN strafe jump to goal locations that are far away" );
 idCVar bot_useSuicideWhenStuck(		"bot_useSuicideWhenStuck",		"1",		CVAR_GAME | CVAR_BOOL,						"0 = bots never suicide when stuck. 1 = bots suicide if they detect that they're stuck" );
 idCVar bot_useDeployables(			"bot_useDeployables",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots dont drop deployables of any kind, 1 = bots can drop all deployables" );
 idCVar bot_useMines(				"bot_useMines",					"1",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots dont use mines, 1 = bots can use mines. Default = 1" );
@@ -565,8 +567,8 @@ idCVar g_noTVChat(					"g_noTVChat",					"0",		CVAR_GAME | CVAR_ARCHIVE | CVAR_B
 #endif // SD_SUPPORT_REPEATER
 
 idCVar g_drawHudMessages(			"g_drawHudMessages",			"1",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Draw task, task success and objective text on HUD." );
-idCVar g_mineTriggerWarning(		"g_mineTriggerWarning",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when triggering a proximity mine." );
-idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when APT is locking on. 0: Off 1: Visual warning only 2: Beep only 3: Visual and beep" );
+//idCVar g_mineTriggerWarning(		"g_mineTriggerWarning",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when triggering a proximity mine." );
+//idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when APT is locking on. 0: Off 1: Visual warning only 2: Beep only 3: Visual and beep" );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

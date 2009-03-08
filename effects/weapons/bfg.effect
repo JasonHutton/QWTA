@@ -1,0 +1,1527 @@
+effect effects/weapons/bfg/fly
+{
+	size	169
+
+	spawner "ball"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	0.1,0.1
+			material	"textures/effects/weapons/bfgballsac"
+			trailRepeat	1
+
+			start
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	spawner "sparks"
+	{
+		detail		0.5
+		start		0.2,0.2
+		count		90,90
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	2,3
+			blend	add
+			material	"textures/effects/energy_sparks/spark_blue"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -80,-80,-80,80,80,80 }
+				velocity { box 10,10,10,-10,-10,-10 }
+				acceleration { box -10,-10,-10,10,10,10 }
+				size { box 3,3,8,8 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				tint { envelope flare01 }
+				fade { envelope costable }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				tint { point 0,1,0 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+	emitter "sparklines"
+	{
+		duration	1,1
+		count		20,20
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		line
+		{
+			duration	0.4,0.4
+			material	"textures/effects/weapons/duffybolt"
+			generatedNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				size { box 5,10 }
+				length { box 60,0,0,150,0,0 }
+			}
+
+			motion
+			{
+				fade { envelope linear }
+				length { envelope linear }
+			}
+
+			end
+			{
+				length { box 10,0,0,30,0,0 }
+			}
+			lineHit
+		}
+	}
+	emitter "corecloud"
+	{
+		duration	1,1
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"textures/effects/weapons/smokepuff"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				size { box 30,30,50,50 }
+				rotate { box 0,0.5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 20,20 }
+			}
+			lineHit
+		}
+	}
+	emitter "trail"
+	{
+		duration	1,1
+		count		20,20
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/plasma1"
+			trailRepeat	1
+
+			start
+			{
+				position { line 0,-8,-8,0,8,8 }
+				size { box 40,40,60,60 }
+				tint { point 0.501961,1,0.501961 }
+				fade { point 0.6 }
+				offset { point -5,0,0 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				tint { envelope linear }
+				fade { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				tint { point 0,1,0 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
+	sound "flysound"
+	{
+		soundShader	"sounds/weapons/bfg/fly"
+	}
+}
+
+
+
+effect effects/weapons/bfg/explode
+{
+	size	2075
+
+	sound "Explosion Sound"
+	{
+		soundShader	"sounds/weapons/bfg/explode"
+	}
+	spawner "sparks"
+	{
+		detail		0.5
+		count		200,200
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	3,5
+			blend	add
+			persist
+			material	"textures/effects/energy_sparks/spark_blue"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -60,-60,-60,60,60,60 }
+				velocity { box 200,200,200,-200,-200,-200 }
+				acceleration { box -150,-150,-150,150,150,150 }
+				size { box 3,3,8,8 }
+				tint { point 0,1,0 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				tint { envelope flare01 }
+				fade { envelope linear }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				tint { point 0,0.501961,0 }
+				fade { point 0.1 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+	emitter "coreexpl1"
+	{
+		duration	0.6,0.6
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -20,-20,-20,20,20,20 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope fastinslowout }
+				fade { envelope bfgblast1table }
+				rotate { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 160,160 }
+			}
+			lineHit
+		}
+	}
+	emitter "coreexpl2"
+	{
+		start		0.3,0.3
+		duration	0.5,0.5
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom2"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -20,-20,-20,20,20,20 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope fastinslowout }
+				fade { envelope bfgblast1table }
+				rotate { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 160,160 }
+			}
+			lineHit
+		}
+	}
+	emitter "sparklines"
+	{
+		detail		0.5
+		duration	1,1
+		count		20,20
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		line
+		{
+			duration	0.6,0.6
+			persist
+			material	"textures/effects/weapons/duffybolt"
+			generatedNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -40,-40,-40,40,40,40 surface }
+				size { box 20,30 }
+				length { box 180,0,0,200,0,0 }
+			}
+
+			motion
+			{
+				fade { envelope linear }
+				length { envelope linear }
+			}
+
+			end
+			{
+				length { box 10,0,0,30,0,0 }
+			}
+			lineHit
+		}
+	}
+	spawner "coreflame"
+	{
+		count		20,20
+		locked
+
+		sprite
+		{
+			duration	2,2
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom3"
+			trailRepeat	1
+
+			start
+			{
+				position { line -20,-20,-20,20,20,20 }
+				velocity { box -20,-20,-20,20,20,20 }
+				size { point 60,60 }
+				tint { point 0,0.501961,0 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	spawner "innercoreglow"
+	{
+		count		10,10
+		locked
+
+		sprite
+		{
+			duration	2,2
+			blend	add
+			persist
+			material	"textures/effects/weapons/smokepuff"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				velocity { box -20,-20,-20,20,20,20 }
+				size { box 30,30,50,50 }
+				fade { point 0.6 }
+				rotate { box 0,0.5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { box 80,80,100,100 }
+			}
+			lineHit
+		}
+	}
+	spawner "innerblast"
+	{
+		count		6,6
+		locked
+
+		sprite
+		{
+			duration	1,1
+			material	"textures/effects/weapons/boomboom4"
+			trailRepeat	1
+
+			start
+			{
+				size { point 20,20 }
+				fade { point 0.6 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				rotate { envelope flickerblink }
+			}
+
+			end
+			{
+				size { point 60,60 }
+				rotate { point 0.555556 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "heathaze"
+	{
+		count		5,5
+
+		sprite
+		{
+			duration	0.8,0.8
+			material	"textures/effects/large_explosion_shockwave"
+			trailRepeat	1
+
+			start
+			{
+				velocity { box 300,-50,-50,400,50,50 }
+				size { point 40,40 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 400,400 }
+			}
+			lineHit
+		}
+	}
+	spawner "shockwaveX"
+	{
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	1,1
+			blend	add
+			material	"textures/effects/weapons/bfgballblast"
+			trailRepeat	1
+
+			start
+			{
+				position { point 1,0,0 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { point 0.25,0.25,0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope linear }
+			}
+
+			end
+			{
+				size { point 400,400 }
+			}
+			lineHit
+		}
+	}
+	spawner "shockwaveY"
+	{
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	1,1
+			blend	add
+			material	"textures/effects/weapons/bfgballblast"
+			trailRepeat	1
+
+			start
+			{
+				position { point 1,0,0 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { point 0,0.25,0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope linear }
+			}
+
+			end
+			{
+				size { point 400,400 }
+			}
+			lineHit
+		}
+	}
+	spawner "shockwaveZ"
+	{
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	1,1
+			blend	add
+			material	"textures/effects/weapons/bfgballblast"
+			trailRepeat	1
+
+			start
+			{
+				position { point 1,0,0 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope linear }
+			}
+
+			end
+			{
+				size { point 400,400 }
+			}
+			lineHit
+		}
+	}
+}effect effects/weapons/bfg/beam
+{
+	size	2054
+
+	emitter "beam"
+	{
+		duration	1,1
+		count		15,15
+		locked
+
+		line
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/duffybolt"
+			trailRepeat	1
+
+			start
+			{
+				position { line 0,0,0,0,0,0 useEndOrigin }
+				size { point 6 }
+				length { point 2048,0,0 }
+			}
+
+			motion
+			{
+				fade { envelope linear }
+			}
+			lineHit
+		}
+	}
+}
+
+
+effect effects/weapons/bfg/beam_impact
+{
+	size	57
+
+	cutOffDistance	8192
+
+	emitter "glow1"
+	{
+		duration	1,1
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	1,1
+			material	"textures/particles/fbeam"
+			trailRepeat	1
+
+			start
+			{
+				size { line 30,30,35,35 }
+				tint { point 0,1,0 }
+			}
+			lineHit
+		}
+	}
+	emitter "glow2"
+	{
+		duration	0.5,0.5
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	0.5,0.5
+			material	"textures/particles/fbeam"
+			trailRepeat	1
+
+			start
+			{
+				size { line 35,35,40,40 }
+				tint { point 0,1,0 }
+			}
+			lineHit
+		}
+	}
+	emitter "corecloud"
+	{
+		duration	0.5,0.5
+		count		3,3
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/smokepuff"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -5,-5,-5,5,5,5 }
+				size { box 10,10,15,15 }
+				rotate { box 0,0.5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 10,10 }
+			}
+			lineHit
+		}
+	}
+	sound "arc"
+	{
+		soundShader	"sounds/weapons/bfg/arc"
+	}
+}
+
+effect effects/weapons/bfg/bfg_effect
+{
+	size	142
+
+	emitter "coreexpl1"
+	{
+		duration	0.6,0.6
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				size { point 20,20 }
+				tint { point 0,1,0 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope fastinslowout }
+				fade { envelope bfgblast1table }
+				rotate { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	emitter "coreexpl2"
+	{
+		start		0.3,0.3
+		duration	0.5,0.5
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom2"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				size { point 20,20 }
+				tint { point 0,1,0 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope fastinslowout }
+				fade { envelope bfgblast1table }
+				rotate { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	spawner "coreflame"
+	{
+		count		10,10
+		locked
+
+		sprite
+		{
+			duration	2,2
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom3"
+			trailRepeat	1
+
+			start
+			{
+				position { line -10,-10,-10,10,10,10 }
+				velocity { box -20,-20,-20,20,20,20 }
+				size { point 30,30 }
+				tint { point 0,0.501961,0 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 40,40 }
+			}
+			lineHit
+		}
+	}
+	spawner "innercoreglow"
+	{
+		count		10,10
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/smokepuff"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -5,-5,-5,5,5,5 }
+				velocity { box -20,-20,-20,20,20,20 }
+				size { box 15,15,25,25 }
+				fade { point 0.6 }
+				rotate { box 0,0.5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { box 40,40,50,50 }
+			}
+			lineHit
+		}
+	}
+	spawner "innerblast"
+	{
+		count		6,6
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			material	"textures/effects/weapons/boomboom4"
+			trailRepeat	1
+
+			start
+			{
+				size { point 20,20 }
+				fade { point 0.6 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				rotate { envelope flickerblink }
+			}
+
+			end
+			{
+				size { point 30,30 }
+				rotate { point 0.555556 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "heathaze"
+	{
+		count		5,5
+
+		sprite
+		{
+			duration	1.1,1.1
+			persist
+			material	"textures/effects/large_explosion_shockwave"
+			trailRepeat	1
+
+			start
+			{
+				size { point 20,20 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 100,100 }
+			}
+			lineHit
+		}
+	}
+	spawner "sparks"
+	{
+		detail		0.5
+		start		0.7,0.7
+		count		20,20
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	2,3
+			blend	add
+			persist
+			material	"textures/effects/energy_sparks/spark_blue"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -20,-20,-20,20,20,20 }
+				velocity { box 10,10,10,-10,-10,-10 }
+				acceleration { box -10,-10,-10,10,10,10 }
+				size { box 1,1,3,3 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				tint { envelope flare01 }
+				fade { envelope costable }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				tint { point 0,1,0 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/bfg/fire
+{
+	size	8
+
+	sound "Fire Sound"
+	{
+		soundShader	"sounds/weapons/bfg/fire"
+	}
+//	sound "Far Fire Sound"
+//	{
+//		soundShader	"sounds/weapons/sbc/fire/far"
+//	}
+}
+
+effect effects/weapons/bfg/fire_local
+{
+	size	8
+
+	sound "Fire Sound"
+	{
+		soundShader	"sounds/weapons/bfg/fire/local"
+	}
+}
+
+effect effects/weapons/bfg/charge
+{
+	size	8
+
+	sound "Fire Sound"
+	{
+		soundShader	"sounds/weapons/bfg/charge"
+	}
+//	sound "Far Fire Sound"
+//	{
+//		soundShader	"sounds/weapons/sbc/fire/far"
+//	}
+}
+
+effect effects/weapons/bfg/charge_local
+{
+	size	8
+
+	sound "Fire Sound"
+	{
+		soundShader	"sounds/weapons/bfg/charge/local"
+	}
+}effect effects/weapons/bfg/muzzle_charge
+{
+	size	126
+
+	emitter "trail"
+	{
+		start		1.5,1.5
+		duration	1,1
+		count		20,20
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/plasma1"
+			trailRepeat	1
+
+			start
+			{
+				position { line -8,-8,-8,8,8,8 }
+				size { point 5,5 }
+				tint { point 0.501961,1,0.501961 }
+				fade { point 0.6 }
+				offset { point -5,0,0 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope linear }
+				fade { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 80,80 }
+				tint { point 0,1,0 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "ball"
+	{
+		start		0.75,0.75
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	2.5,2.5
+			persist
+			material	"textures/effects/weapons/bfgballsac"
+			trailRepeat	1
+
+			start
+			{
+				fade { point 0.6 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+			}
+
+			end
+			{
+				size { point 60,60 }
+			}
+			lineHit
+		}
+	}
+	emitter "corecloud"
+	{
+		start		0.75,0.75
+		duration	2.2,2.2
+		count		6,6
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/smokepuff"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+				rotate { box 0,0.5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 16,16 }
+			}
+			lineHit
+		}
+	}
+	spawner "sparks"
+	{
+		detail		0.5
+		count		30,30
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	2,3
+			blend	add
+			persist
+			material	"textures/effects/energy_sparks/spark_blue"
+			generatedNormal
+			flipNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -60,-60,-60,60,60,60 surface }
+				velocity { box 20,0,0,25,0,0 }
+				size { point 5,5 }
+				fade { point 0 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope flare01 }
+				fade { envelope linear }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				size { point 3,3 }
+				tint { point 0,1,0 }
+				fade { point 1 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+	spawner "sparks2"
+	{
+		detail		0.5
+		start		1,1
+		count		30,30
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	1,1.25
+			blend	add
+			persist
+			material	"textures/effects/energy_sparks/spark_blue"
+			generatedNormal
+			flipNormal
+			trailRepeat	1
+			trailType	burn
+			trailTime	3,3
+			trailCount	30,30
+
+			start
+			{
+				position { sphere -60,-60,-60,60,60,60 surface }
+				velocity { box 50,0,0,60,0,0 }
+				size { point 5,5 }
+				fade { point 0 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope flare01 }
+				fade { envelope linear }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				size { point 3,3 }
+				tint { point 0,1,0 }
+				fade { point 1 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+	spawner "sparks3"
+	{
+		detail		0.5
+		start		0.5,0.5
+		count		30,30
+		locked
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	1.5,2.5
+			blend	add
+			persist
+			material	"textures/effects/energy_sparks/spark_blue"
+			generatedNormal
+			flipNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -80,-80,-80,80,80,80 surface }
+				velocity { box 20,0,0,25,0,0 }
+				size { point 5,5 }
+				fade { point 0 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope flare01 }
+				fade { envelope linear }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				size { point 3,3 }
+				tint { point 0,1,0 }
+				fade { point 1 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/bfg/muzzle_fire
+{
+	size	2075
+
+	spawner "sparks"
+	{
+		detail		0.5
+		count		200,200
+		attenuateEmitter
+		attenuation	1024,4096
+
+		sprite
+		{
+			duration	3,5
+			blend	add
+			persist
+			material	"textures/effects/energy_sparks/spark_blue"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -60,-60,-60,60,60,60 }
+				velocity { box 200,200,200,-200,-200,-200 }
+				acceleration { box -150,-150,-150,150,150,150 }
+				size { box 3,3,8,8 }
+				tint { point 0,1,0 }
+				offset { line -6,-6,-6,6,6,6 }
+				rotate { point 0.277778 }
+			}
+
+			motion
+			{
+				tint { envelope flare01 }
+				fade { envelope linear }
+				rotate { envelope acceleratorfade count 2 }
+			}
+
+			end
+			{
+				tint { point 0,0.501961,0 }
+				fade { point 0.1 }
+				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+	emitter "coreexpl1"
+	{
+		duration	0.6,0.6
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -20,-20,-20,20,20,20 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope fastinslowout }
+				fade { envelope bfgblast1table }
+				rotate { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	emitter "coreexpl2"
+	{
+		start		0.3,0.3
+		duration	0.5,0.5
+		count		5,5
+		locked
+
+		sprite
+		{
+			duration	0.8,0.8
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom2"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -20,-20,-20,20,20,20 }
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope fastinslowout }
+				fade { envelope bfgblast1table }
+				rotate { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	spawner "coreflame"
+	{
+		count		20,20
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/boomboom3"
+			trailRepeat	1
+
+			start
+			{
+				position { line -20,-20,-20,20,20,20 }
+				velocity { box -20,-20,-20,20,20,20 }
+				size { point 60,60 }
+				tint { point 0,0.501961,0 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				fade { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 80,80 }
+			}
+			lineHit
+		}
+	}
+	spawner "innerblast"
+	{
+		count		6,6
+		locked
+
+		sprite
+		{
+			duration	0.5,0.5
+			material	"textures/effects/weapons/boomboom4"
+			trailRepeat	1
+
+			start
+			{
+				size { point 40,40 }
+				fade { point 0.6 }
+				rotate { box -0.277778,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				rotate { envelope flickerblink }
+			}
+
+			end
+			{
+				size { point 80,80 }
+				rotate { point 0.555556 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "heathaze"
+	{
+		count		5,5
+
+		sprite
+		{
+			duration	1,1
+			persist
+			material	"textures/effects/large_explosion_shockwave"
+			trailRepeat	1
+
+			start
+			{
+				size { point 40,40 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 400,400 }
+			}
+			lineHit
+		}
+	}
+	emitter "trail"
+	{
+		duration	1,1
+		count		20,20
+
+		sprite
+		{
+			duration	2,2
+			blend	add
+			persist
+			material	"textures/effects/weapons/plasma1"
+			generatedNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -16,-16,-16,16,16,16 }
+				velocity { point 80,0,0 }
+				size { point 80,80 }
+				tint { point 0.501961,1,0.501961 }
+				fade { point 0.6 }
+				offset { point -5,0,0 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				tint { envelope linear }
+				fade { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "ball"
+	{
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	0.6,0.6
+			persist
+			material	"textures/effects/weapons/bfgballsac"
+			trailRepeat	1
+
+			start
+			{
+				size { point 60,60 }
+				fade { point 0.6 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+			}
+
+			end
+			{
+				size { point 75,75 }
+			}
+			lineHit
+		}
+	}
+}
+
+
+

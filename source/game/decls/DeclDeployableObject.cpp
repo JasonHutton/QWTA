@@ -72,6 +72,8 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 
 	waitTime		= temp.GetFloat( "wait_time", "10" );
 
+	creditRequired	= temp.GetFloat( "credit_required", "0.1" );
+
 	const char* entityType;
 
 	entityType	= temp.GetString( "def_deployable" );
@@ -132,6 +134,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	mask				= -1;
 	objectSize			= 0.f;
 	allowRotation		= true;
+	creditRequired		= 0.1f;
 }
 
 

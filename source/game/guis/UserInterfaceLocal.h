@@ -416,6 +416,7 @@ public:
 	void								Script_GetWeaponData( sdUIFunctionStack& stack );
 	void								Script_GetNumWeaponPackages( sdUIFunctionStack& stack );
 	void								Script_GetRoleCountForTeam( sdUIFunctionStack& stack );
+	void								Script_GetRoleLimitForTeam( sdUIFunctionStack& stack );
 	void								Script_GetEquivalentClass( sdUIFunctionStack& stack );
 	void								Script_GetStringMapValue( sdUIFunctionStack& stack );
 	void								Script_GetPersistentRankInfo( sdUIFunctionStack& stack );

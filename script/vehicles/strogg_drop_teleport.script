@@ -1,0 +1,104 @@
+#define STROGG_DROP_TELEPORT_TRANSITION_TIME	5
+
+object strogg_drop_teleport : strogg_drop {
+	void			Idle();
+}
+
+void strogg_drop_teleport::Idle() {
+	float height;
+	float flightTime;
+	float dropTime;
+	float endTime;
+	float soundTime;
+	vector currentPos;
+	float savedBouncyness;
+
+	// FeaRog: wait for the server to synchronise the launch info through to avoid weirdness
+	while( launchTime < 0 ) {
+		sys.waitFrame();
+	}
+
+	playEffect( "fx_trail", "", 1 );
+
+	if ( item != $null_entity ) {
+		savedBouncyness = item.getBouncyness();
+		item.setBouncyness( 0.6 );
+	}
+
+	//
+	// Part 1 parabolic reentry
+	//
+	flightTime = sys.getTime() - launchTime;
+	while ( flightTime < STROGG_DROP_PARABOLE_TIME ) {
+		sys.waitFrame();
+		flightTime = sys.getTime() - launchTime;
+
+		if ( STROGG_DROP_PARABOLE_TIME < flightTime ) {
+			break;
+		}
+
+		currentPos_x	= startPos_x;
+		currentPos_y	= startPos_y + (STROGG_DROP_PARABOLE_TIME - flightTime) * 1000;
+		currentPos_z	= startPos_z + sys.sqrt( (STROGG_DROP_PARABOLE_TIME - flightTime) * 1000 ) * 100;
+		setOrigin( currentPos );
+		item.setOrigin( currentPos );
+	}
+	playEffect( "fx_booster", "", false );
+
+	playEffect( "fx_teleport_start", "", false );
+	setOrigin( itemTargetPos );
+	playEffect( "fx_teleport_end", "", false );
+
+	//
+	// Part 2 just a linear fall
+	//
+	dropTime = sys.getTime() - launchTime;
+	while ( dropTime < STROGG_DROP_TELEPORT_TRANSITION_TIME ) {
+		sys.waitFrame();
+		dropTime = sys.getTime() - launchTime;
+
+		if( !ContinueDrop() ) {
+			// player switched teams before we've deployed
+			stopEffect( "fx_trail" );
+			stopEffect( "fx_booster" );
+			stopEffect( "fx_teleport_start" );
+
+			if ( !sys.isClient() ) {
+				player p = sys.getClient( deployPlayerIndex );
+				objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), p );
+			}
+
+			ClearRequest();
+
+			if( !sys.isClient() ) {
+				item.remove();
+				remove();
+			}
+
+			return;
+		}
+	}
+
+	item.setOrigin( itemTargetPos );
+
+	stopEffect( "fx_trail" );
+	stopEffect( "fx_booster" );
+	playEffect( "fx_hitground", "", false );
+	startSound( "snd_impact", SND_VEHICLE_IDLE );
+
+	ClearRequest();
+
+	if ( item != $null_entity ) {
+		sys.waitFrame();
+		item.setOrigin( itemTargetPos );
+		item.setAngles( getAngles() );
+		item.vOnDeploy();
+		item.setBouncyness( savedBouncyness );
+	}
+
+	sys.wait( 5.f );
+
+	if ( !sys.isClient() ) {
+		remove();
+	}
+}

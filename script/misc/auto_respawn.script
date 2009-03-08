@@ -31,7 +31,7 @@ object auto_respawn {
 	entity			vehicle;
 	float			waitTime;
 	float			delayTime;
-	
+
 	boolean			active;
 
 	float			vehicleType;
@@ -41,12 +41,12 @@ object auto_respawn {
 void auto_respawn::preinit() {
 	waitTime = gameRules.GetFloatKeyWithSuffix( self, "wait_time", 0 );
 	delayTime = getFloatKeyWithDefault( "delay_time", 0.5 );
-	
+
 	playerType	= sys.getTypeHandle( "idPlayer" );
 	vehicleType	= sys.getTypeHandle( "sdTransport" );
 
 	setGameTeam( sys.getTeam( getKey( "team" ) ) );
-	
+
 	updateThreadHandle = -1;
 	active = getIntKeyWithDefault( "start_active", false );
 
@@ -111,7 +111,7 @@ boolean auto_respawn::CheckSpawn() {
 		return false;
 	}
 
-	if ( g_disableVehicleSpawns.getBoolValue() ) {
+	if ( true ) { //g_disableVehicleSpawns.getBoolValue() ) {
 		return false;
 	}
 

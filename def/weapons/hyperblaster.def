@@ -165,7 +165,8 @@ invItemDef inventory/weapons/hyperblaster {
 		"fov_spread"					"0.5"
 
 		"trigger_delay"					"0"
-		"fire_rate"						"0.08"
+		//"fire_rate"						"0.08"
+		"fire_rate"						"0.16"
 		"num_projectiles"				"1"
 
 		"zoomFov"						"60"
@@ -221,10 +222,13 @@ invItemDef inventory/weapons/hyperblaster {
 		"spread_prone_max_settle_time"	"350"
 
 		"overheat_length"				"5"
-		"overheat_per_shot"				"0.17"
+		//"overheat_per_shot"				"0.17"
+		//"overheat_per_shot"				"0.45"
+		"overheat_per_shot"				"0.30"
 		"timer_heat"					"heat_hyperblaster"
 
-		"spin_fire"						"1080"
+		//"spin_fire"						"1080"
+		"spin_fire"						"500"
 		"spin_idle"						"20"
 		"spin_heat"						"5"
 
@@ -235,11 +239,17 @@ invItemDef inventory/weapons/hyperblaster {
 		"player_weapon_num"				"6"
 
 		"fx_idle"						"effects/weapons/hyperblaster_idle"
+		
+		"lock_distance"					"4096"
+		"lock_filter"					"hyperblaster_lock_filter"
+		
+		"snd_target_locking"			"sounds/weapons/misc/target_track_short"
+		"snd_target_locked"				"sounds/weapons/misc/target_lock"
 	}
 
 	clip {
 		"projectile"					"projectile_hyperblaster"
-		"client_projectile"				"projectile_bullet"
+		//"client_projectile"				"projectile_bullet"
 		"type"							"stroyent"
 		"ammo_per_shot"					"4"
 		"max_ammo"						"-1"
@@ -262,7 +272,8 @@ entityDef mountable_strogg_hyperblaster {
 	"fx_tracer"							"effects/base/tracers_strogg"
 	"effectchance fx_tracer"			"1"
 
-	"fire_rate"							"0.10"
+	//"fire_rate"							"0.10"
+	"fire_rate"							"0.16"
 	"spread"							"0.2"
 	"range"								"8192"
 	"muzzle"							"muzzle"
@@ -283,68 +294,6 @@ entityDef mountable_strogg_hyperblaster {
 
 	"fx_damaged"						"effects/generic_smoke"
 }
-
-entityDef projectile_hyperblaster {
-	"spawnclass"						"idProjectile"
-	"inherit"							"projectile_bullet_base_big"
-
-	"range"								"8192"
-	"min_damage_percent"				"10"
-
-	"tracer_chance"						"0"
-	"tracer_interval"					"1"
-	"fx_tracer"							"effects/weapons/hyperblaster_tracer"
-
-  	"fx_explode"				"effects/impacts/blaster_big/impact_default"
-	"fx_explode_pavement"		"effects/impacts/blaster_big/impact_pavement"
- 	"fx_explode_stone"			"effects/impacts/blaster_big/impact_stone"
-  	"fx_explode_concrete"		"effects/impacts/blaster_big/impact_stone"
-	"fx_explode_dirt"			"effects/impacts/blaster_big/impact_dirt"
-	"fx_explode_mud"			"effects/impacts/blaster_big/impact_dirt"
-	"fx_explode_flesh"			"effects/impacts/blaster_big/impact_flesh"
-	"fx_explode_glass"			"effects/impacts/blaster_big/impact_glass"
-	"fx_explode_ice"			"effects/impacts/blaster_big/impact_glass"
- 	"fx_explode_gravel"			"effects/impacts/blaster_big/impact_stone"
-	"fx_explode_metal"			"effects/impacts/blaster_big/impact_metal"
-	"fx_explode_metal_thick"	"effects/impacts/blaster_big/impact_metal"
-	"fx_explode_dusty_road"		"effects/impacts/blaster_big/impact_sand"
-	"fx_explode_sand"			"effects/impacts/blaster_big/impact_sand"
-	"fx_explode_snow"			"effects/impacts/blaster_big/impact_snow"
-	"fx_explode_wood"			"effects/impacts/blaster_big/impact_wood"
-	"fx_explode_wood_thick"		"effects/impacts/blaster_big/impact_wood"
- 	"fx_explode_liquid"			"effects/impacts/blaster_big/impact_liquid"
-  	"fx_explode_water"			"effects/impacts/blaster_big/impact_liquid"
-  	"fx_explode_water_interior"	"effects/impacts/blaster_big/impact_liquid"
-	"fx_explode_forcefield"		"effects/base/bullets/impact_forcefield"
-	"fx_explode_grass"			"effects/impacts/blaster_big/impact_grass"
- 	"fx_explode_plastic"		"effects/impacts/blaster_big/impact_plastic"
-
-	"dmg_damage"						"damage_hyperblaster"
-}
-
-entityDef projectile_hyperblaster_desecrator {
-	"inherit"							"projectile_hyperblaster"
-	"dmg_damage"						"damage_hyperblaster_desecrator"
-}
-
-entityDef projectile_hyperblaster_hog {
-	"inherit"							"projectile_hyperblaster"
-	"dmg_damage"						"damage_hyperblaster_hog"
-}
-
-entityDef projectile_hyperblaster_hornet {
-	"inherit"							"projectile_hyperblaster"
-	"dmg_damage"						"damage_hyperblaster_hornet"
-
-	"fx_explode"						"effects/minigun/strogg"
-	"fx_explode_grass"					"effects/minigun/strogg"
-	"fx_explode_plastic"				"effects/minigun/strogg"
-	"fx_explode_stone"					"effects/minigun/strogg"
-	"fx_explode_wood"					"effects/minigun/strogg"
-	"fx_explode_pavement"				"effects/minigun/strogg"
-	"fx_explode_sand" 					"effects/minigun/strogg"
-}
-
 
 damageDef damage_hyperblaster_hornet {
 	templates/vehicles/weapons/hyperblaster/damage( "hornet_weapons", "pro_vehicle_damage" )
@@ -368,17 +317,17 @@ damageFilter damage_hyperblaster {
 
 	type {
 		target							"target_player_all"
-		damage							19
+		damage							30
 	}
 
 	type {
 		target							"target_veh_all"
-		damage							25
+		damage							30
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							25
+		damage							30
 	}
 }
 

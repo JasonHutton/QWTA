@@ -7,9 +7,9 @@ object deployable_basedefence : deployable_turret {
 
 	entity		OnAcquireTarget();
 	entity		AcquireTarget_Type( string collection );
-	
+
 	float		GetActivateCode( entity p, float distance ) { return AK_NONE; };
-	
+
 	void		OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
 	float		OnUpdateCrosshairInfo( entity p );
 	void		OnBeginAttack();
@@ -19,7 +19,7 @@ object deployable_basedefence : deployable_turret {
 
 	boolean		vCheckActionCode( entity p, float actionCode ) { return false; }
 	void		vApplyEmpDamage( entity attacker, float time, float weaponTime ) {}
-	
+
 	void		SetDeployingFinished();
 
 	boolean		TraceCheck( entity other );
@@ -52,9 +52,9 @@ boolean deployable_basedefence::TargetIsValid( entity targetEnt ) {
 	if ( getEntityAllegiance( targetEnt ) != TA_ENEMY ) {
 		return false;
 	}
-	
+
 	player p = targetEnt;
-	if ( p != $null_entity ) {		
+	if ( p != $null_entity ) {
 		if ( p.getVehicle() != $null_entity ) {
 			return false;
 		}
@@ -62,7 +62,7 @@ boolean deployable_basedefence::TargetIsValid( entity targetEnt ) {
 		if ( p.isInvulnerable() ) {
 			return false;
 		}
-	} else {	
+	} else {
 		vehicle_base v = targetEnt;
 		if ( v != $null_entity ) {
 			if ( v.getNumOccupiedPositions() == 0 ) {
@@ -101,7 +101,7 @@ entity deployable_basedefence::OnAcquireTarget() {
 	if ( targetEnt != $null_entity ) {
 		return targetEnt;
 	}
-	
+
 	return AcquireTarget_Type( "basedefense_attack" );
 }
 
@@ -121,7 +121,7 @@ entity deployable_basedefence::AcquireTarget_Type( string collection ) {
 			return ent;
 		}
 	}
-	
+
 	return $null_entity;
 }
 
@@ -148,7 +148,7 @@ float deployable_basedefence::OnUpdateCrosshairInfo( entity p ) {
 	chSetLineColor( index, color, 1.f );
 	chSetLineType( index, CI_TEXT );
 	chSetLineSize( index, 0, 0 );
-	
+
 	if ( range <= 100 ) {
 		index = chAddLine();
 		chSetLineText( index, G_BuildRangeStr( range ) );
@@ -178,24 +178,30 @@ void deployable_basedefence::OnEndAttack() {
 	startSound( "snd_brass_stop", SND_DEPLOYABLE_BRASS );
 	startSound( "snd_fire_stop", SND_DEPLOYABLE_FIRE );
 	startSound( "snd_fire_far_stop", SND_DEPLOYABLE_FIRE_FAR );
-	
+
 	KillAttackThread();
 }
 
 void deployable_basedefence::OnSetTarget( entity oldTarget, entity newTarget ) {
-	if ( g_aptWarning.getIntValue() == 0 ) {
-		return;
-	}
+	//if ( g_aptWarning.getIntValue() == 0 ) {
+	//	return;
+	//}
+
+	player testPlayer = newTarget;
 
 	if ( lockEntity != newTarget ) {
 		if ( lockEntity != $null_entity ) {
-			lockEntity.vStopTargetLockAlarm( self );
+			if( testPlayer == $null_entity ) { // Indirect vehicle check.
+				lockEntity.vStopTargetLockAlarm( self );
+			}
 			lockEntity = $null_entity;
 		}
 
 		if ( newTarget != $null_entity ) {
 			lockEntity = newTarget;
-			lockEntity.vTargetLockAlarm( self );
+			if( testPlayer == $null_entity ) { // Indirect vehicle check.
+				lockEntity.vTargetLockAlarm( self );
+			}
 		}
 	}
 }

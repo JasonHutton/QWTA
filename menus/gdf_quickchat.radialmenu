@@ -16,7 +16,7 @@ radialMenuDef gdf/quickchat/context {
 	_chat_item_icon( "gdf", "global/sorry", 			"S", "", "drawSorry" )	
 	_chat_item_script_icon( "gdf", "context/health", 	"H", "", "ContextUpdateHealth", "", "drawHealth" )	
 	_chat_item_script_icon( "gdf", "context/support", 	"A", "", "ContextUpdateSupport", "", "drawAmmo" )
-	_chat_item_script_icon( "gdf", "context/vehicle", 	"V", "", "ContextUpdateVehicle", "vehicle_husky", "drawVehicle" )
+	_chat_item_script_icon( "gdf", "context/vehicle", 	"V", "", "ContextUpdateVehicle", "deployobject_husky", "drawVehicle" )
 	
 }
 	
@@ -42,6 +42,7 @@ radialMenuDef gdf_quickchat {
 	page "gdf/quickchat/self/repairing"					// 18
 	page "gdf/quickchat/self/repaired"					// 19
 	page "gdf/quickchat/fireteam"						// 20
+	page "gdf/quickchat/vehicles/vehicledrops"				// 21
 }
 
 radialMenuDef gdf/quickchat/radio {
@@ -164,7 +165,8 @@ radialMenuDef gdf/quickchat/need/team {
 radialMenuDef gdf/quickchat/vehicles {
 	title "gdf/quickchat/vehicles"
 
-	_chat_item( "gdf", "vehicles/needvehicle", 			"N" )
+	_chat_page( "gdf/quickchat/vehicles/vehicledrops",		"21", 	"N" )
+	//_chat_item( "gdf", "vehicles/needvehicle", 			"N" )
 	_chat_item( "gdf", "vehicles/needgunner", 			"G" )
 	_chat_item( "gdf", "vehicles/needdriver", 			"D" )
 	_chat_item( "gdf", "vehicles/needpilot", 			"P" )
@@ -173,6 +175,19 @@ radialMenuDef gdf/quickchat/vehicles {
 	_chat_item( "gdf", "vehicles/vehicleready", 		"V" )
 	_chat_item( "gdf", "vehicles/holdvehicle", 			"H" )
 	_chat_item( "gdf", "vehicles/bailout", 				"B" )
+}
+
+radialMenuDef gdf/quickchat/vehicles/vehicledrops {
+	title "gdf/quickchat/vehicles/vehicledrops"
+	
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_husky",	"H",	"ContextCheckVehicleDrop", "deployobject_husky quickchat/vehicles/vehicledrops/nv_husky" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_armadillo",	"D",	"ContextCheckVehicleDrop", "deployobject_badger quickchat/vehicles/vehicledrops/nv_armadillo" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_trojan",	"J",	"ContextCheckVehicleDrop", "deployobject_trojan quickchat/vehicles/vehicledrops/nv_trojan" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_titan",	"T",	"ContextCheckVehicleDrop", "deployobject_titan quickchat/vehicles/vehicledrops/nv_titan" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_jupiter",	"U",	"ContextCheckVehicleDrop", "deployobject_jupiter quickchat/vehicles/vehicledrops/nv_jupiter" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_anansi",	"A",	"ContextCheckVehicleDrop", "deployobject_anansi quickchat/vehicles/vehicledrops/nv_anansi" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_bumblebee",	"B",	"ContextCheckVehicleDrop", "deployobject_bumblebee quickchat/vehicles/vehicledrops/nv_bumblebee" )
+	_chat_item_script( "gdf", "vehicles/vehicledrops/nv_platypus",	"P",	"ContextCheckVehicleDrop", "deployobject_platypus quickchat/vehicles/vehicledrops/nv_platypus" )
 }
 
 radialMenuDef gdf/quickchat/enemy {

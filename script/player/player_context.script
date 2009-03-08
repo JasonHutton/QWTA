@@ -22,6 +22,7 @@ object player {
 	string	ContextUpdateMCP( string parm );
 	string	ContextCheckAbility( string parm );
 	string	ContextCheckDisguised( string parm );
+	string	ContextCheckVehicleDrop( string parm );
 
 	// context sensitive order system - target based
 	string	ContextUpdateOrder( string parm );
@@ -56,7 +57,7 @@ object player {
 	void	RequestMedic();
 	void	RequestAmmo();
 	void	RequestPickup();
-	
+
 
 	void	ContextStroyentDropped();
 	void	ContextHealthDropped();
@@ -75,7 +76,7 @@ object player {
 ===============================================================================
 
  Helper functions so that you don't have to mash up the strings yourself
- 
+
 ===============================================================================
 */
 string	MakeItemString( player p, string title, string material, string command, string commandData, boolean enabled, entity target ) {
@@ -85,18 +86,18 @@ string	MakeItemString( player p, string title, string material, string command, 
 	if( enabled ) {
 		enabledString = "1";
 	}
-	
+
 	if ( target != $null_entity ) {
 		id = target.getSpawnID();
 	} else {
 		id = "Invalid";
 	}
-	
+
 	team_base team = p.getGameTeam();
-	if( team != $null_entity ) {	
-		newTitle = team.getName() + "/" + newTitle;		
+	if( team != $null_entity ) {
+		newTitle = team.getName() + "/" + newTitle;
 	}
-	
+
 	return newTitle + "|" + material + "|" + command + "|" + commandData + "|" + enabledString + "|" + id;
 }
 string	MakeChatString( player p, string title, string material, string chat ) {
@@ -117,7 +118,7 @@ string	MakePageString( player p, string title, string material, string page ) {
 ===============================================================================
 
  The actual updaters
- 
+
 ===============================================================================
 */
 
@@ -141,12 +142,12 @@ string player::ContextUpdateOrder( string parm ) {
 		if ( getEntityAllegiance( xhEnt ) != TA_FRIEND ) {
 			friendly = false;
 		}
-		
+
 		boolean needsHealth = false;
 		if ( xhEnt.getHealth() < xhEnt.getMaxHealth() ) {
 			needsHealth = true;
 		}
-		
+
 		//
 		// cast the entity down to figure out what it is, then act accordingly
 		//
@@ -154,7 +155,7 @@ string player::ContextUpdateOrder( string parm ) {
 		if ( xhPlayer != $null_entity ) {
 			return ContextUpdateOrder_Player( xhPlayer, friendly, needsHealth );
 		}
-		
+
 		vehicle_base xhVehicle = xhEnt;
 		if ( xhVehicle != $null_entity ) {
 			return ContextUpdateOrder_Vehicle( xhVehicle, friendly, needsHealth );
@@ -185,11 +186,11 @@ string player::ContextUpdateOrder( string parm ) {
 				return MakeContextString( self, "quickchat/objectives/defend", "", "quickchat/context/defend", xhEnt );
 			}
 		}
-		
+
 		destructible_objective xhDestructible = xhEnt;
 		if ( xhDestructible != $null_entity ) {
 			if ( xhDestructible.HasDestroyContext( self ) ) {
-				return MakeContextString( self, "quickchat/objectives/destroy", "", "quickchat/context/destroy", xhEnt );				
+				return MakeContextString( self, "quickchat/objectives/destroy", "", "quickchat/context/destroy", xhEnt );
 			} else if ( friendly ) {
 				return MakeContextString( self, "quickchat/objectives/defend", "", "quickchat/context/defend", xhEnt );
 			}
@@ -198,7 +199,7 @@ string player::ContextUpdateOrder( string parm ) {
 		constructible_objective xhConstructible = xhEnt;
 		if ( xhConstructible != $null_entity ) {
 			if ( friendly ) {
-				return MakeContextString( self, "quickchat/objectives/construct", "", "quickchat/context/construct", xhEnt );				
+				return MakeContextString( self, "quickchat/objectives/construct", "", "quickchat/context/construct", xhEnt );
 			} else {
 				return MakeContextString( self, "quickchat/objectives/defend", "", "quickchat/context/defend", xhEnt );
 			}
@@ -207,7 +208,7 @@ string player::ContextUpdateOrder( string parm ) {
 		projectile_armable xhArmable = xhEnt;
 		if ( xhArmable != $null_entity ) {
 			if ( xhArmable.HasDisarmContext( self ) ) {
-				return MakeContextString( self, "quickchat/objectives/disarmexplosives", "", "quickchat/context/disarmexplosives", xhEnt );				
+				return MakeContextString( self, "quickchat/objectives/disarmexplosives", "", "quickchat/context/disarmexplosives", xhEnt );
 			}
 		}
 
@@ -251,14 +252,14 @@ string player::ContextUpdateOrder_Player( player other, boolean friendly, boolea
 			if ( other.needsRevive() ) {
 				return MakeInvalidString( self, "quickchat/context/order" );
 			}
-			
-			
+
+
 			if ( other.getHealth() > 0 ) {
 				if ( other.isBot() ) {
 					return MakeContextString( self, "quickchat/context/followme", "", "quickchat/context/followme", other );
 				}
 			}
-			
+
 
 			/*
 			if ( IsGDF() ) {
@@ -267,7 +268,7 @@ string player::ContextUpdateOrder_Player( player other, boolean friendly, boolea
 				}
 
 				if ( other.getAmmoFraction() < 1.0f ) {
-					return MakeContextString( self, "quickchat/context/ammo", "", "quickchat/context/ammo_other", other );			
+					return MakeContextString( self, "quickchat/context/ammo", "", "quickchat/context/ammo_other", other );
 				}
 			} else {
 				if ( needsHealth || other.getAmmoFraction() < 1.0f ) {
@@ -277,7 +278,7 @@ string player::ContextUpdateOrder_Player( player other, boolean friendly, boolea
 			*/
 		}
 	}
-	
+
 	return MakeInvalidString( self, "quickchat/context/order" );
 }
 
@@ -307,11 +308,11 @@ string player::ContextUpdateOrder_Vehicle( vehicle_base other, boolean friendly,
 	} else {
 		if ( mcpOther != $null_entity ) {
 			if ( needsHealth ) {
-				return MakeContextString( self, "quickchat/objectives/repairmcp", "", "quickchat/context/repairmcp", mcpOther );			
+				return MakeContextString( self, "quickchat/objectives/repairmcp", "", "quickchat/context/repairmcp", mcpOther );
 			}
-			
+
 			if ( !mcpOther.isDeployed ) {
-				return MakeContextString( self, "quickchat/objectives/escortmcp", "", "quickchat/context/escortmcp", mcpOther );			
+				return MakeContextString( self, "quickchat/objectives/escortmcp", "", "quickchat/context/escortmcp", mcpOther );
 			}
 		}
 
@@ -323,7 +324,7 @@ string player::ContextUpdateOrder_Vehicle( vehicle_base other, boolean friendly,
 			}
 		}
 	}
-	
+
 	return MakeInvalidString( self, "quickchat/context/order" );
 }
 
@@ -345,11 +346,11 @@ string player::ContextUpdateOrder_Deployable( deployable_base other, boolean fri
 		if( qcString != "" ) {
 			return MakeContextString( self, "quickchat/context/attacktarget", "", qcString, other );
 		} else {
-			return MakeContextString( self, "quickchat/context/attacktarget", "", "quickchat/context/attack/deployable", other );		
+			return MakeContextString( self, "quickchat/context/attacktarget", "", "quickchat/context/attack/deployable", other );
 		}
 	} else {
 		if ( needsHealth ) {
-			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/deployable_other", other );			
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/deployable_other", other );
 		}
 	}
 
@@ -366,7 +367,7 @@ string player::ContextUpdateClass( string parm ) {
 	if ( chat == "spec" || getHealth() <= 0 ) {
 		return MakeInvalidString( self, "quickchat/self/imspec" );
 	}
-	
+
 	chat = "quickchat/self/im" + getClassName();
 	return MakeChatString( self, chat, "", chat );
 }
@@ -389,18 +390,11 @@ string player::ContextUpdateVehicle( string parm ) {
 	}
 
 	if ( proxy == $null_entity ) {
-		// not in vehicle	
+		// not in vehicle
 		if ( sys.getTime() >= nextRequestVehicleUpdate ) {
 			nextRequestVehicleUpdate = sys.getTime() + 1;
 
-			string objectName;
-			if ( parm == "vehicle_husky" ) {
-				objectName = "deployobject_husky";
-			} else if ( parm == "vehicle_icarus" ) {
-				objectName = "deployobject_icarus";
-			}
-
-			if ( CheckCanRequestVehicle( objectName ) ) {
+			if ( CheckCanRequestVehicle( parm ) ) {
 				canRequestVehicle = true;
 			} else {
 				canRequestVehicle = false;
@@ -542,11 +536,11 @@ string player::ContextUpdateSupport( string parm ) {
 */
 string player::ContextUpdateRepair( string parm ) {
 	entity proxy = getProxyEntity();
-	
+
 	if ( getHealth() <= 0 ) {
 		return MakeInvalidString( self, "quickchat/context/repair" );
 	}
-	
+
 	// don't show redundant info if you're looking at something
 	entity xhEnt = getCrosshairEntity();
 	if( xhEnt != $null_entity ) {
@@ -565,8 +559,8 @@ string player::ContextUpdateRepair( string parm ) {
 		}
 	}
 /*
-	these are made redundant by the "default" context item	
-	
+	these are made redundant by the "default" context item
+
 	deployable_base item = xhEnt;
 
 	if ( item != $null_entity ) {
@@ -576,9 +570,9 @@ string player::ContextUpdateRepair( string parm ) {
 	} else {
 		if ( xhEnt.getHealth() < xhEnt.getMaxHealth() ) {
 			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/vehicle_other", xhEnt );
-		}	
+		}
 	}
-*/	
+*/
 	return MakeInvalidString( self, "quickchat/context/repair" );
 }
 
@@ -680,10 +674,48 @@ string player::ContextCheckDisguised( string parm ) {
 }
 
 /*
+=====================================================================
+ ContextCheckVehicleDrop
+=====================================================================
+*/
+string player::ContextCheckVehicleDrop( string parm ) {
+	sys.setActionCommand( parm );
+
+	boolean page;
+	float abilityIndex = 0;
+	float chatIndex = 1;
+	if ( sys.argc() == 3 ) {
+		page = true;
+		abilityIndex = 1;
+		chatIndex = 2;
+	}
+
+	if ( sys.getTime() >= nextRequestVehicleUpdate ) {
+		//nextRequestVehicleUpdate = sys.getTime() + 1;
+
+		if ( CheckCanRequestVehicle( sys.argv( abilityIndex ) ) ) {
+			canRequestVehicle = true;
+		} else {
+			canRequestVehicle = false;
+		}
+	}
+
+	if ( canRequestVehicle ) {
+		if ( page ) {
+			return MakePageString( self, sys.argv( chatIndex ), "", sys.argv( 0 ) );
+		} else {
+			return MakeChatString( self, sys.argv( chatIndex ), "", sys.argv( chatIndex ) );
+		}
+	}
+
+	return MakeInvalidString( self, sys.argv( chatIndex ) );
+}
+
+/*
 ===============================================================================
 
  Callbacks and waypoint scripts for contextual actions
- 
+
 ===============================================================================
 */
 
@@ -710,7 +742,7 @@ void player::ContextConstruct( entity target ) {
 
 	if ( !sys.isClient() ) {
 		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
-	}	
+	}
 }
 
 void player::ContextDefend( entity target ) {
@@ -727,7 +759,7 @@ void player::ContextDestroy( entity target ) {
 		} else {
 			self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command for this target
 		}
-	}	
+	}
 }
 
 void player::ContextDisarm( entity target ) {
@@ -735,7 +767,7 @@ void player::ContextDisarm( entity target ) {
 
 	if ( !sys.isClient() ) {
 		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
-	}	
+	}
 }
 
 void player::ContextHack( entity target ) {
@@ -743,7 +775,7 @@ void player::ContextHack( entity target ) {
 
 	if ( !sys.isClient() ) {
 		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
-	}	
+	}
 }
 
 void player::ContextKill( entity target ) {
@@ -817,7 +849,7 @@ void player::ContextAmmo( entity target ) {
 void player::RequestPickup() {
 	AllocPickupTask();
 	FlashCMIcon( self, TA_FRIEND, -1 );
-	
+
 	if ( !sys.isClient() ) { //mal: let the bots see the pickup request.
 		self.setPlayerPickupRequestTime( $null_entity );
 	}

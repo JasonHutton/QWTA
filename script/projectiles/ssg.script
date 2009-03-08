@@ -1,0 +1,101 @@
+/***********************************************************************
+
+projectile_ssg.script
+
+***********************************************************************/
+
+#define DMG_GRAVITY_ACTIVATION_DELAY 5.0f
+
+object projectile_ssg : projectile_ssm {
+	void		DoExplodeEffect_ssg( entity collisionEnt );
+	void		DoExplodeEffect( entity collisionEnt ) {
+		DoExplodeEffect_ssg( collisionEnt );
+	}
+	void		DoRadiusPush();
+	void		DoRadiusPull();
+	void		DoProxBurn();
+
+	void		Idle();
+
+	void			preinit();
+
+	void			OnPostThink();
+
+	float			splashDamagePushIndex;
+	float			splashDamagePullIndex;
+	float			splashDamageProxBurnIndex;
+
+	boolean			gravitySucks;
+	boolean			completelyDone;
+	float			launchTime;
+}
+
+void projectile_ssg::preinit() {
+	gravitySucks = false;
+	completelyDone = false;
+	launchTime = -1;
+
+	splashDamagePushIndex	= GetDamage( getKey( "dmg_splash_damage_push" ) );
+	splashDamagePullIndex	= GetDamage( getKey( "dmg_splash_damage_pull" ) );
+	splashDamageProxBurnIndex	= GetDamage( getKey( "dmg_splash_damage_prox_burn" ) );
+}
+
+void projectile_ssg::Idle() {
+	startSound( "snd_launch", SND_ANY );
+	playEffect( "fx_trail", "", 1 );
+
+	launchTime			= sys.getTime();
+}
+
+void projectile_ssg::OnPostThink() {
+	if( gravitySucks ) {
+		DoRadiusPull();
+		DoProxBurn();
+	}
+	else if( !completelyDone ) {
+		if( ( sys.getTime() - launchTime ) > DMG_GRAVITY_ACTIVATION_DELAY ) {
+			gravitySucks = true;
+		}
+	}
+}
+
+void projectile_ssg::DoExplodeEffect_ssg( entity collisionEnt ) {
+	float removeDelay;
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+
+	gravitySucks = false;
+	completelyDone = true;
+
+	DoRadiusPush();
+	DoRadiusDamage();
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+	ScheduleRemoval( removeDelay );
+}
+
+void projectile_ssg::DoRadiusPush() {
+	float damageIndex = splashDamagePushIndex;
+	//if ( state == MS_AIRBURST ) {
+	//	damageIndex = airBurstDamageIndex;
+	//}
+
+	if ( damageIndex != -1 ) {
+		sys.applyRadiusPush( getWorldOrigin(), self, getOwner(), $null_entity, self, damageIndex, GetDamagePower(), 1.f );
+	}
+}
+
+void projectile_ssg::DoRadiusPull() {
+	float damageIndex = splashDamagePullIndex;
+	//if ( state == MS_AIRBURST ) {
+	//	damageIndex = airBurstDamageIndex;
+	//}
+
+	if ( damageIndex != -1 ) {
+		sys.applyRadiusPull( getWorldOrigin(), self, getOwner(), $null_entity, self, damageIndex, GetDamagePower(), 1.f );
+	}
+}
+
+void projectile_ssg::DoProxBurn() {
+	sys.applyRadiusDamage( getWorldOrigin(), self, getOwner(), radiusDamageIgnoreEntity, self, splashDamageProxBurnIndex, GetDamagePower(), 1.f );
+
+}

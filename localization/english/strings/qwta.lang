@@ -1,0 +1,41 @@
+
+// English language
+
+// comments are enclosed with [] and are ignored during localization
+// for example "%1[victim] was perforated by %2[attacker]
+// nested comments [like[this]] are NOT supported
+{
+	// qwta strings
+	// Obituaries
+	"#str_00011337" "^1&lbrHyperblaster&rbr ^0%a"
+	"#str_00011338" "%b^0 &lbrBFG10k&rbr %a"
+	"#str_00011339" "^1&lbrBFG10k&rbr ^0%a"
+	"#str_00011340" "%b^1 &lbrBFG10k&rbr ^0%a"
+	
+	// Chat
+	"#str_0200287" "Request Armadillo"
+	"#str_0200288" "Request Trojan"
+	"#str_0200289" "Request Titan"
+	"#str_0200290" "Request Anansi"
+	"#str_0200291" "Request Bumblebee"
+	"#str_0200293" "Request Platypus"
+	"#str_0200294" "Request Jupiter"
+	"#str_0201289" "Request Hog"
+	"#str_0201290" "Request Desecrator"
+	"#str_0201291" "Request Cyclops"
+	"#str_0201292" "Request Tormentor"
+	
+	// Quickchat menus
+	"#str_0200292" "Vehicle Drops"
+	"#str_0201293" "Vehicle Drops"
+	
+	// Gamecode
+	"#str_00016302"	"That class has too many players already"
+	"#str_00016303" "Jupiter"
+	"#str_00016304" "BFG10k"
+	
+	// GUIs
+	"#str_00015058" "Jupiter Driver"
+	"#str_00015059" "Jupiter Gunner"
+	"#str_00015060" "Jupiter Passenger"
+}

@@ -515,6 +515,10 @@ const idEventDef EV_Player_SetCarryingObjective( "setCarryingObjective", '\0', D
 const idEventDef EV_Player_AddDamageEvent( "addDamageEvent", '\0', DOC_TEXT( "Add a damage event for the player." ), 4, NULL, "d", "time", "Time for event.", "f", "dir", "Direction for the damage event.", "f", "damage", "Amount of damage done.", "b", "update", "Continually update direction." );
 const idEventDef EV_Player_IsInLimbo( "isInLimbo", 'b', DOC_TEXT( "Returns whether the player is currently in the limbo waiting to respawn." ), 0, NULL );
 
+const idEventDef EV_GetVehicleCredit( "getVehicleCredit", 'f', DOC_TEXT( "Returns the vehicle credit accrued for this player." ), 0, NULL );
+const idEventDef EV_UseVehicleCredit( "useVehicleCredit", '\0', DOC_TEXT( "Uses this amount of vehicle credit." ), 1, NULL, "f", "amount", "Amount of credit to use." );
+
+
 CLASS_DECLARATION( idActor, idPlayer )
 	EVENT( EV_Player_GetButton,				idPlayer::Event_GetButton )
 	EVENT( EV_Player_GetMove,				idPlayer::Event_GetMove )
@@ -676,6 +680,8 @@ CLASS_DECLARATION( idActor, idPlayer )
 	EVENT( EV_Player_SetCarryingObjective,		idPlayer::Event_SetCarryingObjective )
 	EVENT( EV_Player_AddDamageEvent,			idPlayer::Event_AddDamageEvent )
 	EVENT( EV_Player_IsInLimbo,					idPlayer::Event_IsInLimbo )
+	EVENT( EV_GetVehicleCredit,					idPlayer::Event_GetVehicleCredit )
+	EVENT( EV_UseVehicleCredit,					idPlayer::Event_UseVehicleCredit )
 
 END_CLASS
 
@@ -3844,11 +3850,19 @@ void idPlayer::Event_Unheal( int count ) {
 idPlayer::CanGetClass
 ===============
 */
-bool idPlayer::CanGetClass( const sdDeclPlayerClass* pc ) {
+bool idPlayer::CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked ) {
 	idCVar* limitCVar = pc->GetLimitCVar();
+	int count = gameLocal.ClassCount( pc, this, GetGameTeam());
+
 	if ( limitCVar ) {
-		int count = gameLocal.ClassCount( pc, this, GetGameTeam() );
 		if ( count >= limitCVar->GetInteger() ) {
+			return false;
+		}
+	}
+
+	if(!unchecked) {
+		int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), GDF);
+		if(limit >= 0 && count >= limit) {
 			return false;
 		}
 	}
@@ -3890,12 +3904,12 @@ bool idPlayer::GiveClass( const char* classname ) {
 idPlayer::ChangeClass
 ===============
 */
-void idPlayer::ChangeClass( const sdDeclPlayerClass* pc, int classOption ) {
+void idPlayer::ChangeClass( const sdDeclPlayerClass* pc, int classOption, const bool unchecked ) {
 	if ( IsSpectator() ) {
 		return;
 	}
 
-	if ( !CanGetClass( pc ) ) {
+	if ( !CanGetClass( pc, unchecked ) ) {
 		return;
 	}
 
@@ -4830,7 +4844,11 @@ idPlayer* idPlayer::GetNextSpectateClient( bool reverse ) const {
 			if ( !reverse ) {
 				temp = ( temp + 1 ) % MAX_CLIENTS;
 			} else {
-				temp = ( temp - 1 ) % MAX_CLIENTS;
+				//temp = ( temp - 1 ) % MAX_CLIENTS; // I'm sure this is all very elegant, but it crashes. :P -- Azuvector
+				--temp;
+				if ( temp < 0 ) {
+					temp = MAX_CLIENTS - 1;
+				}
 			}
 
 			idPlayer* player = gameLocal.GetClient( temp );
@@ -5089,14 +5107,18 @@ void idPlayer::UpdateSpectating( const usercmd_t& oldCmd ) {
 
 		if ( !player || ( player->IsSpectating() && player != this ) ) {
 			SpectateCycle( true );
-		} else if ( usercmd.buttons.btn.altAttack && !oldCmd.buttons.btn.altAttack ) {
+		} else if ( player != this && usercmd.upmove == 127 && oldCmd.upmove != 127 ) {
 			SpectateFreeFly( false );
+		} else if ( usercmd.buttons.btn.altAttack && !oldCmd.buttons.btn.altAttack ) {
+			SpectateCycle( false, true );
 		} else if ( usercmd.buttons.btn.attack && !oldCmd.buttons.btn.attack ) {
 			SpectateCycle( false );
 		}
 	} else {
 		if ( !player || ( player->IsSpectating() && player != this ) || ( GetEntityAllegiance( player ) != TA_FRIEND ) ) {
 			SpectateCycle( true );
+		} else if ( usercmd.buttons.btn.altAttack && !oldCmd.buttons.btn.altAttack ) {
+			SpectateCycle( false, true );
 		} else if ( usercmd.buttons.btn.attack && !oldCmd.buttons.btn.attack ) {
 			SpectateCycle( false );
 		}
@@ -8009,7 +8031,35 @@ void idPlayer::ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOr
 	// scale by the push scale of the entity
 	idVec3 impulse = entityOrigin - pushOrigin;
 	float dist = impulse.Normalize();
-	if ( dist > radius ) {
+ 	if ( dist > radius ) {
+		return;
+	}
+
+	float distScale = Square( 1.0f - dist / radius );
+	float scale = distScale * pushScale * g_knockback.GetFloat();
+	if ( damageDecl != NULL ) {
+		scale *= damageDecl->GetKnockback();
+	}
+	if ( idMath::Fabs( scale ) < idMath::FLT_EPSILON ) {
+		return;
+	}
+	impulse *= scale;
+
+	physicsObj.SetLinearVelocity( physicsObj.GetLinearVelocity() + impulse );
+	physicsObj.SetKnockBack( 100 );
+}
+
+/*
+============
+idPlayer::ApplyRadiusPull
+============
+*/
+void idPlayer::ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius ) {
+	// scale the push for the inflictor
+	// scale by the push scale of the entity
+	idVec3 impulse = pushOrigin - entityOrigin;//entityOrigin - pushOrigin;
+	float dist = impulse.Normalize();
+ 	if ( dist > radius ) {
 		return;
 	}
 
@@ -12473,6 +12523,39 @@ void idPlayer::OnSetClientSpectatee( idPlayer* spectatee ) {
 
 /*
 ============
+idPlayer::GetVehicleCredit
+============
+*/
+float idPlayer::GetVehicleCredit( void ) {
+	clientInfo_t &clientInfo = botThreadData.GetGameWorldState()->clientInfo[ entityNumber ];
+
+	float vcChargeUsed = MS2SEC(gameLocal.GetTargetTimerValue( clientInfo.scriptHandler.vehicleCreditTimer, this ) - gameLocal.time);
+
+	if ( vcChargeUsed < 0.f ) {
+		return 1.0f;
+	}
+	else {
+		return 1.0f - (vcChargeUsed / (float)botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime);
+	}
+}
+
+/*
+============
+idPlayer::UseVehicleCredit
+============
+*/
+void idPlayer::UseVehicleCredit( float amount ) {
+	clientInfo_t &clientInfo = botThreadData.GetGameWorldState()->clientInfo[ entityNumber ];
+	float newFrac = GetVehicleCredit() - amount;
+	if( newFrac < 0.f ) {
+		newFrac = 0.f;
+	}
+
+	gameLocal.SetTargetTimer( clientInfo.scriptHandler.vehicleCreditTimer, this, SEC2MS(MS2SEC(gameLocal.time) + ( ( 1.0f - newFrac ) * botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime ) ) );
+}
+
+/*
+============
 idPlayer::SetUserGroup
 ============
 */
@@ -14303,6 +14386,19 @@ void idPlayer::UpdatePlayerInformation( void ) {
 	}
 	clientInfo.bombChargeUsed = chargeTime;
 
+// get the vehicle credit charge bar
+	UseVehicleCredit(0.0f); // This is ugly, but... -- Azuvector
+	/*
+	float vcChargeUsed = MS2SEC(gameLocal.GetTargetTimerValue( clientInfo.scriptHandler.vehicleCreditTimer, this ) - gameLocal.time);
+	int vcTime = botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditTime;
+
+	if ( vcChargeUsed < 0.0f ) {
+		clientInfo.vehicleCreditUsed = 1.0f;
+	}
+	else {
+		clientInfo.vehicleCreditUsed = 1.0f - (vcChargeUsed / (float)vcTime);
+	}*/
+
 //mal: get the firesupport charge bar
 	chargeTime = gameLocal.GetTargetTimerValue( clientInfo.scriptHandler.fireSupportTimer, this );
 	chargeTime -= gameLocal.time;
@@ -15205,6 +15301,24 @@ idPlayer::Event_IsInLimbo
 */
 void idPlayer::Event_IsInLimbo( void ) {
 	sdProgram::ReturnBoolean( IsInLimbo() );
+}
+
+/*
+================
+idPlayer::Event_GetVehicleCredit
+================
+*/
+void idPlayer::Event_GetVehicleCredit( void ) {
+	sdProgram::ReturnFloat( GetVehicleCredit() );
+}
+
+/*
+================
+idPlayer::Event_UseVehicleCredit
+================
+*/
+void idPlayer::Event_UseVehicleCredit( float amount ) {
+	UseVehicleCredit(amount);
 }
 
 /*

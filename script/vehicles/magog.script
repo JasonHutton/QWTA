@@ -25,7 +25,7 @@ object vehicle_magog_npc {
 	void			SetupCommandMap();
 	boolean			PerformDrop();
 	void			UpdateEffects( vector pos );
-	
+
 	// virtuals
 	boolean			vIgnoreMagogCollsion();
 
@@ -34,9 +34,9 @@ object vehicle_magog_npc {
 	void			KillAllInBoundingBox();
 	void			RopeThread();
 //	void			CheckDeployable();
-	
+
 	vector			GetItemAttachPoint();
-	
+
 	// deployment stuff
 	float			deployIndex;
 	float			deployPlayerIndex;
@@ -49,7 +49,7 @@ object vehicle_magog_npc {
 	vector			gdfCorner;
 	vector			matchPosition;
 
-	// local data	
+	// local data
 	float			maxHealth;
 	float			commandMapHandle;
 
@@ -67,27 +67,27 @@ object vehicle_magog_npc {
 	float			ropeJoint;
 	float			hatchJoint;
 	float			itemAttachJoint;
-	
+
 	// physics
 	float			maxZAccel;
 	float			maxZVel;
-	
+
 	boolean			cancelDrop;
 	boolean			dropped;
-	
+
 	vector			renderMins;
 	vector			renderMaxs;
 
-	// rotor ground fx	
+	// rotor ground fx
 	boolean			groundEffects;
 	float			groundEffectsThreshhold;
 	float			lastGroundEffectsTime;
 
 	entity			vGetItem() {
 		return item;
-	}		
-	
-	
+	}
+
+
 	void			CacheItemInfoThread();
 	vector			cachedItemOrigin;
 	vector			cachedItemAngles;
@@ -126,7 +126,7 @@ void vehicle_magog_npc::syncFields() {
 
 void vehicle_magog_npc::OnItemChanged() {
 	SetupCrate();
-	
+
 	if ( sys.isClient() ) {
 		thread CacheItemInfoThread();
 	}
@@ -151,7 +151,7 @@ void vehicle_magog_npc::preinit() {
 	maxHealth				= getFloatKey( "health" );
 
 	SetupCommandMap();
-	
+
 	rearUpperRotorJoint = getJointHandle( "rear_upper_rotor" );
 	rearLowerRotorJoint = getJointHandle( "rear_lower_rotor" );
 
@@ -169,7 +169,7 @@ void vehicle_magog_npc::preinit() {
 	// this is to account for rotor spooling etc
 	maxZAccel = getFloatKey( "max_thrust" );
 	maxZVel = getFloatKey( "max_z_vel" );
-	
+
 	gdfCorner = g_vectorZero;
 
 	cancelDrop		= false;
@@ -177,24 +177,24 @@ void vehicle_magog_npc::preinit() {
 
 	// stop the comedy knock back from the deployable exploding when the magog is delivering it
 	disableKnockback();
-	
+
 	startSound( "snd_rotor", SND_VEHICLE_START );
 
 	attachJoint		= getJointHandle( getKey( "joint_attach" ) );
 	ropeJoint		= getJointHandle( getKey( "joint_rope" ) );
 	hatchJoint		= getJointHandle( getKey( "joint_hatch" ) );
 	itemAttachJoint	= INVALID_JOINT;
-	
+
 	groundEffects	= false;
 	groundEffectsThreshhold = getFloatKey( "groundeffects_threshhold" );
 	lastGroundEffectsTime = 0.f;
-	
+
 	setCoverage( 0.f );
 
 	thread UpdateRotors();
 	thread KillAllInBoundingBox();
 	thread RopeThread();
-	
+
 	renderMins = getMins();
 	renderMaxs = getMaxs();
 }
@@ -203,7 +203,7 @@ void vehicle_magog_npc::ClearRequest() {
 	if ( sys.isClient() ) {
 		return;
 	}
-	
+
 	if ( deployPlayerIndex != -1 ) {
 		sys.clearDeployRequest( deployPlayerIndex );
 		deployPlayerIndex = -1;
@@ -216,7 +216,7 @@ void vehicle_magog_npc::destroy() {
 	}
 
 	sys.freeCMIcon( self, commandMapHandle );
-	
+
 	ClearRequest();
 }
 
@@ -229,14 +229,14 @@ void vehicle_magog_npc::Deliver() {
 		pathLevel( 20, -1, -1 );
 		pathStraighten();
 	}
-	
+
 	float numPoints = pathGetNumPoints();
 	if ( numPoints < 2 ) {
 		return;
 	}
-	
+
 //	thread CheckDeployable();
-	
+
 	float pathSpeed = getFloatKeyWithDefault( "path_speed", 1024 );
 	float pathLength = pathGetLength();
 
@@ -244,7 +244,7 @@ void vehicle_magog_npc::Deliver() {
 	endPoint_z += HOVER_HEIGHT_MIN;
 	vector endAngles = g_vectorZero;
 	endAngles_y = sys.angleNormalize180( itemRotation );
-	
+
 	// find the actual end point
 	float fraction = 1.0f;
 	while ( fraction == 1.0f ) {
@@ -253,9 +253,9 @@ void vehicle_magog_npc::Deliver() {
 	}
 	endPoint_z += HOVER_HEIGHT_AIM;
 	matchPosition = endPoint;
-	
+
 	startMagogDelivery( startTime, pathSpeed, 2.0f, endPoint, itemRotation );
-	
+
 	float coverage = 0.f;
 	while ( true ) {
 		if ( sys.isServer() ) {
@@ -263,13 +263,13 @@ void vehicle_magog_npc::Deliver() {
 				sys.warning( "DEPLOYABLE GONE" );
 			}
 		}
-	
+
 		float frameTime = sys.getFrameTime();
-		
+
 		setCoverage( coverage );
 		coverage = coverage + frameTime;
-	
-		vector origin = getWorldOrigin();			
+
+		vector origin = getWorldOrigin();
 		if ( !sys.isClient() ) {
 			float distToEnd = sys.vecLength( origin - endPoint );
 			if ( sys.vecLength( origin - endPoint ) < 64.0f ) {
@@ -285,14 +285,14 @@ void vehicle_magog_npc::Deliver() {
 				setState( "Return" );
 			}
 		}
-		
+
 		sys.waitFrame();
 	}
 }
 
 void vehicle_magog_npc::CacheItemInfoThread() {
 	sys.threadName( "CacheItemInfoThread_" + getName() );
-	
+
 	while ( true ) {
 		if ( item != $null_entity ) {
 			if ( item.isBound() ) {
@@ -308,7 +308,7 @@ void vehicle_magog_npc::Drop() {
 	if( !sys.isClient() ) {
 		if ( !PerformDrop() ) {
 			// the player has switched sides or class since requesting the deployable
-			ClearRequest();		
+			ClearRequest();
 			setState( "Return" );
 		}
 	}
@@ -320,14 +320,14 @@ void vehicle_magog_npc::Drop() {
 			sys.waitFrame();
 		}
 	}
-	
-	vector origin = getWorldOrigin();	
+
+	vector origin = getWorldOrigin();
 	vector endAngles = g_vectorZero;
 	endAngles_y = sys.angleNormalize180( itemRotation );
-	
+
 	if ( item.isBound() ) {
 		cachedItemOrigin = item.getWorldOrigin();
-		cachedItemAngles = item.getAngles();	
+		cachedItemAngles = item.getAngles();
 		item.unbind();
 	}
 	sys.killThread( "CacheItemInfoThread_" + getName() );
@@ -335,7 +335,7 @@ void vehicle_magog_npc::Drop() {
 	// setting this back again ensures a seamless drop for all clients
 	item.setOrigin( cachedItemOrigin );
 	item.setAngles( cachedItemAngles );
-		
+
 	item.vStartMagogDrop();
 
 	if ( item.getFloatKey( "no_drop" ) == 0.f ) {
@@ -343,70 +343,72 @@ void vehicle_magog_npc::Drop() {
 		float timeToDrop = 4.0f;
 		vector dropOrigin = item.getWorldOrigin();
 		vector dropDelta = targetPos - dropOrigin;
-		
+
 		vector dropAngles = item.getAngles();
 		vector dropAngleDelta = endAngles - dropAngles;
 		dropAngleDelta_y = sys.angleNormalize180( dropAngleDelta_y );
-		
-		
+
+
 		float time;
 		float doneNess;
 		vector spot;
 		vector angles;
 		vector ropeModelSpot;
 		vector hookModelSpot;
-		
+
 		// expand the bounds while dropping the item
 		vector mins = getRenderMins();
 		vector maxs = getRenderMaxs();
 		mins_z += dropDelta_z;
 		setRenderBounds( mins, maxs );
-		
+
 		if ( !sys.isClient() ) {
 			item.vStartBoundsKillThread();
 		}
-		
+
 		vector hookStartSpot = getJointPos( attachJoint );
 		vector ropeStartSpot = getJointPos( ropeJoint );
 		vector hookStartModelSpot = worldToModelSpace( hookStartSpot - origin );
 		vector ropeStartModelSpot = worldToModelSpace( ropeStartSpot - origin );
-		
+
 		while ( true ) {
 			time = sys.getTime() - dropTime;
 			doneNess = time / timeToDrop;
 			if ( doneNess > 1.0f ) {
 				doneNess = 1.0f;
 			}
-			
+
 			doneNess = 1 - ( sys.cos( doneNess * 180 ) + 1 ) * 0.5;
 
-			spot = dropOrigin + dropDelta * doneNess;		
-			angles = dropAngles + dropAngleDelta * doneNess;	
-			
-			item.setWorldOrigin( spot );
-			item.setAngles( angles );
-			item.setLinearVelocity( vec3_origin );
-			item.setAngularVelocity( vec3_origin );
+			spot = dropOrigin + dropDelta * doneNess;
+			angles = dropAngles + dropAngleDelta * doneNess;
+
+			if ( item != $null_entity ) {
+				item.setWorldOrigin( spot );
+				item.setAngles( angles );
+				item.setLinearVelocity( vec3_origin );
+				item.setAngularVelocity( vec3_origin );
+			}
 
 			// use the joint position to position the hook
 			vector hookSpot = GetItemAttachPoint(); //item.getJointPos( itemAttachJoint );
 			vector ropeSpot = ( hookSpot + dropOrigin ) * 0.5f;
-			
+
 			origin = getWorldOrigin();
 			hookModelSpot = worldToModelSpace( hookSpot - origin );
 			ropeModelSpot = worldToModelSpace( ropeSpot - origin );
-		
+
 			setJointPos( attachJoint, JOINTMOD_WORLD_OVERRIDE, hookModelSpot );
 			setJointPos( ropeJoint, JOINTMOD_WORLD_OVERRIDE, ropeModelSpot );
-			
+
 			vector resultHookSpot = getJointPos( attachJoint );
-		
+
 			sys.waitFrame();
 			if ( doneNess == 1.0f ) {
-				break;		
+				break;
 			}
 		}
-		
+
 		if ( !sys.isClient() ) {
 			ClearRequest();
 
@@ -415,7 +417,7 @@ void vehicle_magog_npc::Drop() {
 				item = $null_entity;
 			}
 		}
-		
+
 		// bring the hook back up
 		vector hookEndSpot = getJointPos( attachJoint );
 		vector ropeEndSpot = getJointPos( ropeJoint );
@@ -424,16 +426,16 @@ void vehicle_magog_npc::Drop() {
 		while ( true ) {
 			time = sys.getTime() - raiseTime;
 			doneNess = time / ( timeToDrop * 0.75f );
-		
+
 			CLAMP( doneNess, 0.0f, 1.0f );
 			doneNess = 1 - ( sys.cos( doneNess * 180 ) + 1 ) * 0.5;
-					
+
 			origin = getWorldOrigin();
 			ropeStartSpot = sys.toWorldSpace( ropeStartModelSpot, self );
 			hookStartSpot = sys.toWorldSpace( hookStartModelSpot, self );
 			ropeModelSpot = worldToModelSpace( ( ropeStartSpot - ropeEndSpot ) * doneNess + ropeEndSpot - origin );
 			hookModelSpot = worldToModelSpace( ( hookStartSpot - hookEndSpot ) * doneNess + hookEndSpot - origin );
-		
+
 			setJointPos( attachJoint, JOINTMOD_WORLD_OVERRIDE, hookModelSpot );
 			setJointPos( ropeJoint, JOINTMOD_WORLD_OVERRIDE, ropeModelSpot );
 
@@ -446,13 +448,13 @@ void vehicle_magog_npc::Drop() {
 			}
 		}
 
-		// restore the original render bounds		
+		// restore the original render bounds
 		mins_z -= dropDelta_z;
 		setRenderBounds( mins, maxs );
 	}
-	
+
 	dropped = true;
-	
+
 	if ( !sys.isClient() ) {
 		setState( "Return" );
 	}
@@ -466,39 +468,39 @@ void vehicle_magog_npc::Return() {
 			sys.waitFrame();
 		}
 	}
-	
+
 	pathFind( getKey( "path_type" ), targetPos, returnTime, -1.0f, gdfCorner_x, gdfCorner_y, 0, false );
 	float numPoints = pathGetNumPoints();
 	if ( numPoints < 2 ) {
 		return;
 	}
-	
+
 	pathLevel( 20, -1, -1 );
 	pathStraighten();
 
 	float pathSpeed = getFloatKeyWithDefault( "path_speed", 1024 );
 	float pathLength = pathGetLength();
-	
+
 	vector hoverOffset = g_vectorZero;
 	hoverOffset_z = HOVER_HEIGHT_MIN;
-	
+
 	vector endPoint = pathGetPoint( numPoints - 1 ) + hoverOffset;
-	
+
 	startMagogReturn( returnTime, pathSpeed, 2.0f, endPoint );
-	
+
 	while ( true ) {
 		float time = sys.getTime() - returnTime;
-	
+
 		float position = time * pathSpeed;
 		float coverage = ( pathLength - 1 - position ) / pathSpeed;
 		setCoverage( coverage );
-		
+
 		if ( !sys.isClient() ) {
 			if ( position > pathLength ) {
 				remove();
 			}
 		}
-		
+
 		sys.waitFrame();
 	}
 }
@@ -520,15 +522,15 @@ void vehicle_magog_npc::UpdateRotors() {
 
 		setJointAngle( rightUpperRotorJoint, JOINTMOD_WORLD, ang * 1.01f );
 		setJointAngle( rightLowerRotorJoint, JOINTMOD_WORLD, ang * 1.01f );
-		
+
 		vector absMins = getAbsMins();
 		vector traceOrg = ( absMins + getAbsMaxs() ) * 0.5f;
-		
+
 		UpdateEffects( traceOrg );
 	}
 }
 
-void vehicle_magog_npc::OnSetDeploymentParms( float deploymentItemIndex, float playerIndex, vector target, float rotation ) {	
+void vehicle_magog_npc::OnSetDeploymentParms( float deploymentItemIndex, float playerIndex, vector target, float rotation ) {
 	deployPlayerIndex	= playerIndex;
 	targetPos			= target;
 	itemRotation		= sys.angleNormalize180( rotation );
@@ -548,7 +550,7 @@ void vehicle_magog_npc::OnSetDeploymentParms( float deploymentItemIndex, float p
 	if ( deployable != $null_entity ) {
 		p.SetTargetingItem( item );
 	}
-				
+
 	string statName = item.getKey( "stat_name" );
 	if ( statName != "" ) {
 		sys.increaseStatInt( sys.allocStatInt( statName + "_deployed" ), deployPlayerIndex, 1 );
@@ -559,7 +561,7 @@ void vehicle_magog_npc::OnSetDeploymentParms( float deploymentItemIndex, float p
 	// setup the delivery path
 	startTime = sys.getTime();
 	gdfCorner = objManager.GetGDFBasePosition();
-	
+
 	pathFind( getKey( "path_type" ), targetPos, startTime, 1.0f, gdfCorner_x, gdfCorner_y, 0, false );
 	pathLevel( 20, -1, -1 );
 	pathStraighten();
@@ -569,7 +571,7 @@ void vehicle_magog_npc::OnSetDeploymentParms( float deploymentItemIndex, float p
 	vector startDir = pathGetDirection( 0 );
 	startDir = sys.vecNormalize( startDir );
 	vector startAngles = sys.vecToAngles( startDir );
-	
+
 	setWorldOrigin( startPoint );
 	setAngles( startAngles );
 
@@ -599,16 +601,16 @@ vector vehicle_magog_npc::GetItemAttachPoint() {
 	if ( item == $null_entity ) {
 		return '0 0 0';
 	}
-	
+
 	vector org;
-	
+
 	if ( itemAttachJoint != -1 ) {
 		org = item.getJointPos( itemAttachJoint );
 	} else {
 		org = item.getWorldOrigin();
 		org_z += item.getFloatKey( "attach_height" );
 	}
-	
+
 	return org;
 }
 
@@ -624,7 +626,7 @@ void vehicle_magog_npc::KillAllInBoundingBox() {
 
 		entitiesInBounds( mins, maxs, MASK_ALL, 1 );
 		float count = filterEntitiesByClass( "sdTransport", 1 );
-		
+
 		float i;
 		for( i = 0; i < count; i++ ) {
 			entity ent = getBoundsCacheEntity( i );
@@ -662,14 +664,14 @@ void vehicle_magog_npc::RopeThread() {
 
 	while ( true ) {
 		sys.waitFrame();
-	
+
 		float mass = MAGOC_NPC_SWINGMASS;
 		float swingScale = MAGOC_NPC_SWINGSCALE;
 		if ( item == $null_entity ) {
 			mass		= MAGOC_NPC_SWINGMASSEMPTY;
 			swingScale	= MAGOC_NPC_SWINGSCALEEMPTY;
 		}
-		
+
 		float inverseMass = 1 / mass;
 		float gravity = 1066 * mass;
 
@@ -720,7 +722,7 @@ boolean vehicle_magog_npc::PerformDrop() {
 	if ( deployPlayerIndex == -1 ) {
 		return true;
 	}
-	
+
 	if ( item != $null_entity ) {
 		if ( item.getIntKey( "always_drop" ) == 1 ) {
 			return true;
@@ -735,7 +737,7 @@ boolean vehicle_magog_npc::PerformDrop() {
 	if( sys.getTerritoryForPoint( targetPos, getGameTeam(), 1.f, 0.f ) == $null_entity ) {
 		return false;
 	}
-	
+
 	return true;
 }
 
@@ -743,7 +745,7 @@ void vehicle_magog_npc::vCancelDeployForPlayer( float playerIndex ) {
 	if ( playerIndex != deployPlayerIndex ) {
 		return;
 	}
-	
+
 	// deployables already gone
 	if ( dropped ) {
 		return;
@@ -760,7 +762,7 @@ void vehicle_magog_npc::vCancelDeployForPlayer( float playerIndex ) {
 
 void vehicle_magog_npc::UpdateEffects( vector pos ) {
 	groundEffects = true;//( absMins.z - traceObject.endpos.z ) < groundEffectsThreshhold;
-	
+
 	vector end = pos;
 	end_z -= groundEffectsThreshhold;
 
@@ -770,7 +772,7 @@ void vehicle_magog_npc::UpdateEffects( vector pos ) {
 		&& groundEffects && sys.getTraceFraction() < 1.0f ) {
 
 		string surfaceTypeName = sys.getTraceSurfaceType();
-		
+
 		playOriginEffect( "fx_groundeffect", surfaceTypeName, sys.getTraceEndPos(), sys.getTraceNormal(), 0 );
 		lastGroundEffectsTime = sys.getTime();
 	}

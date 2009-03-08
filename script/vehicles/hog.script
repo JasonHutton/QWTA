@@ -1,16 +1,36 @@
 
 object vehicle_hog : vehicle_base {
+	void			preinit();
 	void			init();
 
 	void			OnCollision( object traceObject, float velocity, vector mins, vector maxs );
 
 	void			OnWeaponSelected( entity p, float index );
 
+	void			vSetManualDeploy();
+	void			vOnDeploy();
+	void			DoBoundsDamageThread();
+
+	void			vSetDeployableOwner( entity p );
+	void			vRemoveObject();
+
 	float			nextCollisionEffectTime;
+
+	boolean			manualDeploy;
+}
+
+void vehicle_hog::preinit() {
+	manualDeploy = false;
 }
 
 void vehicle_hog::init() {
 	setLightsEnabled( 0, false );
+	if ( !sys.isClient() ) {
+		if ( manualDeploy ) {
+			setTakesDamage( false );
+			thread DoBoundsDamageThread();
+		}
+	}
 }
 
 void vehicle_hog::OnCollision( object traceObject, float velocity, vector mins, vector maxs ) {
@@ -29,4 +49,33 @@ void vehicle_hog::vOnDeploy() {
 	vector origin = getWorldOrigin();
 	setWorldOrigin( origin + '0 0 32' );
 	setLinearVelocity( vec3_origin );
+	sys.killThread( "DoBoundsDamageThread_" + getName() );
+	setTakesDamage( true );
+}
+
+void vehicle_hog::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+void vehicle_hog::DoBoundsDamageThread() {
+	float dmgIndex = GetDamage( getKey( "dmg_falling" ) );
+
+	while ( true ) {
+		BoundsDamage( self, dmgIndex );
+		sys.waitFrame();
+	}
+}
+
+void vehicle_hog::vSetDeployableOwner( entity p ) {
+	if ( !sys.isClient() ) {
+		if ( p != $null_entity ) {
+			p.binAdd( self );
+		}
+	}
+}
+
+void vehicle_hog::vRemoveObject() {
+	if ( isEmpty() ) {
+		thread DecayThread();
+	}
 }

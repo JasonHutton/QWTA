@@ -1,0 +1,76 @@
+// Original last: 00011336 in the original obituaries.locstr file. (Header lies.)
+// This file last: 00011340
+
+/*
+==================
+ GDF Weapons
+==================
+*/
+
+locString game/obit/bfg10k {
+	text "#str_00011338" // "%b^7 [BFG10k] %a"
+}
+
+/*
+==================
+ GDF Suicides
+==================
+*/
+
+locString game/obit/bfg10k_self {
+	text "#str_00011339" // "^1[BFG10k] ^7%a"
+}
+
+locString game/obit/bfg10k_unknown {
+	text "#str_00011339" // "^1[BFG10k] ^7%a"
+}
+
+/*
+==================
+ GDF Team Kills
+==================
+*/
+
+locString game/obit/bfg10k_team {
+	text "#str_00011340" // "%b^7 [BFG10k] ^7%a"
+}
+
+
+/*
+==================
+ Strogg Weapons
+==================
+*/
+
+/*
+ * From original obituaries.locstr:
+locString game/obit/hyper {
+	text "#str_00011180" // "%b^7 [Hyperblaster] %a"
+}*/
+
+/*
+==================
+ Strogg Suicides
+==================
+*/
+
+locString game/obit/hyper_self {
+	text "#str_00011337" // "^1[Hyperblaster] ^7%a"
+}
+
+locString game/obit/hyper_unknown {
+	text "#str_00011337" // "^1[Hyperblaster] ^7%a"
+}
+
+/*
+==================
+ Strogg Team Kills
+==================
+*/
+
+/*
+ * From original obituaries.locstr:
+locString game/obit/hyper_team {
+	text "#str_00011209" // "%b^7 [Hyperblaster] ^7%a"
+}
+*/

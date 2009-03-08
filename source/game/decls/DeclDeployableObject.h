@@ -25,6 +25,7 @@ public:
 	const sdDeclStringMap*			GetPlacementInfo( void ) const { return placementInfo; }
 	qhandle_t						GetDeploymentMask( void ) const { return mask; }
 	float							GetObjectSize( void ) const { return objectSize; }
+	float							GetCreditRequired( void ) const { return creditRequired; }
 	static void						CacheFromDict( const idDict& dict );
 	bool							AllowRotation( void ) const { return allowRotation; }
 
@@ -39,6 +40,7 @@ private:
 	qhandle_t						mask;
 	float							objectSize;
 	bool							allowRotation;
+	float							creditRequired;
 };
 
 #endif // __DECLDEPLOYABLEOBJECT_H__

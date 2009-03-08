@@ -290,8 +290,11 @@ public:
 	virtual bool				ParseNetworkMessage( int msgType, const idBitMsg& msg );
 
 	sdTeamInfo*					FindNeedyTeam( idPlayer* ignore = NULL );
+	const sdDeclPlayerClass*	FindNeedyClassOnTeam( sdTeamInfo* team = NULL, idPlayer* ignore = NULL );
 
 	virtual const char*			GetDemoNameInfo( void ) = 0;
+
+	static int					GetRoleLimitForTeam( playerClassTypes_t role, playerTeamTypes_t team );
 
 protected:
 	void						NextStateDelayed( gameState_t state, int delay );
@@ -312,7 +315,7 @@ protected:
 
 	void						SetWarmupStatusMessage();
 	static int					NumReady( int& total );
-
+	
 protected:
 	virtual void				GameState_Review( void ) = 0;
 	virtual void				GameState_NextGame( void ) = 0;

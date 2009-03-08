@@ -84,6 +84,19 @@ model vehicle_hornet {
 // Entity Def
 //
 
+deployObject deployobject_hornet {
+	"name"							"hornet"
+	"title"							"Hornet"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_hornet"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+}
+
 entityDef vehicle_hornet {
 	"inherit"						"vehicle_base_strogg"
 

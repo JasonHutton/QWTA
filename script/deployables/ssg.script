@@ -18,12 +18,12 @@ object deployable_ssg : deployable_base {
 	boolean vTargetGetValid( vector pos );
 	void	vTargetSetTarget( vector targetPos, entity targetEnt );
 	void	vDoneDeploy();
-	
+
 	float	vGetFireSupportMode();
 
 	void	InitTargetting( vector targetPos );
-	
-	void	ClearFiringDecal();	
+
+	void	ClearFiringDecal();
 	void	CreateFiringDecal();
 
 	void	ReloadThread( float delay );
@@ -106,7 +106,7 @@ object deployable_ssg : deployable_base {
 
 	entity	missile;
 	boolean	missileActive;
-	
+
 	vector	target;
 
 	generic_target_marker	firingDecal;
@@ -125,7 +125,7 @@ void deployable_ssg::syncFields() {
 
 	sync( "currentYaw" );
 	sync( "currentPitch" );
-	
+
 	syncCallback( "missile", "OnMissileChanged" );
 	syncCallback( "fireSupportState", "OnFireSupportStateChanged" );
 }
@@ -140,19 +140,19 @@ void deployable_ssg::MissileCheck() {
 				ClearFiringDecal();
 			}
 		}
-		
+
 		sys.waitFrame();
 	}
 }
-	
+
 void deployable_ssg::destroy() {
 	delete fsStatus;
 	ClearFiringDecal();
 }
 
-void deployable_ssg::ReloadThread( float delay ) {	
+void deployable_ssg::ReloadThread( float delay ) {
 	fireSupportState = MPS_RELOADING;
-	
+
 	sys.wait( delay );
 
 	fireSupportState = MPS_READY;
@@ -187,7 +187,7 @@ void deployable_ssg::preinit() {
 	float entityDeclIndex;
 	float i;
 	float muzzleHandle;
-	
+
 	recycle			= getFloatKey( "missile_recycle" );
 	fireCount		= getFloatKey( "missile_firecount" );
 	reloadWait		= getFloatKey( "missile_reload" );
@@ -238,9 +238,9 @@ void deployable_ssg::preinit() {
 	hasTarget		= false;
 
 	nextFire		= 0;
-	
+
 	fsStatus = new fireSupportStatus;
-	
+
 	thread TurningThread();
 	thread MissileCheck();
 }
@@ -345,7 +345,7 @@ void deployable_ssg::ClientFiring() {
 
 void deployable_ssg::ServerFiring() {
 	fireSupportState = MPS_FIRING;
-	
+
 	nextFire = sys.getTime() + 2.f;
 
 	while( true ) {
@@ -361,11 +361,11 @@ void deployable_ssg::ServerFiring() {
 
 		sys.waitFrame();
 	}
-	
+
 	sys.wait( 2.f );
 
 	nextFire = 0;
-	
+
 	thread ReloadThread( reloadWait );
 
 	setState( "ServerIdle" );
@@ -389,8 +389,8 @@ void deployable_ssg::Launch() {
 		playAnim( getIntKey( "missile_channel" ), anim );
 	}
 
-	objManager.CPrintEvent( sys.localizeString( "game/ssg_fired" ), $null );
-	
+	//objManager.CPrintEvent( sys.localizeString( "game/ssg_fired" ), $null );
+
 	team_base team = getGameTeam();
 	objManager.PlaySound( team.getKey( "snd_ssg_fired" ), team );
 }
@@ -580,7 +580,7 @@ boolean deployable_ssg::vTargetPlayerEligible( entity p ) {
 	if ( disabledState || !finishedDeploying ) {
 		return 0.f;
 	}
-		
+
 	return 1.f;
 }
 
@@ -637,7 +637,7 @@ void deployable_ssg::CreateFiringDecal() {
 	if ( p == $null_entity ) {
 		return;
 	}
-	
+
 	if ( getEntityAllegiance( p ) != TA_FRIEND ) {
 		return;
 	}

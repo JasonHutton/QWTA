@@ -81,6 +81,18 @@ model vehicle_anansi {
 // ========================================================================
 //
 
+deployObject deployobject_anansi {
+	"name"							"anansi"
+	"title"							"Anansi"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_anansi"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+}
+
 entityDef vehicle_anansi {
 	"inherit"						"vehicle_base_gdf"
 

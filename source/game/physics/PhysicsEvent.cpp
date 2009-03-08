@@ -62,3 +62,27 @@ sdPhysicsEvent_RadiusPush::Apply
 void sdPhysicsEvent_RadiusPush::Apply( void ) const {
 	gameLocal.RadiusPush( _origin, _radius, _damageDecl, _push, _inflictor, _ignore, _flags, false );
 }
+
+/*
+================
+sdPhysicsEvent_RadiusPull::sdPhysicsEvent_RadiusPull
+================
+*/
+sdPhysicsEvent_RadiusPull::sdPhysicsEvent_RadiusPull( nodeType_t& list, const idVec3 &origin, float radius, const sdDeclDamage* damageDecl, float push, const idEntity *inflictor, const idEntity *ignore, int flags ) : sdPhysicsEvent( list ) {
+	_origin				= origin;
+	_radius				= radius;
+	_push				= push;
+	_inflictor			= inflictor;
+	_ignore				= ignore;
+	_flags				= flags;
+	_damageDecl			= damageDecl;
+}
+
+/*
+================
+sdPhysicsEvent_RadiusPull::Apply
+================
+*/
+void sdPhysicsEvent_RadiusPull::Apply( void ) const {
+	gameLocal.RadiusPull( _origin, _radius, _damageDecl, _push, _inflictor, _ignore, _flags, false );
+}

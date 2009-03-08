@@ -368,6 +368,13 @@ void sdUserInterfaceLocal::InitFunctions( void ) {
 	SD_UI_END_FUNC_TAG
 	INIT_SCRIPT_FUNCTION( "getRoleCountForTeam", 'f', "ss", Script_GetRoleCountForTeam );
 
+	SD_UI_FUNC_TAG( getRoleLimitForTeam, "Maximum number of players allowed to use a specific role on a team." )
+		SD_UI_FUNC_PARM( string, "team", "Team name." )
+		SD_UI_FUNC_PARM( string, "role", "Role name." )
+		SD_UI_FUNC_RETURN_PARM( float, "Number of players." )
+	SD_UI_END_FUNC_TAG
+	INIT_SCRIPT_FUNCTION( "getRoleLimitForTeam", 'f', "ss", Script_GetRoleLimitForTeam );
+
 	SD_UI_FUNC_TAG( getEquivalentClass, "Get the equivalent class on the target team to the class on the current team." )
 		SD_UI_FUNC_PARM( string, "currentTeam", "Current team." )
 		SD_UI_FUNC_PARM( string, "targetTeam", "Target team." )

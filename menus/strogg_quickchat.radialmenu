@@ -16,7 +16,7 @@ radialMenuDef strogg/quickchat/context {
 	_chat_item_icon( "strogg", "global/sorry",				"S", "", "drawSorry" )	
 	_chat_item_script_icon( "strogg", "context/health",		"H", "", "ContextUpdateStroyent", "", "drawHealth" )	
 	_chat_item_script_icon( "strogg", "context/support",	"A", "", "ContextUpdateSupport", "", "drawAmmo" )
-	_chat_item_script_icon( "strogg", "context/vehicle",	"V", "", "ContextUpdateVehicle", "vehicle_icarus", "drawVehicle" )
+	_chat_item_script_icon( "strogg", "context/vehicle",	"V", "", "ContextUpdateVehicle", "deployobject_icarus", "drawVehicle" )
 }
 radialMenuDef strogg_quickchat {
 	
@@ -41,6 +41,7 @@ radialMenuDef strogg_quickchat {
 	page "strogg/quickchat/self/repairing"					// 18
 	page "strogg/quickchat/self/repaired"					// 19
 	page "strogg/quickchat/fireteam"						// 20
+	page "strogg/quickchat/vehicles/vehicledrops"				// 21
 }
 
 radialMenuDef strogg/quickchat/radio {
@@ -162,7 +163,8 @@ radialMenuDef strogg/quickchat/need/team {
 radialMenuDef strogg/quickchat/vehicles {
 	title "strogg/quickchat/vehicles"
 
-	_chat_item( "strogg", "vehicles/needvehicle", 			"N" )
+	_chat_page( "strogg/quickchat/vehicles/vehicledrops",		"21", 	"N" )
+	//_chat_item( "strogg", "vehicles/needvehicle", 			"N" )
 	_chat_item( "strogg", "vehicles/needgunner", 			"G" )
 	_chat_item( "strogg", "vehicles/needdriver", 			"D" )
 	_chat_item( "strogg", "vehicles/needpilot", 			"P" )
@@ -171,6 +173,16 @@ radialMenuDef strogg/quickchat/vehicles {
 	_chat_item( "strogg", "vehicles/vehicleready", 			"V" )
 	_chat_item( "strogg", "vehicles/holdvehicle", 			"H" )
 	_chat_item( "strogg", "vehicles/bailout", 				"B" )
+}
+
+radialMenuDef strogg/quickchat/vehicles/vehicledrops {
+	title "strogg/quickchat/vehicles/vehicledrops"
+	
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_icarus",		"I",	"ContextCheckVehicleDrop", "deployobject_icarus quickchat/vehicles/vehicledrops/nv_icarus" )
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_hog",		"H",	"ContextCheckVehicleDrop", "deployobject_hog quickchat/vehicles/vehicledrops/nv_hog" )
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_desecrator",	"D",	"ContextCheckVehicleDrop", "deployobject_desecrator quickchat/vehicles/vehicledrops/nv_desecrator" )
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_cyclops",	"C",	"ContextCheckVehicleDrop", "deployobject_goliath quickchat/vehicles/vehicledrops/nv_cyclops" )
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_tormentor",	"T",	"ContextCheckVehicleDrop", "deployobject_hornet quickchat/vehicles/vehicledrops/nv_tormentor" )
 }
 
 radialMenuDef strogg/quickchat/enemy {

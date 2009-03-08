@@ -238,6 +238,11 @@ scriptEvent	float	distanceToPoint( vector point );
 // Suspends execution of the current thread for the given number of seconds.
 scriptEvent	void 	wait( float time );
 
+// Sets the current bouncyness of this entity.
+scriptEvent	void 	setBouncyness( float bouncyness );
+// Gets the current bouncyness of this entity.
+scriptEvent	float 	getBouncyness();
+
 scriptEvent void	disablePhysics();
 scriptEvent void	enablePhysics();
 
@@ -370,6 +375,8 @@ scriptEvent void	freeHudModule( float handle );
 
 scriptEvent boolean	requestDeployment( entity p, float deployObjectIndex, vector position, float yaw, float delay );
 scriptEvent boolean	requestCheckedDeployment( entity p, float deployObjectIndex, float yaw, float delay );
+scriptEvent float	getDeploymentCredit( float deployObjectIndex );
+scriptEvent string	getDeploymentTitle( float deployObjectIndex );
 
 scriptEvent vector	getWorldMins();
 scriptEvent vector	getWorldMaxs();
@@ -436,7 +443,7 @@ scriptEvent	wstring	toWStr( string str );
 scriptEvent	void 	pushLocString( wstring str );
 scriptEvent void	pushLocStringIndex( handle index );
 
-// Returns a localized string for the current language, formatting in any 
+// Returns a localized string for the current language, formatting in any
 // arguments pushed via pushLocString
 scriptEvent wstring	localizeStringIndexArgs( handle index );
 scriptEvent	wstring	localizeStringArgs( string str );
@@ -712,6 +719,10 @@ scriptEvent float	getDeclCount( float declType );
 scriptEvent float	getDeclIndex( float declType, string name );
 scriptEvent string	getDeclName( float declType, float declIndex );
 scriptEvent void	applyRadiusDamage( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
+// QWTA
+scriptEvent void	applyRadiusPush( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
+scriptEvent void	applyRadiusPull( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePull, float damageIndex, float damageScale, float radiusScale );
+// QWTA
 scriptEvent boolean	filterEntity( float filterIndex, entity other );
 scriptEvent float	getTableCount( float tableIndex );
 scriptEvent float	getTableValue( float tableIndex, float valueIndex );
@@ -1246,6 +1257,9 @@ scriptEvent void 	setSniperAOR( boolean enabled );
 scriptEvent float	getKilledTime();
 scriptEvent void	forceRespawn();
 
+scriptEvent	float	getVehicleCredit();
+scriptEvent	void	useVehicleCredit( float amount );
+
 // should only be called from OnUsed
 scriptEvent void	enter( entity toEnter );
 
@@ -1612,7 +1626,7 @@ scriptEvent void setBotActionStateForEvent( float actionState, entity triggerEnt
 scriptEvent void deactivateBotAction( string actionName );
 scriptEvent void activateBotAction( string actionName );
 scriptEvent void setBotCriticalClass( float playerTeam, float criticalClassType );
-scriptEvent void botUpdateForEvent( float playerTeamLimiter, float playerClassType, float eventType ); //mal: eventType will usually == ACTION_STATE_NULL for events that were completed! 
+scriptEvent void botUpdateForEvent( float playerTeamLimiter, float playerClassType, float eventType ); //mal: eventType will usually == ACTION_STATE_NULL for events that were completed!
 scriptEvent void setAttackingTeam( float playerTeam );
 scriptEvent void setPrimaryTeamAction( float playerTeam, string actionName );
 scriptEvent void setSecondaryTeamAction( float playerTeam, string actionName );
@@ -1652,7 +1666,7 @@ scriptEvent float getNumClassPlayers( float playerTeam, float playerClass );
 
 /***********************************************************************
 
-	bots training objective manager 
+	bots training objective manager
 
 ***********************************************************************/
 scriptEvent void gameIsOnFinalObjective();

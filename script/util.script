@@ -148,7 +148,7 @@ cvar	g_allowMineIcons;
 cvar	g_mineIconSize;
 cvar	g_mineIconAlphaScale;
 
-cvar	g_aptWarning;
+//cvar	g_aptWarning;
 
 object gameplay_base;
 gameplay_base gameplayManager;
@@ -457,12 +457,12 @@ float MakeTerritoryIcon( entity ent ) {
 
 	vector worldMins;
 	vector worldMaxs;
-		
+
 	entity other = ent.getEntityKey( "target_playzone" );
 	if ( other == $null_entity ) {
 		worldMins	= sys.getWorldMins();
 		worldMaxs	= sys.getWorldMaxs();
-	} else {	
+	} else {
 		worldMins	= other.getMins();
 		worldMaxs	= other.getMaxs();
 		worldMins	= sys.toWorldSpace( worldMins, other );
@@ -470,11 +470,11 @@ float MakeTerritoryIcon( entity ent ) {
 	}
 
 	float territoryIconHandle	= sys.allocCMIcon( ent, 100 );
-	
+
 	vector worldSize = worldMaxs - worldMins;
-	
+
 	vector temp;
-	
+
 	temp = ent.getVectorKey( "territory_start" );
 
 	vector objectStart;
@@ -482,16 +482,16 @@ float MakeTerritoryIcon( entity ent ) {
 	objectStart_y = worldMins_y + ( temp_y * worldSize_y );
 
 	temp = ent.getVectorKey( "territory_end" );
-	
+
 	vector objectEnd;
 	objectEnd_x = worldMins_x + ( temp_x * worldSize_x );
 	objectEnd_y = worldMins_y + ( temp_y * worldSize_y );
-	
+
 //	sys.println( objectStart );
 //	sys.println( objectEnd );
-	
+
 	vector objectSize = objectEnd - objectStart;
-	
+
 	sys.setCMIconSize2d( territoryIconHandle, objectSize_x, objectSize_y );
 	sys.setCMIconSizeMode( territoryIconHandle, SM_WORLD );
 	sys.setCMIconFlag( territoryIconHandle, CMF_ALWAYSKNOWN );
@@ -500,7 +500,7 @@ float MakeTerritoryIcon( entity ent ) {
 	sys.setCMIconPositionMode( territoryIconHandle, PM_FIXED );
 	sys.setCMIconOrigin( territoryIconHandle, ( objectStart + objectEnd ) * 0.5f );
 	sys.setCMIconMaterial( territoryIconHandle, materialHandle );
-	
+
 	return territoryIconHandle;
 }
 
@@ -513,18 +513,18 @@ void FreeTerritoryIcon( entity territory, float territoryIconHandle ) {
 
 void G_ProjectCircleDecal( float decalHandle, vector size, float depth, vector position, vector color ) {
 	vector startPos	= position + ( g_vectorUp * depth * 0.5f );
-	
+
 	vector forward;
 	forward_x		= size_x * 0.5f;
-	
+
 	vector side;
 	side_y			= size_y * 0.5f;
-	
+
 	sys.resetDecal( decalHandle );
 	sys.projectDecal( decalHandle, startPos + ( forward + side ), g_vectorDown, depth, 1, size, 0.f, color );
 	sys.projectDecal( decalHandle, startPos + ( forward - side ), g_vectorDown, depth, 1, size, 90.f, color );
 	sys.projectDecal( decalHandle, startPos + ( -forward + side ), g_vectorDown, depth, 1, size, 180.f, color );
-	sys.projectDecal( decalHandle, startPos + ( -forward + -side ), g_vectorDown, depth, 1, size, 270.f, color );	
+	sys.projectDecal( decalHandle, startPos + ( -forward + -side ), g_vectorDown, depth, 1, size, 270.f, color );
 }
 
 handle g_fireSupportStateStr;
@@ -567,7 +567,7 @@ void G_StringForFireSupportState( float state ) {
 		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/acquired" );
 		return;
 	}
-	
+
 	if ( state == MPS_INVALID ) {
 		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/invalid" );
 		return;
@@ -600,7 +600,7 @@ Localization
 
 // build the localized range string, e.g. "Range: 42m"
 wstring G_BuildRangeStr( float range ) {
-	sys.pushLocString( int( range ) ); 
+	sys.pushLocString( int( range ) );
 	sys.pushLocStringIndex( g_locStr_Meters );
 	return sys.localizeStringArgs( "game/range" );
 }
@@ -622,13 +622,13 @@ entity CallManualDeploy( string deployObject, string deployItem, object deployTe
 	if ( sys.isClient() ) {
 		return $null_entity;
 	}
-	
+
 	float itemDef = GetEntityDef( deployItem );
-	
+
 	entity obj = sys.spawn( deployObject );
 	obj.setGameTeam( deployTeam );
 	obj.vSetDeploymentParms( itemDef, -1, location, angle );
-	
+
 	return obj.vGetItem();
 }
 
@@ -648,28 +648,28 @@ boolean G_TryFireScud( entity firer, entity targetEnt ) {
 
 	// set any MCP up to fire
 	float count = worldspawn.entitiesOfCollection( "mcp" );
-	
+
 	float i;
 	for ( i = 0; i < count; i++ ) {
 		entity ent = worldspawn.getBoundsCacheEntity( i );
-		
+
 		if ( ent.vFireScud( firer, targetEnt ) ) {
 			return true;
 		}
 	}
-	
+
 	return false;
 }
 
 float G_CountMinesOwnedByEntity( entity p ) {
 	p.entitiesOfCollection( "mine" );
 	float count = p.filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
-	
+
 	float number;
 	float index;
 	for ( index = 0; index < count; index++ ) {
 		entity mine = p.getBoundsCacheEntity( index );
-		
+
 		if ( mine.vGetOwner() == p ) {
 			number++;
 		}
@@ -682,7 +682,7 @@ float G_CountMinesOwnedByEntity( entity p ) {
 object firesupport_marker {
 	void		preinit();
 	void		DoWarning();
-	
+
 	float		range;
 	float		endTime;
 	float		nextPlayTime;
@@ -698,7 +698,7 @@ void firesupport_marker::preinit() {
 	warningRange = getFloatKey( "warning_range" );
 	warningSound = getKey( "snd_ff_warning" );
 	warningSoundEnemy = getKey( "snd_ff_warning_enemy" );
-	
+
 	thread DoWarning();
 }
 
@@ -706,7 +706,7 @@ void firesupport_marker::DoWarning() {
 	while ( true ) {
 		entitiesOfCollection( "players" );
 		float playerCount = filterEntitiesByRadius( getWorldOrigin(), warningRange, 1 );
-		
+
 		float i = 0;
 		for( i = 0; i < playerCount; i++ ) {
 			entity p = getBoundsCacheEntity( i );
@@ -720,7 +720,7 @@ void firesupport_marker::DoWarning() {
 		if ( sys.getTime() > endTime ) {
 			break;
 		}
-	
+
 		sys.wait( 1.f );
 	}
 }
@@ -730,21 +730,21 @@ void firesupport_marker::DoWarning() {
 boolean G_CheckFireSupportBlock( vector location, entity myPlayer ) {
 	myPlayer.entitiesOfCollection( "fs_block" );
 	float count = myPlayer.filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
-	
+
 	float index;
 	for ( index = 0; index < count; index++ ) {
 		firesupport_marker marker = myPlayer.getBoundsCacheEntity( index );
 		if ( marker == $null_entity ) {
 			continue;
 		}
-		
+
 		float range = marker.range * marker.range;
-		
+
 		if ( sys.vecLengthSquared( location - marker.getWorldOrigin() ) < range ) {
 			return false;
 		}
 	}
-	
+
 	return true;
 }
 
@@ -777,9 +777,9 @@ void BoundsDamage( entity self, float dmgIndex ) {
 	vector mins = self.getAbsMins();
 	vector maxs = self.getAbsMaxs();
 	mins_z = mins_z - 64;
-	
+
 	//sys.debugBounds( g_colorRed, mins, maxs, 0 );
-	
+
 	float count = self.entitiesInBounds( mins, maxs, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, 1 );
 	float index;
 	for ( index = 0; index < count; index++ ) {
@@ -854,7 +854,7 @@ void G_SetPrimaryObjectiveIndex( float objIndex ) {
 	entity worldspawn = sys.getEntity( "worldspawn" );
 
 	g_primaryObjectiveIndex = objIndex;
-	
+
 	float count = worldspawn.entitiesOfCollection( "objective_markers" );
 	float index;
 	for ( index = 0; index < count; index++ ) {
@@ -946,16 +946,16 @@ entity G_FindDeployedMCP() {
 	entity worldspawn = sys.getEntity( "worldspawn" );
 
 	float count = worldspawn.entitiesOfCollection( "mcp" );
-	
+
 	float i;
 	for ( i = 0; i < count; i++ ) {
 		entity ent = worldspawn.getBoundsCacheEntity( i );
-		
+
 		if ( ent.vIsDeployed() ) {
 			return ent;
 		}
 	}
-	
+
 	return $null_entity;
 }
 
@@ -968,16 +968,16 @@ entity G_FindMiningLaserMaterials() {
 		sys.error( "G_FindMiningLaserMaterials - No entityDef called 'gameplay/construction/mining_laser/objective'" );
 		return $null_entity;
 	}
-	
+
 	float count = worldspawn.entitiesOfType( entityDef );
 	if ( count > 1 ) {
 		sys.error( "G_FindMiningLaserMaterials - More than one 'gameplay/construction/mining_laser/objective' spawned" );
 		return $null_entity;
 	}
-	
+
 	if ( count < 1 ) {
 		return $null_entity;
 	}
-	
+
 	return worldspawn.getBoundsCacheEntity( 0 );
 }

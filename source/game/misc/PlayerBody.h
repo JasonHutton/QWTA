@@ -102,6 +102,8 @@ public:
 	const sdProgram::sdFunction*		hasNoUniformFunc;
 	const sdProgram::sdFunction*		prePlayerFullyKilledFunc;
 
+	virtual const char*					GetDefaultSurfaceType( void ) const { return "flesh"; }
+
 private:
 	void								SetupBody( void );
 

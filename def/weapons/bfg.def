@@ -1,0 +1,140 @@
+
+// Projectile Entity Def
+// ========================================================================
+
+entityDef projectile_bfg {
+	"spawnclass"					"idProjectile_RigidBody"
+	"mins"							"-24 -24 -24"
+	"maxs"							"24 24 24"
+	"model"							""
+
+	"scriptObject"					"projectile_bfg"
+	
+	"noshadows"							"1"
+
+	"dmg_damage"					"damage_bfg"
+	"dmg_splash_damage"				"damage_bfg_splash"
+	"dmg_beam_damage"				"damage_bfg_beam"
+	"dmg_bfg_effect"				"damage_bfg_effect"
+
+	"health"						"400"
+	"velocity"						"0 0 0"
+	"mass"							"1"
+	"gravity"						"0"
+	"fuse"							"-1"
+
+	"aor_layout"					"missile"
+
+	"detonate_on_fuse"				"0"
+	"detonate_on_death"				"1"
+	"detonate_on_world"				"1"
+	"detonate_on_actor"				"1"
+
+	"face_velocity"					"1"
+
+	"detonate_upwards"			"0"
+
+	"snd_launch"					"sounds/deployables/ssm/launch"
+	"fx_trail"						"effects/weapons/bfg/fly"
+	"fx_explode"					"effects/weapons/bfg/explode"
+	"fx_explode_water"				"effects/water/explosion"
+	"fx_explode_water_interior"		"effects/water/explosion_interior"
+	
+	"fx_beam"					"effects/weapons/bfg/beam"
+	"fx_beam_impact"				"effects/weapons/bfg/beam_impact"
+	"fx_bfg_effect"					"effects/weapons/bfg/bfg_effect"
+
+	"use_air_burst"					"0"
+	//"fx_airburst"					"effects/weapons/dmg/explode_air"
+
+	"ti_target_info"				"target_beacon"
+
+	"collection_mdfExport"				"mdfExport"
+
+	
+	// QWTA
+	"has_postthink"					"1"
+}
+
+damageDef damage_bfg {
+	damage							"damage_bfg"
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/bfg10k"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+}
+
+damageDef damage_bfg_splash {
+	damage							"damage_bfg"
+	radius							512
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/bfg10k"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+}
+
+damageDef damage_bfg_beam {
+	damage							"damage_bfg_beam"
+	radius							2048
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+	
+	tt_obituary						"tooltips/killmsgs/weapons/bfg10k"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+}
+
+damageDef damage_bfg_effect {
+	damage							"damage_bfg_effect"
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+	
+	tt_obituary						"tooltips/killmsgs/weapons/bfg10k"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+}
+
+damageFilter damage_bfg {
+	type {
+		target	"target_all"
+		damage	1000
+	}
+}
+
+damageFilter damage_bfg_beam {
+	type {
+		target	"target_all"
+		damage	1
+	}
+}
+
+damageFilter damage_bfg_effect {
+	type {
+		target	"target_all"
+		damage	500
+	}
+}

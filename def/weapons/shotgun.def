@@ -164,9 +164,9 @@ invItemDef inventory/weapons/shotgun {
 		"fov_spread"					"0.6"
 
 		"reload_ammo"					"1"
-		"fire_rate"						"0.75"
+		"fire_rate"						"0.825"
 
-		"num_projectiles"				"8"
+		"num_projectiles"				"10"
 		"low_ammo"						"3"
 
 		"gui_sight"						"game/sights/assaultrifle_scope"
@@ -206,13 +206,13 @@ invItemDef inventory/weapons/shotgun {
 
 		"spread_crouch_max_settle_time"		"600"
 
-		"spread_prone_min"					"4"
+		"spread_prone_min"					"3"
 		"spread_prone_max"					"5"
-		"spread_prone_inc"					"4"
+		"spread_prone_inc"					"3"
 
-		"spread_prone_viewrate_min"			"4"
+		"spread_prone_viewrate_min"			"3"
 		"spread_prone_viewrate_max"			"5"
-		"spread_prone_viewrate_inc"			"4"
+		"spread_prone_viewrate_inc"			"3"
 
 		"spread_prone_max_settle_time"		"600"
 
@@ -241,7 +241,7 @@ entityDef projectile_shotgun {
 	"inherit"							"projectile_bullet_base"
 
 	"range"								"4096"
-	"min_damage_percent"				"1"
+	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_shotgun"
 }
@@ -278,12 +278,12 @@ damageFilter damage_shotgun {
 
 	type {
 		target							"target_player_all"
-		damage							9
+		damage							10
 	}
 
 	type {
 		target							"target_veh_light_all"
-		damage							9
+		damage							10
 	}
 
 	type {
@@ -293,7 +293,7 @@ damageFilter damage_shotgun {
 
 	type {
 		target							"target_deployables_all"
-		damage							9
+		damage							10
 	}
 }
 

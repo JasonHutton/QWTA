@@ -210,6 +210,19 @@ model vehicle_goliath {
 	channel legs					( *origin )
 }
 
+deployObject deployobject_goliath {
+	"name"							"goliath"
+	"title"							"Goliath"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_goliath"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+}
+
 entityDef vehicle_goliath {
 	"inherit"						"vehicle_base_strogg"
 

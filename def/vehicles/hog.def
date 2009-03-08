@@ -62,7 +62,7 @@ deployObject deployobject_hog {
 	"title"							"Hog"
 	"wait_time"						"1000"
 	"def_deployable"				"vehicle_hog"
-	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"def_deployable_carrier"		"vehicle_strogg_drop_teleport"
 	"str_placement"					""
 	"mask"							"dm_default"
 	"object_radius"					"2048"
@@ -316,6 +316,8 @@ entityDef vehicle_hog {
 	"wake_point_3"					"-110 70 0"
 
 	"collide_dot_limit"				"-0.01"
+	
+	"always_drop"					"1"
 
 	// If you value your sanity, DO NOT MODIFY THESE.
 	// They are only here to prevent collision model modifications

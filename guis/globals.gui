@@ -80,6 +80,9 @@ stringMap gameHud {
 	
 	"parachuteActive"				"float"
 	"thirdEyeActive"				"float"
+	
+	"unconsciousTime"			"float"
+	"deadTime"				"float"
 	                            	
 	"weaponCrosshair"				"string"
 	

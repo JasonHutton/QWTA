@@ -15,18 +15,35 @@ object weapon_hyperblaster : weapon_clip {
 	void		SpinThread();
 	boolean		CanFire();
 
-	void		OnIronSightsEnabled() { hide(); }
-	void		OnIronSightsDisabled() { show(); }
+	void		OnIronSightsEnabled();
+	void		OnIronSightsDisabled();
 
 	float		spinSpeed;
 	float		spinSpeedFire;
-	
+
 	boolean		spinThreadActive;
+}
+
+void weapon_hyperblaster::OnIronSightsDisabled() {
+	if ( !hasTargetLock ) {
+		enableTargetLock( 0 );
+	}
+	UpdateCrosshair();
+	show();
+}
+
+void weapon_hyperblaster::OnIronSightsEnabled() {
+	if ( hasIronSightsLock ) {
+		enableTargetLock( 1 );
+	}
+	UpdateCrosshair();
+	hide();
 }
 
 void weapon_hyperblaster::preinit() {
 	hasScope		= false;
 	hasIronSights	= true;
+	hasIronSightsLock	= true;
 	hasEndFireAnim	= true;
 	hasHeat			= true;
 	usesStroyent	= true;
@@ -48,7 +65,7 @@ void weapon_hyperblaster::Raise() {
 	if ( hasHeat && ShouldRunGuis() ) {
 		CreateUpdateHeat();
 	}
-	
+
 	if ( !spinThreadActive ) {
 		thread SpinThread();
 		spinThreadActive = true;
@@ -61,7 +78,7 @@ void weapon_hyperblaster::Lower() {
 	if ( ShouldRunGuis() ) {
 		KillUpdateHeat();
 	}
-	
+
 	if ( spinThreadActive ) {
 		spinSpeed = 0;
 		fadeSound( SND_WEAPON_FIRE2, -60.0f, 0.2f );
@@ -79,7 +96,7 @@ boolean weapon_hyperblaster::CanFire() {
 		dryfireAttack = true;
 		return false;
 	}
-	
+
 	dryfireAttack = false;
 	return true;
 }
@@ -107,7 +124,7 @@ void weapon_hyperblaster::SpinThread() {
 
 	float jointBarrel		= getJointHandle( getKey( "joint_barrel" ) );
 	float jointBarrelWorld	= worldModel.getJointHandle( getKey( "joint_barrel_world" ) );
-	
+
 	startSound( "snd_barrel_loop", SND_WEAPON_FIRE2 );
 	startSound( "snd_barrel_loop_low", SND_WEAPON_FIRE3 );
 
@@ -141,7 +158,7 @@ void weapon_hyperblaster::SpinThread() {
 		fraction = fraction * fraction * fraction * fraction;
 		if ( fraction < 0.0001f ) {
 			fraction = 0.f;
-			
+
 			fadeSound( SND_WEAPON_FIRE2, -60.0f, 1.0f );
 			fadeSound( SND_WEAPON_FIRE3, -60.0f, 1.0f );
 		} else {
@@ -153,11 +170,11 @@ void weapon_hyperblaster::SpinThread() {
 
 			float volume = sys.sqrt( sys.sin( fraction * 90 ) ) * 20.0f - 20.0f;
 			fadeSound( SND_WEAPON_FIRE2, volume, 0.0f );
-			
+
 			float volumeLow = sys.sqrt( sys.sin( ( 1.0f - fraction ) * 90 ) ) * 5.0f - 5.0f;
 			fadeSound( SND_WEAPON_FIRE3, volumeLow, 0.0f );
 		}
-		
+
 		sys.waitFrame();
 	}
 }

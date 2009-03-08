@@ -43,6 +43,18 @@ model vehicle_bumblebee {
 	}
 }
 
+deployObject deployobject_bumblebee {
+	"name"							"bumblebee"
+	"title"							"Bumblebee"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_bumblebee"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+}
+
 entityDef vehicle_bumblebee {
 	"inherit"						"vehicle_base_gdf"
 

@@ -1083,6 +1083,7 @@ public:
 	bool					Bot_CheckIfEnemyHasUsInTheirSightsWhenInAirVehicle();
 
 //mal: vehicle combat/misc utility functions
+	int						CallForNewVehicle( int vehicleType );
 	int						FindClosestVehicle( float range, const idVec3& org, const playerVehicleTypes_t vehicleType, int vehicleFlags, int vehicleIgnoreFlags, bool emptyOnly );
 	void					GetVehicleInfo( int entNum, proxyInfo_t& vehicleInfo ) const;
 	const proxyInfo_t *		GetBotVehicleInfo( int entNum ) const;

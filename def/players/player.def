@@ -160,7 +160,17 @@ entityDef player_base {
 	"ti_content_bounds_filter"			"target_content_bounds"
 	
 	"do_object_husky"					"deployobject_husky"
+	"do_object_badger"					"deployobject_badger"
+	"do_object_trojan"					"deployobject_trojan"
+	"do_object_titan"					"deployobject_titan"
+	"do_object_anansi"					"deployobject_anansi"
+	"do_object_bumblebee"					"deployobject_bumblebee"
+	"do_object_platypus"					"deployobject_platypus"
 	"do_object_icarus"					"deployobject_icarus"
+	"do_object_hog"						"deployobject_hog"
+	"do_object_desecrator"					"deployobject_desecrator"
+	"do_object_goliath"					"deployobject_goliath"
+	"do_object_hornet"					"deployobject_hornet"
 }
 
 toolTip proficiency_upgrade_respawn {

@@ -33,13 +33,13 @@ object strogg_drop {
 	float			launchTime;
 
 	vector			startPos;
-	
+
 	boolean			alwaysDrop;
 	boolean			cancelled;
-	
+
 	entity			vGetItem() {
 		return item;
-	}	
+	}
 }
 
 void strogg_drop::preinit() {
@@ -74,6 +74,7 @@ void strogg_drop::Idle() {
 	float endTime;
 	float soundTime;
 	vector currentPos;
+	float savedBouncyness;
 
 	// FeaRog: wait for the server to synchronise the launch info through to avoid weirdness
 	while( launchTime < 0 ) {
@@ -81,6 +82,11 @@ void strogg_drop::Idle() {
 	}
 
 	playEffect( "fx_trail", "", 1 );
+
+	if ( item != $null_entity ) {
+		savedBouncyness = item.getBouncyness();
+		item.setBouncyness( 0.6 );
+	}
 
 	//
 	// Part 1 parabolic reentry
@@ -113,7 +119,7 @@ void strogg_drop::Idle() {
 		if ( roots > 0 ) {
 			time_zero = sys.getRoot( 0 );
 		}
-		
+
 		soundTime += time_zero - STROGG_DROP_SOUND_TIME;
 	}
 
@@ -122,7 +128,7 @@ void strogg_drop::Idle() {
 	//
 	while ( true ) {
 		sys.waitFrame();
-		
+
 		if( !ContinueDrop() ) {
 			// player switched teams before we've deployed
 			stopEffect( "fx_trail" );
@@ -134,12 +140,12 @@ void strogg_drop::Idle() {
 			}
 
 			ClearRequest();
-			
+
 			if( !sys.isClient() ) {
 				item.remove();
 				remove();
 			}
-			
+
 			return;
 		}
 
@@ -178,6 +184,7 @@ void strogg_drop::Idle() {
 		item.setOrigin( itemTargetPos );
 		item.setAngles( getAngles() );
 		item.vOnDeploy();
+		item.setBouncyness( savedBouncyness );
 	}
 
 	sys.wait( 5.f );
@@ -210,7 +217,7 @@ void strogg_drop::OnSetDeploymentParms( float deploymentItemIndex, float playerI
 	deployPlayerIndex	= playerIndex;
 	itemTargetPos		= target;
 	itemRotation		= rotation;
-	
+
 	player p = sys.getClient( playerIndex );
 	item = sys.spawnType( deploymentItemIndex );
 	item.vSetDeployableOwner( p );
@@ -273,11 +280,11 @@ boolean strogg_drop::ContinueDrop() {
 	if( getEntityAllegiance( p ) != TA_FRIEND ) {
 		return false;
 	}
-	
+
 	if( sys.getTerritoryForPoint( itemTargetPos, getGameTeam(), 1.f, 0.f ) == $null_entity ) {
 		return false;
 	}
-	
+
 	return !cancelled;
 }
 

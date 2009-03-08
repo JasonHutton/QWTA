@@ -1,0 +1,91 @@
+
+object vehicle_weapon_chargeshot : vehicle_weapon_vrof {
+	void		preinit();
+
+	void				Idle();
+	void		Fire();
+
+	float	trigger_delay;
+
+	string	muzzleChargeFX;
+	string	muzzleChargeSound;
+	string	muzzleChargeSoundLocal;
+}
+
+void vehicle_weapon_chargeshot::preinit() {
+	trigger_delay = getFloatKey( "trigger_delay" );
+	muzzleChargeFX		= getKey( "muzzle_charge" );
+	muzzleChargeSound			= getKey( "muzzle_chargesound" );
+	muzzleChargeSoundLocal	= getKey( "muzzle_chargesound_local" );
+}
+
+void vehicle_weapon_chargeshot::Idle() {
+	SetCrosshair();
+
+	while ( true ) {
+		sys.waitFrame();
+
+		UpdateCharge();
+
+		if ( user != $null_entity ) {
+			user.proxyFiringWeaponStart = false;
+			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
+				if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime ) {
+					vehicle.playJointEffect( muzzleChargeFX, jointHandle, 0 );
+					if( user == sys.getLocalPlayer() ) {
+						vehicle.playJointEffect( muzzleChargeSoundLocal, jointHandle, 0 );
+					}
+					else {
+						vehicle.playJointEffect( muzzleChargeSound, jointHandle, 0 );
+					}
+					sys.wait( trigger_delay );
+
+					if( !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
+						user.proxyFiringWeaponStart = true;
+						if ( sys.getTime() >= reFireTime ) {
+							setState( "Fire" );
+						}
+					}
+					else {
+						// Got emp'd mid-charge.
+					}
+				}
+			}
+		}
+	}
+}
+
+void vehicle_weapon_chargeshot::Fire() {
+	vector origin = vehicle.getJointPos( jointHandle );
+
+	vector vehicleVelocity = vehicle.getLinearVelocity();
+	vehicleVelocity_z = 0.f;
+
+	float velocityLength = sys.vecLength( velocity );
+	vector forward;
+	if ( user != $null_entity ) {
+		forward = sys.angToForward( user.getRenderViewAngles() );
+	} else {
+		forward = vehicle.jointToWorldSpace( jointHandle, velocity ) * ( 1 / velocityLength );
+	}
+
+	vector projectileVelocity = forward * velocityLength;
+
+	float forwardVelocity = vehicleVelocity * forward;
+	if ( forwardVelocity > 0.0f ) {
+		projectileVelocity += forward * forwardVelocity;
+	}
+
+	vehicle.launchMissileSimple( user, vehicle, $null_entity, projectileIndex, -1, spread, origin, projectileVelocity );
+	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+	if( user == sys.getLocalPlayer() ) {
+		vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
+	} else {
+		vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+	}
+
+	AddReFireDelay( fireRate );
+	RemoveCharge();
+
+	GoToIdle();
+}

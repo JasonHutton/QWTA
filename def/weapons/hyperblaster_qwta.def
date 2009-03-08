@@ -1,0 +1,166 @@
+#include <def/damage.include>
+
+entityDef projectile_hyperblaster {
+	"spawnclass"				"idProjectile_RigidBody"
+	//"scriptObject"				"projectile_missile"
+	"scriptObject"				"projectile_homingnail"
+	"aor_layout"				"missile"
+	"mins"					"-1 -1 -1"
+	"maxs"					"1 1 1"
+	"cone"					"3"
+	"scale"					"1"
+	"noshadows"				"1"
+	"model" 				""
+	"launchFromBarrel"			"1"
+	"health"				"0"
+	"velocity"				"2500 0 0"
+	"face_velocity"				"1"
+	"angular_velocity"			"0 0 0"
+	"bounce"				"0"
+	"mass"					"1"
+	"gravity"				"0"
+	"fuse"					"4.0"
+	"detonate_on_fuse"			"1"
+	"detonate_on_death"			"0"
+	"detonate_on_world"			"1"
+	"detonate_on_actor"			"1"
+	
+	"fx_splash"				"effects/base/impact_water_large"
+	"fx_trail"				"effects/weapons/hyperblaster/bolt"
+	//"fx_explode"				"effects/weapons/plasmacannon/explode_small"
+	//"fx_explode_sand"			"effects/weapons/plasmacannon/explode"
+	//"fx_explode_water"			"effects/water/explosion"
+	
+	"fx_ricochet"				"effects/base/bullets/ricochet"
+	"fx_ricochet_flesh"			"effects/base/bullets/ricochet_blank"
+	"fx_ricochet_water"			"effects/base/bullets/ricochet_blank"
+	
+	"fx_explode"				"effects/impacts/railgun/impact_default"
+	"fx_explode_pavement"		"effects/impacts/railgun/impact_pavement"
+	"fx_explode_stone"			"effects/impacts/railgun/impact_stone"
+	"fx_explode_concrete"		"effects/impacts/railgun/impact_stone"
+	"fx_explode_dirt"			"effects/impacts/railgun/impact_dirt"
+	"fx_explode_mud"			"effects/impacts/railgun/impact_dirt"
+	"fx_explode_flesh"			"effects/impacts/railgun/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/railgun/impact_glass"
+	"fx_explode_ice"			"effects/impacts/railgun/impact_glass"
+	"fx_explode_gravel"			"effects/impacts/railgun/impact_stone"
+	"fx_explode_metal"			"effects/impacts/railgun/impact_metal"
+	"fx_explode_metal_thick"	"effects/impacts/railgun/impact_metal"
+	"fx_explode_dusty_road"		"effects/impacts/railgun/impact_sand"
+	"fx_explode_sand"			"effects/impacts/railgun/impact_sand"
+	"fx_explode_snow"			"effects/impacts/railgun/impact_snow"
+	"fx_explode_wood"			"effects/impacts/railgun/impact_wood"
+	"fx_explode_wood_thick"		"effects/impacts/railgun/impact_wood"
+	"fx_explode_liquid"			"effects/impacts/railgun/impact_liquid"
+	"fx_explode_water"			"effects/impacts/railgun/impact_liquid"
+	"fx_explode_water_interior"	"effects/impacts/railgun/impact_liquid"
+	"fx_explode_forcefield"		"effects/impacts/railgun/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/railgun/impact_grass"
+ 	"fx_explode_plastic"		"effects/impacts/railgun/impact_plastic"
+	 	
+ 	// Bullet holes (cheaper than the effects system ones)
+	"dec_impact"				"bullets/stone"
+	"dec_impact_pavement"			"bullets/stone"
+	"dec_impact_stone"			"bullets/stone"
+	"dec_impact_concrete"			"bullets/stone"
+	"dec_impact_dirt"			"bullets/stone"
+	"dec_impact_mud"			"bullets/stone"
+	// flesh
+	"dec_impact_glass"			"bullets/glass"
+	"dec_impact_ice"			"bullets/glass"
+	//gravel
+	"dec_impact_metal"			"bullets/metal"
+	"dec_impact_metal_thick"		"bullets/metal"
+	"dec_impact_dusty_road"			"bullets/stone"
+	"dec_impact_sand"			"bullets/stone"
+	//snow
+	"dec_impact_wood"			"bullets/wood"
+	"dec_impact_wood_thick"			"bullets/wood"
+	"dec_impact_grass"			"bullets/stone"
+
+	"dec_impact_forcefield"			"_"
+	"dec_impact_water"			"_"
+	
+	
+	//"snd_fly"				"sounds/weapons/plasmacannon/fly"
+	"snd_fly"				"sounds/deployables/ssg/fly"
+	
+	"dmg_damage"				"damage_hyperblaster"
+	"dmg_splash_damage"			"damage_hyperblaster_splash"
+	
+	//"use_air_burst"				"1"
+	//"fx_airburst"				"effects/weapons/plasmacannon/explode_small_air"
+	
+	"collection_mdfExport"				"mdfExport"
+	
+	"thrust_power"						"3000"
+	"has_thrust"						"1"
+}
+
+entityDef projectile_hyperblaster_desecrator {
+	"inherit"							"projectile_hyperblaster"
+	"dmg_damage"						"damage_hyperblaster_desecrator"
+	"dmg_splash_damage"					"damage_hyperblaster_desecrator_splash"
+}
+
+entityDef projectile_hyperblaster_hog {
+	"inherit"							"projectile_hyperblaster"
+	"dmg_damage"						"damage_hyperblaster_hog"
+	"dmg_splash_damage"					"damage_hyperblaster_hog_splash"
+}
+
+entityDef projectile_hyperblaster_hornet {
+	"inherit"							"projectile_hyperblaster"
+	"dmg_damage"							"damage_hyperblaster_hornet"
+	"dmg_splash_damage"						"damage_hyperblaster_hornet_splash"
+}
+
+damageDef damage_hyperblaster_splash {
+	templates/vehicles/weapons/hyperblaster/damage_splash( "hyperblaster", "pro_aggressor_damage" )
+}
+
+damageDef damage_hyperblaster_hornet_splash {
+	templates/vehicles/weapons/hyperblaster/damage_splash( "hornet_weapons", "pro_vehicle_damage" )
+}
+
+damageDef damage_hyperblaster_hog_splash {
+	templates/vehicles/weapons/hyperblaster/damage_splash( "hog_weapons", "pro_vehicle_damage" )
+}
+
+damageDef damage_hyperblaster_desecrator_splash {
+	templates/vehicles/weapons/hyperblaster/damage_splash( "desecrator_weapons", "pro_vehicle_damage" )
+}
+
+damageFilter damage_hyperblaster_splash {
+	
+	type {
+		target	"target_player_all"
+		damage	30
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	30
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	30
+	}
+
+	type {
+		target	"target_explodable"
+		damage	30
+	}
+}
+
+targetInfo hyperblaster_lock_filter {
+	include collection "deployables"
+	include collection "players"
+	include collection "mountables"
+	include collection "vehicles"
+	exclude collection "nolock"
+
+	require alive
+}

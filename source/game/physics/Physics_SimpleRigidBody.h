@@ -72,6 +72,7 @@ public:
 	void					SetFriction( const float linear, const float angular, const float contact ) { ; }
 	void					SetWaterFriction( const float linear, const float angular );
 	void					SetBouncyness( const float b );
+	float					GetBouncyness( void ) const { return normalBouncyness; } // This is seriously asking for trouble, but... -- Azuvector
 	void					SetBouncyness( float normal, float tangential, float angular );
 	void					SetStopSpeed( float stopSpeed );
 

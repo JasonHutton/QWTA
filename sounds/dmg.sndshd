@@ -1,0 +1,18 @@
+sound sounds/weapons/dmg/fly {
+	volume	-5
+	minDistance	25
+	maxDistance 175
+	looping
+	
+	sounds/weapons/dmg/energy_loop.wav
+}
+
+sound sounds/weapons/dmg/explode {
+
+	volume 5
+	minDistance 100
+	maxDistance 200
+	shakes 0.1
+
+	sounds/weapons/dmg/energy_burst.wav
+}

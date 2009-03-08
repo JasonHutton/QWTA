@@ -1842,6 +1842,15 @@ void idGameLocal::ServerProcessReliableMessage( int clientNum, const idBitMsg &m
 			}
 			break;
 		}
+		case GAME_RELIABLE_CMESSAGE_CLASSSWITCH_UNCHECKED: {
+			int index = msg.ReadLong();
+			int classOption = msg.ReadLong();
+			const sdDeclPlayerClass* pc = declPlayerClassType.SafeIndex( index );
+			if ( pc != NULL ) {
+				client->ChangeClass( pc, classOption, true );
+			}
+			break;
+		}
 		case GAME_RELIABLE_CMESSAGE_CHANGEWEAPON: {
 			int id = msg.ReadLong();
 			if ( client->GetInventory().CanEquip( id, true ) ) {

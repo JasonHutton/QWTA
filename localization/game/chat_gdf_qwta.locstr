@@ -1,0 +1,50 @@
+// Original last: 0200286 in the original chat_gdf_bot.locstr file.
+// This file last: 0200294
+
+/*
+==================
+ GDF Vehicles
+==================
+*/
+
+/*
+ * From original chat_gdf.locstr:
+locString gdf/quickchat/vehicles/needvehicle  {
+	text "#str_0200101" // "Request Husky"
+}*/
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_husky  {
+	text "#str_0200101" // "Request Husky"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_armadillo  {
+	text "#str_0200287" // "Request Armadillo"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_trojan  {
+	text "#str_0200288" // "Request Trojan"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_titan  {
+	text "#str_0200289" // "Request Titan"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_anansi  {
+	text "#str_0200290" // "Request Anansi"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_bumblebee  {
+	text "#str_0200291" // "Request Bumblebee"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops  {
+	text "#str_0200292" // "Vehicle Drops"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_platypus  {
+	text "#str_0200293" // "Request Platypus"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_jupiter {
+	text "#str_0200294" // "Request Jupiter"
+}

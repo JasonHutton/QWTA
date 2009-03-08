@@ -39,4 +39,20 @@ private:
 	const sdDeclDamage*			_damageDecl;
 };
 
+class sdPhysicsEvent_RadiusPull : public sdPhysicsEvent {
+public:
+								sdPhysicsEvent_RadiusPull( nodeType_t& list, const idVec3 &origin, float radius, const sdDeclDamage* damageDecl, float push, const idEntity *inflictor, const idEntity *ignore, int flags );
+
+	void						Apply( void ) const;
+
+private:
+	idVec3						_origin;
+	float						_radius;
+	float						_push;
+	idEntityPtr< idEntity >		_inflictor;
+	idEntityPtr< idEntity >		_ignore;
+	int							_flags;
+	const sdDeclDamage*			_damageDecl;
+};
+
 #endif // __PHYSICS_EVENT_H__

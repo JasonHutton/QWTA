@@ -285,6 +285,9 @@ const idEventDef EV_GetJointHandle( "getJointHandle", 'd', DOC_TEXT( "Returns a 
 const idEventDef EV_GetDefaultSurfaceType( "getDefaultSurfaceType", 's', DOC_TEXT( "Returns the name of the $decl:surfaceType$ to use for parts of the entity with no $decl:surfaceType$." ), 0, NULL );
 const idEventDef EV_ForceRunPhysics( "forceRunPhysics", '\0', DOC_TEXT( "Runs a physics tic for the entity." ), 0, NULL );
 
+const idEventDef EV_SetBouncyness( "setBouncyness", '\0', DOC_TEXT( "Sets the entity's bouncyness." ), 1, NULL, "f", "bouncyness" );
+const idEventDef EV_GetBouncyness( "getBouncyness", 'f', DOC_TEXT( "Gets the entity's bouncyness." ), 0, NULL );
+
 idEntity::entityCache_t					idEntity::scriptEntityCache;
 sdPair< bool, idEntity::entityCache_t >	idEntity::savedEntityCache[ NUM_ENTITY_CAHCES ];
 sdCrosshairInfo*						idEntity::crosshairInfo = NULL;
@@ -513,6 +516,9 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_GetDefaultSurfaceType,		idEntity::Event_GetDefaultSurfaceType )
 
 	EVENT( EV_ForceRunPhysics,				idEntity::Event_ForceRunPhysics )
+
+	EVENT( EV_SetBouncyness,				idEntity::Event_SetBouncyness )
+	EVENT( EV_GetBouncyness,				idEntity::Event_GetBouncyness )
 END_CLASS
 
 /*
@@ -3832,6 +3838,34 @@ void idEntity::ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOr
 
 /*
 ============
+idEntity::ApplyRadiusPull - QWTA
+============
+*/
+void idEntity::ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius ) {
+	// scale the push for the inflictor
+	// scale by the push scale of the entity
+	idVec3 impulse = pushOrigin - entityOrigin;//entityOrigin - pushOrigin;
+	float dist = impulse.Normalize();
+	if ( dist > radius ) {
+		return;
+	}
+
+	float distScale = Square( 1.0f - dist / radius );
+	impulse.z += 1.0f;
+	float scale = distScale * pushScale * GetRadiusPushScale();
+	if ( damageDecl != NULL ) {
+		scale *= damageDecl->GetPush();
+	}
+	if ( idMath::Fabs( scale ) < idMath::FLT_EPSILON ) {
+		return;
+	}
+
+	// push the force application point closer to the entity so it causes less rotation
+	GetPhysics()->AddForce( 0, ( pushOrigin + entityOrigin ) * 0.5f, impulse * scale );
+}
+
+/*
+============
 idEntity::CanDamage
 
 Returns true if the inflictor can directly damage the target.  Used for
@@ -5074,6 +5108,58 @@ void idEntity::Event_SetFriction( float linear, float angular, float contact ) {
 		simpleRigidBody->SetFriction( linear, angular, contact );
 		return;
 	}
+}
+
+/*
+================
+idEntity::Event_SetBouncyness
+================
+*/
+void idEntity::Event_SetBouncyness( float bouncyness ) {
+	idPhysics* physics = GetPhysics();
+
+	idPhysics_RigidBody* rigidBody = physics->Cast< idPhysics_RigidBody >();
+	if ( rigidBody != NULL ) {
+		rigidBody->SetBouncyness( bouncyness );
+		return;
+	}
+
+	sdPhysics_RigidBodyMultiple* rigidBodyMult = physics->Cast< sdPhysics_RigidBodyMultiple >();
+	if ( rigidBodyMult != NULL ) {
+		rigidBodyMult->SetBouncyness( bouncyness );
+	}
+
+	sdPhysics_SimpleRigidBody* simpleRigidBody = physics->Cast< sdPhysics_SimpleRigidBody >();
+	if ( simpleRigidBody != NULL ) {
+		simpleRigidBody->SetBouncyness( bouncyness );
+		return;
+	}
+}
+
+/*
+================
+idEntity::Event_GetBouncyness
+================
+*/
+float idEntity::Event_GetBouncyness( void ) {
+	idPhysics* physics = GetPhysics();
+
+	idPhysics_RigidBody* rigidBody = physics->Cast< idPhysics_RigidBody >();
+	if ( rigidBody != NULL ) {
+		return rigidBody->GetBouncyness();
+	}
+
+	sdPhysics_RigidBodyMultiple* rigidBodyMult = physics->Cast< sdPhysics_RigidBodyMultiple >();
+	if ( rigidBodyMult != NULL ) {
+		return rigidBodyMult->GetBouncyness();
+	}
+
+	sdPhysics_SimpleRigidBody* simpleRigidBody = physics->Cast< sdPhysics_SimpleRigidBody >();
+	if ( simpleRigidBody != NULL ) {
+		return simpleRigidBody->GetBouncyness();
+	}
+
+	//return 1.0; // Bullshit default! :D
 }
 
 /*
