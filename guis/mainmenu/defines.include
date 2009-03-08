@@ -1,0 +1,14 @@
+
+#ifndef __mainmenu_defines__
+#define __mainmenu_defines__
+
+#define MB_YESNO 			1
+#define MB_OK 				2
+#define	MB_ICON_INFO 		4
+#define	MB_ICON_ERROR 		8
+#define	MB_ICON_QUESTION  	16
+#define	MB_YESNOCANCEL  	32
+
+#define BAR_WIDTH ( SCREEN_WIDTH - $evalint( PADDING * 2 ) )
+
+#endif // !__mainmenu_defines__

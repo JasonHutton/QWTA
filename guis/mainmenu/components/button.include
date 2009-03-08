@@ -1,0 +1,265 @@
+
+#ifndef __component_button__
+#define __component_button__
+
+#ifndef BUTTON_HEIGHT
+#define BUTTON_HEIGHT 	16
+#endif
+
+#ifndef BUTTON_WIDTH
+#define BUTTON_WIDTH 	80
+#endif
+
+$template _btn_init
+	properties {
+		handle	btnGradMaterial		= cacheMaterial( "_btnGrad", "_3h button_grad" );
+		handle	btnLineMaterial		= cacheMaterial( "_btnLine", "_3h button_line" );
+		handle	btnFillMaterial		= cacheMaterial( "_btnFill", "_3h button_fill" );
+	}
+$endtemplate
+
+// ----------------------
+// Button controls
+// ----------------------
+$template _button( NameParm, xPos, yPos, widthParm, heightParm )
+	windowDef btn##NameParm {
+		properties {
+			float	fontSize 				= 12;
+			vec2	textOffset				= 0,1;
+
+			rect	rect					= xPos, yPos, widthParm, heightParm;
+			color	lineColor				= COLOR_BUTTON_LINES;
+			color	fillColor				= COLOR_BUTTON_FILL;
+			color	gradientColor			= COLOR_BUTTON_GRADIENT;
+			color	foreColor				= COLOR_TEXT;
+		}
+		_fadable
+		_tab_stop
+
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.btnFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.btnGradMaterial, absoluteRect, gradientColor );
+				gui.scriptPushFloat( true );
+			}
+			onPostDraw {
+				drawCachedMaterial( gui.btnLineMaterial, absoluteRect, lineColor );
+			}
+
+			onNamedEvent "highlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				foreColor = transition( foreColor, COLOR_TEXT_HIGHLIGHT, ACTIVATE_TRANSITION_TIME );
+				gradientColor = transition( gradientColor, COLOR_BUTTON_HI_GRADIENT, ACTIVATE_TRANSITION_TIME );
+			}
+			onNamedEvent "unhighlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+				if( compare( gui.focusedWindow, name ) == false ) {
+					foreColor = transition( foreColor, COLOR_TEXT, ACTIVATE_TRANSITION_TIME );
+ 				}
+				gradientColor = transition( gradientColor, COLOR_BUTTON_GRADIENT, ACTIVATE_TRANSITION_TIME );
+			}
+			onPropertyChanged "allowEvents" {
+				callSuper();
+				if( allowEvents == false ) {
+					postNamedEvent( "unhighlight" );
+				}
+			}
+			onNamedEvent "onFadeIn" {
+				callSuper();
+				allowEvents = true;
+			}
+			onNamedEvent "onFadeOut" {
+				callSuper();
+				allowEvents = false;
+			}
+			onGainFocus {
+			    foreColor = COLOR_TEXT_HIGHLIGHT;
+			}
+			onLoseFocus {
+				foreColor = COLOR_TEXT;
+			}
+			onMouseEnter {
+				postNamedEvent( "highlight" );
+				gui.playSound( "boop" );
+			}
+			onMouseExit {
+				postNamedEvent( "unhighlight" );
+			}
+			onAccept {
+           		gui.playSound( "accept" );
+				postOptionalNamedEvent( "onAction" );
+			}
+			onKeyUp "mouse1" {
+				gui.playSound( "accept" );
+				postOptionalNamedEvent( "onAction" );
+			}
+		}
+
+$endtemplate
+
+$template _end_button
+	}
+$endtemplate
+
+$template _button_action( action )
+	events {
+		onNamedEvent "onAction"  {
+			action
+		}
+	}
+$endtemplate
+
+$template _button_disable_if( property, predicate )
+	events {
+		onCreate {
+			callSuper();
+			postNamedEvent( "checkEnabled" );
+		}
+		onNamedEvent "onShow" {
+			callSuper();
+			postNamedEvent( "checkEnabled" );
+		}
+		$if( property != "" )
+		onPropertyChanged property {
+			callSuper();
+			postNamedEvent( "checkEnabled" );
+		}
+		$endif
+
+		onNamedEvent "checkEnabled" {
+			callSuper();
+			if( predicate ) {
+				allowEvents = false;
+				colorMultiplier.a = 0.35;
+			} else {
+				allowEvents = true;
+				colorMultiplier.a = 1;
+			}
+		}
+	}
+$endtemplate
+
+$template _button_disable_if_not( property, predicate )
+	events {
+		onCreate {
+			callSuper();
+			postNamedEvent( "checkEnabled" );
+		}
+		onNamedEvent "onShow" {
+			callSuper();
+			postNamedEvent( "checkEnabled" );
+		}
+		$if( property != "" )
+		onPropertyChanged property {
+		    callSuper();
+			postNamedEvent( "checkEnabled" );
+		}
+		$endif
+		onNamedEvent "checkEnabled" {
+		    callSuper();
+			if( predicate ) {
+				allowEvents = true;
+				colorMultiplier.a = 1;
+			} else {
+				allowEvents = false;
+				colorMultiplier.a = 0.35;
+			}
+		}
+	}
+$endtemplate
+
+$template _button_arrows( NameParm, XPos, YPos, WidthParm, HeightParm )
+	_button( NameParm, XPos, YPos, WidthParm, HeightParm )
+
+	properties {
+		rect	leftRect		= absoluteRect.x + 20, absoluteRect.y + 2, 20, 12;
+		rect	rightRect		= absoluteRect.x + absoluteRect.w - 40, absoluteRect.y + 2, 20, 12;
+
+		handle	leftMaterialT 	= gui.cacheMaterial( "arrowleftt", "_st arrowleft_t" );
+		handle	leftMaterialB 	= gui.cacheMaterial( "arrowleftb", "_st arrowleft_b" );
+
+		handle	rightMaterialT 	= gui.cacheMaterial( "arrowrightt", "_st arrowright_t" );
+		handle	rightMaterialB 	= gui.cacheMaterial( "arrowrightb", "_st arrowright_b" );
+
+		handle	leftAddMaterialT = gui.cacheMaterial( "arrowleft_addt", "_st arrowleft_add_t" );
+		handle	leftAddMaterialB = gui.cacheMaterial( "arrowleft_addb", "_st arrowleft_add_b" );
+
+		handle	rightAddMaterialT = gui.cacheMaterial( "arrowright_addt", "_st arrowright_add_t" );
+		handle	rightAddMaterialB = gui.cacheMaterial( "arrowright_addb", "_st arrowright_add_b" );
+
+		color	gradOverlayColor = 0, 0, 0, 0;
+		color	arrowOverlayColor = COLOR_BLACK;
+	}
+
+	events {
+		onPreDraw {
+			callSuper();
+			drawCachedMaterial( leftMaterialT, "leftRect.x,leftRect.y,leftRect.w,leftRect.h * 0.5", COLOR_BTN_FANCY_ARROW );
+			drawCachedMaterial( leftMaterialB, "leftRect.x,leftRect.y + ( leftRect.h * 0.5 ),leftRect.w,leftRect.h * 0.5", COLOR_BTN_FANCY_ARROW );
+
+			drawCachedMaterial( rightMaterialT, "rightRect.x,rightRect.y,rightRect.w,rightRect.h * 0.5", COLOR_BTN_FANCY_ARROW );
+			drawCachedMaterial( rightMaterialB, "rightRect.x,rightRect.y + ( rightRect.h * 0.5 ),rightRect.w,rightRect.h * 0.5", COLOR_BTN_FANCY_ARROW );
+
+			drawCachedMaterial( leftAddMaterialT, "leftRect.x,leftRect.y,leftRect.w,leftRect.h * 0.5", arrowOverlayColor );
+			drawCachedMaterial( leftAddMaterialB, "leftRect.x,leftRect.y + ( leftRect.h * 0.5 ),leftRect.w,leftRect.h * 0.5", arrowOverlayColor );
+
+			drawCachedMaterial( rightAddMaterialT, "rightRect.x,rightRect.y,rightRect.w,rightRect.h * 0.5", arrowOverlayColor );
+			drawCachedMaterial( rightAddMaterialB, "rightRect.x,rightRect.y + ( rightRect.h * 0.5 ),rightRect.w,rightRect.h * 0.5", arrowOverlayColor );
+
+//				gui.scriptPushFloat( true );
+		}
+
+		onMouseEnter {
+			callSuper();
+			gradOverlayColor 	= transition( gradOverlayColor, COLOR_BTN_FANCY_GRADIENT, ACTIVATE_TRANSITION_TIME );
+			foreColor.a 		= transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+
+			arrowOverlayColor = transition( arrowOverlayColor, COLOR_BTN_FANCY_ARROW, 200 );
+
+			timeline.default.resetTime( 0 );
+			timeline.default.active = true;
+		}
+
+		onMouseExit {
+			callSuper();
+			timeline.default.resetTime( 9999 );
+
+			gradOverlayColor = transition( gradOverlayColor, COLOR_BLACK, ACTIVATE_TRANSITION_TIME );
+			foreColor.a = transition( foreColor.a, 0.5, ACTIVATE_TRANSITION_TIME );
+
+			arrowOverlayColor = transition( arrowOverlayColor, COLOR_BLACK, 750, "0.2,0.9" );
+		}
+	}
+	timeline {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 2, 500 );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 22, 500 );
+		}
+		// bobbing loop
+		onTime 500 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 15, 1000, "0, 0.5" );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 35, 1000, "0, 0.5" );
+		}
+
+		onTime 1500 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 2, 1000, "0.75, 1" );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 22, 1000, "0.75, 1" );
+		}
+		onTime 2500 {
+			resetTime( 500 );
+		}
+		onTime 9999 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 20, 300 );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 40, 300 );
+		}
+	}
+$endtemplate
+
+$template _end_button_arrows
+	_end_button
+$endtemplate
+
+#endif // !__component_button__

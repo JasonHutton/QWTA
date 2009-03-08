@@ -1,0 +1,816 @@
+
+#include <guis/common/colors.include>
+#include <guis/common/utility.include>
+#include <guis/mainmenu/components/dialog.include>
+
+#include "script/items/item_states.include"
+
+#ifndef __hud_objectives__
+#define __hud_objectives__
+
+$template __objective_background( ObjectiveProperty, HeightParm, ShowDivider, FlashProperty )
+	properties {
+		rect 	rect 			= offset - widthBump, 142 - heightBump, 108 + ( 2 * widthBump ), HeightParm + ( 2 * heightBump );
+		float 	shouldShow 		= ObjectiveProperty && gui.compass.shouldShow;
+		color 	colorMultiplier = 1, 1, 1, 0;
+		rect	flashRectBase	= absoluteRect.x - flashRect.x, absoluteRect.y - flashRect.y, absoluteRect.w + flashRect.w, absoluteRect.h + flashRect.h;
+		rect	flashRect		= 0, 0, 0, 0;
+		float	flashAlpha		= 0;
+		float	bumpSize		= 0;
+		float	widthBump		= 0;
+		float	heightBump		= 0;
+		float	offset			= 0;
+		rect	objText			= offset - widthBump, absoluteRect.y - 20, 108 + ( 2 * widthBump ), 16;
+		color	objColor		= 1,1,1,0;
+		float	objOffset		= 160;
+		float	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+		color	fillColorBase	= COLOR_DIALOG_FILL;
+		color	highlightColor	= COLOR_HUD_TUTORIAL_HIGHLIGHT;
+	}
+	_draw_dialog_frame( drawText, gui.blankWStr, "nogradient" )
+
+// hide text underneath the objective
+	events {
+		onCreate {
+			if( shouldShow ) {
+				_fadein
+			}
+		}
+		onPropertyChanged "shouldShow" {
+			if( shouldShow ) {
+				_fadein
+			} else {
+				_fadeout
+			}
+		}
+		onPropertyChanged #ObjectiveProperty "player.teamName" {
+			if( ObjectiveProperty ) {
+				timeline.default.active = true;
+				timeline.default.resetTime( 0 );
+				
+				timeline.move.active = true;
+				timeline.move.resetTime( 0 );
+			}
+		}		
+		onPropertyChanged #FlashProperty {
+			if ( FlashProperty ) {
+				timeline.default.loop = true;
+				timeline.default.active = true;		
+				timeline.default.resetTime( 800 );
+			} else {
+				timeline.default.active = false;
+				timeline.default.loop = false;
+			}
+		}
+		onPostDraw {
+			$if( ShowDivider == "divider" ) 		
+			drawCachedMaterial( gui.whiteMaterial, "absoluteRect.x + 20, absoluteRect.y + 1, 1, absoluteRect.h - 2", lineColor );
+			$endif			
+			drawCachedMaterial( gui.dlgFillMaterial, flashRectBase, "1,1,1,flashAlpha" );			
+			
+			if( foreColor.a > 0 ) {
+				if( compare( player.teamName, "strogg" ) ) {
+					drawLocalizedText( globals.mapInfo.stroggCurrentObjective, objText, objColor, 14, DTF_CENTER | DTF_BOTTOM | DTF_SINGLELINE | DTF_DROPSHADOW );
+					return;
+				}
+				if( compare( player.teamName, "gdf" ) ) {
+					drawLocalizedText( globals.mapInfo.gdfCurrentObjective, objText, objColor, 14, DTF_CENTER | DTF_BOTTOM | DTF_SINGLELINE | DTF_DROPSHADOW );
+					return;
+				}
+			}
+		}		
+		onNamedEvent "flash" {
+			flashAlpha = transition( 0.8f, 0.f, 2000, "0.1,0.9" );
+			flashRect = transition( "4, 4, 8, 8", "0, 0, 0, 0", 350 );
+		}
+		onNamedEvent "tooltipHighlight" {
+			timeline.tooltipFlashStarter.active = true;
+			timeline.tooltipFlashStarter.resetTime( 0 );
+		}
+	}
+	timeline tooltipflashStarter {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			timeline.tooltipFlash.active = true;
+			timeline.tooltipFlash.resetTime( 0 );
+		}
+		onTime 6000 {
+			timeline.tooltipFlash.active = false;
+			timeline.tooltipFlash.resetTime( 0 );
+			fillColor = transition( fillColor, fillColorBase, 300 );
+		}
+	}
+	timeline tooltipFlash {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			fillColor = transition( fillColor, highlightColor, 300 );
+		}
+		onTime 500 {
+			fillColor = transition( fillColor, fillColorBase, 300 );
+		}
+		onTime 1000 {
+			resetTime( 0 );
+		}
+	}
+	timeline {
+		properties {
+			float active = false;
+			float loop = false;
+		}
+		onTime 1000 {
+			postNamedEvent( "flash" );
+			if ( loop ) {
+				resetTime( 0 );
+			} else {
+				active = false;
+			}
+		}
+	}
+	timeline move {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			offset = CENTER_X - ( rect.w * 0.5f );
+			bumpSize = transition( 16, 0, 750, "0.1, 1" );
+			
+			widthBump = transition( 32, 0, 500, "0.1, 1" );
+			heightBump = transition( 32, 0, 500, "0.1, 1" );
+			
+			objColor.a = transition( 0, 1, 1000, "0.1, 1"  );
+			gui.movingObjective = true;
+		}
+		onTime 2000 {
+			offset = transition( offset, SCREEN_WIDTH - ( absoluteRect.w + 2 ), 1000, "0.1, 0.8" );			
+		}
+		onTime 2250 {
+			objColor.a = transition( objColor.a, 0, 350  );
+		}
+		onTime 3000 {
+			offset = SCREEN_WIDTH - ( absoluteRect.w + 2 );
+			active = false;
+			gui.movingObjective = false;
+		}
+	}
+$endtemplate
+
+$template __construct_objective
+	windowDef constructObjective {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.constructObjective.active, 20, "divider", globals.constructObjective.flash )
+
+		windowDef constructProgress {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 74, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.constructObjective.stage1;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+
+				float	lastPosition	= 0;
+				color	idealColor 		= COLOR_HUD_PROGRESS;
+			}
+			events {
+				onPropertyChanged "position" {
+					// flash green
+					if( position == 1 ) {
+						foreColor.r = transition( 0, idealColor.r, 500 );
+						foreColor.b = transition( 0, idealColor.b, 500 );
+					}
+				}
+				onPropertyChanged "globals.constructObjective.active" "globals.constructObjective.multiStage" {
+					if( globals.constructObjective.multiStage ) {
+						rect.x = 66;
+						rect.w = 40;
+					} else {
+						rect.x = 24;
+						rect.w = 80;
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}
+				
+				onPropertyChanged "globals.constructObjective.stage1" {
+					if ( globals.constructObjective.stage1 < lastPosition ) {
+						if ( globals.constructObjective.decaying && timeline.flashRed.active == false ) {
+							timeline.flashRed.active = true;
+							timeline.flashRed.resetTime( 0 );
+						}
+					}
+					
+					lastPosition = immediate( globals.constructObjective.stage1 );
+				}
+			}
+			timeline flashRed {
+				properties {
+					float active = false;
+				}
+				onTime 0 {
+					foreColor.g = transition( 0, idealColor.g, 500 );
+					foreColor.b = transition( 0, idealColor.b, 500 );
+				}
+				onTime 500 {
+					active = false;
+				}
+			}
+		}
+		windowDef constructProgress2 {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 40, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.constructObjective.stage2;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+				float 	visible 		= globals.constructObjective.multiStage;
+
+				float	lastPosition	= 0;
+				color	idealColor 		= COLOR_HUD_PROGRESS;
+			}
+			events {		
+				onPropertyChanged "position" {
+					// flash green
+					if( position == 1 ) {
+						foreColor.r = transition( 0, idealColor.r, 500 );
+						foreColor.b = transition( 0, idealColor.b, 500 );
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}
+				
+				onPropertyChanged "globals.constructObjective.stage2" {
+					if ( globals.constructObjective.stage2 < lastPosition ) {
+						if ( globals.constructObjective.decaying && timeline.flashRed.active == false ) {
+							timeline.flashRed.active = true;
+							timeline.flashRed.resetTime( 0 );
+						}
+					}
+					
+					lastPosition = immediate( globals.constructObjective.stage2 );
+				}
+			}
+			timeline flashRed {
+				properties {
+					float active = false;
+				}
+				onTime 0 {
+					foreColor.g = transition( 0, idealColor.g, 500 );
+					foreColor.b = transition( 0, idealColor.b, 500 );
+				}
+				onTime 500 {
+					active = false;
+				}
+			}
+		}
+		windowDef constructIcon {
+			properties {
+				rect 	rect 		= 2 - gui.constructObjective.bumpSize, 2 - gui.constructObjective.bumpSize, 16 + ( 2 * gui.constructObjective.bumpSize ), 16 + ( 2 * gui.constructObjective.bumpSize );
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "constructicon";
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+		}	
+	}
+	
+$endtemplate
+
+$template __mcp_objective
+	windowDef mcpObjective {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.mcpObjective.active, 32, "divider", globals.mcpObjective.flash )
+		
+		windowDef mcpProgress {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 80, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.mcpObjective.progress;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+			}
+			events {
+				onPropertyChanged "globals.mcpObjective.canDeploy" {
+					// flash green
+					if( position >= 1 ) {
+						foreColor.r = transition( 0, foreColor.r, 500 );
+						foreColor.b = transition( 0, foreColor.b, 500 );
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}				
+			}
+		}				
+		windowDef mcpIcon {
+			properties {
+				rect 	rect 		= 2 - gui.mcpObjective.bumpSize, 2 - gui.mcpObjective.bumpSize, 16 + ( 2 * gui.mcpObjective.bumpSize ), 16 + ( 2 * gui.mcpObjective.bumpSize );
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "mcpicon";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+			windowDef mcpIconState {				
+				properties {
+					rect	rect			= 0, 0, gui.mcpIcon.rect.width, gui.mcpIcon.rect.height;
+					color	backColor		= 1, 0, 0, 0;
+					string	material		= "_st deployable_status_disabled";
+					float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+				}
+				events {						
+					onPropertyChanged "globals.mcpObjective.disabled" {
+						if( globals.mcpObjective.disabled ) {
+							backColor.a = 1;							
+						} else {
+							backColor.a = 0;
+						}
+					}
+				}
+			}							
+		}	
+		windowDef mcpHealth {
+			type progress;
+			properties {
+				rect	rect 				= 34, 16, 70, 12;
+				float 	position 			= globals.mcpObjective.health;	
+				string 	fillMaterial 		= "small_progress_flip";				
+
+				color 	foreColor 			= 1, 1, 1, 0.6;
+				color	targetColor			= 1, 1, 1, 0.6;
+				
+				float	lastHealthValue		= 0;
+				float	lowHealth			= false;
+				handle 	iconMaterial		= gui.cacheMaterial( "mcpicon", "_st health_icon" );			
+				rect	iconRect			= absoluteRect.x - 10, absoluteRect.y + 1, 10, 10;
+				float 	flags				= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+			}
+			events {			
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( iconMaterial, iconRect, foreColor );
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );
+				}
+				onPropertyChanged "globals.mcpObjective.disabled" {
+					if( globals.mcpObjective.disabled ) {
+						// flash red
+						fillMaterial 	= "small_progress_flash";
+						targetColor.r	= 1;
+						targetColor.g	= 0;
+						targetColor.b	= 0;
+					} else {
+						// normal white
+						fillMaterial 	= "small_progress";
+						targetColor.r	= 1;
+						targetColor.g	= 1;
+						targetColor.b	= 1;						
+					}
+					foreColor.r = targetColor.r;
+					foreColor.g = targetColor.g;
+					foreColor.b = targetColor.b;
+					
+					lastHealthValue	= immediate( globals.mcpObjective.health );
+					
+					if( globals.mcpObjective.disabled && lowHealth == false ) {
+						lowHealth = true;
+						gui.playGameSound( "bad" );
+					} else {
+						lowHealth = false;
+					}						
+				}
+				onPropertyChanged "globals.mcpObjective.health" {
+					if( globals.mcpObjective.health > lastHealthValue ) {
+						postNamedEvent( "flashGreen" );
+					} else {
+						postNamedEvent( "flashRed" );
+					}			
+					
+					lastHealthValue = immediate( globals.mcpObjective.health );
+				}
+				onNamedEvent "flashGreen" {
+					// flash green
+					foreColor.r = transition( 0, targetColor.r, 1000, "0,2" );
+					foreColor.g	= 1;
+					foreColor.b = transition( 0, targetColor.b, 1000, "0,2" );
+				}
+				onNamedEvent "flashRed" {
+					// flash red
+					foreColor.r	= 1;
+					foreColor.b = transition( 0, targetColor.b, 1000, "0,2" );
+					foreColor.g = transition( 0, targetColor.g, 1000, "0,2" );
+
+					highlightColor 	= transition( "1,0,0,1", "1,0,0,0", 1000, "0,2" );
+					highlightRange 	= immediate( globals.mcpObjective.health ), immediate( lastHealthValue );
+				}
+			}
+		}
+	}
+	
+$endtemplate
+
+$template __destroy_objective( index )
+	windowDef destroyObjective##index {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.destroyObjective##index.active, 20, "divider", globals.destroyObjective##index.flash )
+		events {
+			onPropertyChanged "globals.destroyObjective"## #index ## ".active" {
+				callSuper();
+				// hide the text for multiple objectives
+				if( gui.numActiveObjectives > 1 ) {
+					objText.y = SCREEN_HEIGHT;
+				} else {
+					objText.y = absoluteRect.y - 20;
+				}
+				
+			}
+			onPropertyChanged "gui.numActiveObjectives" {
+				rect.y = 142 + ( 20 * ( immediate( gui.numActiveObjectives ) - 1 ) * ( index - 1 ) );				
+			}
+		}
+		windowDef destroyProgress##index {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 80, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.destroyObjective##index.progress;
+				vec2	highlightRange	= 0, globals.destroyObjective##index.disarmProgress;
+				color	highlightColor	= 0.9961, 0.2695, 0.0781, 0.9;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );
+				}
+			}
+		}			
+		windowDef destroyIcon##index {
+			properties {
+				rect 	rect 		= 2 - gui.destroyObjective##index.bumpSize, 2 - gui.destroyObjective##index.bumpSize, 16 + gui.destroyObjective##index.bumpSize, 16 + gui.destroyObjective##index.bumpSize;
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "destroyicon";
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+		}	
+	}
+	
+$endtemplate
+
+$template __hack_objective	
+	windowDef hackObjective {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.hackObjective.active, 20, "divider", globals.hackObjective.flash )		
+		
+		windowDef hackProgress {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 80, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.hackObjective.progress;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+
+				color	idealColor 		= COLOR_HUD_PROGRESS;
+				float	lastPosition	= 0;
+			}
+			events {
+				onPropertyChanged "position" {
+					// flash green
+					if( position == 1 ) {
+						foreColor.r = transition( 0, idealColor.r, 500 );
+						foreColor.b = transition( 0, idealColor.b, 500 );
+						return;
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}
+				
+				onPropertyChanged "globals.hackObjective.progress" {
+					if ( globals.hackObjective.progress < lastPosition ) {
+						if ( globals.hackObjective.decaying && timeline.flashRed.active == false ) {
+							timeline.flashRed.active = true;
+							timeline.flashRed.resetTime( 0 );
+						}
+					}			
+					
+					lastPosition = immediate( globals.hackObjective.progress );
+				}
+			}
+			timeline flashRed {
+				properties {
+					float active = false;
+				}
+				onTime 0 {
+					foreColor.g = transition( 0, idealColor.g, 500 );
+					foreColor.b = transition( 0, idealColor.b, 500 );
+				}
+				onTime 500 {
+					active = false;
+				}
+			}
+		}			
+		windowDef hackIcon {
+			properties {
+				rect 	rect 		= 2 - gui.hackObjective.bumpSize, 2 - gui.hackObjective.bumpSize, 16 + ( 2 * gui.hackObjective.bumpSize ), 16 + ( 2 * gui.hackObjective.bumpSize );
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "hackicon";
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+		}	
+	}
+	
+$endtemplate
+
+$template __doc_objective
+	windowDef docObjective {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.docObjective.active || globals.docObjective2.active || globals.docObjective3.active, 20, "nodivider", globals.docObjective.flash )
+
+		windowDef docProgress {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 80, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.docObjective.transmitProgress;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+				float	visible			= globals.docObjective.isMultiPart == 0;
+			}
+			events {
+				onPropertyChanged "position" {
+					// flash green
+					if( position == 1 ) {
+						foreColor.r = transition( 0, foreColor.r, 500 );
+						foreColor.b = transition( 0, foreColor.b, 500 );
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}
+			}
+		}
+		
+		windowDef docIcon {
+			properties {
+				rect 	rect 		= 2, 2, 16, 16;
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "docicon";
+				float	visible 	= globals.docObjective.active;
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+				
+				rect	flashRectBase	= absoluteRect.x - 6, absoluteRect.y - 6, absoluteRect.w + 12, absoluteRect.h + 12;
+				rect	flashRect;
+				float	flashAlpha		= 0;
+			}
+		
+			events {
+				onPropertyChanged "globals.docObjective.state" {
+					if ( globals.docObjective.state == CARRYABLE_ITEM_HOME ) {
+						postNamedEvent( "flash" );
+						material = "docicon";
+					}
+					
+					if ( globals.docObjective.state == CARRYABLE_ITEM_CARRIER ) {
+						postNamedEvent( "flash" );
+						material = "docicon_carrier";
+					}
+					
+					if ( globals.docObjective.state == CARRYABLE_ITEM_DROPPED ) {
+						postNamedEvent( "flash" );
+						material = "docicon_dropped";
+					}
+				}
+
+				onNamedEvent "flash" {
+					flashAlpha = transition( 0.8, 0.0, 2000, "0.1,0.9" );
+					flashRect = transition( flashRectBase, absoluteRect, 350 );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.obj_fill, flashRect, "1, 1, 1, flashAlpha" );
+				}
+			}
+		}
+
+		windowDef docIcon2 {
+			properties {
+				rect 	rect 		= 28, 2, 16, 16;
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "docicon";
+				float	visible 	= globals.docObjective2.active;
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+				
+				rect	flashRectBase	= absoluteRect.x - 6, absoluteRect.y - 6, absoluteRect.w + 12, absoluteRect.h + 12;
+				rect	flashRect;
+				float	flashAlpha		= 0;
+			}
+			
+			events {
+				onPropertyChanged "globals.docObjective2.state" {
+					if ( globals.docObjective2.state == CARRYABLE_ITEM_HOME ) {
+						postNamedEvent( "flash" );
+						material = "docicon";
+					}
+					
+					if ( globals.docObjective2.state == CARRYABLE_ITEM_CARRIER ) {
+						postNamedEvent( "flash" );
+						material = "docicon_carrier";
+					}
+					
+					if ( globals.docObjective2.state == CARRYABLE_ITEM_DROPPED ) {
+						postNamedEvent( "flash" );
+						material = "docicon_dropped";
+					}
+				}
+				
+				onNamedEvent "flash" {
+					flashAlpha = transition( 0.8, 0.0, 2000, "0.1,0.9" );
+					flashRect = transition( flashRectBase, absoluteRect, 350 );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.obj_fill, flashRect, "1, 1, 1, flashAlpha" );
+				}
+			}
+		}
+
+		windowDef docIcon3 {
+			properties {
+				rect 	rect 		= 54, 2, 16, 16;
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "docicon";
+				float	visible 	= globals.docObjective3.active;
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+				
+				rect	flashRectBase	= absoluteRect.x - 6, absoluteRect.y - 6, absoluteRect.w + 12, absoluteRect.h + 12;
+				rect	flashRect;
+				float	flashAlpha		= 0;
+			}
+			
+			events {
+				onPropertyChanged "globals.docObjective3.state" {
+					if ( globals.docObjective3.state == CARRYABLE_ITEM_HOME ) {
+						postNamedEvent( "flash" );
+						material = "docicon";
+					}
+					
+					if ( globals.docObjective3.state == CARRYABLE_ITEM_CARRIER ) {
+						postNamedEvent( "flash" );
+						material = "docicon_carrier";
+					}
+					
+					if ( globals.docObjective3.state == CARRYABLE_ITEM_DROPPED ) {
+						postNamedEvent( "flash" );
+						material = "docicon_dropped";
+					}
+				}
+				
+				onNamedEvent "flash" {
+					flashAlpha = transition( 0.8, 0.0, 2000, "0.1,0.9" );
+					flashRect = transition( flashRectBase, absoluteRect, 350 );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.obj_fill, flashRect, "1, 1, 1, flashAlpha" );
+				}
+			}
+		}
+	}
+$endtemplate
+
+$template __goal_objective
+	windowDef goalObjective {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.goalObjective.active, 20, "divider", globals.goalObjective.flash )
+		
+		windowDef goalProgress {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 80, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.goalObjective.progress;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+			}
+			events {
+				onPropertyChanged "position" {
+					// flash green
+					if( position == 1 ) {
+						foreColor.r = transition( 0, foreColor.r, 500 );
+						foreColor.b = transition( 0, foreColor.b, 500 );
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}				
+			}
+		}
+		windowDef goalIcon {
+			properties {
+				rect 	rect 		= 2 - gui.goalObjective.bumpSize, 2 - gui.goalObjective.bumpSize, 16 + ( 2 * gui.goalObjective.bumpSize ), 16 + ( 2 * gui.goalObjective.bumpSize );
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "goalicon";
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+		}	
+	}
+$endtemplate
+
+$template __flyerhive_objective
+	windowDef flyerhiveObjective {
+		properties {
+			float visible = player.commandMapState == 0;
+		}
+		__objective_background( globals.flyerhiveObjective.active, 20, "divider", globals.flyerhiveObjective.flash )
+		
+		windowDef flyerhiveProgress {
+			type progress;
+			properties {
+				rect 	rect 			= 24, 4, 80, 12;
+				vec2	range 			= 0, 1;
+				float 	position 		= globals.flyerhiveObjective.progress;
+				color	foreColor 		= COLOR_HUD_PROGRESS;
+				string	fillMaterial 	= "small_progress";
+				float 	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS | PF_DRAW_FROM_LOWER_END;
+			}
+			events {
+				onPropertyChanged "position" {
+					// flash green
+					if( position == 1 ) {
+						foreColor.r = transition( 0, foreColor.r, 500 );
+						foreColor.b = transition( 0, foreColor.b, 500 );
+					}
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+					gui.scriptPushFloat( true );
+				}
+				onPostDraw {
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_BUTTON_LINES );		
+				}				
+			}
+		}
+		windowDef flyerhiveIcon {
+			properties {
+				rect 	rect 		= 2 - gui.flyerhiveObjective.bumpSize, 2 - gui.flyerhiveObjective.bumpSize, 16 + ( 2 * gui.flyerhiveObjective.bumpSize ), 16 + ( 2 * gui.flyerhiveObjective.bumpSize );
+				color	backColor 	= COLOR_WHITE;
+				string	material 	= "flyerhiveicon";
+				float 	flags		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+		}	
+	}
+$endtemplate
+
+#endif // !__hud_objectives__

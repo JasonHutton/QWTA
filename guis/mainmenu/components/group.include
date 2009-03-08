@@ -1,0 +1,75 @@
+
+#ifndef __component_group__
+#define __component_group__
+
+$template _group_box( NameParm, xPos, yPos, WidthParm, HeightParm )
+	windowDef grp##NameParm {
+		properties {
+			rect	rect 		= xPos, yPos, WidthParm, HeightParm;
+			color	fillColor 	= COLOR_BOX_FILL;
+			color	lineColor	= COLOR_BOX_LINES;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+				
+				gui.scriptPushFloat( false );
+			}
+		}
+$endtemplate
+
+$template _end_group_box
+	}
+$endtemplate
+
+$template _group_label( TextParm )
+	properties {
+		rect textRect = absoluteRect.x + PADDING, absoluteRect.y + PADDING, absoluteRect.w, 12;		
+		handle localizedText = TextParm;
+	}
+	events {
+		onPostDraw {
+			callSuper();
+			drawLocalizedText( localizedText, textRect, COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+		}
+	}
+$endtemplate
+
+$template _group_box_vertical( NameParm, xPos, yPos, WidthParm, HeightParm )	
+	_group_box( NameParm, xPos, yPos, WidthParm, HeightParm )
+		windowDef lyt##NameParm {
+			type layoutVertical;
+			properties {
+				vec4 	margins = PADDING, PADDING, PADDING, PADDING;
+				rect	rect = 0, 0, gui.grp##NameParm.rect.w, gui.grp##NameParm.rect.h;
+			}
+$endtemplate
+
+$template _end_group_box_vertical
+		}
+	_end_group_box
+$endtemplate
+
+$template _group_box_vertical_label( NameParm, TextParm, xPos, yPos, WidthParm, HeightParm )
+	_group_box( NameParm##Surround, xPos, yPos, WidthParm, HeightParm )
+		_group_label( TextParm )
+		windowDef grp##NameParm {
+			type layoutVertical;
+			properties {
+				vec4 	margins = PADDING, PADDING, PADDING, PADDING;
+				rect	rect = 0, 12, gui.grp##NameParm##Surround.rect.w, gui.grp##NameParm##Surround.rect.h - 12;
+			}
+$endtemplate
+
+$template _end_group_box_vertical_label
+		}		
+	_end_group_box
+$endtemplate
+
+$template _end_group_layout
+	}
+$endtemplate
+
+
+#endif // !__component_group__

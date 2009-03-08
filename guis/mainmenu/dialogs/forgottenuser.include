@@ -1,0 +1,216 @@
+
+#define USER_EDIT_WIDTH			130
+#define FUS_NO_TASK 			0
+#define FUS_SERVICE_CONNECT 	1
+#define FUS_REQUEST_USERS 		2
+
+// ================================================================================
+// Forgotten User Dialog
+// ================================================================================
+_dialog( ForgottenUser, caption, _center( desktop, width ), _center( desktop, height ), 260, 162, "noMove", "dim" )
+	_single_dialog( ForgottenUser )
+    _on_default( ForgottenUserNext, ForgottenUserCancel )
+
+	properties {
+		handle 	caption = localize( "guis/mainmenu/forgottenuser" );
+		float 	taskActive = FUS_NO_TASK;
+	}
+
+	events {
+		onPropertyChanged "visible" {
+			callSuper();
+			if ( visible > 0 ) {
+				taskActive 			= FUS_NO_TASK;
+				setTabStop( 0 );
+			}
+		}
+	}
+	_label_localized( ForgottenUser_Info, localize( "guis/mainmenu/find_existing_accounts" ), _left( dlgForgottenUser ), _top( dlgForgottenUser ), _fill_to_right_of( dlgForgottenUser ), 16, COLOR_TEXT )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+	_end_label	
+	windowDef lytForgottenUser {
+		type layoutVertical;
+		properties {
+			rect rect = _right( dlgForgottenUser ), _to_bottom_of( lblForgottenUser_Info ), USER_EDIT_WIDTH, _fill_to_top_of( btnForgottenUserCancel );
+			vec4 margins = PADDING, PADDING, PADDING, PADDING;
+		}	
+
+		windowDef lytForgottenUser_CDKey {
+			type layoutStatic;
+			properties {
+				rect rect = 0, 0, USER_EDIT_WIDTH, BUTTON_HEIGHT;
+				float disabled = sdnet.steamActive && compare( sdnet.storedLicenseCode, "" ) == false;
+			}
+			_edit( ForgottenUser_CDKey, 0, 0, $evalfloat( USER_EDIT_WIDTH - ( 23 + 2 * PADDING ) ), BUTTON_HEIGHT )
+				_advance_to_next_control_when_full( edtForgottenUser_CDKeyChecksum )
+				_draw_right_edit_label( localize( "guis/mainmenu/cdkey" ), COLOR_TEXT, 100 )
+				_button_disable_if( "gui.lytForgottenUser_CDKey.disabled", gui.lytForgottenUser_CDKey.disabled == true )
+
+				properties {
+					float	maxTextLength = 16;
+					float	flags = immediate( flags ) | EF_UPPERCASE;
+				}
+				events {
+					onNamedEvent "onShow" {
+						callSuper();
+						editText = sdnet.storedLicenseCode;
+					}
+				}				
+			_end_edit
+
+			_edit( ForgottenUser_CDKeyChecksum, $evalfloat( USER_EDIT_WIDTH - ( 20 + 2 * PADDING ) ), 0, 20, BUTTON_HEIGHT )
+				_advance_to_next_control_when_full( btnForgottenUserNext )
+				_button_disable_if( "gui.lytForgottenUser_CDKey.disabled", gui.lytForgottenUser_CDKey.disabled == true )
+				
+				properties {
+					float	maxTextLength = 2;
+					float	flags = immediate( flags ) | EF_UPPERCASE;
+				}
+				events {
+					onNamedEvent "onShow" {
+						callSuper();
+						editText = sdnet.storedLicenseCodeChecksum;
+					}
+				}
+			_end_edit
+		}
+				
+		_list( ForgottenUser_Users, 0, 0, 120, 54 )
+			events {
+				onNamedEvent "onShow" {
+					clearItems();
+				}
+				onCreate {
+					insertColumn( toWStr( "<width = 100%>" ), 0, 0 );
+				}
+			}
+		_end_list
+	}
+
+	// ================================================================================
+	// Next
+	// ================================================================================
+	_button( ForgottenUserNext, _to_left_of( btnForgottenUserCancel ) - 3, _bottom( dlgForgottenUser ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/search" );
+			float 	validation 		= 0;
+		}
+
+		_button_action(
+		
+			// validate key code
+			if ( compare( gui.edtForgottenUser_CDKey.editText, "" ) ) {
+				_setup_confirmation_ok_error( localize( "guis/mainmenu/blankcdkey" ) )
+				_show_popup( confirmation )
+				return;
+			}
+
+			validation = sdnet.checkKey( gui.edtForgottenUser_CDKey.editText, gui.edtForgottenUser_CDKeyChecksum.editText );
+			if ( validation == false ) {
+				_setup_confirmation_ok_error( localize( "guis/mainmenu/cdkeychecksummismatch" ) )
+				_show_popup( confirmation )
+				return;
+			}
+					
+			// set values and move on
+			if ( sdnet.state != SS_ONLINE ) {
+				if ( sdnet.connect() == false ) {
+					// process error
+					_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+					_show_popup( confirmation )
+					return;
+				}
+				gui.dlgForgottenUser.taskActive = FUS_SERVICE_CONNECT;
+				_show_popup( sdNetProgress );
+			} else {
+				gui.dlgForgottenUser.taskActive = FUS_REQUEST_USERS;
+					if( sdnet.getUserNamesForKey( gui.edtForgottenUser_CDKey.editText ) == false ) {
+						_setup_confirmation_ok_error( sdnet.taskResultMessage )
+						_show_popup( confirmation )
+						return;
+					}
+				_show_popup( sdNetProgress )
+			}
+		)
+		events {
+			onPropertyChanged "sdnet.state" {
+				if ( sdnet.state == SS_ONLINE ) {
+					if ( gui.dlgForgottenUser.taskActive == FUS_SERVICE_CONNECT ) {
+						gui.dlgForgottenUser.taskActive = FUS_REQUEST_USERS;
+						_show_popup( sdNetProgress )
+						if( sdnet.getUserNamesForKey( gui.edtForgottenUser_CDKey.editText ) == false ) {
+							_setup_confirmation_ok_error( sdnet.taskResultMessage )
+							_show_popup( confirmation )			
+							return;			
+						}
+					}
+				}
+			}
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive != FUS_NO_TASK ) {
+					return;
+				}
+				
+				if ( gui.dlgForgottenUser.taskActive == FUS_SERVICE_CONNECT ) {				
+					if( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						gui.dlgForgottenUser.taskActive = FUS_REQUEST_USERS;
+						_show_popup( sdNetProgress )
+						if( sdnet.getUserNamesForKey( gui.edtForgottenUser_CDKey.editText ) == false ) {
+							_setup_confirmation_ok_error( sdnet.taskResultMessage )
+							_show_popup( confirmation )				
+						}
+						return;
+					}
+					
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )					
+					return;
+				}
+				if ( gui.dlgForgottenUser.taskActive == FUS_REQUEST_USERS ) {
+					gui.dlgForgottenUser.taskActive = FUS_NO_TASK;
+
+					// process result
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						gui.lstForgottenUser_Users.fillFromEnumerator( "sdnetRetrievedUserNames" );
+						return;
+					}
+
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					return;
+				}			
+			}
+			onNamedEvent "showTopLevel" {
+			    _close_top_dialog
+				_push_page( main )
+			}
+			onPropertyChanged "gui.onConnectionLost" {
+				gui.dlgForgottenUser.taskActive = 0;
+
+				if ( gui.dlgForgottenUser.visible ) {
+					_show_single_dialog( login )
+				}
+			}
+		}
+	_end_button
+	// ================================================================================
+	// Cancel
+	// ================================================================================
+	_button( ForgottenUserCancel, _right( dlgForgottenUser ), _bottom( dlgForgottenUser ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+			handle localizedText = localize( "guis/mainmenu/done" );
+		}
+		events {
+		}
+		_button_action(
+			_show_single_dialog( login )
+		)
+	_end_button
+_end_dialog
+
+#undef USER_EDIT_WIDTH

@@ -1,0 +1,393 @@
+
+//===============================================================
+// Server Filters Popup
+//===============================================================
+
+$template __update_icon( IndexParm, ValueParm )
+	if( ValueParm == SFS_DONTCARE ) {
+		setItemText( toWStr( "<material = 'dontcare'>" ), IndexParm, 1 );
+		setItemText( toWStr( "<loc = 'guis/mainmenu/doesntmatter'>" ), IndexParm, 3 );
+	}
+	if( ValueParm == SFS_HIDE ) {
+		setItemText( toWStr( "<material = 'hide'>" ), IndexParm, 1 );
+		setItemText( toWStr( "<loc = 'guis/mainmenu/hide'>" ), IndexParm, 3 );
+	}
+	if( ValueParm == SFS_SHOWONLY ) {
+		setItemText( toWStr( "<material = 'show'>" ), IndexParm, 1 );
+		setItemText( toWStr( "<loc = 'guis/mainmenu/show'>" ), IndexParm, 3 );
+	}
+	setItemMaterialSize( "12, 12", IndexParm, 1 );
+	setItemTextFlags( DTF_TOP | DTF_SINGLELINE | DTF_RIGHT, IndexParm, 3 );
+$endtemplate
+
+$template __numeric_filter( FilterType, StringParm, IconParm, IndexParm )
+	properties {
+		float IndexParm = -1;
+	}
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+
+			IndexParm = insertItem( gui.blankWStr, -1, 0 );
+
+			state = sdnet.queryNumericFilterState( FilterType, 1 );
+			setItemDataInt( state, IndexParm, 0 );
+			setItemText( toWStr( "<material = '" + IconParm + "'>" ), IndexParm, 0 );
+			setItemMaterialSize( "12, 12", IndexParm, 0 );
+			setItemText( localizeArgs( StringParm ), IndexParm, 2 );
+
+			__update_icon( IndexParm, state );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+			sdnet.applyNumericFilter( FilterType, getItemDataInt( IndexParm, 0, SFS_DONTCARE ), SFO_EQUAL, SFR_AND, 1 );
+		}
+		onNamedEvent "onClear" {
+			callSuper();
+			setItemDataInt( SFS_DONTCARE, IndexParm, 0 );
+			__update_icon( IndexParm, state );
+		}
+	}
+$endtemplate
+
+$template __string_filter( FilterType, StringParm, IconParm, IndexParm, ValueParm, CompareParm, BinParm )
+	properties {
+		float IndexParm = -1;
+	}
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+
+			IndexParm = insertItem( gui.blankWStr, -1, 0 );
+			state = sdnet.queryStringFilterState( "si_rules", ValueParm );
+			setItemDataInt( state, IndexParm, 0 );
+			setItemText( toWStr( "<material = '" + IconParm + "'>" ), IndexParm, 0 );
+			setItemMaterialSize( "12, 12", IndexParm, 0 );
+
+			setItemText( localizeArgs( StringParm ), IndexParm, 2 );
+
+			__update_icon( IndexParm, state );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+			sdnet.applyStringFilter( FilterType, getItemDataInt( IndexParm, 0, SFS_DONTCARE ), CompareParm, BinParm, ValueParm );
+		}
+		onNamedEvent "onClear" {
+			callSuper();
+			setItemDataInt( SFS_DONTCARE, IndexParm, 0 );
+			__update_icon( IndexParm, state );
+		}		
+	}
+$endtemplate
+
+
+_dialog( ServerFilters, localize( "guis/mainmenu/filters" ), gui.btnEditFilters.absoluteRect.x - ( rect.w - gui.btnEditFilters.absoluteRect.w ), gui.btnEditFilters.absoluteRect.y + gui.btnEditFilters.absoluteRect.h + PADDING, 296, 396, "noMove", "dim" )
+	_input_dialog( serverFilters )
+	_on_default( serverFilters_Done, serverFilters_Done )
+
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			setTabStop( 0 );
+		}
+	}
+
+	_group_box_vertical( ServerFilters, PADDING, _top( dlgServerFilters ), _fill_to_right_of( dlgServerFilters ), $evalfloat( ( BUTTON_HEIGHT ) * 5 + ( PADDING * 3 ) ) )
+		_edit( ServerFilters_ServerName, 100, 0, 100, BUTTON_HEIGHT )
+			_draw_left_edit_label( localize( "guis/mainmenu/servername" ), COLOR_TEXT, 100 )
+			events {
+				onPropertyChanged "editText" {
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+				}
+				onNamedEvent "onClear" {
+					callSuper();
+					editText = "";
+				}
+			}
+			timeline {
+				properties {
+					float active = 0;
+				}
+				onTime 500 {
+					sdnet.clearFilters();
+					gui.lstServerFilters.postNamedEvent( "onApply" );
+				}
+			}
+		_end_edit
+
+		_edit( ServerFilters_MapName, 100, 0, 100, BUTTON_HEIGHT )
+			_draw_left_edit_label( localize( "guis/mainmenu/mapname" ), COLOR_TEXT, 100 )
+			events {
+				onPropertyChanged "editText" {
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+				}
+				onNamedEvent "onClear" {
+					callSuper();
+					editText = "";
+				}
+			}
+			timeline {
+				properties {
+					float active = 0;
+				}
+				onTime 500 {
+					sdnet.clearFilters();
+					gui.lstServerFilters.postNamedEvent( "onApply" );
+				}
+			}
+		_end_edit
+
+		_edit( ServerFilters_Ping, 100, 0, 100, BUTTON_HEIGHT )
+			_draw_left_edit_label( localize( "guis/mainmenu/maxping" ), COLOR_TEXT, 100 )
+			properties {
+				float flags = immediate( flags ) | EF_INTEGERS_ONLY;
+			}
+			events {
+				onPropertyChanged "editText" {
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+				}
+				onNamedEvent "onClear" {
+					callSuper();
+					editText = "";
+				}
+			}
+			timeline {
+				properties {
+					float active = 0;
+				}
+				onTime 500 {
+					sdnet.clearFilters();
+					gui.lstServerFilters.postNamedEvent( "onApply" );
+				}
+			}
+		_end_edit
+		
+		_edit( ServerFilters_Players, 100, 0, 100, BUTTON_HEIGHT )
+			_draw_left_edit_label( localize( "guis/mainmenu/maxplayers" ), COLOR_TEXT, 100 )
+			properties {
+				float flags = immediate( flags ) | EF_INTEGERS_ONLY;
+			}
+			events {
+				onPropertyChanged "editText" {
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+				}
+				onNamedEvent "onClear" {
+					callSuper();
+					editText = "";
+				}
+			}
+			timeline {
+				properties {
+					float active = 0;
+				}
+				onTime 500 {
+					sdnet.clearFilters();
+					gui.lstServerFilters.postNamedEvent( "onApply" );
+				}
+			}
+		_end_edit
+		
+		_edit( ServerFilters_MaxBots, 100, 0, 100, BUTTON_HEIGHT )
+			_draw_left_edit_label( localize( "guis/mainmenu/maxbots" ), COLOR_TEXT, 100 )
+			properties {
+				float flags = immediate( flags ) | EF_INTEGERS_ONLY;
+			}
+			events {
+				onPropertyChanged "editText" {
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+				}
+				onNamedEvent "onClear" {
+					callSuper();
+					editText = "";
+				}
+			}
+			timeline {
+				properties {
+					float active = 0;
+				}
+				onTime 500 {
+					sdnet.clearFilters();
+					gui.lstServerFilters.postNamedEvent( "onApply" );
+				}
+			}
+		_end_edit				
+	_end_group_box_vertical
+	
+
+	windowDef lstServerFilters {
+		type list;
+				
+		_list_highlight_full_items
+		_list_highlight_header
+		_list_draw_selected_item
+		_list_draw_background
+		_list_properties	
+		
+		properties {
+			rect	rect 		= PADDING, _to_bottom_of( grpServerFilters ) + 3, _fill_to_right_of( dlgServerFilters ), _fill_to_top_of( btnServerFilters_Done );
+			float 	flags 		= immediate( flags ) | WF_TRUNCATE_TEXT;
+			float 	value;
+			float 	state;
+			string 	operator;
+			vec2 	selItem;
+			
+			// avoid slight floating point rounding issues  when measuring text in widescreen modes
+			// ceil( 15.000003 ) = 15pix in all modes but 16:10, which measures to ceil( 15.3 ) = 16pix
+			float	fixedRowHeight = 15;
+			float internalBorderWidth = 3;
+		}
+
+		events {
+			onCreate {
+				callSuper();
+				insertColumn( gui.blankWStr, 12, 0 );					// State Icon
+				insertColumn( gui.blankWStr, 12, 1 );					// Feature Icon
+				insertColumn( toWStr( "<width = 60%>" ), 0, 2 );		// Text
+				insertColumn( toWStr( "<width = 40%>" ), 0, 3 );		// State Text
+			}
+
+			onNamedEvent "onShow" {
+				callSuper();
+				clearItems();
+
+				gui.edtServerFilters_MapName.editText = sdnet.queryStringFilterValue( "si_map" );
+				gui.edtServerFilters_ServerName.editText = sdnet.queryStringFilterValue( "si_name" );
+				value = sdnet.queryNumericFilterValue( SF_PING );
+				if( value == 0 ) {
+					gui.edtServerFilters_Ping.editText = "";
+				} else {
+					gui.edtServerFilters_Ping.editText = immediate( toString( value, 0 ) );
+				}
+				
+				value = sdnet.queryNumericFilterValue( SF_PLAYERCOUNT );
+				if( value == 0 ) {
+					gui.edtServerFilters_Players.editText = "";
+				} else {
+					gui.edtServerFilters_Players.editText = immediate( toString( value, 0 ) );
+				}
+				
+				value = sdnet.queryNumericFilterValue( SF_MAXBOTS );
+				if( value == 0 ) {
+					gui.edtServerFilters_MaxBots.editText = "";
+				} else {
+					gui.edtServerFilters_MaxBots.editText = immediate( toString( value, 0 ) );
+				}				
+			}
+
+			onNamedEvent "cycleState" {
+				if( currentSelection < 0 ) {
+					return;
+				}
+				value = getItemDataInt( currentSelection, 0, 0 );
+				value = immediate( value + 1 );
+				if( value >= SFS_MAX ) {
+					value = SFS_MIN + 1;
+				}
+
+				setItemDataInt( value, currentSelection, 0 );
+				__update_icon( currentSelection, value );
+				gui.playSound( "boop" );
+
+				sdnet.clearFilters();
+				postNamedEvent( "onApply" );
+			}
+
+			onKeyDown "space" {
+				postNamedEvent( "cycleState" );
+			}
+			onKeyUp "mouse1" {
+				selItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				//if( selItem.y == 1 ) {
+					postNamedEvent( "cycleState" );
+				//}
+			}
+		}
+#if !defined( SD_DEMO_BUILD )
+		__numeric_filter( SF_RANKED, "guis/mainmenu/ranked", "ranked", rankedIndex )
+#endif		
+		__numeric_filter( SF_FAVORITE, "guis/mainmenu/favorites", "favorite_set", favIndex )
+#if !defined( SD_DEMO_BUILD )		
+		__numeric_filter( SF_FRIENDS, "guis/mainmenu/friends_clanmates", "friends/onserver", friendsIndex )
+#endif		
+		__numeric_filter( SF_PASSWORDED, "guis/mainmenu/passworded", "password", pwIndex )
+		__numeric_filter( SF_PUNKBUSTER, "guis/mainmenu/punkbuster", "punkbuster", pbIndex )
+		__numeric_filter( SF_FRIENDLYFIRE, "guis/mainmenu/teamdamage", "friendly_fire", ffIndex )
+		__numeric_filter( SF_AUTOBALANCE, "guis/mainmenu/balancedteams", "balance", balanceIndex )
+		__numeric_filter( SF_EMPTY, "guis/mainmenu/empty", "empty", emptyIndex )
+		__numeric_filter( SF_FULL, "guis/mainmenu/full", "full", fullIndex )
+//		__numeric_filter( SF_BOTS, "guis/mainmenu/bots", "bot", botsIndex )
+		__numeric_filter( SF_PURE, "guis/mainmenu/pure", "pure", pureIndex )
+		__numeric_filter( SF_LATEJOIN, "guis/mainmenu/allowlatejoin", "latejoin", lateJoinIndex )		
+#if !defined( SD_DEMO_BUILD )		
+		__numeric_filter( SF_MODS, "guis/mainmenu/mods", "_unknownGameType", modsIndex )		
+#endif		
+		__string_filter( "si_rules", "game/gametype/objective", "sdGameRulesObjective", objIndex, "sdGameRulesObjective", SFO_EQUAL, SFR_OR )
+		__string_filter( "si_rules", "game/gametype/campaign", "sdGameRulesCampaign", campIndex, "sdGameRulesCampaign", SFO_EQUAL, SFR_OR )
+		__string_filter( "si_rules", "game/gametype/stopwatch", "sdGameRulesStopWatch", stopwIndex, "sdGameRulesStopWatch", SFO_EQUAL, SFR_OR )
+
+
+		// ensure this happens after the templates above apply their state to the filters
+		events {
+			onNamedEvent "onApply" {
+				callSuper();
+
+				sdnet.applyStringFilter( "si_map", SFS_HIDE, SFO_NOT_CONTAINS, SFR_AND, gui.edtServerFilters_MapName.editText );
+				sdnet.applyStringFilter( "si_name", SFS_HIDE, SFO_NOT_CONTAINS, SFR_AND, gui.edtServerFilters_ServerName.editText );
+				if( compare( gui.edtServerFilters_Ping.editText, "" ) == false ) {
+					sdnet.applyNumericFilter( SF_PING, SFS_HIDE, SFO_GREATER, SFR_AND, toFloat( gui.edtServerFilters_Ping.editText ) );
+				} else {
+					sdnet.applyNumericFilter( SF_PING, SFS_HIDE, SFO_LESS, SFR_AND, 0 );
+				}
+				if( compare( gui.edtServerFilters_Players.editText, "" ) == false ) {
+					sdnet.applyNumericFilter( SF_PLAYERCOUNT, SFS_HIDE, SFO_GREATER, SFR_AND, toFloat( gui.edtServerFilters_Players.editText ) );
+				} else {
+					sdnet.applyNumericFilter( SF_PLAYERCOUNT, SFS_HIDE, SFO_LESS, SFR_AND, 0 );
+				}
+				if( compare( gui.edtServerFilters_MaxBots.editText, "" ) == false ) {
+					sdnet.applyNumericFilter( SF_MAXBOTS, SFS_HIDE, SFO_GREATER, SFR_AND, toFloat( gui.edtServerFilters_MaxBots.editText ) );
+				} else {
+					sdnet.applyNumericFilter( SF_MAXBOTS, SFS_HIDE, SFO_LESS, SFR_AND, 0 );
+				}
+				sdnet.saveFilters( "default" );
+				// don't rescan the servers, just recreate the list
+				sdnet.stopFindingServers( gui.serverMode );
+				//if ( sdnet.findServers( gui.serverMode ) > 0 ) {
+					gui.lstDWServers.postNamedEvent( "newServerList" );
+					gui.lstDWServers.postNamedEvent( "updateServerList" );
+				//}
+			}
+
+			onNamedEvent "onShow" {
+				callSuper();
+				currentSelection = 0;
+			}
+		}
+	_end_list
+
+	_button( ServerFilters_Done, _right( dlgServerFilters ), _bottom( dlgServerFilters ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/done" );
+		}
+		_button_action(
+			_close_input
+			gui.focusedWindow = "lstDWServers";
+		)
+	_end_button
+	
+	_button( ServerFilters_ClearAll, _to_left_of( btnServerFilters_Done ) - 3, _bottom( dlgServerFilters ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/clearall" );
+		}
+		_button_action(
+			gui.broadcastEventToDescendants( "dlgServerFilters", "onClear" );
+			sdnet.clearFilters();
+			gui.lstServerFilters.postNamedEvent( "onApply" );
+		)
+	_end_button	
+
+_end_dialog

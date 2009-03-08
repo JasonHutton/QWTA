@@ -1,0 +1,584 @@
+
+#ifndef __limbo__
+#define __limbo__
+
+#ifdef PADDING
+#undef PADDING
+#endif
+
+#define PADDING 4
+
+#ifdef BUTTON_WIDTH
+#undef BUTTON_WIDTH
+#endif
+
+#define BUTTON_WIDTH 	100
+
+$template _teamListColumns( TeamName )
+	properties {
+		float	flags				= immediate( flags ) | LF_SHOW_HEADINGS | LF_COLUMN_SORT | WF_TRUNCATE_TEXT;
+		float	playerCount 			= 0;
+		float	lastSelection			= -1;
+		wstring	lastItem;
+		float	spectateClientNum		= -1;
+	}
+	_list_properties
+	_list_draw_selected_item
+	_list_highlight_header
+	_list_draw_column_sort( "default" )
+	
+	timeline {
+		onTime 0 {
+			if( !isVisible() ) {
+				return;
+			}
+			if( currentSelection >= 0 ) {
+				lastItem 	= getItemText( currentSelection, 3 );
+			}
+			storeVisualState();
+
+			gui.scriptPushString( #TeamName );
+			fillFromEnumerator( "scoreboardList" );
+			playerCount = gui.scriptGetFloatResult();	// number of players
+			gui.scriptGetFloatResult();	// average ping
+			gui.scriptGetFloatResult(); // average xp
+
+			setItemMaterialSize( "12,12", -1, 0 );
+			setItemMaterialSize( "12,12", -1, 1 );
+			setItemTextFlags( DTF_BOTTOM | DTF_SINGLELINE | DTF_LEFT, -1, 1 );
+			setItemTextFlags( DTF_BOTTOM | DTF_SINGLELINE | DTF_LEFT, -1, 2 );
+			setItemTextFlags( DTF_BOTTOM | DTF_SINGLELINE | DTF_LEFT, -1, 3 );
+			setItemTextFlags( DTF_BOTTOM | DTF_SINGLELINE | DTF_RIGHT, -1, 4 );
+
+			setColumnText( localizeArgs( "guis/game/scoreboard/team_label", localizeArgs( "guis/game/scoreboard/" ##TeamName ), toWString( playerCount, 0 ) ), 3 );
+			setColumnWidth( 90, 3, true );
+			setColumnFlags( toWStr( "<flags customdraw>" ), 3 );			
+
+			currentSelection 	= findItem( lastItem, 3 );
+			restoreVisualState();
+		}
+		onTime 500 {
+			resetTime( 0 );
+		}
+	}
+	events {
+		onCreate {
+			insertColumn( toWStr( "<flags nosort>" ),		12,		0 );	// class
+			insertColumn( toWStr( "<flags nosort>" ),		12,		1 );	// rank
+			insertColumn( gui.blankWStr,					0,		2 );	// fireteam
+			insertColumn( toWStr( "<width = 100%><flags customdraw>" ), 		0, 3 );	// name
+			insertColumn( gui.blankWStr,	0,		4 );	// mission
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'><flags numeric customdraw>" ),	40,		5 );	// xp
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/ping'><flags numeric customdraw>" ),	40,		6 );	// ping
+			insertColumn( gui.blankWStr,			0,		7 ); // entity num			
+
+			activeColumn = 3;
+		}
+		onDoubleClick "mouse1" {
+			if( currentSelection == -1 ) {
+				return;
+			}
+			spectateClientNum = getItemDataInt( currentSelection, 7, -1 );
+			if ( spectateClientNum != -1 ) {				
+				gui.spectateClient( spectateClientNum );
+				gui.deactivate();
+			}
+		}
+	}
+$endtemplate
+
+$template _class_button( NameParm, TeamParm, XPos, YPos, ClassParm )
+	windowDef btnClass##NameParm {
+		properties {
+			float	flags 		= immediate( flags ) | WF_CAPTURE_KEYS;
+
+			rect	rect 		= ( XPos ) + PADDING, YPos, 36, 26;
+			rect	logoRect	= absoluteRect.x, absoluteRect.y, 24, 24;
+			rect	textRect	= absoluteRect.x, absoluteRect.y, absoluteRect.w - 2, absoluteRect.h - 2;
+			rect	criticalRectBase = absoluteRect.x + absoluteRect.w - 12, absoluteRect.y, 12, 12;
+			rect	criticalRect = criticalRectBase;
+
+			handle	logoMaterial 	= gui.cacheMaterial( name + "logo", #NameParm );
+
+			color	fillColor	= COLOR_CLASS_FILL;
+			color	gradColor	= COLOR_CLASS_GRADIENT;
+			color	lineColor	= COLOR_CLASS_LINE;
+			color	logoColor	= COLOR_CLASS_TEXT;
+			color	activeColor	= COLOR_BLACK;
+
+			wstring	countText	= toWStr( "0" );
+			float	count		= -1;
+			float	isCritical 	= compare( player.TeamParm##CriticalClass, #NameParm );			
+		}
+		
+		events {
+			onActivate {
+				if ( isCritical && count == 0 ) {
+					timeline.criticalClassPulse.resetTime( 0 );
+				}
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+				drawCachedMaterial( gui.btnGradMaterial, absoluteRect, gradColor );
+				drawCachedMaterial( logoMaterial, logoRect,		logoColor );
+
+				drawText( countText, textRect, logoColor, 12, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
+
+				drawCachedMaterial( gui.gradMaterial, absoluteRect, activeColor );
+				
+				if( isCritical ) {
+					drawCachedMaterial( gui.criticalClass, criticalRect, COLOR_WHITE );	
+				}
+
+				gui.scriptPushFloat( true );
+			}
+			onQueryTooltip {
+				if( isCritical ) {
+					toolTipText = localizeArgs( "guis/mainmenu/criticalclass", localizeArgs( "game/classes/" ## #NameParm ) );
+				} else {
+					toolTipText = localizeArgs( "game/classes/" ## #NameParm );
+				}
+			}
+
+			onMouseEnter {
+				activeColor = transition( activeColor, "0.16, 0.16, 0.16, 1", ACTIVATE_TRANSITION_TIME );
+				logoColor = transition( logoColor, COLOR_ACTIVE_CLASS_TEXT, ACTIVATE_TRANSITION_TIME );
+				gui.playGameSound( "boop" );
+			}
+			onMouseExit {
+				activeColor = transition( activeColor, COLOR_BLACK, ACTIVATE_TRANSITION_TIME );
+				if( icompare( gui.classSelection, #NameParm ) == false ) {
+					logoColor = transition( logoColor, COLOR_CLASS_TEXT, ACTIVATE_TRANSITION_TIME );
+				}
+			}
+			onKeyDown "Mouse1" #ClassParm {
+				if( icompare( gui.classSelection, #NameParm ) == true ) {
+					// cycle through the weapons
+					gui.weaponSelection = immediate( gui.weaponSelection + 1 );
+					if( gui.weaponSelection >= gui.numAvailableWeapons ) {
+						gui.weaponSelection = 0;
+					}
+				}
+				gui.classSelection = #NameParm;
+				gui.playGameSound( "system/button/click" );
+				
+				if ( compare( gui.classSelection, "" ) == false && compare( gui.classSelection, "spectating" ) == false ) {
+					gui.voiceOver = gui.classSelection;
+					gui.postNamedEvent( "startVoice" );
+				}
+			}
+			onPropertyChanged "gui.classSelection" {
+				if( icompare( gui.classSelection, #NameParm ) ) {
+					fillColor = transition( fillColor, COLOR_ACTIVE_CLASS_FILL, ACTIVATE_TRANSITION_TIME );
+					lineColor = transition( lineColor, COLOR_ACTIVE_CLASS_LINE, ACTIVATE_TRANSITION_TIME );
+					logoColor = transition( logoColor, COLOR_ACTIVE_CLASS_TEXT, ACTIVATE_TRANSITION_TIME );
+					gradColor = transition( gradColor, COLOR_ACTIVE_CLASS_GRADIENT, ACTIVATE_TRANSITION_TIME );
+				} else {
+					fillColor = transition( fillColor, COLOR_CLASS_FILL, ACTIVATE_TRANSITION_TIME );
+					lineColor = transition( lineColor, COLOR_CLASS_LINE, ACTIVATE_TRANSITION_TIME );
+					logoColor = transition( logoColor, COLOR_CLASS_TEXT, ACTIVATE_TRANSITION_TIME );
+					gradColor = transition( gradColor, COLOR_CLASS_GRADIENT, ACTIVATE_TRANSITION_TIME );
+				}
+			}
+			onPropertyChanged "count" "isCritical" {
+				if ( count == 0 && isCritical ) {
+					timeline.criticalClassPulse.active = true;
+				} else {
+					timeline.criticalClassPulse.active = false;
+				}
+				timeline.criticalClassPulse.resetTime( 0 );
+			}
+		}
+		timeline {
+			onTime 0 {
+				count = gui.getRoleCountForTeam( #TeamParm, #NameParm );
+				countText = toWString( count, 0 );
+			}
+			onTime 500 {
+				resetTime( 0 );
+			}
+		}
+		timeline criticalClassPulse {
+			onTime 1000 {
+				criticalRect = transition( criticalRect, "criticalRectBase.x - 3, criticalRectBase.y - 3, criticalRectBase.width + 6, criticalRectBase.height + 6", 1000, "90, 10" );
+			}
+			onTime 2000 {
+				criticalRect = transition( criticalRect, criticalRectBase, 1000, "10, 90" );
+			}
+			onTime 3000 {
+				if ( isCritical && count == 0 ) {
+					resetTime( 1000 );
+				}
+			}
+		}
+	}
+$endtemplate
+
+$template _team_button( NameParm, KeyParm, TextParm, PromptParm, XPos, YPos, ActiveColor, ActiveGradColor )
+	windowDef btn##NameParm {
+		properties {
+			rect 	rect 		= XPos, YPos, 68, 42;
+			color	foreColor 	= 1, 1, 1, 0.5;
+
+			rect	textRect	  = absoluteRect.x, absoluteRect.y + 4, absoluteRect.w, 12;
+			rect	countTextRect	= absoluteRect.x, absoluteRect.y, absoluteRect.w - 2, absoluteRect.h - 2;
+			rect	logoRect		= absoluteRect.x + 9, absoluteRect.y + 13, 50, 27;
+			handle	teamText 		= localize( TextParm );
+
+			handle	logoMaterial 	= gui.cacheMaterial( name + "logo", "logo" ## #NameParm );
+
+			color	overlayColor	= 0, 0, 0, 0;
+			color	activeColor	= ActiveColor;
+			color	activeFillColor	= ActiveColor;
+
+			wstring	toolTipText 	= localizeArgs( "guis/limbo/double_click_to_join", localizeArgs( PromptParm ) );
+			float	flags 			= WF_CAPTURE_KEYS;
+			wstring	playerCount;
+		}
+
+		timeline updatePlayerCount {
+			onTime 0 {
+				playerCount = toWString( gui.getTeamPlayerCount( #NameParm ), 0 );
+			}
+			onTime 150 {
+				resetTime( 0 );
+			}
+		}
+
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.facFillMaterial, absoluteRect, COLOR_FACTION_FILL );
+				drawCachedMaterial( gui.facFillMaterial, absoluteRect, activeFillColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_FACTION_GRADIENT );
+				drawCachedMaterial( logoMaterial, logoRect,		COLOR_WHITE );
+				drawCachedMaterial( gui.facLineMaterial, absoluteRect, COLOR_FACTION_LINE );
+
+				drawLocalizedText( teamText, textRect, foreColor, 12, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE );
+				drawText( playerCount, countTextRect, foreColor, 12, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
+
+				//drawCachedMaterial( gradMaterial, absoluteRect, activeColor );
+				drawCachedMaterial( gui.facHiGradMaterial, absoluteRect, overlayColor );
+
+				gui.scriptPushFloat( true );
+			}
+			onCreate {
+				activeFillColor.a = 0.0f;
+			}
+			onKeyDown "mouse1" KeyParm {
+				if( icompare( gui.teamSelection, "spec" ) == 0 ) {
+					gui.lastTeamSelection	= immediate( gui.teamSelection );
+				}
+				gui.teamSelection = #NameParm;
+				gui.playGameSound( "system/button/click" );
+				
+				gui.postNamedEvent( "stopVoice" );
+				
+				$if ( #NameParm == "gdf" )
+					gui.timeline.gdfTeamVoice.active = true;
+					gui.timeline.gdfTeamVoice.resetTime( 0 );
+				$endif
+				$if ( #NameParm == "strogg" )
+					gui.timeline.stroggTeamVoice.active = true;
+					gui.timeline.stroggTeamVoice.resetTime( 0 );
+				$endif
+			}
+
+			onDoubleClick "mouse1" {
+				if( icompare( gui.teamSelection, "spec" ) == 0 ) {
+					gui.lastTeamSelection	= immediate( gui.teamSelection );
+				}
+				gui.teamSelection = #NameParm;
+				gui.consoleCommand( "clientTeam " + gui.teamSelection + _newline );
+				gui.playGameSound( "system/button/click" );
+			}
+			onMouseEnter {
+				foreColor.a = transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+				gui.playGameSound( "boop" );
+			}
+			onMouseExit {
+				foreColor.a = transition( foreColor.a, 0.5, ACTIVATE_TRANSITION_TIME );
+			}
+			onPropertyChanged "player.teamName" "gui.teamSelection" {
+				if( icompare( gui.teamSelection, #NameParm ) ) {
+					activeColor.a = transition( activeColor.a, 1, ACTIVATE_TRANSITION_TIME );
+					activeFillColor.a = transition( activeFillColor.a, 1, ACTIVATE_TRANSITION_TIME );
+					overlayColor = transition( overlayColor, ActiveGradColor, ACTIVATE_TRANSITION_TIME );
+				} else {
+					activeColor.a = transition( activeColor.a, 0, ACTIVATE_TRANSITION_TIME );
+					activeFillColor.a = transition( activeFillColor.a, 0, ACTIVATE_TRANSITION_TIME );
+					overlayColor = transition( overlayColor, "0, 0, 0, 0", ACTIVATE_TRANSITION_TIME );
+				}
+			}
+			onQueryTooltip {
+				if( icompare( gui.teamSelection, #NameParm ) || player.serverIsRepeater ) {
+					toolTipText 	= gui.blankWStr;
+				} else {
+					toolTipText 	= localizeArgs( "guis/limbo/double_click_to_join", localizeArgs( PromptParm ) );
+				}
+			}
+		}	
+$endtemplate
+
+$template _end_team_button
+	}
+$endtemplate
+
+$template _deploy_button( NameParm, TextParm, XPos, YPos, WidthParm )
+windowDef btn##NameParm {
+	properties {
+		rect 	rect 			= XPos, YPos, WidthParm, 33;
+		rect	leftRect		= absoluteRect.x + 20, absoluteRect.y + 1, 51, 30;
+		rect	rightRect		= absoluteRect.x + absoluteRect.w - 71, absoluteRect.y + 1, 51, 30;
+		color	foreColor 		= 1, 1, 1, 0.5;
+
+		handle	leftMaterial 	= gui.cacheMaterial( "arrowleft", "_3v arrowleft" );
+		handle	rightMaterial 	= gui.cacheMaterial( "arrowright", "_3v arrowright" );
+
+		handle	leftAddMaterial = gui.cacheMaterial( "arrowleft_add", "_3v arrowleft_add" );
+		handle	rightAddMaterial = gui.cacheMaterial( "arrowright_add", "_3v arrowright_add" );
+
+		handle	buttonText 		= TextParm;
+
+		color	gradOverlayColor = 0, 0, 0, 0;
+		color	arrowOverlayColor = COLOR_BLACK;
+		wstring	toolTipText = localizeArgs( "guis/limbo/clicktodeploy" );
+	}
+
+	events {
+		onPreDraw {
+			drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_FACTION_FILL );
+			drawCachedMaterial( gui.gradMaterial, absoluteRect, COLOR_FACTION_GRADIENT );
+			drawCachedMaterial( gui.gradMaterial, absoluteRect, gradOverlayColor );
+			drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_FACTION_LINE );
+
+			drawCachedMaterial( leftMaterial, leftRect, COLOR_DEPLOY_ARROW );
+			drawCachedMaterial( rightMaterial, rightRect, COLOR_DEPLOY_ARROW );
+
+			drawCachedMaterial( leftAddMaterial, leftRect, arrowOverlayColor );
+			drawCachedMaterial( rightAddMaterial, rightRect, arrowOverlayColor );
+
+			drawLocalizedText( buttonText, absoluteRect, foreColor, 16, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE );
+
+			gui.scriptPushFloat( true );
+		}
+
+		onMouseEnter {
+			gradOverlayColor 	= transition( gradOverlayColor, COLOR_FACTION_GRADIENT, ACTIVATE_TRANSITION_TIME );
+			foreColor.a 		= transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+
+			arrowOverlayColor = transition( arrowOverlayColor, COLOR_DEPLOY_ARROW, 200 );
+
+			timeline.default.resetTime( 0 );
+			timeline.default.active = true;
+			gui.playGameSound( "boop" );
+		}
+
+		onMouseExit {
+			timeline.default.resetTime( 9999 );
+
+			gradOverlayColor = transition( gradOverlayColor, COLOR_BLACK, ACTIVATE_TRANSITION_TIME );
+			foreColor.a = transition( foreColor.a, 0.5, ACTIVATE_TRANSITION_TIME );
+
+			arrowOverlayColor = transition( arrowOverlayColor, COLOR_BLACK, 750, "0.2,0.9" );
+		}
+		onKeyDown "mouse1" {
+			gui.playGameSound( "system/button/click" );
+			gui.postNamedEvent( "deploy" );
+		}
+	}
+	timeline {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 2, 500 );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 53, 500 );
+		}
+		// bobbing loop
+		onTime 500 {
+			
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 15, 1000, "0, 0.5" );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 66, 1000, "0, 0.5" );
+		}
+
+		onTime 1500 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 2, 1000, "0.5, 1" );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 53, 1000, "0.75, 1" );
+		}
+		onTime 2500 {
+			resetTime( 500 );
+		}
+
+		onTime 9999 {
+			leftRect.x = transition( leftRect.x, absoluteRect.x + 20, 300 );
+			rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 71, 300 );
+		}
+	}
+$endtemplate
+
+$template _end_deploy_button
+	}
+$endtemplate
+
+$template _objective_info( TeamName, Number )
+	drawLocalizedText( globals.mapInfo.TeamName##Objective##Number,
+$endtemplate
+
+
+$template _proficiency_bar( NumParm, XParm, YParm, ToolTipParm )
+	windowDef prof##NumParm {
+		properties {
+			rect	rect				= XParm, YParm, 90, 16;
+			rect	iconRect			= absoluteRect.x + 4, absoluteRect.y, 12, 12;
+			rect	progressRect		= absoluteRect.x + 28, absoluteRect.y + 12, 40, 3;
+			rect	progressRectFill	= absoluteRect.x + 28, absoluteRect.y + 12, 40 * position, 3;
+			rect	barRect				= absoluteRect.x + 24, absoluteRect.y, 12, 12;
+			vec2	textAlignment		= TA_LEFT, TA_VCENTER;
+			float	position			= limbo.proficiencyPercent##NumParm;
+			float	numProf				= limbo.proficiency##NumParm;
+			handle	profTypeMaterial;
+			string	profName			= limbo.proficiencyName##NumParm;
+			wstring	toolTipText			= ToolTipParm;		
+		}
+		events {
+			onActivate {
+				if( compare( profName, "" ) == false ) {
+					profTypeMaterial = gui.cacheMaterial( name + "icon", "_st prof_" + profName );
+				}
+			}
+			onPropertyChanged "profName"  {
+				if( compare( profName, "" ) == false ) {
+					profTypeMaterial = gui.cacheMaterial( name + "icon", "_st prof_" + profName );
+				}
+			}
+			onPreDraw {								
+				if( position > 0.0f && position < 1.0f ) {
+					drawCachedMaterial( gui.whiteMaterial, progressRect, "0.225,0.225,0.225,1" );
+					drawCachedMaterial( gui.whiteMaterial, progressRectFill, COLOR_PROGRESS_FILL );
+				}			
+				
+				drawCachedMaterial( profTypeMaterial, iconRect, COLOR_TAB_CONTENT_TEXT );
+				drawTiledMaterial( gui.profBackMaterial, barRect, COLOR_WHITE, "4, 1" );
+				drawTiledMaterial( gui.profIconMaterial, barRect, COLOR_WHITE, "numProf, 1" );
+				
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+$endtemplate
+
+$template _rewards( NumParm, XPos, YPos )
+	windowDef rewardsBack##NumParm {
+		type iconNotification;
+		properties {
+			rect 	rect = gui.rewards##NumParm.rect;
+			vec2 	iconSize = gui.rewards##NumParm.iconSize;
+			float 	initialized = false;
+			color	colorMultiplier = 1,1,1,0.10;
+			float 	iconFadeTime = 0;
+			float 	iconSlideTime = 0;
+			handle 	item;
+		}
+		events {
+			onNamedEvent "onUpdate" {
+				clear();
+				gui.scriptPushString( gui.classSelection );
+				gui.scriptPushFloat( limbo.proficiencyID##NumParm );
+				fillFromEnumerator( "playerAllUpgrades" );
+				initialized = true;
+			}		
+		}
+	}
+	windowDef rewards##NumParm {
+		type iconNotification;
+		properties {
+			rect rect 		= XPos, YPos, ( iconSize.x + iconSpacing + 2 ) * 2, ( iconSize.x + iconSpacing ) * 2;
+			vec2 iconSize 	= 28, 28;
+			float flags		= immediate( flags ) | WF_CLIP_TO_RECT;
+			float iconFadeTime = 0;
+			float iconSlideTime = 0;
+			wstring toolTipText;
+			handle item;
+		}
+		events {
+			onQueryToolTip {
+				item = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( isValidHandle( item ) ) {
+					toolTipText = getItemText( item );
+					return;
+				} else {
+					item = gui.rewardsBack##NumParm.getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+					if( isValidHandle( item ) ) {
+						toolTipText = localizeArgs( "game/proficiency/not_unlocked", gui.rewardsBack##NumParm.getItemText( item ) );
+						return;
+					}
+				}
+				toolTipText = gui.blankWStr;
+			}
+			onPropertyChanged "gui.classSelection" {
+				clear();
+				timeline.default.resetTime( 0 );
+			}
+		}
+		timeline {
+			onTime 0 {				
+				gui.scriptPushString( gui.classSelection );
+				gui.scriptPushFloat( limbo.proficiencyID##NumParm );
+				fillFromEnumerator( "playerUpgrades" );		
+
+				gui.rewardsBack##NumParm.postNamedEvent( "onUpdate" );
+			}
+			onTime 500 	{
+				resetTime( 0 );
+			}
+		}
+
+$endtemplate
+
+$template _end_rewards
+	}
+$endtemplate
+
+$template _voice_reset_button( NameParm, XPos, YPos, Width, Height, ButtonColor, LineColor )
+	windowDef btn##NameParm {
+		properties {
+			rect 	rect 		= XPos, YPos, Width, Height;
+			color	foreColor 	= ButtonColor;
+			color	lineColor 	= LineColor;
+			rect	logoRect		= absoluteRect.x, absoluteRect.y + 1, Width - 4, Height - 6;
+
+			handle	logoMaterial 	= gui.cacheMaterial( "_voice_icon", "_st voip" );
+
+			wstring	toolTipText = localizeArgs( "guis/limbo/limbo_vo_reset" );
+			float	visible			= gui.tabcGameInfo.currentPage == GI_CAMPAIGN;
+		}
+		events {
+			onCreate {
+				foreColor.a = 0.5;
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.chkFillMaterial, absoluteRect, foreColor );
+				drawCachedMaterial( gui.chkLineMaterial, absoluteRect, lineColor );
+				drawCachedMaterial( logoMaterial, logoRect, COLOR_WHITE );
+				gui.scriptPushFloat( true );
+			}
+			onKeyDown "mouse1" {
+				gui.playGameSound( "system/button/click" );
+				gui.postNamedEvent( "resetVoiceTutorial" );
+			}
+			onMouseEnter {
+				foreColor.a = transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+				gui.playGameSound( "boop" );
+			}
+			onMouseExit {
+				foreColor.a = transition( foreColor.a, 0.5, ACTIVATE_TRANSITION_TIME );
+			}
+		}
+$endtemplate
+
+$template _end_voice_reset_button
+	}
+$endtemplate
+
+#endif // !__limbo__

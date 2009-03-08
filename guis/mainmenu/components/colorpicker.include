@@ -1,0 +1,110 @@
+
+#include "list.include"
+
+#ifndef __component_colorpicker__
+#define __component_colorpicker__
+
+$template _color_picker( NameParm )
+	windowDef lst##NameParm {
+		type list;
+		_list_draw_background
+		_list_properties
+		_list_scrollbar( NameParm )
+		_tab_stop
+
+		properties {
+			float fixedRowHeight = 12;
+			float rowSpacing = 2;
+			color itemColor;
+			float itemRow;
+			float itemCol;
+			rect itemRect;
+			float internalBorderWidth = 4;
+			float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+			float updatingList = false;
+		}
+		events {
+			onNamedEvent "pushDefaultColors" {				
+				gui.scriptPushFloat( false );
+				gui.scriptPushString( "" );
+				gui.scriptPushVec4( COLOR_WHITE );								
+			}
+			onNamedEvent "createColorList" {
+				updatingList = true;
+				
+				//storeVisualState();
+				fillFromEnumerator( "colors" );
+				//restoreVisualState();
+				
+				ensureItemIsVisible( currentSelection );				
+
+				updatingList = false;
+				setItemMaterialSize( "16,16", -1, -1 );
+				setItemFlags( toWStr( "<flags customDraw>" ), -1, 0 );
+			}
+			onCreate {
+				insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// color
+				insertColumn( gui.blankWStr, 0, 1 );	// code
+				insertColumn( gui.blankWStr, 0, 2 );	// 4 component color string
+
+				postNamedEvent( "pushDefaultColors" );
+				postNamedEvent( "createColorList" );
+			}
+			onDrawItem {
+				itemRow = gui.scriptGetFloatResult();
+				itemCol = gui.scriptGetFloatResult();
+
+				itemRect = getItemRect( itemRow, itemCol, GIR_COLUMN );
+				itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, COLOR_WHITE, itemRow, 0 );
+
+				drawCachedMaterial( gui.whiteMaterial, itemRect, itemColor );
+				if( itemRow == currentSelection ) {
+					itemColor.r = immediate( 1 - itemColor.r );
+					itemColor.g = immediate( 1 - itemColor.g );
+					itemColor.b = immediate( 1 - itemColor.b );
+					itemColor.a = 0.75;
+					drawRect( itemRect, itemColor, 1 );
+					drawRect( "itemRect.x + 1, itemRect.y + 1, itemRect.w - 2, itemRect.h - 2", COLOR_BLACK, 1 );
+				}
+				gui.scriptPushFloat( false );
+			}
+		}
+$endtemplate
+
+$template _end_color_picker
+	}
+$endtemplate
+
+// used inside of an edit control
+$template _color_picker_edit( NameParm )
+	properties {
+		float insertingColor = false;
+	}
+	events {
+		onKeyDown "mouse2" {
+			insertingColor = true;
+			gui.focusedWindow = name;
+			gui.lst##NameParm.postNamedEvent( "showMenu" );
+		}
+		onPropertyChanged "gui.lst" ## #NameParm ## ".visible" {
+			if( gui.lst##NameParm.visible == false ) {
+				insertingColor = false;
+			}
+		}
+
+		onPropertyChanged "gui.lst" ## #NameParm ## ".colorChosen" {
+			if( gui.lst##NameParm.colorChosen == true ) {
+				if( compare( gui.focusedWindow, name ) && gui.lst##NameParm.currentSelection >= 0 ) {
+					if( anySelected() ) {
+						surroundSelection( toStr( _get_current_list_text( NameParm, 1 ) ), "^0" );
+					} else {
+						insertText( toStr( _get_current_list_text( NameParm, 1 ) ) );
+					}
+				}
+				insertingColor = false;
+			}
+		}
+	}
+$endtemplate
+
+#endif // __component_colorpicker__

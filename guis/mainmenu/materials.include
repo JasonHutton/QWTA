@@ -1,0 +1,32 @@
+
+#ifndef __mainmenu_materials__
+#define __mainmenu_materials__
+
+$template _menu_icons	
+	// filter icons 
+	materials {
+		"password"		"guis/assets/icons/icons_sheet1, rect( 160, 16, 16, 16 )"
+		"empty"			"guis/assets/icons/icons_sheet1, rect( 192, 16, 16, 16 )"
+		"full"			"guis/assets/icons/icons_sheet1, rect( 176, 16, 16, 16 )"
+		"friendly_fire"	"guis/assets/icons/icons_sheet1, rect( 208, 16, 16, 16 )"
+		"punkbuster"	"guis/assets/icons/icons_sheet1, rect( 128, 16, 16, 16 )"
+		"balance"		"guis/assets/icons/icons_sheet1, rect( 144, 16, 16, 16 )"		
+		"pure"			"guis/assets/icons/icons_sheet1, rect( 0, 0, 16, 16 )"		
+		"ranked"		"guis/assets/icons/icons_sheet1, rect( 64, 0, 16, 16 )"		
+		"tv"			"guis/assets/icons/icons_sheet2, rect( 48, 16, 16, 16 )"		
+		"bot"			"guis/assets/icons/icons_sheet1, rect( 80, 0, 16, 16 )"		
+		"latejoin"		"guis/assets/icons/icons_sheet1, rect( 96, 0, 16, 16 )"
+		"novoting"		"guis/assets/icons/icons_sheet1, rect( 112, 0, 16, 16 )"
+		
+		"dontcare"		"guis/nodraw"
+		"show"			"guis/assets/mainmenu/filters/show"
+		"hide"			"guis/assets/mainmenu/filters/hide"
+		
+		"teams/owner"		"guis/assets/mainmenu/team_states, rect( 0, 0, 16, 16 )"
+		"teams/admin"		"guis/assets/mainmenu/team_states, rect( 16, 0, 16, 16 )"
+		"teams/member"		"guis/assets/mainmenu/team_states, rect( 32, 0, 16, 16 )"	
+	}
+
+$endtemplate
+
+#endif // !__mainmenu_materials__

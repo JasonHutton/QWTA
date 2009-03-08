@@ -1,0 +1,104 @@
+//===============================================================
+//	AddFriend Popup
+//===============================================================
+_dialog( AddFriend, localize( "guis/mainmenu/addfriend" ), _center( desktop, width ), _center( desktop, height ), 220, 160, "noMove", "dim" )
+    _input_dialog( AddFriend )
+    _on_default( AddFriendOk, AddFriendCancel )
+    properties {
+    	float autoClose = false;
+    }
+
+    events {
+    	onNamedEvent "onShow" {
+    		callSuper();
+    		setTabStop( 0 );
+    		autoClose = false;
+    		gui.edtAddFriend_Reason.editText = localizeArgs( "guis/mainmenu/defaultaddreason" );
+    		gui.edtAddFriend_Reason.selectAll();
+    	}
+    	onPropertyChanged "gui.activePopup" "allowEvents" "allowChildEvents" {    	
+    		if( isVisible() && compare( gui.activePopup, "" ) == true && allowEvents && allowChildEvents ) { 
+    			setTabStop( 0 );
+    		}
+    	}	
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( visible ) {
+    			_close_input
+    		}
+    	}
+    }
+
+	_edit( AddFriend, _right( dlgAddFriend ), _top( dlgAddFriend ) + 10, 100, BUTTON_HEIGHT )
+		_clear_on_show
+		_draw_right_edit_label( localize( "guis/mainmenu/username" ), COLOR_TEXT, 80 )
+		properties {
+			float	maxTextLength = 20;
+		}		
+    _end_edit
+    
+    _label_localized( AddFriendReason, localize( "guis/mainmenu/add_reason_prompt" ), PADDING, _to_bottom_of( edtAddFriend ) + PADDING, _fill_to_right_of( dlgAddFriend ), BUTTON_HEIGHT, COLOR_TEXT )
+    	properties {
+    		vec2 textAlignment = TA_LEFT, TA_VCENTER;
+    		float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+    	}
+    _end_label
+    
+    _editw_scroll( AddFriend_Reason, PADDING, _to_bottom_of( lblAddFriendReason ) + 3, _fill_to_right_of( dlgAddFriend ), $evalfloat( BUTTON_HEIGHT * 3 ) )	
+    	properties {
+    		float	maxTextLength = 256;
+    	}
+	_end_editw_scroll
+    
+	_button( AddFriendOk, _to_left_of( btnAddFriendCancel ) - 3, _bottom( dlgAddFriend ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/addfriend" );
+		}
+		_button_disable_if( "gui.edtAddFriend.editText", compare( gui.edtAddFriend.editText, "" ) )
+
+		_button_action(
+			if( allowEvents == false ) {
+				return;
+			}
+			taskActive = 1;
+			sdnet.proposeFriendship( gui.edtAddFriend.editText, gui.edtAddFriend_Reason.editText );
+			_show_popup( sdNetProgress )
+        )
+        events {
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == 1 ) {
+						//_close_input;
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							taskActive = 0;
+							gui.lstFriends.postNamedEvent( "requestUpdate" );
+							gui.edtAddFriend.editText = "";
+							gui.edtAddFriend_Reason.selectAll();
+							
+							if( gui.dlgAddFriend.autoClose ) {
+								_close_input
+							}							
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage );
+						_show_popup( confirmation )
+						return;
+					}
+				}
+			}
+        }
+    _end_button
+	_button( AddFriendCancel, _right( dlgAddFriend ), _bottom( dlgAddFriend ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/done" );
+		}
+        _button_action(
+			_close_input;
+        )
+	_end_button
+_end_dialog

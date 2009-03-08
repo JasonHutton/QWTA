@@ -1,0 +1,161 @@
+
+#ifndef __game_chat__
+#define __game_chat__
+
+$template __chat( ParentName )
+	windowDef globalList {
+		type list;
+		_med_text_props
+		properties {
+				rect	rect					= 2, 2, gui.ParentName.rect.w - 20, _fill_to_top_of( edtChat );
+				color	backColor				= 0, 0, 0, 0;
+				float	scrollToEnd;
+				float	allowEvents				= false;
+				float	flags					= immediate( flags ) | WF_WRAP_TEXT | LF_VARIABLE_HEIGHT_ROWS;
+		}
+		
+		events {
+			onCreate {
+				insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Chat
+			}
+			onActivate {
+				gui.scrollbar.position = scrollAmountMax;
+			}
+			onPreDraw {
+				if( scrollToEnd ) { 
+					gui.scrollbar.position = immediate( scrollAmountMax );
+					scrollToEnd = false;
+				}
+				scrollAmount = gui.scrollbar.position;
+
+				gui.scriptPushFloat( true );
+			}	
+		}
+		timeline default {
+			onTime 0 {
+			
+				// jrad
+				// if the user is scrolling back in the list we want to avoid
+				// popping back to the end of the list when new chats are added
+				// see if we're scrolled to 100% and if so, ensure that any new
+				// items appear as they're added
+				scrollToEnd = immediate( scrollAmount >= scrollAmountMax );
+
+				// regenerate the list						
+				gui.scriptPushFloat( true );
+				gui.scriptPushFloat( CHAT_MODE_MESSAGE );
+				gui.scriptPushFloat( -1 );	// item count: we want all items in our list
+				
+				fillFromEnumerator( "chatHistory" );
+				
+				// force scrollAmountMax to be recalculated now
+				requestLayout();
+			}
+			onTime 250 {
+				resetTime( 0 );
+			}
+		}
+		windowDef listScroller {
+			properties {
+				rect rect = 0, 0, gui.globalList.rect.w, gui.globalList.rect.h;
+				float allowEvents = false;
+			}
+		}
+	}
+	windowDef scrollbar {
+		type slider;
+		_scrollable_list
+		
+		properties {
+			rect 	rect 			= gui.globalList.rect.width + 2, 4, 11, gui.globalList.pageSize - 4;
+			string 	material 		= "_3v scroll";
+			float 	orientation 	= 0;			
+			vec2 	range 			= 0, gui.globalList.scrollAmountMax;
+			float	pageStep		= gui.globalList.pageSize;
+		}
+		events {
+			onNamedEvent "moveup" {
+				 position = max( range.x, immediate( position ) - 12 );
+			}
+			onNamedEvent "movedown" {
+				 position = min( immediate( position ) + 12, range.y );
+			}
+			onNamedEvent "home" {
+				 position = immediate( range.y );
+			}
+			onNamedEvent "end" {
+				 position = immediate( range.x );
+			}
+			onMouseUpDownArrow {
+				postNamedEvent( "loseFocus" );
+			}
+			onMouseUpUpArrow {
+				postNamedEvent( "loseFocus" );
+			}
+			onMouseUpThumb {
+				postNamedEvent( "loseFocus" );
+			}
+			onMouseUpGutter {
+				postNamedEvent( "loseFocus" );
+			}
+			onEndScroll {
+				postNamedEvent( "loseFocus" );
+			}
+			onMouseUpThumb {
+				postNamedEvent( "loseFocus" );
+			}
+			onNamedEvent "loseFocus" {
+				gui.focusedWindow = "edtChat";			
+			}
+		}
+	}
+	_editw( Chat, 4, _bottom( ParentName ), gui.ParentName.rect.w - 8, EDIT_HEIGHT )
+		properties {
+			string 	chatCommand = "say";
+			float	maxTextLength = 200;		
+			float	allowDeactivate = true;
+			float	allowUnfocus	= false;
+			vec2	textOffset		= 3, 1;
+		}
+		events {
+			onAccept {
+				if( wcompare( editText, gui.blankWStr ) == 0 ) {
+					gui.chatCommand( chatCommand, editText );
+					gui.playGameSound( "system/button/click" );
+				}
+				self.clearText();
+				if( allowDeactivate ) {
+					gui.deactivate();
+				}
+			}
+			onCancel {
+				if( wcompare( editText, gui.blankWStr ) && allowUnfocus ) {
+					gui.focusedWindow = "";
+				}
+				self.clearText();
+				if( allowDeactivate ) {
+					gui.deactivate();
+				}
+			}
+			onKeyDown "mwheelup" "pgup" {
+				 gui.scrollbar.postNamedEvent( "moveup" );
+			}
+			onKeyDown "mwheeldown" "pgdn" {					 
+				 gui.scrollbar.postNamedEvent( "movedown" );
+			}
+			onGainFocus {
+				flags = immediate( flags ) | WF_CAPTURE_KEYS;
+			}
+			onLoseFocus {
+				flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+			}
+		}
+		timeLine {
+			onTime 0 {
+				self.clearText();
+			}
+		}
+	_end_edit
+$endtemplate
+
+#endif // !__game_chat__

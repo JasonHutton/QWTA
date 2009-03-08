@@ -1,0 +1,93 @@
+
+#ifndef __hud_colors__
+#define __hud_colors__
+
+#define COLOR_DIALOG_FILL				color( player.teamNameView + "_COLOR_DIALOG_FILL" )
+#define COLOR_DIALOG_LINES				color( player.teamNameView + "_COLOR_DIALOG_LINES" )
+#define COLOR_DIALOG_GRADIENT			color( player.teamNameView + "_COLOR_DIALOG_GRADIENT" )
+                                    			
+#define COLOR_BUTTON_FILL				COLOR_DIALOG_FILL
+#define COLOR_BUTTON_LINES				COLOR_DIALOG_LINES
+#define COLOR_BUTTON_GRADIENT			COLOR_DIALOG_LINES
+#define COLOR_BUTTON_HI_GRADIENT		COLOR_DIALOG_LINES
+#define COLOR_BUTTON_HI_LINES			COLOR_DIALOG_LINES
+
+#define COLOR_EDIT_LINES      			COLOR_BUTTON_LINES
+#define COLOR_EDIT_HI_LINES    			COLOR_BUTTON_HI_LINES
+#define COLOR_EDIT_FILL       			COLOR_BUTTON_FILL
+#define COLOR_EDIT_HI_FILL       		COLOR_BUTTON_HI_GRADIENT
+                                    			
+#define COLOR_SLIDER_LINES				COLOR_DIALOG_FILL
+#define COLOR_SLIDER_HI_LINES			COLOR_DIALOG_LINES
+#define COLOR_SLIDER_THUMB				COLOR_DIALOG_GRADIENT
+                                    			
+#define COLOR_COMPASS_FRAME_FILL		color( player.teamNameView + "_COLOR_COMPASS_FRAME_FILL" )
+#define COLOR_COMPASS_FRAME_LINE		color( player.teamNameView + "_COLOR_COMPASS_FRAME_LINE" )
+                                    			
+#define COLOR_TIMER_FILL				color( player.teamNameView + "_COLOR_TIMER_FILL" )
+#define COLOR_TIMER_LINE				color( player.teamNameView + "_COLOR_TIMER_LINE" )
+                                    			
+#define COLOR_ICON						color( player.teamNameView + "_COLOR_ICON" )
+#define COLOR_ICON_DIM					color( player.teamNameView + "_COLOR_ICON_DIM" )
+                                    			
+#define COLOR_MISSION_FILL				color( player.teamNameView + "_COLOR_MISSION_FILL" )
+#define COLOR_MISSION_LINE				color( player.teamNameView + "_COLOR_MISSION_LINE" )
+
+#define COLOR_SCOREBOARD_FILL			color( player.teamName + "_COLOR_SCOREBOARD_FILL" )
+#define COLOR_SCOREBOARD_SPEC_FILL		color( player.teamName + "_COLOR_SCOREBOARD_SPEC_FILL" )
+#define COLOR_SCOREBOARD_LINE			color( player.teamName + "_COLOR_SCOREBOARD_LINE" )
+#define COLOR_SCOREBOARD_ITEM			color( player.teamName + "_COLOR_SCOREBOARD_ITEM" )
+                                            	
+#define COLOR_VEHICLE_OUTER_FILL		color( player.teamNameView + "_COLOR_VEHICLE_OUTER_FILL" )
+#define COLOR_VEHICLE_PASSENGER_LIST_FILL    	color( player.teamNameView + "_COLOR_VEHICLE_PASSENGER_LIST_FILL" )
+#define COLOR_VEHICLE_PASSENGER_LIST_GRADIENT   color( player.teamNameView + "_COLOR_VEHICLE_PASSENGER_LIST_GRADIENT" )
+#define COLOR_VEHICLE_BOXES_LINE        	color( player.teamNameView + "_COLOR_VEHICLE_BOXES_LINE" )
+#define COLOR_VEHICLE_BAR            		color( player.teamNameView + "_COLOR_VEHICLE_BAR" )
+#define COLOR_VEHICLE_BAR_LINE       		color( player.teamNameView + "_COLOR_VEHICLE_BAR_LINE" )
+
+#define COLOR_HEALTH_BAR            		color( player.teamNameView + "_COLOR_HEALTH_BAR" )
+#define COLOR_HEALTH_BAR_LINE       		color( player.teamNameView + "_COLOR_HEALTH_BAR_LINE" )
+
+#define COLOR_FIRETEAM_FIRETEAM_OUTER_FILL	color( player.teamNameView + "_COLOR_FIRETEAM_FIRETEAM_OUTER_FILL" )
+#define COLOR_FIRETEAM_OUTER_GRADIENT    	color( player.teamNameView + "_COLOR_FIRETEAM_OUTER_GRADIENT" )
+#define COLOR_FIRETEAM_PLAYER_LIST_GRADIENT	color( player.teamNameView + "_COLOR_FIRETEAM_PLAYER_LIST_GRADIENT" )
+#define COLOR_FIRETEAM_LINE        			color( player.teamNameView + "_COLOR_FIRETEAM_LINE" )
+
+#define COLOR_WEAPON_LIST_ICON_LINE			color( player.teamNameView + "_COLOR_WEAPON_LIST_ICON_LINE" )
+#define COLOR_WEAPON_LIST_ITEM_FILL 		color( player.teamNameView + "_COLOR_WEAPON_LIST_ITEM_FILL" )
+#define COLOR_WEAPON_LIST_ITEM_LINE 		color( player.teamNameView + "_COLOR_WEAPON_LIST_ITEM_LINE" )
+                                            	
+#define COLOR_WEAPON_LIST_ITEM_HI_FILL		color( player.teamNameView + "_COLOR_WEAPON_LIST_ITEM_HI_FILL" )
+#define COLOR_WEAPON_LIST_ITEM_HI_LINE		color( player.teamNameView + "_COLOR_WEAPON_LIST_ITEM_HI_LINE" )
+#define COLOR_WEAPON_LIST_ITEM_HI_GRADIENT	color( player.teamNameView + "_COLOR_WEAPON_LIST_ITEM_HI_GRADIENT" )
+
+#define COLOR_BAR_FILL						color( player.teamNameView + "_COLOR_BAR_FILL" )
+#define COLOR_BAR_GRADIENT					color( player.teamNameView + "_COLOR_BAR_GRADIENT" )
+
+#define COLOR_CROSSHAIR_LINE				color( player.teamNameView + "_COLOR_CROSSHAIR_LINE" )
+#define COLOR_CROSSHAIR_FILL				color( player.teamNameView + "_COLOR_CROSSHAIR_FILL" )
+#define COLOR_CROSSHAIR_GRADIENT			color( player.teamNameView + "_COLOR_CROSSHAIR_GRADIENT" )
+
+#define COLOR_HUD_DARK 						color( player.teamNameView + "_COLOR_HUD_DARK" )
+#define COLOR_HUD_CM_RING 					color( player.teamNameView + "_COLOR_HUD_CM_RING" )
+#define COLOR_HUD_DARK_NOALPHA				color( player.teamNameView + "_COLOR_HUD_DARK_NOALPHA" )
+#define COLOR_HUD_MED 						color( player.teamNameView + "_COLOR_HUD_MED" )
+#define COLOR_HUD_LIGHT 					color( player.teamNameView + "_COLOR_HUD_LIGHT" )
+#define COLOR_HUD_LIGHT_NOALPHA				color( player.teamNameView + "_COLOR_HUD_LIGHT_NOALPHA" )
+#define COLOR_HUD_HIGHLIGHT					color( player.teamNameView + "_COLOR_HUD_HIGHLIGHT" )
+#define COLOR_HUD_PROGRESS					color( player.teamNameView + "_COLOR_HUD_PROGRESS" )
+#define COLOR_HUD_WEAPON_HIGH				color( player.teamNameView + "_COLOR_HUD_WEAPON_HIGH" )
+#define COLOR_HUD_TEXT						COLOR_WHITE
+
+#define COLOR_TEXT							color( player.teamNameView + "_COLOR_TEXT" )
+#define COLOR_TEXT_HIGHLIGHT				COLOR_WHITE
+
+#define COLOR_YELLOW_TEXT					color( player.teamNameView + "_COLOR_YELLOW_TEXT" )
+
+#define COLOR_LIST_HIGHLIGHT				color( player.teamNameView + "_COLOR_LIST_HIGHLIGHT" )
+#define COLOR_LIST_GRADIENT					color( player.teamNameView + "_COLOR_LIST_GRADIENT" )
+
+#define COLOR_HUD_TUTORIAL_HIGHLIGHT		color( player.teamNameView + "_COLOR_HUD_TUTORIAL_HIGHLIGHT" )
+#define COLOR_HUD_TUTORIAL_HIGHLIGHT_FULL	color( player.teamNameView + "_COLOR_HUD_TUTORIAL_HIGHLIGHT_FULL" )
+
+#endif // !__hud_colors__

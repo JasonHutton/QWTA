@@ -1,0 +1,423 @@
+
+#ifndef __mainmenu_cvars__
+#define __mainmenu_cvars__
+
+$template _flip_cvar_sign( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			checked = gui.getCVarFloat( #CVarParm ) < 0;
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			checked = gui.getCVarFloat( #CVarParm ) < 0;
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+			if( checked ) {
+			    gui.setCVarFloat( #CVarParm, abs( gui.getCVarFloat( CVarParm ) ) * -1 );
+			} else {
+				gui.setCVarFloat( #CVarParm, abs( gui.getCVarFloat( CVarParm ) ) );
+			}
+		}
+	}
+$endtemplate
+
+// used in the control
+$template _cvar_bool( CVarParm )
+	events {
+		onCVarChanged #CVarParm {
+			callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != false;
+		}
+	    onCreate {
+	    	callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != false;
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+			if( checked ) {
+			    gui.setCVarBool( #CVarParm, true );
+			} else {
+				gui.setCVarBool( #CVarParm, false );
+			}
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}
+	}
+$endtemplate
+
+
+// inverted logic
+$template _cvar_bool_not( CVarParm )
+	events {
+		onCVarChanged #CVarParm {
+			callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != true;
+		}
+	    onCreate {
+	    	callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != true;
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+			if( checked ) {
+			    gui.setCVarBool( #CVarParm, false );
+			} else {
+				gui.setCVarBool( #CVarParm, true );
+			}
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}
+	}
+$endtemplate
+
+// used in the parent
+$template _cvar_cache_bool( CVarParm )
+	properties {
+		string CVarParm##Cached = "0";
+	}
+	events {
+	    onCreate {
+	    	callSuper();
+	    	CVarParm##Cached = toString( gui.getCVarBool( #CVarParm ), 0 );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+     		gui.setCVarBool( #CVarParm, toFloat( CVarParm##Cached ) );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_cached_bool( CVarParm )
+	events {
+	    onNamedEvent "onShow" "updateCheck" {
+	    	callSuper();
+	    	checked = toFloat( gui.getStringForProperty( "gui." +  gui.getParentName( name ) + "." ## #CVarParm ## "Cached", "0" ) );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( gui.getCVarBool( #CVarParm ), 0 ) );
+			postNamedEvent( "updateCheck" );
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+      		gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( checked, 0 ) );
+		}
+	}
+$endtemplate
+
+$template _cvar_get_cached( NameParm, CVarParm, DefaultParm )
+	gui.getStringForProperty( "gui." + gui.getParentName( #NameParm ) + "." ## #CVarParm ## "Cached", DefaultParm )
+$endtemplate
+
+$template _cvar_cached_bool_changed( NameParm, CVarParm )
+	( compare( _cvar_get_cached( NameParm, CVarParm, "0" ), toString( gui.getCVarBool( CVarParm ), 0 ) ) == false )
+$endtemplate
+
+$template _cvar_cached_int_changed( NameParm, CVarParm )
+	( compare( _cvar_get_cached( NameParm, CVarParm, "0" ), toString( gui.getCVarInt( CVarParm ), 0 ) ) == false )
+$endtemplate
+
+// used for setting related cvars that shouldn't update the state of the UI element
+$template _cvar_set_cached_bool_secondary( CVarParm )
+	events {
+		onCVarChanged #CVarParm {
+			callSuper();
+			gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( gui.getCVarBool( #CVarParm ), 0 ) );
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+      		gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( checked, 0 ) );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_cached_bool_not( CVarParm )
+	events {
+	    onNamedEvent "onShow" "updateCheck" {
+	    	callSuper();
+	    	checked = toFloat( gui.getStringForProperty( "gui." +  gui.getParentName( name ) + "." ## #CVarParm ## "Cached", "0" ) ) == 0;
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( gui.getCVarBool( #CVarParm ), 0 ) );
+			postNamedEvent( "updateCheck" );
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+      		gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( checked == 0, 0 ) );
+		}
+	}
+$endtemplate
+
+$template _cvar_slider( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			position = gui.getCVarFloat( #CVarParm );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			position = gui.getCVarFloat( #CVarParm );
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}
+		onPropertyChanged "position" {
+		    gui.setCVarFloat( #CVarParm, position );
+		}
+	}
+$endtemplate
+
+$template _cvar_slider_int( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+		onPropertyChanged "position" {
+		    gui.setCVarInt( #CVarParm, position );
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}		
+		onCVarChanged #CVarParm {
+			callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+	}
+$endtemplate
+
+$template _cvar_cache_slider_int( CVarParm )
+	properties {
+		float flags = immediate( flags ) | SF_INTEGER_SNAP;
+	}
+	events {
+	    onCreate {
+	    	callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+		onPropertyChanged "position" {
+		    gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", toString( position, 0 ) );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+	}
+$endtemplate
+
+$template _cvar_cache_int( CVarParm )
+	properties {
+		string CVarParm##Cached;
+	}
+	events {
+	    onCreate {
+	    	callSuper();
+	    	CVarParm##Cached = toString( gui.getCVarInt( #CVarParm ), 0 );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			CVarParm##Cached = toString( gui.getCVarInt( #CVarParm ), 0 );
+		}			
+		onNamedEvent "onApply" {
+			callSuper();
+     		gui.setCVarInt( #CVarParm, toFloat( CVarParm##Cached ) );
+		}
+	}
+$endtemplate
+
+$template _cvar_cache_string( CVarParm )
+	properties {
+		string CVarParm##Cached;
+	}
+	events {
+	    onCreate {
+	    	callSuper();
+	    	CVarParm##Cached = gui.getCVar( #CVarParm );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			CVarParm##Cached = gui.getCVar( #CVarParm );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+     		gui.setCVar( #CVarParm, CVarParm##Cached );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_cached_int( CVarParm, ValueParm )
+	events {
+		onCreate {
+			callSuper();
+			checked = gui.getCVarInt( #CVarParm ) == ValueParm;
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			checked = gui.getCVarInt( #CVarParm ) == ValueParm;
+		}
+	    onNamedEvent "onShow" "updateCheck" {
+	    	callSuper();
+	    	checked = toFloat( gui.getStringForProperty( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", #ValueParm ) ) == ValueParm;
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+      		gui.setPropertyFromString( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", #ValueParm );
+      		gui.broadcastEventToDescendants( gui.getParentName( name ), "updateCheck" );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_cached_string( CVarParm, ValueParm )
+	events {
+		onCreate {
+			callSuper();
+			checked = icompare( gui.getCVar( #CVarParm ), ValueParm );
+		}
+		onCVarChanged #CVarParm {
+			gui.setPropertyFromString( gui.getParentName( name ), #CVarParm ## "Cached", gui.getCVar( #CVarParm ) );
+			checked = icompare( gui.getCVar( #CVarParm ), ValueParm );
+		}
+	    onNamedEvent "onShow" "updateCheck" {
+	    	callSuper();
+	    	checked = gui.getStringForProperty( "gui." + gui.getParentName( name ) + "." ## #CVarParm ## "Cached", #ValueParm )
+		}
+		onNamedEvent "onAction" {
+			callSuper();
+      		gui.setPropertyFromString( gui.getParentName( name ), #CVarParm ## "Cached", gui.getCVar( #CVarParm ) );
+      		gui.broadcastEventToDescendants( gui.getParentName( name ), "updateCheck" );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_int( CVarParm, ValueParm )
+	events {
+		onCreate {
+			callSuper();
+			checked = gui.getCVarInt( #CVarParm ) == ValueParm;
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			postNamedEvent( "updateCheck" );
+		}
+	    onNamedEvent "onShow" "updateCheck" {
+	    	callSuper();
+			checked = gui.getCVarInt( #CVarParm ) == ValueParm;
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}		
+		onNamedEvent "onAction" {
+			callSuper();
+      		gui.setCVarInt( #CVarParm, ValueParm );
+      		gui.broadcastEventToDescendants( gui.getParentName( name ), "updateCheck" );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_string( CVarParm, ValueParm )
+	events {
+		onCreate {
+			callSuper();
+			checked = compare( gui.getCVar( #CVarParm ), ValueParm );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			postNamedEvent( "updateCheck" );
+		}
+	    onNamedEvent "onShow" "updateCheck" {
+	    	callSuper();
+			checked = compare( gui.getCVar( #CVarParm ), ValueParm );
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}		
+		onNamedEvent "onAction" {
+			callSuper();
+		    gui.setCVar( #CVarParm, ValueParm );
+		    gui.broadcastEventToDescendants( gui.getParentName( name ), "updateCheck" );
+		}
+	}
+$endtemplate
+
+$template _cvar_set_edit( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			editText = gui.getCVar( #CVarParm );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			editText = gui.getCVar( #CVarParm );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+		    gui.setCVar( #CVarParm, editText );
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}		
+	}
+$endtemplate
+
+$template _cvar_set_edit_int( CVarParm )
+	properties {
+		float flags = immediate( flags ) | EF_INTEGERS_ONLY;
+	}
+	events {
+	    onCreate {
+	    	callSuper();
+			editText = toString( gui.getCVarInt( #CVarParm ), 0 );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			editText = toString( gui.getCVarInt( #CVarParm ), 0 );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+			if( compare( editText, "" ) ) {
+				return;
+			}
+		    gui.setCVarInt( #CVarParm, toFloat( editText ) );
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}		
+	}
+$endtemplate
+
+$template _cvar_set_edit_float( CVarParm )
+	properties {
+		float flags = immediate( flags ) | EF_INTEGERS_ONLY | EF_ALLOW_DECIMAL;
+	}
+	events {
+	    onCreate {
+	    	callSuper();
+			editText = toString( gui.getCVarFloat( #CVarParm ), 2 );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			editText = toString( gui.getCVarFloat( #CVarParm ), 2 );
+		}
+		onNamedEvent "onApply" {
+			callSuper();
+			if( compare( editText, "" ) ) {
+				return;
+			}
+		    gui.setCVarFloat( #CVarParm, toFloat( editText ) );
+		}
+		onNamedEvent "resetCVar" {
+			gui.resetCVar( #CVarParm );
+		}		
+	}
+$endtemplate
+
+$template _cvar_gui_locked( CVarParm )
+	_button_disable_if( "", gui.isCVarLocked( #CVarParm ) )
+$endtemplate
+
+#endif // !__mainmenu_cvars__

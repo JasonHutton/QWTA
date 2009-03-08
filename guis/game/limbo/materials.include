@@ -1,0 +1,115 @@
+
+#ifndef __limbo_materials__
+#define __limbo_materials__
+
+#define LIMBO_BUTTON_GRAD_HEIGHT 26
+
+$template _limbo_materials
+	// faction button gradient
+	materials {
+		"faction_grad_l"		"guis/assets/mainmenu/sheet_add, rect( 255, 155, 22, 1 )"
+		"faction_grad_r"		"guis/assets/mainmenu/sheet_add, rect( 255, 155, 23, 1 ) flipX"
+		"faction_grad_t"		"guis/assets/mainmenu/sheet_add, rect( 278, 130, 1, 18 )"
+		"faction_grad_b"		"guis/assets/mainmenu/sheet_add, rect( 278, 159, 1, 23 )"
+		"faction_grad_tl"		"guis/assets/mainmenu/sheet_add, rect( 255, 130, 23, 22 )"
+		"faction_grad_tr"		"guis/assets/mainmenu/sheet_add, rect( 255, 130, 23, 22 ) flipX"
+		"faction_grad_bl"		"guis/assets/mainmenu/sheet_add, rect( 255, 159, 23, 23 )"
+		"faction_grad_br"		"guis/assets/mainmenu/sheet_add, rect( 255, 159, 23, 23 ) flipX"
+		"faction_grad_c"		"guis/nodraw"
+	}
+	
+	// faction button highlight gradient
+	materials {
+		"faction_hi_grad_l"		"guis/assets/mainmenu/sheet_add, rect( 290, 183, 31, 52 )"
+		"faction_hi_grad_c"		"guis/assets/mainmenu/sheet_add, rect( 319, 183, 1, 52 )"
+		"faction_hi_grad_r"		"guis/assets/mainmenu/sheet_add, rect( 290, 183, 31, 52 ) flipX"
+	}	
+	
+	// faction button fill
+	materials {
+		"faction_l"				"guis/assets/mainmenu/sheet_fill, rect( 255, 187, 14, 1 )"
+		"faction_r"				"guis/assets/mainmenu/sheet_fill, rect( 255, 187, 14, 1 ) flipX"
+		"faction_t"				"guis/assets/mainmenu/sheet_fill, rect( 259, 182, 1, 14 )"
+		"faction_b"				"guis/assets/mainmenu/sheet_fill, rect( 259, 182, 1, 14 ) flipY"
+		"faction_tl"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 14, 14 )"
+		"faction_tr"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 14, 14 ) flipX"
+		"faction_bl"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 14, 14 ) flipY"
+		"faction_br"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 14, 14 ) flipX flipY"
+		"faction_c"				"guis/assets/white"
+	}
+	
+	// faction button lines
+	materials {
+		"faction_line_l"		"guis/assets/mainmenu/sheet_add, rect( 255, 203, 14, 1 )"
+		"faction_line_r"		"guis/assets/mainmenu/sheet_add, rect( 255, 203, 14, 1 ) flipX"
+		"faction_line_t"		"guis/assets/mainmenu/sheet_add, rect( 259, 198, 1, 14 )"
+		"faction_line_b"		"guis/assets/mainmenu/sheet_add, rect( 259, 198, 1, 14 ) flipY"
+		"faction_line_tl"		"guis/assets/mainmenu/sheet_add, rect( 255, 198, 14, 14 )"
+		"faction_line_tr"		"guis/assets/mainmenu/sheet_add, rect( 255, 198, 14, 14 ) flipX"
+		"faction_line_bl"		"guis/assets/mainmenu/sheet_add, rect( 255, 198, 14, 14 ) flipY"
+		"faction_line_br"		"guis/assets/mainmenu/sheet_add, rect( 255, 198, 14, 14 ) flipX flipY"
+		"faction_line_c"		"guis/nodraw"
+	}
+	
+	// window frame, fill
+	materials {
+		"window_l"			"guis/assets/mainmenu/sheet_fill, rect( 131, 167, 8, 4 )"
+		"window_r"			"guis/assets/mainmenu/sheet_fill, rect( 131, 167, 8, 4 ) flipX"
+		"window_t"			"guis/assets/mainmenu/sheet_fill, rect( 132, 167, 4, 8 )"
+		"window_b"			"guis/assets/mainmenu/sheet_fill, rect( 132, 167, 4, 8 ) flipY"
+		"window_tl"			"guis/assets/mainmenu/sheet_fill, rect( 131, 163, 8, 8 )"
+		"window_tr"			"guis/assets/mainmenu/sheet_fill, rect( 131, 163, 8, 8 ) flipX"
+		"window_bl"			"guis/assets/mainmenu/sheet_fill, rect( 131, 163, 8, 8 ) flipY"
+		"window_br"			"guis/assets/mainmenu/sheet_fill, rect( 131, 163, 8, 8 ) flipX flipY"
+		"window_c"			"guis/assets/white"
+	}
+
+	// window frame, lines
+	materials {
+		"window_line_l"			"guis/assets/mainmenu/sheet_add, rect( 131, 185, 8, 4 )"
+		"window_line_r"			"guis/assets/mainmenu/sheet_add, rect( 131, 185, 8, 4 ) flipX"
+		"window_line_t"			"guis/assets/mainmenu/sheet_add, rect( 145, 179, 4, 8 )"
+		"window_line_b"			"guis/assets/mainmenu/sheet_add, rect( 145, 179, 4, 8 ) flipY"
+		"window_line_tl"		"guis/assets/mainmenu/sheet_add, rect( 131, 179, 8, 8 )"
+		"window_line_tr"		"guis/assets/mainmenu/sheet_add, rect( 131, 179, 8, 8 ) flipX"
+		"window_line_bl"		"guis/assets/mainmenu/sheet_add, rect( 131, 179, 8, 8 ) flipY"
+		"window_line_br"		"guis/assets/mainmenu/sheet_add, rect( 131, 179, 8, 8 ) flipX flipY"
+		"window_line_c"			"guis/nodraw"
+	}
+	
+	// tab top, fill
+	materials {
+		"tab_l"			"guis/assets/mainmenu/sheet_fill, rect( 131, 167, 8, 4 )"
+		"tab_r"			"guis/assets/mainmenu/sheet_fill, rect( 131, 167, 8, 4 ) flipX"
+		"tab_t"			"guis/assets/mainmenu/sheet_fill, rect( 132, 167, 4, 8 )"
+		"tab_b"			"guis/nodraw"
+		"tab_tl"		"guis/assets/mainmenu/sheet_fill, rect( 131, 163, 8, 8 )"
+		"tab_tr"		"guis/assets/mainmenu/sheet_fill, rect( 131, 163, 8, 8 ) flipX"
+		"tab_bl"		"guis/nodraw"
+		"tab_br"		"guis/nodraw"
+		"tab_c"			"guis/assets/white"
+	}
+
+	// tab top, lines
+	materials {
+		"tab_line_l"		"guis/assets/mainmenu/sheet_add, rect( 131, 185, 8, 4 )"
+		"tab_line_r"		"guis/assets/mainmenu/sheet_add, rect( 131, 185, 8, 4 ) flipX"
+		"tab_line_t"		"guis/assets/mainmenu/sheet_add, rect( 145, 179, 4, 8 )"
+		"tab_line_b"		"guis/nodraw"
+		"tab_line_tl"		"guis/assets/mainmenu/sheet_add, rect( 131, 179, 8, 8 )"
+		"tab_line_tr"		"guis/assets/mainmenu/sheet_add, rect( 131, 179, 8, 8 ) flipX"
+		"tab_line_bl"		"guis/nodraw"
+		"tab_line_br"		"guis/nodraw"
+		"tab_line_c"		"guis/nodraw"
+	}
+
+	// button gradient
+	materials {
+		"tab_grad_l"			"guis/assets/mainmenu/sheet_fill, rect( 210, 196, 4, 14 )"
+		"tab_grad_c"			"guis/assets/mainmenu/sheet_fill, rect( 212, 196, 2, 14 )"
+		"tab_grad_r"			"guis/assets/mainmenu/sheet_fill, rect( 210, 196, 4, 14 ) flipX"		
+	}
+
+$endtemplate
+
+#endif // !__limbo_materials__

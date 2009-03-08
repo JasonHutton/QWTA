@@ -1,0 +1,100 @@
+
+windowDef dlgIntroMovie {
+	_input_dialog( introMovie )
+	type cinematic;
+	properties {
+		rect rect 			= 0, ( SCREEN_HEIGHT - rect.h ) * 0.5, SCREEN_WIDTH, rect.w * 0.5625;		
+
+		float visible		= globals.introMovies.state != INTRO_MOVIE_COMPLETE;
+		float flags			= immediate( flags ) | WF_CAPTURE_KEYS | WF_CAPTURE_MOUSE;
+		color backColor 	= 1, 1, 1, 1;
+		color overlayColor	= COLOR_INVISIBLE;
+		rect fullScreen		= 0, 0, gui.screenDimensions.x, gui.screenDimensions.y;
+		float allowEvents	= false;
+		string soundShader	= "video/intro";
+		
+	}
+	timeline {
+		onTime 100 {
+			if( globals.introMovies.state == INTRO_MOVIE_COMPLETE ) {
+				allowEvents = false;
+				return;
+			}
+
+			// no intro movies if we're trying to auto-login or doing reload engine (gui_introPlayed)
+			if( gui.getCVarInt( "gui_introPlayed" ) || gui.getCVarBool( "g_skipIntro" ) || compare( gui.getCVar( "net_accountName" ), "" ) == false || compare( gui.getCVar( "net_autoConnectServer" ), "" ) == false ) {
+				gui.setCVarInt( "gui_introPlayed", 1 );	
+				globals.introMovies.state = INTRO_MOVIE_COMPLETE;
+				allowEvents = false;
+				return;
+			}
+			gui.setCVarInt( "gui_introPlayed", 1 );
+			_show_input( introMovie )
+			globals.introMovies.state = INTRO_MOVIE_1;
+			gui.dlgIntroMovie.active = true;
+			gui.focusedWindow = "dlgIntroMovie";
+			allowEvents = true;
+			material 	= "cinematic";
+		}
+	}
+	events {
+		onPreDraw {
+			drawCachedMaterial( gui.whiteMaterial, fullScreen, COLOR_BLACK );			
+			gui.scriptPushFloat( true );
+		}
+		onPostDraw {
+			drawCachedMaterial( gui.whiteMaterial, fullScreen, overlayColor );
+		}
+		onPropertyChanged "active" {
+			if( active == true ) {
+				return;
+			}
+			if( globals.introMovies.state == INTRO_MOVIE_UNPLAYED ) {
+				globals.introMovies.state = INTRO_MOVIE_1;
+				active = true;				
+				return;
+			}
+
+			if( globals.introMovies.state == INTRO_MOVIE_1 ) {
+				globals.introMovies.state = INTRO_MOVIE_COMPLETE;
+				allowEvents = false;
+				_close_input
+				return;
+			}
+		}
+		onKeyDown "mouse1" "space" {
+			timeline.fadeOut.active = true;
+			timeline.fadeOut.resetTime( 0 );
+			allowEvents = false;
+		}
+		onAccept {
+			timeline.fadeOut.active = true;
+			timeline.fadeOut.resetTime( 0 );
+			allowEvents = false;
+		}		
+		onCancel {
+			timeline.fadeOut.active = true;
+			timeline.fadeOut.resetTime( 0 );
+			allowEvents = false;
+		}
+		onPropertyChanged "globals.game.isRunning" {
+			if( globals.game.isRunning && allowEvents == true ) {
+				gui.dlgIntroMovie.active = false;
+				gui.fadeSoundClass( 1, -100, 1 );
+				allowEvents = false;			
+			}
+		}
+	}
+	timeline fadeOut {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			overlayColor.a = transition( 0, 1, 500 );
+			gui.fadeSoundClass( 1, -100, 500 );
+		}
+		onTime 800 {
+			gui.dlgIntroMovie.active = false;
+		}
+	}
+}

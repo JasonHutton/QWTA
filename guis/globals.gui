@@ -1,0 +1,347 @@
+
+stringMap guiGlobals {
+	"namespace_gameHud" 			"gameHud"
+	"namespace_game"				"game"
+	"namespace_weapons"				"weapons"
+	"namespace_armTool"				"armTool"
+	"namespace_charge"				"charge"
+	"namespace_vehicles" 			"vehicles"
+	"namespace_deployables" 		"deployables"
+	"namespace_mapinfo" 			"mapinfo"
+	"namespace_progressBar"			"progressBar"
+	"namespace_mcpObjective"		"mcpObjective"
+	"namespace_constructObjective"	"constructObjective"
+	"namespace_hackObjective"		"hackObjective"
+	"namespace_docObjective"		"docObjective"
+	"namespace_docObjective2"		"docObjective"
+	"namespace_docObjective3"		"docObjective"
+	"namespace_goalObjective"		"goalObjective"
+	"namespace_flyerhiveObjective"	"flyerhiveObjective"
+	"namespace_destroyObjective1"	"destroyObjective"
+	"namespace_destroyObjective2"	"destroyObjective"
+	"namespace_messageBox"			"messageBox"
+	"namespace_introMovies"			"introMovies"
+	"namespace_campaignInfo"		"campaignInfo"
+}
+
+stringMap game {
+	"isRunning"						"float"
+}
+
+stringMap gameHud {
+	"wantAdmin"						"float"		// set by code when _admin is executed, before calling up the limbo menu
+	"wantVote"						"float"		// set by code when _votes is executed, before calling up the limbo menu
+	
+	"mapZoomLevel"					"float"
+	"newMapZoomLevel"				"float"
+	"hideCrosshairCounter"			"float"
+	"showPostProcess"				"float"
+	"deployResult"					"float"
+	"gdfRespawnTime"				"float"
+	"stroggRespawnTime"				"float"
+	"spectatingRespawnTime"			"float"
+	"visionEnhancer"				"string"
+	"targetLockCount"				"float"
+	"targetLockCountDeployable"		"float"
+	"targetLockCountBasedefence"	"float"
+	"targetLockDeployableAttack"	"float"
+	"mineWarningTime"				"float"
+	                        		
+	"decoyLaunchedTime"				"float"
+	"decoyChargeFraction"			"float"
+	                        		
+	"successTextTime"				"float"
+	"successText"					"wstring"
+	                        	
+	"weaponState"					"handle"
+	                        		
+	"weaponLowAmmo"					"float"
+	"weaponReloadTime"				"float"
+	"weaponShowAllAmmo"				"float"
+	"weaponShowClip"				"float"
+	"weaponNeedsAmmoBox"			"float"
+	"weaponShowCustom"				"float"
+	"weaponHideAmmo"				"float"
+	"weaponShowCharge"				"float"
+	"weaponAmmoString"				"string"
+	
+	"weaponChargePercent"			"float"
+	"weaponGrenadeExpireTime"		"float"
+	"teamMineStatus"				"wstring"
+	
+	"spawnHostActive"				"float"
+	"carryableItemActive"			"float"
+	"teleporterActive"				"float"
+
+	"supplyCrateHealth0"			"float"
+	"supplyCrateSupplies0"			"float"
+	"supplyCrateHealth1"			"float"
+	"supplyCrateSupplies1"			"float"
+	
+	"parachuteActive"				"float"
+	"thirdEyeActive"				"float"
+	                            	
+	"weaponCrosshair"				"string"
+	
+	"respawnTimerText"				"string"
+	
+	"showChat"						"float"
+	"showDeployableState"			"float"
+	"hideCrosshairInfo"				"float"	
+	"activeCrosshairInfoFlags"		"float"
+	"showHud"						"float"
+	"needsParachute"				"float"
+	"needsCharge"					"float"
+	
+	"numChatLines"					"float"
+		
+	"dynamicContentRect"			"vec4"
+	"newRank"						"float"
+	"proficiencyText"				"wstring"
+	"proficiencyCategoryText"		"wstring"
+	"proficiencyCategoryTime"		"float"
+	"proficiencyIcon"				"string"
+	"proficiencySound"				"string"
+	
+	"signalStrength"				"float"
+	
+	"lowAmmoFlash"					"float"
+	"mediumAmmoFlash"				"float"
+	
+	"bumpNotifyIcon"				"string"
+	
+	"flyerhiveEndTime"				"float"
+	
+	"reviveText"					"wstring"
+	
+	"lifeStatsString"				"wstring"
+	"lifeStatsTitle"				"handle"
+}
+
+stringMap mcpObjective {
+	"active"						"float"
+	"progress"						"float"
+	"disabled"						"float"
+	"health"						"float"
+	"canDeploy"						"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+}
+
+stringMap constructObjective {
+	"stage1"						"float"
+	"stage2"						"float"
+	"active"						"float"
+	"multiStage"					"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+	"decaying"						"float"
+}
+
+stringMap hackObjective {
+	"progress"						"float"
+	"active"						"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+	"decaying"						"float"
+}
+
+stringMap docObjective {
+	"progress"						"float"
+	"transmitProgress"				"float"
+	"isMultiPart"					"float"
+	"active"						"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+	"state"							"float"
+}
+
+stringMap goalObjective {
+	"progress"						"float"
+	"active"						"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+}
+
+stringMap flyerhiveObjective {
+	"progress"						"float"
+	"disarmProgress"				"float"
+	"active"						"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+}
+
+stringMap destroyObjective {
+	"progress"						"float"
+	"disarmProgress"				"float"
+	"active"						"float"
+	"objectiveNum"					"float"
+	"flash"							"float"
+}
+
+stringMap weapons {
+	// current weapon info
+	"weaponId"					"float"
+	"weaponSlot"				"float"
+	                    	
+	// a new weapon has been selected
+	"weaponSelected"			"float"
+	"numSwitchingWeapons"		"float"
+	                    		
+	"energyBarCharge"			"float"
+	"energyAvailable"			"float"
+	"energySegments"			"float"
+	"heat"						"float"
+	"cooling"					"float"
+	"showHeat"					"float"
+	"showUseCount"				"float"	                        	
+	
+	"menuExpireTime"			"float"
+	
+	"distance"					"float"
+}
+
+stringMap armTool {
+	"statusTextHandle"			"handle"
+	"isSearching"				"float"
+}
+
+stringMap charge {
+	"timeLeft"					"float"
+}
+
+stringMap deployables {
+	"currentItem"			"float"
+	"allowRotation"			"float"
+
+	"maintainLock"			"float"
+	"deployableName"		"string"
+	"statusMaterial"		"string"
+	"statusDesatMaterial"	"string"
+	"statusText"			"handle"
+	"statusTimer"			"float"
+	"modeText"				"handle"
+	"timerValue"			"float"
+	"timerState"			"float"
+	"state"					"float"
+	"health"				"float"
+	"maxHealth"				"float"
+
+	"lockPercent"			"float"
+	"fs_state"				"float"
+	"guiState"				"float"	// used for the HUD status icons
+}
+
+stringMap vehicles {
+	"chargeValue"			"float"
+	"overDriveFraction"		"float"
+	"collectiveValue"		"float"
+	"disabledString"		"wstring"
+	"vehicle_charge"		"float"
+	"siegeMode"				"handle"
+	"drivingMCP"			"float"
+}
+
+stringMap mapinfo {
+	"numObjectives"			"float"
+	"currentObjective"		"float"
+	"mapStatus"				"wstring"
+	"gdfCurrentObjective"	"handle"
+	"stroggCurrentObjective""handle"
+
+	"stroggObjective0" 		"handle"
+	"stroggObjective1" 		"handle"
+	"stroggObjective2" 		"handle"
+	"stroggObjective3" 		"handle"
+	"stroggObjective4" 		"handle"
+	"stroggObjective5" 		"handle"
+	"stroggObjective6" 		"handle"
+
+	"gdfObjective0" 		"handle"
+	"gdfObjective1" 		"handle"
+	"gdfObjective2" 		"handle"
+	"gdfObjective3" 		"handle"
+	"gdfObjective4" 		"handle"
+	"gdfObjective5" 		"handle"
+	"gdfObjective6" 		"handle"
+
+	"stroggObjectiveMat0" 	"string"																																																												
+	"stroggObjectiveMat1" 	"string"																																																												
+	"stroggObjectiveMat2" 	"string"																																																												
+	"stroggObjectiveMat3" 	"string"																																																												
+	"stroggObjectiveMat4" 	"string"
+	"stroggObjectiveMat5" 	"string"
+	"stroggObjectiveMat6" 	"string"
+
+	"gdfObjectiveMat0" 		"string"
+	"gdfObjectiveMat1" 		"string"
+	"gdfObjectiveMat2" 		"string"
+	"gdfObjectiveMat3" 		"string"
+	"gdfObjectiveMat4" 		"string"
+	"gdfObjectiveMat5" 		"string"
+	"gdfObjectiveMat6" 		"string"
+
+	"objectiveComplete0" 	"float" 
+	"objectiveComplete1" 	"float" 
+	"objectiveComplete2" 	"float" 
+	"objectiveComplete3" 	"float" 
+	"objectiveComplete4" 	"float" 
+	"objectiveComplete5" 	"float"
+	"objectiveComplete6" 	"float"
+	
+	"statsReady"			"float"
+}
+
+stringMap progressBar {
+	"visible"			"float"
+	"text"				"handle"
+	"percent"			"float"
+}
+
+stringMap messageBox {
+	"message"			"wstring"
+	"title"				"handle"
+	"type"				"float"
+	"active"			"float"
+}
+
+stringMap introMovies {
+	"state"				"float"
+}
+
+stringMap campaignInfo {
+	"backdrop"			"string"
+	"mapShot"			"string"
+	
+	"name"				"wstring"
+	"mapName"			"wstring"
+	"mapLocation"		"handle"
+	"mapBriefing"		"handle"
+	"mapMusic"			"string"
+	
+	"ruleStatus"		"wstring"
+	
+	"statsReady"		"float"
+	
+	"currentMap"		"float"
+	"numMaps"			"float"
+		
+	"position1"			"vec2"
+	"position2"			"vec2"
+	"position3"			"vec2"
+	
+	"status1"			"string"
+	"status2"			"string"
+	"status3"			"string"
+	
+	"title1"			"wstring"
+	"title2"			"wstring"
+	"title3"			"wstring"
+	
+	"motd1"				"wstring"
+	"motd2"				"wstring"
+	"motd3"				"wstring"
+	"motd4"				"wstring"
+	
+
+}

@@ -1,0 +1,95 @@
+// ================================================================================
+// Replay Dialog
+// ================================================================================
+_dialog( Replay, localize( "guis/mainmenu/replay" ), PADDING, 44, _client_dimension( desktop, width ), _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( replay )
+	
+	_label_literal( Replay, gui.blankWStr, PADDING, _top( dlgReplay ), _fill_to_right_of( dlgReplay ), BUTTON_HEIGHT, COLOR_WHITE )
+		properties {
+			float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_WRAP_TEXT;
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				text = localizeArgs( "guis/mainmenu/togglenetdemohint", gui.getKeyBind( "toggleNetDemo", "" ) );
+			}
+		}
+	_end_label
+
+	_list( Demos, _left( dlgReplay ), _to_bottom_of( lblReplay ) + 3, _fill_to_right_of( dlgReplay ), _fill_to_top_of( btnPlayDemo ) )
+		properties {
+			float flags = immediate( flags ) | LF_SHOW_HEADINGS | LF_COLUMN_SORT | WF_TRUNCATE_TEXT;
+			vec2 cursorItem;
+		}
+		_list_draw_column_sort( "default" )
+		
+		events {
+			onCreate {
+				self.insertColumn( toWStr( "<width = 65%><flags customdraw><loc = 'guis/mainmenu/replays'>" ), 0, 0 );
+				self.insertColumn( toWStr( "<width = 35%><flags customdraw dataSort><loc = 'guis/mainmenu/date'>" ), 0, 1 );
+				self.insertColumn( gui.blankWStr, 0, 2 );	// full path
+				activeColumn = 0;
+			}
+			onNamedEvent "update" {
+				fillFromEnumerator( "demoList" );
+			}
+			onNamedEvent "onShow" {
+				callSuper();
+				postNamedEvent( "update" );
+			}
+			onDoubleClick "mouse1" {
+				cursorItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( cursorItem.x >= 0 ) {
+					postNamedEvent( "playDemo" );
+				}
+			}
+			onNamedEvent "playDemo" {
+				gui.consoleCommand( "playNetDemo " + _quote + toStr( getItemText( currentSelection, 0 ) ) + _quote + _newline );
+			}
+		}
+	_end_list
+
+	_button( PlayDemo, _right( dlgReplay ), _bottom( dlgReplay ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/play" );
+		}
+		_button_disable_if( "gui.lstDemos.currentSelection", gui.lstDemos.currentSelection == -1 )
+		events {
+			onNamedEvent "onAction" {
+				if( gui.lstDemos.currentSelection == -1 ) {
+					return;
+				}
+				gui.lstDemos.postNamedEvent( "playDemo" );
+			}
+		}
+	_end_button
+	
+	_button( DeleteDemo, _to_left_of( btnPlayDemo ) - 3, _bottom( dlgReplay ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/delete" );
+		}
+		_button_disable_if( "gui.lstDemos.currentSelection", gui.lstDemos.currentSelection == -1 )
+		events {
+			onNamedEvent "onAction" {
+				if( gui.lstDemos.currentSelection == -1 ) {
+					return;
+				}
+				_setup_confirmation_yesno_literal( localizeArgs( "guis/mainmenu/delete_prompt", gui.lstDemos.getItemText( gui.lstDemos.currentSelection, 2 ) ), name, "onYes", "onNo" )
+				_show_popup( confirmation )
+				gui.focusedWindow = "btnConfirmationNo";
+
+			}
+			onNamedEvent "onYes" {
+				_close_popup
+				gui.deleteFile( toStr( gui.lstDemos.getItemText( gui.lstDemos.currentSelection, 2 ) ) );
+				gui.lstDemos.postNamedEvent( "update" );
+			}
+			
+			onNamedEvent "onNo" {
+				_close_popup
+			}
+		}
+	_end_button	
+_end_dialog

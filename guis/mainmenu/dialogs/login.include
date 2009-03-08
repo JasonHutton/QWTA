@@ -1,0 +1,260 @@
+
+#define DLG_LOGIN_BUTTON_WIDTH 120
+// ================================================================================
+// Login dialog
+// ================================================================================
+_dialog( login, localize( "guis/mainmenu/login" ), _center( desktop, width ), _center( desktop, height ), 316, 168, "noMove", "dim" )	
+	_single_dialog( login )	
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			setTabStop( 0 );
+		}
+		onNamedEvent "login" {
+            if( gui.lstUserProfiles.currentSelection == -1 ) {
+                return;
+            }
+			sdnet.activateUser( toStr( _get_current_list_text( UserProfiles, 0 ) ) );
+			_push_page( main )
+			_close_top_dialog
+		}
+	}
+
+	// ================================================================================
+	// Profile list
+	// ================================================================================
+	_list( UserProfiles, _left( dlgLogin ), _top( dlgLogin ), 178, _client_dimension( dlgLogin, height ) - ( 2 * PADDING ) )		
+		properties {
+			float initialized = false;
+			float flags = immediate( flags ) | LF_COLUMN_SORT | WF_TRUNCATE_TEXT;
+			wstring lastSelection;
+			wstring prompt = localizeArgs( "guis/mainmenu/click_x_to_begin", localizeArgs( "guis/mainmenu/createuser" ) );
+			vec4 	textRect 		= absoluteRect.x, absoluteRect.y + ( ( absoluteRect.h * 0.5 ) - ( textRect.h * 0.5 ) ), absoluteRect.w, 60;
+			vec2	measure;
+			float 	needMeasure = true;
+			vec2	hoverItem;
+		}
+		events {
+			onPostDraw {
+				if( needMeasure ) {
+					measure = measureText( prompt, textRect, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+					textRect.h = measure.y;
+					needMeasure = false;
+				}
+				if( numItems == 0 ) {
+					drawText( prompt, textRect, COLOR_WHITE, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+				}
+			}
+			onNamedEvent "onShow" {
+				needMeasure = true;
+			}
+			onNamedEvent "updateList" {
+				if ( initialized == 0 ) {
+					// because onCreate doesn't always run before this
+					initialized = true;
+					insertColumn( gui.blankWStr, 0, 0 );		// Raw username
+					insertColumn( toWStr( "<flags numeric>" ), 12, 1 );	// icon
+					insertColumn( toWStr( "<width = 100%>" ), 0, 2 );	// user
+					insertColumn( gui.blankWStr, 0, 3 );	// default
+				}
+			
+				if( currentSelection >= 0 ) {
+					lastSelection = getItemText( currentSelection, 2 );
+				} else {
+					lastSelection = gui.blankWStr;
+				}
+				storeVisualState();
+				
+				fillFromEnumerator( "sdnetUsers" );
+				setItemMaterialSize( "12, 12", -1, 1 );
+				activeColumn = 2;
+				sort();
+				
+				if ( numItems > 0 ) {
+					currentSelection = findItem( toWStr( "1" ), 3 );	// select the default user for next logout
+		
+					if( currentSelection == -1 ) {
+						currentSelection = findItem( lastSelection, 2 );
+					}
+					ensureItemIsVisible( currentSelection );					
+				} else {
+					currentSelection = -1;
+				}
+			}
+			onQueryTooltip {
+				hoverItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( hoverItem.x == - 1 ) {
+					toolTipText = gui.blankWStr;
+					return;
+				}
+				if( wcompare( getItemText( hoverItem.x, 1 ), toWStr( "1" ) ) ) {
+					toolTipText = localizeArgs( "guis/mainmenu/onlineaccount" );
+				} else {
+					toolTipText = localizeArgs( "guis/mainmenu/offlineaccount" );
+				}
+			}
+			onPropertyChanged "gui.dlgLogin.visible" {
+				callSuper();
+				if ( visible > 0 ) {
+					postNamedEvent( "updateList" );
+				}
+			}
+			onDoubleClick "mouse1" {
+				gui.playSound( "accept" );
+				gui.dlgLogin.postNamedEvent( "login" );
+			}
+            onAccept {
+				gui.dlgLogin.postNamedEvent( "login" );
+			}
+		}
+	_end_list
+
+	// ================================================================================
+	// Select user
+	// ================================================================================
+	_button( login_SelectUser, _right( dlgLogin, width ), _top( dlgLogin ), DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action( gui.dlgLogin.postNamedEvent( "login" ); )
+		_button_disable_if( "gui.lstUserProfiles.currentSelection",  gui.lstUserProfiles.currentSelection == -1 )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/selectuser" );
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				postNamedEvent( "checkEnabled" );
+			}
+		}
+	_end_button
+
+	// ================================================================================
+	// Create user
+	// ================================================================================
+	_button( login_CreateUser, _right( dlgLogin, width ), _to_bottom_of( btnLogin_SelectUser ) + 4, DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action( _show_single_dialog( createUser ) )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/createuser" );
+		}	
+	_end_button
+#if !defined( SD_DEMO_BUILD )
+	_button( Login_FogottenUser, _right( dlgLogin, width ), _to_bottom_of( btnLogin_CreateUser ) + 4, DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/forgottenuser" );
+		}
+		_button_action(
+			_show_single_dialog( ForgottenUser )
+		)
+	_end_button
+#endif	
+#if !defined( SD_DEMO_BUILD )
+	// ================================================================================
+	// Remove user
+	// ================================================================================
+	_button( login_RemoveUser, _right( dlgLogin, width ), _to_bottom_of( btnLogin_FogottenUser ) + 4, DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action (
+			sdnet.activateUser( toStr( _get_current_list_text( userProfiles, 0 ) ) );
+			_show_single_dialog( removeUser );
+		)
+		_button_disable_if( "gui.lstUserProfiles.currentSelection",  gui.lstUserProfiles.currentSelection == -1 )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/removeuser" );
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				postNamedEvent( "checkEnabled" );
+			}
+		}		
+	_end_button
+	
+#else
+	// ================================================================================
+	// Remove user
+	// ================================================================================
+	_button( login_RemoveUser, _right( dlgLogin, width ), _to_bottom_of( btnLogin_CreateUser ) + 4, DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action (			
+			_setup_confirmation_yesno( "guis/mainmenu/removeuserconfirmation", name, "removeLocalUser", "OnNo" )
+			_show_popup( confirmation )
+			gui.focusedWindow = "btnConfirmationNo";			
+		)
+		_button_disable_if( "gui.lstUserProfiles.currentSelection",  gui.lstUserProfiles.currentSelection == -1 )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/removeuser" );
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				postNamedEvent( "checkEnabled" );
+			}
+			onNamedEvent "removeLocalUser" {
+				_show_popup( sdNetProgress )
+	
+				sdnet.deactivateUser();
+				sdnet.deleteUser( sdnet.makeRawUsername( toStr( _get_current_list_text( userProfiles, 0 ) ) ) );
+				gui.lstUserProfiles.postNamedEvent( "updateList" );
+	
+				_close_popup;
+			}
+			onNamedEvent "OnNo" {
+				_close_popup;
+			}			
+		}
+	_end_button
+#endif	
+
+
+	// ================================================================================
+	// Set default
+	// ================================================================================
+	
+	_check( login_SetDefault, localize( "guis/mainmenu/setdefault" ), _right( dlgLogin ), _to_bottom_of( btnLogin_RemoveUser ) + 4, DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_disable_if( "gui.lstUserProfiles.currentSelection",  gui.lstUserProfiles.currentSelection == -1 )
+		_button_action(
+			callSuper();
+			sdnet.setDefaultUser( toStr( _get_current_list_text( UserProfiles, 0 ) ), checked );
+			gui.lstUserProfiles.postNamedEvent( "updateList" );
+		)
+		events {
+			onPropertyChanged "gui.lstUserProfiles.currentSelection" {
+				callSuper();
+				if( gui.lstUserProfiles.currentSelection == -1 ) {
+					checked = false;
+					return;
+				}
+				if( compare( toStr( _get_current_list_text( UserProfiles, 3 ) ), "1" ) ) {
+					checked = true;
+					return;
+				}
+				checked = false;
+			}
+		}
+	_end_check
+
+//		_horizontal_line( login, PADDING, _to_bottom_of( lstUserProfiles ) + PADDING, gui.dlgLogin.rect.w - $evalfloat( PADDING * 2 ), 8 )
+
+	// ================================================================================
+	// Quit
+	// ================================================================================
+	_button( login_Quit, _right( dlgLogin ), _bottom( dlgLogin ), DLG_LOGIN_BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action( _setup_confirmation_yesno( "guis/mainmenu/quitgametext", self.name, "OnYes", "OnNo" );
+						_show_popup( confirmation )
+		)
+		properties {
+			handle localizedText = localize( "guis/mainmenu/quitgame" );
+		}
+		events {
+			onNamedEvent "OnYes" {
+				_close_popup;
+				gui.clearGeneralStrings( "menu" );
+				gui.activePopup = "";
+				gui.activeDialog = "";
+				gui.activePane = "";
+				gui.clickOnCreditsToExit = true;
+				_show_single_dialog( credits );
+			}
+			onNamedEvent "OnNo" {
+				_close_popup;
+			}
+		}
+	_end_button
+_end_dialog
+	

@@ -1,0 +1,1188 @@
+// ================================================================================
+// Settings Dialog
+// ================================================================================
+_dialog( Settings, localize( "guis/mainmenu/settings" ), PADDING, 44, ( gui.desktop.rect.w * 0.585 ) - $evalfloat( PADDING * 2 ), _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+#define SETTINGS_SIMPLE 1
+#define SETTINGS_ADVANCED 2
+#define SETTINGS_VOICE 3
+#define RESET_COUNTDOWN_MSEC 18000
+
+#define ADVANCED_DROPDOWN_LABEL_WIDTH 130
+
+#define SS_SLIDER_WIDTH 	80
+
+	_closable_subdialog
+	_single_dialog( settings )
+
+	properties {
+		float reloadSounds 		= false;
+		float execMachineSpec 	= false;
+		float reloadImages 		= false;
+		float restartSounds 	= false;
+		float restartEngine 	= false;
+		float machineSpec 		= -1;
+		float vidRestart		= false;
+		string currentPage;
+	}
+
+	events {
+		onNamedEvent "onShow" {
+		    callSuper();
+			execMachineSpec = false;
+			reloadImages 	= false;
+			reloadSounds 	= false;
+			vidRestart		= false;
+			machineSpec 	= -1;
+			// once we require a restartEngine, we'll always require one, don't reset
+			gui.broadcastEventToDescendants( name, "update" );
+		}
+	}
+
+	_button( Settings_Reset, _right( dlgSettings ), _bottom( dlgSettings ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/defaults" );
+		}
+		_button_action(
+			_setup_confirmation_yesno( "guis/mainmenu/resetsettingsforengine", name, "onYes", "onNo" )
+			_show_popup( confirmation )
+			gui.focusedWindow = "btnConfirmationNo";
+		)
+		events {
+			onNamedEvent "onYes" {
+				gui.desktop.allowEvents = false;
+				gui.desktop.allowChildEvents = false;
+				gui.flags = immediate( gui.flags ) & ~GUI_SHOWCURSOR;
+				timeline.reloadEngine.active = true;
+				timeline.reloadEngine.resetTime( 0 );
+			}
+			onNamedEvent "onNo" {
+				_close_popup
+			}
+		}
+
+		timeline reloadEngine {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				gui.fadeIn.changeZOrder( ZO_BACK );
+				gui.fadeIn.overlayColor.a = transition( 0, 1, 800 );
+				gui.fadeSoundClass( 1, -60, 700 );
+			}
+			onTime 1000 {
+				gui.stopMusic();
+				gui.consoleCommand( "reloadEngine resetConfigs menu"  + _newline );
+			}
+		}
+	_end_button
+
+	_button( Settings_Apply, _to_left_of( btnSettings_Reset ) - 3, _bottom( dlgSettings ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			wstring countdown;
+			float baseTime;
+			float lastRMode;
+			float lastRAspect;
+			float lastRFullscreen;
+		}
+		events {
+			onNamedEvent "applySettings" {
+				gui.dlgSettings.vidRestart = false;
+				gui.dlgSettings.vidRestart = _cvar_cached_bool_changed( chkSettings_Video_Fullscreen, "r_fullScreen" );
+				gui.dlgSettings.vidRestart = immediate( gui.dlgSettings.vidRestart ) | _cvar_cached_int_changed( lstSettings_VideoMode, "r_mode" );
+				gui.dlgSettings.vidRestart = immediate( gui.dlgSettings.vidRestart ) | _cvar_cached_int_changed( lstSettings_VideoAspect, "r_aspectRatio" );
+
+				if( gui.dlgSettings.execMachineSpec ) {
+					gui.consoleCommandImmediate( "setMachineSpec " + toString( gui.dlgSettings.machineSpec, 0 ) + _newline );
+				}
+
+				gui.broadcastEventToDescendants( gui.getParentName( name ), "onApply" );
+
+				// require a restart if the user tries to change sound settings while in-game
+				// otherwise looping ambient sounds won't be restarted after the s_restart
+				if( gui.dlgSettings.restartSounds ) {
+					if( globals.game.isRunning == false ) {
+						gui.consoleCommand( "s_restart" + _newline );
+						gui.desktop.timeline.music.resetTime( 0 );	// ensure we get the music back
+					} else {
+						gui.dlgSettings.restartEngine = true;
+					}
+				}
+
+				if( gui.dlgSettings.vidRestart == true ) {
+					postNamedEvent( "promptVidRestart" );
+				} else {
+					postNamedEvent( "promptEngineRestart" );
+				}
+
+				gui.broadcastEventToDescendants( gui.getParentName( name ), "update" );
+
+				// ensure that everything is properly resized in the case of resolution/aspect ratio changes
+				gui.desktop.requestLayout();
+			}
+			onNamedEvent "promptEngineRestart" {
+				if( gui.dlgSettings.restartEngine || gui.dlgSettings.execMachineSpec || gui.dlgSettings.reloadImages || gui.dlgSettings.reloadSounds ) {
+					_setup_confirmation_yesno( "guis/mainmenu/restart_required", name, "onYes", "onNo" )
+					_show_popup( confirmation )
+					gui.focusedWindow = "btnConfirmationNo";
+				}
+				gui.dlgSettings.reloadImages 	= false;
+				gui.dlgSettings.execMachineSpec = false;
+				gui.dlgSettings.reloadSounds 	= false;
+				gui.dlgSettings.restartSounds 	= false;
+				gui.dlgSettings.vidRestart 		= false;
+			}
+			onNamedEvent "onRestoreYes" {
+				timeline.restoreSettings.active = false;
+				_close_popup
+
+				// start the delayed prompt timeline
+				timeline.delayedRestartPrompt.active = true;
+				timeline.delayedRestartPrompt.resetTime( 0 );
+			}
+			onNamedEvent "onRestoreNo" {
+				timeline.restoreSettings.active = true;
+				timeline.restoreSettings.resetTime( RESET_COUNTDOWN_MSEC );
+
+			}
+			onNamedEvent "promptVidRestart" {
+				// apply
+				gui.consoleCommand( "vid_restart" + _newline );
+
+				// show prompt
+				_setup_confirmation_yesno_literal( localizeArgs( "guis/mainmenu/displaymodeprompt", gui.btnSettings_Apply.countdown ), name, "onRestoreYes", "onRestoreNo" )
+				_show_popup( Confirmation )
+				gui.focusedWindow = "btnConfirmationNo";
+
+				// start the reset timeline
+				timeline.restoreSettings.active = true;
+				timeline.restoreSettings.resetTime( 0 );
+
+				// countdown display
+				baseTime = immediate( gui.time );
+				gui.btnSettings_Apply.countdown = toWString( abs( RESET_COUNTDOWN_MSEC - ( gui.time - baseTime  ) ) / 1000, 0 );
+				gui.dlgSettings.vidRestart = false;
+			}
+		}
+		timeline delayedRestartPrompt {
+			properties {
+				float active = false;
+			}
+			onTime 50 {
+				// ensure that everything is properly resized in the case of resolution/aspect ratio changes
+				gui.desktop.requestLayout();
+			}
+
+			onTime 500 {
+				active = false;
+				postNamedEvent( "promptEngineRestart" );
+			}
+		}
+		// HACK
+		timeline clearGlyphCache {
+			properties {
+				float active = timeline.restoreSettings.active;
+			}
+			onTime 1000 {
+				gui.consoleCommand( "clearGlyphCache" + _newline );
+				resetTime( 0 );
+			}
+		}
+		// END HACK
+		timeline restoreSettings {
+			properties {
+				float active = false;
+			}
+			onTime RESET_COUNTDOWN_MSEC {
+				_close_popup
+
+				// restore
+				gui.setCVarInt( "r_mode", lastRMode );
+				gui.setCVarInt( "r_aspectRatio", lastRAspect );
+				gui.setCVarInt( "r_fullscreen", lastRFullscreen );
+
+				gui.consoleCommand( "vid_restart" + _newline );
+
+				// kill the countdown
+				gui.btnSettings_Apply.countdown = gui.blankWStr;
+
+				// update UI
+				gui.broadcastEventToDescendants( "dlgSettings", "update" );
+				active = false;
+
+				// show reload engine prompt, if needed
+				timeline.delayedRestartPrompt.active = true;
+				timeline.delayedRestartPrompt.resetTime( 0 );
+			}
+		}
+		_button_action(
+			lastRMode = gui.getCVarInt( "r_mode" );
+			lastRAspect = gui.getCVarInt( "r_aspectRatio" );
+			lastRFullscreen = gui.getCVarBool( "r_fullscreen" );
+
+			postNamedEvent( "applySettings" );
+
+		)
+		events {
+			onNamedEvent "onYes" {
+				gui.desktop.allowEvents = false;
+				gui.desktop.allowChildEvents = false;
+				gui.flags = immediate( gui.flags ) & ~GUI_SHOWCURSOR;
+				timeline.reloadEngine.active = true;
+				timeline.reloadEngine.resetTime( 0 );
+			}
+			onNamedEvent "onNo" {
+				_close_popup
+			}
+		}
+		timeline reloadEngine {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				gui.fadeIn.changeZOrder( ZO_BACK );
+				gui.fadeIn.overlayColor.a = transition( 0, 1, 800 );
+				gui.fadeSoundClass( 1, -60, 700 );
+			}
+			onTime 1000 {
+				gui.stopMusic();
+				gui.consoleCommand( "reloadEngine menu" + _newline );
+			}
+		}
+		properties {
+			handle localizedText = localize( "guis/mainmenu/apply" );
+		}
+	_end_button
+
+	_tab_container( Settings_Video, SETTINGS_SIMPLE, PADDING, _top( dlgSettings ), _fill_to_right_of( dlgSettings ), _fill_to_bottom_of( dlgSettings ) - ( BUTTON_HEIGHT + 3 ) )
+		properties {
+			float fixedWidth = ( gui.dlgGameSettings.rect.w - $evalfloat( 2 * PADDING + 4 ) ) / 3;
+		}	
+
+		_tab_page( SettingsVideo_Simple, localize( "guis/mainmenu/simple" ), Settings_Video, SETTINGS_SIMPLE, 2, 0 )
+			events {
+				onPropertyChanged "visible" {
+					callSuper();
+					if( visible ) {
+						gui.dlgSettings.currentPage = name;
+					}
+				}
+			}
+			windowDef lytSettingsVideo_Simple {
+				type layoutVertical;
+				properties {
+					rect rect = 0, 0, gui.tabpSettingsVideo_SimpleContent.rect.w, gui.tabpSettingsVideo_SimpleContent.rect.h;
+					vec4 margins = PADDING, PADDING, PADDING, PADDING;
+					float flags = VLF_DRAW_REVERSED;
+				}
+				_label_localized( Settings_Audio, localize( "guis/mainmenu/audio" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+// ================================================================================
+// Audio Options
+// ================================================================================
+				_slider( settings_Audio_Volume, localize( "guis/mainmenu/volume" ), PADDING, 0, -60, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( s_volume_DB )
+					properties {
+						float lastPlayedTime = 0;
+					}
+					events {
+						onPropertyChanged "position" {
+							callSuper();
+							if( gui.time > lastPlayedTime + 100 && isVisible() ) {
+								gui.playSound( "volumesound" );
+								lastPlayedTime = immediate( gui.time );
+							}
+						}
+					}
+				_end_slider
+
+				_slider( settings_Audio_MusicVolume, localize( "guis/mainmenu/music_volume" ), PADDING,  0, -60, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( s_volumeMusic_dB )
+					events {
+						onPropertyChanged "position" {
+							callSuper();
+							gui.fadeSoundClass( 1, gui.getCVarFloat( "s_volumeMusic_dB" ), 0 );
+						}
+					}
+				_end_slider
+
+				_cvar_cache_bool( s_useAdpcmCompression )
+				_check( Settings_Audio_Compression, localize( "guis/mainmenu/compressedsounds" ), PADDING, 4, 100 )
+				    _cvar_set_cached_bool( s_useAdpcmCompression )
+				    events {
+				    	onPropertyChanged "checked" {
+				    		callSuper();
+				    		gui.dlgSettings.reloadSounds = gui.getCVarBool( "s_useAdpcmCompression" ) != checked;
+				    	}
+				    }
+				_end_check
+
+				_dropdown( Settings_NumSpeakers, localize( "guis/mainmenu/speakersetup" ), PADDING, 4, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						float index;
+						float numSpeakers = gui.getCVarInt( "s_numberOfSpeakers" );
+					}
+					events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );							
+						}
+						onNamedEvent "onShow" {
+							postNamedEvent( "update" );	
+						}
+						
+						onNamedEvent "update" {
+							clearItems();
+							index = insertItem( toWStr( "<loc = 'guis/mainmenu/2'>" ), -1, 0 );
+							setItemDataInt( 2, index, 0 );
+
+							if( gui.querySpeakers( 4 ) ) {
+								index = insertItem( toWStr( "<loc = 'guis/mainmenu/quadraphonic'>" ), -1, 0 );
+								setItemDataInt( 4, index, 0 );
+							}
+
+							if( gui.querySpeakers( 6 ) ) {
+								index = insertItem( toWStr( "<loc = 'guis/mainmenu/5_1'>" ), -1, 0 );
+								setItemDataInt( 6, index, 0 );
+							}
+
+							if( gui.querySpeakers( 8 ) ) {
+								index = insertItem( toWStr( "<loc = 'guis/mainmenu/7_1'>" ), -1, 0 );
+								setItemDataInt( 8, index, 0 );
+							}										
+							currentSelection = findItemDataInt( gui.getCVarInt( "s_numberOfSpeakers" ), 0 );
+						}
+						
+						onCVarChanged "s_numberOfSpeakers" {
+							postNamedEvent( "update" );	
+						}
+						onNamedEvent "onSelected" {
+							callSuper();
+							numSpeakers = getItemDataInt( currentSelection, 0, 0 );
+							gui.dlgSettings.restartSounds = numSpeakers != gui.getCVarInt( "s_numberOfSpeakers" );
+						}
+						onNamedEvent "onApply" {
+							gui.setCVarInt( "s_numberOfSpeakers", numSpeakers );
+						}
+					}
+				_end_dropdown
+				
+				_button( Settings_Simple_Detect, PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/mainmenu/detectdevices" );
+					}
+					_button_action(												
+						gui.lstSettings_NumSpeakers.postNamedEvent( "update" );
+						
+						timeline.default.active = true;
+						timeline.default.resetTime( 0 );
+					)
+					
+					// user feedback: give some feedback that something is happening,
+					// even though it's almost instant
+					timeline {
+						properties {
+							float active = false;
+						}
+						onTime 0 {
+							_show_popup( sdNetProgress )
+						}
+						onTime 500 {
+							_close_popup
+						}
+					}
+				_end_button
+
+				_label_localized( Settings_Video, localize( "guis/mainmenu/video" ), 0, PADDING, 100, $evalfloat( BUTTON_HEIGHT + PADDING ), COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+// ================================================================================
+// Video Options
+// ================================================================================
+				_slider( Settings_Video_Brightness, localize( "guis/mainmenu/brightness" ), PADDING, 0, 0.5, 2, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( r_brightness )
+					properties {
+						float pageStep = 0.1;
+					}
+				_end_slider
+				_slider( Settings_Video_Gamma, localize( "guis/mainmenu/gamma" ), PADDING, 0, 0.5, 2, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( r_gamma )
+					properties {
+						float pageStep = 0.1;
+					}
+				_end_slider
+				_cvar_cache_bool( r_fullscreen )
+				_check( Settings_Video_Fullscreen, localize( "guis/mainmenu/fullscreen" ), PADDING, 0, 100 )
+				    _cvar_set_cached_bool( r_fullscreen )
+				_end_check
+
+				_dropdown( Settings_VideoAspect, localize( "guis/mainmenu/aspectratio" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+				    events {
+						onNamedEvent "update" {
+							currentSelection = gui.getCVarInt( "r_aspectRatio" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), rect.w, 0 );	// Mode
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/4_3'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/16_9'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/16_10'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/5_4'>" ), -1, 0 );
+						}
+						onCVarChanged "r_aspectRatio" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "r_aspectRatio" );
+						}
+						onNamedEvent "onSelected" {
+						    callSuper();
+						    if( currentSelection >= 0 ) {
+						    	gui.setPropertyFromString( "gui." + gui.getParentName( name ) + ".r_aspectRatioCached", toString( currentSelection, 0 ) );
+							}
+						}
+					}
+				_end_dropdown_list
+				_cvar_cache_int( r_aspectRatio )
+				_end_dropdown_layout
+
+				_dropdown( Settings_VideoMode, localize( "guis/mainmenu/resolution" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						wstring lastSelection;
+					}
+				    events {
+						onNamedEvent "update" {
+							//gui.scriptPushFloat( gui.lstSettings_VideoAspect.currentSelection );
+							gui.scriptPushFloat( -1 );	// allow all aspects
+							gui.scriptPushFloat( gui.chkSettings_Video_Fullscreen.checked );
+						    fillFromEnumerator( "videoModeList" );
+						}
+						onPropertyChanged 	/*"gui.lstSettings_VideoAspect.currentSelection"*/
+											"gui.chkSettings_Video_Fullscreen.checked" {
+							if( gui.lstSettings_VideoAspect.currentSelection >= 0 ) {
+								//gui.scriptPushFloat( gui.lstSettings_VideoAspect.currentSelection );
+								gui.scriptPushFloat( -1 );	// allow all aspects
+								gui.scriptPushFloat( gui.chkSettings_Video_Fullscreen.checked );
+						    	fillFromEnumerator( "videoModeList" );
+						    	if( currentSelection == -1 ) {
+						    		currentSelection = 0;
+						    	}
+						    }
+						}
+						onCVarChanged "r_mode" {
+							callSuper();
+							currentSelection = findItem( toWString( gui.getCVarInt( "r_mode" ), 0 ), 1 );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), rect.w, 0 );	// Mode
+							insertColumn( gui.blankWStr, 0, 1 );					// Data;
+						}
+						onPropertyChanged "currentSelection" {
+						    callSuper();
+						    if( currentSelection >= 0 ) {
+						    	gui.setPropertyFromString( "gui." + gui.getParentName( name ) + ".r_modeCached", toStr( getItemText( currentSelection, 1 ) ) );
+							}
+						}
+					}
+				_end_dropdown_list
+				_cvar_cache_int( r_mode )
+				_end_dropdown_layout
+
+				_dropdown( Settings_Video_MachineSpec, localize( "guis/mainmenu/quality" ), PADDING, 4, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_machineSpec" );
+
+							if( gui.dlgSettings.execMachineSpec == true ) {
+								return;
+							}
+
+							if( currentSelection == 0 ) {
+								if( gui.checkCVarsAgainstCFG( "specs", ".dat", "minspec" ) == false ) {
+									currentSelection = 3;
+								}
+								return;
+							}
+							if( currentSelection == 1 ) {
+								if( gui.checkCVarsAgainstCFG( "specs", ".dat", "recspec" ) == false ) {
+									currentSelection = 3;
+								}
+								return;
+							}
+							if( currentSelection == 2 ) {
+								if( gui.checkCVarsAgainstCFG( "specs", ".dat", "highspec" ) == false ) {
+									currentSelection = 3;
+								}
+								return;
+							}
+						}
+						onCVarChanged "com_machineSpec" {
+							callSuper();
+							postNamedEvent( "update" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Mode
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/custom'>" ), -1, 0 );
+						}
+						onNamedEvent "onSelected" {
+						    callSuper();
+						    if( currentSelection >= 0 && currentSelection < 3 ) {
+						    	gui.dlgSettings.machineSpec = immediate( currentSelection );
+						    	gui.dlgSettings.execMachineSpec = true;
+							}
+						}
+					}
+				_end_dropdown_list
+				_cvar_cache_int( com_machineSpec )
+				_end_dropdown_layout
+
+				_button( settings_Video_ChooseMachineSpec, PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/mainmenu/autodetect" );
+					}
+					_button_action(
+						gui.consoleCommandImmediate( "setMachineSpec -1 detect" + _newline );
+						gui.dlgSettings.execMachineSpec = true;
+						gui.lstSettings_Video_MachineSpec.postNamedEvent( "update" );
+						gui.lstSettings_Video_MachineSpec.postNamedEvent( "onSelected" );
+						
+						timeline.default.active = true;
+						timeline.default.resetTime( 0 );
+					)
+					
+					// user feedback: give some feedback that something is happening,
+					// even though it's almost instant					
+					timeline {
+						properties {
+							float active = false;
+						}
+						onTime 0 {
+							_show_popup( sdNetProgress )
+						}
+						onTime 500 {
+							_close_popup
+						}
+					}
+					
+				_end_button
+			}
+		_end_tab_page
+
+		_tab_page( Settings_Voice, localize( "guis/mainmenu/voice" ), Settings_Video, SETTINGS_VOICE, _to_right_of( tabpSettingsVideo_Simple ), 0 )
+			events {
+				onPropertyChanged "visible" {
+					callSuper();
+					if( visible ) {
+						gui.dlgSettings.currentPage = name;
+					}
+				}
+			}
+			windowDef lytSettingsVoice {
+				type layoutVertical;
+				properties {
+					rect rect = 0, 0, gui.tabpSettings_VoiceContent.rect.w, gui.tabpSettings_VoiceContent.rect.h;
+					vec4 margins = PADDING, PADDING, PADDING, PADDING;
+					float flags = VLF_DRAW_REVERSED;
+				}
+				_label_localized( Settings_Voice, localize( "guis/mainmenu/voice" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+				_slider( settings_Audio_Volume_VOIP_In, localize( "guis/mainmenu/volume_voip_in" ), PADDING, 0, -60, 10, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( s_volume_VoIPIn_dB )
+				_end_slider
+
+				_slider( Settings_Audio_Volume_VOIP_Out, localize( "guis/mainmenu/volume_voip_out" ), PADDING, 0, -60, 10, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( s_volume_VoIPOut_dB )
+				_end_slider
+
+				_slider( Settings_Audio_Volume_VoIP_Scale, localize( "guis/mainmenu/voice/audiofade" ), PADDING, 0, 0, 1, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_slider( s_volume_VoIPScale )
+					
+					properties {
+						float pageStep = 0.1;						
+					}
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/voice/audiofade_tip" );
+						}
+					}
+				_end_slider
+
+				_check( Settings_ReceiveGlobal, localize( "guis/mainmenu/voice/global" ), PADDING, 4, 100 )
+					_cvar_bool( ui_voipReceiveGlobal )
+				_end_check
+
+				_check( Settings_ReceiveTeam, localize( "guis/mainmenu/voice/team" ), PADDING, 4, 100 )
+					_cvar_bool( ui_voipReceiveTeam )
+				_end_check
+
+				_check( Settings_ReceiveFireTeam, localize( "guis/mainmenu/voice/fireteam" ), PADDING, 4, 100 )
+					_cvar_bool( ui_voipReceiveFireTeam )
+				_end_check
+
+				_dropdown( Settings_PrimarySound, localize( "guis/mainmenu/sound/primary" ), PADDING, 4, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 8 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_TRUNCATE_TEXT;
+						float index;
+						string device = gui.getCVar( "s_primaryDevice" );
+					}
+					events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// name
+							insertColumn( gui.blankWStr, 0, 1 );				// hash
+						}
+						onNamedEvent "onShow" {
+							clearItems();
+							fillFromEnumerator( "soundOutput" );
+							postNamedEvent( "update" );
+						}
+						onNamedEvent "update" {
+							currentSelection = findItem( toWStr( gui.getCVar( "s_primaryDevice" ) ), 1 );
+						}
+						onNamedEvent "onSelected" {
+							callSuper();
+							device = toStr( getItemText( currentSelection, 1 ) );
+							gui.dlgSettings.restartSounds = icompare( device, gui.getCVar( "s_primaryDevice" ) ) != true;
+						}
+						onNamedEvent "onApply" {
+							gui.setCVar( "s_primaryDevice", device );
+						}
+					}
+				_end_dropdown
+
+				_dropdown( Settings_VoiceSound, localize( "guis/mainmenu/sound/voice" ), PADDING, 4, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 8 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_TRUNCATE_TEXT;
+						float index;
+						string device = gui.getCVar( "s_voiceDevice" );
+					}
+					events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// name
+							insertColumn( gui.blankWStr, 0, 1 );				// hash
+						}
+						onNamedEvent "onShow" {
+							clearItems();
+							fillFromEnumerator( "soundOutput" );
+							postNamedEvent( "update" );
+						}						
+						onNamedEvent "update" {
+							currentSelection = findItem( toWStr( gui.getCVar( "s_voiceDevice" ) ), 1 );
+						}
+						onNamedEvent "onSelected" {
+							callSuper();
+							device = toStr( getItemText( currentSelection, 1 ) );
+							gui.dlgSettings.restartSounds = icompare( device, gui.getCVar( "s_voiceDevice" ) ) != true;
+						}
+						onNamedEvent "onApply" {
+							gui.setCVar( "s_voiceDevice", device );
+						}
+					}
+				_end_dropdown
+
+				_dropdown( Settings_MicSound, localize( "guis/mainmenu/sound/microphone" ), PADDING, 4, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Simple ), $evalfloat( BUTTON_HEIGHT * 8 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_TRUNCATE_TEXT;
+						float index;
+						string device = gui.getCVar( "s_micDevice" );
+					}
+					events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// name
+							insertColumn( gui.blankWStr, 0, 1 );				// hash
+						}
+						onNamedEvent "onShow" {
+							clearItems();
+							fillFromEnumerator( "soundInput" );
+							postNamedEvent( "update" );
+						}
+						onNamedEvent "update" {
+							currentSelection = findItem( toWStr( gui.getCVar( "s_micDevice" ) ), 1 );
+						}
+						onNamedEvent "onSelected" {
+							callSuper();
+							device = toStr( getItemText( currentSelection, 1 ) );
+							gui.dlgSettings.restartSounds = icompare( device, gui.getCVar( "s_micDevice" ) ) != true;
+						}
+						onNamedEvent "onApply" {
+							gui.setCVar( "s_micDevice", device );
+						}
+					}
+				_end_dropdown
+				
+				_button( Settings_Voice_Detect, PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/mainmenu/detectdevices" );
+					}
+					_button_action(
+						gui.refreshSoundDevices();
+						
+						gui.lstSettings_PrimarySound.postNamedEvent( "onShow" );
+						gui.lstSettings_VoiceSound.postNamedEvent( "onShow" );						
+						gui.lstSettings_MicSound.postNamedEvent( "onShow" );
+						
+						timeline.default.active = true;
+						timeline.default.resetTime( 0 );
+					)
+					
+					// user feedback: give some feedback that something is happening,
+					// even though it's almost instant
+					timeline {
+						properties {
+							float active = false;
+						}
+						onTime 0 {
+							_show_popup( sdNetProgress )
+						}
+						onTime 500 {
+							_close_popup
+						}
+					}
+				_end_button
+				
+				_button( Settings_Voice_Test, PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/mainmenu/voice/testaudio" );
+						float allowInput = true;
+						float percent = 0.0f;
+						rect progressRect = absoluteRect.x + 4, ( absoluteRect.y + absoluteRect.h + 4 ), ( absoluteRect.w - 8 ) * percent, 2;
+						float playingBack = false;
+					}
+					_button_disable_if( "allowInput", allowInput != true )
+					
+#define SOUND_TEST_DURATION 5000
+#define SOUND_TEST_TOTAL_DURATION 10000
+					_button_action(
+						gui.soundTest( STC_START, SOUND_TEST_DURATION );
+						timeline.soundTest.active = true;
+						timeline.soundTest.resetTime( 0 );
+					)
+					timeline soundTest {
+						properties {
+							float active = false;
+						}
+						onTime 0 {
+							localizedText = localize( "guis/mainmenu/voice/recording" );
+							allowInput = false;
+							playingBack = false;
+						}
+						onTime SOUND_TEST_DURATION {
+							localizedText = localize( "guis/mainmenu/voice/playingback" );							
+						}
+						
+						onTime SOUND_TEST_TOTAL_DURATION {
+							localizedText = localize( "guis/mainmenu/voice/testaudio" );
+							allowInput = true;
+						}
+					}
+					events {
+						onPostDraw {
+							callSuper();
+							if( allowInput == false ) {								
+								if( gui.soundTest( STC_STATUS_RECORDING, 0.0f ) ) {
+									percent = gui.soundTest( STC_STATUS_PERCENT, 0.0f );
+								}
+								if( gui.soundTest( STC_STATUS_PLAYBACK, 0.0f ) && playingBack == false ) {
+									percent = transition( 0, 1, SOUND_TEST_DURATION );
+									playingBack = true;
+								}
+								if( percent > 0.0f ) {
+									drawCachedMaterial( gui.whiteMaterial, progressRect, "1.0, 1.0, 1.0, 0.75" );
+								}
+							}
+						}
+					}
+				_end_button				
+			}
+		_end_tab_page
+
+		_tab_page( SettingsVideo_Advanced, localize( "guis/mainmenu/advanced" ), Settings_Video, SETTINGS_ADVANCED, _to_right_of( tabpSettings_Voice ), 0 )
+			events {
+				onPropertyChanged "visible" {
+					callSuper();
+					if( visible ) {
+						gui.dlgSettings.currentPage = name;
+					}
+				}
+			}
+			windowDef lytSettingsVideo_Advanced {
+				type layoutVertical;
+				properties {
+					rect rect = 0, 0, gui.tabpSettingsVideo_SimpleContent.rect.w, gui.tabpSettingsVideo_SimpleContent.rect.h;
+					vec4 margins = PADDING, PADDING, PADDING, PADDING;
+					float flags = VLF_DRAW_REVERSED;
+				}
+/*
+				_label_localized( Settings_AdvAudio, localize( "guis/mainmenu/audio" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+// ================================================================================
+// Audio Options
+// ================================================================================
+				_cvar_cache_string( s_driver )
+				_radio( settings_Audio_Driver_DSound, localize( "guis/mainmenu/dsound" ), PADDING, 0, _fill_to_right_of( lytSettingsVideo_Advanced ) )
+					_cvar_set_string( s_driver, "dsound" )
+				_end_radio
+
+				_radio( settings_Audio_Driver_OpenAL, localize( "guis/mainmenu/openal" ), PADDING, 0, _fill_to_right_of( lytSettingsVideo_Advanced ) )
+					_cvar_set_string( s_driver, "openal" )
+					_button_disable_if( "", true )
+				_end_radio
+
+				_label_localized( Settings_AdvVideo, localize( "guis/mainmenu/video" ), 0, 0, 100, $evalfloat( BUTTON_HEIGHT + PADDING ), COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+*/
+// ================================================================================
+// Video Options
+// ================================================================================
+
+				_label_localized( Settings_Video_Advanced_TextureQuality, localize( "guis/mainmenu/texturequality" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+				_cvar_cache_int( image_diffusePicMip )
+				_slider( Settings_Video_DiffusePicmip, localize( "guis/mainmenu/diffuse" ), PADDING, 0, -2, 2, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_cache_slider_int( image_diffusePicMip )
+					events {
+						onPropertyChanged "position" {
+							callSuper();
+							gui.dlgSettings.reloadImages = gui.dlgSettings.reloadImages || position != gui.getCVarInt( "image_diffusePicMip" );
+						}
+					}
+				_end_slider
+
+				_cvar_cache_int( image_bumpPicMip )
+				_slider( Settings_Video_BumpPicmip, localize( "guis/mainmenu/bump" ), PADDING, 0, -2, 2, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_cache_slider_int( image_bumpPicMip )
+					events {
+						onPropertyChanged "position" {
+							callSuper();
+							gui.dlgSettings.reloadImages = gui.dlgSettings.reloadImages || position != gui.getCVarInt( "image_bumpPicMip" );
+						}
+					}
+				_end_slider
+
+				_cvar_cache_int( image_specularPicMip )
+				_slider( Settings_Video_SpecularPicmip, localize( "guis/mainmenu/specular" ), PADDING, 0, -2, 2, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_cache_slider_int( image_specularPicMip )
+					events {
+						onPropertyChanged "position" {
+							callSuper();
+							gui.dlgSettings.reloadImages = gui.dlgSettings.reloadImages || position != gui.getCVarInt( "image_specularPicMip" );
+						}
+					}
+				_end_slider
+
+				_cvar_cache_int( image_anisotropy )
+				_slider( Settings_Video_Anisotropy, localize( "guis/mainmenu/anisotropy" ), PADDING, 0, 0, 16, ADVANCED_DROPDOWN_LABEL_WIDTH, SS_SLIDER_WIDTH )
+					_cvar_cache_slider_int( image_anisotropy )
+					events {
+						onPostDraw {
+							callSuper();
+							drawText( toWString( position, 0 ), "absoluteRect.x + absoluteRect.w - 8, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+						}
+					}
+				_end_slider
+
+				_label_localized( Settings_Video_Advanced_VisualQuality, localize( "guis/mainmenu/visualquality" ), 0, 4, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+$template __setup_spec( Command )
+	properties {
+		string config;
+	}
+	events {
+		onNamedEvent "update" {
+			config = "";
+		}
+		onNamedEvent( "onSelected" ) {
+		    callSuper();
+		    if( currentSelection == 0 ) {
+		    	config = "min";
+		    	return;
+		    }
+		    if( currentSelection == 1 ) {
+		    	config = "rec";
+		    	return;
+		    }
+			if( currentSelection == 2 ) {
+		    	config = "high";
+		    	return;
+		    }
+		    config = "";
+		}
+		onNamedEvent "onApply" {
+			if( compare( config, "" ) ) {
+				return;
+			}
+			gui.consoleCommandImmediate( "exec specs/" + config + "spec_" ## Command + ".dat"+ _newline );
+			config = "";
+		}
+	}
+$endtemplate
+
+				_dropdown( Settings_Video_DrawQuality, localize( "guis/mainmenu/drawquality" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						float value;
+					}
+				    events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 ); // Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+							postNamedEvent( "update" );
+						}
+				    	onCVarChanged "r_megaDrawMethod" {
+				    		postNamedEvent( "update" );
+				    	}
+						onNamedEvent "update" {
+							callSuper();
+							value = gui.getCVarInt( "r_megaDrawMethod" );
+							if( value == 0 ) {
+								currentSelection = 1;
+							} else {
+								currentSelection = 0;
+							}
+						}
+						onNamedEvent( "onSelected" ) {
+						    callSuper();
+						    if( currentSelection == 0 ) {
+						    	gui.setPropertyFromString( "gui." + gui.getParentName( name ) + ".r_megaDrawMethodCached", "3" );
+						    	return;
+							}
+							gui.setPropertyFromString( "gui." + gui.getParentName( name ) + ".r_megaDrawMethodCached", "0" );
+						}
+					}
+				_end_dropdown_list
+				_cvar_cache_int( r_megaDrawMethod )
+				_end_dropdown_layout
+
+				_dropdown( Settings_Video_Foliage, localize( "guis/mainmenu/foliage" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					__setup_spec( "foliage" )
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_lastFoliageLevel" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+						}
+					}
+				_end_dropdown
+
+				_dropdown( Settings_Video_CPULevel, localize( "guis/mainmenu/cpulevel" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					__setup_spec( "cpu" )
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_lastCPULevel" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+						}
+					}
+				_end_dropdown
+
+				_dropdown( Settings_Video_CPUDetailLevel, localize( "guis/mainmenu/cpudetaillevel" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					__setup_spec( "gamedetail" )
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_lastCPUDetailLevel" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+						}
+					}
+				_end_dropdown
+
+				_dropdown( Settings_Video_GraphicsLevel, localize( "guis/mainmenu/graphicslevel" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					__setup_spec( "gpu" )
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_lastGraphicsLevel" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+						}
+
+					}
+				_end_dropdown
+
+				_dropdown( Settings_Video_GraphicsDetailLevel, localize( "guis/mainmenu/graphicsdetaillevel" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					__setup_spec( "gpudetail" )
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_lastGraphicsDetailLevel" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+						}
+					}
+				_end_dropdown
+
+				_dropdown( Settings_Video_GPUSpec, localize( "guis/mainmenu/shaderspec" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 5 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							currentSelection = gui.getCVarInt( "com_gpuSpec" );
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Spec
+
+							insertItem( toWStr( "<loc = 'guis/mainmenu/low'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/medium'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/high'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/ultra'>" ), -1, 0 );
+						}
+						onNamedEvent( "onSelected" ) {
+						    callSuper();
+						    if( currentSelection >= 0 ) {
+						    	gui.setPropertyFromString( "gui." + gui.getParentName( name ) + ".com_gpuSpecCached", toString( currentSelection, 0 ) );
+							}
+						}
+					}
+				_end_dropdown_list
+				_cvar_cache_int( com_gpuSpec )
+				_end_dropdown_layout
+
+				_dropdown( Settings_Video_Multisamples, localize( "guis/mainmenu/multisamples" ), PADDING, 0, ADVANCED_DROPDOWN_LABEL_WIDTH, _fill_to_right_of( lytSettingsVideo_Advanced ), $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						float index;
+						float value;
+					}
+				    events {
+						onNamedEvent "update" {
+							callSuper();
+							value = gui.getCVarInt( "r_multisamples" );
+							if( value == 0 ) {
+								currentSelection = 0;
+							} else {
+								currentSelection = findItem( toWStr( toString( value, 0 ) + "x" ), 0 );
+							}
+						}
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 ); //spec
+
+							index = insertItem( toWStr( "<loc = 'guis/mainmenu/disabled'>" ), -1, 0 );
+							setItemDataInt( 0, index, 0 );
+							fillFromEnumerator( "availableMSAA" );
+						}
+
+						onNamedEvent( "onSelected" ) {
+						    callSuper();
+						    if( currentSelection >= 0 ) {
+						    	gui.setPropertyFromString( "gui." + gui.getParentName( name ) + ".r_multisamplesCached", toString( getItemDataInt( currentSelection, 0, 0 ), 0 ) );
+						    	gui.dlgSettings.restartEngine = getItemDataInt( currentSelection, 0, 0 ) != gui.getCVarInt( "r_multisamples" );
+							}
+						}
+					}
+				_end_dropdown_list
+				_cvar_cache_int( r_multisamples )
+				_end_dropdown_layout
+
+				_label_localized( Settings_Video_Advanced_Misc, localize( "guis/mainmenu/misc" ), 0, 4, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+
+				_cvar_cache_bool( r_swapInterval )
+				_check( Settings_Video_VSync, localize( "guis/mainmenu/vsync" ), PADDING, 0, 100 )
+				    _cvar_set_cached_bool( r_swapInterval )
+				_end_check
+
+				_cvar_cache_bool( r_shadows )
+				_cvar_cache_bool( g_showPlayerShadow )
+				_check( Settings_Video_Shadows, localize( "guis/mainmenu/shadows" ), PADDING, 0, 100 )
+				    _cvar_set_cached_bool( r_shadows )
+				  	_cvar_set_cached_bool_secondary( g_showPlayerShadow )
+				_end_check
+
+				_cvar_cache_bool( r_softParticles )
+				_check( Settings_Video_SoftParticles, localize( "guis/mainmenu/softparticles" ), PADDING, 0, 100 )
+				    _cvar_set_cached_bool( r_softParticles )
+				    _cvar_gui_locked( r_softParticles )
+				_end_check
+
+				_cvar_cache_bool( r_useAlphaToCoverage )
+				_check( Settings_Video_AlphaToCoverage, localize( "guis/mainmenu/alphatocoverage" ), PADDING, 0, 100 )
+				    _cvar_set_cached_bool( r_useAlphaToCoverage )
+				    _cvar_gui_locked( r_useAlphaToCoverage )
+				_end_check
+			}
+		_end_tab_page
+	_end_tab_container
+_end_dialog

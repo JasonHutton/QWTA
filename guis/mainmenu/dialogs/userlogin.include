@@ -1,0 +1,191 @@
+//===============================================================
+//	User Login Dialog
+//===============================================================
+_dialog( UserLogin, localize( "guis/mainmenu/login" ), _center( desktop, width ), _center( desktop, height ), 220, 140, "noMove", "dim" )
+	_input_dialog( UserLogin )
+	_on_default( userLoginLogin, userLoginCancel )
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			setTabStop( 0 );
+		}
+	 	onPropertyChanged "gui.popupActive" {
+    		if( isVisible() && gui.popupActive == false ) {
+    			setTabStop( 0 );
+    		}
+    	}
+	}
+
+    _edit( UserLoginStoredUserName, _right( dlgUserLogin ), _top( dlgUserLogin ), 100, BUTTON_HEIGHT )
+        _draw_right_edit_label( localize( "guis/mainmenu/username" ), COLOR_TEXT_DIM, 100 )
+        properties {
+        	float	maxTextLength = 20;
+			float	allowEvents = false;
+			float	allowFocus = false;
+			string	editText = sdnet.accountUsername;
+			color	foreColor = 1,1,1,0.5;
+        }
+    _end_edit
+
+    _edit( UserLoginPassword, _right( dlgUserLogin ), _to_bottom_of( edtUserLoginStoredUserName ) + 3, 100, BUTTON_HEIGHT )
+        properties {
+        	float	maxTextLength = 20;
+			float	password = 1;
+        }
+        _draw_right_edit_label( localize( "guis/mainmenu/password" ), COLOR_TEXT, 100 )
+        _clear_on_show
+    _end_edit
+    
+    _check( UserLoginSavePass, localize( "guis/mainmenu/savepassword" ), _right( dlgUserLogin, width ), _to_bottom_of( edtUserLoginPassword ) + 3, gui.edtUserLoginPassword.rect.w )
+    	events {
+    		onNamedEvent "onShow" {
+    			checked = compare( sdnet.getProfileString( "savePassword", "0" ), "1" );
+    		}
+    		onNamedEvent "onAction" {
+    			callSuper();
+    			sdnet.setProfileString( "savePassword", toString( checked, 0 ) );
+    		}
+    	}
+    _end_check
+
+    _button( UserLoginResetPass, _right( dlgUserLogin, width ), _to_bottom_of( chkUserLoginSavePass ) + 13, gui.chkUserLoginSavePass.rect.w, BUTTON_HEIGHT )
+		properties {
+			float taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/resetpassword" );
+		}
+        _button_action(
+        	_close_input
+        	_show_input( ResetPassword )
+        )
+    _end_button
+
+    _button( UserLoginLogin, _to_left_of( btnUserLoginCancel, width ) - 3, _bottom( dlgUserLogin, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/login" );
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				postNamedEvent( "checkEnabled" );
+			}
+		}
+
+		_button_disable_if( "gui.edtUserLoginPassword.editText", compare( gui.edtUserLoginPassword.editText, "" ) == true )
+        _button_action(
+            if ( compare( gui.edtUserLoginPassword.editText, "" ) ) {
+				return;
+			}
+
+			sdnet.accountSetPassword( gui.edtUserLoginPassword.editText );
+
+			if ( sdnet.state != SS_ONLINE ) {
+				if ( sdnet.connect() == 0 ) {
+					// process error
+					_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+					_show_popup( confirmation )
+					return;
+				}
+				taskActive = 1;
+			} else {
+				taskActive = 2;
+				sdnet.signIn();
+				// gui.print( "signin" + _newline );
+			}
+			_show_popup( sdNetProgress )
+        )
+
+		events {
+			onPropertyChanged "sdnet.state" {
+				if ( sdnet.state == SS_INITIALIZED ) {
+					if ( taskActive == 1 ) {
+						taskActive = 0;
+
+						// process error
+				   	   _setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+				   	   _show_popup( confirmation )
+					}
+				}
+				if ( sdnet.state == SS_ONLINE ) {
+					if ( taskActive == 1 ) {
+						taskActive = 2;
+						sdnet.signIn();
+						// gui.print( "signin" + _newline );
+					}
+				}
+			}
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == 2 ) {
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							taskActive = 3;
+							_show_popup( sdNetProgress )
+							sdnet.assureProfileExists();
+							// gui.print( "assureProfileExists" + _newline );
+							return;
+						}
+
+						// process error
+					    _setup_confirmation_ok_error( sdnet.taskResultMessage )
+                        _show_popup( confirmation )
+
+					    sdnet.accountSetPassword( "" );
+
+						gui.edtUserLoginPassword.editText = "";
+						return;
+					}					
+
+					if ( taskActive == 3 ) {
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							if ( sdnet.validateProfile() == true ) {
+								gui.broadcastEvent( gui.nextCallbackWindow, gui.nextCallback );
+								_close_input;
+								gui.nextCallbackWindow = "";
+								gui.nextCallback = "";
+								sdnet.initFriends();
+								sdnet.initTeams();
+							}
+							return;
+						}
+
+						// process error
+					    _setup_confirmation_ok_error( sdnet.taskResultMessage )
+                        _show_popup( confirmation )
+
+						sdnet.accountSetPassword( "" );
+
+						gui.edtUserLoginPassword.editText = "";
+
+						return;
+					}
+				}
+			}
+			onPropertyChanged "gui.onConnectionLost" {
+				if ( taskActive > 0 ) {
+					taskActive = 0;
+					sdnet.accountSetPassword( "" );
+					gui.edtUserLoginPassword.editText = "";
+				}
+			}
+		}
+    _end_button
+
+    _button( UserLoginCancel, _right( dlgUserLogin, width ), _bottom( dlgUserLogin, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/cancel" );
+		}
+        _button_action(
+        	_close_input
+			gui.nextCallbackWindow = "";
+			gui.nextCallback = "";
+			gui.loginCanceled = immediate( gui.loginCanceled + 1 );
+        )
+    _end_button
+_end_dialog

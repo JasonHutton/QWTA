@@ -1,0 +1,12 @@
+
+#ifndef __mainmenu_demonware__
+#define __mainmenu_demonware__
+
+#define AC_NEW 0
+#define AC_RESETPASS 1
+#define AC_EXISTING 2
+#define AC_OFFLINE 3
+
+
+
+#endif // !__mainmenu_demonware__

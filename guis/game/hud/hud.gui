@@ -1,0 +1,3124 @@
+
+#include <guis/common/utility.include>
+#include <guis/common/colors.include>
+#include <guis/common/defs.include>
+#include <guis/common/materials.include>
+#include <guis/game/hud/crosshair.include>
+#include <guis/game/hud/hud.include>
+#include <guis/game/hud/tooltips.include>
+#include <guis/game/hud/objectives.include>
+#include <guis/game/fireteam.include>
+#include <guis/game/game_materials.include>
+
+#define NOTIFY_BUMP_TABLE "sintable"
+
+#include <script/deployables/base_defines.include>	// for deployable state constants
+
+gui hud {
+	properties {
+		float	flags						= immediate( flags ) | GUI_FULLSCREEN & ~GUI_INTERACTIVE;
+		float	isSpectatorClass			= icompare( player.teamName, "spectating" );
+		float	viewingOthers				= ( player.localView == false && ( isSpectatorClass == true || player.spectating == true ) );
+		float 	shouldShowNormalHud 		= viewingOthers || ( player.localView == true && isSpectatorClass == false && player.endGameCamera == false );
+		float	numActiveObjectives			= 0;
+
+		// used by gamecode
+		float	drawSquare					= false;
+		float	movingObjective 			= false;
+		
+		string	ttArg;
+		wstring	selectedTask				= toWStr( "" );
+	}
+
+	__cvar_property( g_advancedHud, advancedHud )
+	__cvar_property( g_keepFireTeamList, keepFireTeam )
+	__cvar_property( g_drawHudMessages, drawHudMessages )
+
+	_crosshair_materials
+	_hud_materials
+	_menu_icons
+	_player_upgrade_icons
+
+	// Init window classes
+	_dlg_init
+	_wnd_init
+	_btn_init
+
+	properties {
+		color	dialogFillColor		= COLOR_DIALOG_FILL;
+		color	dialogLineColor		= COLOR_DIALOG_LINES;
+		color	barGradientColor	= COLOR_BAR_GRADIENT;
+		color	iconDimColor		= COLOR_ICON_DIM;
+		float	testFlash 			= 0;
+
+		handle	obj_fill			= cacheMaterial( "_obj_fill", "obj_fill" );
+	}
+
+	sounds {
+		"bad"				"sounds/ui/main/bad"
+		"good"				"sounds/ui/main/good"
+		"verygood"			"sounds/ui/main/verygood"
+		"cm_gdf"			"sounds/ui/main/cmtrans_gdf"
+		"cm_strogg"			"sounds/ui/main/cmtrans_strogg"
+		"interaction"		"sounds/ui/main/interaction"
+		"cannot"			"sounds/ui/main/cannot"
+
+		"deploy_confirm"	"sounds/tools/deployer/confirm"
+		"accepted_mission"	"player/accepted_mission"
+		"show_lifestats"	"sounds/ui/main/neutral"
+	}
+
+	// precached materials
+	materials {
+		"guis/assets/hud/proficiency_icon"			"guis/assets/hud/proficiency_icon"
+
+		"compass_zoom"								"guis/assets/mainmenu/sheet_fill, rect( 322, 243, 10, 10 )"
+		"compass" 	 								"guis/hud/compass/ring"
+
+		"compass_tl"								"guis/assets/mainmenu/sheet_fill, rect( 394, 133, 50, 50 ), flipY"
+		"compass_tr"								"guis/assets/mainmenu/sheet_fill, rect( 394, 133, 50, 50 ), flipX FlipY"
+		"compass_bl"								"guis/assets/mainmenu/sheet_fill, rect( 394, 133, 50, 50 )"
+		"compass_br"								"guis/assets/mainmenu/sheet_fill, rect( 394, 133, 50, 50 ), flipX"
+		"compass_l"									"guis/nodraw"
+		"compass_r"									"guis/nodraw"
+		"compass_t"									"guis/nodraw"
+		"compass_b"									"guis/nodraw"
+		"compass_c"									"guis/nodraw"
+
+		"compassbg_fill"							"guis/assets/hud/gdf/compassbg_fill"
+		"compassbg_line"							"guis/assets/hud/gdf/compassbg_line"
+
+		"health_bar_l"								"guis/assets/hud/gdf/sheet, rect( 402, 4, 16, 16 ) flipX"
+		"health_bar_c"								"guis/assets/hud/gdf/sheet, rect( 62, 4, 16, 16 )"
+		"health_bar_r"								"guis/assets/hud/gdf/sheet, rect( 42, 4, 16, 16 ) flipX"
+
+		"ammo_bar_l"								"guis/assets/hud/gdf/sheet, rect( 42, 4, 16, 16 )"
+		"ammo_bar_c"								"guis/assets/hud/gdf/sheet, rect( 62, 4, 16, 16 )"
+		"ammo_bar_r"								"guis/assets/hud/gdf/sheet, rect( 402, 4, 16, 16 )"
+
+		"ammo_bar_flipvert_l"						"guis/assets/hud/gdf/sheet, rect( 42, 4, 16, 16 ) flipY"
+		"ammo_bar_flipvert_c"						"guis/assets/hud/gdf/sheet, rect( 62, 4, 16, 16 ) flipY"
+		"ammo_bar_flipvert_r"						"guis/assets/hud/gdf/sheet, rect( 62, 4, 16, 16 ) flipY"
+
+		"textures/sfx/lagometer"					"textures/sfx/lagometer"
+
+		"slot0" 									"guis/nodraw"
+		"slot1" 									"guis/assets/hud/gdf/weapontypes, rect( 64, 0, 16, 16 )"
+		"slot2" 									"guis/assets/hud/gdf/weapontypes, rect( 0, 0, 16, 16 )"
+		"slot3" 									"guis/assets/hud/gdf/weapontypes, rect( 16, 0, 16, 16 )"
+		"slot4" 									"guis/assets/hud/gdf/weapontypes, rect( 32, 0, 16, 16 )"
+		"slot5" 									"guis/assets/hud/gdf/weapontypes, rect( 48, 0, 16, 16 )"
+		"slot6" 									"guis/assets/hud/gdf/weapontypes, rect( 80, 0, 16, 16 )"
+		"slot7" 									"guis/assets/hud/gdf/weapontypes, rect( 80, 0, 16, 16 )"
+
+		"chargeicon_gdf"							"guis/assets/icons/weapons/hecharge"
+		"chargeicon_strogg"							"guis/assets/icons/weapons/plasmacharge"
+		"mineicon_gdf"								"guis/assets/icons/weapons/landmine"
+		"mineicon_strogg"							"guis/assets/icons/weapons/strogg_landmine"
+		"suppliesicon"								"guis/assets/deploy/icons/gdf_supplies"
+		"spawnhosticon"								"guis/assets/deploy/icons/strogg_spawn"
+		"carryableitemicon"							"guis/assets/deploy/icons/document_objective"
+		"teleporteritemicon"						"guis/assets/icons/weapons/teleportgun"
+		"parachuteicon"								"guis/assets/icons/gdf_parachute"
+		"stroggshieldicon"							"guis/assets/icons/strogg_dropshield"
+		"thirdeyeitemicon"							"guis/assets/icons/weapons/thirdeye"
+
+		"constructicon"								"hud/icons/missionsystem/obj_build"
+		"anyclassicon"								"hud/icons/missionsystem/obj_any_class"
+		"hackicon"									"hud/icons/missionsystem/obj_hack"
+		"destroyicon"								"hud/icons/missionsystem/obj_destroy"
+		"docicon"									"hud/icons/missionsystem/obj_document"
+		"docicon_carrier"							"hud/icons/missionsystem/obj_document_taken"
+		"docicon_dropped"							"hud/icons/missionsystem/obj_document_dropped"
+		"mcpicon"									"hud/icons/missionsystem/obj_mcp"
+		"goalicon"									"hud/icons/missionsystem/obj_goal"
+		"flyerhiveicon"								"hud/icons/missionsystem/obj_destroy_drone"
+
+		"obj_fill"									"hud/icons/missionsystem/obj_fill_material"
+
+		"deployable_status_disabled"				"guis/assets/hud/gdf/deployable_status"
+
+		"parachute_hint"							"hud/hint/global"
+
+		"lagicon"									"hud/icons/lagicon"
+		"recicon"									"hud/icons/recicon"
+		
+		"pause_icon"								"hud/pause_icon, rect( 160, 0, 32, 32 )"
+
+		"health_top_fill_tl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 12, 12 )"
+		"health_top_fill_t"							"guis/assets/mainmenu/sheet_fill, rect( 234, 196, 11, 12 )"
+		"health_top_fill_tr"						"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 12, 12 ), flipX"
+		"health_top_fill_l"							"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 12, 1 )"
+		"health_top_fill_c"							"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 1, 1 )"
+		"health_top_fill_r"							"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 12, 1 )"
+		"health_top_fill_bl"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 12, 4 )"
+		"health_top_fill_b"							"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 1, 4 )"
+		"health_top_fill_br"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 12, 4 )"
+
+		"health_top_line_tl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 212, 12, 12 )"
+		"health_top_line_t"							"guis/assets/mainmenu/sheet_fill, rect( 231, 212, 11, 12 )"
+		"health_top_line_tr"						"guis/assets/mainmenu/sheet_fill, rect( 223, 212, 12, 12 ), flipX"
+		"health_top_line_l"							"guis/assets/mainmenu/sheet_fill, rect( 225, 212, 12, 2 )"
+		"health_top_line_c"							"guis/assets/mainmenu/sheet_fill, rect( 225, 212, 1, 1 )"
+		"health_top_line_r"							"guis/assets/mainmenu/sheet_fill, rect( 231, 212, 12, 1 )"
+		"health_top_line_bl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 221, 12, 4 )"
+		"health_top_line_b"							"guis/assets/mainmenu/sheet_fill, rect( 225, 223, 1, 4 )"
+		"health_top_line_br"						"guis/assets/mainmenu/sheet_fill, rect( 223, 221, 12, 4 ), flipX"
+
+		"health_bottom_fill_bl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 12, 12 ), flipY"
+		"health_bottom_fill_b"						"guis/assets/mainmenu/sheet_fill, rect( 234, 196, 11, 12 ), flipY"
+		"health_bottom_fill_br"						"guis/assets/mainmenu/sheet_fill, rect( 179, 119, 14, 12 )"
+		"health_bottom_fill_l"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 12, 1 ), flipY"
+		"health_bottom_fill_c"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 1, 1 ), flipY"
+		"health_bottom_fill_r"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 14, 1 ), flipY"
+		"health_bottom_fill_tl"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 12, 4 ), flipY"
+		"health_bottom_fill_t"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 1, 4 ), flipY"
+		"health_bottom_fill_tr"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 14, 4 ), flipY"
+
+		"health_bottom_line_bl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 212, 12, 12 ), flipY"
+		"health_bottom_line_b"						"guis/assets/mainmenu/sheet_fill, rect( 231, 212, 11, 12 ), flipY"
+		"health_bottom_line_br"						"guis/assets/mainmenu/sheet_fill, rect( 194, 122, 11, 10 )"
+		"health_bottom_line_l"						"guis/assets/mainmenu/sheet_fill, rect( 223, 218, 12, 2 ), flipY"
+		"health_bottom_line_c"						"guis/assets/mainmenu/sheet_fill, rect( 228, 219, 1, 1 )"
+		"health_bottom_line_r"						"guis/assets/mainmenu/sheet_fill, rect( 225, 218, 14, 2 ), flipX flipY"
+		"health_bottom_line_tl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 218, 12, 2 ), flipY"
+		"health_bottom_line_t"						"guis/assets/mainmenu/sheet_fill, rect( 225, 223, 1, 4 ), flipY"
+		"health_bottom_line_tr"						"guis/assets/mainmenu/sheet_fill, rect( 225, 218, 14, 2 ), flipX flipY"
+
+		"health_top_grad_l"							"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 5, 13 )"
+		"health_top_grad_c"							"guis/assets/mainmenu/sheet_fill, rect( 228, 196, 5, 13 )"
+		"health_top_grad_r"							"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 5, 13 ), flipX"
+
+		"health_icon"								"guis/assets/mainmenu/sheet_fill, rect( 345, 164, 24, 24 ), flipX"
+
+		"bar_fill_l"								"guis/assets/mainmenu/sheet_fill, rect( 228, 196, 5, 13 )"
+		"bar_fill_c"								"guis/assets/mainmenu/sheet_fill, rect( 233, 196, 5, 13 )"
+		"bar_fill_r"								"guis/assets/mainmenu/sheet_fill, rect( 228, 196, 5, 13 ), flipX"
+
+		"bar_line_l"								"guis/assets/mainmenu/sheet_fill, rect( 228, 212, 5, 13 )"
+		"bar_line_c"								"guis/assets/mainmenu/sheet_fill, rect( 233, 212, 5, 13 )"
+		"bar_line_r"								"guis/assets/mainmenu/sheet_fill, rect( 228, 212, 5, 13 ), flipX"
+
+		"bar_grad"									"guis/assets/mainmenu/sheet_fill, rect( 213, 212, 1, 13 )"
+
+		"xp_fill_l"									"guis/assets/mainmenu/sheet_fill, rect( 272, 183, 4, 13 ), flipY"
+		"xp_fill_c"									"guis/assets/mainmenu/sheet_fill, rect( 272, 183, 4, 13 ), flipY"
+		"xp_fill_r"									"guis/assets/mainmenu/sheet_fill, rect( 255, 183, 6, 13 ), flipX flipY"
+
+		"xp_line_l"									"guis/assets/mainmenu/sheet_fill, rect( 261, 199, 5, 13 ), flipY"
+		"xp_line_c"									"guis/assets/mainmenu/sheet_fill, rect( 261, 199, 1, 13 ), flipY"
+		"xp_line_r"									"guis/assets/mainmenu/sheet_fill, rect( 255, 199, 6, 13 ), flipX flipY"
+
+		"ammo_bottom_fill_bl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 12, 12 ), flipY"
+		"ammo_bottom_fill_b"						"guis/assets/mainmenu/sheet_fill, rect( 234, 196, 11, 12 ), flipY"
+		"ammo_bottom_fill_br"						"guis/assets/mainmenu/sheet_fill, rect( 223, 196, 12, 12 ), flipX, flipY"
+		"ammo_bottom_fill_l"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 12, 1 ), flipY"
+		"ammo_bottom_fill_c"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 1, 1 ), flipY"
+		"ammo_bottom_fill_r"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 12, 1 ), flipY"
+		"ammo_bottom_fill_tl"						"guis/assets/mainmenu/sheet_fill, rect( 225, 202, 12, 4 ), flipY"
+		"ammo_bottom_fill_t"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 1, 4 ), flipY"
+		"ammo_bottom_fill_tr"						"guis/assets/mainmenu/sheet_fill, rect( 234, 202, 12, 4 ), flipY"
+
+		"ammo_bottom_line_bl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 212, 12, 12 ), flipY"
+		"ammo_bottom_line_b"						"guis/assets/mainmenu/sheet_fill, rect( 231, 212, 11, 12 ), flipY"
+		"ammo_bottom_line_br"						"guis/assets/mainmenu/sheet_fill, rect( 223, 212, 12, 12 ), flipX, flipY"
+		"ammo_bottom_line_l"						"guis/assets/mainmenu/sheet_fill, rect( 225, 212, 12, 2 ), flipY"
+		"ammo_bottom_line_c"						"guis/assets/mainmenu/sheet_fill, rect( 225, 212, 1, 1 ), flipY"
+		"ammo_bottom_line_r"						"guis/assets/mainmenu/sheet_fill, rect( 231, 212, 12, 1 ), flipY"
+		"ammo_bottom_line_tl"						"guis/assets/mainmenu/sheet_fill, rect( 223, 221, 12, 4 ), flipY"
+		"ammo_bottom_line_t"						"guis/assets/mainmenu/sheet_fill, rect( 225, 223, 1, 4 ), flipY"
+		"ammo_bottom_line_tr"						"guis/assets/mainmenu/sheet_fill, rect( 223, 221, 12, 4 ), flipX, flipY"
+	}
+
+	events {
+		onPropertyChanged "player.teamName" {
+			postNamedEvent( "SetupRespawnTimer" );
+		}
+
+		onNamedEvent "OnSpawn" {
+			globals.progressBar.visible = 0;
+			globals.gameHud.hideCrosshairCounter = 0;
+		}
+
+		onNamedEvent "SetupRespawnTimer" {
+			if ( icompare( player.teamName, "gdf" ) ) {
+				globals.gameHud.respawnTimerText = msToHMS( globals.gameHud.gdfRespawnTime - player.gameTime );
+			}
+			if ( icompare( player.teamName, "strogg" ) ) {
+				globals.gameHud.respawnTimerText = msToHMS( globals.gameHud.stroggRespawnTime - player.gameTime );
+			}
+			if ( icompare( player.teamName, "spectating" ) ) {
+				globals.gameHud.respawnTimerText = msToHMS( globals.gameHud.spectatingRespawnTime - player.gameTime );
+			}
+		}
+		
+		onToolTipEvent {
+			ttArg = gui.scriptGetStringResult();
+		}
+
+		onActivate {
+			callSuper();
+
+			postNamedEvent( "SetupRespawnTimer" );
+
+			globals.gameHud.hideCrosshairCounter 			= 0;
+			globals.gameHud.weaponLowAmmo 					= 0;
+			globals.gameHud.weaponNeedsAmmoBox				= 1;
+			globals.gameHud.weaponShowAllAmmo 				= 0;
+			globals.gameHud.weaponShowClip 					= 0;
+			globals.gameHud.weaponShowCustom 				= 0;
+			globals.gameHud.weaponChargePercent 			= 0;
+			globals.gameHud.weaponGrenadeExpireTime 		= 0;
+			globals.gameHud.weaponCrosshair					= "small";
+
+			globals.gameHud.newRank							= 0;
+			globals.gameHud.proficiencyCategoryTime			= -9999;
+			globals.gameHud.decoyChargeFraction				= 1;
+			globals.gameHud.supplyCrateHealth0				= 0;
+			globals.gameHud.supplyCrateSupplies0			= 0;
+			globals.gameHud.supplyCrateHealth1				= 0;
+			globals.gameHud.supplyCrateSupplies1			= 0;
+			globals.gameHud.parachuteActive					= 0;
+			globals.gameHud.thirdEyeActive					= 0;
+
+			globals.gameHud.showChat						= 1;
+			globals.gameHud.showDeployableState				= 1;
+			globals.gameHud.hideCrosshairInfo				= 0;
+			globals.gameHud.activeCrosshairInfoFlags		= CF_CROSSHAIR | CF_PLAYER_ICONS | CF_TASKS | CF_OBJ_MIS;
+			globals.gameHud.showHud							= 1;
+			globals.gameHud.mapZoomLevel					= immediate( globals.gameHud.newMapZoomLevel );
+
+			globals.gameHud.numChatLines					= 8;
+
+			globals.gameHud.wantAdmin						= 0;
+			globals.gameHud.wantVote						= 0;
+			
+			globals.gameHud.mineWarningTime					= 0;
+
+			globals.gameHud.bumpNotifyIcon					= "";
+			globals.gameHud.flyerhiveEndTime				= 0;
+
+			globals.constructObjective.active				= 0;
+			globals.mcpObjective.active						= 0;
+			globals.hackObjective.active					= 0;
+			globals.docObjective.active						= 0;
+			globals.docObjective2.active					= 0;
+			globals.docObjective3.active					= 0;
+			globals.goalObjective.active					= 0;
+			globals.flyerhiveObjective.active				= 0;
+			globals.destroyObjective1.active				= 0;
+			globals.destroyObjective2.active				= 0;
+
+			globals.constructObjective.flash				= 0;
+			globals.mcpObjective.flash						= 0;
+			globals.hackObjective.flash						= 0;
+			globals.docObjective.flash						= 0;
+			globals.docObjective2.flash						= 0;
+			globals.docObjective3.flash						= 0;
+			globals.goalObjective.flash						= 0;
+			globals.flyerhiveObjective.flash				= 0;
+			globals.destroyObjective1.flash					= 0;
+			globals.destroyObjective2.flash					= 0;
+			
+			globals.hackObjective.decaying					= 0;
+			globals.constructObjective.decaying				= 0;
+
+			globals.docObjective.state						= CARRYABLE_ITEM_HOME;
+			globals.docObjective2.state						= CARRYABLE_ITEM_HOME;
+			globals.docObjective3.state						= CARRYABLE_ITEM_HOME;
+
+			globals.gameHud.needsParachute					= 0;
+			globals.gameHud.needsCharge						= 0;
+			globals.gameHud.lowAmmoFlash 					= false;
+			globals.gameHud.mediumAmmoFlash					= false;
+
+			globals.deployables.state						= DS_REMOVED;
+			globals.deployables.guiState					= 0;
+
+			globals.progressBar.visible 					= 0;
+
+			globals.gameHud.dynamicContentRect				= fireTeam.absoluteRect.x, fireTeam.absoluteRect.y, tasks.absoluteRect.w, 0;
+
+			globals.gameHud.spawnHostActive					= 0;
+			globals.gameHud.carryableItemActive				= 0;
+			globals.gameHud.teleporterActive				= 0;
+
+			globals.vehicles.siegeMode						= floatToHandle( -1 );
+
+			globals.gameHud.proficiencySound				= "";
+			
+			globals.gameHud.lifeStatsString 				= gui.blankWStr;
+			globals.gameHud.lifeStatsTitle 					= floatToHandle( -1 );			
+			
+			ttArg											= "";
+		}
+
+		onPropertyChanged "globals.gameHud.hideCrosshairCounter" {
+			if ( globals.gameHud.hideCrosshairCounter < 0 ) {
+				globals.gameHud.hideCrosshairCounter = 0;
+			}
+		}
+	}
+
+	windowDef desktop {
+		properties {
+			rect	rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float 	visible = globals.gameHud.showHud > 0;
+		}
+	}
+	
+	windowDef pauseBackground {
+		properties {
+			rect	rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float 	visible = true;
+			float	show = player.isPaused;
+		}
+		events {
+			onCreate {
+				backColor = "0, 0, 0, 0";
+			}
+			onPropertyChanged "show" {
+				if ( show ) {
+					backColor.a = transition( backColor.a, 0.4, 200 );
+				} else {
+					backColor.a = transition( backColor.a, 0, 200 );
+				}
+			}
+		}
+	}
+
+	// blue outline around items while tooltip is up
+	windowDef toolTipHudOutline {
+		
+#define HL_TIMER		1
+#define HL_COMPASS		2
+#define HL_TIP			3
+#define HL_MISSYSTEM	4
+#define HL_PARACHUTEUSE	5
+#define HL_OBJECTIVE	6
+
+		properties {
+			float visible = player.endGame == false && gui.isSpectatorClass == false && player.spectating == false;
+			
+			color	highlightColor = COLOR_HUD_TUTORIAL_HIGHLIGHT_FULL;
+			
+			rect	highlightRectStart;
+			rect	highlightRectEnd;
+
+			rect	highlightRect1;
+			rect	highlightRect2;
+			rect	highlightRect3;
+			rect	highlightRect4;
+			rect	highlightRect5;
+			
+			float	highlightAlpha1;
+			float	highlightAlpha2;
+			float	highlightAlpha3;
+			float	highlightAlpha4;
+			float	highlightAlpha5;
+			
+			float	hlItem;
+			
+			handle 	highlightMaterial = gui.cacheMaterial( "_highlightLine", "_frame highlight_line" );
+		}
+		events {
+			onCreate {
+				hlItem = -1;
+			}
+			onPropertyChanged "gui.ttArg" {
+				if ( !player.isSinglePlayer ) {
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_timer" ) == true ) {
+					highlightRectStart = CENTER_X - 200, CENTER_Y - 150 + gui.respawnLabel.textRect.h, 400, 250;
+					highlightRectEnd = gui.respawnLabel.textRect;
+					highlightRectEnd.w = 55;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_compass" ) == true ) {
+					highlightRectStart = CENTER_X,  gui.Compass.absoluteRect.y, SCREEN_WIDTH - CENTER_X, 250;
+					highlightRectEnd = gui.Compass.rect;
+					postNamedEvent( "startHighlight" );
+					gui.Compass.postNamedEvent( "startFlash" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_tip" ) == true ) {
+					highlightRectStart = CENTER_X - 200, 0, 400, 200;
+					highlightRectEnd = gui.tip.rect;
+					postNamedEvent( "startHighlight" );
+					gui.tip.postNamedEvent( "tooltipHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_mis_system" ) == true ) {
+					/*highlightRectStart = gui.tasks.rect;
+					highlightRectStart.w = 400;
+					highlightRectStart.h = 400;
+					highlightRectEnd = gui.tasks.rect;
+					postNamedEvent( "startHighlight" );*/
+					gui.tasks.postNamedEvent( "startFlash" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_parachute_use" ) == true ) {
+					highlightRectStart = CENTER_X - 150, CENTER_Y - 100, 300, 200 + gui.parachuteIndicator.rect.h;
+					highlightRectEnd = gui.parachuteIndicator.rect;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_objective_module" ) == true && !gui.movingObjective ) {
+					highlightRectStart = CENTER_X, 140, SCREEN_WIDTH / 2, 200;
+					
+					if ( globals.constructObjective.active ) {
+						highlightRectEnd = gui.constructObjective.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.constructObjective.postNamedEvent( "tooltipHighlight" );
+						return;
+						
+					}
+					
+					if ( globals.mcpObjective.active ) {
+						highlightRectEnd = gui.mcpObjective.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.mcpObjective.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+					
+					if ( globals.hackObjective.active ) {
+						highlightRectEnd = gui.hackObjective.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.hackObjective.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+					
+					if ( globals.docObjective.active || globals.docObjective2.active || globals.docObjective3.active ) {
+						highlightRectEnd = gui.docObjective.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.docObjective.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+					
+					if ( globals.goalObjective.active ) {
+						highlightRectEnd = gui.goalObjective.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.goalObjective.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+					
+					if ( globals.flyerhiveObjective.active ) {
+						highlightRectEnd = gui.flyerhiveObjective.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.flyerhiveObjective.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+					
+					if ( globals.destroyObjective1.active ) {
+						highlightRectEnd = gui.destroyObjective1.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.destroyObjective1.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+					
+					if ( globals.destroyObjective2.active ) {
+						highlightRectEnd = gui.destroyObjective2.absoluteRect;
+						hlItem = HL_OBJECTIVE;
+						postNamedEvent( "startHighlight" );
+						gui.destroyObjective2.postNamedEvent( "tooltipHighlight" );
+						return;
+					}
+				}
+				
+				if ( icompare( gui.ttArg, "hl_inv_0" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 223, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 101, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+
+				if ( icompare( gui.ttArg, "hl_inv_1" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 251, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 129, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_inv_2" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 279, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 157, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_inv_3" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 307, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 185, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_inv_4" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 335, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 213, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_inv_5" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 363, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 241, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_inv_6" ) == true ) {
+					highlightRectStart = SCREEN_WIDTH - 420, SCREEN_HEIGHT - 391, 403, 150;
+					highlightRectEnd = SCREEN_WIDTH - 153, SCREEN_HEIGHT - 269, 136, 28;
+					postNamedEvent( "startHighlight" );
+					return;
+				}
+				
+				if ( icompare( gui.ttArg, "hl_mcp_health" ) == true ) {
+					if ( globals.mcpObjective.active ) {
+						gui.mcpHealth.postNamedEvent( "flashGreen" );
+					}
+					return;
+				}
+
+
+				postNamedEvent( "noHighlight" );
+			}
+			onPropertyChanged "globals.constructObjective.active"
+								"globals.mcpObjective.active"
+								"globals.hackObjective.active"
+								"globals.docObjective.active"
+								"globals.docObjective2.active"
+								"globals.docObjective3.active"
+								"globals.goalObjective.active"
+								"globals.flyerhiveObjective.active"
+								"globals.destroyObjective1.active"
+								"globals.destroyObjective2.active" {
+				if ( hlItem != HL_OBJECTIVE ) {
+					return;
+				}
+
+				if ( globals.constructObjective.active ||
+					globals.mcpObjective.active ||
+					globals.hackObjective.active ||
+					globals.docObjective.active ||
+					globals.docObjective2.active ||
+					globals.docObjective3.active ||
+					globals.goalObjective.active ||
+					globals.flyerhiveObjective.active ||
+					globals.destroyObjective1.active ||
+					globals.destroyObjective2.active ) {
+					return;
+				}
+				
+				gui.ttArg = "";
+			}
+			onPropertyChanged "player.isPaused"
+								"player.dead" {
+				if ( !player.isPaused || player.dead ) {
+					if ( icompare( gui.ttArg, "hl_inv_0" ) == true ||
+						icompare( gui.ttArg, "hl_inv_1" ) == true ||
+						icompare( gui.ttArg, "hl_inv_2" ) == true ||
+						icompare( gui.ttArg, "hl_inv_3" ) == true ||
+						icompare( gui.ttArg, "hl_inv_4" ) == true ||
+						icompare( gui.ttArg, "hl_inv_5" ) == true ||
+						icompare( gui.ttArg, "hl_inv_6" ) == true ) {
+						// stop highlight if highlighting inventory and unpausing game
+						postNamedEvent( "noHighlight" );
+					}
+				}
+			}
+			onPreDraw {
+				if ( !player.inProxy && ( gui.tip.shouldShow && ( ( icompare( gui.ttArg, "hl_mis_system" ) == false ) || gui.tasks.expanded == true ) ) ) {
+					drawCachedMaterial( highlightMaterial, highlightRect1, "highlightColor.r, highlightColor.g, highlightColor.b, highlightColor.a * highlightAlpha1" );
+					drawCachedMaterial( highlightMaterial, highlightRect2, "highlightColor.r, highlightColor.g, highlightColor.b, highlightColor.a * highlightAlpha2" );
+					drawCachedMaterial( highlightMaterial, highlightRect3, "highlightColor.r, highlightColor.g, highlightColor.b, highlightColor.a * highlightAlpha3" );
+					drawCachedMaterial( highlightMaterial, highlightRect4, "highlightColor.r, highlightColor.g, highlightColor.b, highlightColor.a * highlightAlpha4" );
+					drawCachedMaterial( highlightMaterial, highlightRect5, "highlightColor.r, highlightColor.g, highlightColor.b, highlightColor.a * highlightAlpha5" );
+				}
+
+				gui.scriptPushFloat( false );
+			}
+			onNamedEvent "startHighlight" {
+				timeline.blips.active = true;
+				timeline.blips.resetTime( 0 );
+			}
+			onNamedEvent "noHighlight" {
+				hlItem = -1;
+				timeline.blips.active = false;
+				highlightAlpha1		= transition( highlightAlpha1, 0, 1200, "0.9, 0.1" );
+				highlightAlpha2		= transition( highlightAlpha2, 0, 1200, "0.9, 0.1" );
+				highlightAlpha3		= transition( highlightAlpha3, 0, 1200, "0.9, 0.1" );
+				highlightAlpha4		= transition( highlightAlpha4, 0, 1200, "0.9, 0.1" );
+				highlightAlpha5		= transition( highlightAlpha5, 0, 1200, "0.9, 0.1" );
+			}
+		}
+		timeline blips {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				highlightRect1 		= transition( highlightRectStart, highlightRectEnd, 700, "0.1, 0.9" );
+				highlightAlpha1		= transition( 0, 1, 1200, "0.1, 0.9" );
+			}
+			onTime 300 {
+				highlightRect2 		= transition( highlightRectStart, highlightRectEnd, 700, "0.1, 0.9" );
+				highlightAlpha2		= transition( 0, 1, 1200, "0.1, 0.9" );
+			}
+			onTime 600 {
+				highlightRect3		= transition( highlightRectStart, highlightRectEnd, 700, "0.1, 0.9" );
+				highlightAlpha3		= transition( 0, 1, 1200, "0.1, 0.9" );
+			}
+			onTime 900 {
+				highlightRect4 		= transition( highlightRectStart, highlightRectEnd, 700, "0.1, 0.9" );
+				highlightAlpha4		= transition( 0, 1, 1200, "0.1, 0.9" );
+			}
+			onTime 1200 {
+				highlightRect5 		= transition( highlightRectStart, highlightRectEnd, 700, "0.1, 0.9" );
+				highlightAlpha5		= transition( 0, 1, 1200, "0.1, 0.9" );
+			}
+			onTime 1200 {
+				highlightAlpha1		= transition( highlightAlpha1, 0, 300, "0.1, 0.9" );
+			}
+			onTime 1500 {
+				highlightAlpha2		= transition( highlightAlpha2, 0, 300, "0.1, 0.9" );
+			}
+			onTime 1800 {
+				highlightAlpha3		= transition( highlightAlpha3, 0, 300, "0.1, 0.9" );
+			}
+			onTime 2100 {
+				highlightAlpha4		= transition( highlightAlpha4, 0, 300, "0.1, 0.9" );
+			}
+			onTime 2400 {
+				highlightAlpha5		= transition( highlightAlpha5, 0, 300, "0.1, 0.9" );
+			}
+		}
+	}
+
+	__crosshair( 1 )
+
+	windowDef targetLockIndicator {
+		properties {
+			handle	localizedText = floatToHandle( -1 );
+			color	foreColor = 1, 0, 0, 1;
+			float	fontSize = 16;
+			rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 8, 64, 12;
+			float	vehicleLock = player.vehicleValid && ( globals.gameHud.targetLockCount > 0 );
+			float	vehicleLockBasedefence = player.vehicleValid && ( globals.gameHud.targetLockCountBasedefence > 0 );
+			float	playerLock = player.vehicleValid == false && ( globals.gameHud.targetLockCountDeployable > 0 );
+			float	visible = vehicleLock || playerLock || vehicleLockBasedefence;
+		}
+
+		events {
+			onPropertyChanged "vehicleLock" "playerLock" "vehicleLockBasedefence" {
+				if ( vehicleLock && ( globals.gameHud.targetLockCount >= globals.gameHud.targetLockCountBasedefence ) ) {
+					localizedText = localize( "guis/hud/missile_lock" );
+					return;
+				}
+
+				if ( vehicleLockBasedefence ) {
+					localizedText = localize( "guis/hud/basedefence_lock" );
+					return;
+				}
+
+				if ( playerLock ) {
+					localizedText = localize( "guis/hud/deployable_lock" );
+					return;					
+				}
+				
+				localizedText = floatToHandle( -1 );
+			}
+			onPropertyChanged "visible" {
+				if ( visible ) {
+					timeline.default.active = true;
+					timeline.default.resetTime( 0 );
+				} else {
+					timeline.default.active = false;
+				}
+			}
+		}
+
+		timeLine {
+			onTime 100 {
+				foreColor.r = transition( foreColor.r, 1, 200 );
+				if ( playerLock && globals.gameHud.targetLockDeployableAttack == false ) {
+					foreColor.g = transition( foreColor.g, 1, 200 );
+				}
+			}
+			onTime 400 {
+				foreColor.r = transition( foreColor.r, 0.6, 200 );
+				if ( playerLock && globals.gameHud.targetLockDeployableAttack == false ) {
+					foreColor.g = transition( foreColor.g, 0.6, 200 );
+				} else {
+					foreColor.g = transition( foreColor.g, 0, 200 );
+				}
+			}
+			onTime 700 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+	windowDef mineTriggerWarning {
+		properties {
+			handle	localizedText = localize( "guis/hud/mine_trigger_warning" );
+			color	foreColor = 1, 0, 0, 0;
+			float	fontSize = 16;
+			rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 8, 64, 12;
+			float	showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+			float	visible = gui.targetLockIndicator.visible == false && showTrigger;
+		}
+
+		events {
+			onCVarChanged "g_mineTriggerWarning" {
+				showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+			}
+			onPropertyChanged "globals.gameHud.mineWarningTime" {
+				if ( globals.gameHud.mineWarningTime > 0 ) {
+					foreColor = transition( "1, 0, 0, 1", "0.6, 0, 0, 0", 1000, "0.1, 0.9" );
+				}
+			}
+		}
+	}
+	
+	windowDef selectedTaskNotifier {
+		properties {
+			wstring	text					= localizeArgs( "guis/hud/mission_selected", gui.selectedTask );
+			color	foreColor				= 1, 1, 1, 0;
+			float	fontSize				= 14;
+			rect	rect					= ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 40, 64, 12;
+			float	shouldShow				= gui.time <= taskSelectedEndTime && ( player.dead == false && player.spawning == false );
+			float	taskSelectedEndTime		= 0;
+			float 	flags					= immediate( flags ) | WF_DROPSHADOW;
+		}
+
+		events {
+			onPropertyChanged "gui.selectedTask" {
+				if ( iwcompare( gui.selectedTask, gui.toWStr( "" ) ) == false ) {
+					taskSelectedEndTime = immediate( gui.time ) + 2000;
+				}
+			}
+			onPropertyChanged "shouldShow" {
+				if ( shouldShow ) {
+					foreColor.a = transition( 0, 1, 200, "0.1, 0.9" );
+				} else {
+					foreColor.a = transition( 1, 0, 200, "0.1, 0.9" );
+				}
+			}
+		}
+	}
+
+	__target_lock_indicator
+
+	windowDef decoyLaunchIndicator {
+		properties {
+			handle localizedText = localize( "guis/hud/decoy_ejected" ); // "Decoy Ejected"
+			color	foreColor = 0, 1, 0, 0;
+			float	fontSize = 16;
+			rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 32, 64, 12;
+			//float	visible = player.vehicleValid;
+		}
+		events {
+			onPropertyChanged "globals.gameHud.decoyLaunchedTime" {
+				foreColor.a = transition( 1.0f, 0.0f, 3000 );
+			}
+		}
+	}
+
+	windowDef vote {
+		properties {
+			rect rect 					= 2, globals.gameHud.dynamicContentRect.y + globals.gameHud.dynamicContentRect.h + 4, 196, 23 + measure.y;
+			vec2 measure 				= 240, 51;
+			rect voteTextRect 			= absoluteRect.x + 8, absoluteRect.y + 20, absoluteRect.w - 16, 16;
+			float needMeasure 			= true;
+			color colorMultiplier 		= 1,1,1,showFade * cvarFade;
+			float showFade				= 1;
+
+			float flashAlpha			= 0;
+			float flashStartTime		= 0;
+			float flashTime				= 0;
+			rect flashRect;
+			rect flashRectBase			=  0, globals.gameHud.dynamicContentRect.y + globals.gameHud.dynamicContentRect.h - 2, 196, 27 + measure.y;
+
+			rect	textRect			= absoluteRect.x + PADDING, ( absoluteRect.y ) + 4, absoluteRect.w - $evalfloat( 2 * PADDING ), DIALOG_CAPTION_HEIGHT;
+			color	lineColor			= COLOR_DIALOG_LINES;
+			color	fillColor			= COLOR_DIALOG_FILL;
+			wstring text 				= localizeArgs( "game/vote/vote_status", gui.getKeyBind( "vote y", "" ), toWString( player.voteYesCount, 0 ), gui.getKeyBind( "vote n", "" ), toWString( player.voteNoCount, 0 ) );
+		}
+		__cvar_fadable( gui_voteAlpha )
+		_fadable
+
+		events {
+			onCreate {
+				callSuper();
+				if( player.voteActive == false ) {
+					showFade = 0;
+				}
+				timeline.flash.active = false;
+			}
+
+			onPropertyChanged "player.voteText" {
+				needMeasure = true;
+				if ( wcompare( player.voteText, gui.blankWStr ) == false ) {
+					postNamedEvent( "slideIn" );
+				}
+			}
+			onPropertyChanged "player.voteActive" {
+				if( player.voteActive ) {
+					showFade = transition( showFade, 1.0f, 200 );
+					postNamedEvent( "slideIn" );
+				} else {
+					showFade = transition( showFade, 0.0f, 200 );
+				}
+			}
+			onPropertyChanged "flashRectBase.y" {
+				postNamedEvent( "updateFlash" );
+			}
+
+			onPreDraw {
+				if( needMeasure ) {
+					measure = measureText( player.voteText, voteTextRect, 12, DTF_WORDWRAP | DTF_LEFT | DTF_TOP );
+					needMeasure = false;
+				}
+
+				drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
+
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+					drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
+				popColor();
+
+				drawText( text, textRect, COLOR_WHITE, 12, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+				drawText( player.voteText, voteTextRect, foreColor, 12, DTF_WORDWRAP | DTF_LEFT | DTF_TOP );
+				drawCachedMaterial( gui.dlgFillMaterial, flashRect, "1,1,1,flashAlpha" );
+
+				gui.scriptPushFloat( false );
+			}
+
+			onNamedEvent "slideIn" {
+				gui.playGameSound( "click" );
+				rect.x = transition( 0 - rect.width, 2, 500, "0.9, 0.1" );
+				timeline.flash.active = true;
+				timeline.flash.resetTime( 0 );
+			}
+			onNamedEvent "updateFlash" {
+				flashTime = ( immediate( flashStartTime ) + immediate( gui.time ) ) - immediate( flashStartTime );
+				if ( flashTime > 0 ) {
+					flashRect = transition( flashRectBase, absoluteRect, flashTime );
+				}
+			}
+		}
+		timeline flash {
+			onTime 510 {
+				flashAlpha = transition( 0.8f, 0.f, 500, "0.1,0.9" );
+				flashRect = transition( flashRectBase, absoluteRect, 350 );
+				flashStartTime = immediate( gui.time );
+			}
+		}
+	}
+
+	windowDef Compass {
+		properties {
+			rect	rect 		= SCREEN_WIDTH - ( rect.w - 2 ), 0, 128, 128;
+			float	shouldShow 	= ( ( gui.shouldShowNormalHud || player.spectating ) && player.scoreboardActive == false && player.endGameCamera == false ) ;
+
+			rect compassRect 	= absoluteRect.x + 7, absoluteRect.y + 6, absoluteRect.w - 15, absoluteRect.h - 15;
+			rect compassRingRect = absoluteRect.x + 3, absoluteRect.y + 2, absoluteRect.w - 7, absoluteRect.h - 7;
+			float alpha 		= 1;
+			float squareAlpha 	= 1 - alpha;
+
+			handle ringMaterial = gui.cacheMaterial( "ring", "compass" );
+			handle fillMaterial = gui.cacheMaterial( "compfill", "compassbg_fill" );
+			handle lineMaterial = gui.cacheMaterial( "compline", "compassbg_line" );
+			handle zoomMaterial = gui.cacheMaterial( "compzoom", "_st compass_zoom" );
+
+			handle spawnWaveMaterial 	= gui.cacheMaterial( "compwave", "_st spawnwave" );
+			//handle matchMaterial 		= gui.cacheMaterial( "compmatch", "_st match" );
+
+			handle timerLeftFillMaterial = gui.cacheMaterial( "comptimerLeftFill", "_3h timer_left_fill" );
+			handle timerFillMaterial = gui.cacheMaterial( "comptimerFill", "_3h timer_fill" );
+
+			handle timerLeftLineMaterial = gui.cacheMaterial( "comptimerLeftLine", "_3h timer_left_line" );
+			handle timerLineMaterial = gui.cacheMaterial( "comptimerLine", "_5h timer_line" );
+
+			handle cm			= cacheRenderCallback( "commandMap" );
+			handle cmIcons		= cacheRenderCallback( "commandMapIcons" );
+
+			color fillColor		= COLOR_COMPASS_FRAME_FILL;
+			color fillColorBase = COLOR_COMPASS_FRAME_FILL;
+			color highlightColor = COLOR_HUD_TUTORIAL_HIGHLIGHT;
+			color lineColor		= COLOR_COMPASS_FRAME_LINE;
+
+			color timerFill		= COLOR_TIMER_FILL;
+			color timerLine		= COLOR_TIMER_LINE;
+
+			rect zoomRect 		= absoluteRect.x + absoluteRect.w - 18, absoluteRect.y + absoluteRect.h - 16, 8, 8;
+			rect zoomTextRect	= zoomRect.x - 42, zoomRect.y, 40, 10;
+
+			rect timerLeftRect	= absoluteRect.x + 16, absoluteRect.y + absoluteRect.h - 6, 28, 20;
+			rect timerRect		= timerLeftRect.x + timerLeftRect.w, timerLeftRect.y, absoluteRect.w - 49, 20;
+
+			rect spawnWaveRect	= timerRect.x + 2, timerRect.y + 8, 31, 10;
+			rect matchRect		= timerRect.x + ( timerRect.w - 38 ), timerRect.y + 8, 10, 10;
+			rect matchTextRect	= timerRect.x + ( timerRect.w - 28 ), timerRect.y + 8, 24, 12;
+			float drawRing 		= gui.getCVarBool( "g_rotateCommandMap" );
+			float showFade		= 1;
+			color colorMultiplier = 1,1,1,showFade * cvarFade;
+		}
+
+		__cvar_fadable( gui_commandMapAlpha )
+
+		events {
+			onCVarChanged "g_rotateCommandMap" {
+				drawRing = gui.getCVarBool( "g_rotateCommandMap" );
+			}
+			onCreate {
+				callSuper();
+				if( !shouldShow ) {
+					showFade = 0;
+				}
+			}
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {
+					showFade = transition( showFade, 1, 200 );
+				} else {
+					showFade = transition( showFade, 0, 200 );
+				}
+			}
+			onPreDraw {
+				// back fill
+				drawCachedMaterial( fillMaterial, absoluteRect, fillColor );
+
+				if( player.commandMapState == 1 ) {
+					clipToRect( compassRect );
+				}
+
+				drawRenderCallback( cm, compassRect );
+
+				drawRenderCallback( cmIcons, compassRect );
+
+				if( player.commandMapState == 1 ) {
+					unclipRect();
+				}
+
+				if( drawRing ) {
+					drawShaderParm( 4, 1.0f - ( ( player.yaw + 270 ) / 360 ) );
+				} else {
+					drawShaderParm( 4, 0.0f );
+				}
+				drawCachedMaterial( ringMaterial, compassRingRect, "1,1,1,alpha" );
+				drawShaderParm( 4, 0.0f );
+
+				// zoom info
+				drawCachedMaterial( zoomMaterial, zoomRect , "1, 1, 1, alpha" );
+				drawText( toWString( globals.gameHud.mapZoomLevel * 100, 0 ), zoomTextRect, "1,1,1,alpha", 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+
+				// expanded border
+				pushColorComponents( 1, 1, 1, squareAlpha, true );
+				drawRect( compassRect, fillColor, 4 );
+				popColor();
+
+				// lines
+				pushColorComponents( 1, 1, 1, alpha, true );
+
+				drawCachedMaterial( lineMaterial, absoluteRect, lineColor );
+
+				// time bar
+				drawCachedMaterial( timerLeftFillMaterial, timerLeftRect, timerFill );
+				drawCachedMaterial( timerFillMaterial, timerRect, timerFill );
+
+				drawCachedMaterial( timerLeftLineMaterial, timerLeftRect, timerLine );
+				drawCachedMaterial( timerLineMaterial, timerRect, timerLine );
+
+				// deploy info
+				if( player.warmup == false ) {
+					drawText( toWStr( globals.gameHud.respawnTimerText ), timerLeftRect, "1,1,1,alpha", 16, DTF_SINGLELINE | DTF_CENTER | DTF_BOTTOM );
+					drawCachedMaterial( spawnWaveMaterial, spawnWaveRect, gui.iconDimColor );
+				}
+
+				// match info
+				drawText( toWStr( msToHMS( player.matchTime ) ), matchTextRect, gui.iconDimColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_BOTTOM );
+				//drawCachedMaterial( matchMaterial, matchRect, gui.iconDimColor );
+
+				popColor();
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "player.commandMapState" {
+				if( player.commandMapState == 1 ) {
+					// expanding
+					alpha = transition( alpha, 0.0f, 100 );
+					globals.gameHud.mapZoomLevel = transition( globals.gameHud.mapZoomLevel, 1, 250 );
+					rect.w = transition( rect.w, 400, 100 );
+					rect.h = transition( rect.h, 400, 100 );
+					gui.drawSquare = true;
+					gui.setShaderParm( 11, 1 );
+				} else {
+					// contracting
+					alpha = transition( alpha, 1.0f, 100 );
+					globals.gameHud.mapZoomLevel = transition( 1, globals.gameHud.newMapZoomLevel, 250 );
+					rect.w = transition( rect.w, 128, 100 );
+					rect.h = transition( rect.h, 128, 100 );
+					gui.drawSquare = false;
+					gui.setShaderParm( 11, 0 );
+				}
+
+				if( gui.isSpectatorClass == false ) {
+					gui.playGameSound( "cm_" + player.teamName );
+				}
+			}
+			onPropertyChanged "globals.gameHud.newMapZoomLevel" {
+				if( globals.gameHud.mapZoomLevel < 1.0 && player.commandMapState == 0 ) {
+					globals.gameHud.mapZoomLevel = transition( globals.gameHud.mapZoomLevel, globals.gameHud.newMapZoomLevel, 50 );
+				}
+			}
+			onNamedEvent "startFlash" {
+				timeline.flashStarter.active = true;
+				timeline.flashStarter.resetTime( 0 );
+			}
+		}
+		timeline flashStarter {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				timeline.flash.active = true;
+				timeline.flash.resetTime( 0 );
+			}
+			onTime 6000 {
+				timeline.flash.active = false;
+				timeline.flash.resetTime( 0 );
+				fillColor = transition( fillColor, fillColorBase, 300 );
+			}
+		}
+		timeline flash {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				fillColor = transition( fillColor, highlightColor, 300 );
+			}
+			onTime 500 {
+				fillColor = transition( fillColor, fillColorBase, 300 );
+			}
+			onTime 1000 {
+				resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef objectiveStatus {
+		properties {
+			color colorMultiplier = 1,1,1,cvarFade;
+		}
+		__cvar_fadable( gui_objectiveStatusAlpha )
+
+		__construct_objective
+		__mcp_objective
+		__hack_objective
+		__doc_objective
+		__goal_objective
+		__flyerhive_objective
+		__destroy_objective( 1 )
+		__destroy_objective( 2 )
+	}
+
+	events {
+		onPropertyChanged "globals.destroyObjective1.active" {
+			if( globals.destroyObjective1.active ) {
+				_increment( gui.numActiveObjectives, 1 )
+			} else {
+				_decrement( gui.numActiveObjectives, 1 )
+			}
+		}
+		onPropertyChanged "globals.destroyObjective2.active" {
+			if( globals.destroyObjective2.active ) {
+				_increment( gui.numActiveObjectives, 1 )
+			} else {
+				_decrement( gui.numActiveObjectives, 1 )
+			}
+		}
+	}
+
+
+	windowDef chatHistoryList {
+		type list;
+		_med_text_props
+		properties {
+			rect 	rect 				= 144, 334, 320, 90;
+			float	visible				= globals.gameHud.showChat > 0 && player.scoreboardActive == false;
+			color	foreColor			= gui.iconDimColor;
+			float	flags				= immediate( flags ) | WF_WRAP_TEXT | LF_VARIABLE_HEIGHT_ROWS | WF_AUTO_SIZE_HEIGHT | WF_DROPSHADOW;
+			color	colorMultiplier		= 1,1,1,cvarFade;
+		}
+
+		__cvar_fadable( gui_chatAlpha )
+		events {
+			onCreate {
+				callSuper();
+				insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Chat
+				postNamedEvent( "updatePosition" );
+			}
+			onPropertyChanged "gui.advancedHud" {
+				postNamedEvent( "updatePosition" );
+			}
+			onNamedEvent "updatePosition" {
+				if ( gui.advancedHud ) {
+					rect.x = 144;
+					rect.y = 334;
+					rect.w = 320;
+					rect.h = 90;
+				} else {
+					rect.h = 29;
+					rect.x = _left( obituaryHistoryList );
+					rect.y = _to_bottom_of( obituaryHistoryList ) + 10;
+				}
+			}
+			onPropertyChanged "gui.selectedTaskNotifier.shouldShow" {
+				if( gui.advancedHud == false ) {
+					if( gui.selectedTaskNotifier.shouldShow ) {
+						rect.w = SCREEN_WIDTH * 0.3f;
+					} else {
+						rect.w = 320;
+					}
+				} else {
+					rect.w = 320;
+				}
+			}			
+		}
+		timeline {
+			onTime 0 {
+				gui.scriptPushFloat( false );
+				gui.scriptPushFloat( CHAT_MODE_MESSAGE );
+				gui.scriptPushFloat( globals.gameHud.numChatLines );
+				fillFromEnumerator( "chatHistory" );
+
+				scrollAmount = scrollAmountMax;
+			}
+			onTime 50 {
+				resetTime( 0 );
+			}
+		}
+	}
+	windowDef obituaryHistoryList {
+		type list;
+		_med_text_props
+		properties {
+			rect 	rect 				= 8, 244, SCREEN_WIDTH * 0.5f, 90;
+			float	visible				= player.scoreboardActive == false;
+			color	foreColor			= gui.iconDimColor;
+			float	flags				= immediate( flags ) | WF_WRAP_TEXT | LF_VARIABLE_HEIGHT_ROWS  | WF_DROPSHADOW;
+			color	colorMultiplier		= 1,1,1,cvarFade;
+		}
+		__cvar_fadable( gui_obitAlpha )
+
+		events {
+			onCreate {
+				callSuper();
+				insertColumn( gui.blankWStr, rect.w - 12, 0 );	// Obituary
+				postNamedEvent( "updatePosition" );
+			}
+			onPropertyChanged "gui.advancedHud" {
+				postNamedEvent( "updatePosition" );
+			}
+			onPropertyChanged "gui.selectedTaskNotifier.shouldShow" {
+				if( gui.selectedTaskNotifier.shouldShow ) {
+					rect.w = SCREEN_WIDTH * 0.3f;
+				} else {
+					rect.w = SCREEN_WIDTH * 0.5f;
+				}
+			}
+			onNamedEvent "updatePosition" {
+				if ( gui.advancedHud ) {
+					rect.height = 90;
+					rect.y = 244;
+				} else {
+					rect.height = 29;
+					rect.y = 236;
+				}
+			}
+		}
+
+		timeline {
+			onTime 0 {
+				gui.scriptPushFloat( false );
+				gui.scriptPushFloat( CHAT_MODE_OBITUARY );
+				gui.scriptPushFloat( 5 );	// we want 5 items in our list
+				fillFromEnumerator( "chatHistory" );
+				requestLayout();
+				scrollAmount = scrollAmountMax;
+			}
+			onTime 50 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef voiceChatReceivingLight {
+		_med_text_props
+		properties {
+			rect rect 				= 4, 184, 80, 16;
+			rect iconRect			= absoluteRect.x, absoluteRect.y, 12, 12;
+			rect textRect			= absoluteRect.x + 14, absoluteRect.y, 100, 16;
+			handle icon 			= gui.cacheMaterial( "chatrecicon", "_st voip" );
+			wstring text			= toWStr( player.lastVoiceSender );
+			color backColor 		= 1,1,1,0;
+			float visible 			= player.scoreboardActive == false && ( player.voteActive == false || ( ( gui.vote.rect.y + gui.vote.rect.height ) >= rect.y ) == false );
+		}
+
+		events {
+			onPreDraw {
+				if( backColor.a > 0.01f ) {
+					drawCachedMaterial( icon, iconRect, backColor );
+					drawText( text, textRect, backColor, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW | DTF_TRUNCATE );
+				}
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "player.voiceReceiving" {
+				if( player.voiceReceiving ) {
+					backColor.a = transition( backColor.a, 1, 300 );
+				} else {
+					backColor.a = transition( backColor.a, 0, 300 );
+				}
+			}
+		}
+	}
+
+	// voice chat
+	windowDef voiceChatSendingLight {
+		_med_text_props
+		properties {
+			rect rect 				= 4, _to_bottom_of( voiceChatReceivingLight ) + 4, 80, 16;
+			rect iconRect			= absoluteRect.x, absoluteRect.y, 12, 12;
+			rect textRect			= absoluteRect.x + 14, absoluteRect.y, 80, 16;
+			handle localizedText	= localize( "guis/hud/audio_sending" );
+
+			handle icon 			= global;
+			handle default			= gui.cacheMaterial( "chatsendicon", "_st voip" );
+			handle global 			= gui.cacheMaterial( "voip_global", "_st voip_global" );
+			handle team 			= gui.cacheMaterial( "voip_team", "_st voip_team" );
+			handle fireteam 		= gui.cacheMaterial( "voip_fireteam", "_st voip_fireteam" );
+
+			color backColor 		= 1,1,1,0;
+			float visible 			= player.scoreboardActive == false && ( player.voteActive == false  || ( ( gui.vote.rect.y + gui.vote.rect.height ) >= rect.y ) == false );
+			color textColor			= COLOR_WHITE;
+		}
+		events {
+			onPropertyChanged "player.voiceSendMode" {
+				if( player.voiceSendMode == VOIPC_GLOBAL ) {
+					icon = global;
+					textColor = COLOR_WHITE;
+					return;
+				}
+				if( player.voiceSendMode == VOIPC_TEAM ) {
+					icon = team;
+					textColor = 1,1,0,1;
+					return;
+				}
+				if( player.voiceSendMode == VOIPC_FIRETEAM ) {
+					icon = fireteam;
+					textColor = 0,1,0,1;
+					return;
+				}
+				icon = default;
+				textColor = COLOR_WHITE;
+			}
+
+			onPreDraw {
+				if( backColor.a > 0.01f ) {
+					drawCachedMaterial( icon, iconRect, backColor );
+					drawLocalizedText( localizedText, textRect, textColor, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+				}
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "player.voiceSending" {
+				if( player.voiceSending ) {
+					backColor.a = transition( backColor.a, 1, 300 );
+				} else {
+					backColor.a = transition( backColor.a, 0, 300 );
+				}
+			}
+		}
+	}
+
+	windowDef spectateLabel {
+		_huge_text_props
+		properties {
+			rect	rect					= 32, 180, 400, 100;
+			wstring	text					= localizeArgs( "guis/hud/following", toWStr( player.spectateClient ) );
+			vec2	textAlignment			= TA_LEFT, TA_VCENTER;
+			float 	flags 					= immediate( flags ) | WF_WRAP_TEXT  | WF_DROPSHADOW;
+			float	visible					= player.spectating && player.localView == false && player.scoreboardActive == false;
+		}
+	}
+
+	_tooltip
+
+	windowDef lagOMeter {
+		properties {
+			color 	backColor 					= 1,1,1,1;
+			string 	material 					= "textures/sfx/lagometer";
+			float	visible						= player.lagOMeter;
+			rect	rect						= gui.screenCenter.x - 32,410,64,64;
+		}
+	}
+
+//Solo assignment
+	windowDef tasks {
+		type list;
+		properties {
+			float	shouldShow 				= gui.shouldShowNormalHud && player.scoreboardActive == false;
+			rect 	rect 					= 2, 2, 196, 128;
+			float	flashAlpha				= 0;
+			rect	flashRectBase			= absoluteRect.x - flashRect.x, absoluteRect.y - flashRect.y, absoluteRect.w + flashRect.w, absoluteRect.h + flashRect.h;
+			rect	flashRect 				= 0, 0, 0, 0;
+			float	showFade 				= 1;
+			color	colorMultiplier 		= 1,1,1, showFade * cvarFade;
+			float	flags					= immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_INHERIT_PARENT_COLORS | LF_VARIABLE_HEIGHT_ROWS;
+			color	selectedItemForeColor	= 1, 1, 0, 1;
+			float	expanded 				= gui.time < ( player.taskSelectedTime + 2000 );
+			rect	itemRect;
+			float	itemIndex					= -1;
+			color	lineColor				= COLOR_DIALOG_LINES;
+			color	fillColor				= COLOR_DIALOG_FILL;
+			color	fillColorBase			= COLOR_DIALOG_FILL;
+			color	highlightColor			= COLOR_HUD_TUTORIAL_HIGHLIGHT;
+			float	internalBorderWidth		= 2;
+			float	lastSelectItem			= -1;
+		}
+
+		_draw_dialog_frame( drawText, gui.blankWStr, "nogradient" )
+		_med_text_props
+		__cvar_fadable( gui_objectiveListAlpha )
+
+		events {
+			onCreate {
+				callSuper();
+				if( !shouldShow ) {
+					showFade = 0;
+				}
+				insertColumn( gui.blankWStr, 16, 0 );	// icon
+				insertColumn( toWStr( "<width = 100%>" ), 0, 1 );	// task
+				insertColumn( gui.blankWStr, 36, 2 );	// xp
+			}
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {
+					showFade = transition( showFade, 1, 200 );
+				} else {
+					showFade = transition( showFade, 0, 200 );
+				}
+			}
+			onSelectItem {
+				if ( lastSelectItem != currentSelection && currentSelection >= 0 && currentSelection < numItems ) {
+					// force an update so the task notifier catches the change in the case that there are two tasks
+					// with the same name
+					// don't do it if we're collapsing, however
+					if( expanded ) {
+						gui.selectedTask = gui.blankWStr;
+					}
+					gui.selectedTask = getItemText( currentSelection, 1 );
+					lastSelectItem = immediate( currentSelection );
+				}
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
+
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+				drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
+				popColor();
+
+				drawCachedMaterial( gui.dlgFillMaterial, flashRectBase, "1,1,1,flashAlpha" );
+
+				gui.scriptPushFloat( true );
+			}
+
+			onPropertyChanged "player.taskCompletedTime" "gui.testFlash" {
+				flashAlpha = transition( 0.8f, 0.f, 2000, "0.1,0.9" );
+				flashRect = transition( "4,4,8,8", "0,0,0,0", 350 );
+
+				gui.playGameSound( "good" );
+			}
+
+			onPropertyChanged "player.taskExpiredTime" {
+				flashAlpha = transition( 0.8f, 0.f, 2000, "0.1,0.9" );
+				flashRect = transition( "4,4,8,8", "0,0,0,0", 350 );
+
+				gui.playGameSound( "bad" );
+			}
+
+			onPropertyChanged "player.taskSelectedTime" {
+				timeline.updateList.resetTime( 0 );
+			}
+
+			onDrawSelectedBackground {
+				itemIndex = gui.scriptGetFloatResult();
+				itemRect = gui.scriptGetVec4Result();
+				if( expanded ) {
+					drawCachedMaterial( gui.dlgFillMaterial, itemRect, COLOR_LIST_GRADIENT );
+				}
+			}
+			onPropertyChanged "player.hasTask" {
+				if ( player.hasTask ) {
+					gui.playGameSound( "accept" );
+				}
+			}
+			onNamedEvent "startFlash" {
+				timeline.flashStarter.active = true;
+				timeline.flashStarter.resetTime( 0 );
+			}
+		}
+		timeline flashStarter {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				timeline.flash.active = true;
+				timeline.flash.resetTime( 0 );
+			}
+			onTime 6000 {
+				timeline.flash.active = false;
+				timeline.flash.resetTime( 0 );
+				fillColor = transition( fillColor, fillColorBase, 300 );
+			}
+		}
+		timeline flash {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				fillColor = transition( fillColor, highlightColor, 300 );
+			}
+			onTime 500 {
+				fillColor = transition( fillColor, fillColorBase, 300 );
+			}
+			onTime 1000 {
+				resetTime( 0 );
+			}
+		}
+		timeline updateList {
+			onTime 0 {
+				if( expanded ) {
+					gui.scriptPushFloat( true );
+				} else {
+					gui.scriptPushFloat( false );
+				}
+				fillFromEnumerator( "activeTaskList" );
+				setItemMaterialSize( "14, 14", -1, 0 );
+				setItemTextFlags( DTF_BOTTOM | DTF_SINGLELINE | DTF_RIGHT, -1, 2 );
+				requestLayout();
+			}
+			onTime 250 {
+				resetTime( 0 );
+			}
+		}
+	}
+
+//
+//Fire teams
+//
+	windowDef fireTeam {
+		properties {
+			rect 	rect 	= 2, _to_bottom_of( tasks ) + 4, 144, ( gui.lstFireTeam.absoluteRect.h + 21 );
+
+			float	shouldShow	= player.fireTeamShow == true && player.spectator == false && player.scoreboardActive == false && ( player.fireTeamActive == true || gui.lstFireTeam.numItems > 1 ) && gui.shouldShowNormalHud && ( gui.keepFireTeam || player.showFireTeam );
+			wstring title;
+
+			handle	teamIcon;
+			rect	iconRect = absoluteRect.x + 2, absoluteRect.y + 2, 12, 12;
+			color	colorMultiplier = 1,1,1,showFade * cvarFade;
+			color	fill = COLOR_DIALOG_FILL;
+			color	line = COLOR_DIALOG_LINES;
+			color	grad = COLOR_DIALOG_GRADIENT;
+
+			float	showFade = 0;
+			color	colorMultiplier = 1,1,1, showFade * cvarFade;
+		}
+		__cvar_fadable( gui_fireteamAlpha )
+
+		__draw_dialog_frame( drawText, gui.blankWStr, "nogradient", fill, line, grad )
+		events {
+			onCreate {
+				callSuper();
+				if( shouldShow ) {
+					showFade = 1;
+				}
+				postNamedEvent( "updateTitle" );
+				postNamedEvent( "updateIcon" );
+			}
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {
+					showFade = transition( showFade, 1, 200 );
+				} else {
+					showFade = transition( showFade, 0, 200 );
+				}
+			}
+
+			onPropertyChanged "player.fireTeamActive" {
+				postNamedEvent( "updateTitle" );
+			}
+			onNamedEvent "updateTitle" {
+				if( player.fireTeamActive ) {
+					title = localizeArgs( "guis/hud/fire_team", player.fireTeamName );
+				} else {
+					title 	= player.fireTeamName;
+				}
+			}
+			onPropertyChanged "rect" "shouldShow" {
+				callSuper();
+				if( shouldShow ) {
+					globals.gameHud.dynamicContentRect = absoluteRect.x, absoluteRect.y, gui.tasks.absoluteRect.w, absoluteRect.h;
+				} else {
+					globals.gameHud.dynamicContentRect.h = 0;
+				}
+			}
+			onPropertyChanged "visible" {
+				postNamedEvent( "updateRect" );
+			}
+			onPostDraw {
+				if( isValidHandle( teamIcon ) ) {
+					drawCachedMaterial( teamIcon, iconRect, gui.iconDimColor );
+				}
+				drawText( title, "absoluteRect.x + 24, absoluteRect.y, absoluteRect.w - 26, absoluteRect.h", gui.iconDimColor, 12, DTF_SINGLELINE | DTF_LEFT | DTF_TOP | DTF_TRUNCATE );
+			}
+			onPropertyChanged "player.teamName" {
+				postNamedEvent( "updateIcon" );
+			}
+			onNamedEvent "updateIcon" {
+				if( compare( player.teamName, "spectating" ) == false ){
+					teamIcon = gui.cacheMaterial( "fticon", "_st " + player.teamName );
+				} else {
+					teamIcon = floatToHandle( -1 );
+				}
+				if( compare( player.teamName, "strogg" ) ) {
+					iconRect.x = 2;
+					iconRect.w = 22;
+				} else {
+					iconRect.x = 6;
+					iconRect.w = 12;
+				}
+			}
+		}
+		windowDef lstFireTeam {
+			type list;
+			_med_text_props
+			properties {
+				rect	rect				= 2, 18, 140, 164;
+				float	flags				= immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_TRUNCATE_TEXT | WF_INHERIT_PARENT_COLORS;
+				color	backColor			= 0, 0, 0, 0;
+				color	fillColor			= COLOR_FIRETEAM_FIRETEAM_OUTER_FILL;
+				color	lineColor			= COLOR_FIRETEAM_LINE;
+				float	fontSize			= 12;
+				float	itemRow;
+				float	itemCol;
+				wstring	itemText;
+				rect	itemRect;
+			}
+			events {
+				onCreate {
+					insertColumn( gui.blankWStr, 16, 0 );	// class
+					insertColumn( gui.blankWStr, 16, 1 );	// rank
+					insertColumn( gui.blankWStr, 116, 2 );	// name
+
+					fillColor.a = immediate( fillColor.a * 0.25 );
+					lineColor.a = immediate( lineColor.a * 0.25 );
+				}
+				onDrawItem {
+					itemRow = gui.scriptGetFloatResult();
+					itemCol = gui.scriptGetFloatResult();
+					itemText = getItemText( itemRow, itemCol );
+					itemRect = getItemRect( itemRow, itemCol, GIR_FULLWIDTH );
+					itemRect.x = immediate( itemRect.x + 4 );
+					itemRect.w = immediate( itemRect.w - 8 );
+
+					drawText( itemText, itemRect, gui.iconDimColor, fontSize, DTF_SINGLELINE | DTF_VCENTER | DTF_RIGHT | DTF_TRUNCATE );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+	}
+	timeline fireteams {
+		onTime 0 {
+			if( player.fireTeamShow ) {
+				gui.scriptPushFloat( FIRETEAMLIST_MYFIRETEAM );
+				lstFireTeam.fillFromEnumerator( "fireTeamList" );
+				lstFireTeam.setItemMaterialSize( "16, 16", -1, 0 );
+				lstFireTeam.setItemMaterialSize( "14, 14", -1, 1 );
+				lstFireTeam.requestLayout();		
+			}
+		}
+		onTime 250 {
+			resetTime( 0 );
+		}
+	}
+//Deployable Window
+
+	windowDef deployables {
+		properties {
+			float 	visible 		= player.spectator == 0 && player.spectating == 0 && globals.gameHud.showDeployableState > 0;
+			float	alpha 			= 0.0f;
+			rect	rect			= SCREEN_WIDTH - 328, SCREEN_HEIGHT - 50, 200, 64;
+		}
+
+#define DI_MINES		1
+#define DI_SUPPLIES		2
+#define DI_SPAWNHOST	3
+#define DI_DEPLOYABLE	4
+#define DI_CHARGE		5
+#define DI_CARRYABLE	6
+#define DI_TELEPORTER	7
+#define DI_SUPPLIES2	8
+#define DI_THIRDEYE		9
+#define DI_PARACHUTE	10
+
+		windowDef deployableNotifications {
+			type iconNotification;
+			properties {
+				rect rect 					= 0, 0, gui.deployables.rect.w, gui.deployables.rect.h;
+				vec2 iconSize 				= 46, 42;
+				float orientation			= IO_HORIZONTAL_RIGHT;
+
+				handle 	itemHandle;
+				color	itemColor;
+				rect	itemRect;
+				float	itemData;
+				rect	scratchRect;
+
+				color	scratchColor;
+
+				// Mines
+				handle	minesMaterial;
+				handle 	minesIcon;
+
+				// Deployables
+				handle 	deployableIcon;
+
+				handle	disabledIcon		= gui.cacheMaterial( "depdisabled", "_st deployable_status_disabled" );
+				handle	deployableMaterial;
+				handle	deployableTimer;
+				handle	progress			= gui.cacheMaterial( "depprogress", "_3h small_health_flip" );
+
+				float 	deployableHealth 	= globals.deployables.health / globals.deployables.maxHealth;
+				float 	lastDeployableHealth;
+				color	deployableOverrideColor = COLOR_WHITE;
+
+				// HE Charge
+				handle	chargeIcon;
+				handle 	chargeMaterial;
+
+				handle	lastItemAdded;
+
+				// Supplies
+				handle	suppliesMaterial = gui.cacheMaterial( "suppliesIcon", "_st suppliesicon" );
+				handle	suppliesIcon0;
+				handle	suppliesIcon1;
+
+				float 	lastSuppliesHealth0;
+				float 	lastSuppliesHealth1;
+				color	suppliesOverrideColor0 = COLOR_WHITE;
+				color	suppliesOverrideColor1 = COLOR_WHITE;
+
+				color	flashColor = 1,1,1,0;
+				float	flashSize = 0;
+
+				// Spawnhost
+				handle	spawnHostMaterial = gui.cacheMaterial( "spawnHostIcon", "_st spawnhosticon" );
+				handle	spawnHostIcon;
+
+				// Carryable Item
+				handle	carryableItemMaterial = gui.cacheMaterial( "carryableItemIcon", "_st carryableitemicon" );
+				handle	carryableItemIcon;
+
+				// Teleporter Item
+				handle	teleporterItemMaterial = gui.cacheMaterial( "teleporterItemIcon", "_st teleporteritemicon" );
+				handle	teleporterItemIcon;
+
+				// Third Eye Item
+				handle	thirdEyeItemMaterial = gui.cacheMaterial( "thirdEyeItemIcon", "_st thirdeyeitemicon" );
+				handle	thirdEyeItemIcon;
+
+				// Parachute
+				handle	parachuteMaterial = gui.cacheMaterial( "ParachuteItemIcon", "_st parachuteicon" );
+				handle	dropShieldMaterial = gui.cacheMaterial( "StroggShieldIcon", "_st stroggshieldicon" );
+				handle	parachuteIcon;
+			}
+			events {
+				onCreate {
+					postNamedEvent( "updateMines" );
+					postNamedEvent( "updateDeployable" );
+					postNamedEvent( "updateStatus" );
+					postNamedEvent( "updateDesat" );
+					postNamedEvent( "updateCharge" );
+					postNamedEvent( "updateSupplies0" );
+					postNamedEvent( "updateSupplies1" );
+					postNamedEvent( "updateSpawnHost" );
+					postNamedEvent( "updateCarryableItem" );
+					postNamedEvent( "updateTeleporter" );
+					postNamedEvent( "updateThirdEye" );
+					postNamedEvent( "updateParachute" );
+				}
+				onNamedEvent "updateStatus" {
+					if( compare( globals.deployables.statusMaterial, "" ) == 0 ) {
+						deployableMaterial = gui.cacheMaterial( "deployIcon", "::" + globals.deployables.statusMaterial );
+					}
+				}
+				onNamedEvent "updateDesat" {
+					if( compare( globals.deployables.statusDesatMaterial, "" ) == 0 ) {
+						deployableTimer = gui.cacheMaterial( "deployTime", "::" + globals.deployables.statusDesatMaterial );
+					}
+				}
+				onPropertyChanged "globals.deployables.statusMaterial" {
+					postNamedEvent( "updateStatus" );
+				}
+				onPropertyChanged "globals.deployables.statusDesatMaterial" {
+					postNamedEvent( "updateDesat" );
+				}
+				onPropertyChanged "globals.deployables.state" {
+					postNamedEvent( "updateDeployable" );
+					if( globals.deployables.state == DS_DISABLED ) {
+						lastItemAdded = gui.copyHandle( deployableIcon );
+						bumpIcon( deployableIcon, NOTIFY_BUMP_TABLE );
+						postNamedEvent( "flash" );
+						gui.playGameSound( "bad" );
+					}
+				}
+				onNamedEvent "updateDeployable" {
+					if( globals.deployables.state == DS_REMOVED ) {
+						if( isValidHandle( deployableIcon ) ) {
+							removeIcon( deployableIcon );
+							deployableIcon = floatToHandle( -1 );
+						}
+					} else {
+						if( isValidHandle( deployableIcon ) == false ) {
+							deployableIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( deployableIcon );
+							setItemData( deployableIcon, DI_DEPLOYABLE );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+							globals.deployables.timerValue = 0; // reset timer
+						}
+					}
+				}
+				onNamedEvent "updateMines" {
+					if( icompare( player.role, "engineer" ) || icompare( player.role, "constructor" ) ) {
+						if( isValidHandle( minesIcon ) == false && icompare( player.teamName, "spectating" ) == false ) {
+							minesIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( minesIcon );
+							setItemData( minesIcon, DI_MINES );
+
+							minesMaterial = gui.cacheMaterial( "mineIcon", "_st mineicon_" + player.teamName );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+							gui.playGameSound( "boop" );
+						}
+					} else {
+						if( isValidHandle( minesIcon ) ) {
+							removeIcon( minesIcon );
+							minesIcon = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onPropertyChanged "globals.deployables.guiState" {
+					if( globals.deployables.guiState == 0 && isValidHandle( deployableIcon ) ) {
+						lastItemAdded = gui.copyHandle( deployableIcon );
+						bumpIcon( deployableIcon, NOTIFY_BUMP_TABLE );
+						postNamedEvent( "flash" );
+						gui.playGameSound( "deploy_confirm" );
+					}
+				}
+
+				onNamedEvent "updateCharge" {
+					if( globals.gameHud.weaponChargePercent > 0 && globals.gameHud.weaponChargePercent < 1 ) {
+						if( isValidHandle( chargeIcon ) == false ) {
+							chargeIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( chargeIcon );
+							setItemData( chargeIcon, DI_CHARGE );
+
+							chargeMaterial = gui.cacheMaterial( "chargeIcon", "_st chargeicon_" + player.teamName );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( chargeIcon ) ) {
+							removeIcon( chargeIcon );
+							chargeIcon = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onNamedEvent "updateSpawnHost" {
+					if( globals.gameHud.spawnHostActive ) {
+						if( isValidHandle( spawnHostIcon ) == false ) {
+							spawnHostIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( spawnHostIcon );
+							setItemData( spawnHostIcon, DI_SPAWNHOST );
+
+							spawnHostMaterial = gui.cacheMaterial( "spawnHostIcon", "_st spawnhosticon" );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( spawnHostIcon ) ) {
+							removeIcon( spawnHostIcon );
+							spawnHostIcon = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onNamedEvent "updateCarryableItem" {
+					if( globals.gameHud.carryableItemActive ) {
+						if( isValidHandle( carryableItemIcon ) == false ) {
+							carryableItemIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( carryableItemIcon );
+							setItemData( carryableItemIcon, DI_CARRYABLE );
+
+							carryableItemMaterial = gui.cacheMaterial( "carryableItemIcon", "_st carryableitemicon" );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( carryableItemIcon ) ) {
+							removeIcon( carryableItemIcon );
+							carryableItemIcon = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onNamedEvent "updateTeleporter" {
+					if( globals.gameHud.teleporterActive ) {
+						if( isValidHandle( teleporterItemIcon ) == false ) {
+							teleporterItemIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( teleporterItemIcon );
+							setItemData( teleporterItemIcon, DI_TELEPORTER );
+
+							teleporterItemMaterial = gui.cacheMaterial( "teleporterItemIcon", "_st teleporteritemicon" );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( teleporterItemIcon ) ) {
+							removeIcon( teleporterItemIcon );
+							teleporterItemIcon = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onNamedEvent "updateSupplies0" {
+					if( globals.gameHud.supplyCrateHealth0 > 0 && globals.gameHud.supplyCrateSupplies0 > 0 ) {
+						if( isValidHandle( suppliesIcon0 ) == false ) {
+							suppliesIcon0 = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( suppliesIcon0 );
+							setItemData( suppliesIcon0, DI_SUPPLIES );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( suppliesIcon0 ) ) {
+							removeIcon( suppliesIcon0 );
+							suppliesIcon0 = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onNamedEvent "updateSupplies1" {
+					if( globals.gameHud.supplyCrateHealth1 > 0 && globals.gameHud.supplyCrateSupplies1 > 0 ) {
+						if( isValidHandle( suppliesIcon1 ) == false ) {
+							suppliesIcon1 = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( suppliesIcon1 );
+							setItemData( suppliesIcon1, DI_SUPPLIES2 );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( suppliesIcon1 ) ) {
+							removeIcon( suppliesIcon1 );
+							suppliesIcon1 = floatToHandle( -1 );
+						}
+					}
+				}
+				onNamedEvent "updateParachute" {
+					if( globals.gameHud.parachuteActive ) {
+						if( isValidHandle( parachuteIcon ) == false ) {
+							parachuteIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( parachuteIcon );
+							setItemData( parachuteIcon, DI_PARACHUTE );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( parachuteIcon ) ) {
+							removeIcon( parachuteIcon );
+							parachuteIcon = floatToHandle( -1 );
+						}
+					}
+				}
+				onNamedEvent "updateThirdEye" {
+					if( globals.gameHud.thirdEyeActive ) {
+						if( isValidHandle( thirdEyeItemIcon ) == false ) {
+							thirdEyeItemIcon = addIcon( "nodraw" );
+							lastItemAdded = gui.copyHandle( thirdEyeItemIcon );
+							setItemData( thirdEyeItemIcon, DI_THIRDEYE );
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+						}
+					} else {
+						if( isValidHandle( thirdEyeItemIcon ) ) {
+							removeIcon( thirdEyeItemIcon );
+							thirdEyeItemIcon = floatToHandle( -1 );
+						}
+					}
+				}
+
+				onPropertyChanged "globals.gameHud.supplyCrateHealth0" "globals.gameHud.supplyCrateSupplies0" {
+					postNamedEvent( "updateSupplies0" );
+
+					if( globals.gameHud.supplyCrateHealth0 > lastSuppliesHealth0 ) {
+						suppliesOverrideColor0 = transition( "0,1,0,1", COLOR_WHITE, 300 );
+					} else {
+						suppliesOverrideColor0 = transition( "1,0,0,1", COLOR_WHITE, 300 );
+					}
+					lastSuppliesHealth0 = immediate( globals.gameHud.supplyCrateHealth0 );
+				}
+
+				onPropertyChanged "globals.gameHud.supplyCrateHealth1" "globals.gameHud.supplyCrateSupplies1" {
+					postNamedEvent( "updateSupplies1" );
+
+					if( globals.gameHud.supplyCrateHealth1 > lastSuppliesHealth1 ) {
+						suppliesOverrideColor1 = transition( "0,1,0,1", COLOR_WHITE, 300 );
+					} else {
+
+						suppliesOverrideColor1 = transition( "1,0,0,1", COLOR_WHITE, 300 );
+					}
+					lastSuppliesHealth1 = immediate( globals.gameHud.supplyCrateHealth1 );
+				}
+
+				onPropertyChanged "globals.gameHud.spawnHostActive" {
+					postNamedEvent( "updateSpawnHost" );
+				}
+
+				onPropertyChanged "globals.gameHud.carryableItemActive" {
+					postNamedEvent( "updateCarryableItem" );
+				}
+
+				onPropertyChanged "globals.gameHud.teleporterActive" {
+					postNamedEvent( "updateTeleporter" );
+				}
+
+				onPropertyChanged "globals.gameHud.thirdEyeActive" {
+					postNamedEvent( "updateThirdEye" );
+				}
+
+				onPropertyChanged "globals.gameHud.parachuteActive" {
+					postNamedEvent( "updateParachute" );
+				}
+
+				onPropertyChanged "player.role" {
+					if( isValidHandle( minesIcon ) ) {
+						removeIcon( minesIcon );
+						minesIcon = floatToHandle( -1 );
+					}
+					postNamedEvent( "updateMines" );
+				}
+
+				onPropertyChanged "player.teamName" {
+					if( isValidHandle( minesIcon ) ) {
+						removeIcon( minesIcon );
+						minesIcon = floatToHandle( -1 );
+					}
+					postNamedEvent( "updateMines" );
+				}
+
+				onPropertyChanged "deployableHealth" {
+					if( deployableHealth > lastDeployableHealth ) {
+						deployableOverrideColor = transition( "0,1,0,1", COLOR_WHITE, 300 );
+					} else {
+						deployableOverrideColor = transition( "1,0,0,1", COLOR_WHITE, 300 );
+					}
+					lastDeployableHealth = immediate( deployableHealth );
+				}
+
+				onPropertyChanged "globals.gameHud.weaponChargePercent" {
+					postNamedEvent( "updateCharge" );
+				}
+
+				onPropertyChanged "globals.gameHud.bumpNotifyIcon" {
+					if ( gui.icompare( globals.gameHud.bumpNotifyIcon, "" ) == true ) {
+						return;
+					}
+
+					if ( gui.icompare( globals.gameHud.bumpNotifyIcon, "mines" ) == true ) {
+						if( isValidHandle( minesIcon ) ) {
+							lastItemAdded = minesIcon;
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+							gui.playGameSound( "boop" );
+							postNamedEvent( "flash" );
+						}
+					}
+
+					if ( gui.icompare( globals.gameHud.bumpNotifyIcon, "carryableitem" ) == true ) {
+						if( isValidHandle( carryableItemIcon ) ) {
+							lastItemAdded = carryableItemIcon;
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+							postNamedEvent( "flash" );
+						}
+					}
+
+					if ( gui.icompare( globals.gameHud.bumpNotifyIcon, "parachute" ) == true ) {
+						if( isValidHandle( parachuteIcon ) ) {
+							lastItemAdded = parachuteIcon;
+							bumpIcon( lastItemAdded, NOTIFY_BUMP_TABLE );
+							postNamedEvent( "flash" );
+						}
+					}
+
+					globals.gameHud.bumpNotifyIcon = "";
+				}
+
+				onIconAdded {
+					postNamedEvent( "flash" );
+				}
+				onNamedEvent "flash" {
+					flashColor.a = transition( 0.8, 0.0, 2000, "0.1,0.9" );
+					flashSize = transition( 4, 0, 500 );
+				}
+
+				onPreDrawIcon {
+					itemHandle = floatToHandle( gui.scriptGetFloatResult() );
+					itemRect = gui.scriptGetVec4Result();
+					itemColor = gui.scriptGetVec4Result();
+
+					itemData = getItemData( itemHandle );
+
+					// background
+					scratchColor			= COLOR_DIALOG_FILL;
+					scratchColor.a = immediate( scratchColor.a ) * itemColor.a;
+					drawCachedMaterial( gui.dlgFillMaterial, itemRect, scratchColor );
+
+					scratchColor			= COLOR_DIALOG_LINES;
+					scratchColor.a = immediate( scratchColor.a ) * itemColor.a;
+					drawCachedMaterial( gui.dlgLineMaterial, itemRect, scratchColor );
+
+					// line divider
+					scratchRect.x = itemRect.x + 1, itemRect.y + 25, itemRect.w - 2, 1;
+
+					if ( itemData != DI_PARACHUTE ) {
+						drawCachedMaterial( gui.whiteMaterial, scratchRect, scratchColor );
+					}
+
+					// activation flash
+					if( hcompare( lastItemAdded, itemHandle ) ) {
+						scratchRect.x = itemRect.x - flashSize;
+						scratchRect.y = itemRect.y - flashSize;
+						scratchRect.w = itemRect.w + ( flashSize * 2 );
+						scratchRect.h = itemRect.h + ( flashSize * 2 );
+
+						drawCachedMaterial( gui.dlgFillMaterial, scratchRect, flashColor );
+					}
+
+					// Mines
+					if( itemData == DI_MINES ) {
+						scratchRect = itemRect.x - 10, itemRect.y + 6, 64, 16;
+
+						scratchColor			= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a = immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( minesMaterial, scratchRect, scratchColor );
+
+						scratchRect = itemRect;
+						scratchRect.y = itemRect.y + 24;
+						scratchRect.h = 16;
+
+						foreColor = COLOR_WHITE;
+						foreColor.a = immediate( foreColor.a ) * itemColor.a;
+						drawText( globals.gameHud.teamMineStatus, scratchRect, foreColor, 12, DTF_SINGLELINE | DTF_CENTER | DTF_BOTTOM );
+						return;
+					}
+
+					// SpawnHost
+					if( itemData == DI_SPAWNHOST ) {
+						scratchRect = itemRect.x - 10, itemRect.y + 6, 64, 16;
+
+						scratchColor			= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 			= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( spawnhostMaterial, scratchRect, scratchColor );
+
+						scratchRect = itemRect.x, itemRect.y + 24, itemRect.w, 16;
+						return;
+					}
+
+					// Carryable Item
+					if( itemData == DI_CARRYABLE ) {
+						scratchRect = itemRect.x + immediate( itemRect.w / 2 ) - 16, itemRect.y, 32, 32;
+
+						scratchColor			= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 			= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( carryableItemMaterial, scratchRect, scratchColor );
+
+						scratchRect = itemRect.x, itemRect.y + 24, itemRect.w, 16;
+						return;
+					}
+
+					// Teleporter Item
+					if( itemData == DI_TELEPORTER ) {
+						scratchRect = itemRect.x + 12 - immediate( itemRect.w / 2 ), itemRect.y + 6, 64, 16;
+
+						scratchColor			= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 			= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( teleporterItemMaterial, scratchRect, scratchColor );
+
+						scratchRect = itemRect.x, itemRect.y + 24, itemRect.w, 16;
+						return;
+					}
+
+					// HE Charge
+					if( itemData == DI_CHARGE ) {
+						scratchRect.x = itemRect.x - 10,itemRect.y + 6, 64, 16;
+
+						scratchColor	= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 	= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( chargeMaterial, scratchRect, scratchColor );
+
+						scratchColor	= COLOR_WHITE;
+						scratchColor.a 	= immediate( scratchColor.a ) * itemColor.a;
+
+						scratchRect.x = itemRect.x + 2 + ( ( 1.0 - globals.gameHud.weaponChargePercent ) * 42 );
+						scratchRect.y = itemRect.y + 28;
+						scratchRect.w = 42 * ( globals.gameHud.weaponChargePercent );
+						scratchRect.h = 10;
+
+						clipToRect( scratchRect );
+						drawCachedMaterial( progress, "itemRect.x + 2, itemRect.y + 28, 42, 10", scratchColor );
+						unclipRect();
+
+						return;
+					}
+
+					// Supplies
+					if( itemData == DI_SUPPLIES ) {
+						scratchRect.x = itemRect.x - 10;
+						scratchRect.y = itemRect.y + 6;
+						scratchRect.w = 64;
+						scratchRect.h = 16;
+
+						scratchColor	= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 	= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( suppliesMaterial, scratchRect, scratchColor );
+
+						scratchColor	= COLOR_WHITE;
+						scratchColor.a 	= immediate( scratchColor.a ) * itemColor.a;
+
+						if( globals.gameHud.supplyCrateHealth0 < 0.33 ) {
+							scratchColor.r = 1, 0, 0, immediate( scratchColor.a ) * ( sintable[ gui.time * 0.002 ] * 0.4 ) + 0.6;
+						}
+
+						scratchColor.r = suppliesOverrideColor0.r * immediate( scratchColor.r );
+						scratchColor.g = suppliesOverrideColor0.g * immediate( scratchColor.g );
+						scratchColor.b = suppliesOverrideColor0.b * immediate( scratchColor.b );
+
+						scratchRect.x = itemRect.x + 2 + ( ( 1.0 - globals.gameHud.supplyCrateHealth0 ) * 42 );
+						scratchRect.y = itemRect.y + 28;
+						scratchRect.w = 42 * ( globals.gameHud.supplyCrateHealth0 );
+						scratchRect.h = 10;
+
+						clipToRect( scratchRect );
+						drawCachedMaterial( progress, "itemRect.x + 2, itemRect.y + 28, 42, 10", scratchColor );
+						unclipRect();
+
+						return;
+					}
+
+					// Supplies 2
+					if( itemData == DI_SUPPLIES2 ) {
+						scratchRect.x = itemRect.x - 10;
+						scratchRect.y = itemRect.y + 6;
+						scratchRect.w = 64;
+						scratchRect.h = 16;
+
+						scratchColor	= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 	= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( suppliesMaterial, scratchRect, scratchColor );
+
+						scratchColor	= COLOR_WHITE;
+						scratchColor.a 	= immediate( scratchColor.a ) * itemColor.a;
+
+						if( globals.gameHud.supplyCrateHealth1 < 0.33 ) {
+							scratchColor.r = 1, 0, 0, immediate( scratchColor.a ) * ( sintable[ gui.time * 0.002 ] * 0.4 ) + 0.6;
+						}
+
+						scratchColor.r = suppliesOverrideColor1.r * immediate( scratchColor.r );
+						scratchColor.g = suppliesOverrideColor1.g * immediate( scratchColor.g );
+						scratchColor.b = suppliesOverrideColor1.b * immediate( scratchColor.b );
+
+						scratchRect.x = itemRect.x + 2 + ( ( 1.0 - globals.gameHud.supplyCrateHealth1 ) * 42 );
+						scratchRect.y = itemRect.y + 28;
+						scratchRect.w = 42 * ( globals.gameHud.supplyCrateHealth1 );
+						scratchRect.h = 10;
+
+						clipToRect( scratchRect );
+						drawCachedMaterial( progress, "itemRect.x + 2, itemRect.y + 28, 42, 10", scratchColor );
+						unclipRect();
+
+						return;
+					}
+
+					// Deployable
+					if( itemData == DI_DEPLOYABLE ) {
+
+						scratchRect.x = itemRect.x + 1;
+						scratchRect.y = itemRect.y + 4;
+						scratchRect.w = 44;
+						scratchRect.h = 21;
+
+						scratchColor	= COLOR_WHITE;
+						scratchColor.a = immediate( scratchColor.a ) * itemColor.a;
+
+						if( globals.deployables.guiState != 0 ) {
+							pushColorComponents( 1, 1, 1, 0.25, true );
+						}
+
+						drawCachedMaterial( deployableMaterial, scratchRect, scratchColor );
+						drawTimer( deployableTimer, scratchRect, scratchColor, globals.deployables.timerValue, false );
+
+						if( globals.deployables.state == DS_DISABLED ) {
+							scratchRect.x = itemRect.x + 13, itemRect.y + 4, 21, 21;
+
+							scratchColor = 1,0,0,itemColor.a;
+							drawCachedMaterial( disabledIcon, scratchRect, scratchColor );
+						}
+
+						scratchColor	= COLOR_WHITE;
+						scratchColor.a = immediate( scratchColor.a ) * itemColor.a;
+
+						if( globals.deployables.state == DS_DISABLED ) {
+							scratchColor.r = 1, 0, 0, immediate( scratchColor.a ) * ( sintable[ gui.time * 0.002 ] * 0.4 ) + 0.6;
+						}
+
+						scratchColor.r = deployableOverrideColor.r * immediate( scratchColor.r );
+						scratchColor.g = deployableOverrideColor.g * immediate( scratchColor.g );
+						scratchColor.b = deployableOverrideColor.b * immediate( scratchColor.b );
+
+						scratchRect.x = itemRect.x + 2 + ( ( 1.0 - deployableHealth ) * 42 );
+						scratchRect.y = itemRect.y + 28;
+						scratchRect.w = 42 * ( deployableHealth );
+						scratchRect.h = 10;
+
+						clipToRect( scratchRect );
+						drawCachedMaterial( progress, "itemRect.x + 2, itemRect.y + 28, 42, 10", scratchColor );
+						unclipRect();
+
+						if( globals.deployables.guiState != 0 ) {
+							popColor();
+						}
+
+						return;
+					}
+
+					// Third Eye Item
+					if( itemData == DI_THIRDEYE ) {
+						scratchRect = itemRect.x + 12 - immediate( itemRect.w / 2 ), itemRect.y + 6, 64, 16;
+
+						scratchColor			= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 			= immediate( scratchColor.a ) * itemColor.a;
+
+						drawCachedMaterial( thirdEyeItemMaterial, scratchRect, scratchColor );
+
+						scratchRect = itemRect.x, itemRect.y + 24, itemRect.w, 16;
+						return;
+					}
+
+					// Parachute Item
+					if( itemData == DI_PARACHUTE ) {
+						scratchRect = itemRect.x + 14 - immediate( itemRect.w / 2 ), itemRect.y + 6, 64, 32;
+
+						scratchColor			= COLOR_WEAPON_LIST_ICON_LINE;
+						scratchColor.a 			= immediate( scratchColor.a ) * itemColor.a;
+
+						if ( icompare( player.teamName, "gdf" ) == true ) {
+							drawCachedMaterial( parachuteMaterial, scratchRect, scratchColor );
+						} else {
+							drawCachedMaterial( dropShieldMaterial, scratchRect, scratchColor );
+						}
+
+						scratchRect = itemRect.x, itemRect.y + 24, itemRect.w, 16;
+						return;
+					}
+				}
+			}
+		}
+	}
+
+//Health Bar
+	windowDef healthParentBox {
+		properties {
+			rect	rect 				= 2, SCREEN_HEIGHT - 51, 200, 50;
+			float 	visible			 	= gui.shouldShowNormalHud;
+			float	lastHealthValue		= immediate( player.health );
+			float	lowHealth			= false;
+
+			handle 	topFillMaterial		= gui.cacheMaterial( "htopFill", "_frame health_top_fill" );
+			handle 	topLineMaterial		= gui.cacheMaterial( "htopLine", "_frame health_top_line" );
+			handle 	topGradMaterial		= gui.cacheMaterial( "htopGrad", "_3h health_top_grad" );
+
+			handle 	botFillMaterial		= gui.cacheMaterial( "hbotFill", "_frame health_bottom_fill" );
+			handle 	botLineMaterial		= gui.cacheMaterial( "hbotLine", "_frame health_bottom_line" );
+
+			handle 	xpFillMaterial		= gui.cacheMaterial( "xpFill", "_3h xp_fill" );
+			handle 	xpLineMaterial		= gui.cacheMaterial( "xpLine", "_3h xp_line" );
+
+			handle 	iconMaterial		= gui.cacheMaterial( "healthicon", 	"_st health_icon" );
+			handle	barFillMaterial		= gui.cacheMaterial( "hbarFill", 	"_3h bar_fill" );
+			handle	barLineMaterial		= gui.cacheMaterial( "hbarLine", 	"_3h bar_line" );
+			handle	barGradMaterial		= gui.cacheMaterial( "hbarGrad", 	"_st bar_grad" );
+
+			rect	topRect				= absoluteRect.x, absoluteRect.y, 58, 16;
+			rect	iconRect			= topRect.x + 5, topRect.y + 2, 12, 12;
+			rect	textRect			= topRect.x + 22, topRect.y + 1, 36, 16;
+			rect	dividerRect			= topRect.x + 22, ( topRect.y + topRect.h ) - 7, 1, 7;
+			rect	healthBarRect		= topRect.x, topRect.y + 15, 126, 13;
+			rect	botRect				= topRect.x, topRect.y + 28, 85, 21;
+
+			rect	classTextRect		= botRect.x + 22, botRect.y, 69, 21;
+
+			rect	xpRect				= botRect.x + botRect.w, botRect.y, 41, 13;
+			rect	xpTextRect			= xpRect.x + 4, xpRect.y + 1, 35, 13;
+			rect	xpDividerRect		= xpRect.x - 1, ( xpRect.y + xpRect.h ) - 7, 1, 7;
+			rect 	xpProgressRect 		= xpRect.x + 1, xpRect.y + 11, ( xpRect.w * max( 0.0f, min( limbo.proficiencyPercent0, 1.0f ) ) ) - 2, 2;
+
+			float	fontSize			= 14;
+
+			color	flashXPColor		= 1,1,1,0;
+
+			color	xpFillColor			= COLOR_HUD_PROGRESS;
+		}
+
+		// feedback
+		events {
+			onPreDraw {
+				drawCachedMaterial( topFillMaterial, topRect, gui.dialogFillColor );
+				drawCachedMaterial( topGradMaterial, topRect, gui.barGradientColor );
+				drawCachedMaterial( topLineMaterial, topRect, gui.dialogLineColor );
+
+				drawCachedMaterial( botFillMaterial, botRect, gui.dialogFillColor );
+				drawCachedMaterial( botLineMaterial, botRect, gui.dialogLineColor );
+
+				drawCachedMaterial( xpFillMaterial, xpRect, gui.dialogFillColor );
+				drawCachedMaterial( xpLineMaterial, xpRect, gui.dialogLineColor );
+
+				if( flashXPColor.a > 0 ) {
+					drawCachedMaterial( botFillMaterial, botRect, flashXPColor );
+					drawCachedMaterial( botLineMaterial, botRect, flashXPColor );
+
+					drawCachedMaterial( xpFillMaterial, xpRect, flashXPColor );
+					drawCachedMaterial( xpLineMaterial, xpRect, flashXPColor );
+				}
+
+				drawCachedMaterial( gui.whiteMaterial, xpDividerRect, gui.dialogLineColor );
+
+				drawCachedMaterial( iconMaterial, iconRect, gui.iconDimColor );
+				drawCachedMaterial( gui.whiteMaterial, dividerRect, gui.dialogLineColor );
+
+				drawCachedMaterial( barFillMaterial, healthBarRect, gui.dialogFillColor );
+				drawCachedMaterial( barGradMaterial, healthBarRect, gui.barGradientColor );
+				drawCachedMaterial( barLineMaterial, healthBarRect, gui.dialogLineColor );
+
+				drawCachedMaterial( gui.whiteMaterial, xpProgressRect, xpFillColor );
+				//drawCachedMaterial( gui.whiteMaterial, xpProgressRect, gui.barGradientColor );
+
+				drawLocalizedText( player.roleTitle, classTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				drawText( toWStr( toString( max( 0, player.health ), 0 ) ), textRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+				drawText( toWStr( toString( player.xp, 0 ) ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				drawLocalizedText( localize( "guis/game/scoreboard/xp" ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "player.taskCompletedTime" "gui.testFlash" {
+				flashXPColor.a = transition( 0.8, 0, 2000, "0.1,0.9" );
+			}
+
+			onPropertyChanged "player.health" {
+				if( player.health > lastHealthValue ) {
+					//fontSize = transition( 20, 12, 150 );
+					gui.healthFill.highlightColor = transition( "0,1,0,1", "0,1,0,0", 1000, "0,2" );
+					gui.healthFill.highlightRange = immediate( lastHealthValue / player.maxHealth ), immediate( player.health / player.maxHealth );
+				} else {
+					gui.healthFill.highlightColor = transition( "1,0,0,1", "1,0,0,0", 1000, "0,2" );
+					gui.healthFill.highlightRange = immediate( player.health / player.maxHealth ), immediate( lastHealthValue / player.maxHealth );
+				}
+				if( ( player.health / player.maxHealth ) < 0.25 && lowHealth == false ) {
+					lowHealth = true;
+					if ( player.health > 0 ) {
+						gui.playGameSound( "bad" );
+					}
+				} else {
+					lowHealth = false;
+				}
+
+				lastHealthValue = immediate( player.health );
+			}
+		}
+		windowDef healthFill {
+			type progress;
+			properties {
+				float 	position 		= player.health / player.maxHealth;
+				string 	fillMaterial 	= "small_progress";
+				string 	fillHighlightMaterial 	= "small_progress";
+				color	backColor		= 0, 0, 0, 0;
+				color	foreColor		= COLOR_HUD_PROGRESS;
+				rect	rect			= 0, 14.5, 126, 14;
+			}
+			events {
+				onPropertyChanged "position" {
+					if( position > 0.5 ) {
+						fillMaterial 	= "small_progress";
+						foreColor 		= COLOR_HUD_PROGRESS;
+						return;
+					}
+					if( position > 0.25 ) {
+						fillMaterial 	= "small_progress_flash";
+						foreColor.g		= 0.5;
+						foreColor.b		= 0;
+						return;
+					}
+					fillMaterial 	= "small_progress_flash";
+					foreColor.g		= 0;
+					foreColor.b		= 0;
+				}
+			}
+		}
+		windowDef rankIcon {
+			properties {
+				rect rect 					= 1, 28, 20, 20;
+				string material 			= "_st " + player.rankMaterial;
+				color backColor 			= 1, 1, 1, 1;
+			}
+		}
+
+/*
+		windowDef upgradeIcons {
+			type iconNotification;
+			properties {
+				vec2 iconSize = 24, 24;
+				rect rect = 0, 0, 192, 32;
+			}
+			timeline {
+				onTime 0 {
+					fillFromEnumerator( "playerUpgrades" );
+				}
+				onTime 500 {
+					resetTime( 0 );
+				}
+			}
+		}
+*/
+	}
+
+//Ammo Bar
+	windowDef AmmoParentBox {
+		properties {
+			rect	rect 		= SCREEN_WIDTH - ( rect.w + 2 ), SCREEN_HEIGHT - 54, 126, 50;
+			float 	visible 	= gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) );
+			float	lastClip 	= immediate( player.weaponClip );
+
+			handle 	topFillMaterial		= gui.cacheMaterial( "atopFill", "_frame health_top_fill" );
+			handle 	topLineMaterial		= gui.cacheMaterial( "atopLine", "_frame health_top_line" );
+			handle 	topGradMaterial		= gui.cacheMaterial( "atopGrad", "_3h health_top_grad" );
+
+			handle 	botFillMaterial		= gui.cacheMaterial( "abotFill", "_frame ammo_bottom_fill" );
+			handle 	botLineMaterial		= gui.cacheMaterial( "abotLine", "_frame ammo_bottom_line" );
+
+			handle 	iconMaterial		= gui.cacheMaterial( "ammoicon", "_st slot" + toString( player.weaponSlot, 0 ) );
+
+			handle	barFillMaterial		= gui.cacheMaterial( "abarFill", 	"_3h bar_fill" );
+			handle	barLineMaterial		= gui.cacheMaterial( "abarLine", 	"_3h bar_line" );
+			handle	barGradMaterial		= gui.cacheMaterial( "abarGrad", 	"_st bar_grad" );
+
+			rect	topRect				= absoluteRect.x + ( rect.w - topRect.w ), absoluteRect.y, 80, 16;
+			rect	dividerRect			= topRect.x + ( topRect.w - 28 ), ( topRect.y + topRect.h ) - 7, 1, 7;
+			rect	iconRect			= topRect.x + ( topRect.w - 20 ), topRect.y + 2, 12, 12;
+			rect	ammoCountRect		= topRect.x + 6, topRect.y + 2, 36, 16;
+			rect	clipDividerRect		= ammoCountRect.x + ammoCountRect.w + 8, topRect.y + 2, 5, 16;
+			rect	clipCountRect		= clipDividerRect.x + clipDividerRect.w + 2, topRect.y + 2, 36, 16;
+
+			rect	ammoBarRect			= absoluteRect.x, topRect.y + 15, 126, 13;
+			rect	botRect				= absoluteRect.x, ammoBarRect.y + 13, 126, 16;
+			rect	ammoTextRect		= botRect.x + 4, botRect.y, 124, 16;
+
+			float	fontSize			= 14;
+			vec2	measure;
+			handle	lastWeapon			= floatToHandle( -1 );
+			float 	showBackground		= ( ( globals.gameHud.weaponShowCharge == false && player.weaponNeedsAmmo ) || globals.gameHud.weaponShowCustom ) || ( ( globals.gameHud.weaponShowClip && player.weaponNeedsAmmo ) && globals.gameHud.weaponShowAllAmmo != 1 );
+			float	needMeasure			= true;
+		}
+
+		events {
+			onPreDraw {
+				if( needMeasure ) {
+					measure = measureText( toWStr( globals.gameHud.weaponAmmoString ), topRect, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					ammoCountRect.w = immediate( measure.x );
+					measure = measureText( toWStr( "/" ), clipDividerRect, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					clipCountRect.w = immediate( measure.x );
+					needMeasure = false;
+				}
+				if( showBackground ) {
+					drawCachedMaterial( topFillMaterial, topRect, gui.dialogFillColor );
+					drawCachedMaterial( topGradMaterial, topRect, gui.barGradientColor );
+					drawCachedMaterial( topLineMaterial, topRect, gui.dialogLineColor );
+
+					drawCachedMaterial( iconMaterial, iconRect, gui.iconDimColor );
+					drawCachedMaterial( gui.whiteMaterial, dividerRect, gui.dialogLineColor );
+				}
+
+				drawCachedMaterial( barFillMaterial, ammoBarRect, gui.dialogFillColor );
+				drawCachedMaterial( barGradMaterial, ammoBarRect, gui.barGradientColor );
+				drawCachedMaterial( barLineMaterial, ammoBarRect, gui.dialogLineColor );
+
+				drawCachedMaterial( botFillMaterial, botRect, gui.dialogFillColor );
+				drawCachedMaterial( botLineMaterial, botRect, gui.dialogLineColor );
+
+
+				if( ( globals.gameHud.weaponShowCharge == false && player.weaponNeedsAmmo ) || globals.gameHud.weaponShowCustom ) {
+					drawText( toWStr( globals.gameHud.weaponAmmoString ), ammoCountRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				}
+
+				if( ( globals.gameHud.weaponShowClip && player.weaponNeedsAmmo ) && globals.gameHud.weaponShowAllAmmo != 1 ) {
+					drawText( toWStr( "/" ), clipDividerRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawText( toWString( player.weaponTotalClip - player.weaponClip, 0 ), clipCountRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				}
+
+				drawLocalizedText( player.weaponName, ammoTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "globals.gameHud.weaponAmmoString" {
+				needMeasure = true;
+			}
+			onPropertyChanged "player.weaponSlot" {
+				iconMaterial = gui.cacheMaterial( "weapicon", "_st slot" + toString( player.weaponSlot, 0 ) );
+			}
+			onPropertyChanged 	"globals.gameHud.weaponShowAllAmmo"
+								"globals.gameHud.weaponShowClip"
+								"globals.gameHud.weaponShowCustom"
+								"player.weaponTotalClip"
+								"player.weaponClip" {
+
+				if ( globals.gameHud.weaponShowCustom == 1 ) {
+					// weaponAmmoString is being set from code/script
+					return;
+				}
+				if( globals.gameHud.weaponShowAllAmmo == 1 ) {
+					globals.gameHud.weaponAmmoString = toString( player.weaponShotsAvailable, 0 );
+					return;
+				}
+				globals.gameHud.weaponAmmoString = toString( player.weaponClip, 0 );
+			}
+			onPropertyChanged "globals.gameHud.weaponLowAmmo" {
+				if( globals.gameHud.weaponLowAmmo == 1 ) {
+					gui.ammoFill.highlightRange = gui.ammoFill.position, 1.0f;
+					gui.ammoFill.highlightColor = transition( "1, 0, 0, 1", "1, 0, 0, 0", 1000, "0, 2" );
+
+					gui.playGameSound( "bad" );
+					globals.gameHud.weaponLowAmmo = 0;
+				}
+			}
+
+			onPropertyChanged "player.weaponClip" {
+				// don't flash when switching to another weapon with more ammo
+				if( player.weaponClip > lastClip && hcompare( player.weaponName, lastWeapon ) || hcompare( floatToHandle( -1 ), lastWeapon )) {
+					gui.ammoFill.highlightRange = immediate( lastClip / player.weaponShotsPerClip ), immediate( player.weaponClip / player.weaponShotsPerClip );
+					gui.ammoFill.highlightColor = transition( "0,1,0,1", "0,1,0,0", 1000, "0,2" );
+					lastClip = immediate( player.weaponClip );
+				}
+
+				lastWeapon = player.weaponName;
+			}
+		}
+		windowDef ammoFill {
+			type progress;
+
+			properties {
+				float 	position 			= player.weaponClip / player.weaponShotsPerClip;
+				string 	fillMaterial 		= "small_progress_flip";
+				string 	fillHighlightMaterial = "small_progress_flip";
+				rect 	rect				= 0, 14.5, 126, 14;
+				color	foreColor			= 1,1,1,0.6;
+				float	flags				= immediate( flags | PF_DRAW_FROM_LOWER_END );
+				float	visible				= globals.gameHud.weaponShowCharge || player.weaponShotsPerClip > 0;
+			}
+			events {
+				onPropertyChanged "globals.gameHud.weaponShowCharge" "player.weaponName" {
+					if( globals.gameHud.weaponShowCharge ) {
+						position 		= globals.weapons.energyBarCharge;
+					} else {
+						position 		= player.weaponClip / player.weaponShotsPerClip;
+						segments = 1;
+					}
+				}
+				onPropertyChanged "globals.weapons.energySegments" {
+					segments = ceil( 100 / globals.weapons.energySegments );
+					if ( segments > 8 ) {
+						segments = 1;
+					}
+				}
+				onPropertyChanged "globals.weapons.energyAvailable" "globals.weapons.cooling" {
+					if( globals.weapons.energyAvailable == false || globals.weapons.cooling == true ) {
+						foreColor = 1, 0, 0, 0.6;
+					} else {
+						foreColor = 1, 1, 1, 0.6;
+					}
+				}
+				onPropertyChanged "globals.gameHud.needsCharge" {
+					if( globals.gameHud.needsCharge && globals.gameHud.weaponShowCharge ) {
+						highlightColor 	= transition( "1,1,0,1", "1,1,0,0", 1000, "0,2" );
+						highlightRange 	= 0, 1;
+						globals.gameHud.needsCharge = false;
+					}
+				}
+			}
+			events {
+				onPropertyChanged "position" {
+					globals.gameHud.lowAmmoFlash = false;
+					globals.gameHud.mediumAmmoFlash = false;
+					if( globals.gameHud.weaponShowCharge ) {
+						if( globals.weapons.energyAvailable == false || globals.weapons.cooling == true ) {
+							foreColor.g		= 0;
+							foreColor.b		= 0;
+						} else {
+							foreColor.g		= 1;
+							foreColor.b		= 1;
+						}
+						fillMaterial 	= "small_progress_flip";
+						return;
+					}
+					if( position > 0.5 ) {
+						fillMaterial 	= "small_progress_flip";
+						foreColor.g		= 1;
+						foreColor.b		= 1;
+						return;
+					}
+					if( position > 0.25 ) {
+						fillMaterial 	= "small_progress_flip_flash";
+						foreColor.g		= 0.5;
+						foreColor.b		= 0;
+						globals.gameHud.mediumAmmoFlash = true;
+						return;
+					}
+					if( visible ) {
+						globals.gameHud.lowAmmoFlash = true;
+					}
+					fillMaterial 	= "small_progress_flip_flash";
+					foreColor.g		= 0;
+					foreColor.b		= 0;
+				}
+			}
+		}
+		windowDef ammoFill2 {
+			type progress;
+
+			properties {
+				float 	position 			= 1.0f - globals.weapons.heat;
+				string 	fillMaterial 		= "small_progress_flip";
+				rect 	rect				= 0, 14.5, 126, 14;//0, 20.5, 126, 7
+				color	foreColor			= 1,0,0,0.75;
+				float	flags				= immediate( flags | PF_DRAW_FROM_LOWER_END );
+				float	visible				= ( globals.weapons.heat != 1.0f && globals.weapons.showHeat == true ) || globals.gameHud.weaponReloadTime > 0 ;
+
+				float	startTime			= -1.0f;
+				float	targetTime			= -1.0f;
+			}
+			events {
+				onPropertyChanged "globals.weapons.showHeat" "globals.gameHud.weaponReloadTime" {
+					if ( globals.weapons.showHeat == true ) {
+						position = 1.0f - globals.weapons.heat;
+					} else {
+						startTime	= immediate( player.gameTime );
+						targetTime	= immediate( player.gameTime + ( globals.gameHud.weaponReloadTime * 1000 ) );
+						position 	= ( ( player.gameTime - startTime ) / ( targetTime - startTime ) );
+					}
+				}
+			}
+		}
+	}
+
+	// Rank-up animation
+#define RANKUP_HIDE_TIME 4600
+
+	events {
+		onPropertyChanged "globals.gameHud.newRank" {
+			if( globals.gameHud.newRank && player.localView ) {
+				timeline.dynamicRank.active = true;
+				timeline.dynamicRank.resetTime( 0 );
+				globals.gameHud.newRank = 0;
+			}
+		}
+
+		// hide the animation if the player dies or otherwise loses the HUD
+		onPropertyChanged "player.dead" "player.limbo" "player.spawning" "player.spectator" "player.spectating" "player.localView" {
+			if( player.dead || player.limbo || player.spawning || player.spectator || player.spectating || player.localView ) {
+				timeline.dynamicRank.resetTime( RANKUP_HIDE_TIME );
+			}
+		}
+	}
+
+
+	timeline dynamicRank {
+		properties {
+			float active = 0;
+		}
+
+		// fade everything in
+		onTime 0 {
+			gui.dynamicRankBG.rect 					= gui.screenCenter.x - 24, gui.screenCenter.y + 50, 48, 48;
+			gui.dynamicRankIcon.backColor.a 		= transition( 0, 1, 200 );
+			gui.dynamicRankIconFlash.backColor.a 	= 0;
+		}
+
+		// flash icon
+		onTime 1000 {
+			gui.dynamicRankIconFlash.backColor.a = transition( 0, 1, 500 );
+			gui.dynamicRankIconFlash.rect = transition( "0, 0, gui.dynamicRankBG.rect.w, gui.dynamicRankBG.rect.h",
+													    "-8, -8, gui.dynamicRankBG.rect.w + 16, gui.dynamicRankBG.rect.h + 16", 500 );
+		}
+
+		// fade out flash
+		onTime 1500 {
+			gui.dynamicRankIconFlash.backColor.a = transition( 1, 0, 500 );
+		}
+
+		// move icon to lower corner
+		onTime 2000 {
+			gui.dynamicRankBG.rect = transition( gui.dynamicRankBG.rect, gui.rankIcon.absoluteRect, 500, ".1,.8" );
+		}
+
+		// flash icon
+		onTime 3000 {
+			gui.dynamicRankIconFlash.backColor.a = transition( 0, 1, 500 );
+			gui.dynamicRankIconFlash.rect = transition( "0, 0, gui.dynamicRankBG.rect.w, gui.dynamicRankBG.rect.h",
+													    "-2, -2, gui.dynamicRankBG.rect.w + 4, gui.dynamicRankBG.rect.h + 4", 500 );
+		}
+
+		// fade everything out
+		onTime 4500 {
+			gui.dynamicRankIcon.backColor.a = 0;
+			gui.dynamicRankIconFlash.backColor.a = transition( 1, 0, 500 );
+			active = 0;
+			resetTime( 0 );
+		}
+
+		// hide everything
+		onTime RANKUP_HIDE_TIME {
+			gui.dynamicRankIcon.backColor.a = 0;
+			gui.dynamicRankIconFlash.backColor.a = 0;
+			active = 0;
+			resetTime( 0 );
+		}
+	}
+
+	windowDef dynamicRankBG {
+		properties {
+			rect 	rect = gui.screenCenter.x - 24, gui.screenCenter.y + 50, 48, 48;
+		}
+		windowDef dynamicRankIcon {
+			properties {
+				string 	material = "_st " + player.rankMaterial;
+				rect 	rect = 0, 0, gui.dynamicRankBG.rect.w, gui.dynamicRankBG.rect.h;
+				color	backColor = 1,1,1,0;
+			}
+		}
+		windowDef dynamicRankIconFlash {
+			properties {
+				color	backColor = 1,1,1,0;
+			}
+			events {
+				onPropertyChanged "player.rankMaterial" {
+					if( compare( player.rankMaterial, "" ) || compare( player.rankMaterial, "nodraw" ) ) {
+						material = "";
+					} else {
+						material = "_st " + player.rankMaterial + "_flash";
+					}
+				}
+			}
+		}
+	}
+
+	windowDef parachuteIndicator {
+		properties {
+			string material = "parachute_hint";
+			rect rect = gui.screenCenter.x - 32, gui.screenCenter.y + 32, 64, 64;
+			color backColor = 1,1,1,0;
+		}
+		events {
+			onPropertyChanged "globals.gameHud.needsParachute" {
+				if( globals.gameHud.needsParachute ) {
+					backColor.a = 1;
+				} else {
+					backColor.a = transition( backColor.a, 0, 1000 );
+				}
+			}
+		}
+	}
+
+	windowDef lagged {
+		properties {
+			rect rect 			= SCREEN_WIDTH - 36, 5, 32, 32;
+			color backColor 	= COLOR_WHITE;
+			string material 	= "lagicon";
+			vec2 materialScale 	= -1, 1;
+			float visible 		= player.isLagged;
+		}
+	}
+
+	windowDef recordingDemo {
+		properties {
+			rect rect 			= SCREEN_WIDTH - 26, 2, 24, 24;
+			color backColor 	= COLOR_WHITE;
+			string material 	= "recicon";
+			float visible 		= demo.state == 0 && gui.lagged.visible == false;
+		}
+	}
+
+	windowDef fadeIn {
+		properties {
+			color overlayColor	= 0,0,0,0;
+			rect fullScreen		= 0,0, gui.screenDimensions.x, gui.screenDimensions.y;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.whiteMaterial, fullScreen, overlayColor );
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "player.endGameCamera" {
+				if( player.endGameCamera ) {
+					overlayColor.a = transition( 1, 0, 1000 );
+				} else {
+					overlayColor.a = 0;
+				}
+			}
+		}
+	}
+
+	windowDef winningTeam {
+		properties {
+			rect 	rect 				= _center( desktop, width ), _center( desktop, height ) - 110, 100, 64;
+			handle 	localizedText 		= player.winningTeamString;
+			float	flags				= immediate( flags ) | WF_AUTO_SIZE_WIDTH | WF_AUTO_SIZE_HEIGHT | WF_DROPSHADOW;
+			float 	fontSize 			= 32;
+		}
+	}
+
+#define BESTS_NOTIFIER_DURATION 6000
+#define BESTS_NOTIFIER_TOTAL_TIME $evalint( 2 * BESTS_NOTIFIER_DURATION )
+
+	windowDef lifeStats {
+		properties {
+			rect 	rect 				= _center( desktop, width ), 2, gui.tip.rect.w, measure.y + 32;
+
+			rect	textRect			= absoluteRect.x + PADDING, ( absoluteRect.y ) + 4, absoluteRect.w - $evalfloat( 2 * PADDING ), DIALOG_CAPTION_HEIGHT;
+			rect	textBackRect		= absoluteRect.x, absoluteRect.y, absoluteRect.w, 20;
+			rect	contentRect			= absoluteRect.x + PADDING, ( absoluteRect.y ) + 20, absoluteRect.w - $evalfloat( 2 * PADDING ), absoluteRect.h - 20;
+			color	lineColor			= COLOR_DIALOG_LINES;
+			color	fillColor			= COLOR_DIALOG_FILL;
+
+			float 	shouldShow			= 	( player.limbo | player.dead | player.spawning ) && 
+											( player.endGameCamera == false && player.endGame == false );
+										  
+			float	visible				= 	player.commandmapstate == 0 && player.scoreboardActive == false && player.toolTipIsPriority == false;
+
+			float	activateTime;
+
+			color	colorMultiplier		= 1,1,1,showFade * cvarFade;
+			float	showFade			= 0;
+			rect	iconRect			= absoluteRect.x + ( absoluteRect.w - ( iconRect.w + 2 ) ), absoluteRect.y + ( absoluteRect.h - ( iconRect.h + 2 ) ), 24, 24;
+
+			handle	teamIcon			= floatToHandle( -1 );
+			
+			handle	cachedTitle;
+			wstring cachedString;
+			
+			float	stringValid			= wcompare( cachedString, gui.blankWStr ) == false;
+			
+			vec2	measure;
+			float	needMeasure;
+		}
+		__cvar_fadable( gui_personalBestsAlpha )
+		events {
+			onCreate {
+				callSuper();
+				if( shouldShow && stringValid ) {
+					showFade = 1;
+				} else {
+					showFade = 0;
+				}
+				postNamedEvent( "updateIcon" );
+			}
+			
+			onPropertyChanged "globals.gameHud.lifeStatsString" {
+				// we don't have constant wstring expressions, so take a copy a different way
+				cachedString = wFormat( "%1", globals.gameHud.lifeStatsString ) );
+				needMeasure = true;
+			}
+			
+			onPropertyChanged "globals.gameHud.lifeStatsTitle" {
+				cachedTitle = gui.copyHandle( globals.gameHud.lifeStatsTitle );
+			}
+			
+			onPropertyChanged "player.teamName" {
+				postNamedEvent( "updateIcon" );
+			}
+			/*
+			onPropertyChanged "gui.advancedHud" {
+				postNamedEvent( "updatePosition" );
+			}
+			onNamedEvent "updatePosition" {
+				if ( gui.advancedHud ) {
+					rect.y = 2;
+				} else {
+					rect.y = _center( desktop, height ) + 110;
+				}
+			}
+			*/			
+			
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {					
+					showFade = transition( showFade, 1.0f, ACTIVATE_TRANSITION_TIME );
+					activateTime = immediate( gui.time );
+					gui.playGameSound( "show_lifestats" );
+				} else {
+					// make sure it's readable if they respawn on the edge of a wave
+					if( ( gui.time - activateTime ) < BESTS_NOTIFIER_DURATION ) {
+						timeline.hide.active = true;
+						timeline.hide.resetTime( BESTS_NOTIFIER_TOTAL_TIME - ( BESTS_NOTIFIER_DURATION - ( gui.time - activateTime ) ) );
+					} else {
+						showFade = transition( showFade, 0.0f, ACTIVATE_TRANSITION_TIME );
+						cachedString = gui.blankWStr;
+					}
+				}
+			}
+			
+			onPropertyChanged "rect.w" {
+				needMeasure = true;
+			}
+			
+			onPreDraw {
+				if( needMeasure ) {
+					measure = measureText( cachedString, "0, 0, absoluteRect.w - 28, absoluteRect.h", 14, DTF_WORDWRAP | DTF_LEFT | DTF_TOP );
+					needMeasure = false;
+				}
+				if( stringValid ) {
+					drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
+					drawCachedMaterial( teamIcon, iconRect, "1,1,1,0.25" );
+	
+					pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+						drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
+					popColor();
+	
+					drawCachedMaterial( gui.dlgFillMaterial, textBackRect, "0,0,0,0.5" );
+					drawLocalizedText( cachedTitle, textRect, COLOR_WHITE, 14, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+					drawText( cachedString, contentRect, COLOR_WHITE, 14, DTF_LEFT | DTF_TOP | DTF_WORDWRAP );
+				}
+
+				gui.scriptPushFloat( false );
+			}
+
+			
+			onNamedEvent "updateIcon" {
+				if( compare( player.teamName, "spectating" ) == false ){
+					teamIcon = gui.cacheMaterial( "fticon", "_st " + player.teamName );
+				} else {
+					teamIcon = floatToHandle( -1 );
+				}
+				if( compare( player.teamName, "strogg" ) ) {
+					iconRect.w = 44;
+				} else {
+					iconRect.w = 24;
+				}
+			}
+		}
+		timeline hide {
+			properties {
+				float active = false;
+			}
+			onTime BESTS_NOTIFIER_TOTAL_TIME {
+				showFade = transition( showFade, 0.0f, ACTIVATE_TRANSITION_TIME );	
+				cachedString = gui.blankWStr;			
+			}
+		}
+
+	}
+
+	__center_print_info
+
+	// pause icon should be on top of all other HUD elements
+	/*windowDef pauseIcon {
+		properties {
+			rect rectBase = CENTER_X - 8, CENTER_Y - 98, 16, 16;
+			rect rect = rectBase;
+			color foreColor = 1, 1, 1, 0;
+			handle pauseIconHandle = gui.cacheMaterial( "_pause_icon", "pause_icon" );
+		}
+		events {
+			onPropertyChanged "player.isPaused" {
+				if ( player.isPaused ) {
+					foreColor.a = transition( foreColor.a, 1, 200 );
+				} else {
+					foreColor.a = transition( foreColor.a, 0, 200 );
+				}
+			}
+			onPreDraw {
+				drawCachedMaterial( pauseIconHandle, rect, foreColor );
+				gui.scriptPushFloat( false );
+			}
+		}
+		timeline resize {
+			onTime 0 {
+				rect = transition( rectBase, "rectBase.x - 2, rectBase.y - 2, rectBase.w + 4, rectBase.h + 4", 800, "0.9, 1.0" );
+			}
+			onTime 800 {
+				rect = transition( rect, rectBase, 800, "0.9, 1.0" );
+			}
+			onTime 1600 {
+				resetTime( 0 );
+			}
+		}
+	}*/
+	windowDef pauseText {
+		properties {
+			rect textRect				= 0, CENTER_Y - 80, SCREEN_WIDTH, 20;
+			color foreColor				= 1, 1, 1, 0;
+			handle pressF1Text			= localize( "guis/hud/game_is_paused_f1" );
+			wstring pressF1WeaponKeyText= localizeArgs( "guis/hud/game_is_paused_f1_weapon", player.unpauseKeyString );
+			handle gamePausedText		= localize( "guis/hud/game_is_paused" );
+		}
+		events {
+			onPropertyChanged "player.isPaused" {
+				if ( player.isPaused ) {
+					foreColor.a = transition( foreColor.a, 1, 200 );
+				} else {
+					foreColor.a = transition( foreColor.a, 0, 200 );
+				}
+			}
+			onPreDraw {
+				if ( player.isPaused ) {
+					if ( ( player.toolTipIsPriority == false ) || ( player.isServer == false ) ) {
+						drawLocalizedText( gamePausedText, textRect, foreColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					} else {
+						if ( iwcompare( player.unpauseKeyString, toWStr( "" ) ) == false ) {
+							drawText( pressF1WeaponKeyText, textRect, foreColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+						} else {
+							drawLocalizedText( pressF1Text, textRect, foreColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+						}
+					}
+				}
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+}

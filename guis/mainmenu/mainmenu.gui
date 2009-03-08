@@ -1,0 +1,1955 @@
+
+#include <guis/common/utility.include>
+
+#include "defines.include"
+#include "colors.include"
+#include "effects.include"
+#include "cvars.include"
+#include "demonware.include"
+#include "effects.include"
+#include "materials.include"
+#include "signin.include"
+#include "utility.include"
+
+#include <guis/common/colors.include>
+#include <guis/common/defs.include>
+#include <guis/common/materials.include>
+
+#include "components/button.include"
+#include "components/check.include"
+#include "components/colorpicker.include"
+#include "components/dialog.include"
+#include "components/dropdown.include"
+#include "components/edit.include"
+#include "components/group.include"
+#include "components/icon.include"
+#include "components/list.include"
+#include "components/menu.include"
+#include "components/pane.include"
+#include "components/progress.include"
+#include "components/radio.include"
+#include "components/slider.include"
+#include "components/tab.include"
+#include "components/tab_page.include"
+#include "components/tooltip.include"
+#include "components/window.include"
+
+#define INTRO_MOVIE_UNPLAYED -1
+#define INTRO_MOVIE_1 1
+#define INTRO_MOVIE_COMPLETE 9999
+
+#define USE_RENDERWORLD
+
+#define NEWS_TICKER_SCROLL_SPEED 1
+#define NEWS_TICKER_DISPLAY_TIME 4
+
+gui mainMenu {
+	properties {
+		float 		flags		= immediate( flags ) | GUI_SHOWCURSOR | GUI_FRONTEND | GUI_FULLSCREEN | GUI_TOOLTIPS | GUI_CATCH_ALL_EVENTS;
+		string	  	bindContext = "menu";	
+
+		float 		serverMode 			= FS_INTERNET;
+		float 		serverRefreshMode 	= FSM_NEW;
+		float		selectedServer 		= -1;
+		
+		float		refreshProgress		= 0;	// time until next auto-refresh of the current server
+
+		string 		nextCallbackWindow;
+		string 		nextCallback;
+		string 		disconnectCallbackWindow;
+		string 		disconnectCallback;
+		string		classSelection;
+		string		activeTab;
+		float		cursorReset = false;
+		
+		float	  	clickOnCreditsToExit = false;
+		float  	  	onConnectionLost = 0;
+		float  	  	oldSDNetState = 0;
+		handle 		noLimitText = localize( "guis/mainmenu/nolimit" );
+		handle 		disabledText = localize( "guis/mainmenu/botsdisabled" );
+		float		initialVersionCheckDone = false;
+		float		numHotServers = 0;
+		
+		handle		infoIcon 			= cacheMaterial( "infoIcon", 		"_st icon_information" );  		
+		
+		handle 		levelPreview		= cacheMaterial( "levelPreview",	"levelshot" );
+		handle 		campaignPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
+		handle		rankedIcon			= cacheMaterial( "ranked", 			"_st ranked" );
+		handle		punkBusterIcon		= cacheMaterial( "pb", 				"_st punkbuster" );		
+		
+		float		allowLAN = true;
+		float		allowBots = true;
+		wstring		messageTimeStamp;
+		float		customRefreshActive = false;
+		
+		float		loginCanceled = 0;
+	}
+	_dialog_container
+	_menu_icons
+	_crosshair_materials
+	_monitor_music_volume
+	
+	// init window classes
+	_btn_init
+	_dlg_init
+	_wnd_init
+	_chk_init
+	_lst_init
+	_rad_init
+	_tab_init
+	_tabs_init
+	
+	_progress_timeline( prgNetProgressProgress )
+	_progress_timeline( prgMessageBoxProgress )	
+	_progress_timeline( prgUpdateProgressProgress )
+#if !defined( SD_DEMO_BUILD )
+	_progress_timeline( prgFriendProgress )	
+	_progress_timeline( prgTeamsProgress )	
+#endif
+	materials {
+		"logo_sd" 				"guis/assets/qet/logo_sd_color"
+		"logo_id" 				"guis/assets/qet/logo_id"
+		"logo_atvi" 			"guis/assets/qet/logo_atvi"
+		"logo_nerve" 			"guis/assets/qet/logo_nerve"
+		"etqw_logo"				"guis/assets/mainmenu/etqw_logo"
+		"logo_bink"				"guis/assets/qet/logo_bink"
+				
+		"mainbar_fill_tl"		"guis/assets/mainmenu/sheet_fill, rect( 0, 64, 241, 48 )"
+		"mainbar_fill_l"		"guis/assets/mainmenu/sheet_fill, rect( 241, 64, 17, 48 )"
+		"mainbar_fill_c"		"guis/assets/mainmenu/sheet_fill, rect( 272, 64, 2, 48 )"
+		"mainbar_fill_r"		"guis/assets/mainmenu/sheet_fill, rect( 374, 64, 17, 48 )"
+		"mainbar_fill_tr"		"guis/assets/mainmenu/sheet_fill, rect( 389, 64, 123, 48 )"
+			
+		"mainbar_tl"			"guis/assets/mainmenu/sheet_add, rect( 0, 0, 241, 48 )"
+		"mainbar_l"				"guis/assets/mainmenu/sheet_add, rect( 241, 0, 17, 48 )"
+		"mainbar_c"				"guis/assets/mainmenu/sheet_add, rect( 272, 0, 2, 48 )"
+		"mainbar_r"				"guis/assets/mainmenu/sheet_add, rect( 374, 0, 17, 48 )"
+		"mainbar_tr"			"guis/assets/mainmenu/sheet_add, rect( 389, 0, 123, 48 )"
+		
+		"scanlines"				"guis/assets/mainmenu/scanlines"
+		"stroggfleet_bg"		"models/guis/assets/mainmenu/stroggfleet_bg"
+		"stroggfleet_mom"		"models/guis/assets/mainmenu/stroggfleet_mom"
+
+        "friends/online"		"guis/assets/icons/icons_sheet1, rect( 16, 17, 16, 16 )"
+		"friends/offline"		"guis/assets/icons/icons_sheet1, rect( 32, 17, 16, 16 )"
+		"friends/blocked"		"guis/assets/icons/icons_sheet1, rect( 48, 17, 16, 16 )"
+		"friends/newmessage"	"guis/assets/icons/icons_sheet1_flash, rect( 64, 17, 16, 16 )"
+		"friends/newevent"		"guis/assets/icons/icons_sheet1_flash, rect( 80, 17, 16, 16 )"
+		"friends/pending"		"guis/assets/icons/icons_sheet1_flash, rect( 112, 17, 16, 16 )"
+		"friends/invited"		"guis/assets/icons/icons_sheet1, rect( 96, 17, 16, 16 )"
+		"friends/onserver"		"guis/assets/icons/icons_sheet1, rect( 0, 16, 16, 16 )"
+		
+		"hotserver"				"guis/assets/icons/icons_sheet2, rect( 0, 0, 16, 16 )"
+		"chevrons"				"guis/assets/icons/icons_sheet2, rect( 16, 0, 32, 16 )"
+		"chevrons_flipped"		"guis/assets/icons/icons_sheet2, rect( 16, 0, 32, 16 ) flipX"
+																																			
+		"stats_separator"		"guis/assets/mainmenu/sheet_add, rect( 227, 224, 2, 16 )"
+		
+		"cinematic"				"_cinematicGui_YUV"
+		"connected"				"guis/assets/mainmenu/sheet_add, rect( 427, 194, 84, 44 )"
+		
+		"sdGameRulesObjective"	"guis/assets/icons/gametypes, rect( 0, 0, 32, 32 )"
+		"sdGameRulesCampaign"	"guis/assets/icons/gametypes, rect( 32, 0, 32, 32 )"
+		"sdGameRulesStopWatch"	"guis/assets/icons/gametypes, rect( 64, 0, 32, 32 )"
+		"_unknownGameType"		"guis/assets/icons/gametypes, rect( 96, 0, 32, 32 )"
+		
+		// news window
+		"news_arrow_next"		"guis/assets/mainmenu/sheet_add, rect( 336, 243, 11, 11 ) "
+		"news_arrow_prev"		"guis/assets/mainmenu/sheet_add, rect( 336, 243, 11, 11 ) flipX"
+		
+		"pane_r"				"guis/assets/mainmenu/sheet_fill, rect( 131, 167, 8, 4 )"
+#if !defined( SD_DEMO_BUILD )			
+		"community_site"		"guis/assets/mainmenu/community_site"
+		"stats_site"			"guis/assets/mainmenu/stats_site"
+#endif		
+	}
+	
+#if defined( SD_DEMO_BUILD )	
+	materials {
+		"quit_bg"			"guis/assets/mainmenu/demo/merged_bg"
+        "buy_now"			"guis/assets/mainmenu/demo/buynow"
+        "shot1"				"guis/assets/mainmenu/demo/screenshot01"
+        "shot2"				"guis/assets/mainmenu/demo/screenshot02"
+        "shot3"				"guis/assets/mainmenu/demo/screenshot03"
+        "shot4"				"guis/assets/mainmenu/demo/screenshot04"
+        "shot5"				"guis/assets/mainmenu/demo/screenshot05"
+        "shot6"				"guis/assets/mainmenu/demo/screenshot06"
+        "shot7"				"guis/assets/mainmenu/demo/screenshot07"
+        "shot8"				"guis/assets/mainmenu/demo/screenshot08"
+        "shot9"				"guis/assets/mainmenu/demo/screenshot09"
+        "classhelp"			"guis/assets/mainmenu/demo/quickhelp, rect( 4, 3, 60, 44 )"
+        "territory"			"guis/assets/mainmenu/demo/quickhelp, rect( 73, 2, 48, 48 )"
+        "gdfTeam"			"guis/assets/mainmenu/demo/quickhelp, rect( 4, 53, 115, 85 )"
+        "stroggTeam"		"guis/assets/mainmenu/demo/quickhelp, rect( 4, 140, 115, 85 )"
+        
+        "critical_class"	"guis/assets/icons/icons_sheet1, rect( 32, 0, 16, 16 )"
+        
+        "hint"				"hud/hint/global"
+        "obj1"				"hud/icons/missionsystem/obj_destroy"
+        "obj2"				"hud/icons/missionsystem/obj_destroy_drone"
+        "obj3"				"hud/icons/missionsystem/obj_document"
+        "obj4"				"hud/icons/missionsystem/obj_defend"
+        "obj5"				"hud/icons/missionsystem/obj_mcp"
+        "obj6"				"hud/icons/missionsystem/obj_goal"
+        "obj7"				"hud/icons/missionsystem/obj_build"
+        
+        "task1"				"hud/icons/missionsystem/mis_covert_ops"
+        "task2"				"hud/icons/missionsystem/mis_engineer"
+        "task3"				"hud/icons/missionsystem/mis_field_ops"
+        "task4"				"hud/icons/missionsystem/mis_medic"
+        "task5"				"hud/icons/missionsystem/mis_soldier"
+        "task6"				"hud/icons/missionsystem/mis_any_class"
+        "task7"				"hud/icons/missionsystem/mis_spawn"
+        "task8"				"hud/icons/missionsystem/mis_revive"
+        "task9"				"hud/icons/missionsystem/mis_spawnhost"
+        "task10"			"hud/icons/missionsystem/mis_destroy_spawnhost"
+	}
+#endif
+
+	sounds {
+		"video/intro"	"video/intro"		
+		// played when adjusting the volume slider
+		"volumesound"	"sounds/weapons/assaultrifle/fire"
+		"mainmenu"		"sounds/music/mainmenu"
+	}
+
+	partialLoadModels {
+		"models/guis/assets/mainmenu/earth2.lwo" ""
+		"models/guis/assets/mainmenu/space.lwo" ""
+		"models/guis/assets/mainmenu/stars.obj" ""
+		"models/guis/assets/mainmenu/stroggfleet_bg.lwo" ""
+		"models/guis/assets/mainmenu/stroggfleet_carrier.lwo" ""
+		"models/guis/assets/mainmenu/stroggfleet_fregate.lwo" ""
+		"models/guis/assets/mainmenu/stroggfleet_cruiser.lwo" ""
+		"models/guis/assets/mainmenu/stroggfleet_mom.lwo" ""
+	}
+	
+	// no trailing / on the paths
+	touchFolders {
+		"guis/mainmenu/dialogs/credits" ".dat"
+		"specs" ".dat"
+	}
+	
+	// Update system monitoring
+	events {
+		onActivate {
+			postNamedEvent( "checkUpdates" );
+		}
+		onDeactivate {
+			if ( gui.clickOnCreditsToExit == true ) {
+				gui.clickOnCreditsToExit = false;
+				_pop_page
+			}
+		}
+		onPropertyChanged "updates.state" {
+			postNamedEvent( "checkUpdates" );
+		}
+		onNamedEvent "checkUpdates" {
+			if( ( updates.state == UPDATE_PROMPTING ) ||
+				( updates.state == UPDATE_DOWNLOADING ) ||
+				( updates.state == UPDATE_PROMPT_DL_FAILED ) ||
+				( updates.state == UPDATE_PROMPT_READY ) ||
+				( updates.state == UPDATE_PROMPT_READY ) ) {
+				_show_input( Update )
+			} else {
+				if( dlgUpdate.visible ) {
+					_close_input
+				}	
+			}			
+		}
+	}	
+
+	windowDef desktop {
+		properties {
+			color 	backColor 	= 0,0,0,1;
+			float   flags 		= immediate( flags ) | WF_CAPTURE_KEYS;
+			rect	rect		= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			string 	username;
+			string	password;
+			float 	activated 	= false;
+		}
+
+		events {
+			onCreate {
+				globals.messageBox.message = gui.blankWStr;
+				globals.messageBox.title = -1;
+				globals.messageBox.type = -1;
+				globals.messageBox.active = 0;
+
+				globals.introMovies.state = INTRO_MOVIE_UNPLAYED;
+			}
+
+			onPropertyChanged "globals.introMovies.state" {
+				postNamedEvent( "beginUI" );							
+			}
+			
+			onCancel {
+				if( gui.generalStringAvailable( "menu" ) ) {
+					if( compare( gui.activeDialog, "" ) == false ) {
+						_close_top_dialog
+					}				
+					if( compare( gui.getGeneralString( "menu" ), "main" ) == false ) {
+						_pop_page
+						return;
+					}
+				}
+				if( globals.game.isRunning && gui.clickOnCreditsToExit == false ) {
+					gui.stopMusic();
+					gui.activateMenuSoundWorld( false );
+			    	gui.deactivate();
+				} 
+			}
+
+			onActivate {
+				gui.activateMenuSoundWorld( true );
+				
+				gui.clearGeneralStrings( "menu" );
+				gui.activePane = "";
+				gui.activeDialog = "";
+				// avoid resetting messages from the server
+				if( gui.dlgMessageBox.visible == false ) {
+					gui.activeInput = "";
+				}
+				gui.activePopup = "";
+							
+				if ( sdnet.state > SS_DISABLED ) {
+					postNamedEvent( "beginUI" );
+				}
+				timeline.music.resetTime( 0 );
+			}
+			onNamedEvent "beginUI" {
+				if( globals.introMovies.state != INTRO_MOVIE_COMPLETE ) {
+					gui.cursorSize = 0, 0;
+					return;
+				}
+				
+				// see if we can auto-login
+				username = gui.getCVar( "net_accountName" );
+				password = gui.getCVar( "net_accountPassword" );
+				
+				gui.setCVar( "net_accountName", "" );
+				gui.setCVar( "net_accountPassword", "" );
+				
+				if( compare( username, "" ) || sdnet.activeUserState == US_ONLINE /* should never happen */ ) {
+					if ( sdnet.hasActiveUser > 0 ) {
+						_close_top_dialog;
+						_push_page( main );
+						
+						if( compare( gui.getCVar( "net_autoConnectServer" ), "" ) == false && sdnet.activeUserState == US_ACTIVE) {
+							gui.tabMain_Play.postNamedEvent( "onAction" );
+						}
+					} else {
+						_show_single_dialog( login );
+					}				
+				} else {
+					// switch to the specified user and try to login
+					_close_top_dialog;
+					_push_page( main );
+					
+					activated = false;
+					if( icompare( sdnet.activeUsername, username ) == false )  {
+						if( compare( sdnet.activeUsername, "" ) == false ) {
+							sdnet.deactivateUser();
+						}
+						activated = sdnet.activateUser( username );
+					} else {
+						activated = true;
+					}
+						
+					if( activated ) {
+#if !defined( SD_DEMO_BUILD )					
+						sdnet.accountSetPassword( password );
+#endif						
+						gui.tabMain_Play.postNamedEvent( "onAction" );
+					} else {
+						_show_single_dialog( login );			
+					}
+				}
+				
+				if( !gui.cursorReset ) {
+					gui.cursorSize = 32, 32;
+					gui.cursorPos = SCREEN_WIDTH * 0.5, SCREEN_HEIGHT * 0.5;
+					gui.cursorReset = true;
+					gui.esrbNotice.colorMultiplier.a = 1;
+					gui.esrbNotice.changeZOrder( ZO_BACK );
+				}				
+				
+				timeline.music.resetTime( 0 );
+				if( gui.initialVersionCheckDone == false ) {
+					gui.consoleCommand( "checkNewVersion" + _newline );
+					gui.initialVersionCheckDone = true;
+				}				
+			}
+			onPropertyChanged "sdnet.connectFailed" {
+				if( globals.introMovies.state == INTRO_MOVIE_COMPLETE ) {
+					_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+					_show_popup( confirmation )
+				}
+			}			
+			onPropertyChanged "gui.loginCanceled" {
+				// make sure that subsequent logins don't try to auto-connect
+				gui.setCVar( "net_autoConnectServer", "" );
+			}
+			onPropertyChanged "sdnet.state" {
+				if ( gui.oldSDNetState == SS_DISABLED && sdnet.state >= SS_INITIALIZED ) {
+					// initial startup
+					postNamedEvent( "beginUI" );
+				}
+				if ( gui.oldSDNetState == SS_ONLINE && sdnet.state == SS_INITIALIZED ) {
+					if ( sdnet.disconnectReason > 1 ) {
+						// unexpected disconnect
+						gui.onConnectionLost = immediate( gui.onConnectionLost + 1 );
+						_setup_confirmation_ok_error( sdnet.disconnectString );
+						_show_popup( confirmation )
+					}
+				}
+
+				gui.oldSDNetState = immediate( sdnet.state );
+			}
+#if !defined( SD_DEMO_BUILD )
+			onQueryTooltip {
+				if( containsPoint( gui.tabMain_Play.iconRect, gui.cursorPos.x, gui.cursorPos.y ) && ( sdnet.hasPendingTeamEvents || sdnet.hasPendingFriendEvents ) ) {
+					toolTipText = localizeArgs( "guis/mainmenu/tooltips/newevents" );				
+					
+					return;				
+				}
+				tooltipText = gui.blankWStr;
+			}
+			onKeyDown "mouse1" {
+				if( containsPoint( gui.tabMain_Play.iconRect, gui.cursorPos.x, gui.cursorPos.y ) && ( sdnet.hasPendingTeamEvents || sdnet.hasPendingFriendEvents ) ) {
+					gui.tabMain_Play.postNamedEvent( "onAction" );
+				}				
+			}
+#endif			
+		}
+		timeline music {
+			onTime 0 {
+				if( globals.introMovies.state == INTRO_MOVIE_COMPLETE ) {
+					gui.playMusic( "mainmenu" );
+					gui.fadeSoundClass( 1, -60, 0 );
+				}
+			}
+			
+			onTime 250 {
+				if( globals.introMovies.state == INTRO_MOVIE_COMPLETE ) {
+					gui.fadeSoundClass( 1, gui.getCVarFloat( "s_volumeMusic_dB" ), 1000 );
+				}
+			}
+		}
+	}
+
+
+#ifdef USE_RENDERWORLD
+	windowDef background {
+		type renderWorld;
+		properties {
+			string 	atmosphere 	= "main_menu";
+			rect	rect		= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+		windowDef spaceModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 0, 0, -300;
+				string 	modelName = "models/guis/assets/mainmenu/space.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+		windowDef earthModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 1700, 730, -420;
+				vec3	modelRotation = 0, 155, 0;
+				string 	modelName = "models/guis/assets/mainmenu/earth2.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+		windowDef starModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 0, 0, 0;
+				string 	modelName = "models/guis/assets/mainmenu/stars.obj";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+
+		windowDef camera {
+			type renderCamera;
+			properties {
+				//string cameraAnim = "models/cameras/camera_test.md5camera";
+				//vec3 cameraOrigin = -2000, 0, 0;
+			}
+		}
+		
+		windowDef fleetModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 180, 20, -30;
+				string 	modelName = "models/guis/assets/mainmenu/stroggfleet_bg.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+
+		windowDef carrierModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 180, -30, -30;
+				string 	modelName = "models/guis/assets/mainmenu/stroggfleet_carrier.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+
+		windowDef frigateModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 160, -30, -10;
+				string 	modelName = "models/guis/assets/mainmenu/stroggfleet_fregate.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+
+		windowDef cruiserModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 140, -550, 30;
+				string 	modelName = "models/guis/assets/mainmenu/stroggfleet_cruiser.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}
+
+		windowDef mothershipModel {
+			type renderModel;
+			properties {
+				vec3	modelOrigin = 400, 900, -200;
+				string 	modelName = "models/guis/assets/mainmenu/stroggfleet_mom.lwo";
+				float 	visible = globals.introMovies.state == INTRO_MOVIE_COMPLETE;
+			}
+		}				
+	}
+	
+	timeLine earthModel {
+		onTime 0 {
+			gui.earthModel.modelRotation.y = transition( 155, 515, 960000 );
+		}
+		onTime 960000 {
+			resetTime( 0 );
+		}
+	}
+
+	timeLine carrierModel {
+		onTime 0 {
+			gui.carrierModel.modelOrigin.y = transition( -30, 500, 480000 );
+			gui.carrierModel.modelOrigin.z = transition( -30, -100, 480000 );
+		}
+		
+	}
+	
+	timeLine frigateModel {
+		onTime 0 {
+			gui.frigateModel.modelOrigin.y = transition( -30, 700, 240000 );
+			gui.frigateModel.modelOrigin.z = transition( -10, -20, 240000 );
+		}		
+	}
+
+	timeLine cruiserModel {
+		onTime 100000 {
+			gui.cruiserModel.modelOrigin.x = transition( 140, 170, 160000 );
+			gui.cruiserModel.modelOrigin.y = transition( -550, 500, 160000 );
+			gui.cruiserModel.modelOrigin.z = transition( 30, -100, 160000 );
+		}	
+	}
+
+	timeLine mothershipModel {
+		onTime 0 {
+			gui.mothershipModel.modelOrigin.y = transition( 900, -900, 200000 );
+			gui.mothershipModel.modelOrigin.z = transition( -200, -310, 200000 );
+		}	
+	}		
+#endif //USE_RENDERWORLD	
+
+	windowDef partialLoad {
+		properties {
+			color overlayColor	= 0,0,0,0;
+			rect fullScreen		= 0,0, gui.screenDimensions.x, gui.screenDimensions.y;
+			float allowEvents 	= false;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.whiteMaterial, fullScreen, overlayColor );
+				gui.scriptPushFloat( false );
+			}
+			onActivate {
+				if( globals.game.isRunning ) {
+					overlayColor.a = 1;
+					timeline.partialLoad.active = false;				
+				}
+			}
+			onPropertyChanged "globals.game.isRunning" {
+				if( globals.game.isRunning ) {
+					overlayColor.a = 1;
+					timeline.partialLoad.active = false;
+				} else {
+					timeline.partialLoad.active = true;
+					timeline.partialLoad.resetTime( 0 );
+				}
+			}
+		}
+		timeline partialLoad {
+			properties {
+				float active = false;
+			}
+			onTime 500 {
+				if( gui.isBackgroundLoadComplete() ) {
+					overlayColor.a = transition( overlayColor.a, 0, 2000 );
+					active = false;
+					return;
+				}
+				resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef scanlines {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "scanlines";
+			rect	rect	= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+	}
+
+	windowDef etqw_logo {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "etqw_logo";
+			rect	rect	= CENTER_X - ( rect.w * 0.5 ), 330, 340, 85;
+			float visible = compare( gui.activeDialog, "" ) == true || compare( gui.activeDialog, "login" );			
+		}
+
+#ifdef SD_BUILD_TAG
+		properties {
+			wstring betaText = toWStr( SD_BUILD_TAG );
+		}
+		events {
+			onPostDraw {
+				drawText( betaText, "absoluteRect.x, absoluteRect.y, absoluteRect.w, absoluteRect.h + 15", "0.8,0.1,0.1,1", 20, DTF_CENTER | DTF_BOTTOM | DTF_SINGLELINE | DTF_DROPSHADOW );
+			}
+		}
+#endif		
+	}
+
+	windowDef mainHeader {
+		properties {
+			rect  rect = 0, 0, SCREEN_WIDTH, 38;
+
+			handle fillMaterialTL 	= gui.cacheMaterial( "hdrFill_tl", "_st mainbar_fill_tl" );
+			handle fillMaterialL 	= gui.cacheMaterial( "hdrFill_l", "_st mainbar_fill_l" );
+			handle fillMaterialC 	= gui.cacheMaterial( "hdrFill_c", "_st mainbar_fill_c" );
+			handle fillMaterialR 	= gui.cacheMaterial( "hdrFill_r", "_st mainbar_fill_r" );
+			handle fillMaterialTR 	= gui.cacheMaterial( "hdrFill_tr", "_st mainbar_fill_tr" );
+			
+			handle addMaterialTL 	= gui.cacheMaterial( "hdrAdd_tl", "_st mainbar_tl" );
+			handle addMaterialL 	= gui.cacheMaterial( "hdrAdd_l", "_st mainbar_l" );
+			handle addMaterialC 	= gui.cacheMaterial( "hdrAdd_c", "_st mainbar_c" );
+			handle addMaterialR 	= gui.cacheMaterial( "hdrAdd_r", "_st mainbar_r" );
+			handle addMaterialTR 	= gui.cacheMaterial( "hdrAdd_tr", "_st mainbar_tr" );
+			
+			rect rectTL 	= 0, 0, ( SCREEN_WIDTH - 157 ) * 0.75f, 40;
+			rect rectL 		= rectTL.w, 0, 17, 40;
+			rect rectC 		= rectL.x + rectL.w, 0, ( SCREEN_WIDTH - 157 ) * 0.25f, 40;
+			rect rectR 		= rectC.x + rectC.w, 0, 17, 40;
+			rect rectTR 	= rectR.x + rectR.w, 0, 123, 40;
+			
+			color fillColor = 0,0,0,1;
+			color addColor	= 0.055, 0.267,0.373, 1;
+			color colorMultiplier = 1,1,1,0;
+		}
+		_fadable
+
+		events {
+			onPreDraw {
+				drawCachedMaterial( fillMaterialTL, rectTL, fillColor );
+				drawCachedMaterial( fillMaterialL, rectL, fillColor );
+				drawCachedMaterial( fillMaterialC, rectC, fillColor );
+				drawCachedMaterial( fillMaterialR, rectR, fillColor );
+				drawCachedMaterial( fillMaterialTR, rectTR, fillColor );
+								
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1.0f, false );
+				drawCachedMaterial( addMaterialTL, rectTL, addColor );
+				drawCachedMaterial( addMaterialL, rectL, addColor );
+				drawCachedMaterial( addMaterialC, rectC, addColor );
+				drawCachedMaterial( addMaterialR, rectR, addColor );
+				drawCachedMaterial( addMaterialTR, rectTR, addColor );
+				popColor();
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "gui.activePane" {
+				if( compare( gui.activePane, "" ) ) {
+					_fadeout
+				} else {
+					_fadein
+				}
+			}
+		}
+	}
+
+	// ================================================================================
+	// Profile Info
+	// ================================================================================
+	_label_literal( Profile_Username, localizeArgs( "guis/mainmenu/profile", toWStr( sdnet.activeUserName ) ), gui.mainHeader.rectC.x, 23, gui.mainHeader.rectC.w, 16, COLOR_WHITE )
+		properties {
+			vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+			color colorMultiplier = 1,1,1,0;
+			float	flags = immediate( flags ) | WF_TRUNCATE_TEXT;
+		}
+		_fadable
+		events {
+			onPropertyChanged "sdnet.hasActiveUser" "gui.activePane" {
+				if( compare( gui.activePane, "" ) || sdnet.hasActiveUser <= 0 ) {
+					_fadeout;
+					return;
+				}
+				_fadein;
+			}
+		}	
+	_end_label
+	
+	// ================================================================================
+	// Clan Info
+	// ================================================================================
+#if !defined( SD_DEMO_BUILD )	
+	_label_literal( Profile_ClanName, localizeArgs( "guis/mainmenu/claninfo", toWStr( sdnet.teamName ) ) , gui.mainHeader.rectC.x, 7, _fill_to_right_of( desktop ), 16, COLOR_WHITE )
+		properties {
+			vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+			float 	flags = immediate( flags ) | WF_TRUNCATE_TEXT;
+			color 	colorMultiplier = 1,1,1,0;
+		}
+        _fadable
+        events {
+            onPropertyChanged "sdnet.hasActiveUser" "gui.activePane" "sdnet.teamName" {
+				if( compare( gui.activePane, "" ) || sdnet.hasActiveUser <= 0 || compare( sdnet.teamName, "" ) ) {
+				    _fadeout;
+				    return;
+				}
+				_fadein;
+            }
+        }
+	_end_label
+#endif	
+
+// ================================================================================
+// Main menu pane
+// ================================================================================
+	_pane( main )
+		events {
+			onCreate {
+				callSuper();
+				// disable the focus flag that's auto-set when we have key event handlers
+				flags = immediate( flags ) & ~WF_ALLOW_FOCUS;
+			}
+		}
+
+		// ================================================================================
+		// Play Online
+		// ================================================================================
+		_tab( main_Play, _left( paneMain ), _center( paneMain, height ) )			
+			_button_action( _signin_button( name, "onNext" ) )
+#if !defined( SD_DEMO_BUILD )			
+			_button_disable_if( "sdnet.hasAccount", sdnet.hasAccount == false )
+#endif			
+			_signin_procedure
+
+			properties {
+				handle localizedText = localize( "guis/mainmenu/playonline" );
+				string autoConnectServer;
+			}
+			events {
+				onNamedEvent "onNext" {
+					gui.nextCallbackWindow = "";
+					gui.nextCallback = "";
+					if( gui.serverMode == FS_LAN ) {
+						gui.serverMode = FS_INTERNET;
+					}
+					_push_page( play )
+					
+					autoConnectServer = gui.getCVar( "net_autoConnectServer" );
+					if( compare( autoConnectServer, "" ) == false ) {
+						gui.consoleCommand( "connect " + autoConnectServer + _newline );
+						gui.setCVar( "net_autoConnectServer", "" );
+					}
+				}
+				
+#if !defined( SD_DEMO_BUILD )	
+				
+				onQueryToolTip {
+					if( allowEvents ) {
+						if( sdnet.hasAccount && sdnet.activeUserState != US_ONLINE ) {
+							toolTipText = localizeArgs( "guis/mainmenu/clicktologin" );
+							return;
+						}
+												
+						if( sdnet.hasPendingTeamEvents || sdnet.hasPendingFriendEvents ) {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/newevents" );				
+							return;
+						}
+					}
+					toolTipText = gui.blankWStr;
+				}
+#endif		
+			}
+#if !defined( SD_DEMO_BUILD )
+			properties {
+				handle pendingIcon = gui.cacheMaterial( "pendingClan", "_st friends/newevent" );
+				rect iconRect = absoluteRect.x - 12, absoluteRect.y + 2, 12, 12;
+				color iconColor = 0.5, 0.5, 0.5, 1;
+			}
+			events {
+				onPostDraw {
+					callSuper();
+					if( sdnet.hasPendingTeamEvents || sdnet.hasPendingFriendEvents ) {
+						drawCachedMaterial( pendingIcon, iconRect, iconColor );
+					}
+				}	
+			}
+			timeline icon {
+				properties {
+					float active = sdnet.hasPendingTeamEvents || sdnet.hasPendingFriendEvents;
+				}
+				onTime 0 {
+					iconColor = transition( iconColor, COLOR_WHITE, 500 );
+				}
+				onTime 500 {
+					iconColor = transition( iconColor, "0.5, 0.5, 0.5, 1", 500 );
+				}
+				onTime 1000 {
+					resetTime( 0 );
+				}
+			}
+#endif						
+		_end_tab
+
+		// ================================================================================
+		// Play LAN
+		// ================================================================================
+		_tab( main_PlayLAN, _to_right_of( tabMain_Play ) + PADDING, _center( paneMain, height ) )
+			_button_action(
+				if( gui.serverMode == FS_INTERNET ) {
+					gui.serverMode = FS_LAN;
+				}
+				_push_page( play )
+			)
+			_button_disable_if( "gui.allowLAN", gui.allowLAN == false )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/playlan" );
+			}
+		_end_tab
+		
+		// ================================================================================
+		// Play Comp
+		// ================================================================================
+		_tab( main_PlayComp, _to_right_of( tabMain_PlayLAN, width ) + PADDING, _center( paneMain, height ) )			
+			_button_action( _push_page( playComputer ) )
+			_button_disable_if( "gui.allowBots", gui.allowBots == false )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/playcomp" );
+			}
+		_end_tab		
+
+		// ================================================================================
+		// Player Stats
+		// ================================================================================
+		_tab( main_PlayerStats, _to_right_of( tabMain_PlayComp ) + PADDING, _center( paneMain, height ) )
+#if !defined( SD_DEMO_BUILD )			
+			_button_action( _signin_button( name, "onNext" ) )
+			_button_disable_if( "sdnet.hasAccount", sdnet.hasAccount == false )
+			_signin_procedure
+#else 		
+			_button_action( _push_page( playerStats ); )
+#endif						
+			properties {
+				handle localizedText = localize( "guis/limbo/persistentstats" );
+			}
+			events {
+				onNamedEvent "onNext" {
+					_push_page( playerStats );
+				}
+#if !defined( SD_DEMO_BUILD )				
+				onQueryToolTip {
+					if( allowEvents ) {
+						if( sdnet.hasAccount && sdnet.activeUserState != US_ONLINE && allowEvents ) {
+							toolTipText = localizeArgs( "guis/mainmenu/clicktologin" );
+							return;
+						}
+					}
+					toolTipText = gui.blankWStr;					
+				}
+#endif					
+			}
+		_end_tab
+
+		// ================================================================================
+		// Options
+		// ================================================================================
+		_tab( main_Options, _to_right_of( tabMain_PlayerStats ) + PADDING, _center( paneMain, height ) )			
+			_button_action( _push_page( options ); )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/options" );
+			}
+		_end_tab
+		
+		// ================================================================================
+		// Help
+		// ================================================================================
+#if defined( SD_DEMO_BUILD )	
+		_tab( main_Help, _to_right_of( tabMain_Options ) + PADDING, _center( paneMain, height ) )			
+			_button_action( _push_page( help ); )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/help" );
+			}
+		_end_tab		
+#endif 
+
+		// ================================================================================
+		// Sign Out
+		// ================================================================================
+		_tab( main_Signout, _to_left_of( tabMain_Quit ) - PADDING, _center( paneMain, height ) )			
+			properties {
+				handle 	localizedText 	= localize( "guis/mainmenu/logoff" );
+				float	taskActive		= 0;
+			}
+
+			_button_action(
+				_setup_confirmation_yesno( "guis/mainmenu/logoffprompt", name, "onYes", "onNo" )
+				_show_popup( confirmation )
+				gui.focusedWindow = "btnConfirmationNo";
+			)
+			events {
+			    onNamedEvent "onYes" {
+			        _close_popup;
+					
+					gui.consoleCommand( "disconnect" + _newline );
+
+					if ( sdnet.activeUserState == US_ONLINE ) {
+						// user is online
+						taskActive = 1;
+						_show_popup( sdNetProgress )
+#if !defined( SD_DEMO_BUILD )
+						sdnet.storeProfile();
+#else
+						sdnet.signOut();
+#endif
+					} else {
+						gui.clearGeneralStrings( "menu" );
+						gui.activePane = "";
+
+						sdnet.deactivateUser();
+						_show_single_dialog( login )
+					}
+				}
+				onNamedEvent "onNo" {
+				    _close_popup;
+				}
+				onPropertyChanged "sdnet.taskActive" {
+					if ( sdnet.taskActive == 0 ) {
+						if ( taskActive == 1 ) {
+							taskActive = 0;
+#if !defined( SD_DEMO_BUILD )
+							// process result
+							if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+								taskActive = 2;
+								sdnet.signOut();
+								return;
+							}
+
+							// process error
+
+							_setup_confirmation_ok_error( sdnet.taskResultMessage )
+							_show_popup( confirmation )							
+
+							// FIXME: signout anyway - writeCount should guard for badness.
+							// But maybe we should print a warning in a popup anyway?
+							
+							return;
+						}
+						if ( taskActive == 2 ) {
+							taskActive = 0;
+#endif
+							// this can't really error out code wise
+							
+							gui.clearGeneralStrings( "menu" );
+							gui.activePane = "";
+							
+							sdnet.deactivateUser();
+							_show_single_dialog( login )
+
+							return;
+						}
+					}
+				}
+			}
+		_end_tab
+
+		// ================================================================================
+		// Quit
+		// ================================================================================
+		_tab( main_Quit, _right( paneMain ) + PADDING, _center( paneMain, height ) )		
+			_button_action( _setup_confirmation_yesno( "guis/mainmenu/quitgametext", self.name, "OnYes", "OnNo" );
+				_show_popup( confirmation )
+				gui.focusedWindow = "btnConfirmationNo";
+			)
+
+			properties {
+				handle localizedText = localize( "guis/mainmenu/quitgame" );
+			}
+			events {
+				onNamedEvent "OnYes" {
+					_close_popup;
+					gui.clearGeneralStrings( "menu" );
+					gui.activePopup = "";
+					gui.activeDialog = "";
+					gui.activePane = "";
+					gui.activeInput = "";
+					gui.clickOnCreditsToExit = true;
+					_push_page( credits );
+				}
+				onNamedEvent "OnNo" {
+					_close_popup;
+				}
+			}
+		_end_tab
+
+	_end_pane
+
+
+
+	// ================================================================================
+	// Player Stats subpane
+	// ================================================================================
+	_pane( playerStats )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( playerStats ) ) {
+					_show_single_dialog( playerStats );
+				}
+			}
+		}
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( PlayerStats_Back, _right_pane, _center( panePlayerStats, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+ 	_end_pane
+ 	
+	// ================================================================================
+	// Play Computer subpane
+	// ================================================================================
+	_pane( PlayComputer )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( playComputer ) ) {
+					_show_single_dialog( playComp );
+				}
+			}
+		}
+
+		// ================================================================================
+		// Back
+		// ================================================================================		
+		_tab( playComputer_Back, _right_pane, _center( panePlayComputer, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab		
+ 	_end_pane 	
+
+
+
+	// ================================================================================
+	// Play subpane
+	// ================================================================================
+	_pane( play )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( play ) ) {
+					_show_single_dialog( joinGame );
+				}
+			}
+		}
+
+		// ================================================================================
+		// Join game
+		// ================================================================================
+
+		_check( ClientPunkBuster, localize( "guis/mainmenu/punkbuster" ), $evalfloat( PADDING * 2 ), _center( panePlay, height ), 120 )
+			properties {
+				float visible = icompare( gui.activeDialog, "joinGame" );
+				float initialized = false;
+			}
+			events {
+				onPropertyChanged "visible" {
+					callSuper();
+					checked = gui.getCVarBool( "net_clientPunkbusterEnabled" );
+					initialized = true;
+					if( gui.getCVarBool( "com_clientPunkbusterAvailable" ) == false ) {
+						visible = false;
+						checked = false;
+					}					
+				}
+				onCVarChanged "net_clientPunkbusterEnabled" {
+					checked = gui.getCVarBool( "net_clientPunkbusterEnabled" );
+				}
+				onNamedEvent "checkChanged" {
+					if( initialized == false ) {
+						return;
+					}
+					
+				    if( checked && gui.getCVarBool( "net_clientPunkbusterEnabled" ) == false ) {
+				    	gui.consoleCommand( "pb_cl_enable" + _newline );	
+				    } else {
+				    	if( gui.getCVarBool( "net_clientPunkbusterEnabled" ) == true ) {
+				    		gui.consoleCommand( "pb_cl_disable" + _newline );
+				    	}
+				    }
+				}
+		
+				onPostDraw {
+					callSuper();
+					drawCachedMaterial( gui.punkbusterIcon, "absoluteRect.x - 14, absoluteRect.y - 2, 12, 12", COLOR_WHITE );
+				}			
+			}	
+		_end_check
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( play_Back, _right_pane, _center( panePlay, height ) )
+			
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+	_end_pane
+	
+
+	// ================================================================================
+	// Replay subpane
+	// ================================================================================
+	_pane( replay )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( replay ) ) {
+					_show_single_dialog( replay );
+				}
+			}
+		}
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( replay_Back, _right_pane, _center( paneReplay, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+ 	_end_pane
+ #if !defined( SD_DEMO_BUILD )
+	// ================================================================================
+	// Mods subpane
+	// ================================================================================
+	_pane( mods )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( mods ) ) {
+					_show_single_dialog( mods );
+				}
+			}
+		}
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( mods_Back, _right_pane, _center( paneMods, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+ 	_end_pane
+#endif
+
+ #if defined( SD_DEMO_BUILD )
+ 	// ================================================================================
+	// Mods subpane
+	// ================================================================================
+	_pane( help )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( help ) ) {
+					_show_single_dialog( help );
+				}
+			}
+		}
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( help_Back, _right_pane, _center( paneHelp, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+ 	_end_pane
+ #endif
+	// ================================================================================
+	// Options subpane
+	// ================================================================================
+	_pane( options )
+
+	    // push up the first dialog
+	    events {
+			onNamedEvent "fadeBegin" {
+			    callSuper();
+			    if( _pane_is_active( options ) ) {
+			    	_show_single_dialog( gameSettings );
+			    	gui.activeTab = "tabOptions_GameSettings";
+			    }
+			}
+		}
+		// ================================================================================
+		// Game Settings
+		// ================================================================================
+		_tab( options_GameSettings, _left( paneOptions ), _center( paneOptions, height ) )			
+			_button_action( _show_single_dialog( gameSettings ); )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/gamesettings" );
+				float allowActive = true;
+			}
+		_end_tab
+
+		// ================================================================================
+		// Controls
+		// ================================================================================
+		_tab( options_Controls, _to_right_of( tabOptions_GameSettings, width ) + PADDING, _center( paneOptions, height ) )			
+			_button_action( _show_single_dialog( keyBindings ); )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/controls" );
+				float allowActive = true;
+			}
+		_end_tab
+
+		// ================================================================================
+		// Settings
+		// ================================================================================
+		_tab( options_Settings, _to_right_of( tabOptions_Controls, width ) + PADDING, _center( paneOptions, height ) )
+			
+			_button_action( _show_single_dialog( settings ); )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/settings" );
+				float allowActive = true;
+			}
+		_end_tab
+
+		// ================================================================================
+		// Account
+		// ================================================================================
+#if !defined( SD_DEMO_BUILD )		
+		_tab( options_Account, _to_right_of( tabOptions_Settings, width ) + PADDING, _center( paneOptions, height ) )
+			
+			_button_action( _signin_button( name, "onNext" ) )
+			_button_disable_if( "sdnet.hasAccount", sdnet.hasAccount == false )
+			_signin_procedure
+
+			events {
+				onNamedEvent "onNext" {
+					gui.nextCallbackWindow = "";
+					gui.nextCallback = "";
+					_show_single_dialog( account );
+				}
+				onQueryToolTip {
+					if( allowEvents ) {
+						if( sdnet.hasAccount && sdnet.activeUserState != US_ONLINE ) {
+							toolTipText = localizeArgs( "guis/mainmenu/clicktologin" );
+							return;
+						}
+					}
+					toolTipText = gui.blankWStr;					
+				}						
+			}
+			properties {
+				handle localizedText = localize( "guis/mainmenu/account" );
+				float allowActive = true;
+			}
+		_end_tab
+#endif
+
+		// ================================================================================
+		// Updates
+		// ================================================================================
+#if !defined( SD_DEMO_BUILD )		
+		_tab( options_Updates, _to_right_of( tabOptions_Account, width ) + PADDING, _center( paneOptions, height ) )
+#else
+		_tab( options_Updates, _to_right_of( tabOptions_Settings, width ) + PADDING, _center( paneOptions, height ) )
+#endif		
+			properties {
+				handle localizedText = localize( "guis/mainmenu/update/check" );				
+				float manualUpdate = false;				
+			}
+			_button_action( 
+				manualUpdate = true;
+				gui.consoleCommand( "checkNewVersion" + _newline );
+			)
+			
+			_button_disable_if( "updates.state", updates.state != UPDATE_IDLE )
+
+			events {
+				onPropertyChanged "updates.state" {
+					callSuper();
+					if( updates.state == UPDATE_IDLE ) {
+						manualUpdate = false;
+					}
+				}
+			}
+		_end_tab		
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( options_Back, _right_pane, _center( paneOptions, height ) )
+			
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+	_end_pane
+	
+
+	// ================================================================================
+	// Bindings subpane
+	// ================================================================================
+	_pane( keyBindings )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( keyBindings ) ) {
+					_show_single_dialog( keyBindings );
+					gui.lstKeyBindings.bindCategory = "etqw/movement";
+				}
+			}
+		}
+
+		// ================================================================================
+		// Defaults
+		// ================================================================================
+		_tab( controls_Defaults, _left( paneKeyBindings ), _center( paneKeyBindings, height ) )
+			
+			_button_action(
+				_setup_confirmation_yesno( "guis/mainmenu/resetdefaultkeys", self.name, "OnYes", "OnNo" )
+				_show_popup( confirmation )
+			)
+			events {
+				onNamedEvent "OnYes" {
+					_close_popup;
+					gui.consoleCommand( "exec default.cfg" + _newline );
+					gui.lstKeyBindings.fillFromEnumerator( "keyBindings" );
+				}
+				onNamedEvent "OnNo" {
+					_close_popup;
+				}
+			}
+			properties {
+				handle localizedText = localize( "guis/mainmenu/defaults" );
+			}
+		_end_tab
+
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( controls_BindingsBack, _right_pane, _center( paneKeyBindings, height ) )
+			
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+	_end_pane
+#if 0
+	// ================================================================================
+	// Analogue subpane
+	// ================================================================================
+	_pane( analogue )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( analogue ) ) {
+					_show_single_dialog( analogueSettings );
+				}
+			}
+		}
+	
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( analogue_Back, _right_pane, _center( paneAnalogue, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+			}
+		_end_tab
+	}
+	// ================================================================================
+	// Analogue Dialog
+	// ================================================================================
+	_dialog( analogueSettings, localize( "guis/mainmenu/analogue" ), PADDING, 60, BAR_WIDTH, 360, "noMove", "noDim" )
+		_closable_subdialog
+		_single_dialog( analogueSettings )
+	_end_dialog
+#endif 
+	// ================================================================================
+	// Credits subpane
+	// ================================================================================
+	_pane( credits )
+		events {
+			onNamedEvent "fadeBegin" {
+				callSuper();
+				if( _pane_is_active( credits ) ) {
+					_show_single_dialog( credits );
+				}
+			}
+		}
+		// ================================================================================
+		// Back
+		// ================================================================================
+		_tab( credits_Back, _right_pane, _center( paneCredits, height ) )
+			_button_action( _pop_page; _close_top_dialog; )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/back" );
+				float visible = gui.clickOnCreditsToExit == false;
+			}
+		_end_tab
+	}
+	
+// ================================================================================
+// Odd-man-out buttons
+// ================================================================================	
+	_button( ReturnToGame, PADDING, _bottom( desktop ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/resume" );
+			float	visible = globals.game.isRunning && gui.clickOnCreditsToExit == false;
+			float 	allowEvents = gui.modalDialogActive != true;
+		}
+		_button_action( gui.activateMenuSoundWorld( false ); gui.deactivate(); )
+	_end_button
+
+	_button( Disconnect, _to_right_of( btnReturnToGame ) + 6, _bottom( desktop ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/disconnect" );
+			float	visible = globals.game.isRunning && gui.clickOnCreditsToExit == false;
+			float 	allowEvents = gui.modalDialogActive != true;
+		}
+		_button_action( gui.consoleCommand( "disconnect" + _newline ); )
+	_end_button
+#if !defined( SD_DEMO_BUILD )
+	_button( Mods, _to_left_of( btnReplay ) - 3, _bottom( desktop ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/mods" );
+			float	visible = icompare( gui.activePane, "main" ) == true && gui.serviceMOTD.visible == false;
+			float 	allowEvents = gui.modalDialogActive != true;
+		}
+		_button_action( _push_page( mods ); )
+	_end_button
+#endif
+
+#if !defined( SD_DEMO_BUILD )
+	_button( Replay, _to_left_of( btnCredits ) - 3, _bottom( desktop ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+#else
+	_button( Replay, _right( desktop ), _bottom( desktop ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+#endif	
+		properties {
+			handle localizedText = localize( "guis/mainmenu/replay" );
+			float	visible = icompare( gui.activePane, "main" ) == true && gui.serviceMOTD.visible == false;
+			float 	allowEvents = gui.modalDialogActive != true;
+		}
+		_button_action( _push_page( replay ); )
+	_end_button
+
+#if !defined( SD_DEMO_BUILD )		
+	_button( Credits, _right( desktop ), _bottom( desktop ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/credits" );
+			float	visible = icompare( gui.activePane, "main" ) == true && gui.serviceMOTD.visible == false;
+			float 	allowEvents = gui.modalDialogActive != true;
+		}
+		_button_action( _push_page( credits ); )
+	_end_button
+#endif
+
+// ================================================================================
+// MOTD Ticker
+// ================================================================================
+	windowDef serviceMOTD {
+		type news;
+		properties {
+			rect rect 				= PADDING, _to_bottom_of( dlgJoinGame ) + 3, _fill_to_right_of( desktop ), BUTTON_HEIGHT;
+			float	fontSize 		= 12;
+			float	speed			= NEWS_TICKER_SCROLL_SPEED;
+			vec2	textAlignment	= TA_CENTER, TA_VCENTER;
+#if !defined( SD_DEMO_BUILD )		
+			float	visible			= sdnet.hasAccount && gui.dlgJoinGame.visible;
+#else
+			float	visible			= gui.dlgJoinGame.visible;
+#endif			
+			float	fadeType		= FT_VSCROLL;
+			float	displayTime		= NEWS_TICKER_DISPLAY_TIME;
+			
+			float 	allowEvents 	= gui.modalDialogActive == false;
+			float 	allowChildEvents = gui.modalDialogActive == false;			
+
+			vec4	scratchRect;
+			float	index;
+			
+			handle	arrowPrev;
+			handle	arrowNext;
+			
+			color	prevArrowColor;
+			color	nextArrowColor;
+			
+			float	needMeasure;
+			vec2	measure;
+			
+			float	lineAlpha;
+		}
+		events {
+			onCreate {
+				arrowPrev = gui.cacheMaterial( "news_arrow_prev", "news_arrow_prev" );
+				arrowNext = gui.cacheMaterial( "news_arrow_next", "news_arrow_next" );
+				postNamedEvent( "updatePositioning" );
+			}
+			onActivate {
+				prevArrowColor = COLOR_BUTTON_LINES;
+				nextArrowColor = COLOR_BUTTON_LINES;
+				colorLink = COLOR_TEXT_LINK;
+				needMeasure = true;
+				pauseNews = false;
+				lineAlpha = 0;
+			}
+			
+			// drawing
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_BUTTON_FILL );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_BUTTON_LINES );
+				gui.scriptPushFloat( true );
+			}
+			onPostDraw {
+				if ( needMeasure ) {
+					needMeasure = false;
+					measure = measureText( newsText, absoluteRect, fontSize, DTF_CENTER | DTF_VCENTER );
+				}
+				
+				if ( linkState != US_NONE && allowEvents ) {
+					scratchRect = absoluteRect.x + ( absoluteRect.width / 2.0f ) - ( measure.x / 2.0f ),
+									absoluteRect.y + absoluteRect.height / 2.0f + 4,
+									measure.x,
+									1;
+					drawRect( scratchRect, "colorLink.r, colorLink.g, colorLink.b, colorLink.a * lineAlpha", 1 );
+				}
+			}
+			onDrawButton {
+				index = gui.scriptGetFloatResult();
+
+				if ( index == BR_PREV ) {
+					scratchRect = absoluteRect.x + 2, absoluteRect.y + 2, absoluteRect.height - 4, absoluteRect.height -4;
+					drawCachedMaterial( arrowPrev, scratchRect, prevArrowColor );
+				} else {
+					scratchRect = absoluteRect.x + absoluteRect.width - absoluteRect.height - 2, absoluteRect.y + 2, absoluteRect.height - 4, absoluteRect.height -4;
+					drawCachedMaterial( arrowNext, scratchRect, nextArrowColor );
+				}
+
+				gui.scriptPushVec4( scratchRect );
+			}
+			onPropertyChanged "gui.btnDisconnect.visible" {
+				postNamedEvent( "updatePositioning" );
+			}
+			onNamedEvent "updatePositioning" {
+				needMeasure = true;
+				if( gui.btnDisconnect.visible ) {
+					rect.x = _to_right_of( btnDisconnect ) + 3;
+				} else {
+					rect.x = PADDING;
+				}		
+			}
+			onMouseEnterPrev {
+				prevArrowColor = transition( prevArrowColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				gui.playSound( "boop" );
+			}
+			onMouseExitPrev {
+				prevArrowColor = transition( prevArrowColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+			}
+			onMouseEnterNext {
+				nextArrowColor = transition( nextArrowColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				gui.playSound( "boop" );
+			}
+			onMouseExitNext {
+				nextArrowColor = transition( nextArrowColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+			}
+			onMouseButtonPrevUp {
+				prevNewsItem();
+				gui.playSound( "accept" );
+			}
+			onMouseButtonNextUp {
+				nextNewsItem();
+				gui.playSound( "accept" );
+			}
+			onPropertyChanged "newsText" {
+				needMeasure = true;
+			}
+			onPropertyChanged "linkState" {
+				if ( linkState == US_HIGHLIGHTED_LINK ) {
+					colorLink = COLOR_TEXT_LINK;
+				} else {
+					colorLink = COLOR_WHITE;
+				}
+			}
+			onPropertyChanged "itemState" {
+				// fade in line below text
+				if ( itemState == IS_FIXED ) {
+					lineAlpha = transition( lineAlpha, 1, 500, "0.1, 0.9" );
+				} else {
+					lineAlpha = 0;
+				}
+			}
+
+			// confirmation dialog
+			onMouseUpText {
+				if( wcompare( url, gui.blankWStr ) == true ) {
+					return;
+				}
+				_setup_confirmation_yesnocancel_literal( localizeArgs( "guis/mainmenu/gotourl", url ), name, "onYes", "onNo", "onCancel" )
+				_show_popup( confirmation )
+				pauseNews = true;
+				gui.playSound( "accept" );
+			}			
+			onNamedEvent "onYes" {
+				_close_popup;
+				gotoURL( true );
+				pauseNews = false;
+			}
+			onNamedEvent "onNo" {
+				_close_popup;				
+				gotoURL( false );
+				pauseNews = false;
+			}
+			onNamedEvent "onCancel" {
+				_close_popup;
+				pauseNews = false;
+			}
+		}
+	}	
+	
+#if !defined( SD_DEMO_BUILD )
+	
+// ================================================================================
+// Friends context menu
+// ================================================================================
+	_menu( friendsContext, 0, 0, $evalfloat( BUTTON_WIDTH * 2 ) + 19, 180 )
+		properties {
+			float isMemberValid = compare( gui.lstFriends.currentUser, "" ) == false;
+			float contextAction;
+		}
+		events {
+			onPropertyChanged "gui.onConnectionLost" {
+				if ( visible > 0 ) {
+					visible = 0;
+				}
+			}
+		}
+		_menu_items
+			if( isMemberValid && sdnet.isPendingFriend( gui.lstFriends.currentUser ) ) {
+				_menu_item( toWStr( "<loc ='guis/mainmenu/friendrequest'>" ), "lstFriends", "onContextAction"  )
+				return;
+			}
+			_menu_item( toWStr( "<loc ='guis/mainmenu/addfriend'>" ), "lstFriends", "addFriend"  )			
+			
+			if( isMemberValid &&
+				compare( sdnet.teamName, "" ) == false && 
+				sdnet.isTeamMember( gui.lstFriends.currentUser ) == false &&
+				gui.lstFriends.currentFriendPending == false && 
+				gui.lstFriends.currentFriendInvited == false &&
+				gui.mnuTeamsContext.isOwner ) {
+				_menu_item( toWStr( "<loc ='guis/mainmenu/invitetoclan'>" ), "lstFriends", "inviteToClan"  )				
+			}
+			_menu_divider
+			_menu_item( toWStr( "<loc ='guis/mainmenu/messagefriend'>" ), "lstFriends", "messageFriend"  )
+			_menu_disable_last_item_if( gui.lstFriends.currentFriendPending || gui.lstFriends.currentFriendInvited || !isMemberValid )
+			
+			_menu_item( toWStr( "<loc ='guis/mainmenu/blockfriend'>" ), "lstFriends", "blockFriend"  )
+			_menu_disable_last_item_if( gui.lstFriends.currentFriendPending || gui.lstFriends.currentFriendInvited || !isMemberValid )
+
+			if( gui.lstFriends.currentFriendPending == false && gui.lstFriends.currentFriendInvited == false && isMemberValid ) {
+				if( sdnet.isSelfOnServer() ) {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/invitetoserver'>" ), "lstFriends", "inviteFriend"  )
+				}
+				if( sdnet.isFriendOnServer( gui.lstFriends.currentUser ) ) {
+					_menu_divider
+					_menu_item( toWStr( "<loc ='guis/mainmenu/joinonserver'>" ), "lstFriends", "followToServer"  )
+					_menu_item( toWStr( "<loc ='guis/mainmenu/findserver'>" ), "lstFriends", "selectServer"  )
+				}
+			}
+			_menu_divider
+			_menu_item( toWStr( "<loc ='guis/mainmenu/removeFriend'>" ), "removeFriend", "removeFriend"  )
+			_menu_disable_last_item_if( ( isMemberValid == false || gui.lstFriends.currentFriendPending ) )
+		_end_menu_items
+	_end_menu
+	
+// ================================================================================
+// Clan context menu
+// ================================================================================
+	_menu( teamsContext, 0, 0, $evalfloat( BUTTON_WIDTH * 2 ) + 19, 280 )
+		properties {
+			float isAdmin = sdnet.teamMemberStatus == MS_OWNER || sdnet.teamMemberStatus == MS_ADMIN;
+			float isOwner = sdnet.teamMemberStatus == MS_OWNER;
+			float isMemberValid = compare( gui.lstTeam.currentUser, "" ) == false;
+			float onTeam = compare( sdnet.teamName, "" ) == false;
+			float memberStatus;
+		}
+		events {
+			onPropertyChanged "gui.onConnectionLost" {
+				if ( visible > 0 ) {
+					visible = 0;
+				}
+			}
+		}
+		_menu_items
+			if( sdnet.numPendingClanInvites > 0 ) {
+				_menu_item( toWStr( "<loc ='guis/mainmenu/viewclaninvites'>" ), "lstTeam", "reviewInvites"  )				
+			}
+			if( compare( sdnet.teamName, "" ) ) {				
+				_menu_item( toWStr( "<loc ='guis/mainmenu/createclan'>" ), "lstTeam", "createTeam"  )
+				return;
+			}
+			if( isMemberValid &&
+				sdnet.isFriend( gui.lstTeam.currentUser ) == false && 
+				sdnet.isPendingFriend( gui.lstTeam.currentUser ) == false ) {
+				_menu_item( toWStr( "<loc ='guis/mainmenu/addfriend'>" ), "lstTeam", "addFriend"  )				
+			}			
+			
+			if( isAdmin ) {
+				_menu_item( toWStr( "<loc ='guis/mainmenu/invitemember'>" ), "lstTeam", "inviteMember"  )				
+			}
+			
+			if( isMemberValid ) {
+				_menu_divider
+				_menu_item( toWStr( "<loc ='guis/mainmenu/messagemember'>" ), "lstTeam", "messageMember"  )
+				_menu_disable_last_item_if( gui.lstTeam.currentFriendPending )
+				
+				if( sdnet.isSelfOnServer() && gui.lstTeam.currentFriendPending == false ) {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/invitetoserver'>" ), "lstTeam", "inviteMemberToServer"  )
+				}
+				
+				if( sdnet.isMemberOnServer( gui.lstTeam.currentUser ) ) {
+					_menu_divider
+					_menu_item( toWStr( "<loc ='guis/mainmenu/joinonserver'>" ), "lstTeam", "followToServer"  )	
+					_menu_item( toWStr( "<loc ='guis/mainmenu/findserver'>" ), "lstTeam", "selectServer"  )			
+				}				
+			}			
+			if( isOwner ) {
+				_menu_divider
+				if( isMemberValid ) {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/removemember'>" ), "lstTeam", "removeMember" )
+										
+					memberStatus = sdnet.getMemberStatus( gui.lstTeam.currentUser );
+					_menu_divider
+					_menu_item( toWStr( "<loc ='guis/mainmenu/promotemember'>" ), "lstTeam", "promoteMember" )
+					_menu_disable_last_item_if( gui.lstTeam.currentFriendPending || memberStatus == MS_OWNER || memberStatus == MS_ADMIN )
+					
+					_menu_item( toWStr( "<loc ='guis/mainmenu/demotemember'>" ), "lstTeam", "demoteMember"  )
+					_menu_disable_last_item_if( gui.lstTeam.currentFriendPending || memberStatus == MS_MEMBER )
+
+					_menu_divider
+					_menu_item( toWStr( "<loc ='guis/mainmenu/transferownership'>" ), "lstTeam", "transferOwnership" )					
+					_menu_disable_last_item_if( gui.lstTeam.currentFriendPending )
+				}	
+				_menu_item( toWStr( "<loc ='guis/mainmenu/broadcastMessage'>" ), "lstTeam", "broadcastMessage" )			
+			}
+			if( onTeam ) {
+				_menu_divider
+				if( sdnet.teamMemberStatus == MS_OWNER ) {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/disbandclan'>" ), "lstTeam", "disbandTeam" )
+				} else {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/leaveclan'>" ), "lstTeam", "leaveTeam" )
+				}
+			}			
+		_end_menu_items
+	_end_menu
+	
+#endif
+	
+// ================================================================================
+// Server browser context menu
+// ================================================================================
+	_menu( serverContext, 0, 0, $evalfloat( BUTTON_WIDTH * 2 ) + 19, 240 )
+		properties {
+			float isValid = gui.selectedServer != -1;
+			string targetWindow = "";
+			float isFavorite = false;
+		}
+		_menu_items
+			_menu_item( toWStr( "<loc ='guis/mainmenu/joinserver'>" ), "lstDWServers", "joinCurrent" )
+			_menu_disable_last_item_if( isValid == false )
+			
+			_menu_divider		
+			
+			if( isValid ) {
+				if( isFavorite ) {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/removefavorite'>" ), targetWindow, "toggleFavorite" )
+				} else {
+					_menu_item( toWStr( "<loc ='guis/mainmenu/addfavorite'>" ), targetWindow, "toggleFavorite" )
+				}
+				_menu_disable_last_item_if( isValid == false )
+			}
+			
+			_menu_item( toWStr( "<loc ='guis/mainmenu/copyserverinfo'>" ), targetWindow, "copyServerInfo"  )
+			_menu_disable_last_item_if( isValid == false )			
+		_end_menu_items
+	_end_menu	
+#if !defined( SD_DEMO_BUILD )			
+	#include <guis/mainmenu/dialogs/accountsettings.include>
+	#include <guis/mainmenu/dialogs/addfriend.include>
+#endif
+	#include <guis/mainmenu/dialogs/bindings.include>
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/blockfriend.include>
+//	#include <guis/mainmenu/dialogs/changedetails.include>
+	#include <guis/mainmenu/dialogs/changepassword.include>
+#endif
+	#include <guis/mainmenu/dialogs/confirmation.include>
+	#include <guis/mainmenu/dialogs/connectip.include>
+#if !defined( SD_DEMO_BUILD )
+//	#include <guis/mainmenu/dialogs/creategame.include>
+	#include <guis/mainmenu/dialogs/createteam.include>
+#endif
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/createuser.include>
+#else	
+	#include <guis/mainmenu/dialogs/createuser_anon.include>
+#endif
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/credits.include>
+#else
+	#include <guis/mainmenu/dialogs/credits_demo.include>
+#endif
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/forgottenuser.include>
+#endif
+	#include <guis/mainmenu/dialogs/gamemessage.include>
+	#include <guis/mainmenu/dialogs/gamesettings.include>
+	
+#if defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/help.include>
+#endif	
+	#include <guis/mainmenu/dialogs/intromovies.include>
+//	#include <guis/mainmenu/dialogs/invitemember.include>	
+	#include <guis/mainmenu/dialogs/joingame.include>
+	#include <guis/mainmenu/dialogs/login.include>
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/mods.include>
+	#include <guis/mainmenu/dialogs/messagefriend.include>
+	#include <guis/mainmenu/dialogs/messagemember.include>
+	#include <guis/mainmenu/dialogs/messageteam.include>
+#endif
+	#include <guis/mainmenu/dialogs/netprogress.include>
+	#include <guis/mainmenu/dialogs/playcomputer.include>	
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/proposemembership.include>	
+	#include <guis/mainmenu/dialogs/removeuser.include>
+	#include <guis/mainmenu/dialogs/reviewinvitation.include>
+	#include <guis/mainmenu/dialogs/reviewserverinvite.include>
+	#include <guis/mainmenu/dialogs/reviewteaminvites.include>
+#endif
+	#include <guis/mainmenu/dialogs/replay.include>
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/resetpassword.include>
+#endif
+	#include <guis/mainmenu/dialogs/settings.include>
+	#include <guis/mainmenu/dialogs/serverfilters.include>
+#if !defined( SD_DEMO_BUILD )
+	#include <guis/mainmenu/dialogs/userlogin.include>
+#endif
+	#include <guis/mainmenu/dialogs/update.include>
+	#include <guis/mainmenu/dialogs/playerstats.include>
+	
+	_tooltip
+	
+	windowDef fadeIn {
+		properties {
+			color overlayColor	= COLOR_BLACK;
+			rect fullScreen		= 0,0, gui.screenDimensions.x, gui.screenDimensions.y;
+			float allowEvents 	= false;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.whiteMaterial, fullScreen, overlayColor );
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "globals.introMovies.state" {				
+				if( globals.introMovies.state == INTRO_MOVIE_COMPLETE ) {
+					changeZOrder( ZO_BACK );
+					overlayColor.a = transition( 1, 0, 2000 );				
+				} else {
+					overlayColor.a = 0;
+				}
+			}
+		}
+	}
+	windowDef esrbNotice {
+		properties {
+			handle	esrbText		= localize( "guis/mainmenu/esrb/online_experience" );
+			color	colorMultiplier = 1,1,1,0;
+			float 	fontSize 		= 20;
+			float	needMeasure		= true;
+			rect	textRect		= CENTER_X - ( 0.5 * textRect.w ), 64, measure.x, 16;
+			rect	drawRect		= textRect.x - 8, textRect.y - 8, textRect.w + 16, textRect.h + 16;
+			vec2	measure;
+			color	fillColor		= COLOR_DIALOG_FILL;
+			
+		}
+		events {
+			onPropertyChanged "gui.activeDialog" {
+				if( compare( gui.activeDialog, "" ) == false || compare( gui.activeDialog, "login" ) == false ) {
+					colorMultiplier.a = 0;
+				}
+			}	
+			onPreDraw {
+				if( needMeasure ) {
+					measure = measureLocalizedText( esrbText, absoluteRect, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+					needMeasure = false;
+					fillColor.a = 1;
+				}
+				
+				drawCachedMaterial( gui.dlgFillMaterial, drawRect, fillColor );
+				
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+				drawCachedMaterial( gui.dlgLineMaterial, drawRect, COLOR_DIALOG_LINES );
+				popColor();
+				
+				drawLocalizedText( esrbText, textRect, COLOR_WHITE, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+				
+				gui.scriptPushFloat( false );
+			}		
+		}
+	}
+	
+}

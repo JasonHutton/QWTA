@@ -1,0 +1,203 @@
+
+#ifndef __component_dropdown__
+#define __component_dropdown__
+
+#define DROPDOWN_ARROW_WIDTH 11
+#define DROPDOWN_ARROW_HEIGHT 11
+
+#include <guis/mainmenu/effects.include>
+
+#include <guis/mainmenu/components/edit.include>
+#include <guis/mainmenu/components/label.include>
+#include <guis/mainmenu/components/list.include>
+
+$template _dropdown( NameParm, TextParm, xPos, yPos, LabelWidth, ContentWidth, ListHeight, PositioningParm )
+	windowDef lyt##NameParm {
+		type layoutStatic;
+
+		properties {
+			$if( PositioningParm == "below" )
+				rect rect = xPos, yPos, ContentWidth + LabelWidth, $evalfloat( BUTTON_HEIGHT + 16 );
+			$else
+				rect rect = xPos, yPos, ContentWidth + LabelWidth, BUTTON_HEIGHT;
+			$endif
+		}
+
+		$if( PositioningParm == "below" )
+			_label_literal( NameParm##Value, gui.blankWStr, 0, BUTTON_HEIGHT, gui.lyt##NameParm.rect.w, BUTTON_HEIGHT, COLOR_WHITE )
+		$else
+			_label_literal( NameParm##Value, gui.blankWStr, LabelWidth, 0, ContentWidth - gui.lyt##NameParm.rect.x, BUTTON_HEIGHT, COLOR_WHITE )
+		$endif
+		    properties {
+				color	foreColor 			= COLOR_TEXT;
+				color	borderColor			= COLOR_BUTTON_LINES;
+				color	fillColor			= COLOR_BUTTON_FILL;
+				vec2    textAlignment 		= TA_LEFT, TA_VCENTER;
+				vec2    textOffset          = 3, 1;
+				color	labelForeColor		= COLOR_TEXT;
+				float	visible				= gui.lyt##NameParm.visible;
+				$if( PositioningParm == "below" )
+					rect	labelRect			= absoluteRect.x, ( absoluteRect.y - BUTTON_HEIGHT ) + 1, ContentWidth, BUTTON_HEIGHT;
+				$else
+					rect	labelRect			= absoluteRect.x - LabelWidth, absoluteRect.y + 1, LabelWidth, BUTTON_HEIGHT;
+				$endif
+				rect	textRect			= absoluteRect.x + 3, absoluteRect.y + 1, absoluteRect.w - ( gui.ico##NameParm.rect.w + 4 ), absoluteRect.h;
+			}
+			_tab_stop
+			events {
+				onKeyDown "mouse1" "space" {
+				    gui.lst##NameParm.postNamedEvent( "toggleVisible" );
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+					drawCachedMaterial( gui.wndLineMaterial, absoluteRect, borderColor );
+					drawLocalizedText( TextParm, labelRect, labelForeColor, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawText( text, textRect, foreColor, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+					gui.scriptPushFloat( false );
+				}
+				onNamedEvent "highlight" {
+				    borderColor = transition( borderColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				    fillColor = transition( fillColor, COLOR_BUTTON_HI_FILL, ACTIVATE_TRANSITION_TIME );
+				    foreColor = transition( foreColor, COLOR_WHITE, ACTIVATE_TRANSITION_TIME );
+				}
+				onNamedEvent "unhighlight" {
+					borderColor = transition( borderColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+					fillColor = transition( fillColor, COLOR_BUTTON_FILL, ACTIVATE_TRANSITION_TIME );
+					foreColor = transition( foreColor, COLOR_TEXT, ACTIVATE_TRANSITION_TIME );
+				}
+				onMouseEnter {
+					postNamedEvent( "highlight" );
+				    gui.playSound( "boop" );
+				}
+				onMouseExit {
+					postNamedEvent( "unhighlight" );
+				}
+				onGainFocus {
+					postNamedEvent( "highlight" );
+				}
+				onLoseFocus {
+					postNamedEvent( "unhighlight" );
+				}
+				/*
+				onKeyDown "uparrow" {
+					if( gui.lst##NameParm.currentSelection > 0 ) {
+						gui.lst##NameParm.currentSelection = immediate( gui.lst##NameParm.currentSelection ) - 1;
+						gui.lst##NameParm.postOptionalNamedEvent( "onSelected" );
+					}
+				}
+				onKeyDown "downarrow" {
+					if( gui.lst##NameParm.currentSelection < gui.lst##NameParm.numItems - 1 ) {
+						gui.lst##NameParm.currentSelection = immediate( gui.lst##NameParm.currentSelection ) + 1;
+						gui.lst##NameParm.postOptionalNamedEvent( "onSelected" );
+					}
+				}
+				*/
+	  		}
+			_icon( NameParm, "_st dropdown_arrow", __right( lbl##NameParm##Value, 3 ), _center( lbl##NameParm##Value, height ), DROPDOWN_ARROW_HEIGHT, DROPDOWN_ARROW_HEIGHT, COLOR_BUTTON_LINES )
+				events {
+					onMouseEnter {
+					    iconColor = transition( iconColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+					}
+					onMouseExit {
+						iconColor = transition( iconColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+					}
+					onKeyDown "mouse1" "space" {
+					    gui.lst##NameParm.postNamedEvent( "toggleVisible" );
+					}
+				}
+			_end_icon
+
+		_end_label
+
+		_list( NameParm, gui.lbl##NameParm##Value.rect.x, _to_bottom_of( lbl##NameParm##Value ), gui.lbl##NameParm##Value.rect.width, ListHeight )
+			properties {
+				float 	visible 	= false;
+				float 	flags 		= immediate( flags ) | LF_HOT_TRACK | LF_NO_NULL_SELECTION;
+				vec2	selection;
+				float	originalValue;
+			}
+			events {
+				onPropertyChanged "visible" {
+					callSuper();
+					if( visible ) {
+						scrollAmount = 0;
+						originalValue = immediate( currentSelection );
+						currentSelection = -1;
+						clearTransitions( -1, -1 );
+					}
+					gui.playSound( "accept" );
+					fillColor.a = 1;					
+				}
+				onPropertyChanged "currentSelection" {
+				    if( currentSelection >= 0 && visible == false ) {
+				    	gui.lbl##NameParm##Value.text = getItemText( currentSelection, 0 );
+		   			}
+				}
+				onNamedEvent "toggleVisible" {
+				    if( visible ) {
+						visible = false;
+						gui.focusedWindow = "lbl" ## #NameParm ## "Value";
+						if( currentSelection == -1 ) {
+							currentSelection = immediate( originalValue );
+						}
+					} else {
+						visible = true;
+						gui.focusedWindow = name;
+						changeZOrder( ZO_BACK );
+					}
+				}
+				onAccept {
+					visible = false;
+				    if( currentSelection >= 0 ) {
+				    	gui.lbl##NameParm##Value.text = getItemText( currentSelection, 0 );
+		   			}
+		   			postOptionalNamedEvent( "onSelected" );
+				}
+				onCancel {
+					visible = false;
+				}
+
+				onKeyDown "mouse1" {
+					// eat mouse down events to windows behind the list from responding
+				}
+				onKeyUp "mouse1" {
+					selection = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+					if( selection.x != -1 && selection.y != -1 ) {
+						visible = false;						
+					}
+				    if( currentSelection >= 0 ) {
+				    	gui.lbl##NameParm##Value.text = getItemText( currentSelection, 0 );
+				    	postOptionalNamedEvent( "onSelected" );
+		   			}		   			
+				}
+				onPropertyChanged "gui.focusedWindow" {
+				    if( icompare( gui.focusedwindow, name ) ||
+						icompare( gui.focusedwindow, "lst" ## #NameParm ## "Scrollbar" ) ||
+						icompare( gui.focusedwindow, "ico" ## #NameParm ) ||
+						icompare( gui.focusedwindow, "lbl" ## #NameParm ## "Value" ) ) {
+				    	return;
+					}
+				    if( originalValue >= 0 && visible ) {
+				    	currentSelection = immediate( originalValue );
+				    	gui.lbl##NameParm##Value.text = getItemText( currentSelection, 0 );
+				    	postOptionalNamedEvent( "onSelected" );
+		   			}
+		   			visible = false;					
+				}
+			}
+$endtemplate
+
+$template _end_dropdown
+		_end_list
+	}
+$endtemplate
+
+$template _end_dropdown_list
+		_end_list
+$endtemplate
+
+$template _end_dropdown_layout
+	}
+$endtemplate
+
+#endif __component_dropdown__

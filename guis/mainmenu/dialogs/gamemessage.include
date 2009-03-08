@@ -1,0 +1,130 @@
+// ================================================================================
+// Message Box spawned from the game
+// ================================================================================
+_dialog( MessageBox, globals.messageBox.title, _center( desktop, width ), _center( desktop, height ), 280, 160, "noMove", "dim" )
+	_input_dialog( MessageBox )
+	_on_default( MessageBoxOk, MessageBoxCancel )
+	properties {
+		float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+	}
+	_signin_procedure
+	events {		
+		onPropertyChanged "gui.dlgConfirmation.visible" "globals.messageBox.active" "globals.messageBox.type" {								
+			if( globals.messageBox.type == -1 ) {
+				return;
+			}
+			if( globals.messageBox.type == MSG_NEED_AUTH && globals.messageBox.active ) {								
+				globals.messageBox.type = -1;
+				globals.messageBox.active = false;				
+				_signin_button( name, "onLogin" )
+				return;
+			}
+
+			if( gui.dlgConfirmation.visible == false && globals.messageBox.active ) {
+				_show_input( MessageBox )
+				setTabStop( 0 );
+				return;
+			}
+			if( visible == true && globals.messageBox.active == false ) {
+				_close_input
+			}
+		}
+		onNamedEvent "onLogin" {
+			gui.consoleCommand( "reconnect" );
+		}
+		onPropertyChanged "gui.activeDialog" {
+			if( visible ) {
+				postNamedEvent( "moveToFront" );
+			}
+		}		
+	}
+
+	_group_box( MessageBoxBackground, _center( dlgMessageBox, width ), _top( dlgMessageBox ), _client_dimension( dlgMessageBox, width ), _fill_to_top_of( btnMessageBoxCancel ) )	
+		_label_literal( messageBoxPopup, globals.messageBox.message, _center( grpMessageBoxBackground, width ), 2, _client_dimension( grpMessageBoxBackground, width ) - 26, _fill_to_top_of( edtMessageBoxPassword ), "1,1,1,1" )
+			properties {
+				float flags 	= immediate( flags ) | WF_WRAP_TEXT;
+				vec2 textAlignment = TA_LEFT, TA_TOP;
+			}
+			events {
+				onPostDraw {
+					drawCachedMaterial( gui.infoIcon, "absoluteRect.x - 18, absoluteRect.y + 2, 16, 16", COLOR_WHITE );
+				}	
+			}
+		_end_label
+		
+		_edit( MessageBoxPassword, $evalfloat( PADDING + 60 ), _above( prgMessageBoxProgress ) - 3, _fill_to_right_of( grpMessageBoxBackground ), BUTTON_HEIGHT )
+			_draw_right_edit_label( localize( "guis/mainmenu/password" ), COLOR_TEXT, 60 )
+			_clear_on_show
+			
+			properties {
+				float	visible			= ( globals.messageBox.type == MSG_NEED_PASSWORD );
+				float	password		= true;
+			}
+		_end_button
+	
+		_progress_indefinite( MessageBoxProgress, _left( grpMessageBoxBackground ), _bottom( grpMessageBoxBackground ), _fill_to_right_of( grpMessageBoxBackground ) )
+			properties {
+				float visible = ( globals.messageBox.type == MSG_NEED_PASSWORD ) || ( globals.messageBox.type == MSG_ABORT );
+			}
+		_end_progress_indefinite		
+	_end_group_box
+
+	_button( MessageBoxOk, _to_left_of( btnMessageBoxCancel ) - 3, _bottom( dlgMessageBox, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action(
+			globals.messageBox.active = false;
+			_close_input
+			if( globals.messageBox.type == MSG_NEED_PASSWORD ) {
+				gui.setCVar( "password", gui.edtMessageBoxPassword.editText );
+			}
+			if( globals.messageBox.type == MSG_DOWNLOAD_YESNO ) {
+				gui.consoleCommand( "acceptDownload" + _newline );
+			}
+		)
+		properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/ok" );
+			float	visible			= ( globals.messageBox.type != MSG_ABORT );
+		}
+		events {
+			onPropertyChanged "globals.messageBox.type" {
+				if( globals.messageBox.type == MSG_DOWNLOAD_YESNO ) {
+					localizedText = localize( "guis/mainmenu/yes" );
+				} else {
+					localizedText = localize( "guis/mainmenu/ok" );
+				}
+			}
+			onPropertyChanged "gui.btnMessageBoxCancel.visible"  {
+				if( gui.btnMessageBoxCancel.visible ) {
+					rect.x = _to_left_of( btnMessageBoxCancel ) - 3;
+				} else {
+					rect.x = _center( dlgMessageBox, width );
+				}
+			}			
+		}
+	_end_button
+
+	_button( MessageBoxCancel, _right( dlgMessageBox ), _bottom( dlgMessageBox, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action(
+			globals.messageBox.active = false;
+			_close_input
+			if( globals.messageBox.type == MSG_NEED_PASSWORD || globals.messageBox.type == MSG_ABORT ) {
+				gui.consoleCommand( "disconnect" + _newline );
+			}
+			if( globals.messageBox.type == MSG_DOWNLOAD_YESNO ) {
+				gui.consoleCommand( "denyDownload" + _newline );
+			}
+		)
+		properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/cancel" );
+			float	visible			= ( globals.messageBox.type == MSG_OKCANCEL ) || ( globals.messageBox.type == MSG_NEED_PASSWORD ) || ( globals.messageBox.type == MSG_ABORT ) || ( globals.messageBox.type == MSG_DOWNLOAD_YESNO );
+		}
+		events {
+			onPropertyChanged "globals.messageBox.type" {
+				if( globals.messageBox.type == MSG_DOWNLOAD_YESNO ) {
+					localizedText = localize( "guis/mainmenu/no" );
+				} else {
+					localizedText = localize( "guis/mainmenu/cancel" );
+				}
+			}			
+		}
+	_end_button
+_end_dialog

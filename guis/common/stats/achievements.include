@@ -1,0 +1,804 @@
+
+
+// Player Stats
+#define PS_OVERVIEW 	1
+#define PS_ACHIEVEMENTS	2
+#define PS_CLASSES 		3
+#define PS_WEAPONS 		4
+#define PS_VEHICLES 	5
+
+// Weapon Stats
+#define WS_GDF 		1
+#define WS_STROGG 	2
+
+#define WS_WEAPONS	1
+#define WS_TOOLS 	2
+
+$template _list_show_column_tooltip
+	properties {
+		vec2 queryItem;
+	}
+	events {
+		onQueryTooltip {
+			queryItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+
+			if( queryItem.x == -1 && queryItem.y >= 0 ) {
+				toolTipText = getItemText( -1, queryItem.y );
+				return;
+			}
+			toolTipText = gui.blankWStr;
+		}
+	}
+$endtemplate
+
+$template _list_draw_alternating_colors
+	properties {
+		float 	itemIndex;
+		vec4	itemRect;
+		float	drawNum;
+	}
+	events {
+		onPreDraw {
+			drawNum = 0;
+			gui.scriptPushFloat( true );
+		}
+		onDrawItemBackground {
+			itemIndex = gui.scriptGetFloatResult();
+			gui.scriptGetVec4Result();	// color
+			itemRect = gui.scriptGetVec4Result();		
+			if( wcompare( getItemText( itemIndex, 0 ), gui.blankWStr ) == false ) {
+				if( ( drawNum % 2 ) == 0 )  {				
+					drawCachedMaterial( gui.whiteMaterial, itemRect, COLOR_INVISIBLE );
+				} else {
+					drawCachedMaterial( gui.whiteMaterial, itemRect, COLOR_LIST_ALTERNATE_ROW );
+				}
+									
+				drawNum = immediate( drawNum + 1 );				
+			} else {
+				drawNum = 1;
+			}
+		}			
+	}
+$endtemplate
+
+$template _achievements_banner
+	windowDef statsPlayerBanner {
+		properties {
+			rect	rect 			= 0, 0, _fill_to_right_of( tabpStatsOverviewContent ), 30;
+			rect	gradRect 		= absoluteRect.x, absoluteRect.y, absoluteRect.w, 32;
+			rect	rankIconRect	= absoluteRect.x + 2, absoluteRect.y + 2, 32, 32;
+			rect	medalIconRect	= absoluteRect.x + 4, absoluteRect.y + 38, 32, 32;
+			rect	textRect		= absoluteRect.x + 42, absoluteRect.y, absoluteRect.w, 20;
+			rect	taskRect		= absoluteRect.x + 42, absoluteRect.y + 20, absoluteRect.w, 16;
+			
+			string	lastSelectedMedalList;
+
+			handle	rankMaterial;
+			wstring	achieveText;
+		}
+		events {
+			onNamedEvent "statsUpdated" {
+				achieveText = localizeArgs( "game/achievements/achievements", localizeArgs( gui.getPersistentRankInfo( "title" ) ), toWStr( sdnet.activeUserName ) );
+				rankMaterial = gui.cacheMaterial( "perRank", gui.getPersistentRankInfo( "material" ) );
+
+			}
+			onPreDraw {
+				drawCachedMaterial( rankMaterial, rankIconRect, COLOR_WHITE );
+				drawText( achieveText, textRect, COLOR_WHITE, 18, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+$endtemplate
+
+$template _achievements_list( NameParm, CategoryParm )
+	windowDef  lstAchievementOverview##NameParm {
+		type list;
+		properties {
+			rect rect 						= 0, 0, 40, 240;
+			float fixedRowHeight 			= 66;
+			vec2 item;
+			vec2 item;
+			color	foreColor				= 0.5, 0.5, 0.5, 1.0f;
+			vec4	scratchColor;
+			vec4	itemRect;
+			float 	lastSelected;
+			float	updating = false;
+		}
+		events {
+			onCreate {
+				insertColumn( gui.blankWStr, 32, 0 );		// text
+				insertColumn( gui.blankWStr, 0, 1 );		// category
+				insertColumn( gui.blankWStr, 0, 2 );		// level
+			}
+			onPropertyChanged "gui.classSelection" {
+				postNamedEvent( "statsUpdated" );
+			}
+			onGainFocus  {
+				gui.statsPlayerBanner.lastSelectedMedalList = name;
+			}
+			onNamedEvent "statsUpdated" {				
+				gui.scriptPushString( CategoryParm );
+				
+				updating = true;
+				lastSelected = immediate( currentSelection );
+				fillFromEnumerator( "sdnetAchievements" );
+				currentSelection = immediate( lastSelected );
+				updating = false;
+				
+				setItemMaterialSize( "32,64", -1, 0 );
+				postNamedEvent( "updateText" );
+			}
+			onNamedEvent "updateText" {
+				if( compare( gui.focusedWindow, name ) == false ) {
+					currentSelection = -1;
+					return;
+				}
+				if( currentSelection == -1 ) {
+					if( numItems == 0 ) {
+						return;
+					}
+					currentSelection = 0;
+				}
+				gui.scriptPushString( toStr( getItemText( currentSelection, 1 ) ) );
+				gui.scriptPushFloat( toFloat( toStr( getItemText( currentSelection, 2 ) ) ) );
+				gui.lstAchievementList.fillFromEnumerator( "sdnetAchievementTasks" );
+
+				gui.statsPlayerBanner_Achievements.medalMaterial = gui.cacheMaterial( name + "rankIco", "_st " + toStr( getItemText( currentSelection, 0 ) ) );
+				gui.statsPlayerBanner_Achievements.taskText = localizeArgs( "game/achievements/" + toStr( getItemText( currentSelection, 1 ) ) + "_level" + toStr( getItemText( currentSelection, 2 ) ) );
+				if( isVisible() ) {
+					gui.playSound( "accept" );
+				}			
+			}
+			onPropertyChanged "gui.lytMedals.selectedItem" {
+				if( updating == false ) {
+					postNamedEvent( "updateText" );
+				}
+			}
+			onSelectItem {
+				// force a change
+				gui.lytMedals.selectedItem = -1;
+				gui.lytMedals.selectedItem = currentSelection;
+			}
+			onQueryToolTip {
+				item = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( item.x != -1 && item.y != -1 ) {
+					toolTipText = localizeArgs( "game/achievements/" + toStr( getItemText( item.x, 1 ) ) + "_level" + toStr( getItemText( item.x, 2 ) ) );
+				}
+			}
+			onEnterItem {
+				item.x = gui.scriptGetFloatResult();
+				item.y = gui.scriptGetFloatResult();
+				scratchColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, item.x, item.y );
+				transitionItemVec4( LTP_FORECOLOR, scratchColor, "1,1,1,1", ACTIVATE_TRANSITION_TIME, "", item.x, item.y );
+				gui.playSound( "boop" );
+			}
+			onExitItem {
+				item.x = gui.scriptGetFloatResult();
+				item.y = gui.scriptGetFloatResult();
+				scratchColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, item.x, item.y );
+				transitionItemVec4( LTP_FORECOLOR, scratchColor, foreColor, ACTIVATE_TRANSITION_TIME, "", item.x, item.y );
+			}
+			onDrawSelectedBackground {
+				item.x = gui.scriptGetFloatResult();
+				itemRect = gui.scriptGetVec4Result();
+								
+				drawCachedMaterial( gui.lstLineMaterial, itemRect, COLOR_LIST_GRADIENT );
+			}			
+		}
+	}
+$endtemplate
+
+$template _achievements( WidthParm )
+	windowDef statsPlayerBanner_Achievements {
+		properties {
+			rect	rect 			= 0, 0, WidthParm, 100;
+			rect	gradRect 		= absoluteRect.x, absoluteRect.y, absoluteRect.w, 32;
+			rect	rankIconRect	= absoluteRect.x + 4, absoluteRect.y + 4, 32, 32;
+			rect	medalIconRect	= absoluteRect.x + 4, absoluteRect.y + 38, 32, 64;
+			rect	textRect		= absoluteRect.x + 42, absoluteRect.y, absoluteRect.w, 20;
+			rect	taskRect		= absoluteRect.x + 42, absoluteRect.y + 20, absoluteRect.w, 16;
+
+			handle	rankMaterial;
+			handle	medalMaterial;
+			wstring	achieveText;
+			wstring	taskText;
+		}
+		events {
+			onNamedEvent "statsUpdated" {
+				achieveText = localizeArgs( "game/achievements/achievements", localizeArgs( gui.getPersistentRankInfo( "title" ) ), toWStr( sdnet.activeUserName ) );
+				rankMaterial = gui.cacheMaterial( "perRank2", gui.getPersistentRankInfo( "material" ) );
+			}
+			onPreDraw {
+				drawCachedMaterial( rankMaterial, rankIconRect, COLOR_WHITE );
+				drawCachedMaterial( medalMaterial, medalIconRect, COLOR_WHITE );
+				drawText( achieveText, textRect, COLOR_WHITE, 18, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+				drawText( taskText, taskRect, COLOR_WHITE, 14, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+
+				gui.scriptPushFloat( false );
+			}
+		}
+		windowDef lytMedals {
+			type layoutHorizontal;
+			properties {
+				rect rect = PADDING, 150, _fill_to_right_of( statsPlayerBanner_Achievements ), 210;
+				string class;
+				float selectedItem = -1;
+			}
+
+			_achievements_list( Soldier, 	"soldier" )
+			_achievements_list( Medic, 		"medic" )
+			_achievements_list( Engineer, 	"engineer" )
+			_achievements_list( FieldOps, 	"fieldops" )
+			_achievements_list( CovertOps, 	"covertops" )
+			_achievements_list( BattleSense, "battlesense" )
+			_achievements_list( LightWeapons, "lightweapons" )
+			_achievements_list( Vehicles, 	"vehicles" )
+
+			events {
+				onPropertyChanged "gui.lstAchievementOverviewSoldier.numItems" {
+					if( gui.lstAchievementOverviewSoldier.numItems > 0 && gui.lstAchievementList.numItems == 0 ) {
+						gui.focusedWindow = "lstAchievementOverviewSoldier";						
+						gui.lstAchievementOverviewSoldier.currentSelection = 0;
+					}
+				}
+			}
+		}
+
+		windowDef lstAchievementList {
+			type list;
+			_list_properties
+			_list_scrollbar( AchievementList )
+
+			properties {
+				rect rect = 40, 40, _fill_to_right_of( statsPlayerBanner_Achievements ), 150;
+				float fixedRowHeight = 14;
+				float allowEvents = false;
+				float itemRow;
+				float itemCol;
+				color itemColor;
+				rect  itemRect;
+				float scratch;
+				rect fillRect;
+				float flags = immediate( flags ) | LF_VARIABLE_HEIGHT_ROWS;
+
+				handle progGradMaterial = gui.cacheMaterial( name + "pgrad", "_st button_grad_c" );
+			}
+			events {
+				onCreate {
+					insertColumn( toWStr( "<width = 60%>" ), 0, 0 );	// text
+					insertColumn( toWStr( "<width = 40%>" ), 0, 1 );	// percent
+					insertColumn( gui.blankWStr, 0, 2 );				// complete
+					insertColumn( gui.blankWStr, 0, 3 );				// completion text
+				}
+				onDrawItem {
+					itemRow = gui.scriptGetFloatResult();
+					itemCol = gui.scriptGetFloatResult();
+					itemRect = getItemRect( itemRow, itemCol, GIR_COLUMN );
+					itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, COLOR_WHITE, itemRow, itemCol );
+
+					if( itemCol == 0 ) {
+						gui.scriptPushFloat( true );
+						return;
+					}
+					if( itemCol == 1 ) {
+						scratch = toFloat( toStr( getItemText( itemRow, itemCol ) ) );
+						itemRect.y = immediate( itemRect.y + 1 );
+						itemRect.h = 12;
+
+						if( scratch > 0.0f ) {
+							fillRect = itemRect.x + 2, itemRect.y + 2, ( ( itemRect.w - 64 ) * max( 0.0f, min( scratch, 1.0f ) ) ) - 4, itemRect.h - 4;
+							clipToRect( fillRect );
+							drawCachedMaterial( gui.btnFillMaterial, "itemRect.x, itemRect.y, itemRect.w - 64, itemRect.h", COLOR_PROGRESS_FILL );
+							drawCachedMaterial( progGradMaterial, "itemRect.x, itemRect.y, itemRect.w - 64, itemRect.h", COLOR_PROGRESS_GRADIENT );
+							unclipRect();
+						}
+						drawText( getItemText( itemRow, 3 ), "itemRect.x + ( itemRect.w - 64 ), itemRect.y + 4, 64, itemRect.h - 4", COLOR_TEXT, 12, DTF_RIGHT | DTF_VCENTER | DTF_SINGLELINE );
+						drawCachedMaterial( gui.btnLineMaterial, "itemRect.x, itemRect.y, itemRect.w - 64, itemRect.h", COLOR_PROGRESS_LINES );
+						gui.scriptPushFloat( false );
+						return;
+					}
+				}
+			}
+		}
+	}
+$endtemplate
+
+$template _stat_contents
+	// ====================================
+	// Stat Overview
+	// ====================================
+	_tab_page( statsOverview, localize( "guis/limbo/overview" ), stats, PS_OVERVIEW, 2, 0 )
+		_achievements_banner
+
+		windowDef lstStatsOverview {
+			type list;
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+
+			properties {
+				rect rect = PADDING, _to_bottom_of( statsPlayerBanner ) + 3, _fill_to_right_of( tabpStatsOverviewContent ), 240;
+				float index;
+				float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT & ~LF_SHOW_HEADINGS | LF_VARIABLE_HEIGHT_ROWS;
+				float allowEvents = false;
+
+				float floatVal;
+
+			}
+			events {
+				onCreate {
+					insertColumn( toWStr( "<width = 25%>" ), 0, 0 );
+					insertColumn( toWStr( "<width = 75%>" ), 0, 1 );
+					postNamedEvent( "statsUpdated" );
+				}
+				onNamedEvent "statsUpdated" {
+					clearItems();
+					if( compare( sdnet.teamName, "" ) == false ) {
+						index = insertItem( toWStr( "<loc = 'guis/mainmenu/clan'>" ), 1, 0 );
+						setItemText( toWStr( sdnet.teamName ), index, 1 );
+					}
+
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totalxp'>" ), 2, 0 );
+					setItemText( toWString( sdnet.getStat( "total_xp" ), 0 ), index, 1 );
+
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totalkills'>" ), 3, 0 );
+					setItemText( toWString( sdnet.getStat( "total_kills" ), 0 ), index, 1 );
+/*
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totaldeaths'>" ), 4, 0 );
+					setItemText( toWString( sdnet.getStat( "total_deaths" ), 0 ), index, 1 );
+
+					if ( sdnet.getStat( "total_deaths" ) == 0 ) {
+						floatVal = 0;
+					} else {
+						floatVal = sdnet.getStat( "total_kills" ) / sdnet.getStat( "total_deaths" );
+					}
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/killsperdeaths'>" ), 5, 0 );
+					setItemText( toWString( floatVal, 1 ), index, 1 );
+*/
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totalteamkills'>" ), 4, 0 );
+					setItemText( toWString( sdnet.getStat( "total_team_kills" ), 0 ), index, 1 );
+/*
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totaldamage'>" ), 5, 0 );
+					setItemText( toWString( sdnet.getStat( "total_damage" ), 0 ), index, 1 );
+
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totalshotfired'>" ), 7, 0 );
+					setItemText( toWString( sdnet.getStat( "total_shots_fired" ), 0 ), index, 1 );
+
+
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/totalshothit'>" ), 9, 0 );
+					setItemText( toWString( sdnet.getStat( "total_shots_hit" ), 0 ), index, 1 );
+
+					if ( sdnet.getStat( "total_shots_hit" ) == 0 ) {
+						floatVal = 0;
+					} else {
+						floatVal = sdnet.getStat( "total_shots_fired" ) / sdnet.getStat( "total_shots_hit" );
+					}
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/hitspershots'>" ), 10, 0 );
+					setItemText( toWString( floatVal, 1 ), index, 1 );
+*/
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/hoursplayed'>" ), 5, 0 );
+					setItemText( toWString( sdnet.getStat( "total_time_played" ) / 3600, 2 ), index, 1 );
+				}
+			}
+		}
+
+		windowDef lstStatsOverviewClasses {
+			type list;
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+			
+			properties {
+				rect rect = PADDING, _to_bottom_of( lstStatsOverview ) + 3, _fill_to_right_of( tabpStatsOverviewContent ), 200;
+				float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+				vec2 item;
+				string prof;
+			}
+
+			_overview_class_stats_table( categories )
+				_add_overview_class_stat( soldier )
+				_add_overview_class_stat( medic )
+				_add_overview_class_stat( engineer )
+				_add_overview_class_stat( fieldops )
+				_add_overview_class_stat( covertops )
+				_add_overview_prof_stat( battlesense )
+				_add_overview_prof_stat( lightweapons )
+				_add_overview_prof_stat( vehicle )
+				_overview_class_totals
+			_end_overview_class_stats_table
+			
+			events {
+				onQueryToolTip {
+					callSuper();
+					
+					item = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+					if( item.x >= 0 && item.x <= 7 && item.y >= 0 && item.y <= 3 ) {
+						if ( item.x == 0 ) {
+							prof = "soldier";
+						}
+						if ( item.x == 1 ) {
+							prof = "medic";
+						}
+						if ( item.x == 2 ) {
+							prof = "engineer";
+						}
+						if ( item.x == 3 ) {
+							prof = "fieldops";
+						}
+						if ( item.x == 4 ) {
+							prof = "covertops";
+						}
+						if ( item.x == 5 ) {
+							prof = "battlesense";
+						}
+						if ( item.x == 6 ) {
+							prof = "lightweapons";
+						}
+						if ( item.x == 7 ) {
+							prof = "vehicle";
+						}
+
+						toolTipText = localizeArgs( "game/overview/prof_total_" + toString( item.x, 0 ), toWString( sdnet.getStat( prof + "_xp" ), 0 ) );
+						return;
+					}
+				}
+			}
+		}
+	_end_tab_page_content
+		_tab_tooltip
+	_end_tab_page_button
+
+	_tab_page( StatsAchievements, localize( "guis/limbo/achievements" ), stats, PS_ACHIEVEMENTS, _to_right_of( tabpStatsOverview ), 0 )
+		_achievements( _fill_to_right_of( tabpStatsOverviewContent ) )
+	_end_tab_page_content
+		_tab_tooltip
+	_end_tab_page_button
+
+	_tab_page( StatsClasses, localize( "guis/limbo/classes" ), stats, PS_CLASSES, _to_right_of( tabpStatsAchievements ), 0 )
+		// ====================================
+		// GDF Stats
+		// ====================================
+		windowDef lstStatsOverviewGDF {
+			type list;
+			properties {
+				rect rect = PADDING, PADDING, _fill_to_right_of( tabpStatsOverviewContent ), 200;
+				float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+			}
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+			
+			_class_stats_table( gdf )
+				_add_class_stat( soldier )
+				_add_class_stat( medic )
+				_add_class_stat( engineer )
+				_add_class_stat( fieldops )
+				_add_class_stat( covertops )
+				_class_totals
+			_end_class_stats_table
+		}
+
+		// ====================================
+		// Strogg Stats
+		// ====================================
+		windowDef lstStatsOverviewStrogg {
+			type list;
+			properties {
+				rect rect = PADDING, _to_bottom_of( lstStatsOverviewGDF ) + $evalfloat( 2 * PADDING ), _fill_to_right_of( tabpStatsOverviewContent ), 200;
+				float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+			}
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+			
+			_class_stats_table( strogg )
+				_add_class_stat( aggressor )
+				_add_class_stat( technician )
+				_add_class_stat( constructor )
+				_add_class_stat( oppressor )
+				_add_class_stat( infiltrator )
+				_class_totals
+			_end_class_stats_table
+		}
+	_end_tab_page_content
+		_tab_tooltip
+	_end_tab_page_button
+
+	// ====================================
+	// Weapon Stats
+	// ====================================
+	_tab_page( StatsWeapons, localize( "guis/limbo/weapons_tools" ), stats, PS_WEAPONS, _to_right_of( tabpStatsClasses ), 0 )
+		properties {
+			float team = -1;
+			float type = -1;
+		}
+		events {
+			onNamedEvent "onShow" {
+				team = WS_GDF;
+				type = WS_WEAPONS;
+			}
+		}
+		_radio( StatsWeapons_GDF, localize( "guis/limbo/gdf_weapons" ), PADDING, PADDING, 120 )
+			properties {
+				float checked = gui.tabpStatsWeaponsContent.team == WS_GDF && gui.tabpStatsWeaponsContent.type == WS_WEAPONS;
+			}
+			events {
+				onNamedEvent "onAction" {
+					gui.tabpStatsWeaponsContent.team = WS_GDF;
+					gui.tabpStatsWeaponsContent.type = WS_WEAPONS;
+				}
+			}
+		_end_radio
+
+		_radio( StatsWeapons_Strogg, localize( "guis/limbo/strogg_weapons" ), _to_right_of( radStatsWeapons_GDF ), PADDING, 120 )
+			properties {
+				float checked = gui.tabpStatsWeaponsContent.team == WS_STROGG && gui.tabpStatsWeaponsContent.type == WS_WEAPONS;
+			}
+			events {
+				onNamedEvent "onAction" {
+					gui.tabpStatsWeaponsContent.team = WS_STROGG;
+					gui.tabpStatsWeaponsContent.type = WS_WEAPONS;
+				}
+			}
+		_end_radio
+
+		_radio( StatsTools_GDF, localize( "guis/limbo/gdf_tools" ), PADDING, _to_bottom_of( radStatsWeapons_GDF ), 120 )
+			properties {
+				float checked = gui.tabpStatsWeaponsContent.team == WS_GDF && gui.tabpStatsWeaponsContent.type == WS_TOOLS;
+			}
+			events {
+				onNamedEvent "onAction" {
+					gui.tabpStatsWeaponsContent.team = WS_GDF;
+					gui.tabpStatsWeaponsContent.type = WS_TOOLS;
+				}
+			}
+		_end_radio
+
+		_radio( StatsTools_Strogg, localize( "guis/limbo/strogg_tools" ), _to_right_of( radStatsTools_GDF ), _to_bottom_of( radStatsWeapons_GDF ), 120 )
+			properties {
+				float checked = gui.tabpStatsWeaponsContent.team == WS_STROGG && gui.tabpStatsWeaponsContent.type == WS_TOOLS;
+			}
+			events {
+				onNamedEvent "onAction" {
+					gui.tabpStatsWeaponsContent.team = WS_STROGG;
+					gui.tabpStatsWeaponsContent.type = WS_TOOLS;
+				}
+			}
+		_end_radio
+
+		windowDef lstStatsWeapons {
+			type list;
+			properties {
+				rect rect = PADDING, _to_bottom_of( radStatsTools_Strogg ), _fill_to_right_of( tabpStatsWeaponsContent ), 360;
+				float visible = gui.tabpStatsWeaponsContent.type == WS_WEAPONS;
+				float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+			}
+			events {
+				onPropertyChanged "gui.tabpStatsWeaponsContent.team" "gui.tabpStatsWeaponsContent.type" {
+					postNamedEvent( "statsUpdated" );
+				}
+			}
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+			
+			_weapon_stats_table
+				if( gui.tabpStatsWeaponsContent.team == WS_GDF ) {
+					_add_weapon_stat( knife )
+					_add_weapon_stat( pistol )
+					_add_weapon_stat( pistol_silenced )
+					_add_weapon_stat( pistol_akimbo )
+					_add_weapon_stat( pistol_akimbo_silenced )
+					_add_weapon_stat( machinepistol )
+					_add_weapon_stat( machinepistol_silenced )
+					_add_weapon_stat( shotgun )
+					_add_weapon_stat( assaultrifle )
+					_add_weapon_stat( assaultrifle_scoped )
+					_add_weapon_stat( sniperrifle )
+					_add_grenade_stat( rocketlauncher )
+					_add_weapon_stat( gpmg )
+					_add_grenade_stat( grenade_frag )
+					_add_grenade_stat( grenade_emp )
+					_add_grenade_stat( vampire )
+					_add_grenade_stat( assaultrifle_grenade )
+					_weapon_totals
+					return;
+				}
+				if( gui.tabpStatsWeaponsContent.team == WS_STROGG ) {
+					_add_weapon_stat( spikes )
+					_add_weapon_stat( blaster )
+					_add_weapon_stat( lightning_pistol )
+					_add_weapon_stat( nailgun )
+					_add_weapon_stat( lacerator )
+					_add_weapon_stat( lacerator_scoped )
+					_add_grenade_stat( obliterator )
+					_add_weapon_stat( hyperblaster )
+					_add_weapon_stat( railgun )
+					_add_grenade_stat( grenade_shrap )
+					_add_grenade_stat( grenade_scrambler )
+					_add_grenade_stat( violator )
+					_add_grenade_stat( plasma_launcher )
+					_weapon_totals
+					return;
+				}
+			_end_weapon_stats_table
+		}
+		windowDef lstStatsToolsGDF {
+				type list;
+				_list_properties
+				_list_draw_alternating_colors
+				_list_show_column_tooltip
+				
+				properties {
+					rect rect = PADDING, _to_bottom_of( radStatsTools_Strogg ), _fill_to_right_of( tabpStatsWeaponsContent ), 320;
+					float visible = gui.tabpStatsWeaponsContent.type == WS_TOOLS;
+					float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+				}
+				events {
+					onPropertyChanged "gui.tabpStatsWeaponsContent.team" "gui.tabpStatsWeaponsContent.type" {
+						postNamedEvent( "statsUpdated" );
+					}
+				}
+				_tool_stats_table
+					if( gui.tabpStatsWeaponsContent.team == WS_GDF ) {
+						_add_tool_stat( third_eye, "game/weapons/third_eye_camera", "showXP", "hideUses" )
+						_add_tool_stat( gdf_hack, "game/weapons/hacker", "showXP", "showUses" )
+						//_add_tool_stat( spotter, "game/weapons/spotter" )
+						_add_tool_stat( gdf_disguise, "game/weapons/disguise", "hideXP", "showUses" )
+						//_add_tool_stat( binoculars, "game/weapons/binoc" )
+						//_add_tool_stat( grenade_smoke, "game/weapons/grenade_smoke" )
+						_add_tool_stat( landmine_gdf, "game/weapons/mine", "showXP", "hideUses" )
+						_add_tool_stat( gdf_pliers, "game/weapons/pliers", "showXP", "hideUses" )
+						_add_tool_stat( gdf_supply, "game/weapons/ammo", "showXP", "showUses" )
+						//_add_tool_stat( targeting_tool, "game/weapons/targetting" )
+						_add_tool_stat( gdf_revive, "game/weapons/defib", "showXP", "showUses" )
+						_add_tool_stat_health( GDF, "game/weapons/health", "showXP", "showUses" )
+						_add_tool_stat( he_charge, "game/weapons/he", "showXP", "showUses" )
+						//_add_tool_stat( deploy_tool, "game/weapons/deploy" )
+						_tool_totals
+						return;
+					}
+					if( gui.tabpStatsWeaponsContent.team == WS_STROGG ) {
+						_add_tool_stat( plasma_charge, "game/weapons/plasma", "showXP", "showUses" )
+						//_add_tool_stat( deploy_tool, "game/weapons/deploy" )
+						_add_tool_stat( strogg_disguise, "game/weapons/disguise", "hideXP", "showUses" )
+						_add_tool_stat( landmine_strogg, "game/weapons/mine_grav", "showXP", "hideUses" )
+						_add_tool_stat( strogg_pliers, "game/weapons/drone_repair", "showXP", "hideUses" )
+						_add_tool_stat( flyerhive, "game/weapons/drone_flyer", "showXP", "hideUses" )
+						_add_tool_stat( strogg_hack, "game/weapons/spike_hacking_tool", "showXP", "showUses" )
+						//_add_tool_stat( trinoculars, "game/weapons/trinoc" )
+						//_add_tool_stat( grenade_teleport, "game/weapons/teleporter" )
+						//_add_tool_stat( targeting_tool, "game/weapons/trinoc_targetting" )
+						_add_tool_stat( strogg_revive, "game/weapons/stroyent_tool", "showXP", "showUses" )
+						_add_tool_stat_health( STROGG, "game/weapons/stroyent_cells", "showXP", "showUses" )
+						_tool_totals
+					}
+				_end_tool_stats_table
+			}
+	_end_tab_page_content
+		_tab_tooltip
+	_end_tab_page_button
+
+	// ====================================
+	// Vehicles Stats
+	// ====================================
+	_tab_page( StatsVehicles, localize( "guis/limbo/vehicles_deployables" ), stats, PS_VEHICLES, _to_right_of( tabpStatsWeapons ), 0 )
+		properties {
+			float team = -1;
+		}
+		events {
+			onNamedEvent "onShow" {
+				team = WS_GDF;
+			}
+		}
+		_radio( StatsVehicles_GDF, localize( "game/gdf" ), PADDING, PADDING, 80 )
+			properties {
+				float checked = gui.tabpStatsVehiclesContent.team == WS_GDF;
+			}
+			events {
+				onNamedEvent "onAction" {
+					gui.tabpStatsVehiclesContent.team = WS_GDF;
+				}
+			}
+		_end_radio
+
+		_radio( StatsVehicles_Strogg, localize( "game/strogg" ), _to_right_of( radStatsVehicles_GDF ), PADDING, 80 )
+			properties {
+				float checked = gui.tabpStatsVehiclesContent.team == WS_STROGG;
+			}
+			events {
+				onNamedEvent "onAction" {
+					gui.tabpStatsVehiclesContent.team = WS_STROGG;
+				}
+			}
+		_end_radio
+
+		windowDef lstStatsVehicles {
+			type list;
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+			
+			properties {
+				rect rect = PADDING, _to_bottom_of( radStatsVehicles_Strogg ), _fill_to_right_of( tabpStatsVehiclesContent ), 240;
+				float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+			}
+			events {
+				onPropertyChanged "gui.tabpStatsVehiclesContent.team" {
+					postNamedEvent( "statsUpdated" );
+				}
+			}
+			_vehicle_stats_table
+				if( gui.tabpStatsVehiclesContent.team == WS_GDF ) {
+					_add_vehicle_stat( husky )
+					_add_vehicle_stat( badger )
+					_add_vehicle_stat( trojan )
+					_add_vehicle_stat( titan )
+					_add_vehicle_stat( anansi )
+					_add_vehicle_stat( bumblebee )
+					_add_vehicle_stat( platypus )
+					_add_vehicle_stat( mcp )
+					_vehicle_totals
+					return;
+				}
+
+				if( gui.tabpStatsVehiclesContent.team == WS_STROGG ) {
+					_add_vehicle_stat( icarus )
+					_add_vehicle_stat( hog )
+					_add_vehicle_stat( desecrator )
+					_add_vehicle_stat( goliath )
+					_add_vehicle_stat( hornet )
+					_vehicle_totals
+					return;
+				}
+			_end_vehicle_stats_table
+		}
+
+		windowDef lstStatsDeployables {
+			type list;
+			_list_properties
+			_list_draw_alternating_colors
+			_list_show_column_tooltip
+			
+			properties {
+				rect rect = PADDING, _to_bottom_of( lstStatsVehicles ) + PADDING, _fill_to_right_of( tabpStatsVehiclesContent ), 240;
+				float flags = immediate( flags ) | LF_TRUNCATE_COLUMNS | LF_VARIABLE_HEIGHT_ROWS;
+			}
+			events {
+				onPropertyChanged "gui.tabpStatsVehiclesContent.team" {
+					postNamedEvent( "statsUpdated" );
+				}
+			}
+			_deployable_stats_table
+				if( gui.tabpStatsVehiclesContent.team == WS_GDF ) {
+					//_add_deployable_stat( supplystation )
+					_add_deployable_stat( radar, radar, "hideUses" )
+					_add_deployable_stat( antipersonnel_gdf, apt_long, "hideUses" )
+					_add_deployable_stat( antivehicle_gdf, avt_long, "hideUses" )
+					_add_deployable_stat( antimissile_gdf, amt_long, "showUses" )
+					_add_deployable_stat( artillery, artillery, "showUses" )
+					_add_deployable_stat( rockets, rocket_artillery, "showUses" )
+					_add_deployable_stat( hammer, ssm_long, "showUses" )
+					_deployable_totals
+					return;
+				}
+
+				if( gui.tabpStatsVehiclesContent.team == WS_STROGG ) {
+					_add_deployable_stat( psi, psi_radar, "hideUses" )
+					_add_deployable_stat( antipersonnel_strogg, apt_long, "hideUses" )
+					_add_deployable_stat( antivehicle_strogg, avt_long, "hideUses" )
+					_add_deployable_stat( antimissile_strogg, amt_long, "showUses" )
+					_add_deployable_stat( railhowitzer, railhow, "showUses" )
+					_add_deployable_stat( plasma_mortar, plasma_mortar, "showUses" )
+					_add_deployable_stat( ssg, ssg_long, "showUses" )
+					_deployable_totals
+					return;
+				}
+			_end_deployable_stats_table
+		}
+	_end_tab_page_content
+		_tab_tooltip
+	_end_tab_page_button
+$endtemplate

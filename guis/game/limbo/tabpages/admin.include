@@ -1,0 +1,853 @@
+#define ADM_PLAYERS 1
+#define ADM_SERVER 2
+
+#define IN_GAME_BOTS
+
+$template _admin_check_init( cvar, CheckedCommand, UncheckedCommand )
+	properties {
+		float activating = false;
+	}
+	events {
+		onActivate {
+			activating = true;
+			checked = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, #cvar, "0" ) );
+			activating = false;
+		}
+		onPropertyChanged "player.serverInfoChanged" {
+			activating = true;
+			checked = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, #cvar, "0" ) );
+			activating = false;			
+		}
+		onNamedEvent "checkChanged" {
+			if ( activating ) {
+				return;
+			}
+
+			activating = true;
+			if ( checked ) {
+				gui.consoleCommand( CheckedCommand + _newline );
+			} else {
+				gui.consoleCommand( UncheckedCommand + _newline );
+			}
+			activating = false;
+		}
+	}
+$endtemplate
+
+$template _admin_check_init_not( cvar, CheckedCommand, UncheckedCommand )
+	properties {
+		float activating = false;
+	}
+	events {
+		onActivate {
+			activating = true;
+			checked = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, #cvar, "0" ) ) == 0;
+			activating = false;
+		}
+		onPropertyChanged "player.serverInfoChanged" {
+			activating = true;
+			checked = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, #cvar, "0" ) ) == 0;
+			activating = false;			
+		}		
+		onNamedEvent "checkChanged" {
+			if ( activating ) {
+				return;
+			}
+
+			activating = true;
+			if ( checked ) {
+				gui.consoleCommand( CheckedCommand + _newline );
+			} else {
+				gui.consoleCommand( UncheckedCommand + _newline );
+			}
+			activating = false;
+		}
+	}
+$endtemplate
+
+$template _admin_check_synced( cvar, CheckedCommand, UncheckedCommand )
+	properties {
+		float activating = false;
+	}
+	events {
+		onActivate {
+			activating = true;
+			checked = gui.getCVarBool( #cvar );
+			activating = false;
+		}
+		onCVarChanged #cvar {
+			activating = true;
+			checked = gui.getCVarBool( #cvar );
+			activating = false;			
+		}			
+		onNamedEvent "checkChanged" {
+			if ( activating ) {
+				return;
+			}
+
+			activating = true;
+			if ( checked ) {
+				gui.consoleCommand( CheckedCommand + _newline );
+			} else {
+				gui.consoleCommand( UncheckedCommand + _newline );
+			}
+			activating = false;
+		}
+	}
+$endtemplate
+
+_tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_of( tabpVote ), 0 )
+	_label_literal( CurrentUserGroup, localizeArgs( "guis/admin/currentgroup", admin.userGroup ), $evalfloat( PADDING * 2 ), PADDING, _fill_to_right_of( tabpAdminContent ), 12, COLOR_WHITE )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		}
+	_end_label
+
+	_label_localized( CurrentCommandStatus, localize( "blank" ), _right( tabpAdminContent ), PADDING, 100, 12, COLOR_WHITE )
+		properties {
+			vec2 textAlignment = TA_RIGHT, TA_VCENTER;
+		}
+		events {
+			onPropertyChanged "admin.commandStateTime" {
+				if( admin.commandState == CS_NOCOMMAND ) {
+					localizedText = localize( "blank" );
+					return;
+				}
+				if( admin.commandState == CS_SUCCESS ) {
+					localizedText = localize( "guis/admin/commandsuccess" );
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+					gui.playSound( "accept" );
+					return;
+				}
+				if( admin.commandState == CS_FAILED ) {
+					localizedText = localize( "guis/admin/commandfailure" );
+					timeline.default.resetTime( 0 );
+					timeline.default.active = true;
+					gui.playSound( "interaction" );
+					return;
+				}
+			}
+		}
+		timeline {
+			onTime 0 {
+				foreColor.a = transition( 1, 0, 5000, "0.2,1" );
+			}
+		}
+	_end_label
+
+	windowDef btnAdminLogin {
+		properties {
+			rect rect 				= PADDING, _bottom( tabpAdminContent ), _fill_to_right_of( tabpAdminContent ), $evalfloat( BUTTON_HEIGHT * 2 );
+			handle localizedText 	= localize( "guis/admin/login" );
+			color	gradColor		= COLOR_BLACK;
+			color	foreColor		= COLOR_TEXT;
+			float	allowEvents 	= admin.isSuperUser == false && admin.canLogin == true;
+		}
+
+		_fadable
+
+		events {
+			onPropertyChanged "allowEvents" {
+				if( allowEvents ) {
+					foreColor.a = 1;
+				} else {
+					foreColor.a = 0.25;
+				}
+			}
+			onKeyDown "mouse1" {
+				gui.playSound( "system/button/click" );
+
+				_show_input( AdminLogin )
+			}
+			onCreate {
+				gradColor.a = 0;
+			}
+
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_RESPAWN_FILL );
+				drawCachedMaterial( gui.btnGradMaterial, absoluteRect, gradColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_RESPAWN_LINE );
+
+				drawLocalizedText( localizedText, absoluteRect, foreColor, 12, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE );
+
+				gui.scriptPushFloat( false );
+			}
+			onMouseEnter {
+				gradColor = transition( gradColor, COLOR_ACTIVE_RESPAWN_FILL, ACTIVATE_TRANSITION_TIME );
+				foreColor.a = transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+				gui.playSound( "boop" );
+			}
+			onMouseExit {
+				gradColor = transition( gradColor, COLOR_RESPAWN_FILL, ACTIVATE_TRANSITION_TIME );
+				foreColor.a = transition( foreColor.a, 0.75, ACTIVATE_TRANSITION_TIME );
+			}
+		}
+	_end_button
+
+	_tab_container( Admin, ADM_PLAYERS, PADDING, _to_bottom_of( lblCurrentUserGroup ) + 3, _fill_to_right_of( tabpAdminContent ), _fill_to_top_of( btnAdminLogin ) )
+		_tab_page( Admin_Players, localize( "guis/admin/players" ), Admin, ADM_PLAYERS, 2, 0 )
+			windowDef lytAdmin_Players {
+				type layoutVertical;
+				properties {
+					float flags = VLF_DRAW_REVERSED;
+					rect rect = 0, 0, gui.tabpAdmin_PlayersContent.rect.w, gui.tabpAdmin_PlayersContent.rect.h;
+				}
+				windowDef lytAdmin_PlayerH {
+					type layoutStatic;
+						properties {
+							vec4 margins = 0, 0, 0, 0;
+							rect rect = 0, 0, gui.lytAdmin_Players.rect.w - ( $evalfloat( 2 * PADDING ) + 3 ), $evalfloat( BUTTON_HEIGHT * 11 );
+						}
+					_list( Players, 0, 0, gui.lytAdmin_PlayerH.rect.w * 0.65, gui.lytAdmin_PlayerH.rect.h )
+						properties {						
+							float	fontSize		= 12;
+							float	flags			= immediate( flags ) | LF_COLUMN_SORT | LF_NO_NULL_SELECTION | LF_SHOW_HEADINGS & ~LF_AUTO_SCROLL_TO_SELECTION;
+							float	columnFontSize		= 12;
+							string	selectedPlayerName	= "";
+							wstring	lastSelection;
+
+							wstring	toolTipText		= localizeArgs( "guis/admin/rightclicktoadmin" );
+							vec2 	selection;
+						}
+						_list_draw_column_sort( "default" )
+						events {
+							onCreate {
+								insertColumn( toWStr( "<loc = 'guis/mainmenu/player'><width = 75%><flags customdraw>" ), 0, 0 );
+								insertColumn( toWStr( "<loc = 'guis/admin/group'><width = 25%><flags customdraw>" ), 0, 1 );
+							}
+							onSelectItem {
+								if ( currentSelection >= 0 && currentSelection < numItems ) {
+									selectedPlayerName = toStr( getItemText( currentSelection, 0 ) );
+								}
+								 else {
+									selectedPlayerName = "";
+								}
+							}
+							onKeyDown "mouse2" {
+								selection = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+								currentSelection = selection.x;
+								if( currentSelection != -1 ) {
+									gui.mnuAdmin_PlayerCommands.postNamedEvent( "showMenu" );
+								}
+							}
+						}
+						timeline {
+							onTime 1000 {
+								if( isVisible() ) {
+									lastSelection = toWStr( selectedPlayerName );
+									storeVisualState();
+									fillFromEnumerator( "playerAdminList" );
+									currentSelection = findItem( lastSelection, 0 );
+									restoreVisualState();
+								}
+								timeline.default.resetTime( 0 );
+							}
+						}
+					_end_list
+					windowDef lytPlayers_MoveToGroup {
+						type layoutVertical;
+						properties {
+							rect rect = _to_right_of( lstPlayers ) + 3, 0, ( gui.lytAdmin_PlayerH.rect.w * 0.35 ) - 3, gui.lytAdmin_PlayerH.rect.h;
+							vec4 margins = 0, 0, 0, 0;
+						}
+						_list( UserGroup, 0, 0, 100, gui.lytPlayers_MoveToGroup.rect.h - ( $evalfloat( 4 * PADDING ) + gui.lytPlayers_MoveToGroup.spacing.y ) )
+							properties {
+								float	flags				= immediate( flags ) | LF_COLUMN_SORT | LF_SHOW_HEADINGS | LF_NO_NULL_SELECTION;
+								string	selectedGroupName	= "";
+							}
+							_list_draw_column_sort( "default" )
+							events {
+								onCreate {
+									insertColumn( toWStr( "<loc = 'guis/admin/usergroups'><width = 100%><flags customdraw>" ), 0, 1 );
+								}
+								onSelectItem {
+									selectedGroupName = toStr( getItemText( currentSelection, 0 ) );
+								}
+								onDoubleClick "mouse1" {
+									gui.btnPlayers_MoveToGroup.postNamedEvent( "onAction" );
+								}
+							}
+							timeline {
+								onTime 1000 {
+									if( visible ) {
+										storeVisualState();
+										fillFromEnumerator( "userGroupList" );
+										currentSelection = findItem( toWStr( selectedGroupName ), 0 );
+										restoreVisualState();
+									}
+									timeline.default.resetTime( 0 );
+								}
+							}
+						_end_list
+
+						// ==============================================================================
+						// Move to User Group
+						// ==============================================================================
+						_button( Players_MoveToGroup, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+							properties {
+								handle localizedText = localize( "guis/admin/movetogroup" );
+								float allowAction = gui.lstPlayers.currentSelection != -1 && gui.lstUserGroup.currentSelection != -1;
+							}
+							_button_disable_if( "allowAction", allowAction == false )
+
+							_button_action(
+								gui.consoleCommand( "admin changeUserGroup " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " " + _quote + gui.lstUserGroup.selectedGroupName + _quote + _newline );
+								gui.lstPlayers.timeline.default.resetTime( 1000 );
+							)
+						_end_button
+					}
+				}
+
+				_group_box( BotCommands, 0, 0, _fill_to_right_of( tabpAdmin_PlayersContent ), $evalfloat( ( BUTTON_HEIGHT ) * 11 + PADDING + 4 ) )
+					properties {
+						float visible = admin.canAddBot;
+					}
+					windowDef lytPlayComp {
+						type layoutVertical;
+						properties {
+							float flags = VLF_DRAW_REVERSED | OF_FIXED_LAYOUT;
+							float visible = admin.canAdjustBots;
+							vec4 margins = 0, 0, 0, 0;
+							rect rect = PADDING, _to_bottom_of( lytAddBots ) + 3, 300, 100;
+						}
+						#include <guis/common/bots.include>
+					}					
+					windowDef lytAddBots {
+						type layoutStatic;
+						properties {
+							rect rect = 0, PADDING, 100, BUTTON_HEIGHT;
+						}
+						_dropdown( PlayCompBotTeam, localize( "blank" ), $evalfloat( 8 + PADDING ), 0, 0, 150, $evalfloat( BUTTON_HEIGHT * 6 ), "right" )
+							properties {
+								float index;
+								float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+								float initialized = false;
+							}
+							events {
+								onNamedEvent "onShow" {
+									if( gui.lblPlayCompBotTeamValue.allowEvents ) {
+										gui.lblPlayCompBotTeamValue.colorMultiplier.a = 1;
+									} else {
+										gui.lblPlayCompBotTeamValue.colorMultiplier.a = 0.5;
+									}								
+								}
+								onPropertyChanged "gui.lblPlayCompBotTeamValue.allowEvents" {
+									if( gui.lblPlayCompBotTeamValue.allowEvents ) {
+										gui.lblPlayCompBotTeamValue.colorMultiplier.a = 1;
+									} else {
+										gui.lblPlayCompBotTeamValue.colorMultiplier.a = 0.5;
+									}
+								}
+								onCreate {
+									gui.lblPlayCompBotTeamValue.allowEvents = gui.btnPlayComp_AddBot.allowAction;
+									gui.icoPlayCompBotTeam.allowEvents = gui.btnPlayComp_AddBot.allowAction;
+									insertColumn( toWStr( "<width = 100%><flags customdraw>" ), 0, 0 );	// name
+									insertColumn( gui.blankWStr, 0, 1 );					// type
+
+									index = insertItem( toWStr( "<loc = 'game/gdf'>" ), -1, 0 );
+									setItemText( toWStr( "gdf" ), index, 1 );
+
+									index = insertItem( toWStr( "<loc = 'game/strogg'>" ), -1, 0 );
+									setItemText( toWStr( "strogg" ), index, 1 );
+									
+									index = insertItem( toWStr( "<loc = 'guis/mainmenu/random'>" ), -1, 0 );
+									setItemText( gui.blankWStr, index, 1 );	
+									
+									currentSelection = immediate( index );
+								}								
+							}
+						_end_dropdown
+
+						//_button( PlayComp_AddBot, _to_right_of( lytPlayCompBotTeam) + 3, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+						_button( PlayComp_AddBot, _to_right_of( lblPlayCompBotTeamValue ) + 24, 0, 138, BUTTON_HEIGHT )
+							_button_action( gui.consoleCommand( "admin addbot " + toStr( _get_current_list_text( PlayCompBotTeam, 1 ) ) +_newline ); )
+							_button_disable_if( "allowAction", allowAction != true )
+							properties {
+								handle localizedText = localize( "guis/mainmenu/addbot" );
+								float allowAction = gui.getCVarInt( "bot_minClients" ) == -1;
+							}
+							events {
+								onCVarChanged "bot_minClients" {
+									allowAction = gui.getCVarInt( "bot_minClients" ) == -1;
+								}
+							}
+						_end_button
+					}										
+				_end_group_box
+			}
+			events {
+				onNamedEvent "onMuteLocal" {
+					gui.mutePlayer( gui.lstPlayers.selectedPlayerName, true );
+				}
+				onNamedEvent "onUnmuteLocal" {
+					gui.mutePlayer( gui.lstPlayers.selectedPlayerName, false );
+				}
+				onNamedEvent "onMuteQuickChat" {
+					gui.mutePlayerQuickChat( gui.lstPlayers.selectedPlayerName, true );
+				}
+				onNamedEvent "onUnmuteQuickchat" {
+					gui.mutePlayerQuickChat( gui.lstPlayers.selectedPlayerName, false );
+				}				
+				onNamedEvent "onMakeSpec" {
+					gui.consoleCommand( "admin setTeam " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " spectator" + _newline );
+				}
+				onNamedEvent "onMakeGDF" {
+					gui.consoleCommand( "admin setTeam " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " gdf" + _newline );
+				}
+				onNamedEvent "onMakeStrogg" {
+					gui.consoleCommand( "admin setTeam " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " strogg" + _newline );
+				}
+				onNamedEvent "onKick" {
+					gui.consoleCommand( "admin kick " + _quote + gui.lstPlayers.selectedPlayerName + _quote + _newline );
+					gui.lstPlayers.timeline.default.resetTime( 1000 );
+				}
+				onNamedEvent "onBan" {
+					gui.consoleCommand( "admin ban " + _quote + gui.lstPlayers.selectedPlayerName + _quote + _newline );
+					gui.lstPlayers.timeline.default.resetTime( 1000 );
+				}
+				onNamedEvent "onWarn" {
+					gui.consoleCommand( "admin warn " + _quote + gui.lstPlayers.selectedPlayerName + _quote + _newline );
+				}
+				onNamedEvent "onPlayerMute" {
+					gui.consoleCommand( "admin playerMute " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " on" + _newline );
+				}
+				onNamedEvent "onPlayerUnmute" {
+					gui.consoleCommand( "admin playerMute " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " off" + _newline );
+				}
+				onNamedEvent "onPlayerVoiPMute" {
+					gui.consoleCommand( "admin playerVOIPMute " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " on" + _newline );
+				}
+				onNamedEvent "onPlayerVoiPUnmute" {
+					gui.consoleCommand( "admin playerVOIPMute " + _quote + gui.lstPlayers.selectedPlayerName + _quote + " off" + _newline );
+				}
+			}
+		_end_tab_page
+
+		_tab_page( Admin_Server, localize( "guis/admin/server" ), Admin, ADM_SERVER, _to_right_of( tabpAdmin_Players ), 0 )
+			_list( Configs, PADDING, _to_bottom_of( grpAdmin_ServerCommands ) + PADDING, gui.grpAdmin_ServerCommands.rect.w, $evalfloat( 16 * 5 ) )
+				properties {
+					float	fontSize		= 12;
+					float	flags			= immediate( flags ) | LF_SHOW_HEADINGS | LF_NO_NULL_SELECTION;
+					float	columnFontSize		= 12;
+					string	selectedConfigName	= "";
+					float	lastSelection;
+				}
+				events {
+					onCreate {
+						insertColumn( toWStr( "<loc = 'guis/admin/configs'><width = 100%><flags customdraw>" ), 0, 0 );// configs
+					}
+					onSelectItem {
+						if ( currentSelection != -1 ) {
+							selectedConfigName = toStr( getItemText( currentSelection, 0 ) );
+						} else {
+							selectedConfigName = "";
+						}
+					}
+				}
+				timeline {
+					onTime 1000 {
+						if( visible ) {
+							storeVisualState();
+							lastSelection = findItem( toWStr( selectedConfigName ), 0 );
+							fillFromEnumerator( "serverConfigList" );
+							currentSelection = immediate( lastSelection );
+							restoreVisualState();
+						}
+						timeline.default.resetTime( 0 );
+					}
+				}
+			_end_list
+
+			// ==============================================================================
+			// Exec Config
+			// ==============================================================================
+			_button( Server_ExecConfig, _to_right_of( lstConfigs ) - rect.w, _to_bottom_of( lstConfigs ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+				properties {
+					handle localizedText = localize( "guis/admin/execconfig" );
+					float allowAction = gui.lstConfigs.currentSelection != -1 && admin.canExecConfig;
+				}
+				_button_disable_if( "allowAction", allowAction == false )
+
+				_button_action(
+					gui.consoleCommand( "admin execConfig " + _quote + gui.lstConfigs.selectedConfigName +_quote + _newline );
+				)
+				events {
+					onQueryTooltip {
+						toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/execconfig" );
+					}
+				}
+			_end_button
+
+			_group_box_vertical( Admin_ServerCommands, PADDING, PADDING, 200, $evalfloat( BUTTON_HEIGHT * 14 )  )
+				properties {
+					float flags = VLF_DRAW_REVERSED;
+					vec2 spacing = 3, 3;
+				}
+				
+				_edit( TimeLimit, 100, 0, 100, BUTTON_HEIGHT )
+					_draw_left_edit_label( localize( "guis/mainmenu/timelimit" ), COLOR_TEXT, 100 )
+					properties {
+						float maxTextLength = 6;
+						float flags = immediate( flags ) | EF_INTEGERS_ONLY | EF_ALLOW_DECIMAL;
+						float allowEvents = admin.canSetTimelimit;
+					}
+					events {
+						onNamedEvent "onShow" {
+							editText = sdnet.queryServerInfo( FS_CURRENT, -1, "si_timeLimit", "20" );
+						}
+						onPropertyChanged "player.serverInfoChanged" {
+							editText = sdnet.queryServerInfo( FS_CURRENT, -1, "si_timeLimit", "20" );
+						}
+						
+						onGainFocus {
+							flags = immediate( flags ) | WF_CAPTURE_KEYS;
+						}
+						onLoseFocus {
+							flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+						}
+						onAccept {
+							if( toFloat( editText ) > 100 ) {
+								editText = "100";
+							}
+							gui.consoleCommand( "admin setTimeLimit " + editText + _newline );
+							//gui.playSound( "system/button/click" );
+							gui.focusedWindow = "";
+						}
+						onCancel {
+							gui.focusedWindow = "";
+						}
+					}
+				_end_edit						
+
+				// ==============================================================================
+				// Character Advancement
+				// ==============================================================================
+				_check( Server_CharacterAdvancement, localize( "guis/admin/disableproficiency" ), 0, 0, BUTTON_WIDTH )
+					_admin_check_init( si_noProficiency, "admin disableProficiency on", "admin disableProficiency off" )
+					_button_disable_if( "admin.canDisableProficiency", admin.canDisableProficiency == false )
+					
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/disableprof" );
+						}
+					}
+				_end_check
+
+				// ==============================================================================
+				// Team Damage
+				// ==============================================================================
+				_check( Server_DisableTeamDamage, localize( "guis/admin/teamdamage" ), 0, 0, BUTTON_WIDTH )
+					_admin_check_init( si_teamDamage, "admin setTeamDamage on", "admin setTeamDamage off" )
+					_button_disable_if( "admin.canSetTeamDamage", admin.canSetTeamDamage == false )
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/teamdamage" );
+						}
+					}
+				_end_check
+
+				// ==============================================================================
+				// Force Team Balance
+				// ==============================================================================
+				_check( Server_ForceTeamBalance, localize( "guis/admin/forceteambalance" ), 0, 0, BUTTON_WIDTH )
+					_admin_check_init( si_teamForceBalance, "admin setTeamBalance on", "admin setTeamBalance off" )
+					_button_disable_if( "admin.canSetTeamBalance", admin.canSetTeamBalance == false )
+					
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/teambalance" );
+						}
+					}
+				_end_check
+
+				// ==============================================================================
+				// Global Text Mute
+				// ==============================================================================
+				_check( Server_MuteChatText, localize( "guis/admin/muteglobalchat" ), 0, 0, BUTTON_WIDTH )
+					_admin_check_init( si_disableGlobalChat, "admin globalMute on", "admin globalMute off" )
+					
+					_button_disable_if( "admin.canGlobalMute", admin.canGlobalMute == false )
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/globaltextmute" );
+						}						
+					}
+				_end_check
+				
+				// ==============================================================================
+				// Mute Global voice
+				// ==============================================================================
+				_check( Server_MuteGlobalVoice, localize( "guis/admin/muteglobalvoice" ), 0, 0, BUTTON_WIDTH )
+					_admin_check_synced( g_disableGlobalAudio, "admin globalVOIPMute on", "admin globalVOIPMute off" )
+					
+					_button_disable_if( "admin.canGlobalMuteVoip", admin.canGlobalMuteVoip == false )
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/admin/muteglobalvoice" );
+						}
+					}
+				_end_check
+
+				// ==============================================================================
+				// Restart Map
+				// ==============================================================================
+				_button( Server_RestartMap, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/admin/restartmap" );
+						float allowAction = admin.canRestartMap;
+					}
+					_button_disable_if( "allowAction", allowAction == false )
+
+					_button_action(
+						gui.consoleCommand( "admin restartMap" + _newline );
+					)
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/restartmap" );
+						}
+					}
+				_end_button
+
+				// ==============================================================================
+				// Restart Campaign
+				// ==============================================================================
+				_button( Server_RestartCampaign, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/admin/restartcampaign" );
+						float allowAction = admin.canRestartCampaign;
+					}
+					_button_disable_if( "allowAction", allowAction == false )
+
+
+					_button_action(
+						gui.consoleCommand( "admin restartCampaign" + _newline );
+					)
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/restartcampaign" );
+						}
+					}
+				_end_button
+
+				// ==============================================================================
+				// Start Match
+				// ==============================================================================
+				_button( Server_StartMatch, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/admin/startmatch" );
+						float allowAction = admin.canStartMatch;
+					}
+					_button_disable_if( "allowAction", allowAction == false )
+
+					_button_action(
+						gui.consoleCommand( "admin startMatch" + _newline );
+					)
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/startmatch" );
+						}
+					}
+				_end_button
+
+				// ==============================================================================
+				// Kick all bots
+				// ==============================================================================
+				_button( Server_KickAllBots, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/admin/kickallbots" );
+						float allowAction = admin.canKick;
+					}
+					_button_disable_if( "allowAction", allowAction == false )
+
+					_button_action(
+						if( admin.isSuperUser ) {
+							gui.setCVarInt( "bot_minClients", -1 );
+						}
+						gui.consoleCommand( "admin kickAllBots" + _newline );
+					)
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/kickbots" );
+						}
+					}
+				_end_button
+
+				// ==============================================================================
+				// Shuffle XP
+				// ==============================================================================
+				_button( Server_ShuffleXP, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/admin/shufflexp" );
+						float allowAction = admin.canShuffleTeams;
+					}
+					_button_disable_if( "allowAction", allowAction == false )
+
+
+					_button_action(
+						gui.consoleCommand( "admin shuffleTeams xp" + _newline );
+					)
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/shufflexp" );
+						}
+					}
+				_end_button
+
+				// ==============================================================================
+				// Shuffle Random
+				// ==============================================================================
+				_button( Server_ShuffleRandom, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+					properties {
+						handle localizedText = localize( "guis/admin/shufflerandom" );
+						float allowAction = admin.canShuffleTeams;
+					}
+					_button_disable_if( "allowAction", allowAction == false )
+
+					_button_action(
+						gui.consoleCommand( "admin shuffleTeams random" + _newline );
+					)
+					events {
+						onQueryTooltip {
+							toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/shufflerand" );
+						}
+					}
+				_end_button
+			_end_group_box_vertical
+
+			// ==============================================================================
+			// Change Map
+			// ==============================================================================
+			_list( Maps, _to_right_of( grpAdmin_ServerCommands ) + 3, _to_bottom_of( lblMapSourceValue ) + 6, gui.lblMapSourceValue.absoluteRect.w, $evalfloat( BUTTON_HEIGHT * 7 ) )
+				_list_draw_column_sort( "default" )
+				properties {
+					float flags = immediate( flags ) | LF_COLUMN_SORT | LF_NO_NULL_SELECTION;
+				}
+				events {
+					onCreate {
+						insertColumn( toWStr( "<width = 100%><flags customdraw>" ), 0, 0 );	//Name
+						insertColumn( gui.blankWStr, 0, 1 );				// DefName
+						insertColumn( gui.blankWStr, 0, 2 );				// Mat
+					}
+				}
+			_end_list
+
+			_dropdown( MapSource, localize( "guis/mainmenu/gametype" ), _to_right_of( grpAdmin_ServerCommands ) + 3, PADDING, _fill_to_right_of( tabpAdmin_ServerContent ), 0, $evalfloat( BUTTON_HEIGHT * 4 ), "below" )
+				properties {
+					float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					float index;
+				}
+				events {
+					onCreate {
+						insertColumn( toWStr( "<width = 100%>" ), rect.w, 0 );		// Pretty Name
+						insertColumn( gui.blankWStr, 0, 1 );				// Value
+						insertColumn( gui.blankWStr, 0, 2 );				// Maplist
+						insertColumn( gui.blankWStr, 0, 3 );				// Action
+
+						// Campaign
+						index = insertItem( toWStr( "<loc = 'game/gametype/campaign'>" ), 0, 0 );
+						setItemText( toWStr( "sdGameRulesCampaign" ), index, 1 );
+						setItemText( toWStr( "campaignList" ), index, 2 );
+						setItemText( toWStr( "setCampaign" ), index, 3 );
+
+						// Objective
+						index = insertItem( toWStr( "<loc = 'game/gametype/objective'>" ), 1, 0 );
+						setItemText( toWStr( "sdGameRulesObjective" ), index, 1 );
+						setItemText( toWStr( "mapList" ), index, 2 );
+						setItemText( toWStr( "setObjectiveMap" ), index, 3 );
+
+						// Stopwatch
+						index = insertItem( toWStr( "<loc = 'game/gametype/stopwatch'>" ), 2, 0 );
+						setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
+						setItemText( toWStr( "mapList" ), index, 2 );
+						setItemText( toWStr( "setStopWatchMap" ), index, 3 );
+					}
+					onNamedEvent "onShow" {
+						index = findItem( toWStr( gui.getCVar( "si_rules" ) ), 1 );
+						if( index != -1 ) {
+							currentSelection = immediate( index );
+						} else {
+							currentSelection = 0;
+						}
+						postOptionalNamedEvent( "onSelected" );
+					}
+					onNamedEvent "onSelected" {
+						callSuper();
+						if( currentSelection < 0 ) {
+							return;
+						}
+						gui.lstMaps.fillFromEnumerator( toStr( getItemText( currentSelection, 2 ) ) );
+
+						gui.lstMaps.activeColumn = 0;
+						gui.lstMaps.sort();
+						gui.lstMaps.currentSelection = 0;
+						gui.btnServer_ChangeMap.postNamedEvent( "OnSourceChanged" );
+					}
+				}
+			_end_dropdown
+
+			_group_box( MapPreviewImage, _right( tabpAdmin_ServerContent ), _to_bottom_of( btnServer_ChangeMap ) + 3, 128, rect.width * 1 / 1.777 )
+				properties {
+					rect previewRect = absoluteRect.x + PADDING, absoluteRect.y + PADDING, absoluteRect.width - $evalfloat( 2 * PADDING ), absoluteRect.height - $evalfloat( 2 * PADDING );
+					handle previewMaterial = floatToHandle( -1 );
+				}
+				events {
+					onPostDraw {
+						if( isValidHandle( previewMaterial ) ) {
+							drawCachedMaterial( previewMaterial, previewRect, COLOR_WHITE );
+						}
+					}
+					onPropertyChanged "gui.lstMaps.currentSelection" {
+						if( gui.lstMaps.currentSelection < 0 || gui.lstMapSource.currentSelection < 0 ) {
+							previewMaterial = floatToHandle( -1 );
+							return;
+						}
+						if( wcompare( _get_current_list_text( MapSource, 1 ), toWStr( "sdGameRulesCampaign" ) ) ) {
+							rect.height = rect.width * 1.0f / ( 1.3333 );
+							previewMaterial = gui.campaignPreview;
+							gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), CAMPAIGNSHOT );
+						} else {
+							rect.height = rect.width * 1.0f / ( 1.7777 );
+							previewMaterial = gui.levelPreview;
+							gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), LEVELSHOT );
+						}
+					}
+				}
+			_end_group_box
+
+			_button( Server_ChangeMap, gui.lstMaps.rect.x + gui.lstMaps.rect.w - rect.w, _to_bottom_of( lstMaps ) + 3, gui.grpMapPreviewImage.rect.w, BUTTON_HEIGHT )
+				properties {
+					handle localizedText = localize( "guis/admin/changemap" );
+					float allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeMap;
+					string action = "changeMap";
+				}
+				_button_disable_if( "allowAction", allowAction == false )
+				_button_action(
+					gui.consoleCommand( "admin " + action + " " + _quote + toStr( _get_current_list_text( Maps, 1 ) ) + _quote + _newline );
+				)
+				events {
+					onNamedEvent "OnSourceChanged" {
+						if( gui.lstMapSource.numItems == 0 ) {
+							return;
+						}
+						if( wcompare( _get_current_list_text( MapSource, 2 ), toWStr( "campaignList" ) ) ) {
+							allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeCampaign;
+							localizedText = localize( "guis/admin/changecampaign" );
+						} else {
+							allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeMap;
+							localizedText = localize( "guis/admin/changemap" );
+						}
+						action = toStr( _get_current_list_text( MapSource, 3 ) );
+					}
+					onQueryTooltip {
+						toolTipText = localizeArgs( "guis/mainmenu/tooltips/admin/changemap" );
+					}
+				}
+			_end_button
+		_end_tab_page
+	_end_tab_container
+_end_tab_page_content
+	properties {
+		float visible = player.serverIsRepeater == false;
+	}
+_end_tab_page_button

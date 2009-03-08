@@ -1,0 +1,1497 @@
+// ================================================================================
+// Join Game Dialog
+// ================================================================================
+#define USER_FRIENDS 				1
+#define USER_TEAMS 					2
+
+#define HOT_SERVER_REFRESH_MS		3000
+#define SERVER_REFRESH_MS			10000
+
+#define DLG_JOINGAME_BUTTON_WIDTH 100
+
+#if !defined( SD_DEMO_BUILD )
+$template _achievements_mini_list( NameParm, CategoryParm )
+	windowDef  lstAchievementMiniOverview##NameParm {
+		type list;
+		properties {
+			rect rect 						= 0, 0, 24, 120;
+			float fixedRowHeight 			= 40;
+			vec2 item;
+			vec2 item;
+			color	foreColor				= 0.5, 0.5, 0.5, 1.0f;
+			vec4	scratchColor;
+			vec4	itemRect;
+			float 	lastSelected;
+			float	updating = false;
+		}
+		events {
+			onCreate {
+				insertColumn( gui.blankWStr, 32, 0 );		// text
+				insertColumn( gui.blankWStr, 0, 1 );		// category
+				insertColumn( gui.blankWStr, 0, 2 );		// level
+			}
+			onNamedEvent "statsUpdated" {
+				gui.scriptPushString( CategoryParm );
+
+				updating = true;
+				lastSelected = immediate( currentSelection );
+				fillFromEnumerator( "sdnetAchievements" );
+				currentSelection = immediate( lastSelected );
+				updating = false;
+
+				setItemMaterialSize( "16,32", -1, 0 );
+			}
+			onQueryToolTip {
+				item = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( item.x != -1 && item.y != -1 ) {
+					toolTipText = localizeArgs( "game/achievements/" + toStr( getItemText( item.x, 1 ) ) + "_level" + toStr( getItemText( item.x, 2 ) ) );
+				}
+			}
+			onEnterItem {
+				item.x = gui.scriptGetFloatResult();
+				item.y = gui.scriptGetFloatResult();
+				scratchColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, item.x, item.y );
+				transitionItemVec4( LTP_FORECOLOR, scratchColor, "1,1,1,1", ACTIVATE_TRANSITION_TIME, "", item.x, item.y );
+				gui.playSound( "boop" );
+			}
+			onExitItem {
+				item.x = gui.scriptGetFloatResult();
+				item.y = gui.scriptGetFloatResult();
+				scratchColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, item.x, item.y );
+				transitionItemVec4( LTP_FORECOLOR, scratchColor, foreColor, ACTIVATE_TRANSITION_TIME, "", item.x, item.y );
+			}
+			/*
+			onDrawSelectedBackground {
+				item.x = gui.scriptGetFloatResult();
+				itemRect = gui.scriptGetVec4Result();
+
+				drawCachedMaterial( gui.lstLineMaterial, itemRect, COLOR_LIST_GRADIENT );
+			}
+			*/
+		}
+	}
+$endtemplate
+#endif
+
+_dialog( JoinGame, floatToHandle( -1 ), PADDING, 44, BAR_WIDTH, _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( joinGame )
+
+	properties {
+		float coolDownTime = 0;	// cooldown after a server browser update so server's don't reject the request
+	}
+
+    events {
+    	onPropertyChanged "sdnet.findingServers" {
+    		if( sdnet.findingServers == false ) {
+    			coolDownTime = immediate( gui.time ) + 2000;
+    		}
+    	}
+		onPropertyChanged "gui.onConnectionLost" {
+			if ( visible > 0 ) {
+				_close_top_dialog;
+				_pop_page;
+			}
+		}
+		onPropertyChanged "gui.serverMode" {
+			gui.lstDWServers.clearItems();
+		}
+		onNamedEvent "onShow" {
+			callSuper();
+			sdnet.loadFilters( "default" );
+
+			if( ( gui.serverMode == FS_INTERNET ) && compare( sdnet.getProfileString( "playedComputerGame", "0" ), "0" ) ) {
+				timeline.firstTime.active = true;
+				timeline.firstTime.resetTime( 0 );
+			}
+		}
+		onHide {
+			sdnet.stopFindingServers( gui.serverMode );
+		}
+		onNamedEvent "onYes" {
+			_close_popup
+			_pop_page
+
+			gui.setCVarInt( "bot_uiSkill", 5 );	// Tutorial
+			gui.setCVarInt( "bot_skill", 3 );	// Tutorial
+			_push_page( playComputer )
+		}
+
+		onNamedEvent "onNo" {
+			_close_popup
+		}
+	}
+	timeLine firstTime {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			active = compare( sdnet.getProfileString( "playedComputerGame", "0" ), "0" );
+		}
+		onTime 150 {
+			_setup_confirmation_yesno( "guis/mainmenu/playonline_botprompt", gui.dlgJoinGame.name, "onYes", "onNo" )
+			_show_popup( confirmation )
+			gui.focusedWindow = "btnConfirmationNo";
+			sdnet.setProfileString( "playedComputerGame", "1" );
+		}
+	}
+	windowDef serverInfoSurround {
+		properties {
+			rect rect = _to_right_of( tabcUserLists ) + PADDING, ( _client_dimension( dlgJoinGame, height ) + 69 ) * 0.5, _fill_to_right_of( dlgJoinGame  ), _fill_to_bottom_of( dlgJoinGame );
+			float flags = immediate( flags ) | WF_CLIP_TO_RECT;
+		}
+		_draw_dialog_frame( drawText, gui.blankWStr, "gradient" )
+
+#if !defined( SD_DEMO_BUILD )
+		events {
+			onDoubleClick "mouse1" {
+				gui.statsInfo.postNamedEvent( "toggle" );
+			}
+		}
+#endif
+
+		windowDef serverInfo {
+			properties {
+				rect 	rect			= 16, 0, gui.serverInfoSurround.rect.w - 16, gui.serverInfoSurround.rect.h;
+
+				wstring serverName;
+				wstring	prettyName;
+				wstring	serverIP;
+				wstring motd1;
+				wstring motd3;
+				wstring motd2;
+				wstring motd4;
+				wstring gameType;
+				wstring	status;
+				handle iconHandle;
+
+				rect	serverTextRect	= absoluteRect.x + PADDING, absoluteRect.y + 4, rect.w - $evalfloat( 2 * PADDING ), DIALOG_CAPTION_HEIGHT;
+				rect	refreshProgressRect = absoluteRect.x + PADDING, absoluteRect.y + ( absoluteRect.h - 6 ), ( absoluteRect.w * gui.refreshProgress ) - $evalfloat( 2 * PADDING ), 2;
+			}
+
+			events {
+				onCreate {
+					callSuper();
+				}
+
+				onPostDraw {
+					callSuper();
+					drawText( serverName, serverTextRect, COLOR_WHITE, 14, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER | DTF_TRUNCATE );
+					drawCachedMaterial( gui.whiteMaterial, refreshProgressRect, "1,1,1,0.25" );
+
+				}
+#if !defined( SD_DEMO_BUILD )
+				onPropertyChanged "gui.statsInfo.open" {
+					if( gui.statsInfo.open ) {
+						rect.x = transition( rect.x, gui.serverInfoSurround.rect.w, 250 );
+					} else {
+						rect.x = transition( rect.x, 16, 250 );
+					}
+				}
+#endif
+				onPropertyChanged "gui.selectedServer" {
+					postNamedEvent( "updateInfo" );
+				}
+				onPropertyChanged "sdnet.serverRefreshComplete" {
+					if( sdnet.serverRefreshComplete ) {
+						postNamedEvent( "updateInfo" );
+					}
+				}
+				onNamedEvent "updateInfo" {
+					if( gui.selectedServer < 0 ) {
+						serverName = gui.blankWStr;
+						prettyName = gui.blankWStr;
+						serverIP = gui.blankWStr;
+						motd1 = gui.blankWStr;
+						motd2 = gui.blankWStr;
+						motd3 = gui.blankWStr;
+						motd4 = gui.blankWStr;
+						gameType = gui.blankWStr;
+						gui.serverFeatures.clear();
+						return;
+					}
+
+					serverName = toWStr( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_name", "" ) );
+					serverIP = toWStr( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "_address", "" ) );
+
+					prettyName = toWStr( sdnet.queryMapInfo( gui.serverMode, gui.selectedServer, "pretty_name", "" ) );
+
+					motd1 = toWStr( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_motd_1", "" ) );
+					motd2 = toWStr( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_motd_2", "" ) );
+					motd3 = toWStr( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_motd_3", "" ) );
+					motd4 = toWStr( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_motd_4", "" ) );
+					gameType = sdnet.queryGameType( gui.serverMode, gui.selectedServer );
+					status = sdnet.getServerStatusString( gui.serverMode, gui.selectedServer );
+
+					gui.serverFeatures.clear();
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "net_serverPunkbusterEnabled", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "punkbuster" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/punkbuster" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_disableVoting", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "novoting" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/novoting" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_teamDamage", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "friendly_fire" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/friendly_fire" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_needPass", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "password" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/password" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_teamForceBalance", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "balance" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/balance" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_allowLateJoin", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "latejoin" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/latejoin" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "si_pure", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "pure" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/pure" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "bot_enable", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "bot" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/bot" ) );
+					}
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "_ranked", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "ranked" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/ranked" ) );
+					}
+#if !defined( SD_DEMO_BUILD )
+					if( toFloat( sdnet.queryServerInfo( gui.serverMode, gui.selectedServer, "_repeater", "0" ) ) ) {
+						iconHandle = gui.serverFeatures.addIcon( "tv" );
+						gui.serverFeatures.setItemText( iconHandle, localizeArgs( "guis/mainmenu/serverfeatures/tv" ) );
+					}
+#endif
+				}
+			}
+
+			_button( JoinDWServer, _right( serverInfo ), _bottom( serverInfo ), DLG_JOINGAME_BUTTON_WIDTH, BUTTON_HEIGHT )
+				properties {
+					handle localizedText = localize( "guis/mainmenu/joinserver" );
+					float visible = gui.selectedServer >= 0;
+				}
+				_button_disable_if( "gui.selectedServer",  gui.selectedServer == -1 )
+				_button_action(
+					if( compare( gui.edtServerPassword.editText, "" ) == false ) {
+						gui.setCVar( "password", gui.edtServerPassword.editText );
+					}
+					if ( gui.selectedServer >= 0 ) {
+						sdnet.joinServer( gui.serverMode, gui.selectedServer );
+					}
+				)
+	        _end_button
+
+	        _edit( ServerPassword, gui.lstServerPlayers.rect.x, _bottom( serverInfo ), _fill_to_left_of( btnJoinDWServer ), BUTTON_HEIGHT )
+	        	properties {
+	        		float visible = gui.selectedServer >= 0;
+	        		float password = 1;
+	        	}
+	        	_draw_right_edit_label( localize( "guis/mainmenu/password" ), COLOR_WHITE, 100 )
+	        	events {
+	        		onAccept {
+	        			gui.setCVar( "password", editText );
+	        		}
+	        		onNamedEvent "onShow" {
+	        			editText = gui.getCVar( "password" );
+	        		}
+	        		onCVarChanged "password" {
+	        			editText = gui.getCVar( "password" );
+	        		}
+	        		onGainFocus {
+	        			flags = immediate( flags ) | WF_CAPTURE_KEYS;
+	        		}
+	        		onLoseFocus {
+	        			flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+	        		}
+	        	}
+	        _end_edit
+
+			_list( ServerPlayers, _client_dimension( serverInfo, width ) * 0.60, 19, _fill_to_right_of( serverInfo ), _fill_to_top_of( btnJoinDWServer ) + 2 )
+				properties {
+					float flags 		= immediate( flags ) | LF_SHOW_HEADINGS | LF_COLUMN_SORT | WF_TRUNCATE_TEXT;
+					float visible 		= gui.selectedServer >= 0;
+					float fontSize 		= 12;
+					float taskActive 	= 0;
+					handle botIcon		= gui.cacheMaterial( "playerBotIcon", "_st friends/onserver" );
+					wstring lastSelection;
+					vec4	scratchVec4;
+					float	drawColumn;
+					vec2	item;
+				}
+				_list_draw_column_sort( "custom" )
+				events {
+					onCreate {
+						insertColumn( toWStr( "<flags customdraw>" ), 16, 0 );																	// bots
+						insertColumn( toWStr( "<loc = 'guis/mainmenu/player'><width = 70%><flags customDraw>" ), 0, 1 );						// name
+						insertColumn( toWStr( "<loc = 'guis/game/scoreboard/ping'><width = 30%><flags numeric><flags customDraw>" ), 0, 2 );	// ping
+						activeColumn = 1;
+					}
+
+					onQueryToolTip {
+						item = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+						if( item.x == -1 || item.y == -1 ) {
+							toolTipText = gui.blankWStr;
+							return;
+						}
+
+						if( wcompare( getItemText( item.x, 0 ), toWStr( "1" ) ) ) {
+							toolTipText = localizeArgs( "guis/mainmenu/bot" );
+						} else {
+							toolTipText = localizeArgs( "guis/mainmenu/human" );
+						}
+					}
+
+					onDrawColumn {
+						scratchVec4 = gui.scriptGetVec4Result();
+						drawColumn = gui.scriptGetFloatResult();
+						if( drawColumn == 0 ) {
+							scratchVec4.y = immediate( scratchVec4.y + 3 );
+							scratchVec4.w = 12;
+							scratchVec4.h = 12;
+							drawCachedMaterial( botIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 0 ) );
+							gui.scriptPushFloat( false );
+							return;
+						}
+						postNamedEvent( "drawColumnSortIndicator" );
+						gui.scriptPushFloat( true );
+					}
+					onPropertyChanged "visible" "gui.dlgJoinGame.visible" {
+						callSuper();
+						if( isVisible() == false ) {
+							timeline.update.active = false;
+							gui.refreshProgress = 0;
+						} else {
+							if( gui.selectedServer >= 0 && gui.lstDWServers.numItems > 0 ) {
+								timeline.update.active = true;
+								timeline.update.resetTime( SERVER_REFRESH_MS );
+							}
+						}
+					}
+					onPropertyChanged "gui.selectedServer" "gui.lstDWServers.numItems" "visible" {
+						callSuper();
+						if( gui.selectedServer < 0 || gui.lstDWServers.numItems == 0 ) {
+							clearItems();
+							timeline.update.active = false;
+							return;
+						}
+						postNamedEvent( "updateInfo" );
+						timeline.update.active = true;
+						timeline.update.resetTime( SERVER_REFRESH_MS );
+					}
+					onNamedEvent "updateInfo" {
+						if( currentSelection != -1 ) {
+							lastSelection = getItemText( currentSelection, 1 );
+						}
+						storeVisualState();
+
+						gui.scriptPushFloat( gui.serverMode );
+						gui.scriptPushFloat( gui.selectedServer );
+						fillFromEnumerator( "sdnetServerClients" );
+						setItemMaterialSize( "12, 12", -1, 0 );
+
+						currentSelection = findItem( lastSelection, 1 );
+						restoreVisualState();
+
+						timeline.update.active = true;
+						timeline.update.resetTime( 0 );
+					}
+					onPropertyChanged "sdnet.serverRefreshComplete" {
+						if( sdnet.serverRefreshComplete ) {
+							postNamedEvent( "updateInfo" );
+						}
+					}
+				}
+				timeline update {
+					properties {
+						float active = false;
+					}
+					onTime 0 {
+						active = isVisible();
+						if( active ) {
+							gui.refreshProgress = transition( 0, 1, SERVER_REFRESH_MS );
+						} else {
+							gui.refreshProgress = 0;
+						}
+					}
+
+					onTime SERVER_REFRESH_MS {
+						if( gui.dlgJoinGame.coolDownTime > gui.time ) {
+							resetTime( SERVER_REFRESH_MS - ( gui.dlgJoinGame.coolDownTime - gui.time ) );
+							return;
+						}
+						resetTime( 0 );
+						if( gui.customRefreshActive == false ) {
+							sdnet.refreshServer( gui.serverMode, gui.selectedServer, "" );
+						}
+						gui.refreshProgress = 0;
+					}
+				}
+			_end_list
+
+			_group_box( ServerMapShot, PADDING, 18, 96, rect.w * 1.0f / ( 1.7777 ) )
+				properties {
+					rect icoRect = absoluteRect.x + 2, absoluteRect.y + 2, absoluteRect.w - 4, absoluteRect.h - 4;
+					float visible = gui.selectedServer >= 0;
+				}
+				events {
+					onPropertyChanged "gui.selectedServer" {
+						gui.uploadLevelShot( sdnet.queryMapInfo( gui.serverMode, gui.selectedServer, "server_shot_thumb", "levelshots/thumbs/generic.tga" ), LEVELSHOT );
+					}
+					onPostDraw {
+						if( isValidHandle( gui.levelPreview ) ) {
+							drawCachedMaterial( gui.levelPreview, icoRect, COLOR_WHITE );
+						}
+					}
+				}
+			_end_group_box
+
+			windowDef serverInfoGroup {
+				properties {
+					rect	rect = _to_right_of( grpServerMapShot ), gui.grpServerMapShot.rect.y, _fill_to_left_of( lstServerPlayers ), 12;
+					float visible = gui.selectedServer >= 0;
+				}
+				events {
+					onPreDraw {
+						drawText( gui.serverInfo.serverIP, "absoluteRect.x + 3, absoluteRect.y + 2, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.serverInfo.prettyName, "absoluteRect.x + 3, absoluteRect.y + 14, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.serverInfo.gameType, "absoluteRect.x + 3, absoluteRect.y + 26, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.serverInfo.status, "absoluteRect.x + 3, absoluteRect.y + 38, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+
+						gui.scriptPushFloat( true );
+					}
+				}
+			}
+
+			windowDef serverMOTDGroup {
+				properties {
+					rect	rect = PADDING, _to_bottom_of( grpServerMapShot ) + 3, _fill_to_left_of( lstServerPlayers ), 54;
+					float visible = gui.selectedServer >= 0;
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_DARK );
+						drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_BOX_LINES );
+
+						drawText( gui.serverInfo.motd1, "absoluteRect.x + 3, absoluteRect.y + 2, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.serverInfo.motd2, "absoluteRect.x + 3, absoluteRect.y + 14, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.serverInfo.motd3, "absoluteRect.x + 3, absoluteRect.y + 26, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.serverInfo.motd4, "absoluteRect.x + 3, absoluteRect.y + 38, absoluteRect.w - 6, 12", COLOR_WHITE, 12, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+
+						gui.scriptPushFloat( false );
+					}
+				}
+			}
+			windowDef serverFeatures {
+				type iconNotification;
+				properties {
+					rect rect = PADDING, _to_bottom_of( serverMOTDGroup ), _fill_to_left_of( lstServerPlayers ), 18;
+					vec2 iconSize 	= 12, 12;
+					float iconFadeTime = ACTIVATE_TRANSITION_TIME;
+					float iconSlideTime = 0;
+					handle iconHandle;
+				}
+				events {
+					onPropertyChanged "gui.selectedServer" {
+						if( gui.selectedServer < 0 ) {
+							iconFadeTime = ACTIVATE_TRANSITION_TIME;
+							iconSlideTime = 0;
+						} else {
+							iconFadeTime = 0;
+							iconSlideTime = 0;
+						}
+					}
+					onQueryToolTip {
+						iconHandle = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+						if( isValidHandle( iconHandle ) ) {
+							toolTipText = getItemText( iconHandle );
+						} else {
+							toolTipText = gui.blankWStr;
+						}
+					}
+				}
+			}
+		}
+#if !defined( SD_DEMO_BUILD )
+		windowDef statsInfo {
+			properties {
+				rect rect 				= closedX, 0, gui.serverInfoSurround.rect.w, gui.serverInfoSurround.rect.h;
+
+				float open 				= false;
+				float manualOpen		= false;
+				float statsTaskActive 	= false;
+
+				rect	rankIconRect	= absoluteRect.x + 2, absoluteRect.y + 2, 48, 48;
+				rect	achieveIconRect	= absoluteRect.x + 6, absoluteRect.y + 70, 40, 80;
+				rect	rankRect		= absoluteRect.x + 74, absoluteRect.y, absoluteRect.w, 20;
+				rect	nameRect		= absoluteRect.x + 74, absoluteRect.y + 20, absoluteRect.w, 20;
+
+				rect	xpRect			= absoluteRect.x + 74, absoluteRect.y + 40, absoluteRect.w, 16;
+				wstring xpLabel  		= wFormat( "%1: %2", localizeArgs( "guis/mainmenu/totalxp" ), xpValue );
+				wstring xpValue;
+
+				rect	hoursRect		= absoluteRect.x + 74, absoluteRect.y + 54, absoluteRect.w, 16;
+				wstring hoursLabel  	= wFormat( "%1: %2", localizeArgs( "guis/mainmenu/hoursplayed" ), hoursValue );
+				wstring hoursValue;
+
+				rect	achieveRect		= absoluteRect.x + 74, absoluteRect.y + 74, 180, 16;
+				handle 	achieveLabel	= localize( "guis/mainmenu/predictedachievement" );
+
+				rect	achieveTitleRect	= absoluteRect.x + 74, absoluteRect.y + 92, absoluteRect.w, 16;
+				handle 	achieveTitleLabel;
+
+				rect	achieveTasksRect	= absoluteRect.x + 74, absoluteRect.y + 106, absoluteRect.w, 16;
+				wstring	achieveTasksLabel;
+				wstring taskComplete;
+				wstring taskTotal;
+
+				rect	achievePercentRect	= absoluteRect.x + 74, absoluteRect.y + 120, absoluteRect.w, 16;
+				wstring	achievePercentLabel;
+
+				handle 	allCompleteText		= localize( "guis/mainmenu/allachievements" );
+
+
+				handle	rankText			= floatToHandle( -1 );
+
+				handle	rankMaterial 		= floatToHandle( -1 );
+				handle 	achieveMaterial 	= floatToHandle( -1 );
+
+				float	initialOpen			= true;
+				float	closedX				= ( rect.w * -1 ) + 24;
+
+				float	allComplete			= false;
+
+			}
+			events {
+				onPropertyChanged "sdnet.hasActiveUser" {
+					if( sdnet.hasActiveUser == false ) {
+						initialOpen = true;
+						rect.x = closedX;
+						open = false;
+					}
+				}
+				onNamedEvent "onShow" {
+					if ( sdnet.activeUserState < US_ONLINE ) {
+						rect.x = closedX;
+						open = false;
+						return;
+					}
+					if( sdnet.requestStats( globals.game.isRunning == false ) ) {
+						statsTaskActive = true;
+					}
+				}
+				onPropertyChanged "sdnet.statsRequestState" {
+					if( statsTaskActive ) {
+						if( sdnet.statsRequestState == SR_REQUESTING ) {
+							return;
+						}
+						if( sdnet.statsRequestState == SR_COMPLETED ) {
+							statsTaskActive = false;
+							gui.broadcastEventToDescendants( name, "statsUpdated" );
+							postNamedEvent( "statsUpdated" );
+							if( initialOpen ) {
+								postNamedEvent( "open" );
+							}
+							return;
+						}
+						if( sdnet.statsRequestState == SR_FAILED ) {
+							statsTaskActive = false;
+						}
+					}
+				}
+
+				onNamedEvent "statsUpdated" {
+
+					allComplete = compare( gui.getPersistentRankInfo( "nextAchievementAvailable" ), "0" );
+
+					if( allComplete == false ) {
+						rankMaterial = gui.cacheMaterial( "statRank", gui.getPersistentRankInfo( "material" ) );
+						achieveMaterial = gui.cacheMaterial( "nextAchieve", gui.getPersistentRankInfo( "nextAchievementMaterial" ) );
+						rankText = localize( gui.getPersistentRankInfo( "title" ) );
+
+						xpValue = toWString( sdnet.getStat( "total_xp" ), 0 );
+
+						hoursValue = toWString( sdnet.getStat( "total_time_played" ) / 3600, 2 );
+
+						achieveTitleLabel = localize( gui.getPersistentRankInfo( "nextAchievementTitle" ) );
+
+						taskComplete = toWStr( gui.getPersistentRankInfo( "nextAchievementTasks" ) );
+						taskTotal = toWStr( gui.getPersistentRankInfo( "nextAchievementTasksTotal" ) );
+						achieveTasksLabel = localizeArgs( "guis/mainmenu/taskssatisfied", taskComplete, taskTotal );
+						achievePercentLabel = localizeArgs( "guis/mainmenu/percentcompleted", toWString( 100 * toFloat( gui.getPersistentRankInfo( "nextAchievementPercent" ) ), 0 ) );
+					}
+				}
+
+				onPreDraw {
+					drawCachedMaterial( rankMaterial, rankIconRect, COLOR_WHITE );
+					drawLocalizedText( rankText, rankRect, COLOR_WHITE, 18, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+					drawText( toWStr( sdnet.activeUserName ), nameRect, COLOR_WHITE, 14, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+
+					drawText( xpLabel, xpRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+					drawText( hoursLabel, hoursRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+
+					if( allComplete == false ) {
+						drawCachedMaterial( achieveMaterial, achieveIconRect, COLOR_WHITE );
+						drawLocalizedText( achieveLabel, achieveRect, COLOR_WHITE, 14, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+						drawLocalizedText( achieveTitleLabel, achieveTitleRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+						drawText( achieveTasksLabel, achieveTasksRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+						drawText( achievePercentLabel, achievePercentRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+					} else {
+						drawLocalizedText( allCompleteText, achieveRect, COLOR_WHITE, 14, DTF_LEFT | DTF_TOP | DTF_WORDWRAP );
+					}
+
+					gui.scriptPushFloat( false );
+				}
+
+				onPropertyChanged "gui.selectedServer" {
+					if( gui.selectedServer != -1 && open && manualOpen == false && sdnet.findingServers == false ) {
+						postNamedEvent( "close" );
+					}
+				}
+
+				onNamedEvent "open" {
+					rect.x = transition( rect.x, 0, 250, "0.2,0.8" );
+					colorMultiplier.a = transition( colorMultiplier.a, 1, 250, "0.2,0.8" );
+					open = true;
+					initialOpen = false;
+				}
+
+				onNamedEvent "close" {
+					rect.x = transition( rect.x, closedX, 250, "0.3,0.7" );
+					colorMultiplier.a = transition( colorMultiplier.a, 0, 250, "0.2,0.8" );
+					open = false;
+				}
+				onNamedEvent "toggle" {
+					if( open == true && gui.selectedServer == -1 ) {
+						postNamedEvent( "open" );
+						return;
+					}
+					if( open == false && ( sdnet.activeUserState < US_ONLINE ) ) {
+						postNamedEvent( "close" );
+						return;
+					}
+
+					open = immediate( open ^ true );
+					if( open ) {
+						postNamedEvent( "open" );
+					} else {
+						postNamedEvent( "close" );
+					}
+				}
+			}
+			windowDef lytMiniMedals {
+				type layoutHorizontal;
+				properties {
+					rect rect = _right( statsInfo ) - 30, 12, 144, 210;
+					vec2 spacing = -6, 0;
+				}
+
+				_achievements_mini_list( MiniSoldier, 		"soldier" )
+				_achievements_mini_list( MiniMedic, 		"medic" )
+				_achievements_mini_list( MiniEngineer, 		"engineer" )
+				_achievements_mini_list( MiniFieldOps, 		"fieldops" )
+				_achievements_mini_list( MiniCovertOps, 	"covertops" )
+				_achievements_mini_list( MiniBattleSense, 	"battlesense" )
+				_achievements_mini_list( MiniLightWeapons, 	"lightweapons" )
+				_achievements_mini_list( MiniVehicles, 		"vehicles" )
+			}
+			windowDef statsChevrons {
+				properties {
+					rect rect 				= _right( statsInfo ) + 8, 0, 16, gui.statsInfo.rect.h;
+
+					color iconColor			= 1, 1, 1, 0.5;
+					rect iconRect1 			= absoluteRect.x + ( absoluteRect.w - ( iconRect1.w + 4 ) ), absoluteRect.y + 8, 16, 8;
+					rect iconRect2 			= absoluteRect.x + ( absoluteRect.w - ( iconRect2.w + 4 ) ), ( absoluteRect.y + absoluteRect.h ) - ( iconRect2.h + 8 ), 16, 8;
+					rect absoluteRect 		= absoluteRect.x + ( absoluteRect.w - ( absoluteRect.w ) ), absoluteRect.y, 16, absoluteRect.h;
+
+
+					handle	paneSide		= gui.cacheMaterial( "pane_r", "_st pane_r" );
+					color	paneColor		= COLOR_BOX_LINES;
+					rect 	paneRect		= absoluteRect.x + 4, absoluteRect.y + 20, 2, absoluteRect.h - 40;
+
+					handle icon 			= gui.cacheMaterial( "chevrons", "_st chevrons" );
+					handle iconFlipped 		= gui.cacheMaterial( "chevrons_flipped", "_st chevrons_flipped" );
+					float oldValue;
+				}
+				events {
+					onCreate {
+						paneColor.a = iconColor.a;
+					}
+					onMouseEnter {
+						if( gui.selectedServer == -1 || sdnet.activeUserState < US_ONLINE ) {
+							iconColor.a = transition( iconColor.a, 0.5f, ACTIVATE_TRANSITION_TIME );
+							return;
+						}
+						iconColor.a = transition( iconColor.a, 1.0f, ACTIVATE_TRANSITION_TIME );
+						gui.playSound( "boop" );
+					}
+					onMouseExit {
+						iconColor.a = transition( iconColor.a, 0.5f, ACTIVATE_TRANSITION_TIME );
+					}
+					onKeyUp "mouse1" {
+						oldValue = immediate( gui.statsInfo.open );
+
+						gui.statsInfo.postNamedEvent( "toggle" );
+						if( oldValue != gui.statsInfo.open && gui.statsInfo.open ) {
+							gui.statsInfo.manualOpen = true;
+						}
+						gui.playSound( "accept" );
+					}
+					onPreDraw {
+						pushColor( COLOR_WHITE, false );
+							if( gui.statsInfo.open ) {
+								drawCachedMaterial( icon, iconRect1, iconColor );
+								drawCachedMaterial( icon, iconRect2, iconColor );
+							} else {
+								drawCachedMaterial( iconFlipped, iconRect1, iconColor );
+								drawCachedMaterial( iconFlipped, iconRect2, iconColor );
+							}
+							drawCachedMaterial( paneSide, paneRect, paneColor );
+
+						popColor();
+
+						gui.scriptPushFloat( false );
+					}
+				}
+			}
+		}
+#endif
+	}
+
+	_tab_container( userLists, USER_FRIENDS, PADDING, gui.serverInfoSurround.rect.y, _client_dimension( dlgJoinGame, width ) * 0.25, _fill_to_bottom_of( dlgJoinGame ) - 2 )
+		properties {
+			color	overlayColor = COLOR_DIALOG_FILL;
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				_set_tab_page( userLists, USER_FRIENDS );
+			}
+		}
+		// ================================================================================
+		// Friends/Teams management
+		// ================================================================================
+		#include <guis/mainmenu/dialogs/tabpages/friends.include>
+		#include <guis/mainmenu/dialogs/tabpages/teams.include>
+	_end_tab_container
+	
+	_button( JoinBest, PADDING, _to_bottom_of( lblServerInfo ), _fill_to_right_of( dlgJoinGame ), BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/instantaction" );
+			handle 	icon = gui.cacheMaterial( "hotserver", "_st hotserver" );
+			float allowAction = ( gui.serverMode != FS_HISTORY && gui.serverMode != FS_FAVORITES ) && sdnet.findingServers == false && gui.numHotServers > 0;
+		}	
+		
+		_button_disable_if( "allowAction", allowAction == false )
+		
+		_button_action(
+			sdnet.joinBestServer( gui.serverMode );
+			callSuper();
+			timeline.default.resetTime( 9999 );				
+		)
+
+		properties {
+			rect	leftRect			= absoluteRect.x + 2, absoluteRect.y + 2, 40, 12;
+			rect	rightRect			= absoluteRect.x + absoluteRect.w - 82, absoluteRect.y + 2, 40, 12;
+	                                	
+			handle	leftMaterialT 		= gui.cacheMaterial( "arrowrightt", "_st arrowleft_t" );
+			handle	leftMaterialB 		= gui.cacheMaterial( "arrowrightb", "_st arrowleft_b" );
+	                                	
+			handle	rightMaterialT 		= gui.cacheMaterial( "arrowleftt", "_st arrowright_t" );
+			handle	rightMaterialB 		= gui.cacheMaterial( "arrowleftb", "_st arrowright_b" );
+	
+			handle	leftAddMaterialT 	= gui.cacheMaterial( "arrowright_addt", "_st arrowleft_add_t" );
+			handle	leftAddMaterialB 	= gui.cacheMaterial( "arrowright_addb", "_st arrowleft_add_b" );
+	
+			handle	rightAddMaterialT 	= gui.cacheMaterial( "arrowleft_addt", "_st arrowright_add_t" );
+			handle	rightAddMaterialB 	= gui.cacheMaterial( "arrowleft_addb", "_st arrowright_add_b" );
+	
+			color	gradOverlayColor 	= 0, 0, 0, 0;
+			color	arrowOverlayColor 	= COLOR_BLACK;
+			color 	foreColor 			= COLOR_TAB_CONTENT_TEXT;
+		}
+	
+		events {
+			onPreDraw {
+				callSuper();
+				drawTiledMaterial( leftMaterialT, "leftRect.x,leftRect.y,leftRect.w,leftRect.h * 0.5", COLOR_BTN_FANCY_ARROW, "2, 1" );
+				drawTiledMaterial( leftMaterialB, "leftRect.x,leftRect.y + ( leftRect.h * 0.5 ),leftRect.w,leftRect.h * 0.5", COLOR_BTN_FANCY_ARROW, "2, 1" );
+	
+				drawTiledMaterial( rightMaterialT, "rightRect.x,rightRect.y,rightRect.w,rightRect.h * 0.5", COLOR_BTN_FANCY_ARROW, "2, 1" );
+				drawTiledMaterial( rightMaterialB, "rightRect.x,rightRect.y + ( rightRect.h * 0.5 ),rightRect.w,rightRect.h * 0.5", COLOR_BTN_FANCY_ARROW, "2, 1" );
+	
+				drawTiledMaterial( leftAddMaterialT, "leftRect.x,leftRect.y,leftRect.w,leftRect.h * 0.5", arrowOverlayColor, "2, 1" );
+				drawTiledMaterial( leftAddMaterialB, "leftRect.x,leftRect.y + ( leftRect.h * 0.5 ),leftRect.w,leftRect.h * 0.5", arrowOverlayColor, "2, 1" );
+	
+				drawTiledMaterial( rightAddMaterialT, "rightRect.x,rightRect.y,rightRect.w,rightRect.h * 0.5", arrowOverlayColor, "2, 1" );
+				drawTiledMaterial( rightAddMaterialB, "rightRect.x,rightRect.y + ( rightRect.h * 0.5 ),rightRect.w,rightRect.h * 0.5", arrowOverlayColor, "2, 1" );
+			}
+	
+			onMouseEnter {
+				callSuper();
+				if( allowAction ) {
+					gradOverlayColor 	= transition( gradOverlayColor, COLOR_BTN_FANCY_GRADIENT, ACTIVATE_TRANSITION_TIME );
+					foreColor.a 		= transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+		
+					arrowOverlayColor = transition( arrowOverlayColor, COLOR_BTN_FANCY_ARROW, 200 );
+					
+					timeline.default.resetTime( 250 );
+					timeline.default.active = true;
+				}
+			}
+	
+			onMouseExit {
+				if( allowAction ) {
+					callSuper();
+					timeline.default.resetTime( 9999 );				
+		
+					gradOverlayColor = transition( gradOverlayColor, COLOR_BLACK, ACTIVATE_TRANSITION_TIME );
+					foreColor.a = transition( foreColor.a, 0.5, ACTIVATE_TRANSITION_TIME );
+		
+					arrowOverlayColor = transition( arrowOverlayColor, COLOR_BLACK, 750, "0.2,0.9" );
+				}
+			}
+			
+			// override default highlight event
+			onNamedEvent "highlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				foreColor = transition( foreColor, "1.0, 0.95, 0.6, 1", ACTIVATE_TRANSITION_TIME );
+				gradientColor = transition( gradientColor, COLOR_BUTTON_HI_GRADIENT, ACTIVATE_TRANSITION_TIME );
+			}
+			
+			// override default unhighlight event
+			onNamedEvent "unhighlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+				if( compare( gui.focusedWindow, name ) == false ) {
+					foreColor = transition( foreColor, COLOR_TAB_CONTENT_TEXT, ACTIVATE_TRANSITION_TIME );
+ 				}
+				gradientColor = transition( gradientColor, COLOR_BUTTON_GRADIENT, ACTIVATE_TRANSITION_TIME );
+			}			
+		}
+		timeline {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				leftRect.x = transition( leftRect.x, absoluteRect.x + 2, 300 );
+				rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 82, 300 );			
+			}
+			onTime 250 {
+				leftRect.x = transition( leftRect.x, absoluteRect.x + 80, 750, "0.25, 0.75" );
+				rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 160, 750, "0.25, 0.75" );
+				resetTime( 1250 );
+			}
+			// bobbing loop
+			onTime 1000 {
+				leftRect.x = transition( leftRect.x, absoluteRect.x + 80, 1000, "0.25, 0.75" );
+				rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 160, 1000, "0.25, 0.75" );
+			}
+	
+			onTime 2000 {
+				leftRect.x = transition( leftRect.x, absoluteRect.x + 60, 1000, "0.25, 0.75" );
+				rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 140, 1000, "0.25, 0.75" );
+			}
+			onTime 3000 {
+				resetTime( 1000 );
+			}
+			
+			onTime 9999 {
+				leftRect.x = transition( leftRect.x, absoluteRect.x + 2, 300 );
+				rightRect.x = transition( rightRect.x, absoluteRect.x + absoluteRect.w - 82, 300 );
+			}			
+		}		
+	_end_button
+
+    _list( DWServers, PADDING, _to_bottom_of( btnJoinBest ) + 3, _fill_to_right_of( dlgJoinGame ), _fill_to_top_of( serverInfoSurround ) )
+		properties {
+			float		flags				= immediate( flags ) | LF_SHOW_HEADINGS | WF_TRUNCATE_TEXT;
+			wstring		storedItem;
+			float		fontSize			= 12;
+			wstring		currentServerIP;
+
+			handle		favoritesIcon		= gui.cacheMaterial( "favoritesIcon", "_st favorite_set" );
+			handle		passwordIcon		= gui.cacheMaterial( "passwordIcon", "_st password" );
+
+			handle 		prompt 				= localize( "guis/mainmenu/emptyserverlist" );
+			vec4 		textRect 			= absoluteRect.x, absoluteRect.y + ( ( absoluteRect.h * 0.5 ) - ( textRect.h * 0.5 ) ), absoluteRect.w, 60;
+			vec2		measure;
+			float		needMeasure			= true;
+			float		saveLastSelection	= false;
+			
+			vec2 		selItem 			= -1, -1;
+			float 		initialized 		= false;
+			vec4		scratchVec4;
+			float 		allowEvents 		= sdnet.findingServers == false;
+			
+		}
+		_list_draw_column_sort( "custom" )
+
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				if ( initialized == false ) {
+					initialized = true;
+					insertColumn( gui.blankWStr, 0, BC_IP );
+					insertColumn( toWStr( "<flags customdraw>" ), 16, BC_FAVORITE );
+					insertColumn( toWStr( "<flags customdraw>" ), 16, BC_PASSWORD );
+					insertColumn( toWStr( "<flags customdraw>" ), 16, BC_RANKED );
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/servername'><flags customdraw><width = 40%>" ), 0, BC_NAME );
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/mapname'><flags customdraw><width = 18%>" ), 0, BC_MAP );
+					insertColumn( toWStr( "<flags nosort>" ), 16, BC_GAMETYPE_ICON );
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/gametype'><flags customdraw><width = 12%>" ), 0, BC_GAMETYPE );
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/time'><flags customdraw dataSort><width = 10%>" ), 0, BC_TIMELEFT );
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/players'><flags customdraw dataSort><width = 10%>" ), 0, BC_PLAYERS );
+					insertColumn( toWStr( "<loc = 'guis/game/scoreboard/ping'><flags customdraw><width = 10%><flags numeric>" ), 0, BC_PING );
+				}
+			}
+			onPropertyChanged "sdnet.hasActiveUser" {
+				if( sdnet.hasActiveUser == false ) {
+					storedItem = gui.blankWStr;
+					clearItems();
+				}
+			}
+			onKeyUp "mouse1" {
+				selItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( selItem.y == 1 && selItem.x != -1 ) {
+					postNamedEvent( "toggleFavorite" );
+				}
+			}
+			onKeyDown "mouse2" {
+				if( sdnet.findingServers ) {
+					return;
+				}
+				selItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				currentSelection = immediate( selItem.x );
+				if( currentSelection >= 0 && currentSelection < numItems ) {
+					currentServerIP = getItemText( currentSelection, BC_IP );
+				} else {
+					currentServerIP	= gui.blankWStr;
+				}
+				gui.mnuServerContext.targetWindow = name;
+				gui.mnuServerContext.isFavorite = iwcompare( toWStr( "f" ), gui.lstDWServers.getItemText( gui.lstDWServers.currentSelection, BC_FAVORITE ) );
+				gui.mnuServerContext.postNamedEvent( "showMenu" );
+			}
+			onNamedEvent "copyServerInfo" {
+				gui.copyText( currentServerIP );
+			}
+			onNamedEvent "toggleFavorite" {
+				if( currentSelection < 0 ) {
+					return;
+				}
+				gui.playSound( "accept" );
+				sdnet.toggleServerFavoriteState( toStr( getItemText( currentSelection, 0 ) ) );
+			}
+			onKeyDown "space" {
+				postNamedEvent( "toggleFavorite" );
+			}
+			onEnterItem {
+				selItem.x = gui.scriptGetFloatResult();
+				selItem.y = gui.scriptGetFloatResult();
+				if( selItem.y != 1 ) {
+					return;
+				}
+				scratchVec4 = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, selItem.x, selItem.y );
+				transitionItemVec4( LTP_FORECOLOR, scratchVec4, COLOR_WHITE, ACTIVATE_TRANSITION_TIME, "", selItem.x, selItem.y );
+			}
+			onExitItem {
+				selItem.x = gui.scriptGetFloatResult();
+				selItem.y = gui.scriptGetFloatResult();
+				if( selItem.y != 1 ) {
+					return;
+				}
+	
+				scratchVec4 = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, selItem.x, selItem.y );
+				transitionItemVec4( LTP_FORECOLOR, scratchVec4, foreColor, ACTIVATE_TRANSITION_TIME, "", selItem.x, selItem.y );
+			}
+			onNamedEvent "joinCurrent" {
+				if ( gui.selectedServer >= 0 ) {
+					sdnet.joinServer( gui.serverMode, gui.selectedServer );
+				}
+			}
+			onDoubleClick "mouse1" {
+				postNamedEvent( "joinCurrent" );
+			}
+			
+			onQueryTooltip {
+				selItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( selItem.x == -1 && selItem.y == 1 ) {
+					tooltipText = localizeArgs( "guis/mainmenu/favoriteprompt" );
+					return;
+				}
+
+				if( selItem.x == -1 && selItem.y == 2 ) {
+					tooltipText = localizeArgs( "guis/mainmenu/serverfeatures/password"	 );
+					return;
+				}
+
+				if( selItem.x == -1 && selItem.y == 3 ) {
+					tooltipText = localizeArgs( "guis/mainmenu/serverfeatures/ranked"	 );
+					return;
+				}
+
+				tooltipText = gui.blankWStr;
+			}
+			onPreDraw {
+				if( needMeasure ) {
+					measure = measureLocalizedText( prompt, textRect, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+					textRect.h = measure.y;
+					needMeasure = false;
+				}
+				callSuper();
+			}
+
+			onPostDraw {
+				if( numItems == 0 && sdnet.findingServers == false ) {
+					drawLocalizedText( prompt, textRect, COLOR_WHITE, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+				}
+			}
+			onNamedEvent "onShow" {
+				callSuper();
+				activeColumn = BC_PING;
+
+				sdnet.stopFindingServers( gui.serverMode );
+				if( numItems == 0 ) {
+					// make sure to save any servers added by Find Server on the friends menu
+					gui.btnNewServers.preserveUnfilteredServers = true;
+					gui.btnNewServers.postNamedEvent( "onAction" );
+					gui.btnNewServers.preserveUnfilteredServers = false;
+				}
+			}
+
+			onDrawColumn {
+				scratchVec4 = gui.scriptGetVec4Result();
+				drawColumn = gui.scriptGetFloatResult();
+				if( drawColumn == 1 ) {
+					drawCachedMaterial( favoritesIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 1 ) );
+					gui.scriptPushFloat( false );
+					return;
+				}
+				if( drawColumn == 2 ) {
+					scratchVec4.y = immediate( scratchVec4.y + 3 );
+					scratchVec4.w = 12;
+					scratchVec4.h = 12;
+					drawCachedMaterial( passwordIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 2 ) );
+					gui.scriptPushFloat( false );
+					return;
+				}
+				if( drawColumn == 3 ) {
+					scratchVec4.y = immediate( scratchVec4.y + 3 );
+					scratchVec4.w = 12;
+					scratchVec4.h = 12;
+					drawCachedMaterial( gui.rankedIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 3 ) );
+					gui.scriptPushFloat( false );
+					return;
+				}
+
+				postNamedEvent( "drawColumnSortIndicator" );
+
+				gui.scriptPushFloat( true );
+			}
+			onNamedEvent "toggleFavorite" {
+				callSuper();
+				postNamedEvent( "updateServer" );
+			}
+			onPropertyChanged "sdnet.serverRefreshComplete" {
+				if( sdnet.serverRefreshComplete ) {
+					postNamedEvent( "updateServer" );
+				}
+			}
+			onNamedEvent "updateServer" {
+				if( currentSelection < 0 || sdnet.findingServers ) {
+					return;
+				}
+				storedItem = getItemText( currentSelection, 0 );
+				storeVisualState();
+
+				// keep the server from popping around in the list
+				flags = immediate( flags ) | LF_DIRECT_UPDATES;
+
+				gui.scriptPushString( toStr( getItemText( currentSelection, 0 ) ) );
+				gui.scriptPushFloat( gui.serverMode );
+				fillFromEnumerator( "sdnetUpdateServer" );
+
+				setItemMaterialSize( "12, 12", -1, 1 );
+				setItemMaterialSize( "12, 12", -1, 2 );
+				setItemMaterialSize( "12, 12", -1, 3 );
+				setItemMaterialSize( "12, 12", -1, 6 );
+
+				flags = immediate( flags ) & ~LF_DIRECT_UPDATES;
+
+				currentSelection = findItem( storedItem, 0 );
+				if( currentSelection >= 0 ) {
+					gui.selectedServer = getItemDataInt( currentSelection, 0, -1 );
+				}
+				ensureItemIsVisible( currentSelection );
+				restoreVisualState();
+			}
+			onPropertyChanged "currentSelection" {
+				if( currentSelection == -1 ) {
+					gui.selectedServer = -1;
+					return;
+				}
+
+				gui.selectedServer = getItemDataInt( currentSelection, 0, -1 );
+				storedItem = getItemText( currentSelection, 0 );
+			}
+
+			onNamedEvent "newServerList" {
+				gui.serverRefreshMode = FSM_NEW;
+			}
+			onNamedEvent "updateServerList" {
+				if( initialized == false ) {
+					return;
+				}
+
+				if ( currentSelection >= 0 ) {
+					if( saveLastSelection == false ) {
+						storedItem = getItemText( currentSelection, 0 );
+						currentSelection = -1;
+					}
+					saveLastSelection = false;
+					//storeVisualState();
+				}
+
+				gui.scriptPushFloat( false );
+				gui.scriptPushFloat( gui.serverMode );
+				gui.scriptPushFloat( gui.serverRefreshMode );
+
+				flags = immediate( flags ) & ~LF_COLUMN_SORT;
+				fillFromEnumerator( "sdnetServers" );
+
+				if( sdnet.findingServers == false ) {
+					flags = immediate( flags ) | LF_COLUMN_SORT;
+					sort();
+				}
+
+				setItemMaterialSize( "12, 12", -1, 1 );
+				setItemMaterialSize( "12, 12", -1, 2 );
+				setItemMaterialSize( "12, 12", -1, 3 );
+				setItemMaterialSize( "12, 12", -1, 6 );
+
+				//gui.lblHiddenInfoCount.text = toWString( max( 0, srcCount - numItems ), 0 );
+				//playerCount = sdnet.getPlayerCount( gui.serverMode );
+			}
+
+			onPropertyChanged "sdnet.findingServers" {
+				if( gui.serverRefreshMode == FSM_REFRESH ) {
+					gui.scriptPushFloat( true );
+					gui.scriptPushFloat( gui.serverMode );
+					gui.scriptPushFloat( gui.serverRefreshMode );
+					fillFromEnumerator( "sdnetServers" );
+				}
+				if( sdnet.findingServers == false ) {
+					flags = immediate( flags ) | LF_COLUMN_SORT;
+					sort();
+
+					if( wcompare( storedItem, gui.blankWStr ) == false ) {
+						currentSelection = findItem( storedItem, 0 );
+						if( currentSelection >= 0 ) {
+							gui.selectedServer = getItemDataInt( currentSelection, 0, -1 );
+						}
+						ensureItemIsVisible( currentSelection );
+					}
+					timeline.updateHotServers.resetTime( HOT_SERVER_REFRESH_MS );
+				}
+			}
+
+			onPropertyChanged "sdnet.numAvailableDWServers" {
+				if ( initialized && visible > 0 && sdnet.numAvailableDWServers > 0 && gui.serverMode == FS_INTERNET ) {
+					//srcCount = sdnet.numAvailableDWServers;
+					postNamedEvent( "updateServerList" );
+				}
+			}
+#if !defined( SD_DEMO_BUILD )
+			onPropertyChanged "sdnet.numAvailableRepeaters" {
+				if ( initialized && visible > 0 && sdnet.numAvailableRepeaters > 0 && gui.serverMode == FS_INTERNET_REPEATER ) {
+					//srcCount = sdnet.numAvailableRepeaters;
+					postNamedEvent( "updateServerList" );
+				}
+			}
+			onPropertyChanged "sdnet.numAvailableLANRepeaters" {
+				if ( initialized && visible > 0 && sdnet.numAvailableLANRepeaters > 0 && gui.serverMode == FS_LAN_REPEATER ) {
+					//srcCount = sdnet.numAvailableLANRepeaters;
+					postNamedEvent( "updateServerList" );
+				}
+			}
+#endif
+			onPropertyChanged "sdnet.numAvailableLANServers" {
+				if ( initialized && visible > 0 && sdnet.numAvailableLANServers > 0 && gui.serverMode == FS_LAN ) {
+					//srcCount = sdnet.numAvailableLANServers;
+					postNamedEvent( "updateServerList" );
+				}
+			}
+			onPropertyChanged "sdnet.numAvailableHistoryServers" {
+				if ( initialized && visible && sdnet.numAvailableHistoryServers > 0 && gui.serverMode == FS_HISTORY ) {
+					//srcCount = sdnet.numAvailableHistoryServers;
+					postNamedEvent( "updateServerList" );
+				}
+			}
+			onPropertyChanged "sdnet.numAvailableFavoritesServers" {
+				if ( initialized && visible && sdnet.numAvailableFavoritesServers > 0 && gui.serverMode == FS_FAVORITES ) {
+					//srcCount = sdnet.numAvailableFavoritesServers;
+					postNamedEvent( "updateServerList" );
+				}
+			}
+		}
+		timeline checkNewServers {
+			onTime 10000 {
+				if( sdnet.findingServers == false && numItems == 0 && sdnet.state >= SS_INITIALIZED && isVisible() && icompare( gui.activeInput, "serverFilters" ) == false ) {
+					if ( sdnet.findServers( gui.serverMode ) > 0 ) {
+						gui.lstDWServers.postNamedEvent( "newServerList" );
+						gui.lstDWServers.postNamedEvent( "updateServerList" );
+					}
+				}
+				resetTime( 0 );
+			}
+		}
+		
+		timeline updateHotServers {
+			properties {
+				string ignoreIP = "";
+				float index;
+			}
+
+			onTime 0 {
+				active = numItems > 0;
+			}
+
+			onTime HOT_SERVER_REFRESH_MS {
+				if( sdnet.findingServers == false ) {
+					if( gui.selectedServer >= 0 ) {
+						index = findItemDataInt( gui.selectedServer, 0 );
+						ignoreIP = toStr( getItemText( index, 0 ) );
+					} else {
+						ignoreIP = "";
+					}
+					sdnet.updateHotServers( gui.serverMode );
+					gui.numHotServers = sdnet.getNumHotServers( gui.serverMode );
+					sdnet.refreshHotServers( gui.serverMode, ignoreIP );
+				}
+
+				resetTime( 0 );
+			}
+		}		
+	_end_list
+#if 0
+	_label_localized( PlayerInfo, localize( "guis/mainmenu/playercount" ), _to_left_of( lblPlayerInfoCount ) - 3, _top( dlgJoinGame ) + 2, 40, BUTTON_HEIGHT, COLOR_TAB_CONTENT_TEXT )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float flags = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+		}
+	_end_label
+
+	_label_literal( PlayerInfoCount, toWString( gui.lstDWServers.playerCount, 0 ), _to_left_of( lblServerInfo ) - PADDING, gui.lblServerInfo.rect.y, 20, BUTTON_HEIGHT, COLOR_WHITE )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float flags = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+		}
+	_end_label
+#endif
+	_label_localized( ServerInfo, localize( "guis/mainmenu/servers" ), _to_left_of( lblServerInfoCount ) - 3, _top( dlgJoinGame ) + 2, 40, BUTTON_HEIGHT, COLOR_TAB_CONTENT_TEXT )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float flags = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+		}
+	_end_label
+
+	_label_literal( ServerInfoCount, toWString( gui.lstDWServers.numItems, 0 )/*toWString( gui.lstDWServers.srcCount, 0 )*/, _right( dlgJoinGame ) - PADDING/*_to_left_of( lblHiddenInfo ) - PADDING*/, gui.lblServerInfo.rect.y, 20, BUTTON_HEIGHT, COLOR_WHITE )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float flags = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+		}
+	_end_label
+#if 0
+	_label_localized( HiddenInfo, localize( "guis/mainmenu/hidden" ), _to_left_of( lblHiddenInfoCount ) - 3, gui.lblServerInfo.rect.y, 40, BUTTON_HEIGHT, COLOR_TAB_CONTENT_TEXT )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float flags = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+		}
+	_end_label
+
+	_label_literal( HiddenInfoCount, gui.blankWStr, _right( dlgJoinGame ) - PADDING, gui.lblServerInfo.rect.y, 20, BUTTON_HEIGHT, COLOR_WHITE )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float flags = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+		}
+	_end_label
+#endif
+	_dropdown( DWServer_Source, localize( "guis/mainmenu/serversource" ), PADDING , PADDING, 50, 100, $evalint( BUTTON_HEIGHT * 6 ), "right" )
+	    properties {
+	    	float index;
+	    	float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+	    }
+	    events {
+			onCreate {
+				insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Mode
+				gui.lblDWServer_SourceValue.labelForeColor = COLOR_TAB_CONTENT_TEXT;
+			}
+			onPropertyChanged "gui.dlgJoinGame.visible" "sdnet.activeUserState" {
+				if( gui.dlgJoinGame.visible == false ) {
+					return;
+				}
+				clearItems();
+
+				index = insertItem( toWStr( "<loc = 'guis/mainmenu/favorites'>" ), -1, 0 );
+				setItemDataInt( FS_FAVORITES, index, 0 );
+
+				if( sdnet.activeUserState == US_ONLINE ) {
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/internet'>" ), -1, 0 );
+					setItemDataInt( FS_INTERNET, index, 0 );
+#if !defined( SD_DEMO_BUILD )
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/internet_tv'>" ), -1, 0 );
+					setItemDataInt( FS_INTERNET_REPEATER, index, 0 );
+#endif
+
+				}
+
+				if( gui.allowLAN ) {
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/lan'>" ), -1, 0 );
+					setItemDataInt( FS_LAN, index, 0 );
+#if !defined( SD_DEMO_BUILD )
+					index = insertItem( toWStr( "<loc = 'guis/mainmenu/lan_tv'>" ), -1, 0 );
+					setItemDataInt( FS_LAN_REPEATER, index, 0 );
+#endif
+				}
+
+				index = insertItem( toWStr( "<loc = 'guis/mainmenu/history'>" ), -1, 0 );
+				setItemDataInt( FS_HISTORY, index, 0 );
+
+				if( gui.serverMode == FS_LAN ) {
+					currentSelection = findItemDataInt( FS_LAN, 0 );
+					return;
+				}
+#if !defined( SD_DEMO_BUILD )
+				if( gui.serverMode == FS_LAN_REPEATER ) {
+					currentSelection = findItemDataInt( FS_LAN_REPEATER, 0 );
+					return;
+				}
+#endif
+				if( gui.serverMode == FS_INTERNET ) {
+					currentSelection = findItemDataInt( FS_INTERNET, 0 );
+					return;
+				}
+#if !defined( SD_DEMO_BUILD )
+				if( gui.serverMode == FS_INTERNET_REPEATER ) {
+					currentSelection = findItemDataInt( FS_INTERNET_REPEATER, 0 );
+					return;
+				}
+#endif
+				if( gui.serverMode == FS_HISTORY ) {
+					currentSelection = findItemDataInt( FS_HISTORY, 0 );
+					return;
+				}
+				if( gui.serverMode == FS_FAVORITES ) {
+					currentSelection = findItemDataInt( FS_FAVORITES, 0 );
+					return;
+				}
+			}
+			onNamedEvent "onSelected" {
+				callSuper();
+
+				sdnet.stopFindingServers( gui.serverMode );
+				gui.serverMode = getItemDataInt( selection.x, 0, FS_INTERNET );
+				gui.selectedServer = -1;
+				if ( sdnet.findServers( gui.serverMode ) > 0 ) {
+					gui.lstDWServers.postNamedEvent( "newServerList" );
+					gui.lstDWServers.postNamedEvent( "updateServerList" );
+				}
+				/*
+				if( gui.serverMode == FS_INTERNET ) {
+					gui.lstDWServers.srcCount = sdnet.numAvailableDWServers;
+					return;
+				}
+				if( gui.serverMode == FS_LAN ) {
+					gui.lstDWServers.srcCount = sdnet.numAvailableLANServers;
+					return;
+				}
+				if( gui.serverMode == FS_HISTORY ) {
+					gui.lstDWServers.srcCount = sdnet.numAvailableHistoryServers;
+					return;
+				}
+				if( gui.serverMode == FS_FAVORITES ) {
+					gui.lstDWServers.srcCount = sdnet.numAvailableFavoritesServers;
+					return;
+				}
+				*/
+			}
+		}
+	_end_dropdown
+
+	_button( NewServers, _to_left_of( btnRefreshServers ) - 3, PADDING, DLG_JOINGAME_BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/newlist" );
+			float preserveUnfilteredServers = false;
+		}
+
+		_button_disable_if( "gui.serverMode", gui.serverMode == FS_HISTORY || gui.serverMode == FS_FAVORITES )
+
+		_button_action(
+			if( sdnet.findingServers ) {
+				sdnet.stopFindingServers( gui.serverMode );
+				return;
+			}
+			if ( sdnet.findServers( gui.serverMode ) > 0 ) {
+				if( preserveUnfilteredServers == false ) {
+					sdnet.clearUnfilteredSessions();
+				}
+				gui.lstDWServers.postNamedEvent( "newServerList" );
+				gui.lstDWServers.postNamedEvent( "updateServerList" );
+			}
+			gui.focusedWindow = "lstDWServers";
+        )
+        events {
+	        onPropertyChanged "sdnet.findingServers" {
+	        	if( sdnet.findingServers && gui.serverRefreshMode == FSM_NEW ) {
+	        		localizedText = localize( "guis/mainmenu/stopsearching" );
+	        	} else {
+	        		localizedText = localize( "guis/mainmenu/newlist" );
+	        	}
+	        }
+		}
+    _end_button
+
+	_button( RefreshServers, _to_left_of( btnConnectToIP ) - 3, PADDING, DLG_JOINGAME_BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/refreshlist" );
+		}
+		_button_disable_if( "gui.lstDWServers.numItems", gui.lstDWServers.numItems == 0 )
+		_button_disable_if( "sdnet.findingServers", sdnet.findingServers == true )
+
+		_button_action(
+			if ( sdnet.findServers( gui.serverMode ) > 0 ) {
+				gui.btnNewServers.preserveUnfilteredServers = true;
+				if( gui.lstDWServers.numItems > 0 && gui.serverMode != FS_LAN ) {
+					gui.serverRefreshMode = FSM_REFRESH;
+					gui.lstDWServers.postNamedEvent( "updateServerList" );
+				} else {
+					gui.lstDWServers.postNamedEvent( "newServerList" );
+					gui.lstDWServers.postNamedEvent( "updateServerList" );
+				}
+				gui.btnNewServers.preserveUnfilteredServers = false;
+				gui.focusedWindow = "lstDWServers";
+			}
+        )
+    _end_button
+
+	_button( ConnectToIP, _to_left_of( btnEditFilters ) - 3, PADDING, DLG_JOINGAME_BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/connectip" );
+		}
+		_button_action(
+			_show_input( connectIP )
+		)
+    _end_button
+
+	_button( EditFilters, _right( dlgJoinGame ), PADDING, DLG_JOINGAME_BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/filters" );
+		}
+
+		_button_action(
+			_show_input( serverFilters )
+        )
+    _end_button
+_end_dialog

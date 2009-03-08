@@ -1,0 +1,209 @@
+
+#ifndef __stats_weapons__
+#define __stats_weapons__
+
+$template _init_grenade_stat
+
+$endtemplate
+
+$template _weapon_stats_table
+	properties {
+		float totalXP;
+		float totalFired;
+		float totalHit;
+		float totalKills;
+		
+		// only use hitscan weapons for ratio calculation
+		float totalHitForRatio;
+		float totalFiredForRatio;
+		
+		float index;
+		float hit;
+		float fired;
+		float ratio;
+		
+		float lookup;
+
+		float flags 			= immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents 		= false;
+		float fixedRowHeight	= STATS_ROW_HEIGHT;
+		float initialized 		= false;
+	}
+	events {
+		onCreate {
+			callSuper();
+			
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/firearms'><width = 35%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'>" ), 48, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/fired'><width = 18.6%>" ), 0, 2 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/hit'><width = 18.6%>" ), 0, 3 );			
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/kills'><width = 20.5%>" ), 0, 4 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/ratio'><width = 8%>" ), 0, 5 );
+			initialized = true;
+			
+			postNamedEvent( "statsUpdated" );
+		}
+
+		onNamedEvent "statsUpdated" {
+			if( initialized == false ) {
+				return;
+			}
+			clearItems();
+			totalXP = 0;
+			totalFired = 0;
+			totalKills = 0;
+			totalHit = 0;
+			
+			totalHitForRatio = 0;
+			totalFiredForRatio = 0;
+$endtemplate
+
+$template _end_weapon_stats_table
+		}
+	}
+$endtemplate
+
+$template _weapon_totals
+	index = insertItem( toWStr( "<material = 'stats_separator'>" ), -1, 0 );
+	setItemMaterialSize( "rect.w - 4, 16", index, 0 );
+	
+	index = insertItem( toWStr( "<loc = 'guis/mainmenu/totals'>" ), -1, 0 );
+	setItemText( toWString( totalXP, 0 ), index, 1 );
+	setItemText( toWString( totalFired, 0 ), index, 2 );
+	setItemText( toWString( totalHit, 0 ), index, 3 );
+	setItemText( toWString( totalKills, 0 ), index, 4 );
+	if ( totalHitForRatio == 0 ) {
+		setItemText( toWStr( "0" ), index, 5 );
+	} else {
+		setItemText( toWString( immediate( ( totalHitForRatio / totalFiredForRatio ) * 100 ), 0 ), index, 5 );
+	}
+$endtemplate
+
+
+
+$template _add_weapon_stat( WeaponParm )
+	fired = sdnet.getStat( #WeaponParm ## "_shots_fired" );
+	hit = sdnet.getStat( #WeaponParm ## "_shots_hit" );
+	if( fired <= 0 ) {
+		ratio = 0;
+	} else {
+		ratio = immediate( ( hit / fired ) * 100 );
+	}
+	
+	
+	index = insertItem( toWStr( "<loc = 'game/weapons/" ## #WeaponParm ## "'>" ), -1, 0 );
+	
+	// XP
+	lookup = sdnet.getStat( #WeaponParm ## "_xp" );
+	totalXP = immediate( totalXP + floor( lookup ) );	
+	setItemText( toWString( lookup, 0 ), index, 1 );
+	
+	// Fired
+	setItemText( toWString( fired, 0 ), index, 2 );
+	totalFired = immediate( totalFired + fired );
+	totalFiredForRatio = immediate( totalFired + fired );
+	
+	// Hit
+	setItemText( toWString( hit, 0 ), index, 3 );
+	totalHit = immediate( totalHit + hit );
+	totalHitForRatio = immediate( totalHit + hit );
+		
+	// Kills
+	lookup = sdnet.getStat( #WeaponParm ## "_kills" );
+	totalKills = immediate( totalKills + lookup );
+	setItemText( toWString( lookup, 0 ), index, 4 );
+	
+	// Ratio
+	setItemText( toWString( ratio, 0 ) + toWStr( "%" ), index, 5 );
+	
+$endtemplate
+
+/*
+$template _grenade_stats_table
+	properties {
+		float totalXP;
+		float totalFired;
+		float totalHit;
+		float totalKills;
+		
+		float index;
+		float hit;
+		float fired;
+		float ratio;
+		
+		float lookup;
+
+		float flags = immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents = false;
+	}
+	events {
+		onCreate {
+			callSuper();
+			
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/grenades'><width = 30%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'>" ), 48, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/thrown'><width = 20.5%>" ), 0, 2 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/hit'><width = 20.5%>" ), 0, 3 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/kills'><width = 20.5%>" ), 0, 4 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/ratio'><width = 8%>" ), 0, 5 );
+			
+			postNamedEvent( "statsUpdated" );
+		}
+
+		onNamedEvent "statsUpdated" {
+			clearItems();
+			totalXP = 0;
+			totalFired = 0;
+			totalKills = 0;
+			totalHit = 0;
+$endtemplate
+
+$template _end_grenade_stats_table
+		}
+	}
+$endtemplate
+*/
+
+// Should be used for all non hitscan weapons as
+// these weapons aren't included in the total hit ratio.
+$template _add_grenade_stat( WeaponParm )
+	fired = sdnet.getStat( #WeaponParm ## "_shots_fired" );
+	hit = sdnet.getStat( #WeaponParm ## "_shots_hit" );
+	if( fired <= 0 ) {
+		ratio = 0;
+	} else {
+		ratio = immediate( ( hit / fired ) * 100 );
+	}
+
+
+	index = insertItem( toWStr( "<loc = 'game/weapons/" ## #WeaponParm ## "'>" ), -1, 0 );
+	
+	// XP
+	lookup = sdnet.getStat( #WeaponParm ## "_xp" );
+	totalXP = immediate( totalXP + floor( lookup ) );	
+	setItemText( toWString( lookup, 0 ), index, 1 );
+	
+	// Fired
+	setItemText( toWString( fired, 0 ), index, 2 );
+	totalFired = immediate( totalFired + fired );	
+	
+	// Hit
+	setItemText( toWString( hit, 0 ), index, 3 );
+	totalHit = immediate( totalHit + hit );	
+		
+	// Kills
+	lookup = sdnet.getStat( #WeaponParm ## "_kills" );
+	totalKills = immediate( totalKills + lookup );
+	setItemText( toWString( lookup, 0 ), index, 4 );
+
+	// Ratio
+	setItemText( toWString( ratio, 0 ) + toWStr( "%" ), index, 5 );
+	
+$endtemplate
+
+$template _grenade_totals
+	_weapon_totals
+$endtemplate
+
+
+#endif // !__stats_weapons__

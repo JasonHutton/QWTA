@@ -1,0 +1,154 @@
+// ================================================================================
+// Generic Confirmation dialog
+// ================================================================================
+_dialog( Confirmation, localize( "guis/mainmenu/confirm" ), _center( desktop, width ), _center( desktop, height ), 235, 130, "noMove", "dim" )
+	properties {
+		string 	window;
+		string 	onYes;
+		string 	onNo;
+		string 	onOk;
+		string	onCancel;
+		float	type = MB_OK | MB_ICON_INFO;
+		float 	visible = icompare( gui.activePopup, "confirmation" ) == true;
+		float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+	}
+
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			setTabStop( 0 );
+		}
+		onPropertyChanged 	"gui.btnConfirmationYes.visible"
+							"gui.btnConfirmationNo.visible"
+							"gui.btnConfirmationOk.visible"
+							"gui.btnConfirmationCancel.visible" {
+			setTabStop( 0 );
+		}
+
+		
+	    onAccept {
+	    	if( gui.dlgConfirmation.type & MB_OK ) {
+				gui.btnConfirmationOk.postNamedEvent( "onAction" );
+				return;
+			}
+			if( gui.dlgConfirmation.type & MB_YESNO ) {
+				gui.btnConfirmationYes.postNamedEvent( "onAction" );
+			}
+			if( gui.dlgConfirmation.type & MB_YESNOCANCEL ) {
+				gui.btnConfirmationNo.postNamedEvent( "onAction" );
+			}            
+		}
+		onCancel {
+			if( gui.dlgConfirmation.type == MB_OK ) {
+            	gui.btnConfirmationOk.postNamedEvent( "onAction" );
+            	return;
+            }
+			if( gui.dlgConfirmation.type & MB_YESNO ) {
+				gui.btnConfirmationNo.postNamedEvent( "onAction" );
+			}            
+			if( gui.dlgConfirmation.type & MB_YESNOCANCEL ) {
+				gui.btnConfirmationNo.postNamedEvent( "onAction" );
+			}            
+		}
+		onPropertyChanged "gui.dlgConfirmation.type" {
+			gui.dlgConfirmation.window 			= "";
+			gui.dlgConfirmation.onYes 			= "";
+			gui.dlgConfirmation.onNo 			= "";
+			gui.dlgConfirmation.onOk			= "";
+			gui.dlgConfirmation.onCancel		= "";
+
+			if( gui.dlgConfirmation.type & MB_YESNOCANCEL ) {
+				rect.width = 272;
+			} else {
+				rect.width = 235;
+			}
+
+			if( gui.dlgConfirmation.type & MB_ICON_QUESTION ) {
+				localizedText = localize( "guis/mainmenu/confirm" );
+				return;
+			}
+			if( gui.dlgConfirmation.type & MB_ICON_ERROR ) {
+				localizedText = localize( "guis/mainmenu/error" );
+				return;
+			}	
+			if( gui.dlgConfirmation.type & MB_ICON_INFO ) {
+				localizedText = localize( "guis/mainmenu/information" );
+				return;
+			}
+		}
+	}
+
+	_group_box(ConfirmationBackground, _center( dlgConfirmation, width ), _top( dlgConfirmation ), _client_dimension( dlgConfirmation, width ), _fill_to_top_of( btnConfirmationNo ) )	
+		_label_localized( Confirmation, localize( "guis/mainmenu/pleasewait" ), _right( grpConfirmationBackground ), 2, _client_dimension( grpConfirmationBackground, width ) - 16, 16, COLOR_WHITE )
+			properties {
+				float flags 	= immediate( flags ) | WF_WRAP_TEXT;
+				vec2 textAlignment = TA_LEFT, TA_TOP;
+				handle	icon	= gui.infoIcon;  
+			}
+			events {
+				onPostDraw {
+					drawCachedMaterial( icon, "absoluteRect.x - 18, absoluteRect.y + 2, 16, 16", COLOR_WHITE );
+				}
+				onPropertyChanged "gui.dlgConfirmation.type" {
+					if( gui.dlgConfirmation.type & MB_ICON_QUESTION ) {
+						icon	= gui.cacheMaterial( "conficon", "_st icon_question" );  
+						return;
+					}
+					if( gui.dlgConfirmation.type & MB_ICON_ERROR ) {
+						icon	= gui.cacheMaterial( "conficon", "_st icon_error" );  
+						return;
+					}
+					icon	= gui.infoIcon;  
+				}
+			}
+		_end_label	
+	_end_group_box		
+
+	_button( ConfirmationYes, _to_left_of( btnConfirmationNo ) - PADDING, _bottom( dlgConfirmation, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action( gui.postNamedEventOn( gui.dlgConfirmation.onYes, gui.dlgConfirmation.window ); )
+		properties {
+			handle localizedText 	= localize( "guis/mainmenu/yes" );
+			float	visible			= ( gui.dlgConfirmation.type & MB_YESNO ) || ( gui.dlgConfirmation.type & MB_YESNOCANCEL );
+		}
+	_end_button
+	
+	_button( ConfirmationNo, _right( dlgConfirmation, width ), _bottom( dlgConfirmation ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action( gui.postNamedEventOn( gui.dlgConfirmation.onNo, gui.dlgConfirmation.window ); )
+		properties {
+			handle localizedText 	= localize( "guis/mainmenu/no" );
+			float	visible			= ( gui.dlgConfirmation.type & MB_YESNO ) || ( gui.dlgConfirmation.type & MB_YESNOCANCEL );
+		}
+		events {
+			onPropertyChanged "gui.btnConfirmationCancel.visible" {
+				if ( gui.btnConfirmationCancel.visible ) {
+					rect.x = _to_left_of( btnConfirmationCancel ) - PADDING;
+				} else {
+					rect.x = _right( dlgConfirmation, width );
+				}
+			}
+		}
+	_end_button
+	_button( ConfirmationCancel, _right( dlgConfirmation, width ), _bottom( dlgConfirmation ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action( gui.postNamedEventOn( gui.dlgConfirmation.onCancel, gui.dlgConfirmation.window ); )
+		properties {
+			handle localizedText 	= localize( "guis/mainmenu/cancel" );
+			float	visible			= gui.dlgConfirmation.type & MB_YESNOCANCEL;
+		}
+	_end_button
+
+	_button( ConfirmationOk, _center( dlgConfirmation, width ), _bottom( dlgConfirmation, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		_button_action(
+			if( gui.dlgConfirmation.type & MB_OK &&
+				( compare( gui.dlgConfirmation.onOk, "" ) == false &&
+				( compare( gui.dlgConfirmation.window, "" ) == false ) ) ) {
+				gui.postNamedEventOn( gui.dlgConfirmation.onOk, gui.dlgConfirmation.window );
+				return;
+			}
+			_close_popup;
+		)
+		properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/ok" );
+			float	visible			= gui.dlgConfirmation.type & MB_OK;
+		}
+	_end_button
+_end_dialog

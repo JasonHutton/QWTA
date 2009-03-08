@@ -1,0 +1,259 @@
+
+// ================================================================================
+// Play Comp Dialog
+// ================================================================================
+_dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_dimension( desktop, width ), 310, "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( playComp )
+	
+	properties {
+		float firstShow = true;
+		float savedSelection;
+	}
+	
+	events {
+		onNamedEvent "onShow" {
+			if( globals.game.isRunning == false ) {
+				if( firstShow ) {
+					gui.sldPlayComp_TotalNumBots.position = 16;
+					gui.sldPlayComp_TotalNumBots.range.y = 16;
+					gui.sldPlayComp_NumStroggBots.position = 8;
+					gui.sldPlayComp_NumGDFBots.position = 8;
+					
+					gui.setCVarBool( "si_teamDamage", false );
+					gui.setCVarBool( "si_teamForceBalance", false );
+					firstShow = false;									
+				}
+			}
+			
+			// force a reupload
+			savedSelection = immediate( gui.lstPlayCompMaps.currentSelection );
+			gui.lstPlayCompMaps.currentSelection = -1;
+			gui.lstPlayCompMaps.currentSelection = immediate( savedSelection );
+		}
+	}
+	
+	_button_arrows( PlayComp_Start, _right( dlgPlayComp ), _bottom( dlgPlayComp ), $evalfloat( 2* BUTTON_WIDTH ), BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/play" );
+			string currentText;
+		}
+		_button_action(
+			gui.consoleCommandImmediate( "disconnect" + _newline );
+			currentText = toStr( _get_current_list_text( PlayCompMaps, 1 ) );
+			gui.broadcastEventToDescendants( gui.getParentName( name ), "onApply" );
+			
+			gui.setCVarBool( "bot_enable", 1 );
+			gui.setCVarInt( "si_minPlayers", 0 );
+			gui.setCVarInt( "si_maxPlayers", 16 );
+			gui.setCVarBool( "si_disableVoting", 1 );
+			gui.setCVarBool( "si_teamForceBalance", false );
+			gui.setCVarInt( "bot_minClients", 16 );
+			gui.setCVarInt( "bot_minClientsMax", 16 );
+			gui.setCVarInt( "si_gameReviewReadyWait", 1 );
+			gui.setCVarFloat( "g_gameReviewPause", 0.090 );						
+			
+			sdnet.setProfileString( "playedComputerGame", "1" );
+			
+			if( gui.lstPlayCompBotSkills.showAdvanced == false ) {
+				gui.setCVarBool( "bot_doObjectives", true );
+				gui.setCVarBool( "bot_allowClassChanges", true );
+				gui.setCVarBool( "g_tooltipAllowEnhanced", true );
+				gui.setCVarFloat( "si_timeLimit", 30.0 );
+				gui.resetCVar( "g_warmup" );
+				
+				gui.setCVarInt( "bot_uiNumGDF", 8 );
+				gui.setCVarInt( "bot_uiNumStrogg", 8 );
+				
+				gui.setCVarBool( "si_teamDamage", false );
+				gui.setCVarBool( "g_warmupDamage", true );
+				gui.setCVarBool( "si_teamForceBalance", false );
+				
+				gui.chkPlayComp_RecordReplay.checked = false;
+			}
+			
+			gui.setCVarBool( "g_trainingMode", gui.getCVarInt( "bot_uiSkill" ) == 5 && gui.getCVarInt( "bot_skill" ) == 3 );
+
+			gui.consoleCommand( "spawnServer " + currentText + _newline );
+			if( gui.chkPlayComp_RecordReplay.checked ) {
+				gui.consoleCommand( "recordNetDemo" + _newline );
+			}
+		)
+	_end_button	
+
+	windowDef lytPlayComp {
+		type layoutVertical;
+		properties {
+			float flags = VLF_DRAW_REVERSED;
+			rect rect = 0, _top( dlgPlayComp ), gui.dlgPlayComp.rect.w - 136, _fill_to_bottom_of( dlgPlayComp );
+			vec4 margins = PADDING, PADDING, PADDING, PADDING;
+		}			
+	
+		// ================================================================================
+		// Game Types
+		// ================================================================================
+		_dropdown( PlayCompGameType, localize( "guis/mainmenu/gametype" ), 8, 0, 150, _fill_to_right_of( lytPlayComp ), $evalfloat( BUTTON_HEIGHT * 4 ), "right" )
+			properties {
+				float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+				float index;
+				string rules;
+				string type;
+			}
+			events {
+				onCreate {
+					insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// PrettyName
+					insertColumn( gui.blankWStr, 0, 1 );				// Value
+					insertColumn( gui.blankWStr, 0, 2 );				// Maplist
+
+					// Campaign
+					index = insertItem( toWStr( "<loc = 'game/gametype/campaign'>" ), 0, 0 );
+					setItemText( toWStr( "sdGameRulesCampaign" ), index, 1 );
+					setItemText( toWStr( "campaignList" ), index, 2 );
+
+					// Objective
+					index = insertItem( toWStr( "<loc = 'game/gametype/objective'>" ), 1, 0 );
+					setItemText( toWStr( "sdGameRulesObjective" ), index, 1 );
+					setItemText( toWStr( "mapList" ), index, 2 );
+
+					// Stopwatch
+					index = insertItem( toWStr( "<loc = 'game/gametype/stopwatch'>" ), 2, 0 );
+					setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
+					setItemText( toWStr( "mapList" ), index, 2 );
+				}
+				onCVarChanged "si_rules" {
+					postNamedEvent( "updateRules" );
+				}				
+				onCreate {
+					callSuper();
+				}
+				onNamedEvent "onShow" {
+					callSuper();
+					if( currentSelection == -1 ) {
+						postNamedEvent( "updateRules" );
+					}
+				}
+				onNamedEvent "updateRules" {										
+					index = findItem( toWStr( gui.getCVar( "si_rules" ) ), 1 );
+					if( index != -1 ) {
+						currentSelection = immediate( index );
+					} else {
+						currentSelection = 0;
+					}
+					
+					postOptionalNamedEvent( "onSelected" );
+				}
+				onNamedEvent "onApply" {
+					if( currentSelection == -1 ) {
+						return;
+					}
+					gui.setCVar( "si_rules", rules );
+				}
+				onNamedEvent "onSelected" {
+					callSuper();
+					if( currentSelection < 0 ) {
+						return;
+					}
+					rules = toStr( getItemText( currentSelection, 1 ) );
+					type = toStr( getItemText( currentSelection, 2 ) );
+					gui.lstPlayCompMaps.fillFromEnumerator( type );					
+
+					if( gui.lstPlayCompMaps.numItems > 0 ) {
+						gui.lstPlayCompMaps.currentSelection = 0;
+					}
+				}
+			}
+		_end_dropdown
+		
+		_dropdown( PlayCompMaps, localize( "guis/mainmenu/map_campgain" ), 8, 0, 150, _fill_to_right_of( lytPlayComp ), $evalfloat( BUTTON_HEIGHT * 6 ), "right" )
+			properties {
+				float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | LF_COLUMN_SORT;
+			}
+			events {
+				onCreate {
+					insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+					insertColumn( gui.blankWStr, 0, 1 );				// Defname
+					insertColumn( gui.blankWStr, 0, 2 );				// Material
+				}
+			}
+		_end_dropdown			
+		
+		#include <guis/common/bots.include>
+		
+		_edit( PlayComp_Timelimit, 158, 3, 100, BUTTON_HEIGHT )
+			_draw_left_edit_label( localize( "guis/mainmenu/timelimit" ), COLOR_TEXT, 150 )
+			_cvar_set_edit_float( si_timelimit )
+			properties {
+				float maxTextLength = 6;
+				float visible = gui.lstPlayCompBotSkills.showAdvanced;
+			}
+			events {
+				onNamedEvent "onApply" {
+					if( toFloat( editText ) > 100 ) {
+						editText = "100";
+					}
+					callSuper();
+				}
+				onQueryTooltip {
+					toolTipText = localizeArgs( "guis/mainmenu/tooltips/timelimit" );
+				}
+			}
+		_end_edit
+				
+		_check( PlayComp_RecordReplay, localize( "guis/mainmenu/recordreplay" ), 8, 0, 120 )
+			properties {
+				float visible = gui.lstPlayCompBotSkills.showAdvanced;
+			}
+		_end_check
+		
+		_cvar_cache_bool( si_teamDamage )
+		_check( PlayComp_TeamDamage, localize( "guis/mainmenu/teamdamage" ), 8, 0, 100 )
+			_cvar_set_cached_bool( si_teamDamage )
+			properties {
+				float visible = gui.lstPlayCompBotSkills.showAdvanced;
+			}			
+		_end_check
+		
+		_cvar_cache_bool( bot_allowClassChanges )
+		_check( PlayComp_ManageBotClasses, localize( "guis/mainmenu/managebotclasses" ), 8, 0, 100 )
+			_cvar_set_cached_bool( bot_allowClassChanges )
+			properties {
+				float visible = gui.lstPlayCompBotSkills.showAdvanced;
+			}			
+		_end_check	
+	}
+	
+	windowDef lytPlayCompPreviewStatic {
+		type layoutStatic;
+		properties {
+			rect rect = _to_right_of( lytPlayComp ) + 4, 32, 128, 96;
+		}
+		_group_box( PlayCompPreview, 0, 0, 128, rect.width * 1 / 1.777 )
+			properties {
+				rect previewRect = absoluteRect.x + PADDING, absoluteRect.y + PADDING, absoluteRect.width - $evalfloat( 2 * PADDING ), absoluteRect.height - $evalfloat( 2 * PADDING );
+				handle previewMaterial = floatToHandle( -1 );
+				float flags = immediate( flags ) | OF_FIXED_LAYOUT;
+			}
+			events {
+				onPostDraw {
+					if( isValidHandle( previewMaterial ) ) {
+						drawCachedMaterial( previewMaterial, previewRect, COLOR_WHITE );
+					}
+				}
+				onPropertyChanged "gui.lstPlayCompMaps.currentSelection" {
+					if( gui.lstPlayCompMaps.currentSelection < 0 ) {
+						return;
+					}
+					if( wcompare( toWStr( gui.lstPlayCompGameType.type ), toWStr( "campaignList" ) ) ) {
+						rect.h = rect.width * ( 1 / 1.3333 );
+						previewMaterial = gui.campaignPreview;
+						gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), CAMPAIGNSHOT );					
+					} else {
+						rect.h = rect.width * ( 1 / 1.7777 );
+						previewMaterial = gui.levelPreview;
+						gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), LEVELSHOT );					
+					}
+				}
+			}
+		_end_group_box				
+	}	
+_end_dialog

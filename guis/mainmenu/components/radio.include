@@ -1,0 +1,104 @@
+
+#ifndef __component_radio__
+#define __component_radio__
+
+#include <guis/mainmenu/components/label.include>
+
+$template _rad_init
+	properties {
+		handle	radFillMaterial		= cacheMaterial( "_radFill", "_st radio" );
+		handle	radLineMaterial		= cacheMaterial( "_radLines", "_st radio_lines" );
+		handle	radCheckMaterial	= cacheMaterial( "_radCheck", "_st radio_check" );
+	}
+$endtemplate
+
+#define RADIO_WIDTH     12
+#define RADIO_HEIGHT    12
+
+$template _radio( NameParm, TextParm, xPos, yPos, WidthParm )
+
+	windowDef rad##NameParm {
+		properties {
+			rect 	rect 			= xPos, yPos, WidthParm - $evalint( RADIO_WIDTH + 3 ), RADIO_HEIGHT;
+			rect	buttonRect		= absoluteRect.x, absoluteRect.y + 2, RADIO_WIDTH, RADIO_HEIGHT;
+			rect	textRect		= absoluteRect.x + RADIO_WIDTH + 3, absoluteRect.y, absoluteRect.w, absoluteRect.h;
+			
+			float	flags			= immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_WRAP_TEXT;
+			                    
+			float   checked     	= false;
+			                    
+			color	fillColor		= COLOR_RADIO_FILL;
+			color	lineColor		= COLOR_RADIO_LINES;
+			color	checkColor		= COLOR_RADIO_HI_LINES;
+			color	foreColor		= COLOR_TEXT;
+			handle	localizedText	= TextParm;
+			float	fontSize		= 12;
+			vec2	textAlignment	= TA_LEFT, TA_VCENTER;
+		}
+		_tab_stop
+		
+		events {
+			onPreDraw {
+				drawLocalizedText( localizedText, textRect, foreColor, fontSize, DTF_LEFT | DTF_VCENTER | DTF_WORDWRAP );
+				drawCachedMaterial( gui.radFillMaterial, buttonRect, fillColor );
+				drawCachedMaterial( gui.radLineMaterial, buttonRect, lineColor );
+				drawCachedMaterial( gui.radCheckMaterial, buttonRect, checkColor );
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "allowEvents" {
+				if( allowEvents == false ) {
+					foreColor.a = 0.25;				
+				} else {
+					foreColor.a = 1;
+				}
+   			}
+		    onCreate {
+				checkColor.a = 0;
+			}
+			onKeyDown "mouse1" "space" {
+				postNamedEvent( "onAction" );
+				gui.playSound( "accept" );
+			}
+			onPropertyChanged "checked" {
+			    if( checked ) {
+			    	checkColor.a = transition( checkColor.a, 1, ACTIVATE_TRANSITION_TIME );
+				} else {
+					checkColor.a = transition( checkColor.a, 0, ACTIVATE_TRANSITION_TIME );
+				}
+				postOptionalNamedEvent( "checkChanged" );
+			}
+			onMouseEnter {
+		    	postNamedEvent( "highlight" );
+		    	gui.playSound( "boop" );
+			}
+			onMouseExit {
+				if( compare( gui.focusedWindow, name ) == false ) {
+	    			postNamedEvent( "unhighlight" );
+	    		}
+			}			
+			onGainFocus {
+			    if( allowEvents ) {
+			    	postNamedEvent( "highlight" );
+				}
+			}
+			onLoseFocus {
+				if( allowEvents ) {
+		    		postNamedEvent( "unhighlight" );
+				}
+			}
+			onNamedEvent "highlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				foreColor = transition( foreColor, COLOR_TEXT_HIGHLIGHT, ACTIVATE_TRANSITION_TIME );
+			}
+			onNamedEvent "unhighlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+				foreColor = transition( foreColor, COLOR_TEXT, ACTIVATE_TRANSITION_TIME );
+			}
+		}
+$endtemplate
+
+$template _end_radio
+	}
+$endtemplate
+
+#endif // !__component_radio__

@@ -1,0 +1,996 @@
+
+#define GS_SLIDER_LABEL_WIDTH 	175
+#define GS_SLIDER_WIDTH 		80
+
+#define SETTINGS_SIMPLE			0
+#define SETTINGS_ADVANCED		1
+#define SETTINGS_CROSSHAIR		2
+
+$template __draw_alpha
+	events {
+		onPostDraw {
+			callSuper();
+			drawCachedMaterial( gui.btnFillMaterial, "absoluteRect.x + absoluteRect.w + 6, absoluteRect.y, 12, 12", "1,1,1,position" );
+		}
+	}
+$endtemplate
+
+// ================================================================================
+// Game Settings Dialog
+// ================================================================================
+_dialog( GameSettings, localize( "guis/mainmenu/gamesettings" ), PADDING, 44, ( gui.desktop.rect.w * 0.585 ) - $evalfloat( PADDING * 2 ), _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( gameSettings )
+
+	properties {
+		string currentPage;
+	}
+
+	_button( GameSettings_Reset, _right( dlgGameSettings ), _bottom( dlgGameSettings ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/defaults" );
+		}
+		_button_action(
+			_setup_confirmation_yesno( "guis/mainmenu/resetsettingsforpage", name, "onYes", "onNo" )
+			_show_popup( confirmation )
+		)
+		events {
+			onNamedEvent "onYes" {
+				_close_popup
+				gui.broadcastEventToDescendants( gui.dlgGameSettings.currentPage, "resetCVar" );
+			}
+			onNamedEvent "onNo" {
+				_close_popup
+			}
+		}
+	_end_button
+
+	_tab_container( GameSettings, SETTINGS_SIMPLE, PADDING, _top( dlgGameSettings ), _fill_to_right_of( dlgGameSettings ), _fill_to_bottom_of( dlgGameSettings ) - $evalfloat( BUTTON_HEIGHT + 3 ) )
+		properties {
+			float fixedWidth = ( gui.dlgGameSettings.rect.w - $evalfloat( 2 * PADDING + 4 ) ) / 3;
+		}
+		_tab_page( GameSettingsSimple, localize( "guis/mainmenu/simple" ), GameSettings, SETTINGS_SIMPLE, 2, 0 )
+			events {
+				onPropertyChanged "visible" {
+					if( visible ) {
+						gui.dlgGameSettings.currentPage = name;
+					}
+				}
+			}
+			windowDef lytGameSettingsLeft {
+				type layoutVertical;
+				properties {
+					rect rect 		= 0, 0, gui.tabpGameSettingsSimpleContent.rect.w, _fill_to_bottom_of( tabpGameSettingsSimpleContent );
+					vec4 margins 	= PADDING, PADDING, PADDING, PADDING;
+					float flags 	= VLF_DRAW_REVERSED;
+				}
+			
+// ================================================================================
+// Player options
+// ================================================================================
+				_label_localized( GameSettings_Player, localize( "guis/mainmenu/player" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+					
+				windowDef lytName {
+					properties {
+						rect rect = 0, 0, 100, BUTTON_HEIGHT;
+					}
+					type layoutStatic;
+					_edit( GameSettings_Name, 70, 0, _fill_to_left_of( btnGameSettings_NameApply ), BUTTON_HEIGHT )
+						_draw_left_edit_label( localize( "guis/mainmenu/name" ), COLOR_TEXT, 60 )
+						_color_picker_edit( GameSettings_ColorInserter )
+						properties {
+							float maxTextLength = 20;
+							float insertingColor = false;
+						}
+
+						events {
+						    onNamedEvent "onShow" 			{ clearText(); editText = gui.getCVar( "ui_name" ); }
+							onCancel 						{ clearText(); editText = gui.getCVar( "ui_name" ); }
+							onAccept 						{
+								editText = gui.collapseColors( editText );
+								if( isWhitespace() ) {
+									return;
+								}
+								gui.setCVar( "ui_name", editText );
+							}
+							onCVarChanged "ui_name"			{ clearText(); editText = gui.getCVar( "ui_name" ); }
+
+							onGainFocus {
+								callSuper();
+								flags = immediate( flags ) | WF_COLOR_ESCAPES;
+							}
+							
+							onNamedEvent "resetCVar" {
+#if !defined( SD_DEMO_BUILD )							
+								gui.setCVar( "ui_name", sdnet.accountUsername );
+#else
+								gui.setCVar( "ui_name", sdnet.activeUsername );		
+#endif								
+							}
+
+							onLoseFocus {
+								callSuper();
+								if( insertingColor == false ) {
+									flags = immediate( flags ) & ~WF_COLOR_ESCAPES;
+								}
+							}
+							onQueryTooltip {
+								toolTipText = localizeArgs( "guis/mainmenu/playernamenotes" );
+							}
+						}
+					_end_edit
+					_button( GameSettings_NameApply, gui.lytName.rect.w - rect.w, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+						properties {
+							handle localizedText = localize( "guis/mainmenu/apply" );
+						}
+						_button_action(
+							gui.edtGameSettings_Name.editText = gui.collapseColors( gui.edtGameSettings_Name.editText );
+							if( gui.edtGameSettings_Name.isWhitespace() ) {
+								return;
+							}
+							gui.setCVar( "ui_name", gui.edtGameSettings_Name.editText );
+						)
+					_end_button
+				}
+
+				windowDef lytClanTag {
+					type layoutStatic;
+					properties {
+						rect rect = 0, 0, 100, BUTTON_HEIGHT;
+					}
+
+					_edit( GameSettings_ClanTag, 70, 0, _fill_to_left_of( btnGameSettings_NameApply ), BUTTON_HEIGHT )
+						_draw_left_edit_label( localize( "guis/mainmenu/clantag" ), COLOR_TEXT, 60 )
+						_color_picker_edit( GameSettings_ColorInserter )
+
+						properties {
+							float maxTextLength = 16;
+						}
+
+						events {
+						    onNamedEvent "onShow" 			{ clearText(); editText = gui.getCVar( "ui_clanTag" ); }
+							onCancel 						{ clearText(); editText = gui.getCVar( "ui_clanTag" ); }
+							onAccept 						{
+								editText = gui.collapseColors( editText );
+								if( isWhitespace() && compare( editText, "" ) == false ) {
+									return;
+								}
+								gui.setCVar( "ui_clanTag", editText );
+							}
+							onCVarChanged "ui_clanTag"		{ clearText(); editText = gui.getCVar( "ui_clanTag" ); }
+							
+							onNamedEvent "resetCVar" {
+								gui.resetCVar( "ui_clanTag" );
+							}
+
+							onGainFocus { callSuper(); flags = immediate( flags ) | WF_COLOR_ESCAPES; }
+							onLoseFocus {
+								callSuper();
+								if( insertingColor == false ) {
+									flags = immediate( flags ) & ~WF_COLOR_ESCAPES;
+								}
+							}
+							onQueryTooltip {
+								toolTipText = localizeArgs( "guis/mainmenu/rightclickcolors" );
+							}
+						}
+					_end_edit
+					_button( GameSettings_ClanTagApply, gui.lytClanTag.rect.w - rect.w, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+						properties {
+							handle localizedText = localize( "guis/mainmenu/apply" );
+						}
+						_button_action(
+							gui.edtGameSettings_ClanTag.editText = gui.collapseColors( gui.edtGameSettings_ClanTag.editText );
+							if( gui.edtGameSettings_ClanTag.isWhitespace() && compare( gui.edtGameSettings_ClanTag.editText, "" ) == false ) {
+								return;
+							}
+							gui.setCVar( "ui_clanTag", gui.edtGameSettings_ClanTag.editText );
+						)
+					_end_button
+				}
+
+				_dropdown( GameSettings_ClanTagPos, localize( "blank" ), 0, 0, 70, gui.edtGameSettings_ClanTag.rect.w, $evalfloat( BUTTON_HEIGHT * 3 ), "right" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+							insertItem( toWStr( "<loc = 'guis/mainmenu/clantag_beforename'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/clantag_aftername'>" ), -1, 0 );
+							currentSelection = gui.getCVarInt( "ui_clanTagPosition" );
+						}
+						onCVarChanged "ui_clanTagPosition" {
+							currentSelection = gui.getCVarInt( "ui_clanTagPosition" );
+						}
+						onPropertyChanged "currentSelection" {
+						    callSuper();
+						    if( currentSelection >= 0 ) {
+						    	gui.setCVarInt( "ui_clanTagPosition", currentSelection );
+							}
+						}
+					}
+				_end_dropdown
+
+
+// ================================================================================
+// HUD Options
+// ================================================================================
+				_label_localized( GameSettings_Simple_HUD, localize( "guis/mainmenu/hud" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+				
+				_check( gameSettings_AdvancedHud, localize( "guis/mainmenu/advancedHud" ), PADDING, 0, 120 )
+					_cvar_bool( g_advancedHud )
+				_end_check
+
+				_check( gameSettings_RespawnText, localize( "guis/mainmenu/showRespawnText" ), PADDING, 0, 120 )
+					_cvar_bool( gui_showRespawnText )
+				_end_check
+				
+				_check( gameSettings_RotateCommandMap, localize( "guis/mainmenu/rotatecommandmap" ), PADDING, 0, 120 )
+					_cvar_bool( g_rotateCommandMap )
+				_end_check
+				
+				_check( gameSettings_KeepFireTeam, localize( "guis/mainmenu/keepFireTeamList" ), PADDING, 0, 120 )
+					_cvar_bool( g_keepFireTeamList )
+				_end_check
+				
+// ================================================================================
+// Misc Options
+// ================================================================================
+				_label_localized( GameSettings_Misc, localize( "guis/mainmenu/misc" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+				
+				_check( gameSettings_ViewBob, localize( "guis/mainmenu/viewbob" ), PADDING, 0, 120 )
+					_cvar_bool_not( pm_skipBob )
+				_end_check
+				
+				_check( gameSettings_ShowComplaints, localize( "guis/mainmenu/showComplaints" ), PADDING, 0, 120 )
+					_cvar_bool( ui_showComplaints )
+				_end_check
+
+
+// ================================================================================
+// Vehicle Options
+// ================================================================================
+				_label_localized( GameSettings_Vehicles, localize( "guis/mainmenu/vehicles" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+				_check( GameSettings_ShowCockpits, localize( "guis/mainmenu/showcockpits" ), PADDING, 0, 120 )
+					_cvar_bool( g_showVehicleCockpits )
+				_end_check
+
+				_check( GameSettings_LockCamera, localize( "guis/mainmenu/lockcamera" ), PADDING, 0, 120 )
+					_cvar_bool_not( ui_drivingCameraFreelook )
+				_end_check
+				
+				_check( GameSettings_RememberCamera, localize( "guis/mainmenu/remembercamera" ), PADDING, 0, 120 )
+					_cvar_bool( ui_rememberCameraMode )
+				_end_check				
+
+// ================================================================================
+// Weapon Options
+// ================================================================================
+				_label_localized( GameSettings_Weapons, localize( "guis/mainmenu/weapons" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+				_check( gameSettings_AutoSwitchEmpty, localize( "guis/mainmenu/autoswitchempty" ), PADDING, 0, 120 )
+					_cvar_bool( ui_autoSwitchEmptyWeapons )
+				_end_check
+
+				_check( gameSettings_IgnoreExplosive, localize( "guis/mainmenu/ignoreexplosive" ), PADDING, 0, 120 )
+					_cvar_bool( ui_ignoreExplosiveWeapons )
+				_end_check
+			}
+		_end_tab_page
+
+// ================================================================================
+// Crosshair Options
+// ================================================================================
+		_tab_page( GameSettingsCrosshair, localize( "guis/mainmenu/hud" ), GameSettings, SETTINGS_CROSSHAIR, _to_right_of( tabpGameSettingsSimple ), 0 )
+			events {
+				onPropertyChanged "visible" {
+					if( visible ) {
+						gui.dlgGameSettings.currentPage = name;
+					}
+				}
+			}
+			windowDef lytGameSettings_Crosshair {
+				type layoutVertical;
+				properties {
+					vec4 	margins = PADDING, 0, 0, PADDING;
+					rect	rect = 0, 0, _fill_to_right_of( tabpGameSettingsCrosshairContent ), _fill_to_bottom_of( tabpGameSettingsCrosshairContent ) + PADDING;
+					float flags = VLF_DRAW_REVERSED;
+				}
+				_label_localized( GameSettings_Crosshair, localize( "guis/mainmenu/crosshair" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+// ================================================================================
+// Feedback Options
+// ================================================================================
+				_scrollable_container( CrossHair, 0, 0, _fill_to_right_of( lytGameSettings_Crosshair ) + PADDING, $evalfloat( ( BUTTON_HEIGHT + 3 ) * 5 ) )
+					_dropdown( GameSettings_Feedback, localize( "guis/mainmenu/hitfeedback" ), 0, 0, GS_SLIDER_LABEL_WIDTH, 103, $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+						properties {
+							float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						}
+						events {
+							onCreate {
+								insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+								insertItem( toWStr( "<loc = 'guis/mainmenu/hitbeepnone'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/hitbeepbeepflash'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/hitbeepbeep'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/hitbeepflash'>" ), -1, 0 );
+								currentSelection = gui.getCVarInt( "g_hitBeep" );
+							}
+							onCVarChanged "g_hitBeep" {
+								currentSelection = gui.getCVarInt( "g_hitBeep" );
+							}
+							onNamedEvent "resetCVar" {
+								gui.resetCVar( "g_hitBeep" );
+							}
+							onPropertyChanged "currentSelection" {
+							    callSuper();
+							    if( currentSelection >= 0 ) {
+							    	gui.setCVarInt( "g_hitBeep", currentSelection );
+								}
+							}
+						}
+					_end_dropdown
+					_slider( GameSettings_Crosshair_Opacity, localize( "guis/mainmenu/crosshair_opacity" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_crosshairAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( GameSettings_Crosshair_StatsOpacity, localize( "guis/mainmenu/crosshair_stats_opacity" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_crosshairStatsAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( GameSettings_Crosshair_GrenadeOpacity, localize( "guis/mainmenu/crosshair_gren_opacity" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_crosshairGrenadeAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( GameSettings_Crosshair_SpreadOpacity, localize( "guis/mainmenu/crosshair_spread_opacity" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_crosshairSpreadAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( GameSettings_Crosshair_SpreadScale, localize( "guis/mainmenu/crosshair_spread_scale" ), 0, 0, 0, 4, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_crosshairSpreadScale" )
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+				_end_scrollable_container
+
+// ================================================================================
+// Crosshair Preview
+// ================================================================================
+				windowDef lytGameSettings_CrosshairStatic {
+					type layoutStatic;
+					properties {
+						rect rect = 0, 0, 100, gui.lstGameSettings_Crosshair.rect.h;
+					}
+
+					_color_picker( GameSettings_CrosshairColors )
+						properties {
+							rect rect = 0, 0, 42, gui.lstGameSettings_Crosshair.rect.h;							
+						}
+						events {
+							onSelectItem {
+								itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, COLOR_WHITE, currentSelection, 0 );
+								if( updatingList == false ) {
+									gui.setCVar( "gui_crosshairColor", 	toString( itemColor.r, 2 ) + " " +
+																		toString( itemColor.g, 2 ) + " " +
+																		toString( itemColor.b, 2 ) + " 1.00" );
+									gui.playSound( "accept" );
+								}
+							}
+							onNamedEvent "resetCVar" {
+								gui.resetCVar( "gui_crosshairColor" );
+							}
+							onNamedEvent "onShow" {								
+								gui.scriptPushFloat( true );
+								gui.scriptPushString( gui.getCVar( "gui_crosshairColor" ) );
+								gui.scriptPushVec4( gui.getCVarColor( "gui_crosshairColor" ) );
+								
+								postNamedEvent( "createColorList" );
+							}
+							onCVarChanged "gui_crosshairColor" {
+								gui.scriptPushFloat( true );
+								gui.scriptPushString( gui.getCVar( "gui_crosshairColor" ) );
+								gui.scriptPushVec4( gui.getCVarColor( "gui_crosshairColor" ) );
+																							
+								postNamedEvent( "createColorList" );
+							}
+						}
+					_end_color_picker
+
+					_list( GameSettings_Crosshair, _to_right_of( lstGameSettings_CrosshairColors ) + 3, 0, 64, $evalfloat( 3 * 28 + 6 ) )
+						properties {
+							float fixedRowHeight = 28;
+							float flags = immediate( flags ) | LF_NO_NULL_SELECTION;
+						}
+						events {
+							onCreate {
+								insertColumn( gui.blankWStr, 100, 0 );		// crosshair
+								insertColumn( gui.blankWStr, 0, 1 );				// def
+								insertColumn( gui.blankWStr, 0, 2 );				// key
+								fillFromEnumerator( "crosshairs" );
+								setItemMaterialSize( "23,23", -1, -1 );
+								setItemTextFlags( DTF_VCENTER | DTF_CENTER | DTF_SINGLELINE, -1, 0 );
+							}
+							onNamedEvent "onShow" {
+								callSuper();
+								currentSelection = findItem( toWStr( gui.getCVar( "gui_crosshairKey" ) ), 2 );
+							}
+							onCVarChanged "gui_crosshairKey" "gui_crosshairDef" {
+								currentSelection = findItem( toWStr( gui.getCVar( "gui_crosshairKey" ) ), 2 );
+							}
+							onSelectItem {
+								gui.setCVar( "gui_crosshairDef", toStr( getItemText( currentSelection, 1 ) ) );
+								gui.setCVar( "gui_crosshairKey", toStr( getItemText( currentSelection, 2 ) ) );
+								gui.playSound( "accept" );
+							}
+							onNamedEvent "resetCVar" {
+								gui.resetCVar( "gui_crosshairKey" );
+								gui.resetCVar( "gui_crosshairDef" );
+							}							
+						}
+					_end_list
+
+					_group_box( GameSettings_Crosshair_Preview, _to_right_of( lstGameSettings_Crosshair ) + 3, 0, rect.h * 1/0.75, gui.lstGameSettings_Crosshair.rect.h - 48 )
+						properties {
+							vec2	center				= absoluteRect.x + rect.w * 0.5f, absoluteRect.y + rect.h * 0.5f;
+							handle	crosshairCenter		= gui.cacheMaterial( "xhaircenter", "nodraw" );
+							rect	crosshairCenterRect	= center.x - ( crosshairCenterRect.w * 0.5 ),
+														  center.y - ( crosshairCenterRect.h * 0.5 ),
+														  23, 23;
+
+							vec2	clipOrigin 			= center.x + $evalfloat( 1 * 16 ), center.y + 4;
+							vec2	healthOrigin 		= center.x - $evalfloat( 24 + 16 ), center.y + 4;
+
+							handle	sideRightFill		= gui.cacheMaterial( "xhairrightFill", "_st indicator_bar_right" );
+							handle	sideLeftFill		= gui.cacheMaterial( "xhairleftFill", "_st indicator_bar_left" );
+
+							float	offset				= 2;
+
+							rect	leftCrosshairRect 	= center.x - ( $evalfloat( 15 + 11.5 ) + offset ), center.y - ( leftCrosshairRect.h * 0.5 ), 15, 7;
+							rect	rightCrosshairRect	= center.x + 11.5 + offset, center.y - ( rightCrosshairRect.h * 0.5 ), 15, 7;
+
+							rect	topCrosshairRect	= center.x - ( topCrosshairRect.w * 0.5 ), ( center.y - $evalfloat( 15 + 11.5 ) ) - offset, 7, 15;
+							rect	bottomCrosshairRect	= center.x - ( bottomCrosshairRect.w * 0.5 ), ( center.y + 11.5 ) + offset, 7, 15;
+
+							handle	progress			= gui.cacheMaterial( "xhairprogress", "_st grenade_status_ring" );
+
+
+							handle	leftSegment 		= gui.cacheMaterial( "xhairleft", 	"small_calibre_horizontal" );
+							handle 	rightSegment 		= gui.cacheMaterial( "xhairright", 	"small_calibre_horizontal" );
+							handle 	topSegment 			= gui.cacheMaterial( "xhairtop", 	"small_calibre_vertical" );
+							handle 	bottomSegment 		= gui.cacheMaterial( "xhairbottom", 	"small_calibre_vertical" );
+
+							color	crosshairColor		= COLOR_WHITE;
+							color	spreadColor			= COLOR_WHITE;
+							color	grenadeColor		= COLOR_WHITE;
+							color	fillColor			= 0.04, 0.04, 0.04, 0.9 * statsAlpha;
+							color	barColor			= 0.75, 0.75, 0.75, statsAlpha;
+							rect	scratchRect;
+							float	grenadeAlpha		= 1;
+							float	statsAlpha			= 1;
+
+							color	colorTint			= COLOR_WHITE;
+						}
+						events {
+							onCVarChanged "gui_crosshairKey" "gui_crosshairDef" "gui_crosshairSpreadScale" "gui_crosshairColor" {
+								postNamedEvent( "updateCrosshair" );
+							}
+
+							onNamedEvent "updateCrosshair" {
+								crosshairCenter = gui.cacheMaterial( "center", "literal: " + gui.getStringMapValue( gui.getCVar( "gui_crosshairDef" ), gui.getCVar( "gui_crosshairKey" ), "" ) );
+								offset = 2 * gui.getCVarFloat( "gui_crosshairSpreadScale" );
+								colorTint = gui.getCVarColor( "gui_crosshairColor" );
+							}
+
+							onNamedEvent "updateColors" {
+								crosshairColor.a = gui.getCVarFloat( "gui_crosshairAlpha" );
+								spreadColor.a = gui.getCVarFloat( "gui_crosshairSpreadAlpha" );
+								grenadeColor.a = gui.getCVarFloat( "gui_crosshairGrenadeAlpha" );
+								statsAlpha = gui.getCVarFloat( "gui_crosshairStatsAlpha" );
+							}
+							onNamedEvent "onShow" {
+								postNamedEvent( "updateColors" );
+								postNamedEvent( "updateCrosshair" );
+							}
+							onCVarChanged "gui_crosshairAlpha" "gui_crosshairSpreadAlpha" "gui_crosshairGrenadeAlpha" "gui_crosshairStatsAlpha" {
+								postNamedEvent( "updateColors" );
+							}
+							onPostDraw {
+								pushColor( colorTint, true );
+								drawCachedMaterial( crosshairCenter, crosshairCenterRect, crosshairColor );
+
+								drawCachedMaterial( leftSegment, leftCrosshairRect, spreadColor );
+								drawCachedMaterial( rightSegment, rightCrosshairRect, spreadColor);
+								drawCachedMaterial( bottomSegment, bottomCrosshairRect, spreadColor );
+								drawCachedMaterial( topSegment, topCrosshairRect, spreadColor );
+
+								drawTimer( progress, "center.x - 16.5, center.y - 16.5, 33, 33", grenadeColor, 0.45, false );
+
+								drawCachedMaterial( sideRightFill, "clipOrigin.x, clipOrigin.y, 24, 24", fillColor );
+								drawCachedMaterial( sideLeftFill, "healthOrigin.x, healthOrigin.y, 24, 24", fillColor );
+
+								scratchRect.x = healthOrigin.x;
+								scratchRect.y = healthOrigin.y + ( 24 * ( 1.0 - 0.75 ) );
+								scratchRect.w = 24;
+								scratchRect.h = ( 24 * 0.75 );
+
+								clipToRect( scratchRect );
+								drawCachedMaterial( sideLeftFill, "healthOrigin.x, healthOrigin.y, 24, 24", barColor );
+								unclipRect();
+
+								scratchRect.x = clipOrigin.x;
+								scratchRect.y = clipOrigin.y;
+								scratchRect.w = 24;
+								scratchRect.h = ( 24 );
+
+								clipToRect( scratchRect );
+								drawCachedMaterial( sideRightFill, "clipOrigin.x, clipOrigin.y, 24, 24", barColor );
+								unclipRect();
+								popColor();
+							}
+						}
+					_end_group_box
+				}
+
+				_label_localized( GameSettings_HUD, localize( "guis/mainmenu/hud/elements" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+
+				_scrollable_container( HUD, 0, 0, _fill_to_right_of( lytGameSettings_Crosshair ) + PADDING, _fill_to_bottom_of( lytGameSettings_Crosshair ) )
+					_dropdown( GameSettings_APT_Warning, localize( "guis/mainmenu/apt_warning_dropdown" ), 0, 0, GS_SLIDER_LABEL_WIDTH, 103, $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+						properties {
+							float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						}
+						events {
+							onCreate {
+								insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_off'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on_visual'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on_beep'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/apt_warning_on'>" ), -1, 0 );
+								currentSelection = gui.getCVarInt( "g_aptWarning" );
+							}
+							onCVarChanged "g_aptWarning" {
+								currentSelection = gui.getCVarInt( "g_aptWarning" );
+							}
+							onNamedEvent "resetCVar" {
+								gui.resetCVar( "g_aptWarning" );
+							}
+							onPropertyChanged "currentSelection" {
+							    callSuper();
+							    if( currentSelection >= 0 ) {
+							    	gui.setCVarInt( "g_aptWarning", currentSelection );
+								}
+							}
+						}
+					_end_dropdown
+
+					_check( GameSettings_Mine_Warning, localize( "guis/mainmenu/mine_warning" ), 0, 2, 120 )
+					_cvar_bool( g_mineTriggerWarning )
+					_end_check
+					
+					_check( GameSettings_ShowWaypoints, localize( "guis/mainmenu/showwaypoints" ), 0, 2, 120 )
+					_cvar_bool( g_showWaypoints )
+					_end_check
+
+					_slider( GameSettings_Waypoint_Opacity, localize( "guis/mainmenu/waypoint_opacity" ), 0, 2, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "g_waypointAlphaScale" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+					_slider( gameSettings_HUD_FireTeams, localize( "guis/mainmenu/hud/fireteam" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_fireteamAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+					
+					_slider( gameSettings_HUD_Bests, localize( "guis/mainmenu/hud/personalbests" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_personalBestsAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider					
+
+					_slider( gameSettings_HUD_ObjList, localize( "guis/mainmenu/hud/objectivelist" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_objectiveListAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_MiniMap, localize( "guis/mainmenu/hud/minimap" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_commandMapAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_ObjStatus, localize( "guis/mainmenu/hud/objectivestatus" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_objectiveStatusAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_Chat, localize( "guis/mainmenu/hud/chat" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_chatAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_Obit, localize( "guis/mainmenu/hud/obituaries" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_obitAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_Votes, localize( "guis/mainmenu/hud/votes" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_voteAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_Tooltip, localize( "guis/mainmenu/hud/tooltips" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_tooltipAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_Vehicle, localize( "guis/mainmenu/hud/vehicle" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_vehicleAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+
+					_slider( gameSettings_HUD_VehicleDirection, localize( "guis/mainmenu/hud/vehicle/direction" ), 0, 0, 0, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "gui_vehicleDirectionAlpha" )
+						__draw_alpha
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+				_end_scrollable_container
+			}
+		_end_tab_page
+
+// ================================================================================
+// Advanced Options
+// ================================================================================
+
+		_tab_page( GameSettingsAdvanced, localize( "guis/mainmenu/advanced" ), GameSettings, SETTINGS_ADVANCED, _to_right_of( tabpGameSettingsCrosshair ), 0 )
+			events {
+				onPropertyChanged "visible" {
+					if( visible ) {
+						gui.dlgGameSettings.currentPage = name;
+					}
+				}
+			}
+			windowDef lytGameSettingsRight {
+				type layoutVertical;
+				properties {
+					rect rect 		= 0, 0, gui.tabpGameSettingsAdvancedContent.rect.w, _fill_to_bottom_of( tabpGameSettingsAdvancedContent );
+					vec4 margins 	= 0, 0, 0, 0;
+					float flags		= immediate( flags ) | VLF_DRAW_REVERSED;
+				}
+				// ================================================================================
+				// QuickChat Options
+				// ================================================================================
+				_label_localized( GameSettings_Quickchat, localize( "guis/mainmenu/quickchat" ), PADDING, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+				windowDef lytGameSettings_Quickchat {
+					type layoutVertical;
+					properties {
+						rect rect = PADDING,  0, gui.tabpGameSettingsAdvancedContent.rect.w, $evalint( ( BUTTON_HEIGHT ) * 10 + ( PADDING * 2 ) );
+						vec4 margins = PADDING, 0, PADDING, PADDING;
+						float flags		= immediate( flags ) | VLF_DRAW_REVERSED;
+					}
+
+					_label_localized( GameSettings_Quickchat_Style, localize( "guis/mainmenu/quickchat_style" ), 0, 0, 100, BUTTON_HEIGHT, COLOR_WHITE )
+						properties {
+							vec2 textAlignment = TA_LEFT, TA_VCENTER;
+						}
+					_end_label
+
+					_radio( Quickchat_Style_0, localize( "guis/mainmenu/quickchat_radial" ), 0, 0, 120 )
+						_cvar_set_int( g_radialMenuStyle, 0 )
+					_end_radio
+
+					_radio( Quickchat_Style_1, localize( "guis/mainmenu/quickchat_vertical" ), 0, 0, 120 )
+						_cvar_set_int( g_radialMenuStyle, 1 )
+					_end_radio
+
+					_label_localized( GameSettings_Quickchat_Mouse, localize( "guis/mainmenu/mouse" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+						properties {
+							vec2 textAlignment = TA_LEFT, TA_VCENTER;
+						}
+					_end_label
+
+					_dropdown( Quickchat_Mouse, localize( "guis/mainmenu/mouse_input_dropdown" ), 0, 0, 150, 150, $evalfloat( BUTTON_HEIGHT * 5 ), "left" )
+						properties {
+							float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+						}
+						events {
+							onCreate {
+								insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+								insertItem( toWStr( "<loc = 'guis/mainmenu/quickchat_nomouse'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/quickchat_mouse'>" ), -1, 0 );
+								insertItem( toWStr( "<loc = 'guis/mainmenu/quickchat_mouseview'>" ), -1, 0 );
+								currentSelection = gui.getCVarInt( "g_radialMenuMouseInput" );
+							}
+							onCVarChanged "ui_clanTagPosition" {
+								currentSelection = gui.getCVarInt( "g_radialMenuMouseInput" );
+							}
+							onPropertyChanged "currentSelection" {
+								callSuper();
+								if( currentSelection >= 0 ) {
+									gui.setCVarInt( "g_radialMenuMouseInput", currentSelection );
+								}
+							}
+						}
+					_end_dropdown
+
+					_slider( Quickchat_Sensitivity, localize( "guis/mainmenu/sensitivity" ), 0, 5, 0.1, 1, GS_SLIDER_LABEL_WIDTH, GS_SLIDER_WIDTH )
+						_cvar_slider( "g_radialMenuMouseSensitivity" )
+						_slider_draw_value( 1.0, 2 )
+						properties {
+							float pageStep = 0.1;
+						}
+					_end_slider
+					_label_localized( GameSettings_Quickchat_Shortcuts, localize( "guis/mainmenu/quickchat_shortcuts" ), 0, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+						properties {
+							vec2 textAlignment = TA_LEFT, TA_VCENTER;
+						}
+					_end_label
+
+					_radio( Quickchat_Shortcuts_0, localize( "guis/mainmenu/quickchat_letters" ), 0, 0, 120 )
+						_cvar_set_int( g_radialMenuUseNumberShortcuts, 0 )
+					_end_radio
+
+					_radio( Quickchat_Shortcuts_1, localize( "guis/mainmenu/quickchat_numbers" ), 0, 0, 120 )
+						_cvar_set_int( g_radialMenuUseNumberShortcuts, 1 )
+					_end_radio
+				}
+				
+				// ================================================================================
+				// Misc Options
+				// ================================================================================
+				
+				_label_localized( GameSettings_AdvMisc, localize( "guis/mainmenu/misc" ), PADDING, -8, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+				
+				_dropdown( GameSettings_ToolTip_VO_Mute, localize( "guis/mainmenu/tooltip_sound_dropdown" ), $evalfloat( PADDING * 2 ), 0, 125, 180, $evalfloat( BUTTON_HEIGHT * 4 ), "left" )
+					properties {
+						float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+					}
+					events {
+						onCreate {
+							insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+							insertItem( toWStr( "<loc = 'guis/mainmenu/mute_tooltip_vo'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/mute_vo_multiplayer'>" ), -1, 0 );
+							insertItem( toWStr( "<loc = 'guis/mainmenu/mute_vo_never'>" ), -1, 0 );
+							currentSelection = gui.getCVarInt( "g_playTooltipSound" );
+						}
+						onCVarChanged "ui_clanTagPosition" {
+							currentSelection = gui.getCVarInt( "g_playTooltipSound" );
+						}
+						onPropertyChanged "currentSelection" {
+						    callSuper();
+						    if( currentSelection >= 0 ) {
+						    	gui.setCVarInt( "g_playTooltipSound", currentSelection );
+							}
+						}
+					}
+				_end_dropdown
+				
+				_label_localized( GameSettings_ToolTip_Time_Label, localize( "guis/mainmenu/tooltiptime" ), $evalfloat( 2 * PADDING ), PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label									
+
+				_slider( GameSettings_ToolTip_Time, floatToHandle( -1 ), $evalfloat( 2 * PADDING ), 0, 0, 4, 0, GS_SLIDER_WIDTH )
+					_cvar_slider( "g_toolTipTimeScale" )
+					properties {
+						float pageStep = 0.1;
+					}
+					events {
+						onPostDraw {
+							callSuper();
+							if( position == 0 ) {
+								drawLocalizedText( gui.disabledText, "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", "1,1,1,0.5", 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+								return;
+							}
+							drawText( toWString( position, 1 ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+						}
+					}
+				_end_slider	
+				
+				_button( GameSettings_ResetTips, $evalfloat( PADDING * 2 ), PADDING, $evalfloat( 2.5 * BUTTON_WIDTH ), BUTTON_HEIGHT )
+					properties {
+						float	flags			= immediate( flags ) | OF_FIXED_LAYOUT;
+						handle localizedText = localize( "guis/mainmenu/resettooltips" );
+					}
+					events {
+						onNamedEvent "onAction" {
+							gui.consoleCommand( "clearTooltipCookies" + _newline );
+							
+							if ( sdnet.hasActiveUser ) {
+								sdnet.setProfileString( "vo_enter_limbo", "0" );
+								sdnet.setProfileString( "vo_team_gdf", "0" );
+								sdnet.setProfileString( "vo_team_strogg", "0" );
+								sdnet.setProfileString( "vo_aggressor", "0" );
+								sdnet.setProfileString( "vo_technician", "0" );
+								sdnet.setProfileString( "vo_constructor", "0" );
+								sdnet.setProfileString( "vo_oppressor", "0" );
+								sdnet.setProfileString( "vo_infiltrator", "0" );
+								sdnet.setProfileString( "vo_soldier", "0" );
+								sdnet.setProfileString( "vo_medic", "0" );
+								sdnet.setProfileString( "vo_engineer", "0" );
+								sdnet.setProfileString( "vo_fieldops", "0" );
+								sdnet.setProfileString( "vo_covertops", "0" );
+								sdnet.setProfileString( "vo_welcome_1", "0" );
+								sdnet.setProfileString( "vo_welcome_2", "0" );
+								sdnet.setProfileString( "vo_welcome_3", "0" );
+								sdnet.setProfileString( "vo_sounds/tooltips/upgrade_new_weapon/info", "0" );
+								sdnet.setProfileString( "vo_sounds/tooltips/upgrade_now_available/info", "0" );
+								sdnet.setProfileString( "vo_sounds/tooltips/upgrade_on_respawn/info", "0" );
+							}
+
+							_setup_confirmation_ok( "guis/mainmenu/tooltipsreset", "", "" )
+							_show_popup( confirmation )
+						}
+					}
+				_end_button					
+				
+				// ================================================================================
+				// Vehicle Options
+				// ================================================================================
+								
+				_label_localized( GameSettings_AdvVehicles, localize( "guis/mainmenu/vehicles" ), PADDING, PADDING, 100, BUTTON_HEIGHT, COLOR_WHITE )
+					properties {
+						vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					}
+				_end_label
+				_check( GameSettings_AdvFlight, localize( "guis/mainmenu/advflight" ), $evalfloat( 2 * PADDING ), 0, 120 )
+					_cvar_bool( ui_advancedFlightControls )
+				_end_check
+/*
+				_check( GameSettings_AdvDriving, localize( "guis/mainmenu/advdriving" ), $evalfloat( 2 * PADDING ), 0, 120 )
+					_cvar_bool( ui_advancedDrivingControls )
+				_end_check
+*/				
+			}
+		_end_tab_page
+	_end_tab_container
+	_color_picker( GameSettings_ColorInserter )
+		properties {
+			float	showToolTips			= false;
+			rect 	rect					= 0, 0, 42, 212;
+			float	visible					= false;
+			string	lastFocused;
+			float	colorChosen				= false;
+		}
+		events {
+			onNamedEvent "showMenu" {
+				callSuper();
+				lastFocused = immediate( gui.focusedWindow );
+				setParent( "desktop" );
+
+				visible = true;
+				colorChosen = false;
+
+				currentSelection = -1;
+				scrollAmount = 0;
+				rect.x = immediate( gui.cursorPos.x );
+				rect.y = immediate( gui.cursorPos.y );
+				if( rect.x + rect.w > SCREEN_WIDTH ) {
+					rect.x = immediate( rect.x - ( ( rect.x + rect.w ) - SCREEN_WIDTH ) ) - PADDING;
+				}
+				if( rect.y + absoluteRect.h > SCREEN_HEIGHT ) {
+					rect.y = immediate( rect.y - ( ( rect.y + absoluteRect.h ) - SCREEN_HEIGHT ) ) - PADDING;
+				}
+				gui.focusedWindow = name;
+				changeZOrder( ZO_BACK );
+
+				showToolTips = immediate( gui.flags & GUI_TOOLTIPS );
+				gui.flags = immediate( gui.flags ) & ~GUI_TOOLTIPS;
+				gui.playSound( "accept" );
+			}
+			onPropertyChanged "visible" {
+				if( visible == false ) {
+					gui.focusedWindow = immediate( lastFocused );
+					flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+					if( showToolTips ) {
+						gui.flags = immediate( gui.flags ) | GUI_TOOLTIPS;
+					}
+				}
+			}
+			onLoseFocus {
+				if( compare( gui.focusedWindow, "lstGameSettings_ColorInserterScrollbar" ) == true ) {
+					return;
+				}
+				visible = false;
+			}
+			onSelectItem {
+				itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, COLOR_WHITE, currentSelection, 0 );
+				visible = false;
+				colorChosen = true;
+				gui.playSound( "accept" );
+			}
+			onCancel {
+				visible = false;
+			}
+		}
+	_end_color_picker
+_end_dialog
+
+#undef GS_SLIDER_WIDTH
+#undef SETTINGS_SIMPLE
+#undef SETTINGS_ADVANCED
+#undef SETTINGS_CROSSHAIR

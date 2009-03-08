@@ -1,0 +1,81 @@
+//===============================================================
+//	ReviewInvitation Popup
+//===============================================================
+_dialog( ReviewInvitation, localize( "guis/mainmenu/reviewinvites" ), _center( desktop, width ), _center( desktop, height ), 300, 160, "noMove", "dim" )
+    _input_dialog( ReviewInvitation )
+    _on_default( ReviewInvitationAccept, ReviewInvitationCancel )
+
+    events {
+    	onNamedEvent "onShow" {
+    		setTabStop( 0 );
+    		gui.edtReviewInvitationInfo.editText = sdnet.getProposalText( gui.lstFriends.currentUser );
+    		gui.lblReviewInvitationName.text = localizeArgs( "guis/mainmenu/accept_proposal", toWStr( gui.lstFriends.currentUser ) );
+    		gui.messageTimeStamp = sdnet.getMessageTimeStamp();
+    	}
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( isVisible() ) {
+    			gui.btnReviewInvitationCancel.postNamedEvent( "onAction" );
+    		}
+    	}    	
+    }
+    
+    _group_box( ReviewInvitation, PADDING, _top( dlgReviewInvitation ), _fill_to_right_of( dlgReviewInvitation ), $evalfloat( BUTTON_HEIGHT * 3 + 3 ) )
+		events {
+			onCreate {
+				fillColor.a = 1.0f;
+			}
+		}
+	    _label_literal( ReviewInvitationName, gui.blankWStr, 2, 2, gui.grpReviewInvitation.rect.w - $evalfloat( 2 * PADDING ), BUTTON_HEIGHT, "1,1,1,0.5" )
+	        properties {
+	           vec2 textAlignment = TA_LEFT, TA_VCENTER;
+	           float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_WRAP_TEXT;
+	        }
+	    _end_label
+	    
+	    _label_literal( ReviewInvitationTime, localizeArgs( "guis/mainmenu/sentat", gui.messageTimeStamp ), 2, _to_bottom_of( lblReviewInvitationName ), 100, BUTTON_HEIGHT, "1,1,1,0.5" )
+		     properties {
+		    	vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		    	float visible = wcompare( gui.messageTimeStamp, gui.blankWStr ) == false;
+		    }
+	    _end_label
+	_end_group_box
+	        
+	_editw_scroll( ReviewInvitationInfo, PADDING, _to_bottom_of( grpReviewInvitation ) + 3, _fill_to_right_of( dlgReviewInvitation ), $evalfloat( BUTTON_HEIGHT * 3 ) )		
+		properties {			
+			float	readOnly 	= true;
+			color	foreColor	= 1,1,1,0.5;			
+		}
+	_end_editw_scroll
+
+
+	_button( ReviewInvitationAccept, _to_left_of( btnReviewInvitationDecline ) - 3, _bottom( dlgReviewInvitation ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle 	localizedText = localize( "guis/mainmenu/accept" );
+		}
+        _button_action(
+			gui.lstFriends.postNamedEvent( "acceptProposal" );
+        )
+	_end_button
+
+	_button( ReviewInvitationDecline, _to_left_of( btnReviewInvitationCancel ) - 3, _bottom( dlgReviewInvitation ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/decline" );
+		}
+        _button_action(
+			gui.lstFriends.postNamedEvent( "rejectProposal" );
+        )
+	_end_button
+
+	_button( ReviewInvitationCancel, _right( dlgReviewInvitation ), _bottom( dlgReviewInvitation ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/cancel" );
+		}
+        _button_action(
+			_close_input
+			sdnet.clearActiveMessage();			
+        )
+	_end_button
+_end_dialog

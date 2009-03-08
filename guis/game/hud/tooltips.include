@@ -1,0 +1,228 @@
+
+#include <templates/tooltips.include>
+#include <guis/common/colors.include>
+#include <guis/game/hud/colors.include>
+#include <guis/mainmenu/components/dialog.include>
+#include <guis/mainmenu/effects.include>
+
+#ifndef __HUD_TOOLTIPS__
+#define __HUD_TOOLTIPS__
+
+$template _tooltip
+	windowDef tip {
+		properties {
+			rect	rect					= ( gui.screenCenter.x - ( rect.w * 0.5f ) ) + offset.x, 2 + offset.y, 202, measure.y + 4;
+			float	shouldShow				= player.commandmapstate == 0 && player.scoreboardActive == false && player.endGameCamera == false && ( gui.lifeStats.colorMultiplier.a <= 0.01 || gui.lifeStats.visible == false );
+			float	flashAlpha				= 0;
+			rect	flashRect				= 0, 0, 0, 0;
+			rect	flashRectBase			= absoluteRect.x - flashRect.x, absoluteRect.y - flashRect.y, absoluteRect.w + flashRect.w, absoluteRect.h + flashRect.h;
+			float	contentFade				= 0;
+			float	showFade				= 1;
+			color	colorMultiplier			= 1,1,1,contentFade * showFade * cvarFade;
+			color	lineColor				= COLOR_DIALOG_LINES;
+			color	fillColor				= COLOR_DIALOG_FILL;
+			color	fillColorBase			= COLOR_DIALOG_FILL;
+			color	highlightColor			= COLOR_HUD_TUTORIAL_HIGHLIGHT;
+
+			wstring	text					= player.toolTipText;
+			
+			float	flags					= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			vec2	textAlignment			= TA_LEFT, TA_VCENTER;
+			handle	drawIcon				= icon;
+			handle	icon					= gui.cacheMaterial( "tipicon", 	"_st icon_information" );
+			handle	notReadyIcon			= gui.cacheMaterial( "notReadyIcon", "_st notready" );
+			color	iconColor				= COLOR_WHITE;
+			rect	iconRect				= absoluteRect.x + 2, absoluteRect.y + 2, 16, 16;
+			rect	textRect				= absoluteRect.x + 26, absoluteRect.y + 1, absoluteRect.w - 28, absoluteRect.h;
+			float	showUpgrade				= ( gui.time - ( 1000 * globals.gameHud.proficiencyCategoryTime ) ) < 8000;
+			vec2	offset					= 0, 0;
+			vec2	measure;
+			float	needMeasure;
+		}
+		_med_text_props
+		__cvar_fadable( gui_tooltipAlpha )
+
+		events {
+			onCreate {
+				callSuper();
+				postNamedEvent( "updateText" );
+			}
+			onPreDraw {
+				if( needMeasure ) {
+					measure = measureText( text, "0, 0, absoluteRect.w - 28, absoluteRect.h", fontSize, DTF_WORDWRAP | DTF_LEFT | DTF_TOP );
+					needMeasure = false;
+				}
+				drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
+
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+				drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
+				popColor();
+				
+				drawCachedMaterial( drawIcon, iconRect, COLOR_WHITE );
+				drawText( text, textRect, foreColor, fontSize, DTF_WORDWRAP | DTF_LEFT | DTF_TOP );
+				
+				drawCachedMaterial( gui.dlgFillMaterial, flashRectBase, "1,1,1,flashAlpha" );
+			
+				gui.scriptPushFloat( false );
+			}				
+					
+			onPropertyChanged "gui.screenDimensions.x" {
+				needMeasure = true;
+				if( SCREEN_WIDTH < VIRTUAL_WIDTH ) {
+					rect.w = 194;
+					return;
+				}
+				if( abs( SCREEN_WIDTH - VIRTUAL_WIDTH ) < 0.01 ) {
+					rect.w = 236;
+					return;
+				}
+				rect.w = 270;				
+			}
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {
+					showFade = transition( showFade, 1.0f, ACTIVATE_TRANSITION_TIME );
+					return;
+				}
+				showFade = transition( showFade, 0.0f, ACTIVATE_TRANSITION_TIME );
+			}
+			onPropertyChanged "text" {
+				if( wcompare( text, gui.blankWStr ) == false ) {
+					contentFade = transition( contentFade, 1.0f, ACTIVATE_TRANSITION_TIME );
+					flashAlpha = transition( 0.8f, 0.f, 350 );
+					flashRect = transition( "4, 2, 4, 4", "0, 0, 0, 0", 350 );
+				} else {
+					contentFade = transition( contentFade, 0.0f, ACTIVATE_TRANSITION_TIME );
+					flashAlpha = 0.0f;
+				}
+			}
+
+			onPropertyChanged 	"player.limbo"
+								"player.spectator"
+								"player.spectating"
+								"player.dead"
+								"player.spawning"
+								"player.warmup"
+								"player.tooltipText"
+								"player.needsReady"
+								"gui.isSpectatorClass"
+								"player.isReady"
+								"player.needsReady"
+								"player.endGame"
+								"player.toolTipIsPriority"
+								"showUpgrade"
+								"globals.gameHud.proficiencyIcon"  {
+				postNamedEvent( "updateText" );
+			}
+			
+			onNamedEvent "updateText" {
+				offset 					= 0, 0;
+				needMeasure 			= true;
+				
+				// cancel flashing if a new tooltip shows up
+				if( wcompare( player.toolTipText, gui.blankWStr ) ) {
+					timeline.tooltipFlashStarter.active = false;
+					timeline.tooltipFlashStarter.resetTime( 0 );
+					timeline.tooltipFlash.active = false;
+					timeline.tooltipFlash.resetTime( 0 );
+					fillColor = transition( fillColor, fillColorBase, 300 );
+				}
+
+				if( showUpgrade && player.toolTipIsPriority == false ) {
+					text 					= localizeArgs( "game/tt/player_profupgrade_info", globals.gameHud.proficiencyText, gui.getKeyBind( "_limbomenu", "" ) );
+					drawIcon 				= gui.cacheMaterial( "profIcon", globals.gameHud.proficiencyIcon );
+					iconRect.w 				= 22;
+					iconRect.h 				= 22;
+					timeline.bounce.active = false;
+					if ( icompare( globals.gameHud.proficiencySound, "" ) == false ) {
+						if( ( gui.getCVarInt( "g_playTooltipSound" ) == 1 && player.isSinglePlayer ) || ( gui.getCVarInt( "g_playTooltipSound" ) == 2 ) ) {
+							if ( sdnet.hasActiveUser ) {
+								if ( compare( sdnet.getProfileString( "vo_" + globals.gameHud.proficiencySound, "0" ), "1" ) == false ) {
+									sdnet.setProfileString( "vo_" + globals.gameHud.proficiencySound, "1" );
+									gui.playGameSoundDirectly( globals.gameHud.proficiencySound );
+								}
+							}
+						}
+						globals.gameHud.proficiencySound = "";
+					}
+					
+					return;
+				}				
+
+				iconRect.w = 16;
+				iconRect.h = 16;					
+
+				if( wcompare( player.toolTipText, gui.blankWStr ) && player.warmup && player.isReady == false &&
+					player.spectating == false && gui.isSpectatorClass == false && player.endGame == false && player.needsReady ) {
+					text = localizeArgs( "game/needreadyup", gui.getKeyBind( "_ready", "" ) );
+					drawIcon				= notReadyIcon;
+
+					timeline.bounce.active 	= true;
+					timeline.bounce.resetTime( 0 );
+					offset.y = timeline.bounce.y;
+					return;
+				}
+
+				if( wcompare( player.toolTipText, gui.blankWStr ) && ( player.spectating || gui.isSpectatorClass ) && player.endGame == false ) {
+					text = localizeArgs( "game/press_for_limbo", gui.getKeyBind( "_limbomenu", "" ), gui.getKeyBind( "_attack", "" ) );
+					drawIcon				= icon;
+
+					timeline.bounce.active	= false;
+					return;
+				}			
+
+				text 					= player.toolTipText;
+				drawIcon				= icon;
+				timeline.bounce.active 	= false;
+			}			
+			onNamedEvent "tooltipHighlight" {
+				timeline.tooltipFlashStarter.active = true;
+				timeline.tooltipFlashStarter.resetTime( 0 );
+			}
+		}
+		timeline tooltipflashStarter {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				timeline.tooltipFlash.active = true;
+				timeline.tooltipFlash.resetTime( 0 );
+			}
+			onTime 6000 {
+				timeline.tooltipFlash.active = false;
+				timeline.tooltipFlash.resetTime( 0 );
+				fillColor = transition( fillColor, fillColorBase, 300 );
+			}
+		}
+		timeline tooltipFlash {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				fillColor = transition( fillColor, highlightColor, 300 );
+			}
+			onTime 500 {
+				fillColor = transition( fillColor, fillColorBase, 300 );
+			}
+			onTime 1000 {
+				resetTime( 0 );
+			}
+		}
+		timeline bounce {
+			properties {
+				float active = false;
+				float y = 0;
+			}
+			onTime 200 {
+				y = transition( 0, 10, 500, "0, 0.8" );
+			}
+			onTime 700 {
+				y = transition( y, 0, 500, "0, 0.8" );
+			}
+			onTime 2000 {
+				resetTime( 0 );
+			}
+		}		
+	}
+$endtemplate
+
+#endif // !__HUD_TOOLTIPS__

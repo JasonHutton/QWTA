@@ -1,0 +1,24 @@
+
+#ifndef __hud_text__
+#define __hud_text__
+
+
+$template _med_text_props 
+	properties {
+		float	fontSize 			= 12;
+	}
+$endtemplate
+
+$template _big_text_props 
+	properties {
+		float	fontSize 			= 14;
+	}
+$endtemplate
+
+$template _huge_text_props 
+	properties {
+		float	fontSize 			= 16;
+	}
+$endtemplate
+
+#endif // !__hud_text__
