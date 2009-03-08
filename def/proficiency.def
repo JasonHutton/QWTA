@@ -1,0 +1,87 @@
+// ======================================================================
+
+proficiencyType fieldops {
+	name			"fieldops"
+	stat_name		"fieldops"
+
+	level 12
+	level 24
+	level 48
+	level 96
+}
+
+proficiencyType soldier {
+	name			"soldier"
+	stat_name		"soldier"
+
+	level 12
+	level 24
+	level 48
+	level 96
+}
+
+proficiencyType covertops {
+	name			"covertops"
+	stat_name		"covertops"
+
+	level 12
+	level 24
+	level 48
+	level 96
+}
+
+proficiencyType engineer {
+	name			"engineer"
+	stat_name		"engineer"
+
+	level 12
+	level 24
+	level 48
+	level 96
+}
+
+proficiencyType medic {
+	name			"medic"
+	stat_name		"medic"
+
+	level 12
+	level 24
+	level 48
+	level 96
+}
+
+
+// ======================================================================
+
+proficiencyType battlesense {
+	name			"battlesense"
+	stat_name		"battlesense"
+	text			"game/proficiency/battlesense"
+
+	level 8
+	level 16
+	level 32
+	level 64
+}
+
+proficiencyType weapon_handling {
+	name			"lightweapons"
+	stat_name		"lightweapons"
+	text			"game/proficiency/lightweapons"
+
+	level 8
+	level 16
+	level 32
+	level 64
+}
+
+proficiencyType vehicle {
+	name			"vehicle"
+	stat_name		"vehicle"
+	text			"game/proficiency/vehicle"
+	
+	level 15
+	level 30
+	level 60
+	level 120
+}

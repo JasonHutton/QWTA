@@ -1,0 +1,325 @@
+#ifndef _PLAYER_INCLUDES_
+#define _PLAYER_INCLUDES_
+
+$template templates/classes/footsteps/gdf
+	"snd_footstep"					"sounds/players/footsteps/default"
+	"snd_footstep_crouch"			"sounds/players/footsteps/default"
+	"snd_footstep_grass"			"sounds/players/footsteps/grass"
+	"snd_footstep_gravel"			"sounds/players/footsteps/gravel"
+	"snd_footstep_metal"			"sounds/players/footsteps/metal"
+	"snd_footstep_pavement"			"sounds/players/footsteps/stone"
+	"snd_footstep_run"				"sounds/players/footsteps/default"
+	"snd_footstep_sand"				"sounds/players/footsteps/gravel"
+	"snd_footstep_stone"			"sounds/players/footsteps/stone"
+	"snd_footstep_strafe"			"sounds/players/footsteps/default"
+	"snd_footstep_walk"				"sounds/players/footsteps/default"
+	"snd_footstep_water"			"sounds/players/footsteps/water"
+	"snd_footstep_water_interior"	"sounds/players/footsteps/water"
+	"snd_footstep_wood"				"sounds/players/footsteps/wood"
+	"snd_footstep_snow"				"sounds/players/footsteps/snow"
+	//"snd_footstep_ladder"			"sounds/players/footsteps/ladder"
+
+	//"fx_footstep"					"effects/impacts/bullets_large/impact_default"
+	"fx_footstep_water"				"effects/player/footstep_water"
+$endtemplate
+
+$template templates/classes/pain/gdf
+	"snd_pain_small"				"sounds/players/gdf/pain/small"
+	"snd_pain_medium"				"sounds/players/gdf/pain/medium"
+	"snd_pain_large"				"sounds/players/gdf/pain/large"
+	"snd_pain_huge"					"sounds/players/gdf/pain/large"
+	"snd_death"						"sounds/players/gdf/death"
+	"snd_land_soft"					"sounds/players/gdf/land/soft"
+	"snd_land_hard"					"sounds/players/movement/land/hard"
+	"snd_freefall"					"sounds/players/freefall"
+$endtemplate
+
+$template templates/classes/footsteps/strogg
+	"snd_footstep"					"sounds/players/footsteps/strogg/default"
+	"snd_footstep_crouch"			"sounds/players/footsteps/strogg/default"
+	"snd_footstep_grass"			"sounds/players/footsteps/strogg/default"
+	"snd_footstep_gravel"			"sounds/players/footsteps/strogg/gravel"
+	"snd_footstep_metal"			"sounds/players/footsteps/strogg/metal"
+	"snd_footstep_pavement"			"sounds/players/footsteps/strogg/pavement"
+	"snd_footstep_run"				"sounds/players/footsteps/strogg/default"
+	"snd_footstep_sand"				"sounds/players/footsteps/strogg/gravel"
+	"snd_footstep_stone"			"sounds/players/footsteps/strogg/pavement"
+	"snd_footstep_strafe"			"sounds/players/footsteps/strogg/default"
+	"snd_footstep_walk"				"sounds/players/footsteps/strogg/default"
+	"snd_footstep_water"			"sounds/players/footsteps/strogg/water"
+	"snd_footstep_water_interior"	"sounds/players/footsteps/strogg/water"
+	"snd_footstep_wood"				"sounds/players/footsteps/strogg/wood"
+	"snd_footstep_snow"				"sounds/players/footsteps/snow"
+	//"snd_footstep_ladder"			"sounds/players/footsteps/ladder"
+
+	//"fx_footstep"					"effects/impacts/bullets_large/impact_default"
+	"fx_footstep_water"				"effects/player/footstep_water"
+$endtemplate
+
+$template templates/classes/pain/strogg
+	"snd_pain_small"				"sounds/players/strogg/pain/small"
+	"snd_pain_medium"				"sounds/players/strogg/pain/small"
+	"snd_pain_large"				"sounds/players/strogg/pain/large"
+	"snd_pain_huge"					"sounds/players/strogg/pain/large"
+	"snd_death"						"sounds/players/strogg/death"
+	"snd_land_soft"					"sounds/players/strogg/land/soft"
+	"snd_land_hard"					"sounds/players/movement/land/hard"
+	"snd_freefall"					"sounds/players/freefall"
+$endtemplate
+
+$template templates/players/request_icons
+	"mtr_cm_icon_player"		"guis/assets/commandmap/icon_player"
+
+	"mtr_cm_icon_unknown"		"hud/commandmap/unknown"
+	"mtr_cm_icon_need_revive"	"hud/icons/missionsystem/mis_revive"
+	"mtr_cm_icon_need_health"	"hud/icons/missionsystem/tsk_medic"
+	"mtr_cm_icon_need_repair"	"hud/icons/player/voicerepair"
+	"mtr_cm_icon_need_ammo"		"hud/icons/missionsystem/tsk_ammo_field_ops"
+	"mtr_cm_icon_need_stroyent"	"hud/icons/missionsystem/tsk_stroyent_technician"
+	
+	"require_view_revive"		"( ability_revive || ( same_entity == true ) ) && same_team"
+	"require_view_health"		"( ability_revive || ( same_entity == true ) ) && same_team"
+	"require_view_repair"		"ability_repair && same_team"
+	"require_view_need_ammo"	"( ability_giveAmmo || ( same_entity == true ) ) && same_team"
+	
+	"require_view_dropped_health"	"( ( ability_revive == false ) || ( same_entity == true ) ) && same_team"
+	"require_view_dropped_ammo"		"( ( ability_giveAmmo == false ) || ( same_entity == true ) ) && same_team"
+$endtemplate
+
+$template templates/players/skeleton_info
+	"bone_hips"					"Hips"
+	"bone_torso"				"ROT"
+	"bone_chest"				"Spine2"
+	"bone_head"					"Neck"
+	"bone_right_shoulder"		"RightArm"
+	"bone_right_elbow"			"RightForeArm"
+	"bone_right_hand"			"RightHand"
+	"bone_right_foot"			"RightToeBase"
+	"bone_left_shoulder"		"LeftArm"
+	"bone_left_elbow"			"LeftForeArm"
+	"bone_left_hand"			"LeftHand"
+	"bone_left_foot"			"LeftToeBase"
+$endtemplate
+
+//=========================================================================
+//== LOCATIONAL DAMAGE ====================================================
+//=========================================================================
+
+$template templates/players/gdf_head_offset
+	"bone_head_model"	"Head"
+	"head_offset"		"0 4 1"
+$endtemplate
+
+$template templates/players/strogg_head_offset
+	"bone_head_model"	"Head"
+	"head_offset"		"0 3 3"
+$endtemplate
+
+$template templates/players/locational_damage_joints
+	"loc_damage_joint_num"	"6"
+	"loc_damage_joint_0"	"Leftleg"
+	"loc_damage_joint_1"	"Rightleg"
+	"loc_damage_joint_2"	"Spine"
+	"loc_damage_joint_3"	"Spine2"
+	"loc_damage_joint_4"	"Neck"
+	"loc_damage_joint_5"	"Head"
+
+	"loc_damage_area_0"		"legs"
+	"loc_damage_area_1"		"legs"
+	"loc_damage_area_2"		"torso"
+	"loc_damage_area_3"		"torso"
+	"loc_damage_area_4"		"neck"
+	"loc_damage_area_5"		"head"
+$endtemplate
+
+$template templates/players/common_proficiencies_gdf
+	proficiency battlesense {
+		level 1 {
+			text	"game/proficiency/battlesense/gdf/reward1"
+			title	"game/proficiency/battlesense/gdf/reward1_title"
+			icon	"battlesense/gdf/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/battlesense/gdf/reward2"
+			title	"game/proficiency/battlesense/gdf/reward2_title"
+			icon	"battlesense/gdf/reward2"
+			tooltip	"proficiency_upgrade_respawn"
+			sound	"sounds/tooltips/upgrade_on_respawn/info"
+		}
+		level 3 {
+			text	"game/proficiency/battlesense/gdf/reward3"
+			title	"game/proficiency/battlesense/gdf/reward3_title"
+			icon	"battlesense/gdf/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/battlesense/gdf/reward4"
+			title	"game/proficiency/battlesense/gdf/reward4_title"
+			icon	"battlesense/gdf/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+
+	proficiency	weapon_handling {
+		level 1 {
+			text	"game/proficiency/weapons/gdf/reward1"
+			title	"game/proficiency/weapons/gdf/reward1_title"
+			icon	"weapons/gdf/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/weapons/gdf/reward2"
+			title	"game/proficiency/weapons/gdf/reward2_title"
+			icon	"weapons/gdf/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/weapons/gdf/reward3"
+			title	"game/proficiency/weapons/gdf/reward3_title"
+			icon	"weapons/gdf/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/weapons/gdf/reward4"
+			title	"game/proficiency/weapons/gdf/reward4_title"
+			icon	"weapons/gdf/reward4"
+			tooltip	"proficiency_upgrade_respawn"
+			sound	"sounds/tooltips/upgrade_on_respawn/info"
+		}
+	}
+
+	proficiency	vehicle {
+		level 1 {
+			text	"game/proficiency/vehicles/gdf/reward1"
+			title	"game/proficiency/vehicles/gdf/reward1_title"
+			icon	"vehicles/gdf/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/vehicles/gdf/reward2"
+			title	"game/proficiency/vehicles/gdf/reward2_title"
+			icon	"vehicles/gdf/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/vehicles/gdf/reward3"
+			title	"game/proficiency/vehicles/gdf/reward3_title"
+			icon	"vehicles/gdf/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/vehicles/gdf/reward4"
+			title	"game/proficiency/vehicles/gdf/reward4_title"
+			icon	"vehicles/gdf/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+$endtemplate
+
+$template templates/players/common_proficiencies_strogg
+	proficiency battlesense {
+		level 1 {
+			text	"game/proficiency/battlesense/strogg/reward1"
+			title	"game/proficiency/battlesense/strogg/reward1_title"
+			icon	"battlesense/strogg/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/battlesense/strogg/reward2"
+			title	"game/proficiency/battlesense/strogg/reward2_title"
+			icon	"battlesense/strogg/reward2"
+			tooltip	"proficiency_upgrade_respawn"
+			sound	"sounds/tooltips/upgrade_on_respawn/info"
+		}
+		level 3 {
+			text	"game/proficiency/battlesense/strogg/reward3"
+			title	"game/proficiency/battlesense/strogg/reward3_title"
+			icon	"battlesense/strogg/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/battlesense/strogg/reward4"
+			title	"game/proficiency/battlesense/strogg/reward4_title"
+			icon	"battlesense/strogg/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}		
+	}
+	
+	proficiency	weapon_handling {
+		level 1 {
+			text	"game/proficiency/weapons/strogg/reward1"
+			title	"game/proficiency/weapons/strogg/reward1_title"
+			icon	"weapons/strogg/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/weapons/strogg/reward2"
+			title	"game/proficiency/weapons/strogg/reward2_title"
+			icon	"weapons/strogg/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/weapons/strogg/reward3"
+			title	"game/proficiency/weapons/strogg/reward3_title"
+			icon	"weapons/strogg/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/weapons/strogg/reward4"
+			title	"game/proficiency/weapons/strogg/reward4_title"
+			icon	"weapons/strogg/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+	
+	proficiency	vehicle {
+		level 1 {
+			text	"game/proficiency/vehicles/strogg/reward1"
+			title	"game/proficiency/vehicles/strogg/reward1_title"
+			icon	"vehicles/strogg/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/vehicles/strogg/reward2"
+			title	"game/proficiency/vehicles/strogg/reward2_title"
+			icon	"vehicles/strogg/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/vehicles/strogg/reward3"
+			title	"game/proficiency/vehicles/strogg/reward3_title"
+			icon	"vehicles/strogg/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/vehicles/strogg/reward4"
+			title	"game/proficiency/vehicles/strogg/reward4_title"
+			icon	"vehicles/strogg/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+$endtemplate
+
+#endif // _PLAYER_INCLUDES_

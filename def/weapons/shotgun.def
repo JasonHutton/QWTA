@@ -1,0 +1,308 @@
+/***********************************************************************
+
+	weapons/shotgun.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix SHOTGUN_ -sourcedir models/weapons/gdf_shotgun/dev_sd -destdir models/weapons/gdf_shotgun/ -keep muzzle -keepmesh right_arm left_arm shell right_hand left_hand pump shotgun
+/*
+	mesh	shotgun_base_file.mb		-dest models/weapons/gdf_shotgun/view.md5mesh
+
+
+	anim	shotgun_idle.mb				-dest models/weapons/gdf_shotgun/idle.md5anim
+*/
+	anim	shotgun_raise.mb			-dest models/weapons/gdf_shotgun/raise.md5anim
+/*
+ 	anim	shotgun_lower.mb			-dest models/weapons/gdf_shotgun/lower.md5anim
+
+   	anim	shotgun_fire.mb				-dest models/weapons/gdf_shotgun/fire.md5anim
+   	anim	shotgun_fire2.mb			-dest models/weapons/gdf_shotgun/fire2.md5anim
+   	anim	shotgun_fire3.mb			-dest models/weapons/gdf_shotgun/fire3.md5anim
+
+   	anim	shotgun_reload_start.mb		-dest models/weapons/gdf_shotgun/reload_start.md5anim
+ 	//anim	shotgun_reload_loop1.mb		-dest models/weapons/gdf_shotgun/reload_loop1.md5anim
+ 	//anim	shotgun_reload_loop2.mb		-dest models/weapons/gdf_shotgun/reload_loop2.md5anim
+
+ anim	shotgun_reload_end.mb		-dest models/weapons/gdf_shotgun/reload_end.md5anim
+
+ 	anim	shotgun_start_sprint.mb		-dest models/weapons/gdf_shotgun/start_sprint.md5anim -range 0 6
+ 	anim	shotgun_start_sprint.mb		-dest models/weapons/gdf_shotgun/leave_sprint.md5anim -range 7 14
+
+ 	anim	shotgun_zoom_in.mb			-dest models/weapons/gdf_shotgun/zoom_in.md5anim
+ 	anim	shotgun_zoom_out.mb			-dest models/weapons/gdf_shotgun/zoom_out.md5anim
+*/
+ 	/*
+ 	anim	shotgun_idle_zoom.mb		-dest models/weapons/gdf_shotgun/idle_zoom.md5anim
+ 	anim	shotgun_fire_zoom.mb		-dest models/weapons/gdf_shotgun/fire_zoom.md5anim
+
+*/
+}
+
+// ========================================================================
+// VIEW Models
+//
+model viewmodel_shotgun {
+	mesh					models/weapons/gdf_shotgun/view.md5mesh
+
+	anim raise				models/weapons/gdf_shotgun/raise.md5anim {
+		frame 1				sound_channel snd_weapon_raise snd_raise
+		frame 8				sound_channel snd_weapon_cock snd_cock
+	}
+	anim idle 				models/weapons/gdf_shotgun/idle.md5anim {
+	}
+	anim fire1 				models/weapons/gdf_shotgun/fire.md5anim {
+		frame 13				sound_channel snd_weapon_cock snd_cock
+	}
+	anim fire2 				models/weapons/gdf_shotgun/fire2.md5anim {
+		frame 13					sound_channel snd_weapon_cock snd_cock
+	}
+	anim fire3 				models/weapons/gdf_shotgun/fire3.md5anim {
+		frame 13				sound_channel snd_weapon_cock snd_cock
+	}
+	anim reload_start 			models/weapons/gdf_shotgun/reload_start.md5anim {
+	}
+	anim reload1 			models/weapons/gdf_shotgun/reload_loop1.md5anim {
+		frame 1				sound_channel snd_weapon_reload snd_reload
+	}
+/*
+	anim reload2 			models/weapons/gdf_shotgun/reload_loop2.md5anim {
+		frame 3					sound_channel snd_weapon_reload snd_reload
+	}
+*/
+	anim reload_end 		models/weapons/gdf_shotgun/reload_end.md5anim {
+		frame 18				sound_channel snd_weapon_reload snd_cock
+	}
+	anim putaway			models/weapons/gdf_shotgun/lower.md5anim {
+	}
+	anim start_sprint		models/weapons/gdf_shotgun/start_sprint.md5anim {
+	}
+	anim leave_sprint		models/weapons/gdf_shotgun/leave_sprint.md5anim {
+	}
+	anim zoomin				models/weapons/gdf_shotgun/zoom_in.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_sights_up
+	}
+	anim zoomout			models/weapons/gdf_shotgun/zoom_out.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim idle_zoom			models/weapons/gdf_shotgun/idle_zoom.md5anim {
+	}
+	anim fire_zoom			models/weapons/gdf_shotgun/fire_zoom.md5anim {
+		frame 9					sound_channel snd_weapon_cock snd_cock
+	}
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_shotgun {
+	mesh		 			models/weapons/gdf_shotgun/shotgun_world.md5mesh
+	anim raise				models/weapons/gdf_shotgun/shotgun_world.md5anim
+	anim idle 				models/weapons/gdf_shotgun/shotgun_world.md5anim
+	anim aim				models/weapons/gdf_shotgun/shotgun_world.md5anim
+	anim fire 				models/weapons/gdf_shotgun/shotgun_world_fire.md5anim
+	anim fire1 				models/weapons/gdf_shotgun/shotgun_world_fire.md5anim
+	anim reload				models/weapons/gdf_shotgun/shotgun_world_reload.md5anim
+	anim noammo				models/weapons/gdf_shotgun/shotgun_world.md5anim
+ 	anim putaway			models/weapons/gdf_shotgun/shotgun_world.md5anim
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/shotgun {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/shotgun"
+	model								"models/weapons/gdf_shotgun/shotgun_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_shotgun"
+		"model_world" 					"worldmodel_shotgun"
+		"anim_limbomenu"				"menu_assault"
+
+		"view_offset"					"2 0 0"
+		"view_foreshorten"				"0.7"
+
+		"joint_attach"					"weapon"
+		"anim_prefix"					"shotgun"
+		"anim_prefix_class"				"machinegun"
+
+		"weapon_scriptobject"			"weapon_shotgun"
+
+		"stat_name"						"shotgun"
+
+ 		"recoilTime"					"500"
+		"recoilAngles"					"-0.3 0 0"
+		"kickback"						"1"
+		"kickback_prone"				"0.5"
+
+		"fx_muzzle_flash"				"effects/weapons/shotgun_muzzleflash_view"
+		"fx_muzzle_flash_world"			"effects/weapons/shotgun_muzzleflash_world"
+
+		"snd_fire"						"sounds/weapons/shotgun/fire"
+		"snd_fire_far"					"sounds/weapons/shotgun/fire/far"
+		"snd_fire_local"				"sounds/weapons/shotgun/fire/local"
+		"snd_cock"						"sounds/weapons/shotgun/cock"
+		"snd_reload"					"sounds/weapons/shotgun/reload"
+		"snd_raise"						"sounds/weapons/shotgun/raise"
+		"snd_sights_up"					"sounds/weapons/shotgun/sights/up"
+		"snd_sights_down"				"sounds/weapons/shotgun/sights/down"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+
+		"fov_zoom"						"60"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.75"
+		"fov_spread"					"0.6"
+
+		"reload_ammo"					"1"
+		"fire_rate"						"0.75"
+
+		"num_projectiles"				"8"
+		"low_ammo"						"3"
+
+		"gui_sight"						"game/sights/assaultrifle_scope"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/shotgun"
+
+		"tt_intro_1"					"shotgun_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"shotgun_ironsights"
+		"tt_intro_ironsights_2"			"generic_weapon_ironsights"
+		"tt_intro_reload"				"generic_weapon_reload"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"crosshair"						"shell"
+
+		"crosshair_spread_min"			"-2.3"
+		"crosshair_spread_max"			"2"
+		"crosshair_spread_scale"		"3.7"
+
+		"spread_min"						"5"
+		"spread_max"						"8"
+		"spread_inc"						"5"
+
+		"spread_viewrate_min"				"5"
+		"spread_viewrate_max"				"8"
+		"spread_viewrate_inc"				"5"
+
+		"spread_max_settle_time"			"600"
+
+		"spread_crouch_min"					"4"
+		"spread_crouch_max"					"6"
+		"spread_crouch_inc"					"4"
+
+		"spread_crouch_viewrate_min"		"4"
+		"spread_crouch_viewrate_max"		"6"
+		"spread_crouch_viewrate_inc"		"4"
+
+		"spread_crouch_max_settle_time"		"600"
+
+		"spread_prone_min"					"4"
+		"spread_prone_max"					"5"
+		"spread_prone_inc"					"4"
+
+		"spread_prone_viewrate_min"			"4"
+		"spread_prone_viewrate_max"			"5"
+		"spread_prone_viewrate_inc"			"4"
+
+		"spread_prone_max_settle_time"		"600"
+
+		"spread_jump_min"					"8"
+		"spread_jump_max"					"8"
+		"spread_jump_inc"					"8"
+
+		"spread_jump_max_settle_time"		"600"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"11"
+	}
+
+	clip {
+		"projectile"					"projectile_shotgun"
+		"client_projectile"				"projectile_bullet"
+		"type"							"shotgun"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"10"
+	}
+}
+
+entityDef projectile_shotgun {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"4096"
+	"min_damage_percent"				"1"
+
+	"dmg_damage"						"damage_shotgun"
+}
+
+damageDef damage_shotgun {
+	damage								"damage_shotgun"
+	kickDir								( 1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							10
+	knockback_damage					10
+
+	kick_time							400
+	kick_amplitude						0.5
+
+	push								5000
+
+	noheadshot
+
+	stat_name							"shotgun"
+
+	record_hit_stats
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/shotgun"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/shotgun/teamkill"
+}
+
+damageFilter damage_shotgun {
+
+	type {
+		target							"target_player_all"
+		damage							9
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							9
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							9
+	}
+}
+
+toolTip shotgun_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/shotgun_1"
+}
+
+toolTip shotgun_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}

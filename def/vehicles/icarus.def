@@ -1,0 +1,331 @@
+//
+// icarus
+//
+
+export frankie {
+		options -prefix ICA_ -rotate 90 -nomerge -sourcedir models/vehicles/strogg_icarus/dev_sd -destdir models/vehicles/strogg_icarus/ -keep driver_cam exit_1 exit_2 exit_3 exit_4 carrier_driver body
+
+		mesh icarus.mb 	-dest icarus.md5mesh
+		anim icarus.mb 	-dest icarus.md5anim -range 0 1
+		anim icarus.mb 	-dest idle.md5anim -range 10 70
+
+		anim icarus.mb 	-dest boost.md5anim -range 70 85
+		anim icarus.mb 	-dest boost_idle.md5anim -range 85 85
+		anim icarus.mb 	-dest boost_end.md5anim -range 85 100
+
+
+
+}
+
+model vehicle_icarus {
+	mesh							models/vehicles/strogg_icarus/icarus.md5mesh
+
+	anim base						models/vehicles/strogg_icarus/icarus.md5anim	{
+	}
+	anim ik_pose					models/vehicles/strogg_icarus/icarus.md5anim 	{
+	}
+	anim initial					models/vehicles/strogg_icarus/icarus.md5anim 	{
+	}
+	anim idle						models/vehicles/strogg_icarus/idle.md5anim 		{
+	}
+	anim boost						models/vehicles/strogg_icarus/boost.md5anim 		{
+	}
+	anim boost_idle					models/vehicles/strogg_icarus/boost_idle.md5anim 		{
+	}
+	anim boost_end					models/vehicles/strogg_icarus/boost_end.md5anim 		{
+	}
+}
+
+deployObject deployobject_icarus {
+	"name"							"icarus"
+	"title"							"Icarus"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_icarus"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"0.1"
+}
+
+entityDef vehicle_icarus_visuals {
+	"spawnclass"					"sdJetPackVisuals"
+	"scriptobject"					"default"
+	"model"							"vehicle_icarus"
+	"maxVisDist"					"8192"
+}
+
+entityDef vehicle_icarus {
+	"max_jump_charge"				"50"
+	"rate_discharge"				"10"
+	"rate_charge"					"10"
+	"max_step_height"				"16"
+
+	"inherit"						"vehicle_base_strogg"
+	
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Vehicle."
+
+	"spawnclass"					"sdJetPack"
+	"scriptObject"					"vehicle_icarus"
+	"vs_vehicleScript"				"icarus"
+
+	"cm_bounds"						"32 0 90"
+	"cm_shot_mins"					"-25 -30 25"
+	"cm_shot_maxs"					"0 30 83"
+
+	"control_context"				"g_bind_context_icarus"
+
+	"health"						"160"
+
+	"stat_name"						"icarus"
+
+	"info_name"						"game/vec/icarus"
+
+	"model"							"vehicle_icarus"
+
+	"decay_time"					"20"
+
+	"dmg_collide"					"damage_icarus_collide"
+
+	"tt_enter"						"vehicle_icarus_enter"
+
+	"icon_size_cm"					"18"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"option_combat_model"			"0"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_icarus"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_icarus"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_icarus"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_icarus"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"gui_vehicle"					"guis/vehicles/strogg_icarus"
+
+	"snd_idle"						"sounds/vehicles/icarus/idle"
+	"snd_stop"						"sounds/vehicles/icarus/stop"
+	"snd_jet"						"sounds/vehicles/misc/strogg/icarus_jet_loop"
+	"snd_jet_start"					"sounds/vehicles/misc/strogg/icarus_jet_start"
+	"snd_jet_stop"					"sounds/vehicles/misc/strogg/icarus_jet_stop"
+	"snd_health_warn"				"sounds/vehicles/misc/warning/air/strogg"
+	"snd_fall_hard"					"sounds/vehicles/icarus/fall"
+	"snd_fall_medium"				"sounds/vehicles/icarus/fall"
+	"snd_fall_light"				"sounds/vehicles/icarus/fall"
+	"snd_fall_soft"					"sounds/vehicles/icarus/fall"
+	"snd_jump"						"sounds/vehicles/icarus/jump"
+
+	"sound_speed_multiplier"		"0.005"
+	"sound_speed_offset"			"1"
+	"sound_pitch_max"				"1.75"
+	"sound_ramp_rate"				"0.075"
+
+	"fan_speed_multiplier"			"1.8"
+	"fan_speed_offset"				"300"
+	"fan_pitch_max"					"800"
+	"fan_ramp_rate"					"0.075"
+
+	"fx_stroybomb_flash"			"effects/weapons/stroybomb_launch"
+
+	"fx_destroy"					"effects/vehicles/destroy"
+
+	"sound_control"					"jetpack"
+
+	"fx_explode"					"effects/base/explosion"
+	"fx_splash"						"effects/water/generic_splash"
+	"fx_wake"						"effects/player/wake"
+	"fx_emped"						"effects/generic_smoke/emp_small"
+	
+	"emp_effect_joint"				"body"
+
+	"task_name"						"game/vec/icarus"
+	"waypoint_offset"				"0 0 96"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_type"				"icarus"
+
+	"give_consent"					"1"
+
+	"mass"							"1000"
+	"gravity"						"800"
+
+	"max_speed"						"360"
+	"max_boost_speed"				"480"
+	"walk_force_scale"				"0.4"
+	"ski_buffer_time"				"0.1"
+	"kinetic_friction"				"10"
+	"kinetic_speed"					"150"
+	"jump_force"					"9600"
+	"boost_force"					"1200"
+
+	"fx_engine"						"effects/vehicles/icarus/engine"
+	"fx_engine_boost"				"effects/vehicles/icarus/engine_boost"
+
+	"def_projectile_decoy"			"projectile_decoy_icarus"
+
+// 	"fx_decoy_extra"				"effects/weapons/flare_extra_icarus"
+//	"extra_decoy_count"				"3"
+//	"extra_decoy_delay"				"0.3"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_velocity"		"0 0 500"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+	"projectile_decoy_joint"		"body"
+
+	"fx_groundeffect_none"			"effects/vehicles/icarus/groundeffect_dirt"
+	"fx_groundeffect_grass"			"effects/vehicles/icarus/groundeffect_grass"
+	"fx_groundeffect_stone"			"effects/vehicles/icarus/groundeffect_stone"
+	"fx_groundeffect_sand"			"effects/vehicles/icarus/groundeffect_sand"
+	"fx_groundeffect_pavement"		"effects/vehicles/icarus/groundeffect_pavement"
+	"fx_groundeffect_dirt"			"effects/vehicles/icarus/groundeffect_dirt"
+	"fx_groundeffect_dusty_road"	"effects/vehicles/icarus/groundeffect_dirt"
+	"fx_groundeffect_gravel"		"effects/vehicles/icarus/groundeffect_stone"
+	"fx_groundeffect_default"		"effects/vehicles/icarus/groundeffect_dirt"
+	"fx_groundeffect_water"			"effects/vehicles/icarus/groundeffect_water"
+	"fx_groundeffect_snow"			"effects/vehicles/icarus/groundeffect_snow"
+
+
+	"joint_damage_smoke"			"r_tail"
+	"joint_damage_fire"				"r_tail"
+
+	"amphibious"					"0"
+
+	"def_visuals"					"vehicle_icarus_visuals"
+
+	"wake_center_width"				"0 0"
+	"wake_edge_width"				"0 0"
+
+	"damage_bonus_scale"			"0.25"
+
+	"always_drop"					"1"
+	"decals"						"0"
+
+//	"dmg_fall"						"damage_icarus_fall"
+	"dmg_falling"					"damage_falling_icarus"
+	"fall_damage_speed_min"			"1200"
+	"fall_damage_speed_max"			"2300"
+
+	"dmg_water"						"damage_icarus_water"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"9"
+	"vehicle_team"					"1"
+	"vehicle_flags"					"9"
+	
+	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
+	
+	"selection_mins"				"-128 -128 -96"
+	"selection_maxs"				"128 128 174"
+	
+}
+
+damageDef damage_icarus_collide {
+	damage								"damage_icarus_collide"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	stat_name							"icarus_weapons"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/icarus"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/icarus/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/icarus/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_icarus_collide {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_veh_all"
+		damage	100
+	}
+	type {
+		target	"target_supply_crate"
+		damage	200
+	}
+	type {
+		target	"target_deployables_all"
+		damage	100
+	}	
+}
+
+damageDef damage_icarus_fall {
+	damage								"damage_icarus_fall"
+
+	stat_name							"icarus_weapons"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/icarus"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/icarus/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/icarus/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_icarus_fall {
+	type {
+		target	"target_player_all"
+		damage	50
+	}
+	type {
+		target	"target_veh_all"
+		damage	200
+	}
+}
+
+damageDef damage_icarus_water {
+	damage								"damage_icarus_water"
+
+	stat_name							"icarus_weapons"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/water"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/water"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/water"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/water"
+}
+
+damageFilter damage_icarus_water {
+	type {
+		target	"target_veh_all"
+		damage	60
+	}
+}
+
+damageFilter damage_falling_icarus {
+	type { 
+		target	"target_player_all"
+		damage	50000
+	}
+	
+	type {
+		target	"target_veh_all"
+		damage	50000
+	}
+}
+
+damageDef damage_falling_icarus {
+	damage		"damage_falling_icarus"
+	noGod
+	noArmor
+	noPain
+	forcePassengerKill
+	
+	tt_obituary_unknown				"tooltips/killmsgs/self/icarus_falling"
+}
+
+toolTip vehicle_icarus_enter {
+	length	5
+	text	"game/tt/icarus"
+}

@@ -1,0 +1,332 @@
+// Export
+// ========================================================================
+
+export frankie {
+	options -prefix SSG_ -rotate 180 -scale 0.7 -sourcedir models/structures/strogg/deployables/weapons/ssg/dev_sd -destdir models/structures/strogg/deployables/weapons/ssg -keep muzzle origin -keepmesh lod0_01 lod0_02 lod0_03 lod0_04 lod0_05 lod0_06 lod0_07 lod0_08 lod0_09 lod0_10 lod0_11 lod0_12 lod0_13 lod1shadow_01 lod1shadow_02 lod1shadow_03 lod1shadow_04 lod1shadow_05 lod1shadow_06 lod1shadow_07 lod1shadow_08 lod1shadow_09 lod1shadow_10 lod1shadow_11 lod1shadow_12 lod1shadow_13
+/*
+	mesh SSG_Setup.mb		-dest ssg_base.md5mesh			-range 50 50
+	anim SSG_Setup.mb		-dest ssg_undeployed.md5anim 	 	-range 1 1
+	anim SSG_Setup.mb		-dest ssg_deploy.md5anim 	 	-range 1 50
+	anim SSG_Setup.mb		-dest ssg_idle.md5anim 	 		-range 50 50
+
+//	anim SSG_Setup.mb		-dest ssg_fire.md5anim 	 		-range 25 25
+	anim SSG_Setup.mb		-dest ssg_reload.md5anim 	 	-range 25 25
+
+	anim SSG_Setup.mb		-dest ssg_lower.md5anim 	 	-range 40 60
+	anim SSG_Setup.mb		-dest ssg_raise.md5anim 	 	-range 60 79
+
+
+
+	anim SSG_Setup.mb		-dest ssg_damaged.md5anim 		-range 80 90
+	*/
+	anim SSG_Setup.mb		-dest ssg_disabled.md5anim 	 	-range 100 130
+
+/*
+	anim SSG_Setup.mb		-dest ssg_disabled_to_damaged.md5anim 	 	-range 90 90
+	anim SSG_Setup.mb		-dest ssg_damaged_to_idle.md5anim 	 	-range 50 50
+
+	anim SSG_firing_nerve.mb		-dest ssg_fire.md5anim 	 		-range 1 24
+*/
+}
+/*
+export frankie {
+	options -prefix SSG_ -rotate 180 -scale 0.7 -sourcedir models/structures/strogg/deployables/weapons/ssg/dev_sd -destdir models/structures/strogg/deployables/weapons/ssg -nojoints -keep muzzle origin -keepmesh lod1_01 lod1_02 lod1_03 lod1_04 lod1_05 lod1_06 lod1_07 lod1_08 lod1_09 lod1_10 lod1_11 lod1_12 lod1_13 lod1shadow_01 lod1shadow_02 lod1shadow_03 lod1shadow_04 lod1shadow_05 lod1shadow_06 lod1shadow_07 lod1shadow_08 lod1shadow_09 lod1shadow_10 lod1shadow_11 lod1shadow_12 lod1shadow_13
+
+	mesh SSG_Setup.mb		-dest ssg_base_lod1.md5mesh
+}
+
+export frankie {
+	options -prefix SSG_ -rotate 180 -scale 0.7 -sourcedir models/structures/strogg/deployables/weapons/ssg/dev_sd -destdir models/structures/strogg/deployables/weapons/ssg -nojoints -keep muzzle origin -keepmesh lod2_01 lod2_02 lod2_03 lod2_04 lod2_05 lod2_06 lod2_07 |lod2_08 lod2_09 lod2_10 lod2_11 lod2_12 lod2_13 lod2shadow_01 lod2shadow_02 lod2shadow_03 lod2shadow_04 lod2shadow_05 lod2shadow_06 lod2shadow_07 lod2shadow_08 lod2shadow_09 lod2shadow_10 lod2shadow_11 lod2shadow_12 lod2shadow_13
+
+	mesh SSG_Setup.mb		-dest ssg_base_lod2.md5mesh
+}
+
+export frankie {
+	options -prefix SSG_ -rotate 180 -scale 0.7 -sourcedir models/structures/strogg/deployables/weapons/ssg/dev_sd -destdir models/structures/strogg/deployables/weapons/ssg -nojoints -keep muzzle origin -keepmesh lod2_01 lod2_02 lod2_03 lod2_04 lod2_05 lod2_06 lod2_07 lod2_08 lod2_09 lod2_10 lod2_11 lod2_12 lod2_13 lod2shadow_01 lod2shadow_02 lod2shadow_03 lod2shadow_04 lod2shadow_05 lod2shadow_06 lod2shadow_07 lod2shadow_08 lod2shadow_09 lod2shadow_10 lod2shadow_11 lod2shadow_12 lod2shadow_13
+
+	mesh SSG_Setup.mb		-dest ssg_base_lod3.md5mesh
+
+}
+*/
+// Models
+// ========================================================================
+
+model deployable_ssg {
+	mesh							models/structures/strogg/deployables/weapons/ssg/ssg_base.md5mesh
+
+	anim base						models/structures/strogg/deployables/weapons/ssg/ssg_idle.md5anim {
+	}
+
+	anim undeployed					models/structures/strogg/deployables/weapons/ssg/ssg_undeployed.md5anim {
+	}
+
+	anim deploy						models/structures/strogg/deployables/weapons/ssg/ssg_deploy.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+		frame 14						sound_channel snd_deployable_deploy2 snd_deploy_foot
+		frame 20						sound_channel snd_deployable_deploy3 snd_deploy_foot
+		frame 27						sound_channel snd_deployable_deploy4 snd_deploy_foot
+	}
+
+	anim fire						models/structures/strogg/deployables/weapons/ssg/ssg_fire.md5anim {
+		frame 1							effect fx_fire muzzle
+	}
+
+	anim reload						models/structures/strogg/deployables/weapons/ssg/ssg_reload.md5anim {
+	}
+
+	anim raise						models/structures/strogg/deployables/weapons/ssg/ssg_raise.md5anim {
+	}
+
+	anim lower						models/structures/strogg/deployables/weapons/ssg/ssg_lower.md5anim {
+	}
+
+	anim damaged					models/structures/strogg/deployables/weapons/ssg/ssg_damaged.md5anim {
+	}
+
+	anim destroyed					models/structures/strogg/deployables/weapons/ssg/ssg_disabled.md5anim {
+	}
+
+	anim disabled_to_damaged		models/structures/strogg/deployables/weapons/ssg/ssg_disabled_to_damaged.md5anim {
+	}
+
+	anim damaged_to_idle			models/structures/strogg/deployables/weapons/ssg/ssg_damaged_to_idle.md5anim {
+	}
+}
+
+// Entity Def
+// ========================================================================
+
+deployObject deployobject_ssg {
+	"name"							"ssg"
+	"title"							"game/deploy/ssg_long"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_ssg"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					"deployitem_ssg_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"mdl_scale_factor"				"0.7"
+	"category"						"firesupport"
+}
+
+stringMap deployitem_ssg_placement_model {
+	"model"							"models/structures/strogg/deployables/weapons/ssg/ssg.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+entityDef deployable_ssg {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_strogg"
+
+	"title"							"game/deploy/ssg_long"
+
+	"collection_gui_count"			"deployable_ssg"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The Strogg SSG"
+	"editor_mins"					"-128 -144 0"
+	"editor_maxs"					"168 144 512"
+
+	"spawnclass"					"sdScriptEntity"
+	"scriptobject"					"deployable_ssg"
+
+	"model"							"deployable_ssg"
+	"cm_model"						"models/structures/strogg/deployables/weapons/ssg/clip.lwo"
+
+	"stat_name"						"ssg"
+
+	"task_name"						"game/deploy/ssg"
+
+	"ch_name"						"game/deploy/ssg_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 256"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"fire_support"
+
+	"def_firesupport_marker"		"firesupport_marker_ssg"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_atk_deploy"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_atk_deploy"
+	"icon_size_cm"					"10"
+
+	"player_wait_time"				"240"
+
+	"health"						"3000"
+	"repair_multiplier"				"1.5"
+
+	"action_time"					"30"
+
+	"def_projectile"				"projectile_deployable_ssg"
+
+	"joint_yaw"						"h_aim"
+	"joint_pitch"					"v_aim"
+	"joint_barrel"					"muzzle"
+
+	"num_missiles"					"1"
+
+	"min_yaw_turn"					"45"
+	"max_yaw_turn"					"120"
+
+	"min_pitch_turn"				"10"
+	"max_pitch_turn"				"30"
+
+	"min_pitch"						"0"
+	"max_pitch"						"90"
+
+	"missile_speed"					"3000"
+	"missile_recycle"				"5"
+	"missile_reload"				"55"
+	"missile_firecount"				"1"
+
+	"target_height"					"8000"
+
+	"missile_anim"					"fire"
+	"missile_channel"				"0"
+
+	"snd_deploy"					"sounds/deployables/ssg/deploy"
+	"snd_deploy_foot"				"sounds/deployables/ssg/deploy/foot"
+	"snd_turret_start"				"sounds/movement/move_01"
+	"snd_turret_stop"				"sounds/movement/stop_04"
+	"snd_barrel_start"				"sounds/movement/move_02"
+	"snd_barrel_stop"				"sounds/movement/stop_03"
+
+	"mtr_color"						"guis/binoculars/target_ssg_color"
+	"mtr_desat"						"guis/binoculars/target_ssg_desat"
+	"mtr_half_desat"				"guis/binoculars/target_ssg_half_desat"
+	"mtr_full_desat"				"guis/binoculars/target_ssg_bright_desat"
+
+	"target_timer"					"timer_ssg"
+	"target_locktime"				"4"
+	"target_lostgraceperiod"		"1"
+	"target_length"					"60"
+
+	"fx_fire"						"effects/deployables/ssg/fire"
+	"fx_death"						"effects/deployables/ssg_destroy"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"h_aim"
+
+	"collection_firesupport_ssg"	"firesupport_ssg"
+	"timer_name"					"timer_ssg"
+
+	"do_object"						"deployobject_ssg"
+
+	"mtr_decal"						"textures/decals/artilleryMarker"
+
+	"drone_orbit_radius"			"220"
+
+	"snd_effect"					""
+
+	"def_marker"					"target_marker"
+	"mtr_marker_cm"					"hud/objectives/firesupport"
+	"cm_marker_sort"				"0"
+	
+	"deployable_type"				"4"
+	
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/firesupportspotted"
+
+	"deploybonus_requireactive"		"0"
+	"prof_deploybonus"				"pro_oppressor_deploy_bonus"
+}
+
+// Projectile Entity Def
+// ========================================================================
+
+entityDef projectile_deployable_ssg {
+	"spawnclass"					"idProjectile_RigidBody"
+	"mins"							"-24 -24 0"
+	"maxs"							"24 24 150"
+	"model"							""
+
+	"scriptObject"					"projectile_ssm"
+
+	"dmg_damage"					"damage_ssg"
+	"dmg_splash_damage"				"damage_ssg_splash"
+
+	"health"						"400"
+	"velocity"						"0 0 0"
+	"mass"							"5"
+	"gravity"						"400"
+	"fuse"							"-1"
+	"targetRadius"					"1280"
+
+	"aor_layout"					"missile"
+
+	"detonate_on_fuse"				"0"
+	"detonate_on_death"				"1"
+	"detonate_on_world"				"1"
+	"detonate_on_actor"				"1"
+
+	"face_velocity"					"1"
+
+	"detonate_upwards"			"1"
+
+	"snd_launch"					"sounds/deployables/ssm/launch"
+	"fx_trail"						"effects/deployables/ssg_trail"
+	"fx_explode"					"effects/deployables/ssg_explode"
+	"fx_explode_water"				"effects/water/explosion"
+	"fx_explode_water_interior"		"effects/water/explosion_interior"
+
+	"use_air_burst"					"1"
+	"fx_airburst"					"effects/deployables/ssg_explode_air"
+
+	"ti_target_info"				"target_beacon"
+
+	"collection_antiair"			"antiair"
+	"collection_mdfExport"			"mdfExport"
+	"collection_antissg"			"antissg"
+
+	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
+
+	"prof_destroy"					"pro_engineer_antimissile_ssg"
+}
+
+damageDef damage_ssg {
+	damage							"damage_ssg"
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssg"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+}
+
+damageDef damage_ssg_splash {
+	damage							"damage_ssg"
+	radius							2048
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"ssg"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssg"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+}
+
+damageFilter damage_ssg {
+	type {
+		target	"target_all"
+		damage	4000
+	}
+
+	type {
+		target	"target_explodable"
+		damage	1000
+	}
+}

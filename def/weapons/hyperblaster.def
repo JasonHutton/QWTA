@@ -1,0 +1,462 @@
+
+#include <def/damage.include>
+
+/***********************************************************************
+
+	HyperBlaster
+
+***********************************************************************/
+
+export hauser {
+	options -prefix HYPERBLASTER_ -sourcedir models/weapons/strogg_hyperblaster/dev_sd -destdir models/weapons/strogg_hyperblaster/ -keep muzzle muzzle2 muzzle3 overheat_left overheat_right
+
+/*
+	mesh	hyperblaster_base_file.mb		-dest models/weapons/strogg_hyperblaster/view.md5mesh
+
+	anim	hyperblaster_base_file.mb		-dest models/weapons/strogg_hyperblaster/base.md5anim
+	anim	hyperblaster_idle.mb			-dest models/weapons/strogg_hyperblaster/idle.md5anim
+	anim	hyperblaster_raise.mb			-dest models/weapons/strogg_hyperblaster/raise.md5anim
+ 	anim	hyperblaster_lower.mb			-dest models/weapons/strogg_hyperblaster/lower.md5anim
+   	anim	hyperblaster_fire.mb			-dest models/weapons/strogg_hyperblaster/fire.md5anim
+   	anim	hyperblaster_spinup.mb			-dest models/weapons/strogg_hyperblaster/spinup.md5anim
+   	anim	hyperblaster_spindown.mb		-dest models/weapons/strogg_hyperblaster/spindown.md5anim
+   	anim	hyperblaster_spinup_fast.mb		-dest models/weapons/strogg_hyperblaster/spinup_fast.md5anim
+*/
+	anim	hyperblaster_overheat.mb		-dest models/weapons/strogg_hyperblaster/reload.md5anim
+/*
+	anim	hyperblaster_base_file.mb		-dest models/weapons/strogg_hyperblaster/zoom_in.md5anim
+	anim	hyperblaster_base_file.mb		-dest models/weapons/strogg_hyperblaster/zoom_out.md5anim
+	anim	hyperblaster_start_sprint.mb	-dest models/weapons/strogg_hyperblaster/start_sprint.md5anim
+	anim	hyperblaster_leave_sprint.mb	-dest models/weapons/strogg_hyperblaster/leave_sprint.md5anim
+*/
+}
+
+
+//=========================================================================
+// View models
+//
+
+
+model viewmodel_hyperblaster {
+	mesh 						models/weapons/strogg_hyperblaster/view.md5mesh
+
+	anim idle 					models/weapons/strogg_hyperblaster/idle.md5anim {
+	}
+	anim fire					models/weapons/strogg_hyperblaster/fire.md5anim {
+	}
+	anim overheat					models/weapons/strogg_hyperblaster/reload.md5anim {
+		frame 3							sound_channel snd_weapon_sig snd_overheat
+		frame 12						effect fx_overheat overheat_left
+		frame 16						sound_channel snd_weapon_mech snd_steam
+		frame 23						sound_channel snd_weapon_foley snd_punch
+		frame 38					sound_channel snd_weapon_foley snd_reloadfx
+	}
+	anim raise					models/weapons/strogg_hyperblaster/raise.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway					models/weapons/strogg_hyperblaster/lower.md5anim {
+	}
+	anim zoomin					models/weapons/strogg_hyperblaster/zoom_in.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_initzoom
+	}
+	anim zoomout					models/weapons/strogg_hyperblaster/zoom_out.md5anim {
+	}
+	anim idle_zoom					models/weapons/strogg_hyperblaster/zoom_in.md5anim {
+	}
+	anim fire_zoom					models/weapons/strogg_hyperblaster/zoom_in.md5anim {
+	}
+	anim spinup					models/weapons/strogg_hyperblaster/spinup.md5anim {
+	}
+	anim spindown					models/weapons/strogg_hyperblaster/spindown.md5anim {
+	}
+	anim spinup_fast				models/weapons/strogg_hyperblaster/spinup_fast.md5anim {
+	}
+	anim leave_sprint				models/weapons/strogg_hyperblaster/leave_sprint.md5anim {
+	}
+	anim start_sprint				models/weapons/strogg_hyperblaster/start_sprint.md5anim {
+	}
+}
+
+model worldmodel_hyperblaster {
+	mesh		 					models/weapons/strogg_hyperblaster/hyperblaster_world.md5mesh
+
+	anim raise						models/weapons/strogg_hyperblaster/hyperblaster_world.md5anim {
+	}
+	anim idle 						models/weapons/strogg_hyperblaster/hyperblaster_world.md5anim {
+	}
+	anim aim						models/weapons/strogg_hyperblaster/hyperblaster_world.md5anim {
+	}
+	anim spinup						models/weapons/strogg_hyperblaster/hyperblaster_world_spinup.md5anim {
+	}
+	anim spindown					models/weapons/strogg_hyperblaster/hyperblaster_world_spin.md5anim {
+	}
+	anim fire						models/weapons/strogg_hyperblaster/hyperblaster_world_spindown.md5anim {
+	}
+	anim reload						models/weapons/strogg_hyperblaster/hyperblaster_world.md5anim {
+	}
+	anim noammo						models/weapons/strogg_hyperblaster/hyperblaster_world.md5anim {
+	}
+ 	anim putaway					models/weapons/strogg_hyperblaster/hyperblaster_world.md5anim {
+ 	}
+}
+
+invItemDef inventory/weapons/hyperblaster {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/hyperblaster"
+	model								"models/weapons/strogg_hyperblaster/hyperblaster_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_hyperblaster"
+		"model_world" 					"worldmodel_hyperblaster"
+		"anim_limbomenu"				"menu"
+		"view_offset"					"0 -1 -2"
+
+		"joint_attach"					"weapon_attach"
+		"anim_prefix"					"2h_hyperblaster"
+		"anim_prefix_class"				"2h"
+
+		"weapon_scriptobject"			"weapon_hyperblaster"
+
+		"stat_name"						"hyperblaster"
+
+		"muzzle_kick_time"				"0.2"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"1 0 0"
+		"muzzle_kick_offset"			"0.5 1 1"
+
+		"joint_barrel"					"barrel_joint"
+		"joint_barrel_world"			"hyperblaster_barrel"
+
+		"recoilTime"					"80"
+		"recoilAngles"					"-0.5 0 0"
+		"kickback"						"0.25"
+		"kickback_prone"				"0.19"
+
+		"fx_overheat"					"effects/weapons/hyperblaster_overheat"
+		"fx_overheat_world"				"effects/weapons/hyperblaster_overheat"
+		"fx_muzzle_flash"				"effects/weapons/hyperblaster_muzzleflash"
+		"fx_muzzle_flash_world"			"effects/weapons/hyperblaster_muzzleflash_world"
+		"fx_tracer"						"effects/base/tracers_strogg"
+		"effectchance fx_tracer"		"1"
+
+		"snd_fire"						"sounds/weapons/hyperblaster/xfire_01"			// For Xian: Hyperblaster sound goes in here
+		"snd_fire_far"					"sounds/weapons/hyperblaster/xfire_01_dist"
+		"snd_fire_local"				"sounds/weapons/hyperblaster/xfire_01_local"
+		"snd_punch"						"sounds/weapons/lacerator/reload_hit"
+		"snd_cock"						"sounds/weapons/gpmg/cock"
+		"snd_reload"					"sounds/weapons/gpmg/reload"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_steam"						"sounds/weapons/blaster/steam"
+		"snd_overheat"					"sounds/weapons/hyperblaster/overheat"
+		"snd_reloadfx"					"sounds/weapons/hyperblaster/reload"
+		"snd_initzoom"					"sounds/weapons/railgun/init"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+		"snd_raise"						"sounds/weapons/hyperblaster/raise"
+		"snd_barrel_loop"				"sounds/weapons/hyperblaster/barrel/loop"
+		"snd_barrel_loop_low"			"sounds/weapons/hyperblaster/barrel/loop_low"
+
+		"speed_mod"						"0.8"
+
+		"fov_zoom"						"45"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.5"
+
+		"trigger_delay"					"0"
+		"fire_rate"						"0.08"
+		"num_projectiles"				"1"
+
+		"zoomFov"						"60"
+		"low_ammo"						"20"
+		"show_all_ammo"					"1"
+		"clip_based"					"0"
+
+		"gui_sight"						"game/sights/assaultrifle_scope"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/hyperblaster"
+		"gui_sniper_scope"				"guis/game/sights/generic_scope"
+		"hud_sort"						"999"
+
+		"tt_intro_1"					"hyperblaster_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"hyperblaster_ironsights"
+		"tt_intro_ironsights_2"			"generic_weapon_ironsights"
+		"tt_intro_heat"					"generic_weapon_heat"
+
+		"crosshair"						"large"
+
+		"crosshair_spread_min"			"-0.45"
+		"crosshair_spread_max"			"3"
+		"crosshair_spread_scale"		"3"
+
+		"spread_min"					"0.68"
+		"spread_max"					"3.5"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"0.68"
+		"spread_viewrate_max"			"3.5"
+		"spread_viewrate_inc"			"2"
+
+		"spread_max_settle_time"		"700"
+
+		"spread_crouch_min"				"0.62"
+		"spread_crouch_max"				"3"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"0.62"
+		"spread_crouch_viewrate_max"	"3"
+		"spread_crouch_viewrate_inc"	"1.5"
+
+		"spread_crouch_max_settle_time"	"450"
+
+		"spread_prone_min"				"0.55"
+		"spread_prone_max"				"2.5"
+		"spread_prone_inc"				"1"
+
+		"spread_prone_viewrate_min"		"0.55"
+		"spread_prone_viewrate_max"		"2.5"
+		"spread_prone_viewrate_inc"		"1"
+
+		"spread_prone_max_settle_time"	"350"
+
+		"overheat_length"				"5"
+		"overheat_per_shot"				"0.17"
+		"timer_heat"					"heat_hyperblaster"
+
+		"spin_fire"						"1080"
+		"spin_idle"						"20"
+		"spin_heat"						"5"
+
+		"autoswitch_priority"			"5"
+
+		"hide_crosshair"				"0"
+
+		"player_weapon_num"				"6"
+
+		"fx_idle"						"effects/weapons/hyperblaster_idle"
+	}
+
+	clip {
+		"projectile"					"projectile_hyperblaster"
+		"client_projectile"				"projectile_bullet"
+		"type"							"stroyent"
+		"ammo_per_shot"					"4"
+		"max_ammo"						"-1"
+	}
+}
+
+// Mountable version of the gun
+entityDef mountable_strogg_hyperblaster {
+	"spawnclass"						"sdScriptEntity"
+	"model"								"mountable_gdf_gpmg"
+	"mount_joint"						"mount"
+	"scriptobject"						"weapon_mounted"
+
+	"snd_fire"							"sounds/weapons/hyperblaster/fire"
+	"snd_fire_far"						"sounds/weapons/hyperblaster/fire/far"
+	"snd_fire_local"					"sounds/weapons/hyperblaster/fire/local"
+
+	"def_projectile"					"projectile_hyperblaster"
+
+	"fx_tracer"							"effects/base/tracers_strogg"
+	"effectchance fx_tracer"			"1"
+
+	"fire_rate"							"0.10"
+	"spread"							"0.2"
+	"range"								"8192"
+	"muzzle"							"muzzle"
+
+	"fire_charge"						"2.5"
+	"recharge_time"						"10"
+
+	"fire_lower_bound"					"0.1"
+	"fire_lower_bound_delay"			"2"
+
+	"health"							"200"
+
+	"option_combat_model"				"1"
+	"option_crosshair_interface"		"1"
+	"option_interactive_interface"		"1"
+
+	"collection_mountables"				"mountables"
+
+	"fx_damaged"						"effects/generic_smoke"
+}
+
+entityDef projectile_hyperblaster {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base_big"
+
+	"range"								"8192"
+	"min_damage_percent"				"10"
+
+	"tracer_chance"						"0"
+	"tracer_interval"					"1"
+	"fx_tracer"							"effects/weapons/hyperblaster_tracer"
+
+  	"fx_explode"				"effects/impacts/blaster_big/impact_default"
+	"fx_explode_pavement"		"effects/impacts/blaster_big/impact_pavement"
+ 	"fx_explode_stone"			"effects/impacts/blaster_big/impact_stone"
+  	"fx_explode_concrete"		"effects/impacts/blaster_big/impact_stone"
+	"fx_explode_dirt"			"effects/impacts/blaster_big/impact_dirt"
+	"fx_explode_mud"			"effects/impacts/blaster_big/impact_dirt"
+	"fx_explode_flesh"			"effects/impacts/blaster_big/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/blaster_big/impact_glass"
+	"fx_explode_ice"			"effects/impacts/blaster_big/impact_glass"
+ 	"fx_explode_gravel"			"effects/impacts/blaster_big/impact_stone"
+	"fx_explode_metal"			"effects/impacts/blaster_big/impact_metal"
+	"fx_explode_metal_thick"	"effects/impacts/blaster_big/impact_metal"
+	"fx_explode_dusty_road"		"effects/impacts/blaster_big/impact_sand"
+	"fx_explode_sand"			"effects/impacts/blaster_big/impact_sand"
+	"fx_explode_snow"			"effects/impacts/blaster_big/impact_snow"
+	"fx_explode_wood"			"effects/impacts/blaster_big/impact_wood"
+	"fx_explode_wood_thick"		"effects/impacts/blaster_big/impact_wood"
+ 	"fx_explode_liquid"			"effects/impacts/blaster_big/impact_liquid"
+  	"fx_explode_water"			"effects/impacts/blaster_big/impact_liquid"
+  	"fx_explode_water_interior"	"effects/impacts/blaster_big/impact_liquid"
+	"fx_explode_forcefield"		"effects/base/bullets/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/blaster_big/impact_grass"
+ 	"fx_explode_plastic"		"effects/impacts/blaster_big/impact_plastic"
+
+	"dmg_damage"						"damage_hyperblaster"
+}
+
+entityDef projectile_hyperblaster_desecrator {
+	"inherit"							"projectile_hyperblaster"
+	"dmg_damage"						"damage_hyperblaster_desecrator"
+}
+
+entityDef projectile_hyperblaster_hog {
+	"inherit"							"projectile_hyperblaster"
+	"dmg_damage"						"damage_hyperblaster_hog"
+}
+
+entityDef projectile_hyperblaster_hornet {
+	"inherit"							"projectile_hyperblaster"
+	"dmg_damage"						"damage_hyperblaster_hornet"
+
+	"fx_explode"						"effects/minigun/strogg"
+	"fx_explode_grass"					"effects/minigun/strogg"
+	"fx_explode_plastic"				"effects/minigun/strogg"
+	"fx_explode_stone"					"effects/minigun/strogg"
+	"fx_explode_wood"					"effects/minigun/strogg"
+	"fx_explode_pavement"				"effects/minigun/strogg"
+	"fx_explode_sand" 					"effects/minigun/strogg"
+}
+
+
+damageDef damage_hyperblaster_hornet {
+	templates/vehicles/weapons/hyperblaster/damage( "hornet_weapons", "pro_vehicle_damage" )
+}
+
+damageDef damage_hyperblaster_hog {
+	templates/vehicles/weapons/hyperblaster/damage( "hog_weapons", "pro_vehicle_damage" )
+}
+
+damageDef damage_hyperblaster_desecrator {
+	templates/vehicles/weapons/hyperblaster/damage( "desecrator_weapons", "pro_vehicle_damage" )
+}
+
+damageDef damage_hyperblaster {
+	templates/vehicles/weapons/hyperblaster/damage( "hyperblaster", "pro_aggressor_damage" )
+	
+	record_hit_stats
+}
+
+damageFilter damage_hyperblaster {
+
+	type {
+		target							"target_player_all"
+		damage							19
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							25
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							25
+	}
+}
+
+entityDef projectile_hyperblaster_twin {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base_big"
+
+	"min_damage_percent"				"10"
+
+	"tracer_chance"						"0"
+	"tracer_interval"					"2"
+	"fx_tracer"							"effects/weapons/hyperblaster_tracer"
+
+	"fx_explode_grass"					"effects/impacts/blaster_big/impact_grass"
+	"fx_explode_metal"					"effects/impacts/blaster_big/impact_metal"
+ 	"fx_explode_plastic"				"effects/impacts/blaster_big/impact_plastic"
+ 	"fx_explode_stone"					"effects/impacts/blaster_big/impact_stone"
+	"fx_explode_wood"					"effects/impacts/blaster_big/impact_wood"
+  	"fx_explode"						"effects/impacts/blaster_big/impact_default"
+	"fx_explode_flesh"					"effects/impacts/blaster_big/impact_flesh"
+ 	"fx_explode_water"					"effects/impacts/blaster_big/impact_liquid"
+ 	"fx_explode_water_interior"			"effects/impacts/blaster_big/impact_liquid"
+	"fx_explode_pavement"				"effects/impacts/blaster_big/impact_pavement"
+	"fx_explode_sand"					"effects/impacts/blaster_big/impact_sand"
+
+	"dmg_damage"						"damage_hyperblaster_twin"
+}
+
+damageDef damage_hyperblaster_twin {
+	damage								"damage_hyperblaster_twin"
+
+	knockback							3
+	push								10000
+
+	stat_name							"goliath_weapons"
+
+	prof_damage							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+}
+
+damageDef damage_hyperblaster_twin_player {
+	damage								"damage_hyperblaster_twin"
+
+	knockback							3
+	push								10000
+
+	prof_damage							"pro_aggressor_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+}
+
+damageFilter damage_hyperblaster_twin {
+
+	type {
+		target							"target_player_all"
+		damage							17
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							25
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							25
+	}
+}
+
+toolTip hyperblaster_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/hyperblaster_1"
+}
+
+toolTip hyperblaster_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}

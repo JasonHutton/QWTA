@@ -1,0 +1,194 @@
+
+#include "player_includes.include"
+
+/////////////////
+// Base Player //
+/////////////////
+
+entityDef player_base {
+	"spawnclass"						"idPlayer"
+	"scriptobject"						"player"
+	
+	"aor_layout"						"player"
+
+	"pain_delay"						"0.5"		// how long to wait before playing pain sound
+	
+	"damage_xp_scale"					"4"
+
+	"health"							"100"
+	"maxhealth"							"100"
+
+	"bleed"								"1"
+
+	"icon_sort_self_cm"					"-100"
+	"icon_sort_self_arc_cm"				"-101"
+	"icon_sort_cm"						"-20"
+	"icon_sort_cm_ftring"				"-19"
+	"icon_sort_cm_request"				"-102"
+
+	"snd_fall"							"player_fall" // done
+	"snd_movement_stroggshuffle"		"sounds/players/footsteps/strogg/cloth"	
+	"snd_guienter"						"gui_hover"
+	"snd_guiexit"						"gui_close"
+	"snd_jump_gdf"						"sounds/players/gdf/jump"
+	"snd_jump_strogg"					"sounds/players/strogg/jump"
+	"snd_land"							"player_thud" // done
+	"snd_stepladder"					"sounds/players/footsteps/ladder"
+	"snd_weapon_switch"					"silence"
+	"snd_hit_feedback"					"feedback_hit_enemy"
+	"snd_hit_feedback_headshot"			"feedback_hit_enemy_headshot"
+	"snd_hit_friendly_feedback"			"feedback_hit_friendly"
+	"snd_hit_vehicle_feedback"			"feedback_hit_vehicle_enemy"
+	"snd_hit_vehicle_friendly_feedback"	"feedback_hit_vehicle_friendly"
+	"snd_login"							"sounds/guis/admin/login"
+	"snd_no_mission"					"sounds/ui/main/bad"
+	"snd_target_lock_alarm"				"sounds/players/target_lock_alarm"
+
+	"icon_mortar_size_cm"				"8"
+	"mtr_mortar_icon"					"hud/commandmap/mortar_target"
+
+	"mtr_commandmapicon_self"			"hud/commandmap/player_self"
+	"mtr_commandmapicon_self_arc"		"hud/commandmap/player_self_arc"
+	"mtr_commandmapicon_tracking"		"guis/assets/icons/tracking"
+	"mtr_commandmapicon_self_spectating" "hud/commandmap/player_self_spectating"
+
+	"mtr_icon_revive"					"hud/icons/player/revive"
+	"mtr_icon_god"						"hud/icons/player/god"
+	"mtr_medic"							"hud/icons/player/voicemedic"
+	"mtr_repair"						"hud/icons/player/voicerepair"
+	"mtr_ammo"							"hud/icons/player/voiceammo"
+	"mtr_passenger"						"hud/icons/player/voicepassenger"
+
+	"gui_camview"						"guis/game/camview"
+	"gui_rankup"						"guis/game/rankup"
+
+	"gui_hud"							"hud"
+	"gui_postprocess"					"guis/postprocess"
+
+	//"fx_spawn_gdf"						"effects/player/spawn_edf"
+	//"fx_spawn_strogg"					"effects/player/spawn_strogg"
+
+	"fx_killed"							"effects/player/killed"
+	"fx_underWater"						"effects/ambient/salvage_blizzard"
+
+	"tt_fireteam_become_leader"			"fireteam_become_leader"
+	"tt_intro_use_me_1_revive"			""
+	"tt_intro_use_me_2_revive"			""
+	"tt_prone_failed"					"prone_failed"
+	"tt_nodisguise_carryable"			"player_nodisguise_carryable"
+	"tt_noobjective"					"game_noobjective_warmup"
+	"tt_stroytransfer_fail"				"stroytransfer_failed"
+	"tt_killed_by_mine"					"killed_by_mine"
+	"tt_new_mission"					"new_mission"
+	"tt_tooltip"						"tooltip_information"
+	"tt_introductory1"					"tooltip_introductory1"
+	"tt_introductory2"					"tooltip_introductory2"
+	"tt_introductory3"					"tooltip_introductory3"
+	"tt_warmup_not_ready"				"tooltip_warmup_not_ready"
+	"tt_explain_objectives"				"tooltip_explain_objectives"
+
+	"collection_players"				"players"
+	"collection_interactive"			"interactive"
+
+	"qc_revive"							"team_revive"
+	"qc_revive_ack"						"quick_onmyway"
+
+	"energy_charge_time"				"30"
+
+	"dead_clamp_pitch_min"				"-45"
+	"dead_clamp_pitch_max"				"45"
+
+	"dead_clamp_yaw_min"				"-67.5"
+	"dead_clamp_yaw_max"				"67.5"
+
+	"prone_clamp_pitch_rate"			"90"
+	"prone_clamp_yaw_rate"				"90"
+
+	"loc_damage_area_damage_legs"		"0.5"
+	"loc_damage_area_damage_torso"		"1"
+	"loc_damage_area_damage_head"		"1.2"
+	"loc_damage_area_damage_neck"		"1"
+	"loc_damage_area_damage_headbox"	"2.5"
+	
+	"collection_he"						"he"
+	"collection_arty"					"arty"
+	"collection_ss"						"ss"
+
+	"prone_crouch_to_prone_time"		"700"
+	"prone_prone_to_crouch_time"		"700"
+	"prone_stand_to_prone_time"			"700"
+	"prone_prone_to_stand_time"			"700"
+
+	"prone_eye_from_standing"			"prone"
+	"prone_eye_from_crouch"				"prone"
+	
+	"maxVisDist"						"7168"
+	
+	
+	"require_context_medic"				"( ability_healthBoost || ability_revive ) && ( same_team == true )"
+	"require_context_spawnhost"			"ability_revive && ( same_team == false )"
+	
+	"require_context_repair"			"ability_repair && ( same_team == true )"
+	
+	"require_context_construct"			"ability_construct && ( same_team == true )"
+	
+	"require_context_kill"				"same_team == false"
+	
+	"require_context_disarm"			"ability_engineer || ability_constructor"
+	
+	"require_context_hack"				"ability_hack"
+	
+	"require_context_pickup"			"ability_transport_player && ( same_team == true )"
+	
+	"mtr_icon_hurt_ring"				"hud/icons/player/hurtring"
+	"hurt_ring_size"					"1.15"
+	"hurt_blink_rate"					"0.250"
+	"hurt_blink_duty"					"0.6"
+	"hurt_blink_time"					"3.000"
+
+	"mtr_icon_team_ring"				"hud/icons/player/hurtring"
+	"team_ring_size"					"1.15"
+	
+	"icon_visible_alpha"				"0.6"
+	"icon_invisible_alpha"				"0.2"
+	
+	"fx_wake"							"effects/player/wake"
+	"fx_splash"							"effects/player/splash"
+	
+	"occlusion_query"					"1"
+	
+	"ti_content_bounds_filter"			"target_content_bounds"
+	
+	"do_object_husky"					"deployobject_husky"
+	"do_object_icarus"					"deployobject_icarus"
+}
+
+toolTip proficiency_upgrade_respawn {
+	alwaysPlay
+	text "game/tt/player_profupgrade_respawn"
+}
+
+toolTip proficiency_upgrade_weapon_select {
+	alwaysPlay
+	text "game/tt/player_profupgrade_weapselect"
+}
+
+toolTip proficiency_upgrade_now {
+	alwaysPlay
+	text "game/tt/player_profupgrade_now"
+	length 8
+}
+
+toolTip player_nodisguise_carryable {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/player_nodisguise_carryable"
+}
+
+stringMap artyViewData {
+	"binoculars_focustreshold_min"		"0.8"
+	"binoculars_focustreshold_max"		"1.75"
+	"binoculars_focusloststep"			"0.09"
+	"binoculars_focusgainstep"			"0.006"
+	"binoculars_zoomfocuslost"			"1"
+	"mtr_targettingReticle"				"textures/decals/artyReticle"
+}

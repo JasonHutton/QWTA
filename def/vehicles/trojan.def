@@ -1,0 +1,511 @@
+// Export
+// ========================================================================
+/*
+reexportmodels vehicles/trojan.def
+testmodel ehicle_trojan
+*/
+
+
+export hauser {
+	options 	-prefix APC_ -nomerge -scale 0.85 -rotate 90 -sourcedir models/vehicles/edf_trojan/dev_sd -destdir models/vehicles/edf_trojan/
+
+	addoptions 	-keep rocket_cam carrier_driver carrier_gunner1 carrier_passenger1 carrier_passenger2 carrier_passenger3 carrier_passenger4 rocket_muzzle1 pilot_position passanger_position exit_right_2 exit_left_1 exit_right_1 exit_front exit_rear gun_2 gun gun2 gun_muzzle gun_camera cam_2 cam_1 exit_left_2 gun_camera_2 middle_front_left_lower_wishbone middle_front_left_upper_wishbone middle_front_left_wheel middle_front_right_lower_wishbone middle_front_right_upper_wishbone middle_front_right_wheel middle_left_spring middle_right_spring rear_left_lower_wishbone rear_left_spring rear_left_upper_wishbone rear_left_wheel rear_right_lower_wishbone rear_right_spring rear_right_upper_wishbone front_left_lower_wishbone front_left_spring front_left_upper_wishbone front_left_wheel front_right_lower_wishbone front_right_spring front_right_upper_wishbone front_right_wheel player_pos_rear_left1 player_pos_rear_left2 player_pos_rear_right1 player_pos_rear_right2 player_camera_rear_left1 player_camera_rear_left2 player_camera_rear_right1 player_camera_rear_right2 driver_pos propeller_joint1 propeller_joint2 -parent rocket_cam rocket2
+
+	addoptions 	-noAnimate m_base m_left_mirror m_right_mirror m_arm m_windows m_rear_door m_left_propeller_shaft m_right_propeller_shaft m_spade m_axe m_right_box_1 m_right_box_2 m_right_box_3 m_left_box_1 m_left_box_2 m_sleeping_bag s_base  s_arm s_right_box_1 s_right_box_2 s_right_box_3  s_left_box_2 s_sleeping_bag
+	mesh trojan_lod0.mb		-dest trojan.md5mesh
+	anim trojan_lod0.mb		-dest trojan.md5anim -range 0 1
+
+
+
+	addoptions -noJoints -keep rocket_cam carrier_driver carrier_gunner1 carrier_passenger1 carrier_passenger2 carrier_passenger3 carrier_passenger4 rocket_muzzle1 pilot_position passanger_position exit_right_2 exit_left_1 exit_right_1 exit_front exit_rear gun_2 gun gun2 gun_muzzle gun_camera cam_2 cam_1 exit_left_2 gun_camera_2 middle_front_left_lower_wishbone middle_front_left_upper_wishbone middle_front_left_wheel middle_front_right_lower_wishbone middle_front_right_upper_wishbone middle_front_right_wheel middle_left_spring middle_right_spring rear_left_lower_wishbone rear_left_spring rear_left_upper_wishbone rear_left_wheel rear_right_lower_wishbone rear_right_spring rear_right_upper_wishbone front_left_lower_wishbone front_left_spring front_left_upper_wishbone front_left_wheel front_right_lower_wishbone front_right_spring front_right_upper_wishbone front_right_wheel player_pos_rear_left1 player_pos_rear_left2 player_pos_rear_right1 player_pos_rear_right2 player_camera_rear_left1 player_camera_rear_left2 player_camera_rear_right1 player_camera_rear_right2 driver_pos propeller_joint1 propeller_joint2 -parent rocket_cam rocket2
+
+	addoptions -noanimate s_sleeping_bag s_right_box_1 s_right_box_2 s_left_box_2 s_right_box_3 s_arm s_base m_left_box_1 m_windows m_arm m_left_propeller_shaft m_right_propeller_shaft m_sleeping_bag m_rear_door m_right_box_1 m_right_box_2 m_left_box_2 m_right_box_3 m_base m_left_mirror m_right_mirror m_axe m_spade front_lights front_left_flare front_right_flare rear_lights rear_left_flare rear_right_flare
+	mesh trojan_lod3.mb		-dest trojan_lod1.md5mesh
+
+
+
+	addoptions -noanimate m_base m_left_propeller_shaft m_right_propeller_shaft m_left_mirror m_right_mirror m_rear_door m_axe m_spade m_sleeping_bag m_right_box_1 m_right_box_2 m_left_box_1 m_left_box_2 m_right_box_3 m_windows m_arm front_lights front_left_flare front_right_flare rear_lights rear_left_flare rear_right_flare s_sleeping_bag s_right_box_1 s_right_box_2 s_left_box_2 s_right_box_3 s_arm s_base
+	mesh trojan_lod3.mb		-dest trojan_lod2.md5mesh
+
+
+	addoptions -noanimate m_rear_door m_sleeping_bag m_right_box_1 m_right_box_2 m_left_box_1 m_left_box_2 m_right_box_3 m_arm m_windows m_base front_lights front_left_flare front_right_flare rear_lights rear_left_flare rear_right_flare s_sleeping_bag s_right_box_1 s_right_box_2 s_left_box_2 s_right_box_3 s_rear_right_wheel s_arm s_base
+	mesh trojan_lod3.mb		-dest trojan_lod3.md5mesh
+
+}
+
+// Models
+// ========================================================================
+//
+
+model vehicle_trojan {
+	mesh							models/vehicles/edf_trojan/trojan.md5mesh
+
+	anim base						models/vehicles/edf_trojan/trojan.md5anim
+	anim ik_pose					models/vehicles/edf_trojan/trojan.md5anim
+	anim initial					models/vehicles/edf_trojan/trojan.md5anim
+	anim idle						models/vehicles/edf_trojan/trojan.md5anim
+}
+
+model vehicle_trojan_weapon1 {
+	mesh							models/vehicles/edf_badger/gun.md5mesh
+
+	anim base						models/vehicles/edf_badger/gun.md5anim
+}
+
+// Entity Def
+// ========================================================================
+//
+
+deployObject deployobject_trojan {
+	"name"							"trojan"
+	"title"							"trojan"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_trojan"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"0.5"
+}
+
+entityDef vehicle_trojan {
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Vehicle."
+
+	"inherit"						"vehicle_base_gdf"
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptobject"					"vehicle_trojan"
+
+	"model"							"vehicle_trojan"
+
+	"vs_vehicleScript"				"trojan"
+
+	"control_context"				"g_bind_context_trojan"
+
+	"angular_friction"				"0.2"
+	"linear_friction"				"0.3"
+	"angular_friction_water"		"0.99"
+	"linear_friction_water"			"0.99"
+	"bouncyness"					"0.2"
+
+	"info_name"						"game/vec/trojan_apc"
+
+	"health"						"3000"
+
+	"decay_time"					"40"
+
+	"option_combat_model"				"1"
+	"option_selection_combat_model"		"1"
+	"option_task_interface"				"1"
+	"option_radar_interface"			"1"
+
+	"repair_multiplier"				"3"
+
+	"tt_enter"					"vehicle_trojan_enter"
+
+	"table_gears"					"trojan_gear_speedchangetable"
+	"table_gearforces"				"trojan_gear_forcetable"
+	"table_gearspeeds"				"trojan_gear_speedtable"
+
+	"snd_engine_start"				"sounds/vehicles/trojan/engine/start"
+	"snd_engine_stop"				"sounds/vehicles/trojan/engine/stop"
+	"snd_engine_idle"				"sounds/vehicles/trojan/engine/idle"
+	"snd_engine_drive"				"sounds/vehicles/trojan/engine/drive"
+	"snd_engine_hardaccel"			"sounds/vehicles/trojan/engine/hardaccel"
+	"snd_engine_water_idle"			"sounds/vehicles/trojan/engine/water_idle"
+	"snd_engine_water_drive"		"sounds/vehicles/trojan/engine/water_drive"
+	"snd_engine_water_hardaccel"	"sounds/vehicles/trojan/engine/water_hardaccel"
+
+	"snd_overdrive"					"sounds/vehicles/trojan/overdrive_start"
+	"snd_overdrive_stop"			"sounds/vehicles/trojan/overdrive_stop"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/gdf"
+
+	"fast_accel_speed"				"10000000" // Not used
+	"fast_accel_stop_speed"			"10000000" // Not used
+	"slow_accel_speed"				"0.1"
+	"slow_accel_stop_speed"			"0.1"
+	"reverse_speed"					"-0.1"
+
+	"sound_control"					"trojan"
+
+	"climate_skin_key"				"trojan"
+
+	"engine_pitch_low"				"0.9"
+	"engine_pitch_high"				"1.4"
+	"engine_speed_low"				"1"
+	"engine_speed_high"				"150"
+
+	"overdrive_pitch_low"			"0.9"
+	"overdrive_pitch_high"			"1.6"
+	"overdrive_speed_low"			"20"
+	"overdrive_speed_high"			"100"
+
+	//----------------------------------------------------------
+	// Engine sound crossfade settings
+
+	"engine_accel_spool_time"		"0.033"
+	"engine_decel_spool_time"		"0.033"
+
+	"engine_idle_min_speed"			"5.0"
+	"engine_idle_max_speed"			"40.0"
+	"engine_idle_min_vol"			"0.0"
+	"engine_idle_max_vol"			"-50.0"
+	"engine_idle_power"				"1.0"
+	"engine_idle_fade_time"			"0.066"
+
+	"engine_drive_min_speed"		"15.0"
+	"engine_drive_max_speed"		"50.0"
+	"engine_drive_min_vol"			"-30.0"
+	"engine_drive_max_vol"			"0.0"
+	"engine_drive_power"			"0.3"
+	"engine_drive_fade_time"		"0.066"
+
+	"engine_accel_pitch_mult"		"2.4"
+	"engine_accel_pitch_offset"		"1.0"
+
+	"engine_accel_min_speed"		"0.5"
+	"engine_accel_mid_speed"		"15.0"
+	"engine_accel_max_speed"		"50.0"
+	"engine_accel_min_vol"			"-30.0"
+	"engine_accel_mid_vol"			"5.0"
+	"engine_accel_max_vol"			"-10.0"
+	"engine_accel_power_low"		"0.1"
+	"engine_accel_power_high"		"5.0"
+	"engine_accel_fade_time"		"0.0"
+
+	"engine_accel_yaw_vol"			"30.0"
+	"engine_accel_yaw_vol_mult"		"0.0"
+	"engine_accel_yaw_pitch"		"60.0"
+	"engine_accel_yaw_pitch_mult"	"0.0"
+	
+	//----------------------------------------------------------
+	
+	
+	"steering_angle"				"60"
+	"steering_speed_scale"			"100"
+	"steering_speed_max"			"120"	// upper limit of steering scale
+	"steering_speed_min"			"60"	// lower limit of steering scale
+	"steering_return_factor"		"0.85"	// percentage of the max speed used to return the wheels to a straight position
+	"steering_ramp_power"			"2"
+	"steering_ramp_offset"			"0.7"
+
+	"simplesteer_forward_speed"				"2.0"
+	"simplesteer_reverse_speed"				"-4.0"
+	"simplesteer_centering_speed_min"		"2.0"
+	"simplesteer_centering_speed_max"		"15.0"
+	"simplesteer_centering_speed_air"		"0.5"
+	"simplesteer_centering_ramp_threshold"	"20.0"		// beneath this speed the centering will ramp up from min to max
+	"simplesteer_reverse_angle_scale"		"-0.5"
+
+	"crash_threshold_0"				"20"
+	"crash_threshold_1"				"500"
+	"crash_threshold_2"				"1000"
+	"jump_threshold_0"				"5"
+	"jump_threshold_1"				"10"
+	"jump_threshold_2"				"20"
+
+	"icon_size_cm"					"21"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"manualgear_next"				"0.5"
+	"manualgear_length"				"10"
+
+	"fx_explode"					"effects/base/explosion"
+
+	"fx_gpmg_fire"					"effects/weapons/gpmg_fire"
+	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash_vehicle"
+	"fx_rocket_muzzle"				"effects/vehicles/trojan/trojan_rockets_fire"
+
+	"fx_gpmg_tracer"				"effects/base/tracers_small"
+	"effectchance fx_tracer"		"0.1"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_trojan"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_trojan"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_trojan"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_trojan"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid"						"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_none"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_none"				"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_none"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_grass"			"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheelspin_grass"			"effects/vehicles/dust/tire_spin_grass"
+ 	"fx_skid_grass"					"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheeldust_stone"			"effects/vehicles/dust/tire_dust_stone"
+ 	"fx_wheelspin_stone"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_stone"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_sand"				"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_sand"				"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_sand"					"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_pavement"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_wheeldust_pavement"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_skid_pavement"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_dirt"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_dirt"				"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_dirt"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_dusty_road"		"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_dusty_road"		"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_dusty_road"			"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheeldust_gravel"			"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_gravel"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_gravel"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_default"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_default"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_default"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_snow"				"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheelspin_snow"				"effects/vehicles/dust/tire_spin_snow"
+	"fx_skid_snow"					"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheeldust_concrete"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_concrete"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_concrete"				"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_water"			"effects/vehicles/dust/tire_dust_water"
+	"fx_wheelspin_water"			"effects/vehicles/dust/tire_spin_water"
+	"fx_skid_water"					"effects/vehicles/dust/tire_dust_water"
+
+	"fx_emped"						"effects/generic_smoke/emp_small"
+	
+	"emp_effect_joint"				"cam_1"
+
+	"joint_damage_smoke"			"exit_rear"
+	"joint_damage_fire"				"exit_rear"
+
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"1.5"
+
+	"dmg_collide"					"damage_trojan_collide"
+
+	"amphibious"					"1"
+
+	"gravity"						"1066"
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"gui_vehicle"					"guis/vehicles/edf_trojan"
+
+
+	"repair_range"					"5"
+	"repair_count"					"30"			// set repair_count to zero as supply package includes health
+	"action_interval"				"3"
+	"supply_package"				"weapons/misc/supplypack"
+	"health_package"				"weapons/misc/healthpack"
+	"snd_acquire"					"sounds/tools/supplypack/pickup"
+
+	"task_name"						"game/vec/trojan"
+	"waypoint_offset"				"0 0 192"
+
+	"jammer_range"					"5000"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_heavy"		"vehicles_heavy"
+	"collection_vehicles_gdf"		"vehicles_gdf"
+
+	"give_consent"					"1"
+
+	"joint_left_thruster"			"propeller_joint1"
+	"joint_right_thruster"			"propeller_joint2"
+
+	"input_mode"					"car"
+	"vehicle_control"				"trojan"
+
+	"min_gear_speed"				"10"
+	"max_gear_speed"				"40"
+
+	"parachute_offset"				"0 0 128"
+
+	"wake_point_0"					"100 50 0"
+	"wake_point_1"					"100 -50 0"
+	"wake_point_2"					"-100 -40 0"
+	"wake_point_3"					"-100 40 0"
+
+	"drown_height"					"2"			// impossible drown height, so it never becomes immobilized
+
+//DECOY STUFF
+
+	"def_projectile_decoy"			"projectile_decoy_trojan"
+	"projectile_decoy_joint"		"gun_2"
+	"projectile_decoy_rate"			"2"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"2"
+	"projectile_decoy_velocity"		"0 0 500"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"8"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"86"
+
+	"qc_spotted"					"quickchat/context/attack/armorspotted"
+}
+
+damageDef damage_trojan_collide {
+	damage							"damage_trojan_collide"
+
+	prof_damage						"pro_vehicle_damage"
+
+	team_kill_cvar					"g_allowComplaint_vehicles"
+
+	stat_name						"trojan_weapons"
+
+	tt_obituary						"tooltips/killmsgs/vehicles/trojan"
+	tt_obituary_unknown				"tooltips/killmsgs/vehicles/trojan/empty"
+	tt_obituary_team_kill			"tooltips/killmsgs/vehicles/trojan/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_trojan_collide {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	300
+	}
+	type {
+		target	"target_supply_crate"
+		damage	500
+	}
+	type {
+		target	"target_deployables_all"
+		damage	300
+	}	
+}
+
+toolTip vehicle_trojan_enter {
+	length	5
+	text	"game/tt/trojan"
+}
+
+itemPackageDef weapons/misc/supplypack {
+	consumable					ammo assaultrifle		30
+	consumable					ammo gpmg				200
+	consumable					ammo grenade			1
+	consumable					ammo grenade_rifle		2
+	consumable					ammo machinepistol		40
+	consumable					ammo pistol				15
+	consumable					ammo rocketlauncher		2
+	consumable					ammo shotgun			10
+	consumable					ammo sniperrifle		10
+//	consumable					health					25
+}
+
+entityDef projectile_trojan_law {
+	"inherit"							"projectile_law"
+
+	"dmg_damage"						"damage_law_trojan"
+	"dmg_splash_damage"					"damage_law_splash_trojan"
+
+	"fx_trail"							"effects/vehicles/trojan/trojan_rockets_trail"
+	"fx_explode"						"effects/anansi_haw"
+}
+
+damageDef damage_law_trojan {
+	damage								"damage_law_trojan"
+
+	push								100000
+
+	noheadshot
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"trojan_weapons"
+
+	tt_obituary							"tooltips/killmsgs/weapons/aamissile"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/aamissile/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/aamissile/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/aamissile/unknown"
+}
+
+damageDef damage_law_splash_trojan {
+	damage								"damage_law_splash_trojan"
+	radius								512
+	knockback							0
+
+	push								100000
+
+	noheadshot
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"trojan_weapons"
+
+	tt_obituary							"tooltips/killmsgs/weapons/aamissile"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/aamissile/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/aamissile/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/aamissile/unknown"
+}
+
+damageFilter damage_law_trojan {
+	type {
+		target							"target_trojan_antiair"
+		damage							600
+	}
+
+	type {
+		target							"target_player_all"
+		damage							130
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							250
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							250
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}
+
+
+damageFilter damage_law_splash_trojan {
+	type {
+		target							"target_trojan_antiair"
+		damage							600
+	}
+
+	type {
+		target							"target_player_all"
+		damage							130
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							250
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							250
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}

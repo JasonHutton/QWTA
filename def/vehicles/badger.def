@@ -1,0 +1,355 @@
+//
+// Badger
+//
+
+export karateka {
+		options -prefix FBV_ -rotate 90 -nomerge 		   -scale .8 -sourcedir models/vehicles/edf_badger/dev_sd -destdir models/vehicles/edf_badger/ -keep carrier_driver carrier_passenger1 carrier_passenger2 carrier_passenger3 carrier_gunner1 rear_lights rear1_position rear2_position rear1_position_cam rear2_position_cam gun gun2 gun_muzzle gun_cam cam_1 cam_2 cam_3 cam_4 cam_5 cam_6 cam_7 cam_8 cam_9 exit_left exit_right exit_front exit_rear gunner_position gunner_position_2 driver_position fire_1 driver_gun driver_gun2 driver_gun_muzzle driver_gun_cam -noAnimate m_tailgate m_right_wheel_arch m_left_wheel_arch m_left_door m_right_door m_bonnet m_right_mirror m_left_mirror m_bulls m_base rear_lights m_windows s_base s_tailgate s_left_door s_right_door s_bonnet s_right_mirror s_left_mirror s_bulls
+
+		mesh badger_lod0.mb 	-dest badger.md5mesh
+
+		anim badger_lod0.mb 	-dest badger.md5anim -range 0 1
+
+		options -prefix FBV_ -rotate 90 -nomerge -noJoints -scale .8 -sourcedir models/vehicles/edf_badger/dev_sd -destdir models/vehicles/edf_badger/ -keep carrier_driver carrier_passenger1 carrier_passenger2 carrier_passenger3 carrier_gunner1 rear_lights rear1_position rear2_position rear1_position_cam rear2_position_cam gun gun2 gun_muzzle gun_cam cam_1 cam_2 cam_3 cam_4 cam_5 cam_6 cam_7 cam_8 cam_9 exit_left exit_right exit_front exit_rear rear_left_upper_wishbone rear_right_upper_wishbone front_right_upper_wishbone front_left_upper_wishbone gunner_position gunner_position_2 driver_position fire_1 driver_gun driver_gun2 driver_gun_muzzle driver_gun_cam -noAnimate m_tailgate m_right_wheel_arch m_left_wheel_arch m_left_door m_right_door m_bonnet m_right_mirror m_left_mirror m_bulls m_base rear_lights m_windows s_base s_tailgate s_left_door s_right_door s_bonnet s_right_mirror s_left_mirror s_bulls
+
+		mesh badger_lod3.mb 	-dest badger_lod1.md5mesh
+		mesh badger_lod3.mb 	-dest badger_lod2.md5mesh
+		mesh badger_lod3.mb 	-dest badger_lod3.md5mesh
+
+}
+
+model vehicle_badger {
+	mesh							models/vehicles/edf_badger/badger.md5mesh
+	anim base						models/vehicles/edf_badger/badger.md5anim {
+	}
+	anim ik_pose					models/vehicles/edf_badger/badger.md5anim {
+	}
+	anim initial					models/vehicles/edf_badger/badger.md5anim {
+	}
+	anim idle						models/vehicles/edf_badger/badger.md5anim {
+	}
+}
+
+
+
+deployObject deployobject_badger {
+	"name"							"badger"
+	"title"							"Badger"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_badger"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"0.2"
+}
+
+entityDef vehicle_badger {
+	"inherit"						"vehicle_base_gdf"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Vehicle."
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_badger"
+	"vs_vehicleScript"				"badger"
+
+	"control_context"				"g_bind_context_badger"
+
+	"angular_friction"				"0.5"
+	"linear_friction"				"0.1"
+	"angular_friction_water"		"0.99"
+	"linear_friction_water"			"0.99"
+	"bouncyness"					"0.4"
+
+	"health"						"1000"
+
+	"info_name"						"game/vec/badger"
+
+	"model"							"vehicle_badger"
+
+	"snd_engine_start"				"sounds/vehicles/badger/engine/start"
+	"snd_engine_stop"				"sounds/vehicles/badger/engine/stop"
+	"snd_engine_idle"				"sounds/vehicles/badger/engine/idle"
+	"snd_engine_drive"				"sounds/vehicles/badger/engine/drive"
+	"snd_engine_hardaccel"			"sounds/vehicles/badger/engine/hardaccel"
+
+	"snd_overdrive"					"sounds/vehicles/badger/overdrive"
+	"snd_overdrive_stop"			"sounds/vehicles/badger/overdrive/stop"
+	"snd_horn_loop"					"sounds/vehicles/badger/horn"
+	"snd_horn_stop"					"sounds/vehicles/badger/horn/stop"
+	"snd_gpmg_overheat"				"sounds/weapons/misc/overheat"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/gdf"
+
+	"fast_accel_speed"				"60"
+	"fast_accel_stop_speed"			"45"
+	"slow_accel_speed"				"10"
+	"slow_accel_stop_speed"			"5"
+	"reverse_speed"					"-5"
+
+	"sound_control"					"badger"
+
+	"climate_skin_key"				"badger"
+
+	"engine_pitch_low"				"0.9"
+	"engine_pitch_high"				"1.5"
+	"engine_speed_low"				"10"
+	"engine_speed_high"				"150"
+
+	"overdrive_pitch_low"			"0.9"
+	"overdrive_pitch_high"			"1.6"
+	"overdrive_speed_low"			"30"
+	"overdrive_speed_high"			"130"
+
+	//----------------------------------------------------------
+	// Engine sound crossfade settings
+
+	"engine_accel_spool_time"		"0.033"
+	"engine_decel_spool_time"		"0.033"
+
+	"engine_idle_min_speed"			"5.0"
+	"engine_idle_max_speed"			"50.0"
+	"engine_idle_min_vol"			"0.0"
+	"engine_idle_max_vol"			"-50.0"
+	"engine_idle_power"				"1.0"
+	"engine_idle_fade_time"			"0.066"
+
+	"engine_drive_min_speed"		"20.0"
+	"engine_drive_max_speed"		"80.0"
+	"engine_drive_min_vol"			"-20.0"
+	"engine_drive_max_vol"			"0.0"
+	"engine_drive_power"			"0.3"
+	"engine_drive_fade_time"		"0.066"
+
+	"engine_accel_pitch_mult"		"1.8"
+	"engine_accel_pitch_offset"		"0.8"
+
+	"engine_accel_min_speed"		"1.0"
+	"engine_accel_mid_speed"		"20.0"
+	"engine_accel_max_speed"		"80.0"
+	"engine_accel_min_vol"			"-10.0"
+	"engine_accel_mid_vol"			"5.0"
+	"engine_accel_max_vol"			"-60.0"
+	"engine_accel_power_low"		"0.1"
+	"engine_accel_power_high"		"5.0"
+	"engine_accel_fade_time"		"0.0"
+
+	"engine_accel_yaw_vol"			"30.0"
+	"engine_accel_yaw_vol_mult"		"0.0"
+	"engine_accel_yaw_pitch"		"60.0"
+	"engine_accel_yaw_pitch_mult"	"0.0"
+	
+	//----------------------------------------------------------
+	
+
+	"steering_angle"				"40"
+	"steering_speed_scale"			"100"
+	"steering_speed_max"			"180"	// upper limit of steering scale
+	"steering_speed_min"			"60"	// lower limit of steering scale
+	"steering_return_factor"		"1.5"	// percentage of the max speed used to return the wheels to a straight position
+	"steering_ramp_power"			"4"
+	"steering_ramp_offset"			"0.7"
+
+	"simplesteer_forward_speed"				"2.0"
+	"simplesteer_reverse_speed"				"-4.0"
+	"simplesteer_centering_speed_min"		"2.0"
+	"simplesteer_centering_speed_max"		"15.0"
+	"simplesteer_centering_speed_air"		"0.5"
+	"simplesteer_centering_ramp_threshold"	"20.0"		// beneath this speed the centering will ramp up from min to max
+	"simplesteer_reverse_angle_scale"		"-0.5"
+
+	"crash_threshold_0"				"20"
+	"crash_threshold_1"				"500"
+	"crash_threshold_2"				"1000"
+	"jump_threshold_0"				"5"
+	"jump_threshold_1"				"20"
+	"jump_threshold_2"				"50"
+
+	"brake_threshold"				"50"
+
+	"decay_time"					"40"
+
+	"dmg_collide"					"damage_badger_collide"
+
+	"tt_enter"						"vehicle_badger_enter"
+
+	"icon_size_cm"					"15"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"def_weapon1"					"weapons/misc/gpmg"
+	"model_weapon1"					"vehicle_badger_weapon1"
+
+	"table_gears"					"badger_gear_speedchangetable"
+	"table_gearforces"				"badger_gear_forcetable"
+	"table_gearspeeds"				"badger_gear_speedtable"
+
+	"manualgear_next"				"0.5"
+	"manualgear_length"				"10"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"fx_explode"					"effects/base/explosion"
+
+	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid"						"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_none"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_none"				"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_none"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_grass"			"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheelspin_grass"			"effects/vehicles/dust/tire_spin_grass"
+ 	"fx_skid_grass"					"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheeldust_stone"			"effects/vehicles/dust/tire_dust_stone"
+ 	"fx_wheelspin_stone"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_stone"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_sand"				"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_sand"				"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_sand"					"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_pavement"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_wheeldust_pavement"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_skid_pavement"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_dirt"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_dirt"				"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_dirt"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_dusty_road"		"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_dusty_road"		"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_dusty_road"			"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheeldust_gravel"			"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_gravel"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_gravel"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_default"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_default"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_default"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_snow"				"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheelspin_snow"				"effects/vehicles/dust/tire_spin_snow"
+	"fx_skid_snow"					"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheeldust_concrete"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_concrete"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_concrete"				"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_water"			"effects/vehicles/dust/tire_dust_water"
+	"fx_wheelspin_water"			"effects/vehicles/dust/tire_spin_water"
+	"fx_skid_water"					"effects/vehicles/dust/tire_dust_water"
+	
+	"fx_gpmg_fire"					"effects/weapons/gpmg_fire"
+	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash_vehicle2"
+	"fx_gpmg_overheat"				"effects/weapons/gpmg_overheat"
+
+	"fx_gpmg_tracer"				"effects/base/tracers_small"
+	"effectchance fx_tracer"		"0.1"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_badger"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_badger"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_badger"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_badger"
+	"fx_emped"						"effects/generic_smoke/emp_small"
+	
+	"emp_effect_joint"				"fire_1"
+
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"1.5"
+
+	"gravity"						"1066"
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"gui_vehicle"					"guis/vehicles/edf_badger"
+
+	"joint_damage_smoke"			"fire_1"
+	"joint_damage_fire"				"fire_1"
+
+	"task_name"						"game/vec/badger"
+	"waypoint_offset"				"0 0 64"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_vehicles_gdf"		"vehicles_gdf"
+
+	"give_consent"					"1"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"input_mode"					"car"
+	"vehicle_control"				"wheeled"
+
+	"min_gear_speed"				"10"
+	"max_gear_speed"				"70"
+	"power_curve_scale"				"1.5"
+
+	"parachute_offset"				"0 0 72"
+
+	"wake_point_0"					"100 40 0"
+	"wake_point_1"					"100 -40 0"
+	"wake_point_2"					"-80 -30 0"
+	"wake_point_3"					"-80 30 0"
+
+// DECOY STUFF
+
+	"def_projectile_decoy"			"projectile_decoy_badger"
+	"projectile_decoy_joint"		"gunner_position_2"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_velocity"		"0 0 500"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"1"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"2" //mal: this is a small(er) ground based vehicle.
+	
+	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
+}
+
+damageDef damage_badger_collide {
+	damage								"damage_badger_collide"
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"badger_weapons"
+
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/badger"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/badger/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/badger/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_badger_collide {
+	type {
+		target	"target_player_all"
+		damage	1000
+	}
+	type {
+		target	"target_veh_all"
+		damage	200
+	}
+	type {
+		target	"target_supply_crate"
+		damage	350
+	}
+	type {
+		target	"target_deployables_all"
+		damage	200
+	}
+}
+
+toolTip vehicle_badger_enter {
+	length	5
+	text	"game/tt/vehicle_passenger"
+}

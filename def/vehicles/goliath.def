@@ -1,0 +1,508 @@
+//
+// Goliath
+//
+/*
+export frankie {
+		options -prefix GOL_ -rotate 90 -sourcedir models/vehicles/strogg_goliath/dev_sd -destdir models/vehicles/strogg_goliath/ -keep l_pilot_gun_1 l_pilot_gun_2 l_pilot_gun_3 r_pilot_gun_1 r_pilot_gun_2 r_pilot_gun_3 l_gun r_gun gunner_cam driver_cam left_exit right_exit left_foot_ik right_foot_ik r_muzzle l_muzzle nose_muzzle nose_1 nose_2 driver_cam_2 left_exit_2 right_exit_2 -parent driver_cam_2 base
+
+//		mesh base.mb 				-dest goliath.md5mesh
+
+		mesh lod_0.mb				-dest goliath.md5mesh
+		anim base.mb 				-dest goliath.md5anim 				-range 0 1
+
+		anim move.mb				-dest move.md5anim
+		anim down.mb				-dest down.md5anim					-range 0 31
+		anim down.mb				-dest up.md5anim					-range 31 73
+
+		anim walk.mb				-dest walk.md5anim
+		anim walkjr_004.mb			-dest walk_r.md5anim 				-range 1 20
+		anim walk_stop_r.mb			-dest walk_stop_r.md5anim  			-range 1 23
+		anim walkjr_004.mb			-dest walk_l.md5anim 				-range 21 40
+		anim walk_stop_l.mb			-dest walk_stop_l.md5anim			-range 22 45
+
+		anim walk_start.mb			-dest walk_start.md5anim   			-range 1 20
+
+		anim walk_back.mb			-dest walk_back.md5anim
+		anim walk_back.mb			-dest walk_back_r.md5anim			-range 21 40
+		anim walk_back_stop_r.mb	-dest walk_back_stop_r.md5anim		-range 21 40
+		anim walk_back.mb			-dest walk_back_l.md5anim			-range 1 21
+		anim walk_back_stop_l.mb	-dest walk_back_stop_l.md5anim		-range 1 12
+
+		anim walk_back_start.mb		-dest walk_back_start.md5anim    	-range 1 21
+
+		anim turn_right.mb			-dest turn_right.md5anim
+		anim turn_left.mb			-dest turn_left.md5anim
+
+		anim turn_right_noo.mb		-dest turn_right_noo.md5anim
+		anim turn_left_noo.mb		-dest turn_left_noo.md5anim
+
+		anim fire.mb				-dest fire_left.md5anim -range 21 40
+		anim fire.mb				-dest fire_right.md5anim -range 1 20
+
+	options -prefix GOL_ -rotate 90 -noJoints -sourcedir models/vehicles/strogg_goliath/dev_sd -destdir models/vehicles/strogg_goliath/ -keep origin gunner_cockpit base driver_cam driver_cam_2 l_hip l_upper_leg l_middle_leg l_lower_leg l_ankle l_ball l_toe l_front_l_toe_1 l_front_l_toe_2 l_front_r_toe_1 l_front_r_toe_2 l_rear_l_toe_1 l_rear_l_toe_2 l_rear_r_toe_1 l_rear_r_toe_2 left_exit left_foot_ik l_pilot_gun_1 l_pilot_gun_2 l_pilot_gun_3 nose_1 nose_2 nose_muzzle r_hip r_upper_leg r_middle_leg r_lower_leg r_ankle r_ball r_toe r_front_l_toe_1 r_front_l_toe_2 r_front_r_toe_1 r_front_r_toe_2 r_rear_l_toe_1 r_rear_l_toe_2 r_rear_r_toe_1 r_rear_r_toe_2 right_exit right_foot_ik r_pilot_gun_1 r_pilot_gun_2 r_pilot_gun_3 turret gunner_cam l_turret l_gun l_muzzle r_turret r_gun r_muzzle left_exit_2 right_exit_2 -parent driver_cam_2 base -parent gunner_cockpit turret_high
+		mesh lod_1.mb 	-dest goliath_lod1.md5mesh
+		mesh lod_2.mb 	-dest goliath_lod2.md5mesh
+		mesh lod_3.mb 	-dest goliath_lod3.md5mesh
+
+	options -prefix GOL_ -rotate 90 -sourcedir models/vehicles/strogg_goliath/dev_sd -destdir models/vehicles/strogg_goliath/ -keep origin base driver_cam driver_cam_2 l_hip l_upper_leg l_middle_leg l_lower_leg l_ankle l_ball l_toe l_front_l_toe_1 l_front_l_toe_2 l_front_r_toe_1 l_front_r_toe_2 l_rear_l_toe_1 l_rear_l_toe_2 l_rear_r_toe_1 l_rear_r_toe_2 left_exit left_foot_ik l_pilot_gun_1 l_pilot_gun_2 l_pilot_gun_3 nose_1 nose_2 nose_muzzle r_hip r_upper_leg r_middle_leg r_lower_leg r_ankle r_ball r_toe r_front_l_toe_1 r_front_l_toe_2 r_front_r_toe_1 r_front_r_toe_2 r_rear_l_toe_1 r_rear_l_toe_2 r_rear_r_toe_1 r_rear_r_toe_2 right_exit right_foot_ik r_pilot_gun_1 r_pilot_gun_2 r_pilot_gun_3 turret gunner_cam l_turret l_gun l_muzzle r_turret r_gun r_muzzle -parent driver_cam_2 base
+
+		mesh lod_1.mb 	-dest test1.md5mesh
+		anim lod_1.mb 	-dest test1.md5anim
+
+}
+*/
+
+
+model vehicle_goliathtest {
+
+	mesh		models/vehicles/strogg_goliath/test1.md5mesh
+
+	anim test	models/vehicles/strogg_goliath/test1.md5anim
+}
+
+
+
+model vehicle_goliath {
+	mesh							models/vehicles/strogg_goliath/id/base.md5mesh
+
+	anim ik_pose					models/vehicles/strogg_goliath/id/base.md5anim
+
+	anim af_pose					models/vehicles/strogg_goliath/id/base.md5anim
+
+	anim base						models/vehicles/strogg_goliath/id/idle.md5anim {
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim powerup					models/vehicles/strogg_goliath/id/up.md5anim
+
+	anim shutdown					models/vehicles/strogg_goliath/id/down.md5anim
+
+	anim walk 						models/vehicles/strogg_goliath/id/walk.md5anim
+
+	anim walk_back					models/vehicles/strogg_goliath/id/walk.md5anim
+
+	anim fall 						models/vehicles/strogg_goliath/id/fall.md5anim
+
+	anim land						models/vehicles/strogg_goliath/id/land.md5anim
+
+
+
+	anim walk_left_start			models/vehicles/strogg_goliath/id/idle_to_walk.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+	}
+
+	anim walk_left					models/vehicles/strogg_goliath/id/walk_left.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim walk_left_stop				models/vehicles/strogg_goliath/id/walk_left_to_stop.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+
+		frame 11						sound_channel snd_vehicle_walk3 snd_footstep
+		frame 11						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim walk_right_start			models/vehicles/strogg_goliath/id/idle_to_walk.md5anim {
+		frame begin						sound_channel snd_vehicle_walk5 snd_leg
+		frame begin						sound_channel snd_vehicle_walk6 snd_leg_interior
+	}  // CB: should be walk_left_start
+
+	anim walk_right					models/vehicles/strogg_goliath/id/walk_right.md5anim {
+		frame begin						sound_channel snd_vehicle_walk5 snd_leg
+		frame begin						sound_channel snd_vehicle_walk6 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk7 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk8 snd_footstep_interior
+	}
+
+	anim walk_right_stop			models/vehicles/strogg_goliath/id/walk_right_to_stop.md5anim {
+		frame begin						sound_channel snd_vehicle_walk5 snd_leg
+		frame begin						sound_channel snd_vehicle_walk6 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk7 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk8 snd_footstep_interior
+	}
+
+	anim walk_back_left_start		models/vehicles/strogg_goliath/id/idle_to_walk_back.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+	}
+
+	anim walk_back_left				models/vehicles/strogg_goliath/id/walk_back_left.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim walk_back_left_stop		models/vehicles/strogg_goliath/id/walk_back_left_to_stop.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim walk_back_right_start		models/vehicles/strogg_goliath/id/idle_to_walk_back.md5anim {
+		frame begin						sound_channel snd_vehicle_walk5 snd_leg
+		frame begin						sound_channel snd_vehicle_walk6 snd_leg_interior
+	}
+
+	anim walk_back_right			models/vehicles/strogg_goliath/id/walk_back_right.md5anim {
+		frame begin						sound_channel snd_vehicle_walk5 snd_leg
+		frame begin						sound_channel snd_vehicle_walk6 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk7 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk8 snd_footstep_interior
+	}
+
+	anim walk_back_right_stop		models/vehicles/strogg_goliath/id/walk_back_right_to_stop.md5anim {
+		frame begin						sound_channel snd_vehicle_walk5 snd_leg
+		frame begin						sound_channel snd_vehicle_walk6 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk7 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk8 snd_footstep_interior
+
+		frame 12						sound_channel snd_vehicle_walk3 snd_footstep
+		frame 12						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim turn_left					models/vehicles/strogg_goliath/id/turn_left.md5anim  {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim turn_right					models/vehicles/strogg_goliath/id/turn_right.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_leg
+		frame begin						sound_channel snd_vehicle_walk2 snd_leg_interior
+		frame begin						sound_channel snd_vehicle_walk3 snd_footstep
+		frame begin						sound_channel snd_vehicle_walk4 snd_footstep_interior
+	}
+
+	anim run_left					models/vehicles/strogg_goliath/id/walk.md5anim {
+	}
+
+	anim run_right					models/vehicles/strogg_goliath/id/walk.md5anim {
+	}
+
+	anim fire_right					models/vehicles/strogg_goliath/id/fire_left.md5anim
+
+	anim fire_left					models/vehicles/strogg_goliath/id/fire_right.md5anim
+
+	anim jump						models/vehicles/strogg_goliath/id/jump12feet.md5anim
+
+	anim jump_start					models/vehicles/strogg_goliath/id/jump12feet_start.md5anim
+
+	anim jump_end					models/vehicles/strogg_goliath/id/jump12feet_end.md5anim
+
+	anim stomp						models/vehicles/strogg_goliath/id/leg_stomp.md5anim {
+		frame begin						sound_channel snd_vehicle_walk1 snd_stomp
+		frame begin						sound_channel snd_vehicle_walk2 snd_stomp_interior
+		frame begin						effect fx_ground_pound_start right_foot_ik
+		frame 14						object_call Stamp
+	}
+
+	channel legs					( *origin )
+}
+
+entityDef vehicle_goliath {
+	"inherit"						"vehicle_base_strogg"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_ragdoll"				"1"
+	"editor_usage"					"Goliath"
+	
+	"control_context"				"g_bind_context_goliath"
+
+	"health"						"4000"
+
+	"mins"							"-128 -128 0"
+	"maxs"							"128 128 320"
+
+	"cylinder"						"8"
+
+	"mass"							"75000"
+
+	"model"							"vehicle_goliath"
+
+	"gravity"						"2000"
+
+	"spawnclass"					"sdWalker"
+	"density"						"50"
+
+	"respawntime"					"10000"
+	"decay_time"					"40"
+
+	"info_name"						"game/vec/goliath"
+	"ragdoll"						"vehicle_goliath"
+	"vs_vehicleScript"				"goliath"
+	"scriptObject"					"vehicle_goliath"
+
+	"aor_layout"					"missile"
+
+	"vehicle_control"				"walker"
+
+	"ik_disabled"					"0"
+
+	"ik_smoothing"					"0.25"
+	"ik_downsmoothing"				"0.05"
+	"ik_waistSmoothing"				"0.2"
+	"ik_tiltWaist"					"0"
+	"ik_waist"						"base"
+	"ik_numLegs"					"2"
+
+	"ik_foot1"						"left_foot_ik"
+	"ik_ankle1"						"l_ankle"
+	"ik_knee1"						"l_lower_leg"
+	"ik_mid1"						"l_middle_leg"
+	"ik_hip1"						"l_upper_leg"
+
+	"ik_foot2"						"right_foot_ik"
+	"ik_ankle2"						"r_ankle"
+	"ik_knee2"						"r_lower_leg"
+	"ik_mid2"						"r_middle_leg"
+	"ik_hip2"						"r_upper_leg"
+
+	"ik_direction"					"1 0 0"
+	"ik_direction2"					"0 0 1"
+	"ik_tweakFactor"				"0.5"
+
+	"ik_footSize"					"96"
+
+	"ik_maxStepSpeed"				"72"
+	"ik_footUpTrace"				"96"
+	"ik_footDownTrace"				"144"
+
+	"turn_rate"						"45"
+	"turn_on_spot"					"1"
+
+	"allow_stomp"					"0"
+	"allow_stamp"					"1"
+
+	"snd_engine_start"				"sounds/vehicles/goliath/engine/start"
+	"snd_engine_stop"				"sounds/vehicles/goliath/engine/stop"
+	"snd_leg"						"sounds/vehicles/goliath/legs"
+	"snd_footstep"					"sounds/vehicles/goliath/footsteps"
+	"snd_recharge_seige"			"sounds/vehicles/goliath/recharge_siege"
+	"snd_recharge_nonseige"			"sounds/vehicles/goliath/recharge_nonsiege"
+	"snd_stomp"						"sounds/vehicles/goliath/stomp"
+
+	"snd_cockpit"					"sounds/vehicles/goliath/interior/cockpit"
+	"snd_engine_start_interior"		"sounds/vehicles/goliath/interior/engine/start"
+	"snd_engine_stop_interior"		"sounds/vehicles/goliath/interior/engine/stop"
+	"snd_leg_interior"				"sounds/vehicles/goliath/interior/legs"
+	"snd_footstep_interior"			"sounds/vehicles/goliath/interior/footsteps"
+	"snd_stomp_interior"			"sounds/vehicles/goliath/interior/stomp"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/strogg"
+
+	"anim_state_0"					"" // spawn ( never used )
+	"anim_state_1"					"shutdown"
+	"anim_state_2"					"powerup"
+	"anim_state_3"					"" // left walk start
+	"anim_state_4"					"walk_right_start"
+	"anim_state_5"					"walk_left"
+	"anim_state_6"					"walk_right"
+	"anim_state_7"					"walk_left_stop"
+	"anim_state_8"					"walk_right_stop"
+	"anim_state_9"					"" // left back walk start
+	"anim_state_10"					"walk_back_right_start"
+	"anim_state_11"					"walk_back_left"
+	"anim_state_12"					"walk_back_right"
+	"anim_state_13"					"walk_back_left_stop"
+	"anim_state_14"					"walk_back_right_stop"
+	"anim_state_15"					"turn_right"
+	"anim_state_16"					"turn_left"
+	"anim_state_17"					"jump_start" // stomp start
+	"anim_state_18"					"jump_end" // stomp end
+	"anim_state_19"					"stomp" // leg stamp
+	"anim_state_20"					"base" // single frame base standing anim for lerping back to
+	"anim_state_21"					"fall"
+	"anim_state_22"					"land"
+
+	"start_on_left"					"0"
+
+	"repair_multiplier"				"3"
+
+	"tt_enter"					"vehicle_goliath_enter"
+
+	"icon_size_cm"					"18"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"joint_damage_smoke"			"turret_high"
+	"joint_damage_fire"				"turret_high"
+	"joint_foot_left"				"left_foot_ik"
+	"joint_foot_right"				"right_foot_ik"
+
+	"fx_leg"						"effects/vehicles/goliath/legs"
+	"fx_footstep"					"effects/vehicles/goliath/footsteps"
+
+	"fx_explode"					"effects/base/explosion"
+
+	"fx_cannon_muzzle"				"effects/weapons/plasmacannon/goliath"
+
+	"fx_hyperblaster_fire"			"effects/weapons/hyperblaster_fire_goliath"			// For Xian: Hyperblaster sound goes in here
+	"fx_hyperblaster_muzzle"		"effects/weapons/hyperblaster_muzzleflash_vehicle"
+	"fx_hyperblaster_tracer"		"effects/base/tracers_strogg"
+	"effectchance fx_hyperblaster_tracer"	"1.0"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_goliath"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_goliath"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_goliath"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_goliath"
+
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"base"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"gui_vehicle"					"guis/vehicles/strogg_goliath"
+
+	"task_name"						"game/vec/goliath"
+
+	"waypoint_offset"				"0 0 192"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_heavy"		"vehicles_heavy"
+
+	"no_drop"						"1"
+	"joint_attach"					"gunner_cam"
+
+	"amphibious"					"0"
+
+	"wake_center_width"				"0 0"
+	"wake_edge_width"				"0 0"
+
+	"stomp_velocity"				"250 0 1000"
+
+	"dmg_stomp"							"damage_goliath_stomp"
+	"stomp_min_scale"					"0.5"
+	"stomp_max_scale"					"6"
+	"stomp_speed_scale"					"0.005"
+	"stomp_hold_time"					"0.6"
+
+	"ground_pound_walk_force"			"8000000"
+	"ground_pound_walk_damage_scale"	"0.15"
+	"ground_pound_walk_range"			"384"
+
+	"ground_pound_min_speed"			"200"
+	"ground_pound_force"				"20000000"
+	"ground_pound_range"				"512"
+
+	"stamp_hold_time"					"0.1"
+	"stamp_force"						"20000000"
+	"stamp_damage_scale"				"3"
+	"stamp_range"						"768"
+
+	"kick_force"						"10000000"
+
+//	"joints_up_sparks"					"r_middle_leg;l_middle_leg"
+//	"fx_up_sparks"						"effects/rich/bullet_sparks"
+
+	"fx_ground_collide"					"effects/vehicles/goliath/goliath_collide_default"
+	"fx_ground_snow"					"effects/vehicles/goliath/goliath_collide_snow"
+	"fx_ground_sand"					"effects/vehicles/goliath/goliath_collide_sand"
+	"fx_ground_dirt"					"effects/vehicles/goliath/goliath_collide_dirt"
+	"fx_ground_mud"						"effects/vehicles/goliath/goliath_collide_dirt"
+	"fx_ground_dusty_road"				"effects/vehicles/goliath/goliath_collide_dirt"
+
+	"fx_ground_pound_start"				"effects/vehicles/goliath/goliath_stomp_start"
+	"fx_ground_pound"					"effects/vehicles/goliath/goliath_stomp_default"
+	"fx_ground_pound_pavement"			"effects/vehicles/goliath/goliath_stomp_concrete"
+	"fx_ground_pound_stone"				"effects/vehicles/goliath/goliath_stomp_default"
+	"fx_ground_pound_concrete"			"effects/vehicles/goliath/goliath_stomp_concrete"
+	"fx_ground_pound_dirt"				"effects/vehicles/goliath/goliath_stomp_dirt"
+	"fx_ground_pound_mud"				"effects/vehicles/goliath/goliath_stomp_dirt"
+	"fx_ground_pound_gravel"			"effects/vehicles/goliath/goliath_stomp_gravel"
+	"fx_ground_pound_metal"				"effects/vehicles/goliath/goliath_stomp_default"
+	"fx_ground_pound_metal_thick"		"effects/vehicles/goliath/goliath_stomp_default"
+	"fx_ground_pound_dusty_road"		"effects/vehicles/goliath/goliath_stomp_dirt"
+	"fx_ground_pound_sand"				"effects/vehicles/goliath/goliath_stomp_sand"
+	"fx_ground_pound_snow"				"effects/vehicles/goliath/goliath_stomp_snow"
+	"fx_ground_pound_grass"				"effects/vehicles/goliath/goliath_stomp_grass"
+	"fx_ground_pound_water"				"effects/vehicles/goliath/goliath_stomp_water"
+
+	"fx_ground_walk"					"effects/vehicles/goliath/goliath_walk_default"
+	"fx_ground_walk_pavement"			"effects/vehicles/goliath/goliath_walk_concrete"
+	"fx_ground_walk_stone"				"effects/vehicles/goliath/goliath_walk_default"
+	"fx_ground_walk_concrete"			"effects/vehicles/goliath/goliath_walk_concrete"
+	"fx_ground_walk_dirt"				"effects/vehicles/goliath/goliath_walk_dirt"
+	"fx_ground_walk_mud"				"effects/vehicles/goliath/goliath_walk_dirt"
+	"fx_ground_walk_gravel"				"effects/vehicles/goliath/goliath_walk_gravel"
+	"fx_ground_walk_metal"				"effects/vehicles/goliath/goliath_walk_default"
+	"fx_ground_walk_metal_thick"		"effects/vehicles/goliath/goliath_walk_default"
+	"fx_ground_walk_dusty_road"			"effects/vehicles/goliath/goliath_walk_dirt"
+	"fx_ground_walk_sand"				"effects/vehicles/goliath/goliath_walk_sand"
+	"fx_ground_walk_snow"				"effects/vehicles/goliath/goliath_walk_snow"
+	"fx_ground_walk_grass"				"effects/vehicles/goliath/goliath_walk_grass"
+	"fx_ground_walk_water"				"effects/vehicles/goliath/goliath_walk_water"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"4"
+	"vehicle_team"					"1"
+	"vehicle_flags"					"6"
+
+//DECOY STUFF
+	"def_projectile_decoy"			"projectile_decoy_goliath"
+
+	"projectile_decoy_velocity"		"0 0 500"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_joint"		"gunner_cam"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+
+	"qc_spotted"					"quickchat/context/attack/armorspotted"
+}
+
+damageDef damage_goliath_stomp {
+	damage							"damage_goliath_stomp"
+
+	prof_damage						"pro_vehicle_damage"
+	
+	stat_name						"goliath_weapons"
+
+	tt_obituary						"tooltips/killmsgs/vehicles/goliath"
+	tt_obituary_unknown				"tooltips/killmsgs/vehicles/goliath/empty"
+	tt_obituary_team_kill			"tooltips/killmsgs/vehicles/goliath/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_goliath_stomp {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_veh_all"
+		damage	200
+	}
+	type {
+		target	"target_supply_crate"
+		damage	200
+	}
+	type {
+		target	"target_deployables_all"
+		damage	75
+	}
+}
+
+toolTip vehicle_goliath_enter {
+	length	5
+	text	"game/tt/goliath"
+}
