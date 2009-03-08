@@ -1,0 +1,84 @@
+
+object vehicle_desecrator : vehicle_base {
+	void			preinit();
+	void			init();
+
+	void			OnCollision( object traceObject, float velocity, vector mins, vector maxs );
+	void			OnPlayerEntered( entity p, float position );
+	void			OnPlayerExited( entity p, float position );
+
+	void			OnWeaponSelected( entity p, float index );
+
+	void			UpdateSiegeTextThread();
+
+	float			threadId;
+}
+
+void vehicle_desecrator::preinit() {
+	float declTableIndex;
+	threadId = -1;
+}
+
+void vehicle_desecrator::init() {
+	setLightsEnabled( 0, false );
+}
+
+void vehicle_desecrator::OnCollision( object traceObject, float velocity, vector mins, vector maxs ) {
+	OnCollision_Base( traceObject, velocity, mins, maxs );
+}
+
+void vehicle_desecrator::OnWeaponSelected( entity p, float index ) {
+	if ( index == 0 ) {
+		FireDecoy( p );
+	} else if ( index == 1 ) {
+		selectVehicleWeapon( p, "hyperblaster" );
+	} else if ( index == 2 ) {
+		selectVehicleWeapon( p, "plasmacannon" );
+	}
+}
+
+void vehicle_desecrator::vOnDeploy() {
+	vector origin = getWorldOrigin();
+	setWorldOrigin( origin + '0 0 32' );
+	setLinearVelocity( vec3_origin );
+}
+
+void vehicle_desecrator::OnPlayerEntered( entity p, float position ) {
+	OnPlayerEntered_Base( p, position );
+
+	if ( p.isLocalPlayer() ) {
+		if ( position == 0 ) {
+			threadId = thread UpdateSiegeTextThread();
+		} else if ( threadId != -1 ) {
+			sys.terminate( threadId );
+			threadId = -1;
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
+		}
+	}
+}
+
+void vehicle_desecrator::OnPlayerExited( entity p, float position ) {
+	OnPlayerExited_Base( p, position );
+
+	if ( p.isLocalPlayer() && position == 0 ) {
+		if ( threadId != -1 ) {
+			sys.terminate( threadId );
+			threadId = -1;
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
+		}
+	}
+}
+
+void vehicle_desecrator::UpdateSiegeTextThread() {
+	handle hText;
+	while ( true ) {
+		if ( inSiegeMode() ) {
+			hText = sys.localizeString( "guis/hud/vehicle_siegemode" );
+		} else {
+			hText = sys.localizeString( "guis/hud/vehicle_hovermode" );
+		}
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", hText );
+		sys.wait( 1.0f );
+	}
+	threadId = -1;
+}

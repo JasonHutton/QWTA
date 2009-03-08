@@ -1,0 +1,469 @@
+
+/*
+===============================================================================
+
+deployable_antipersonnel - anti-personnel turret
+
+===============================================================================
+*/
+
+object deployable_antipersonnel : deployable_turret {
+	entity		OnAcquireTarget();
+
+	boolean		TargetIsValid( entity targetEnt );
+
+	void		preinit();
+	void		destroy();
+	void		syncFields();
+
+	void		OnPostDamage_AP( entity attacker, float oldHealth, float newHealth );
+	void		OnPostDamage( entity attacker, float oldHealth, float newHealth ) {
+		OnPostDamage_AP( attacker, oldHealth, newHealth );
+	}
+	void		OnSetTarget( entity oldTarget, entity newTarget );
+	void		CheckRetribution( entity attacker );
+
+	float		playerClass;
+
+	void		OnFullChargeTimeChanged();
+
+	boolean		ShouldSpinBarrel();
+
+	void		OnBeginAttack();
+	void		OnEndAttack();
+	void		SpinBarrelThread();
+
+	boolean		CanFire();
+	void		Fired();
+	void		FireMissile();
+
+	void		UpdateCharge();
+
+	float		fullChargeTime;
+	float		cooldownTime;
+	float		chargeTime;
+	float		chargePerShot;
+	float		overheatPenalty;
+
+	float		spinBarrelJoint;
+	vector		barrelAngles;
+
+	float		tracerCounter;
+	float		tracerInterval;
+
+	boolean		barrelThreadActive;
+
+	boolean		updateChargeThreadActive;
+	entity		lockEntity;
+}
+
+void deployable_antipersonnel::preinit() {
+	playerClass = sys.getTypeHandle( "idPlayer" );
+
+	fullChargeTime = -1;
+	cooldownTime = -1;
+	chargeTime = getFloatKeyWithDefault( "charge_time", 10 );
+	chargePerShot = getFloatKeyWithDefault( "charge_per_shot", 0.7 );
+	overheatPenalty = getFloatKeyWithDefault( "overheat_penalty", 5 );
+
+	spinBarrelJoint = -1;
+
+	string barrelJointName = getKey( "joint_spin_barrel" );
+	if ( barrelJointName != "" ) {
+		spinBarrelJoint = getJointHandle( barrelJointName );
+	}
+
+	tracerCounter			= 0;
+	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
+}
+
+void deployable_antipersonnel::destroy() {
+	if ( lockEntity != $null_entity ) {
+		lockEntity.vStopTargetLockAlarm( self );
+		lockEntity = $null_entity;
+	}
+}
+
+void deployable_antipersonnel::syncFields() {
+	syncBroadcast( "cooldownTime" );
+
+	sync( "fullChargeTime" );
+	syncCallback( "fullChargeTime", "OnFullChargeTimeChanged" );
+}
+
+void deployable_antipersonnel::OnFullChargeTimeChanged() {
+	if ( !updateChargeThreadActive ) {
+		if ( myUser == sys.getLocalPlayer() ) {
+			thread UpdateCharge();
+		}
+	}
+}
+
+void deployable_antipersonnel::CheckRetribution( entity attacker ) {
+	if ( !TargetIsValid( attacker ) ) {
+		return;
+	}
+
+	if ( !InRange( attacker.getWorldOrigin() ) ) {
+		return;
+	}
+
+	setTurretEnemy( attacker, retributionDelay );
+}
+
+void deployable_antipersonnel::OnPostDamage_AP( entity attacker, float oldHealth, float newHealth ) {
+	boolean oldDisabled = disabledState;
+	UpdateState( newHealth );
+
+	if ( !disabledState ) {
+		if ( getEnemy() == $null_entity && newHealth < oldHealth ) {
+			CheckRetribution( attacker );
+		}
+	}
+	
+	UpdateDisabledStats( attacker, oldDisabled );
+}
+
+boolean deployable_antipersonnel::TargetIsValid( entity targetEnt ) {
+	player testPlayer = targetEnt;
+
+	if ( testPlayer == $null_entity ) {
+		return false;
+	}
+
+	if ( testPlayer.getHealth() <= 0 ) {
+		return false;
+	}
+
+	if ( testPlayer.getVehicle() != $null_entity ) {
+		return false;
+	}
+
+	if ( testPlayer.isDisguised() ) {
+		return false;
+	}
+
+	if ( getEntityAllegiance( testPlayer ) != TA_ENEMY ) {
+		return false;
+	}
+
+	if ( testPlayer.isInvulnerable() ) {
+		return false;
+	}
+
+	if ( !TraceCheck( testPlayer ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+entity deployable_antipersonnel::OnAcquireTarget() {
+	if ( !finishedDeploying || disabledState ) {
+		return $null_entity;
+	}
+
+	float i;
+	float count;
+	entity ent;
+	entity targetingRangeEnt;
+	vector targetDir;
+	vector selfDir;
+
+	entitiesOfClass( playerClass, 0 );
+	filterEntitiesByDisguiseAllegiance( TA_FLAG_ENEMY, 1 );				// only damage enemies
+	filterEntitiesByRadius( getWorldOrigin(), maxRange, 1 );		// find entities within maxRange radius
+	
+	selfDir = getWorldAxis( 0 );
+	selfDir_z = 0;
+
+	count = getBoundsCacheCount(); // number of remaining entities
+	for ( i = 0; i < count; i++ ) {
+		ent = getBoundsCacheEntity( i );
+
+		targetDir = sys.vecNormalize( ent.getWorldOrigin() - getWorldOrigin() );
+		targetDir_z = 0;
+
+		if ( targetDir * selfDir < angleRange ) {
+			continue;
+		}
+
+		if ( !TargetIsValid( ent ) ) {
+			continue;
+		}
+
+		if ( !InRange( ent.getWorldOrigin() ) ) {
+			continue;
+		}
+		if ( InFiringRange( ent.getWorldOrigin() ) ) {
+			return ent;
+		}
+		
+		if ( targetingRangeEnt == $null_entity ) {
+			targetingRangeEnt = ent;
+		}
+	}
+
+	return targetingRangeEnt;
+}
+
+void deployable_antipersonnel::UpdateCharge() {
+	sys.assert( false );
+
+	updateChargeThreadActive = true;
+
+	while ( true ) {
+		if ( myUser != sys.getLocalPlayer() ) {
+			break;
+		}
+
+		float time = sys.getTime();
+
+		float chargeAmount = ( chargeTime - ( fullChargeTime - time ) ) / chargeTime;
+		if ( chargeAmount > 1 ) {
+			chargeAmount = 1;
+		}
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", chargeAmount );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", time >= cooldownTime );
+
+		if ( chargeAmount == 1.f ) {
+			break;
+		}
+
+		sys.waitFrame();
+	}
+
+	updateChargeThreadActive = false;
+}
+
+boolean deployable_antipersonnel::CanFire() {
+	if ( myUser == $null_entity ) {
+		return true;
+	}
+
+	float time = sys.getTime();
+	float chargeAmount = ( chargeTime - ( fullChargeTime - time ) ) / chargeTime;
+	if ( chargeAmount >= chargePerShot && time > cooldownTime ) {
+		return true;
+	}
+
+	return false;
+}
+
+void deployable_antipersonnel::Fired() {
+	if ( myUser == $null_entity ) {
+		return;
+	}
+
+	if ( !sys.isClient() ) {
+		float timePerShot = chargeTime * chargePerShot;
+
+		if ( fullChargeTime < sys.getTime() ) {
+			fullChargeTime = sys.getTime();
+		}
+		fullChargeTime = fullChargeTime + timePerShot;
+
+		float time = sys.getTime();
+		if ( fullChargeTime >= time + chargeTime - timePerShot ) {
+			cooldownTime = sys.getTime() + overheatPenalty;
+		}
+	}
+
+	if ( !updateChargeThreadActive ) {
+		if ( myUser == sys.getLocalPlayer() ) {
+			thread UpdateCharge();
+		}
+	}
+}
+
+void deployable_antipersonnel::FireMissile() {
+	float muzzleJoint;
+
+	float forceTracer = TRACER_CHANCE;
+	if ( tracerInterval > 0 ) {
+		if ( tracerCounter % tracerInterval == 0 ) {
+			forceTracer = TRACER_FORCE;
+		}
+	}
+
+	entity controller = owner;
+	if ( controller == $null_entity ) {
+		controller = self;
+	}
+
+	launchBullet( controller, self, projectileIndex, spread, getJointPos( jointBarrel ), getJointAxis( jointBarrel, 0 ), forceTracer, false ); // hit scan
+	tracerCounter++;
+
+	playJointEffect( "fx_fire", jointBarrel, 0 );
+
+	if( numTracerJoints > 1 ) {
+		muzzleJoint = int( sys.random( numTracerJoints ) ) + 1;
+	} else {
+		muzzleJoint = numTracerJoints;
+	}
+	playEffect( "fx_muzzle", getKey( "joint_tracer" + muzzleJoint ), 0 );
+
+	Fired();
+}
+
+void deployable_antipersonnel::OnBeginAttack() {
+	KillAttackThread();
+	thread AttackThread();
+
+	if ( lockEntity != $null_entity ) {
+		lockEntity.vTargetLockAttack( self );
+	}
+
+	attacking = true;
+
+	if ( spinBarrelJoint != -1 && !barrelThreadActive ) {
+		thread SpinBarrelThread();
+	}
+
+	playCycle( ANIMCHANNEL_ALL, "fire" );
+}
+
+void deployable_antipersonnel::OnEndAttack() {
+	attacking = false;
+
+	playAnim( ANIMCHANNEL_ALL, "base" );
+
+	KillAttackThread();
+}
+
+boolean deployable_antipersonnel::ShouldSpinBarrel() {
+	return attacking && sys.getTime() > cooldownTime;
+}
+
+void deployable_antipersonnel::SpinBarrelThread() {
+	barrelThreadActive = true;
+
+	float speed = 0.f;
+	float maxSpeed = 900;
+
+	float frameTime;
+
+	while ( attacking ) {
+		if ( ShouldSpinBarrel() ) {
+			startSound( "snd_fire_start", SND_DEPLOYABLE_FIRE );
+			startSound( "snd_fire_far", SND_DEPLOYABLE_FIRE_FAR );
+			startSound( "snd_brass", SND_DEPLOYABLE_BRASS );
+
+			while ( ShouldSpinBarrel() ) {
+				frameTime = sys.getFrameTime();
+
+				speed = speed + ( frameTime * 600 );
+				if ( speed > maxSpeed ) {
+					speed = maxSpeed;
+				}
+
+				barrelAngles_y = ( barrelAngles_y + ( frameTime * speed ) ) % 360;
+				setJointAngle( spinBarrelJoint, JOINTMOD_LOCAL, barrelAngles );
+
+				sys.waitFrame();
+			}
+
+			startSound( "snd_brass_stop", SND_DEPLOYABLE_BRASS );
+			startSound( "snd_fire_stop", SND_DEPLOYABLE_FIRE );
+			startSound( "snd_fire_far_stop", SND_DEPLOYABLE_FIRE_FAR );
+		}
+
+		while ( !ShouldSpinBarrel() ) {
+			sys.waitFrame();
+
+			frameTime = sys.getFrameTime();
+
+			speed = speed - ( frameTime * 600 );
+			if ( speed < 0 ) {
+				speed = 0;
+				break;
+			}
+
+			barrelAngles_y = ( barrelAngles_y + ( frameTime * speed ) ) % 360;
+			setJointAngle( spinBarrelJoint, JOINTMOD_LOCAL, barrelAngles );
+		}
+	}
+
+	barrelThreadActive = false;
+}
+
+void deployable_antipersonnel::OnSetTarget( entity oldTarget, entity newTarget ) {
+	if ( g_aptWarning.getIntValue() == 0 ) {
+		return;
+	}
+
+	if ( lockEntity != newTarget ) {
+		if ( lockEntity != $null_entity ) {
+			lockEntity.vStopTargetLockAlarm( self );
+			lockEntity = $null_entity;
+		}
+
+		if ( newTarget != $null_entity ) {
+			lockEntity = newTarget;
+			lockEntity.vTargetLockAlarm( self );
+		}
+	}
+}
+
+/*
+===============================================================================
+
+deployable_antipersonnel_salvage - anti-personnel turret that can't be destroyed
+									starts with zero health though
+
+===============================================================================
+*/
+object deployable_antipersonnel_salvage : deployable_antipersonnel {
+	void	init();
+
+	void	UpdateState( float health );
+	void	CreateDestroyThread() { }
+	void	OnPostDamage( entity attacker, float oldHealth, float newHealth );
+};
+
+void deployable_antipersonnel_salvage::init() {
+	setHealth( 1 );
+	UpdateState( 1 );
+}
+
+void deployable_antipersonnel_salvage::OnPostDamage( entity attacker, float oldHealth, float newHealth ) {
+	if ( newHealth <= 0 ) {
+		setHealth( 1 );
+		newHealth = 1;
+	}
+
+	OnPostDamage_AP( attacker, oldHealth, newHealth );
+}
+
+void deployable_antipersonnel_salvage::UpdateState( float health ) {
+	float frac = health / getMaxHealth();
+
+	float newState;
+
+	player p = sys.getLocalPlayer();
+
+	boolean showHealthStatus = false;
+	if ( p != $null_entity ) {
+		team_base team = p.getGameTeam();
+		float allegiance = getEntityAllegiance( p );
+		if ( allegiance == TA_FRIEND ) {
+			showHealthStatus = true;
+		}
+	}
+
+	float healthStatusParm = 0;
+
+	if ( frac < ( 2.f / 3.f ) ) {
+		newState = DS_DAMAGED;
+		healthStatusParm = frac * 2;
+	} else {
+		newState = DS_NORMAL;
+	}
+
+	if ( showHealthStatus && !disabledState ) {
+		sys.setCMIconShaderParm( commandMapHandle, 5, healthStatusParm );
+	}
+
+	SetDeployableState( newState );
+}

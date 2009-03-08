@@ -1,0 +1,196 @@
+object player {
+	void		RequestDeployment( string objectName );
+	
+	void		RequestHusky();	
+	void		RequestIcarus();
+	
+	void		RequestRepair();
+	
+	void		RequestIconThread( float timeout );
+	void		DeploymentFeedbackThread( boolean allow );
+
+	float		creditChargeRate;
+	boolean		creditThreadActive;
+
+	vector		CalcDropPosition();
+
+	boolean		CheckCanRequestVehicle( string objectName );
+}
+
+/*
+================
+player::DeploymentFeedbackThread
+================
+*/
+void player::DeploymentFeedbackThread( boolean allow ) {
+	sys.wait( 2.f );
+	
+	if ( !allow ) {
+		sys.sendQuickChat( $null_entity, declinedQuickChat, self );
+	} else {
+		sys.sendQuickChat( $null_entity, vehicleWarningQuickChat, self );
+	}
+}
+
+/*
+================
+player::RequestDeployment
+================
+*/
+void player::RequestDeployment( string objectName ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	boolean allowDeploy = true;
+
+	if ( !CheckCanRequestVehicle( objectName ) ) {
+		allowDeploy = false;
+	}
+	
+	if ( allowDeploy ) {
+		vector angles = getViewAngles();
+		vector pos = CalcDropPosition();
+		allowDeploy = sys.requestDeployment( self, GetDeployObject( objectName ), pos, angles_y, 0.f );
+	}
+
+	if ( allowDeploy ) {
+		if ( objectName == "deployobject_husky" || objectName == "deployobject_icarus" ) {
+			vUseVehicleCredit( 0.1f );
+		}
+	}
+
+	thread DeploymentFeedbackThread( allowDeploy );
+}
+
+/*
+================
+player::RequestHusky
+================
+*/
+void player::RequestHusky() {
+	if ( !IsGDF() ) {
+		return;
+	}
+	
+	RequestDeployment( "deployobject_husky" );
+}
+
+/*
+================
+player::RequestIcarus
+================
+*/
+void player::RequestIcarus() {
+	if ( !IsStrogg() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_icarus" );	
+}
+
+/*
+================
+player::RequestIconThread
+================
+*/
+void player::RequestIconThread( float timeout ) {
+	sys.wait( timeout );
+	FreeRequestIcon();
+	
+}
+
+/*
+================
+player::RequestRepair
+================
+*/
+void player::RequestRepair() {
+	SetupRequestIcon( "mtr_cm_icon_need_repair", "require_view_repair" );
+	thread RequestIconThread( 5.f );
+}
+
+/*
+================
+player::CalcDropPosition
+================
+*/
+vector player::CalcDropPosition() {
+	// TODO: if we reinstate vehicle drops for anything other than a husky or icarus, we'll need to change this
+	float dropDist = 112;
+	
+	vector pos = getWorldOrigin();
+	pos_z += 32.f;
+	
+	vector forward = sys.angToForward( getViewAngles() );
+	forward_z = 0;
+	forward = sys.vecNormalize( forward );
+	vector targetPos = pos + ( forward * dropDist );
+	
+	if ( sys.tracePoint( pos, targetPos, MASK_VEHICLESOLID | MASK_SHOT_RENDERMODEL | CONTENTS_MONSTER, self ) < 1.f ) {
+		// failed, default to the player's position
+		return pos;
+	} 
+	
+	return targetPos;
+}
+
+
+object vehicle_base;
+
+/*
+================
+player::CheckCanRequestVehicle
+================
+*/
+boolean player::CheckCanRequestVehicle( string objectName ) {
+	team_base team = getGameTeam();
+
+	float credit = vGetVehicleCredit();
+	float creditRequired = 0.1f;
+
+	entity proxy = getProxyEntity();
+
+	if ( sys.getTime() < nextDeploymentTime ) {
+		return false;
+	} else if ( proxy != $null_entity ) {
+		return false;
+	} else if ( credit < creditRequired ) {
+		return false;
+	} else if ( !team.CanRequestVehicle( self ) ) {
+		return false;
+	} else if ( sys.getTime() < team.GetNextVehicleSpawnTime() ) {
+		return false;
+	} else if ( getHealth() <= 0 ) {
+		return false;
+	} else if ( AI_INWATER ) {
+		return false;
+	} else {
+		// check if we already have a vehicle
+		float i;
+		float num = binGetSize();
+		for ( i = 0; i < num; i++ ) {
+			vehicle_base other = binGet( i );
+			if ( other != $null_entity ) {
+				if ( other.inCollection( "husky" ) ) {
+					return false;
+				} else if ( other.inCollection( "icarus" ) ) {
+					return false;
+				}
+			}
+		}
+
+		// also check if outside
+		vector pos = CalcDropPosition();
+		vector skyPos = pos + '0 0 65535';
+		sys.tracePoint( pos, skyPos, MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, self );
+		
+		if ( sys.getTraceFraction() == 1.f ) {
+			return false;
+		} else if ( !( sys.getTraceSurfaceFlags() & SURF_NOIMPACT ) ) {
+			return false;
+		}
+	}
+
+	return true;
+}

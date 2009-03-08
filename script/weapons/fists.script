@@ -1,0 +1,146 @@
+/***********************************************************************
+
+weapon_fists.script
+
+***********************************************************************/
+
+object weapon_fists : weapon_base {
+
+	void		preinit();
+
+	void		init();
+
+	void		Idle();
+	
+	void		Punch();
+	
+	boolean		AllowActivate();
+	
+	void		ToolTipThread_Raise();
+
+	float		meleeDistance;
+}
+
+void weapon_fists::preinit() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+	}
+}
+
+void weapon_fists::init() {
+	meleeDistance = getFloatKey( "melee_distance" );
+	
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+
+	weaponState( "Raise", 0 );
+}
+
+void weapon_fists::Idle() {
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+	while ( 1 ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", 4 );
+		}
+		if ( WEAPON_ATTACK ) {
+			weaponState( "Punch", 0 );
+		}
+		if ( myPlayer.getButton( PK_ACTIVATE ) ) {
+			if ( AllowActivate() ) {
+				weaponState( "Punch", 0 );
+			}
+		}
+		if ( myPlayer.AI_SPRINT ) {
+			weaponState( "Sprint", 4 );
+		}
+		
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void weapon_fists::Punch() {	
+	fired();
+	playAnim( ANIMCHANNEL_ALL, "fire" );
+	string animname = getAnimatingOnChannel( ANIMCHANNEL_ALL );
+	sys.wait( 0.1 );
+	
+	melee( MASK_SHOT_RENDERMODEL | CONTENTS_BODY | CONTENTS_SLIDEMOVER | CONTENTS_WATER, meleeDistance, true, true );
+	player meleePlayer = getMeleeEntity();
+	string surface = getMeleeSurfaceType();
+	vector origin = getMeleeEndPos();
+	vector normal = getMeleeNormal();
+	entity ent = getMeleeEntity();
+	float fraction = getMeleeFraction();
+
+	boolean backStab = false;
+	if ( meleePlayer != $null_entity ) {
+		backStab = myPlayer.CanStab( meleePlayer );
+	}
+	
+	float scale;
+	if ( backStab ) {
+		scale = -1.f;
+	} else {
+		scale = 1.f;
+	}
+
+	float hit = meleeAttack( scale );
+	if ( hit && backStab ) {
+		if ( myPlayer.getEntityAllegiance( meleePlayer ) == TA_ENEMY ) {
+			team_base team = myPlayer.getGameTeam();
+			team.GiveBackstabProficiency( myPlayer );
+		}
+	}
+	
+	// effects & sounds have to be done based on the trace, since the meleeAttack function returns false on clients
+	string sound = "snd_miss";
+	if ( fraction < 1.0f ) {	
+		sound = "snd_hit_" + surface;
+		
+		string fxName = getKey( "fx_hit_" + surface );
+		if ( fxName == "" ) {
+			fxName = getKey( "fx_hit" );
+		}
+		vector rot = getVectorKey( "rot_" + animname );
+		sys.playWorldEffectRotateAlign( fxName, g_colorWhite, origin, normal, rot, self );
+	}
+	
+	startSound( sound, SND_WEAPON_FIRE );
+				
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+	weaponState( "Idle", 1 );
+}
+
+boolean weapon_fists::AllowActivate() {
+	melee( MASK_SHOT_RENDERMODEL | CONTENTS_BODY | CONTENTS_SLIDEMOVER, meleeDistance, true, true );
+	player meleePlayer = getMeleeEntity();
+	
+	boolean backStab = false;
+	if ( meleePlayer != $null_entity ) {
+		backStab = myPlayer.CanStab( meleePlayer );
+	}
+	
+	return backStab;
+}
+
+void weapon_fists::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	if ( myPlayer.getPlayerClass() == g_playerClassCovertOps || myPlayer.getPlayerClass() == g_playerClassInfiltrator ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1_backstab" ) ) );
+	} else {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	}
+	
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+}

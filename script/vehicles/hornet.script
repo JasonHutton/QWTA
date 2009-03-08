@@ -1,0 +1,24 @@
+
+
+/*
+===================================================================================================
+
+HORNET
+
+===================================================================================================
+*/
+object vehicle_hornet : vehicle_heli {
+	void			OnWeaponSelected( entity p, float index );
+};
+
+void vehicle_hornet::OnWeaponSelected( entity p, float index ) {
+	if ( !sys.isClient() ) {
+		if ( index == 0 ) {
+			FireDecoy( p );
+		} else if ( index == 1 ) {
+			selectVehicleWeapon( p, "plasmacannon" );
+		} else if ( index == 2 ) {
+			selectVehicleWeapon( p, "strockets" );
+		}
+	}
+}

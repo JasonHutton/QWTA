@@ -1,0 +1,227 @@
+
+object deployable_basedefence : deployable_turret {
+	void		preinit();
+	void		destroy();
+
+	boolean		TargetIsValid( entity targetEnt );
+
+	entity		OnAcquireTarget();
+	entity		AcquireTarget_Type( string collection );
+	
+	float		GetActivateCode( entity p, float distance ) { return AK_NONE; };
+	
+	void		OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+	float		OnUpdateCrosshairInfo( entity p );
+	void		OnBeginAttack();
+	void		OnEndAttack();
+	float		OnActivate( entity p, float distance ) { return 0.0f; }
+	void		OnSetTarget( entity oldTarget, entity newTarget );
+
+	boolean		vCheckActionCode( entity p, float actionCode ) { return false; }
+	void		vApplyEmpDamage( entity attacker, float time, float weaponTime ) {}
+	
+	void		SetDeployingFinished();
+
+	boolean		TraceCheck( entity other );
+
+	float		pitchRange;
+	boolean		frontOnly;
+	entity		lockEntity;
+};
+
+void deployable_basedefence::preinit() {
+	frontOnly			= getIntKey( "attack_front_only" );
+	pitchRange			= 180 - getFloatKey( "pitch_angle" );
+	pitchRange			= sys.cos( 0.5f * pitchRange );
+
+	FreeCommandMap();
+}
+
+void deployable_basedefence::destroy() {
+	if ( lockEntity != $null_entity ) {
+		lockEntity.vStopTargetLockAlarm( self );
+		lockEntity = $null_entity;
+	}
+}
+
+boolean deployable_basedefence::TargetIsValid( entity targetEnt ) {
+	if ( targetEnt.getHealth() <= 0 ) {
+		return false;
+	}
+
+	if ( getEntityAllegiance( targetEnt ) != TA_ENEMY ) {
+		return false;
+	}
+	
+	player p = targetEnt;
+	if ( p != $null_entity ) {		
+		if ( p.getVehicle() != $null_entity ) {
+			return false;
+		}
+
+		if ( p.isInvulnerable() ) {
+			return false;
+		}
+	} else {	
+		vehicle_base v = targetEnt;
+		if ( v != $null_entity ) {
+			if ( v.getNumOccupiedPositions() == 0 ) {
+				return false;
+			}
+		}
+	}
+
+	vector angles = getAngles();
+	vector targetDir = targetEnt.getWorldOrigin() - getWorldOrigin();
+	targetDir = sys.rotateVec( targetDir, getWorldAxis( 1 ), angles_x );
+	targetDir = sys.vecNormalize( targetDir );
+
+	float dot = vec3_up * targetDir;
+	if ( !frontOnly ) {
+		dot = sys.fabs( dot );
+	}
+
+	if ( dot > pitchRange ) {
+		return false;
+	}
+
+	if ( !InRange( targetEnt.getWorldOrigin() ) ) {
+		return false;
+	}
+
+	if ( !TraceCheck( targetEnt ) ) {
+		return false;
+	}
+
+	return true;
+}
+
+entity deployable_basedefence::OnAcquireTarget() {
+	entity targetEnt = AcquireTarget_Type( "players" );
+	if ( targetEnt != $null_entity ) {
+		return targetEnt;
+	}
+	
+	return AcquireTarget_Type( "basedefense_attack" );
+}
+
+entity deployable_basedefence::AcquireTarget_Type( string collection ) {
+	float i;
+	float count;
+	entity ent;
+
+	entitiesOfCollection( collection );
+	filterEntitiesByDisguiseAllegiance( TA_FLAG_ENEMY, 1 );				// only damage enemies
+	filterEntitiesByRadius( getWorldOrigin(), maxRange, 1 );	// find entities within maxRange radius
+
+	count = getBoundsCacheCount(); // number of remaining entities
+	for ( i = 0; i < count; i++ ) {
+		ent = getBoundsCacheEntity( i );
+		if ( TargetIsValid( ent ) ) {
+			return ent;
+		}
+	}
+	
+	return $null_entity;
+}
+
+void deployable_basedefence::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	// do nothing aside from making sure our health doesn't go below 0
+	setHealth( 0 );
+}
+
+float deployable_basedefence::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+
+	chSetNumLines( 0 );
+	float index;
+
+	index = chAddLine();
+	chSetLineTextIndex( index, objectTitle );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+	
+	if ( range <= 100 ) {
+		index = chAddLine();
+		chSetLineText( index, G_BuildRangeStr( range ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;
+}
+
+void deployable_basedefence::OnBeginAttack() {
+	startSound( "snd_fire_start", SND_DEPLOYABLE_FIRE );
+	startSound( "snd_fire_far", SND_DEPLOYABLE_FIRE_FAR );
+	startSound( "snd_brass", SND_DEPLOYABLE_BRASS );
+
+	KillAttackThread();
+	thread AttackThread();
+
+	if ( lockEntity != $null_entity ) {
+		lockEntity.vStopTargetLockAlarm( self );
+		lockEntity = $null_entity;
+	}
+}
+
+void deployable_basedefence::OnEndAttack() {
+	startSound( "snd_brass_stop", SND_DEPLOYABLE_BRASS );
+	startSound( "snd_fire_stop", SND_DEPLOYABLE_FIRE );
+	startSound( "snd_fire_far_stop", SND_DEPLOYABLE_FIRE_FAR );
+	
+	KillAttackThread();
+}
+
+void deployable_basedefence::OnSetTarget( entity oldTarget, entity newTarget ) {
+	if ( g_aptWarning.getIntValue() == 0 ) {
+		return;
+	}
+
+	if ( lockEntity != newTarget ) {
+		if ( lockEntity != $null_entity ) {
+			lockEntity.vStopTargetLockAlarm( self );
+			lockEntity = $null_entity;
+		}
+
+		if ( newTarget != $null_entity ) {
+			lockEntity = newTarget;
+			lockEntity.vTargetLockAlarm( self );
+		}
+	}
+}
+
+void deployable_basedefence::SetDeployingFinished() {
+	finishedDeploying = true;
+	deployFinishedTime = sys.getTime();
+}
+
+boolean deployable_basedefence::TraceCheck( entity other ) {
+	vector targetPos = getTargetPosition( other );
+	vector originPos = getJointPos( jointBarrel );
+
+	sys.tracePoint( originPos, targetPos, checkMask, self );
+	if ( sys.getTraceFraction() == 1.f ) {
+		return true;
+	}
+
+	if ( sys.getTraceEntity() != other ) {
+		player p = sys.getTraceEntity();
+		// ignore if we hit the player inside the vehicle
+		if ( p == $null_entity ) {
+			return false;
+		} else if ( p.getVehicle() != other ) {
+			return false;
+		}
+	}
+	return true;
+}

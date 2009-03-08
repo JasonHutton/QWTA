@@ -1,0 +1,163 @@
+/***********************************************************************
+
+weapon_hyperblaster.script
+
+***********************************************************************/
+
+object weapon_hyperblaster : weapon_clip {
+	void		preinit();
+	void		destroy();
+
+	void		Raise();
+	void		Lower();
+	void		Reload() { Overheat(); }
+
+	void		SpinThread();
+	boolean		CanFire();
+
+	void		OnIronSightsEnabled() { hide(); }
+	void		OnIronSightsDisabled() { show(); }
+
+	float		spinSpeed;
+	float		spinSpeedFire;
+	
+	boolean		spinThreadActive;
+}
+
+void weapon_hyperblaster::preinit() {
+	hasScope		= false;
+	hasIronSights	= true;
+	hasEndFireAnim	= true;
+	hasHeat			= true;
+	usesStroyent	= true;
+
+	spinSpeedFire	= getFloatKeyWithDefault( "spin_fire", 360.f );
+	spinSpeed		= 0;
+
+	thread SpinThread();
+	spinThreadActive = true;
+}
+
+void weapon_hyperblaster::destroy() {
+	stopSound( SND_WEAPON_FIRE2 );
+	stopSound( SND_WEAPON_FIRE3 );
+	sys.killThread( "SpinThread_" + getName() );
+}
+
+void weapon_hyperblaster::Raise() {
+	if ( hasHeat && ShouldRunGuis() ) {
+		CreateUpdateHeat();
+	}
+	
+	if ( !spinThreadActive ) {
+		thread SpinThread();
+		spinThreadActive = true;
+	}
+
+	Base_Raise();
+}
+
+void weapon_hyperblaster::Lower() {
+	if ( ShouldRunGuis() ) {
+		KillUpdateHeat();
+	}
+	
+	if ( spinThreadActive ) {
+		spinSpeed = 0;
+		fadeSound( SND_WEAPON_FIRE2, -60.0f, 0.2f );
+		fadeSound( SND_WEAPON_FIRE3, -60.0f, 0.2f );
+		sys.killThread( "SpinThread_" + getName() );
+		spinThreadActive = false;
+	}
+
+	Cleanup();
+	Base_Lower();
+}
+
+boolean weapon_hyperblaster::CanFire() {
+	if ( spinSpeed < spinSpeedFire ) {
+		dryfireAttack = true;
+		return false;
+	}
+	
+	dryfireAttack = false;
+	return true;
+}
+
+void weapon_hyperblaster::SpinThread() {
+	sys.waitFrame();
+
+	float spinUpTime	= 0.2f;
+	float spinDownTime	= 1.6f;
+
+	float spinUpAccel	= spinSpeedFire / spinUpTime;
+	float spinDownAccel	= spinSpeedFire / spinDownTime;
+
+	vector angle = g_vectorZero;
+
+	float basePitch		= 0.5f;
+	float maxPitch		= 1.0f;
+	float pitchRange	= maxPitch - basePitch;
+
+	float basePitchLow	= 0.25f;
+	float maxPitchLow	= 1.0f;
+	float pitchRangeLow	= maxPitchLow - basePitchLow;
+
+	object worldModel		= getWorldModel( 0 );
+
+	float jointBarrel		= getJointHandle( getKey( "joint_barrel" ) );
+	float jointBarrelWorld	= worldModel.getJointHandle( getKey( "joint_barrel_world" ) );
+	
+	startSound( "snd_barrel_loop", SND_WEAPON_FIRE2 );
+	startSound( "snd_barrel_loop_low", SND_WEAPON_FIRE3 );
+
+	fadeSound( SND_WEAPON_FIRE2, -60.0f, 0.0f );
+	fadeSound( SND_WEAPON_FIRE3, -60.0f, 0.0f );
+
+	while ( true ) {
+		float frameTime = sys.getFrameTime();
+
+		float oldSpinSpeed = spinSpeed;
+		if ( WEAPON_ATTACK && !IsOverheated() ) {
+			spinSpeed = spinSpeed + spinUpAccel * frameTime;
+		} else {
+			spinSpeed = spinSpeed - spinDownAccel * frameTime;
+		}
+
+		CLAMP( spinSpeed, 0.0f, spinSpeedFire );
+
+		spinSpeed = spinSpeed * 0.7f + oldSpinSpeed * 0.3f;
+		if ( spinSpeed < 0.0001f ) {
+			spinSpeed = 0.f;
+		}
+		angle_z += spinSpeed * frameTime;
+		if ( angle_z > 360.0f ) {
+			angle_z -= 360.0f;
+		}
+		setJointAngle( jointBarrel, JOINTMOD_LOCAL, angle );
+		worldModel.setJointAngle( jointBarrelWorld, JOINTMOD_LOCAL, -angle );
+
+		float fraction = ( spinSpeed / spinSpeedFire );
+		fraction = fraction * fraction * fraction * fraction;
+		if ( fraction < 0.0001f ) {
+			fraction = 0.f;
+			
+			fadeSound( SND_WEAPON_FIRE2, -60.0f, 1.0f );
+			fadeSound( SND_WEAPON_FIRE3, -60.0f, 1.0f );
+		} else {
+			float pitch = fraction * pitchRange + basePitch;
+			setChannelPitchShift( SND_WEAPON_FIRE2, pitch );
+
+			float pitchLow = fraction * pitchRangeLow + basePitchLow;
+			setChannelPitchShift( SND_WEAPON_FIRE3, pitch );
+
+			float volume = sys.sqrt( sys.sin( fraction * 90 ) ) * 20.0f - 20.0f;
+			fadeSound( SND_WEAPON_FIRE2, volume, 0.0f );
+			
+			float volumeLow = sys.sqrt( sys.sin( ( 1.0f - fraction ) * 90 ) ) * 5.0f - 5.0f;
+			fadeSound( SND_WEAPON_FIRE3, volumeLow, 0.0f );
+		}
+		
+		sys.waitFrame();
+	}
+}

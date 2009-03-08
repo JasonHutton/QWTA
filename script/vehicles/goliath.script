@@ -1,0 +1,85 @@
+
+object vehicle_goliath : vehicle_base {
+	void			preinit();
+	void			init();
+
+	void			OnWeaponSelected( entity p, float index );
+	void			OnPlayerEntered( entity p, float position );
+	void			OnPlayerExited( entity p, float position );
+
+	void			Stamp();
+
+	void			UpdateSiegeTextThread();
+
+	float			stampForce;
+	float			stampDamageScale;
+	float			stampRange;
+
+	float			threadId;
+}
+
+void vehicle_goliath::preinit() {
+	stampForce			= getFloatKeyWithDefault( "stamp_force", 20000000 );
+	stampDamageScale	= getFloatKeyWithDefault( "stamp_damage_scale", 3 );
+	stampRange			= getFloatKeyWithDefault( "stamp_range", 512.f );
+
+	threadId = -1;
+}
+
+void vehicle_goliath::init() {
+	startSound( "snd_cockpit", SND_VEHICLE_INTERIOR );
+}
+
+void vehicle_goliath::Stamp() {
+	groundPound( stampForce, stampDamageScale, stampRange );
+}
+
+void vehicle_goliath::OnWeaponSelected( entity p, float index ) {
+	if ( index == 0 ) {
+		FireDecoy( p );
+	} else if ( index == 1 ) {
+		selectVehicleWeapon( p, "hyperblaster" );
+	} else if ( index == 2 ) {
+		selectVehicleWeapon( p, "plasmacannon" );
+	}
+}
+
+void vehicle_goliath::OnPlayerEntered( entity p, float position ) {
+	OnPlayerEntered_Base( p, position );
+
+	if ( p.isLocalPlayer() ) {
+		if ( position == 0 ) {
+			threadId = thread UpdateSiegeTextThread();
+		} else if ( threadId != -1 ) {
+			sys.terminate( threadId );
+			threadId = -1;
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
+		}
+	}
+}
+
+void vehicle_goliath::OnPlayerExited( entity p, float position ) {
+	OnPlayerExited_Base( p, position );
+
+	if ( p.isLocalPlayer() ) {
+		if ( threadId != -1 ) {
+			sys.terminate( threadId );
+			threadId = -1;
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
+		}
+	}
+}
+
+void vehicle_goliath::UpdateSiegeTextThread() {
+	handle hText;
+	while ( true ) {
+		if ( inSiegeMode() ) {
+			hText = sys.localizeString( "guis/hud/vehicle_siegemode" );
+		} else {
+			hText = sys.localizeString( "guis/hud/vehicle_walkermode" );
+		}
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", hText );
+		sys.wait( 1.0f );
+	}
+	threadId = -1;
+}

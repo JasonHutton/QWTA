@@ -1,0 +1,288 @@
+
+#define STROGG_DROP_ACCELERATION			-1066
+#define STROGG_DROP_SPEED_INITIAL			-200
+#define STROGG_DROP_SOUND_TIME				4
+
+object strogg_drop {
+	void			preinit();
+	void			init();
+	void			destroy();
+	void			syncFields();
+
+	void			Idle();
+
+	void			OnItemChanged();
+	void			OnTargetPosChanged();
+	void			OnSetDeploymentParms( float deploymentItemIndex, float playerIndex, vector target, float rotation );
+	void			vSetDeploymentParms( float deploymentItemIndex, float playerIndex, vector target, float rotation ) {
+		OnSetDeploymentParms( deploymentItemIndex, playerIndex, target, rotation );
+	}
+
+	boolean			ContinueDrop();
+
+	void			ClearRequest();
+
+	void			SetupItem();
+	void			SetupTrajectory();
+
+	entity			item;
+	vector			itemTargetPos;
+	float			itemRotation;
+
+	float			deployPlayerIndex;
+	float			launchTime;
+
+	vector			startPos;
+	
+	boolean			alwaysDrop;
+	boolean			cancelled;
+	
+	entity			vGetItem() {
+		return item;
+	}	
+}
+
+void strogg_drop::preinit() {
+	deployPlayerIndex = -1;
+	launchTime = -1;
+	cancelled = false;
+}
+
+void strogg_drop::init() {
+	setState( "Idle" );
+}
+
+void strogg_drop::destroy() {
+	ClearRequest();
+}
+
+void strogg_drop::syncFields() {
+	syncBroadcast( "item" );
+	syncBroadcast( "itemTargetPos" );
+	syncBroadcast( "itemRotation" );
+	syncBroadcast( "launchTime" );
+	syncCallback( "item", "OnItemChanged" );
+	syncCallback( "itemTargetPos", "OnTargetPosChanged" );
+}
+
+
+#define STROGG_DROP_PARABOLE_TIME 5
+
+void strogg_drop::Idle() {
+	float height;
+	float flightTime;
+	float endTime;
+	float soundTime;
+	vector currentPos;
+
+	// FeaRog: wait for the server to synchronise the launch info through to avoid weirdness
+	while( launchTime < 0 ) {
+		sys.waitFrame();
+	}
+
+	playEffect( "fx_trail", "", 1 );
+
+	//
+	// Part 1 parabolic reentry
+	//
+	flightTime = sys.getTime() - launchTime;
+	while ( flightTime < STROGG_DROP_PARABOLE_TIME ) {
+		sys.waitFrame();
+		flightTime = sys.getTime() - launchTime;
+
+		if ( STROGG_DROP_PARABOLE_TIME < flightTime ) {
+			break;
+		}
+
+		currentPos_x	= startPos_x;
+		currentPos_y	= startPos_y + (STROGG_DROP_PARABOLE_TIME - flightTime) * 1000;
+		currentPos_z	= startPos_z + sys.sqrt( (STROGG_DROP_PARABOLE_TIME - flightTime) * 1000 ) * 100;
+		setOrigin( currentPos );
+		item.setOrigin( currentPos );
+	}
+	playEffect( "fx_booster", "", false );
+	startSound( "snd_landfall", SND_VEHICLE_IDLE );
+	startSound( "snd_landfall_far", SND_VEHICLE );
+
+	soundTime = sys.getTime();
+
+	// Solve the quadratic equation for 0 (assuming height 0 is good enough an estimate for the ground height)
+	{
+		float roots = sys.solveRoots( STROGG_DROP_ACCELERATION / 2.0, STROGG_DROP_SPEED_INITIAL, startPos_z );
+		float time_zero;
+		if ( roots > 0 ) {
+			time_zero = sys.getRoot( 0 );
+		}
+		
+		soundTime += time_zero - STROGG_DROP_SOUND_TIME;
+	}
+
+	//
+	// Part 2 just a linear fall
+	//
+	while ( true ) {
+		sys.waitFrame();
+		
+		if( !ContinueDrop() ) {
+			// player switched teams before we've deployed
+			stopEffect( "fx_trail" );
+			stopEffect( "fx_booster" );
+
+			if ( !sys.isClient() ) {
+				player p = sys.getClient( deployPlayerIndex );
+				objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), p );
+			}
+
+			ClearRequest();
+			
+			if( !sys.isClient() ) {
+				item.remove();
+				remove();
+			}
+			
+			return;
+		}
+
+		flightTime = sys.getTime() - launchTime - STROGG_DROP_PARABOLE_TIME;
+
+		height = startPos_z + ( ( STROGG_DROP_SPEED_INITIAL + ( STROGG_DROP_ACCELERATION * ( flightTime ) / 2 ) ) * flightTime );
+
+		if ( height < itemTargetPos_z ) {
+			setOrigin( itemTargetPos );
+			item.setOrigin( itemTargetPos );
+
+			break;
+		}
+
+		if ( sys.getTime() > soundTime ) {
+//			sys.print( "playsound: current(" + sys.getTime() + ")\n" );
+			soundTime += 10000;/// so it only plays it once
+		}
+
+		currentPos		= startPos;
+		currentPos_z	= height;
+
+		setOrigin( currentPos );
+		item.setOrigin( currentPos );
+	}
+
+	stopEffect( "fx_trail" );
+	stopEffect( "fx_booster" );
+	playEffect( "fx_hitground", "", false );
+	startSound( "snd_impact", SND_VEHICLE_IDLE );
+
+	ClearRequest();
+
+	if ( item != $null_entity ) {
+		sys.waitFrame();
+		item.setOrigin( itemTargetPos );
+		item.setAngles( getAngles() );
+		item.vOnDeploy();
+	}
+
+	sys.wait( 5.f );
+
+	if ( !sys.isClient() ) {
+		remove();
+	}
+}
+
+void strogg_drop::OnItemChanged() {
+	SetupItem();
+}
+
+void strogg_drop::OnTargetPosChanged() {
+	SetupTrajectory();
+}
+
+void strogg_drop::ClearRequest() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( deployPlayerIndex != -1 ) {
+		sys.clearDeployRequest( deployPlayerIndex );
+		deployPlayerIndex = -1;
+	}
+}
+
+void strogg_drop::OnSetDeploymentParms( float deploymentItemIndex, float playerIndex, vector target, float rotation ) {
+	deployPlayerIndex	= playerIndex;
+	itemTargetPos		= target;
+	itemRotation		= rotation;
+	
+	player p = sys.getClient( playerIndex );
+	item = sys.spawnType( deploymentItemIndex );
+	item.vSetDeployableOwner( p );
+
+	deployable_base deployable = item;
+	if ( deployable != $null_entity ) {
+		p.SetTargetingItem( item );
+	}
+
+	string statName = item.getKey( "stat_name" );
+	if ( statName != "" ) {
+		sys.increaseStatInt( sys.allocStatInt( statName + "_deployed" ), deployPlayerIndex, 1 );
+	}
+
+	launchTime			= sys.getTime();
+
+	SetupTrajectory();
+
+	vector currentPos;
+	currentPos_x	= startPos_x;
+	currentPos_y	= startPos_y + STROGG_DROP_PARABOLE_TIME * 1000;
+	currentPos_z	= startPos_z + sys.sqrt( STROGG_DROP_PARABOLE_TIME * 1000 ) * 100;
+	setOrigin( currentPos );
+	item.setOrigin( currentPos );
+
+	SetupItem();
+}
+
+void strogg_drop::SetupItem() {
+	if ( item == $null_entity ) {
+		return;
+	}
+
+	alwaysDrop = item.getIntKey( "always_drop" );
+	item.setOrigin( getWorldOrigin() );
+	item.setAngles( getAngles() );
+	item.setGameTeam( getGameTeam() );
+	item.vSetManualDeploy();
+}
+
+void strogg_drop::SetupTrajectory() {
+	vector worldMaxs	= sys.getWorldMaxs();
+
+	startPos			= itemTargetPos;
+	startPos_z			= worldMaxs_z;
+
+	vector angles;
+	angles_y			= itemRotation;
+
+	setAngles( angles );
+}
+
+boolean strogg_drop::ContinueDrop() {
+	// special cases
+	if ( deployPlayerIndex == -1 || alwaysDrop ) {
+		return true;
+	}
+
+	player p = sys.getClient( deployPlayerIndex );
+	if( getEntityAllegiance( p ) != TA_FRIEND ) {
+		return false;
+	}
+	
+	if( sys.getTerritoryForPoint( itemTargetPos, getGameTeam(), 1.f, 0.f ) == $null_entity ) {
+		return false;
+	}
+	
+	return !cancelled;
+}
+
+void strogg_drop::vCancelDeployForPlayer( float playerIndex ) {
+	if ( deployPlayerIndex == playerIndex ) {
+		cancelled = true;
+	}
+}

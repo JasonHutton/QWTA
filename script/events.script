@@ -1,0 +1,2098 @@
+/***********************************************************************
+
+events.script
+
+Defines game events available to script.
+
+***********************************************************************/
+
+/***********************************************************************
+
+	all entities
+
+***********************************************************************/
+
+// Removes this entity from the game.
+scriptEvent	void 	remove();
+
+// Checks the entity's type
+scriptEvent float	isClass( float typeHandle );
+
+// Returns the name of this entity.
+scriptEvent	string	getName();
+
+//
+scriptEvent	entity 	getMaster();
+
+// Activates this entity as if it was activated by a trigger.
+// Activator is the entity that caused the action (usually the player).
+scriptEvent	void 	activate( entity activator );
+
+// Fixes this entity's position and orientation relative to another entity,
+// such that when the master entity moves, so does this entity.
+scriptEvent	void 	bind( entity master );
+
+scriptEvent	void 	enableAxisBind( boolean loop );
+
+// Fixes this entity's position (but not orientation) relative to another entity,
+// such that when the master entity moves, so does this entity.
+scriptEvent	void 	bindPosition( entity master );
+
+// Fixes this entity's position and orientation relative to a bone on another entity,
+// such that when the master's bone moves, so does this entity.
+scriptEvent	void 	bindToJoint( entity master, string boneName, boolean rotateWithMaster );
+
+// Detaches this entity from its master.
+scriptEvent	void 	unbind();
+
+// Removes all attached entities from the game.
+scriptEvent	void 	removeBinds();
+
+// Sets the model this entity uses.
+scriptEvent	void 	setModel( string modelName );
+
+// Sets the skin this entity uses.  Set to "" to turn off the skin.
+scriptEvent	void 	setSkin( string skinName );
+
+scriptEvent	void 	setCoverage( float v );
+
+scriptEvent	vector	getWorldAxis( float index );
+scriptEvent	void	setWorldAxis( vector fwd, vector right, vector up );
+
+scriptEvent	vector	getGravityNormal();
+
+// Returns the current worldspace position of this entity (regardless of any bind parent).
+scriptEvent	vector	getWorldOrigin();
+
+// Sets the current position of this entity (regardless of any bind parent).
+scriptEvent	void	setWorldOrigin( vector origin );
+
+// Returns the current position of this entity (relative to bind parent if any).
+scriptEvent	vector	getOrigin();
+
+// Sets the current position of this entity (relative to it's bind parent if any).
+scriptEvent	void 	setOrigin( vector origin );
+
+// Returns the current orientation of this entity (relative to bind parent if any).
+scriptEvent	vector	getAngles();
+
+// Sets the current orientation of this entity (relative to bind parent if any).
+scriptEvent	void 	setAngles( vector angles );
+
+// Sets the gravity activating on this entity
+scriptEvent	void 	setGravity( vector gravity );
+
+scriptEvent	void 	alignToAxis( vector vec, float axis );
+
+// Gets the current linear velocity of this entity. The linear velocity of a physics
+// object is a vector that defines the translation of the center of mass in units per second.
+scriptEvent	vector	getLinearVelocity();
+
+// Sets the current linear velocity of this entity in units per second. The linear velocity of
+// a physics object is a vector that defines the translation of the center of mass in units per second.
+scriptEvent	void 	setLinearVelocity( vector velocity );
+
+// Gets the current angular velocity of this entity. The angular velocity of
+// a physics object is a vector that passes through the center of mass. The
+// direction of this vector defines the axis of rotation and the magnitude
+// defines the rate of rotation about the axis in radians per second.
+scriptEvent	vector	getAngularVelocity();
+
+// Sets the current angular velocity of this entity. The angular velocity of
+// a physics object is a vector that passes through the center of mass. The
+// direction of this vector defines the axis of rotation and the magnitude
+// defines the rate of rotation about the axis in radians per second.
+scriptEvent	void 	setAngularVelocity( vector velocity );
+
+// Gets the mass of this entity
+scriptEvent	float 	getMass();
+
+// Gets the center of mass of this entity
+scriptEvent	vector 	getCenterOfMass();
+
+// Sets the friction of this entity if it is a rigid body
+scriptEvent void	setFriction( float linear, float angular, float contact );
+
+// Gets the size of this entity's bounding box.
+scriptEvent	vector	getSize();
+
+// Sets the size of this entity's bounding box.
+scriptEvent	void 	setSize( vector mins, vector maxs );
+
+// Gets the corners of this entity's bounding box
+scriptEvent	vector	getMins();
+scriptEvent	vector	getMaxs();
+
+// Gets the corners of this entity's absolute (world-space) bounding box
+scriptEvent	vector	getAbsMins();
+scriptEvent	vector	getAbsMaxs();
+
+// Gets the corners of this entity's render entity bounding box
+scriptEvent	vector	getRenderMins();
+scriptEvent	vector	getRenderMaxs();
+
+// Overrides the generated render entity bounds
+scriptEvent	void	setRenderBounds( vector mins, vector maxs );
+
+
+// checks if the entity's model is invisible.
+scriptEvent	boolean	isHidden();
+
+// Makes this entity invisible.
+scriptEvent	void 	hide();
+
+// Makes this entity visible if it has a model.
+scriptEvent	void 	show();
+
+// Returns true if this entity touches the other entity.
+scriptEvent	boolean	touches( entity other, boolean ignoreNonTrace );
+
+// Returns true if this entity touches the other entity. Using clip models.
+scriptEvent	boolean	touchesBounds( entity other );
+
+// Gets the value of the specified shader parm.
+scriptEvent	float	getShaderParm( float parm );
+
+// Sets the value of the specified shader parm.
+scriptEvent	void 	setShaderParm( float parm, float value );
+
+// Sets shader parms Parm0, Parm1, Parm2, and Parm3 (red, green, blue, and alpha respectively).
+scriptEvent	void 	setShaderParms( float parm0, float parm1, float parm2, float parm3 );
+
+// Sets the RGB color of this entity (shader parms Parm0, Parm1, Parm2).
+scriptEvent	void 	setColor( float red, float green, float blue );
+
+// Gets the color of this entity (shader parms Parm0, Parm1, Parm2).
+scriptEvent	vector	getColor();
+
+// Stops a specific sound shader on the channel.
+scriptEvent	void 	stopSound( float channel );
+
+// Plays the sound specified by the snd_* key/value pair on the channel and returns
+// the length of the sound. This is the preferred method for playing sounds on an
+// entity since it ensures that the sound is precached.
+scriptEvent	float	startSound( string sound, float channel );
+
+// Fades the sound on this entity to a new level over a period of time.  Use SND_ANY for all currently playing sounds.
+scriptEvent	void 	fadeSound( float channel, float newLevel, float fadeTime );
+
+// specify pitch shifting for a channel
+scriptEvent	void 	setChannelPitchShift( float channel, float shift );
+
+// override sound shader flags for a channel
+scriptEvent	void 	setChannelFlags( float channel, float flags );
+scriptEvent	void 	clearChannelFlags( float channel, float flags );
+
+// searches for the name of a spawn arg that matches the prefix.  for example,
+// passing in "attack_target" matches "attack_target1", "attack_targetx", "attack_target_enemy",
+// etc. The returned string is the name of the key which can then be passed into
+// functions like getKey() to lookup the value of that spawn arg.  This
+// is usefull for when you have multiple values to look up, like when you
+// target multiple objects.  To find the next matching key, pass in the previous
+// result and the next key returned will be the first one that matches after
+// the previous result.  pass in "" to get the first match.  returns "" when no
+// more keys match.  Note to coders: this is the same as MatchPrefix in the game code.
+scriptEvent	string	getNextKey( string prefix, string lastMatch );
+
+// Sets a key on this entity's spawn args. Note that most spawn args are evaluated when
+// this entity spawns in, so this will not change the entity's behavior in most cases.
+// This is chiefly for saving data the script needs in an entity for later retrieval.
+scriptEvent	void 	setKey( string key, string value );
+
+// Retrieves the value of a specific spawn arg.
+scriptEvent	string	getKey( string key );
+
+// Retrieves the integer value of a specific spawn arg.
+scriptEvent	float	getIntKey( string key );
+
+// Retrieves the floating point value of a specific spawn arg.
+scriptEvent	float	getFloatKey( string key );
+
+// Retrieves the vector value of a specific spawn arg.
+scriptEvent	vector	getVectorKey( string key );
+
+// Retrieves the entity specified by the spawn arg.
+scriptEvent	entity	getEntityKey( string key );
+
+// Retrieves the value of a specific spawn arg, returning defaultValue if the key is not found.
+scriptEvent	string	getKeyWithDefault( string key, string defaultValue );
+
+// Retrieves the integer value of a specific spawn arg, returning defaultValue if the key is not found.
+scriptEvent	float	getIntKeyWithDefault( string key, float defaultValue );
+
+// Retrieves the floating point value of a specific spawn arg, returning defaultValue if the key is not found.
+scriptEvent	float	getFloatKeyWithDefault( string key, float defaultValue );
+
+// Retrieves the vector value of a specific spawn arg, returning defaultValue if the key is not found.
+scriptEvent	vector	getVectorKeyWithDefault( string key, vector defaultValue );
+
+// Retrieves the value of a specific spawn arg stored as playerClass data
+scriptEvent	string	getClassKey( string key );
+
+// Returns the distance of this entity to another entity.
+scriptEvent	float	distanceTo( entity other );
+
+// Returns the distance of this entity to a point.
+scriptEvent	float	distanceToPoint( vector point );
+
+// Suspends execution of the current thread for the given number of seconds.
+scriptEvent	void 	wait( float time );
+
+scriptEvent void	disablePhysics();
+scriptEvent void	enablePhysics();
+
+scriptEvent float	entitiesInTranslation( vector start, vector end, float contentMask, entity passEntity );
+scriptEvent float	entitiesInBounds( vector mins, vector maxs, float contentMask, boolean absoluteCoords );
+scriptEvent float	entitiesInLocalBounds( vector mins, vector maxs, float contentMask );
+scriptEvent float	entitiesInRadius( vector centre, float radius, float contentMask, boolean absoluteCoords );
+scriptEvent float	entitiesOfType( float typeHandle );
+scriptEvent float	entitiesOfClass( float typeHandle, boolean additive );
+scriptEvent float	entitiesOfCollection( string name );
+scriptEvent float	filterEntitiesByRadius( vector origin, float radius, boolean inclusive );
+scriptEvent float	filterEntitiesByClass( string typeName, boolean inclusive );
+scriptEvent float	filterEntitiesByAllegiance( float allegianceFlags, boolean inclusive );
+scriptEvent float	filterEntitiesByDisguiseAllegiance( float allegianceFlags, boolean inclusive );
+scriptEvent float	filterEntitiesByFilter( float filterIndex, boolean inclusive );
+scriptEvent float	filterEntitiesByTouching( boolean inclusive );
+
+scriptEvent float	getBoundsCacheCount();
+scriptEvent entity	getBoundsCacheEntity( float index );
+scriptEvent float	getSavedCacheCount( float index );
+scriptEvent entity	getSavedCacheEntity( float index, float entityIndex );
+scriptEvent float	saveCachedEntities();
+scriptEvent void	freeSavedCache( float index );
+
+
+scriptEvent float	getEntityAllegiance( entity other );
+scriptEvent boolean	inCollection( string name );
+
+scriptEvent float	getEntityContents();
+scriptEvent float	getMaskedEntityContents( float mask );
+
+scriptEvent boolean	takesDamage();
+scriptEvent void	setTakesDamage( boolean value );
+scriptEvent void	applyDamage( entity inflictor, entity attacker, vector dir, float damageIndex, float damageScale, object traceObject );
+
+scriptEvent void	setNetworkSynced( boolean value );
+
+scriptEvent float	hasAbility( string abilityName );
+scriptEvent void	sync( string fieldName );
+scriptEvent void	syncBroadcast( string fieldName );
+scriptEvent void	syncCallback( string fieldName, string syncFuncName );
+
+scriptEvent handle	playMaterialEffect( string effectname, vector color, string jointname, string materialType, boolean loop );
+scriptEvent handle	playJointEffect( string effectname, float jointHandle, boolean loop );
+scriptEvent handle	playJointEffectViewSuppress( string effectname, float jointHandle, boolean loop, boolean suppress );
+scriptEvent handle	playEffect( string effectname, string jointname, boolean loop );
+scriptEvent handle	playOriginEffect( string effectname, string materialType, vector origin, vector forward, boolean loop );
+
+scriptEvent handle	playEffectMaxVisDist( string effectname, string jointname, boolean loop, float maxVisDist, boolean isStatic );
+scriptEvent handle	playOriginEffectMaxVisDist( string effectname, string materialType, vector origin, vector forward, boolean loop, float maxVisDist, boolean isStatic );
+
+scriptEvent handle	playBeamEffect( string effectname, string materialType, vector origin, vector endOrigin, boolean loop );
+scriptEvent	string	lookupEffect( string effectname, string materialType );
+
+scriptEvent void	stopEffect( string effectname );
+scriptEvent void	killEffect( string effectname ); // Will destroy all of the current particles as well
+scriptEvent void	stopEffectHandle( handle effectHandle );
+scriptEvent void	unBindEffectHandle( handle effectHandle );
+scriptEvent void	setEffectAttenuation( handle effectHandle, float attenuation );
+scriptEvent void	setEffectRenderBounds( handle effectHandle, boolean loop );
+scriptEvent void	setEffectColor( handle effectHandle, vector color, float alpha );
+scriptEvent void	setEffectOrigin( handle effectHandle, vector origin );
+scriptEvent void	setEffectAngles( handle effectHandle, vector angles );
+scriptEvent vector	getEffectOrigin( handle effectHandle );
+scriptEvent vector	getEffectEndOrigin( handle effectHandle );
+scriptEvent void	stopAllEffects();
+
+scriptEvent void	detachRotationBind( handle effectHandle );
+
+scriptEvent void	clearContacts();
+scriptEvent void	setContents( float contents );
+scriptEvent void	setClipmask( float clipmask );
+scriptEvent void	putToRest();
+scriptEvent boolean	hasForceDisableClip();
+scriptEvent void	forceDisableClip();
+scriptEvent void	forceEnableClip();
+scriptEvent boolean	hasGroundContacts();
+scriptEvent void	disableGravity( boolean disable );
+scriptEvent void	setComeToRest( boolean enabled );
+scriptEvent void	applyImpulse( vector point, vector impulse );
+scriptEvent void	addForce( vector force );
+scriptEvent void	addForceAt( vector force, vector pos );
+scriptEvent void	addTorque( vector torque );
+scriptEvent void	activatePhysics();
+
+// returns true if object is not moving
+scriptEvent	boolean	isAtRest();
+
+// returns true if object is bound
+scriptEvent	boolean	isBound();
+
+scriptEvent void	turnTowards( vector dir, float maxAngularSpeed );
+scriptEvent object	getGameTeam();
+scriptEvent void	setGameTeam( object team );
+scriptEvent entity	launchMissileSimple( entity owner, entity owner2, entity enemy, float projectileDefIndex, float projectileDefIndex, float spread, vector origin, vector velocity );
+scriptEvent void	launchBullet( entity owner, entity ignoreEntity, float projectileDefIndex, float spread, vector origin, vector direction, float tracer, boolean useAntiLag ); // hit scan
+scriptEvent vector	getBulletTracerStart();
+scriptEvent vector	getBulletTracerEnd();
+
+scriptEvent entity	getLocalPlayer();
+scriptEvent entity	getLocalViewPlayer();
+
+scriptEvent float	getGUI( string name );
+scriptEvent void	setGUITheme( float guiHandle, string name );
+scriptEvent void 	guiPostNamedEvent( float guiHandle, string window, string eventName );
+
+scriptEvent boolean	pointInRadar( vector point, float type, boolean ignoreJammers );
+
+scriptEvent void 	disableImpact();
+scriptEvent void 	enableImpact();
+
+scriptEvent void 	disableKnockback();
+scriptEvent void 	enableKnockback();
+
+scriptEvent void 	sendNetworkCommand( string message );
+scriptEvent void 	sendNetworkEvent( float clientIndex, boolean isRepeaterClient, string message );
+
+scriptEvent void	preventDeployment( boolean prevent );
+
+scriptEvent float	allocBeam( string shader );
+scriptEvent void	updateBeam( float beamHandle, vector start, vector end, vector color, float alpha, float width );
+scriptEvent void	freeBeam( float beamHandle );
+scriptEvent void	freeAllBeams();
+
+scriptEvent entity	getNextTeamEntity();
+
+// smaller values are drawn after larger values
+scriptEvent float	allocHudModule( string name, float sort, boolean allowInhibit );
+scriptEvent void	freeHudModule( float handle );
+
+scriptEvent boolean	requestDeployment( entity p, float deployObjectIndex, vector position, float yaw, float delay );
+scriptEvent boolean	requestCheckedDeployment( entity p, float deployObjectIndex, float yaw, float delay );
+
+scriptEvent vector	getWorldMins();
+scriptEvent vector	getWorldMaxs();
+
+scriptEvent void	setDeploymentObject( float deployObjectIndex );
+scriptEvent void	setDeploymentState( float deployObjectState );
+
+scriptEvent void	setDeploymentMode( boolean mode );
+scriptEvent boolean	getDeploymentMode();
+scriptEvent float	getDeploymentRotation();
+scriptEvent boolean	allowDeploymentRotation();
+
+scriptEvent float	getDefaultFov();
+
+scriptEvent	void 	setHealth( float health );
+scriptEvent	float	getHealth();
+scriptEvent	void 	setMaxHealth( float health );
+scriptEvent	float	getMaxHealth();
+scriptEvent	entity	getEnemy();
+
+scriptEvent void	setCanCollideWithTeam( boolean canCollide );
+
+// creates an OBJECT and returns a reference to it
+scriptEvent	entity	spawnClientEffect( string classname );
+scriptEvent	entity	spawnClientCrawlEffect( string classname, entity ent, float crawlTime );
+
+scriptEvent void	setEffectEndOrigin( vector endPos );
+scriptEvent void	setEffectLooping( boolean looping );
+scriptEvent void	endEffect( boolean destroyParticles );
+
+// returns the spawn ID of the entity as a hex-encoded string
+scriptEvent string	getSpawnID();
+
+scriptEvent float	isSpotted();
+scriptEvent void	setSpotted( entity spotter );
+
+scriptEvent void	forceNetworkUpdate();
+
+scriptEvent float	getEntityNumber();
+
+scriptEvent void	disableCrosshairTrace( boolean value );
+
+scriptEvent float	isInWater();
+
+scriptEvent float	getDamageScale();
+scriptEvent string	getDefaultSurfaceType();
+
+/***********************************************************************
+
+	system events (called via 'sys.')
+
+***********************************************************************/
+
+scriptEvent void	addCheapDecal( entity attachTo, vector origin, vector normal, string decalKeyName, string surfaceTypeName );
+
+scriptEvent object	createMaskEditSession();
+
+scriptEvent	string	handleToString( handle h );
+scriptEvent	handle	stringToHandle( string s );
+
+scriptEvent	wstring	toWStr( string str );
+
+// Pushes a localization argument for formatting
+scriptEvent	void 	pushLocString( wstring str );
+scriptEvent void	pushLocStringIndex( handle index );
+
+// Returns a localized string for the current language, formatting in any 
+// arguments pushed via pushLocString
+scriptEvent wstring	localizeStringIndexArgs( handle index );
+scriptEvent	wstring	localizeStringArgs( string str );
+
+// Returns a localized string handle
+scriptEvent	handle 	localizeString( string str );
+
+// Terminates a thread.
+scriptEvent	void 	terminate( float threadNumber );
+
+// Suspends execution of the current thread for the given number of seconds.
+scriptEvent	void 	wait( float time );
+
+// Suspends execution for one game frame.
+scriptEvent	void 	waitFrame();
+
+// Prints the given string to the console.
+scriptEvent	void 	print( string text );
+
+// Prints the given line to the console.
+scriptEvent	void 	println( string text );
+
+// Prints the script stack trace to the console.
+scriptEvent	void 	stackTrace();
+
+// Breaks if the condition is zero. (Only works in debug builds.)
+scriptEvent	void 	assert( boolean condition );
+
+// Returns a wrapper object for a cvar.
+scriptEvent	object	getCVar( string name, string defaultValue );
+
+// Returns a random value X where 0 <= X < range.
+scriptEvent	float	random( float range );
+
+// Returns the current game time in seconds.
+scriptEvent	float	getTime();
+
+// Returns the time converted to GUI time.
+scriptEvent	float	toGuiTime( float time );
+
+// Kills all threads with the specified name
+scriptEvent	void 	killThread( string threadName );
+
+// Sets the name of the current thread.
+scriptEvent	void 	threadName( string name );
+
+// Returns a reference to the entity with the specified hex-encoded spawn ID.
+scriptEvent	entity	getEntityByID( string id );
+
+// Returns a reference to the entity with the specified name.
+scriptEvent	entity	getEntity( string name );
+
+// Creates an entity of the specified classname and returns a reference to the entity.
+scriptEvent	entity	spawn( string classname );
+
+// Creates a client entity of the specified classname and returns a reference to it.
+scriptEvent	entity	spawnClient( string classname );
+
+// Creates an entity of the specified class type index and returns a reference to the entity.
+scriptEvent	entity	spawnType( float entityDefIndex );
+
+// Returns a forward vector for the given Euler angles.
+scriptEvent	vector	angToForward( vector angles );
+
+// Returns a right vector for the given Euler angles.
+scriptEvent	vector	angToRight( vector angles );
+
+// Returns an up vector for the given Euler angles.
+scriptEvent	vector	angToUp( vector angles );
+
+// Returns the sine of the given angle in degrees.
+scriptEvent	float	sin( float degrees );
+
+// Returns the inverse sine of the given value in degrees.
+scriptEvent float	asin( float a );
+
+// Returns the cosine of the given angle in degrees.
+scriptEvent	float	cos( float degrees );
+
+// Returns the angle in degrees of the given dot.
+scriptEvent	float	acos( float dot );
+
+scriptEvent	float	atan( float a );
+scriptEvent	float	atan2( float a1, float a2 );
+scriptEvent	float	getRoot( float index );
+scriptEvent	float	solveRoots( float a, float b, float c );
+
+// Returns an angle in the range -180 -> 180
+scriptEvent	float	angleNormalize180( float angle );
+
+// Returns the absolute value of a number
+scriptEvent	float	fabs( float value );
+
+// Returns the floor of a number
+scriptEvent	float	floor( float value );
+
+// Returns the ceil of a number
+scriptEvent	float	ceil( float value );
+
+// Returns value % modulus
+scriptEvent	float	mod( float value, float modulus );		// integer mod
+scriptEvent	float	fmod( float value, float modulus );		// floating point mod
+
+// Returns the square root of the given number.
+scriptEvent	float	sqrt( float square );
+
+// Returns the normalized version of the given vector.
+scriptEvent	vector	vecNormalize( vector vec );
+
+// Returns the length of the given vector.
+scriptEvent	float	vecLength( vector vec );
+
+scriptEvent	float	vecLengthSquared( vector vec );
+
+// Returns the cross product of the two vectors.
+scriptEvent	vector	crossProduct( vector vec1, vector vec2 );
+
+// Returns Euler angles for the given direction.
+scriptEvent	vector	vecToAngles( vector vec );
+
+// Rotates a vector by a set of angles
+scriptEvent	vector	rotateVecByAngles( vector vec, vector angles );
+
+// Rotates a one set of angles by another set of angles
+scriptEvent	vector	rotateAngles( vector ang1, vector ang2 );
+
+// Rotates a vector about an axis
+scriptEvent	vector	rotateVec( vector vec, vector axis, float angle );
+
+// Transforms a vector into the local space of an entity
+scriptEvent	vector	toLocalSpace( vector vec, entity ent );
+
+// Transforms a vector from the local space of an entity to world space
+scriptEvent	vector	toWorldSpace( vector vec, entity ent );
+
+// Returns the contents in the bounds specified by mins & maxs & origin, based on the mask
+// The 'passEntity' is considered non-solid for the check.
+scriptEvent float	checkContents( vector origin, vector mins, vector maxs, float contents_mask, object passEntity );
+
+// Returns the fraction of movement completed before the box from 'mins' to 'maxs' hits solid geometry
+// when moving from 'start' to 'end'. The 'passEntity' is considered non-solid during the move.
+scriptEvent	float	trace( vector start, vector end, vector mins, vector maxs, float contents_mask, object passEntity );
+
+// Returns the fraction of movement completed before the trace hits solid geometry
+// when moving from 'start' to 'end'. The 'passEntity' is considered non-solid during the move.
+scriptEvent	float	tracePoint( vector start, vector end, float contents_mask, object passEntity );
+
+// Returns the fraction of movement completed before the box from 'mins' to 'maxs' at 'angles' hits solid geometry
+// when moving from 'start' to 'end'. The 'passEntity' is considered non-solid during the move.
+scriptEvent	float	traceOriented( vector start, vector end, vector mins, vector maxs, vector angles, float contents_mask, object passEntity );
+
+scriptEvent	object	saveTrace();
+scriptEvent	void	freeTrace( object index );
+
+// Returns the fraction of movement completed during the last call to trace or tracePoint.
+scriptEvent float	getTraceFraction();
+
+// Returns the position the trace stopped due to a collision with solid geometry during the last call to trace or tracePoint
+scriptEvent vector	getTraceEndPos();
+
+// Returns the collision point from a collision with solid geometry during the last call to trace or tracePoint
+scriptEvent vector	getTracePoint();
+
+// Returns the normal of the hit plane during the last call to trace or tracePoint
+scriptEvent vector	getTraceNormal();
+
+// Returns a reference to the entity which was hit during the last call to trace or tracePoint
+scriptEvent entity	getTraceEntity();
+
+// Returns the flags of the surface type hit during the last call to trace
+scriptEvent float	getTraceSurfaceFlags();
+
+// Returns the name of the surface type hit during the last call to trace
+scriptEvent string	getTraceSurfaceType();
+
+// Returns the color of the surface type hit during the last call to trace
+scriptEvent vector	getTraceSurfaceColor();
+
+// Returns the number of the skeletal joint closest to the location on the entity which was hit
+// during the last call to trace or tracePoint
+scriptEvent string	getTraceJoint();
+
+// Returns the number of the body part of the entity which was hit during the last call to trace or tracePoint
+scriptEvent string	getTraceBody();
+
+// Starts playing background music.
+scriptEvent	void 	music( string shaderName );
+
+// Plays a sound on the local player head, on the specified channel
+scriptEvent	void 	startSoundDirect( string shaderName, float channel );
+
+// Issues an error.
+scriptEvent	void 	error( string text );
+
+// Issues a warning.
+scriptEvent	void 	warning( string text );
+
+// Returns the number of characters in the string
+scriptEvent	float	strLength( string text );
+
+// Returns a string composed of the first num characters
+scriptEvent	string	strLeft( string text, float num );
+
+// Returns a string composed of the last num characters
+scriptEvent	string	strRight( string text, float num );
+
+// Returns the string following the first num characters
+scriptEvent	string	strSkip( string text, float num );
+
+// Returns a string composed of the characters from start to start + num
+scriptEvent	string	strMid( string text, float start, float num );
+
+// Returns the numeric value of a string
+scriptEvent float	strToFloat( string text );
+
+// networking - checks for client
+scriptEvent boolean	isClient();
+
+// networking - are you running a server? ( listen or dedicated )
+scriptEvent boolean	isServer();
+
+// networking - running a demo or have a local client.
+scriptEvent boolean	doClientSideStuff();
+
+// returns the length of time between game frames.  this is not related to renderer frame rate.
+scriptEvent float	getFrameTime();
+
+// returns the number of game frames per second.  this is not related to renderer frame rate.
+scriptEvent float	getTicsPerSecond();
+
+// line drawing for debug visualization.  lifetime of 0 == 1 frame.
+scriptEvent	void 	debugLine( vector color, vector start, vector end, float lifetime );
+scriptEvent	void 	debugArrow( vector color, vector start, vector end, float size, float lifetime );
+scriptEvent	void 	debugCircle( vector color, vector origin, vector dir, float radius, float numSteps, float lifetime );
+scriptEvent	void 	debugBounds( vector color, vector mins, vector maxs, float lifetime );
+
+// Command map icon stuff
+scriptEvent	float 	allocCMIcon( entity owner, float sort );
+scriptEvent	void 	freeCMIcon( entity owner, float iconHandle );
+scriptEvent	void 	setCMIconSize( float iconHandle, float size );
+scriptEvent	void 	setCMIconUnknownSize( float iconHandle, float size );
+scriptEvent	void 	setCMIconSize2d( float iconHandle, float sizeX, float sizeY );
+scriptEvent	void 	setCMIconUnknownSize2d( float iconHandle, float sizeX, float sizeY );
+scriptEvent	void 	setCMIconSizeMode( float iconHandle, float mode );
+scriptEvent	void 	setCMIconPositionMode( float iconHandle, float mode );
+scriptEvent	void 	setCMIconOrigin( float iconHandle, vector origin );
+scriptEvent	void 	setCMIconColor( float iconHandle, vector color, float alpha );
+scriptEvent	void 	setCMIconColorMode( float iconHandle, float mode );
+scriptEvent	void 	setCMIconDrawMode( float iconHandle, float mode );
+scriptEvent	void 	setCMIconAngle( float iconHandle, float angle );
+scriptEvent	void 	setCMIconSides( float iconHandle, float sides );
+scriptEvent	void 	showCMIcon( float iconHandle );
+scriptEvent	void 	hideCMIcon( float iconHandle );
+scriptEvent	void 	addCMIconRequirement( float iconHandle, string requirement );
+scriptEvent	void 	setCMIconMaterial( float iconHandle, float material );
+scriptEvent	void 	setCMIconUnknownMaterial( float iconHandle, float material );
+scriptEvent	void 	setCMIconFireteamMaterial( float iconHandle, float material );
+scriptEvent	void 	setCMIconGuiMessage( float iconHandle, string message );
+scriptEvent	void 	setCMIconFlag( float iconHandle, float flag );
+scriptEvent	void 	clearCMIconFlag( float iconHandle, float flag );
+scriptEvent	void 	setCMIconArcAngle( float iconHandle, float arcAngle );
+scriptEvent	void 	setCMIconShaderParm( float iconHandle, float index, float value );
+scriptEvent float	getCMIconFlags( float iconHandle );
+scriptEvent	void 	flashCMIcon( float iconHandle, float materialIndex, float seconds, float setFlags );
+
+// text drawing for debugging.  align can be 0-left, 1-center, 2-right.  lifetime of 0 == 1 frame.
+scriptEvent	void 	drawText( string text, vector origin, float scale, vector color, float align, float lifetime );
+
+scriptEvent void	broadcastToolTip( float toolTipIndex, entity other, wstring str1, wstring str2, wstring str3, wstring str4 );
+
+scriptEvent float	getDeclType( string name );
+scriptEvent float	getDeclCount( float declType );
+scriptEvent float	getDeclIndex( float declType, string name );
+scriptEvent string	getDeclName( float declType, float declIndex );
+scriptEvent void	applyRadiusDamage( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
+scriptEvent boolean	filterEntity( float filterIndex, entity other );
+scriptEvent float	getTableCount( float tableIndex );
+scriptEvent float	getTableValue( float tableIndex, float valueIndex );
+scriptEvent float	getTableValueExact( float tableIndex, float valueIndex );
+
+scriptEvent float	allocDecal( string materialName );
+scriptEvent void	projectDecal( float decalHandle, vector origin, vector direction, float depth, boolean parallel, vector size, float angle, vector color );
+scriptEvent void	freeDecal( float decalHandle );
+scriptEvent void	resetDecal( float decalHandle );
+
+// Gets a type handle for a type name
+scriptEvent float	getTypeHandle( string typename );
+
+scriptEvent float	argc();
+scriptEvent string	argv( float index );
+scriptEvent float	argvf( float index );
+scriptEvent void	setActionCommand( string message );
+
+// Play an effect in the world.  Effect name is an actual string,
+// not a dict entry.  Make sure to precache the effect.  Also note that these can't loop.
+scriptEvent void	playWorldEffect ( string effectName, vector color, vector org, vector forward );
+scriptEvent void	playWorldEffectRotate ( string effectName, vector color, vector org, vector forward, vector rot );
+scriptEvent void	playWorldEffectRotateAlign ( string effectName, vector color, vector org, vector forward, vector rot, entity ent );
+scriptEvent void	playWorldBeamEffect( string effectname, vector color, vector origin, vector endOrigin );
+
+scriptEvent void	setGUIFloat( float guiHandle, string name, float value );
+scriptEvent void	setGUIHandle( float guiHandle, string name, handle value );
+scriptEvent void	setGUIVec2( float guiHandle, string name, float x, float y );
+scriptEvent void	setGUIVec3( float guiHandle, string name, float x, float y, float z );
+scriptEvent void	setGUIVec4( float guiHandle, string name, float x, float y, float z, float w );
+scriptEvent void	setGUIString( float guiHandle, string name, string value );
+scriptEvent void	setGUIWString( float guiHandle, string name, wstring value );
+scriptEvent float	getGUIFloat( float guiHandle, string name );
+//scriptEvent float	addNotifyIcon( float guiHandle, string window, string material );
+//scriptEvent void	removeNotifyIcon( float guiHandle, string window, float handle );
+//scriptEvent void	bumpNotifyIcon( float guiHandle, string window, float handle );
+
+scriptEvent void	clearDeployRequest( float deployIndex );
+scriptEvent float	getDeployMask( string name );
+scriptEvent float	checkDeployMask( vector mins, vector maxs, float deployMaskHandle );
+scriptEvent float	getWorldPlayZoneIndex( vector point );
+
+scriptEvent float	allocTargetTimer( string name );
+scriptEvent float	getTargetTimerValue( float targetTimerHandle, entity p );
+scriptEvent void	setTargetTimerValue( float targetTimerHandle, entity p, float value );
+
+scriptEvent string	getEntityDefKey( float entityDefIndex, string key );
+scriptEvent float	getEntityDefIntKey( float entityDefIndex, string key );
+scriptEvent float	getEntityDefFloatKey( float entityDefIndex, string key );
+scriptEvent vector	getEntityDefVectorKey( float entityDefIndex, string key );
+
+scriptEvent float	getMaxClients();
+scriptEvent entity	getClient( float index );
+
+scriptEvent entity	getTerritoryForPoint( vector point, object team, boolean requireTeam, boolean requireActive );
+
+scriptEvent float	getMatchTimeRemaining();
+scriptEvent float	getMatchState();					// see GS_* defines
+
+// stats
+scriptEvent handle	getStat( string name );
+scriptEvent handle	allocStatInt( string name );
+scriptEvent handle	allocStatFloat( string name );
+scriptEvent void	increaseStatInt( handle h, float playerIndex, float count );
+scriptEvent void	increaseStatFloat( handle h, float playerIndex, float count );
+scriptEvent float	getStatValue( handle h, float playerIndex );
+scriptEvent float	getStatDelta( handle h, float playerIndex );
+scriptEvent void	setStatBaseLine( float playerIndex );
+
+scriptEvent string	getClimateSkin( string key );
+
+// both sender and recipient can be null, sender == null = high command message, recipient == null = team or global message
+scriptEvent void	sendQuickChat( entity sender, float quickChatIndex, entity recipient );
+
+scriptEvent entity	getContextEntity();
+
+scriptEvent void	setEndGameStatValue( float statIndex, entity p, float value );
+scriptEvent void	setEndGameStatWinner( float statIndex, entity p );
+scriptEvent float	allocEndGameStat();
+scriptEvent void	sendEndGameStats();
+
+// a very approximate point trace using the heightmap - great for really really rough approximations
+scriptEvent float	heightMapTrace( vector start, vector end );
+
+scriptEvent void	enableBotReachability (string name, float team, boolean enable);
+
+scriptEvent float	getNextBotActionIndex( float statIndex, float type );
+scriptEvent vector	getBotActionOrigin( float index );
+scriptEvent float	getBotActionDeployableType( float index );
+scriptEvent float	getBotActionBaseGoalType( float index, object team );
+
+scriptEvent void	enablePlayerHeadModels();
+scriptEvent void	disablePlayerHeadModels();
+
+/***********************************************************************
+
+	rules
+
+***********************************************************************/
+
+scriptEvent object	getTeam( string name );
+scriptEvent void	setWinningTeam( object team );
+scriptEvent void	endGame();
+scriptEvent void	setEndGameCamera( entity other );
+
+// get key suffix for game mode
+scriptEvent string	getKeySuffix();
+
+/***********************************************************************
+
+	lights
+
+***********************************************************************/
+
+// Turns the light/speaker on.
+scriptEvent	void 	turnOn();
+
+// Turns the light/speaker off.
+scriptEvent	void 	turnOff();
+
+/***********************************************************************
+
+	func_forcefield
+
+***********************************************************************/
+
+// Turns the forcefield on and off.
+scriptEvent	void 	toggle();
+
+
+/***********************************************************************
+
+	func_animate
+
+***********************************************************************/
+
+// Switches to a ragdoll taking over the animation.
+scriptEvent	void 	startRagdoll();
+
+/***********************************************************************
+
+	func_movers
+
+***********************************************************************/
+
+scriptEvent void	setToggle( boolean toggle );
+
+/***********************************************************************
+
+	doors
+
+***********************************************************************/
+
+// Enables the door.
+scriptEvent	void 	enable();
+
+// Disables the door.
+scriptEvent	void 	disable();
+
+// Opens the door.
+scriptEvent	void 	open();
+
+// Closes the door.
+scriptEvent	void 	close();
+
+// Door state queries
+scriptEvent	boolean	isOpen();
+scriptEvent	boolean	isClosed();
+scriptEvent	boolean	isOpening();
+scriptEvent	boolean	isClosing();
+
+// Gets the master entity of a door chain
+scriptEvent	entity	getMoveMaster();
+
+// Gets the next entity in the door chain
+scriptEvent	entity	getNextSlave();
+
+/***********************************************************************
+
+	func_moveable
+
+***********************************************************************/
+
+// Makes the moveable non-solid for other entities.
+scriptEvent	void 	becomeNonSolid();
+
+// enable/disable damage
+scriptEvent void	enableDamage( boolean enable );
+
+
+/***********************************************************************
+
+	sdGeneralMover
+
+***********************************************************************/
+
+// start the entity moving specifying the duration of the move
+scriptEvent void	startTimedMove( float from, float to, float seconds );
+
+// move directly to the position
+scriptEvent void	setPosition( float index );
+
+// gets the number of positions available for use
+scriptEvent float	getNumPositions();
+
+// add a position to the end of the list, dir should be normalised or zero (to not change dir)
+scriptEvent float	addPosition( vector pos, vector dir );
+
+// get the state of the entity
+scriptEvent float	getMoverState();
+
+// whether or not to apply damage (using damage_mover_crush) to the blocking entity (on by default)
+scriptEvent void	killBlockingEntity( boolean kill );
+
+
+/***********************************************************************
+
+	skeletal animation (weapons, players, ai, func_animated)
+
+***********************************************************************/
+
+// Looks up the number of the specified joint. Returns INVALID_JOINT if the joint is not found.
+scriptEvent	float	getJointHandle( string jointname );
+
+// Removes any custom transforms on all joints.
+scriptEvent	void	clearAllJoints();
+
+// Removes any custom transforms on the specified joint.
+scriptEvent	void	clearJoint( float jointnum );
+
+// Modifies the position of the joint based on the transform type.
+scriptEvent	void	setJointPos( float jointnum, float transform_type, vector pos );
+
+// Modifies the orientation of the joint based on the transform type.
+scriptEvent	void	setJointAngle( float jointnum, float transform_type, vector angles );
+
+// returns the position of the joint in world space
+scriptEvent	vector	getJointPos( float jointnum );
+
+// returns the position of the joint in model space
+scriptEvent	vector	getLocalJointPos( float jointnum );
+
+//
+scriptEvent	vector	getJointAxis( float jointnum, float index );
+
+// returns the angular orientation of the joint in world space
+scriptEvent	vector	getJointAngle( float jointnum );
+
+// plays an anim, which will be sent across the network
+scriptEvent	float	playAnim( float channel, string animName );
+
+scriptEvent	boolean	isAnimating();
+scriptEvent	string	getAnimatingOnChannel( float channelHandle );
+scriptEvent	string	animationName( float animIndex );
+scriptEvent	boolean	isAnimatingOnChannel( float channelHandle );
+scriptEvent	vector	jointToWorldSpace( float jointHandle, vector dir );
+scriptEvent	vector	worldToModelSpace( vector point );
+
+scriptEvent	void	hideSurface( float index );
+scriptEvent	void	showSurface( float index );
+scriptEvent	float	getSurfaceId( string surfaceName );
+scriptEvent	boolean	isSurfaceHidden( float index );
+
+/***********************************************************************
+
+	weapons
+
+***********************************************************************/
+
+scriptEvent	entity	getOwner();
+scriptEvent	void 	nextWeapon();
+scriptEvent	void 	weaponState( string stateFunction, float blendFrames );
+scriptEvent	string 	getWeaponState();
+
+scriptEvent	void 	addToClip( float modIndex, float amount );
+scriptEvent	float	ammoInClip( float modIndex );
+scriptEvent	float	ammoAvailable( float modIndex );
+scriptEvent	float	clipSize( float modIndex );
+scriptEvent	float	ammoRequired( float modIndex );
+scriptEvent	float	ammoType( float modIndex );
+scriptEvent	void	useAmmo( float ammoType, float amount );
+
+// let the owner know that the weapon was fired
+scriptEvent void	fired();
+
+// Plays the given animation on the given channel.  Returns false if anim doesn't exist.
+// NOTE: weapons only use ANIMCHANNEL_ALL
+scriptEvent	float	playAnim( float channel, string animName );
+
+// Continuously repeats the given animation on the given channel.  Returns false if anim doesn't exist.
+// NOTE: weapons only use ANIMCHANNEL_ALL
+scriptEvent	float	playCycle( float channel, string animName );
+
+// Returns true if the animation playing on the given channel
+// is completed considering a number of blend frames.
+// NOTE: weapons only use ANIMCHANNEL_ALL
+scriptEvent	boolean	animDone( float channel, float blendOutFrames );
+
+// Sets the number of frames to blend between animations on the given channel.
+// NOTE: weapons only use ANIMCHANNEL_ALL
+scriptEvent	void 	setBlendFrames( float channel, float blendFrame );
+
+// Returns the number of frames to blend between animations on the given channel.
+// NOTE: weapons only use ANIMCHANNEL_ALL
+scriptEvent	float 	getBlendFrames( float channel );
+
+scriptEvent	void 	weaponReady();
+scriptEvent	void 	weaponReloading();
+scriptEvent	void 	weaponHolstered();
+scriptEvent	void 	weaponRising();
+scriptEvent	void 	weaponLowering();
+
+scriptEvent	void 	launchProjectiles( float numProjectiles, float projectileIndex, float spread, float fuseOffset, float launchPower, float dmgPower );
+scriptEvent entity  createProjectile( float mod_index );
+scriptEvent void	doProjectileTracer( float projectileIndex, vector start, vector end );
+
+scriptEvent	boolean	melee( float contentMask, float distance, boolean ignoreOwner, boolean useAntiLag );
+scriptEvent	boolean	meleeAttack( float damageScale );
+
+scriptEvent object	saveMeleeTrace();
+scriptEvent float	getMeleeFraction();
+scriptEvent vector	getMeleeEndPos();
+scriptEvent vector	getMeleePoint();
+scriptEvent vector	getMeleeNormal();
+scriptEvent entity	getMeleeEntity();
+scriptEvent float	getMeleeSurfaceFlags();
+scriptEvent string	getMeleeSurfaceType();
+scriptEvent vector	getMeleeSurfaceColor();
+scriptEvent string	getMeleeJoint();
+scriptEvent string	getMeleeBody();
+
+scriptEvent void	enableTargetLock( boolean enable );
+
+scriptEvent	void	setFovStart( float startFov, float endFov, float startTime, float duration );
+scriptEvent	void	setFov( float startFov, float endFov, float duration );
+scriptEvent	void	clearFov();
+scriptEvent	float	getFov();
+
+scriptEvent void	enableClamp( vector baseAngles );
+scriptEvent void	disableClamp();
+
+scriptEvent float	getCurrentSpread();
+scriptEvent void	increaseSpread();
+scriptEvent void	setSpreadModifier( float modifier );
+scriptEvent object	getWorldModel( float index );
+scriptEvent void	setDriftScale( float scale );
+
+scriptEvent void	resetTracerCounter();
+scriptEvent handle	getLastTracer();
+
+scriptEvent void	setupAnimClass( string prefix );
+
+scriptEvent void	enableSway( boolean enable );
+
+scriptEvent void	setStatName( string name );
+
+scriptEvent void	sendTracerMessage( vector start, vector end, float strength );
+
+/***********************************************************************
+
+	projectiles
+
+***********************************************************************/
+
+scriptEvent float	getDamagePower();
+scriptEvent entity	getOwner();
+scriptEvent void	setOwner( entity owner );
+scriptEvent float	getLaunchTime();
+scriptEvent void	launch( vector velocity );
+scriptEvent void	addOwner( entity other );
+scriptEvent void	setEnemy( entity other );
+scriptEvent boolean	isOwner( entity other );
+
+/***********************************************************************
+
+	actors (players and AI)
+
+***********************************************************************/
+
+// Stops the animation currently playing on the given channel over the given number of frames.
+scriptEvent	void 	stopAnim( float channel, float frames );
+
+// Plays the given animation on the given channel.  Returns false if anim doesn't exist. and the time the animation takes
+scriptEvent	float	playAnim( float channel, string animName );
+
+// Plays the given animation on the given channel.  Returns false if anim doesn't exist. Blends with current animation.
+scriptEvent	float	playAnimBlended( float channel, string animName, float blendTime );
+
+scriptEvent	float	getAnimLength( string animname );
+
+// Continuously repeats the given animation on the given channel.  Returns false if anim doesn't exist.
+scriptEvent	float	playCycle( float channel, string animName );
+
+// Plays the given idle animation on the given channel.  Returns false if anim doesn't exist.
+scriptEvent	boolean	idleAnim( float channel, string animName );
+
+// Sets the number of frames to blend between animations on the given channel.
+scriptEvent	void 	setBlendFrames( float channel, float blendFrame );
+
+// Returns the number of frames to blend between animations on the given channel.
+scriptEvent	float 	getBlendFrames( float channel );
+
+// Sets a new animation state script function for the given channel.
+scriptEvent	void 	animState( float channel, string stateFunction, float blendFrame );
+
+// Returns the name of the current animation state script function used for the given channel.
+scriptEvent	string	getAnimState( float channel );
+
+// Returns true if the given animation state script function is currently used for the given channel.
+scriptEvent	boolean	inAnimState( float channel, string stateFunc );
+
+// Returns true if the animation playing on the given channel
+// is completed considering a number of blend frames.
+scriptEvent	boolean	animDone( float channel, float blendOutFrames );
+
+// Disables the animation currently playing on the given channel and syncs
+// the animation with the animation of the nearest animating channel.
+scriptEvent	void 	overrideAnim( float channel );
+
+// Enables animation on the given channel.
+scriptEvent	void 	enableAnim( float channel, float blendFrames );
+
+// Set the various animation prefixes
+scriptEvent	void 	setPrefix( float animChannel, float prefixType, string prefix );
+
+// Returns true when an entity has a specific animation.
+scriptEvent	boolean	hasAnim( float channel, string animName );
+
+// Returns true when a weapon entity has a specific animation.
+scriptEvent	boolean	hasWeaponAnim( string animName );
+
+// sets the next state and goes to it immediately
+scriptEvent	void 	setState( string stateFunc );
+scriptEvent	string  getState();
+
+scriptEvent void syncAnim( float channel, float toChannel, float blendFrames );
+
+scriptEvent	float	getDeployResult( float deployObjectIndex );
+
+/***********************************************************************
+
+	players
+
+***********************************************************************/
+
+// Returns the button state from the current user command.
+scriptEvent	boolean	getButton( float key );
+
+// Returns the movement relative to the player's view angles from the current user command.
+// vector_x = forward, vector_y = right, vector_z = up
+scriptEvent	vector	getMove();
+
+scriptEvent	vector	getUserCmdAngles();
+
+// Returns the player view angles (relative to a bunch of things)
+scriptEvent	vector	getViewAngles();
+
+// Sets the player view angles (may not be reliable in all cases)
+scriptEvent	void	setViewAngles( vector angles );
+
+// Returns the player's remote camera view angles.
+scriptEvent	vector	getCameraViewAngles();
+
+// Returns the player's render view angles (relative to the world)
+scriptEvent	vector	getRenderViewAngles();
+
+// Returns the player view origin.
+scriptEvent	vector	getViewOrigin();
+
+// Returns the entity for the player's weapon
+scriptEvent entity	getWeaponEntity();
+
+scriptEvent void	freeze( boolean enabled );
+scriptEvent void	freezeTurning( boolean enabled );
+
+scriptEvent void	setRemoteCamera( entity other );
+scriptEvent entity	getRemoteCamera();
+
+// sets an offset from the remote camera to be used when viewing a remote camera
+scriptEvent void	setRemoteCameraViewOffset( vector offset );
+
+// get the entity from which the player is currently viewing (e.g. themselves, a remote camera...)
+scriptEvent entity	getViewingEntity();
+
+// ui_showGun value for this player
+scriptEvent boolean	isGunHidden();
+
+scriptEvent void	giveProficiency( float index, float scale, object task, string reason );
+scriptEvent void	giveClassProficiency( float count, string reason );
+scriptEvent float	getProficiency( float type );
+scriptEvent float	getXP( float type, boolean fromBase );
+scriptEvent float	heal( float count );
+scriptEvent float	unheal( float count );
+scriptEvent void	makeInvulnerable( float len );
+scriptEvent void	giveClass( string classname );
+scriptEvent boolean	givePackage( string packageName );
+scriptEvent void	setClassOption( float optionIndex, float itemIndex );
+scriptEvent void	sendToolTip( float index );
+scriptEvent void	cancelToolTips();
+scriptEvent void	selectBestWeapon( boolean allowCurrent );
+scriptEvent void	setWeapon( string weaponName, boolean instant );
+scriptEvent string	getCurrentWeapon();
+scriptEvent boolean	hasWeapon( string weaponName );
+scriptEvent entity	getVehicle();
+scriptEvent float	getAmmoFraction();
+scriptEvent string	getUserName();
+scriptEvent string	getCleanUserName();
+scriptEvent string	getClassName();
+scriptEvent string	getCachedClassName();
+scriptEvent float	getPlayerClass();
+scriptEvent handle	getRankName();
+scriptEvent handle	getShortRankName();
+scriptEvent float	getMaxHealth();
+scriptEvent entity	getCrosshairEntity();
+scriptEvent float	getCrosshairDistance( boolean needValidInfo );
+scriptEvent vector	getCrosshairEndPos();
+scriptEvent float	getCrosshairStartTime();
+scriptEvent void	enterDeploymentMode();
+scriptEvent void	exitDeploymentMode();
+scriptEvent boolean	getDeploymentActive();
+scriptEvent void	setSpawnPoint( entity other );
+scriptEvent entity	getSpawnPoint();
+scriptEvent void	setSpeedModifier( float value );
+scriptEvent void	setSprintScale( float value );
+scriptEvent boolean	needsRevive();
+scriptEvent boolean	isInvulnerable();
+scriptEvent void	revive( entity other, float healthScale );
+scriptEvent void 	setProxyEntity( entity proxy, float positionId );
+scriptEvent entity 	getProxyEntity();
+scriptEvent boolean	getProxyAllowWeapon();
+scriptEvent void 	setSniperAOR( boolean enabled );
+scriptEvent float	getKilledTime();
+scriptEvent void	forceRespawn();
+
+// should only be called from OnUsed
+scriptEvent void	enter( entity toEnter );
+
+scriptEvent float	createIcon( string material, float priority, float timeout );
+scriptEvent void	freeIcon( float iconHandle );
+
+scriptEvent float	getAmmo( float ammoType );
+scriptEvent float	getMaxAmmo( float ammoType );
+scriptEvent void	setAmmo( float ammoType, float amount );
+scriptEvent void	setMaxAmmo( float ammoType, float amount );
+scriptEvent void	setTargetTimeScale( float scale );
+
+scriptEvent void	disableSprint( boolean disable );
+scriptEvent void	disableRun( boolean disable );			// disabling run also disables sprint
+scriptEvent void	disableFootsteps( boolean disable );
+scriptEvent void	disableFallingDamage( boolean disable );
+
+scriptEvent void	disguise( entity other );
+scriptEvent void	setSpectateClient( entity other );
+scriptEvent entity	getDisguiseClient();
+scriptEvent boolean	isDisguised();
+
+scriptEvent void	setViewSkin( string enh ); //Name of skin decl to apply for the whole view
+scriptEvent string	getViewSkin();
+
+scriptEvent void	setGUIClipIndex( float index );
+
+scriptEvent float	getDeploymentRequest();
+scriptEvent vector	getDeploymentPosition();
+
+scriptEvent object	getActiveTask();
+
+scriptEvent void	binAdd( entity other );
+scriptEvent entity	binGet( float index );
+scriptEvent float	binGetSize();
+scriptEvent void	binRemove( entity other );
+
+scriptEvent void	disableShadows( boolean value );
+
+scriptEvent void	inhibitGuis( boolean inhibit );
+
+scriptEvent boolean	getPostArmFindBestWeapon();
+scriptEvent boolean	sameFireTeam( entity other );
+scriptEvent boolean isFireTeamLeader();
+scriptEvent boolean	isLocalPlayer();
+scriptEvent boolean	isToolTipPlaying();
+scriptEvent boolean	isSinglePlayerToolTipPlaying();
+scriptEvent void	resetTargetLock();
+scriptEvent boolean	isLocking();
+scriptEvent void	enableClientModelSights( string name );
+scriptEvent void	disableClientModelSights();
+
+scriptEvent wstring	getCrosshairTitle( boolean allowDisguise );
+
+scriptEvent void	adjustDeathYaw( float adjust );
+
+scriptEvent void	setCarryingObjective( boolean isCarrying );
+
+scriptEvent void	addDamageEvent( float time, float angle, float damage, boolean updateDirection );
+scriptEvent boolean	isInLimbo();
+
+/***********************************************************************
+
+	bots interface for players
+
+***********************************************************************/
+
+//mal: some bot functions to access HE/Plasma Charge info....
+scriptEvent void	setPlayerChargeOrigin( entity self );
+scriptEvent void	setPlayerChargeArmed( boolean chargeArmed, entity self );
+
+//mal: a function to track the dropping of player packs ( health/ammo/supply/etc ).
+scriptEvent void	setPlayerItemState( entity self, boolean destroy );
+
+//mal: some functions to track player grenade info....
+scriptEvent void	setPlayerGrenadeState( entity self, boolean destroy );
+
+//mal: track the player's landmines.
+scriptEvent void	setPlayerMineState( entity self, boolean destroy, boolean spotted );
+scriptEvent void	setPlayerMineArmed( boolean chargeArmed, entity self, boolean isVisible );
+
+//mal: track the player's supply crates
+scriptEvent void setPlayerSupplyCrateState( entity self, boolean destroy );
+
+//mal: track the player's airstrikes
+scriptEvent void setPlayerAirstrikeState( entity self, boolean destroy, boolean strikeOnWay );
+
+//mal: track the player's hives/third eye cameras
+scriptEvent void setPlayerCovertToolState( entity self, boolean destroy );
+
+//mal: track the player's created spawnhosts.
+scriptEvent void setPlayerSpawnHostState( entity self, boolean destroy );
+
+//mal: track the player's smoke grenades
+scriptEvent void setSmokeNadeState( entity self );
+
+//mal: track the player's arty attacks
+scriptEvent void setArtyAttackLocation( vector vec, float artyType );
+
+//mal: track the player's repair requests
+scriptEvent void setPlayerRepairTarget( entity repairTarget );
+
+//mal: track the player's kill requests
+scriptEvent void setPlayerKillTarget( entity killTarget );
+
+//mal: track the player's pickup requests
+scriptEvent void setPlayerPickupRequestTime( entity pickupTarget );
+
+//mal: track the player's command requests
+scriptEvent void setPlayerCommandRequestTime();
+
+//mal: track the player's teleporters
+scriptEvent void setTeleporterState( boolean destroy );
+
+//mal: track the player's repair drones
+scriptEvent void setRepairDroneState( boolean destroy );
+
+//mal: is the player a bot?
+scriptEvent boolean isBot();
+
+//mal: the player wants a specific bot to follow him - let the bot know.
+scriptEvent void setBotEscort( entity botEscort );
+
+//mal: track the GDF player's spawnhost targets
+scriptEvent void setPlayerSpawnHostTarget( entity spawnHostTarget );
+
+
+/***********************************************************************
+
+	atmosphere
+
+***********************************************************************/
+
+scriptEvent void	resetPostProcess();
+scriptEvent float	getDefaultPostProcessSaturation();
+scriptEvent float	getDefaultPostProcessGlareSourceBrightness();
+scriptEvent float	getDefaultPostProcessGlareBlurBrightness();
+scriptEvent float	getDefaultPostProcessGlareBrightnessThreshold();
+scriptEvent float	getDefaultPostProcessGlareThresholdDependency();
+scriptEvent void	setPostProcessTint( vector tint );
+scriptEvent void	setPostProcessSaturation( float saturation );
+scriptEvent void	setPostProcessContrast( float contrast );
+scriptEvent void	setPostProcessGlareParms( float sourceBrightness, float blurBrightness, float brightnessThreshold, float thresholdDep );
+scriptEvent boolean	isNight();
+
+/***********************************************************************
+
+	walker
+
+***********************************************************************/
+
+scriptEvent void	groundPound( float force, float damageScale, float shockWaveRange );
+
+/***********************************************************************
+
+	transports
+
+***********************************************************************/
+
+scriptEvent float	repair( float repairCount );
+scriptEvent vector	getLastRepairOrigin();
+scriptEvent void	inputSetPlayer( entity p );
+scriptEvent float	inputGetCollective();
+scriptEvent entity	getDriver();
+scriptEvent boolean	isEmpty();
+scriptEvent void	updateEngine( boolean off );
+scriptEvent void	setLightsEnabled( float group, boolean enabled );	// group = -1 implies all groups
+scriptEvent void 	disableSuspension( boolean disable );
+
+scriptEvent wstring	getPassengerNames();
+
+scriptEvent void	lock( boolean _lock );
+scriptEvent void	kickPlayer( float index, float flags );
+scriptEvent void	disableTimeout( boolean disable );
+scriptEvent float	getSteerAngle();
+scriptEvent void	destroyParts( float mask );
+scriptEvent void	decayParts( float mask );
+scriptEvent void	decayLeftWheels();
+scriptEvent void	decayRightWheels();
+scriptEvent void	decayNonWheels();
+scriptEvent void	resetDecayTime();
+scriptEvent boolean	hasHiddenParts();
+scriptEvent void	disableModel( boolean disable );
+
+scriptEvent void	swapPosition( entity p );
+scriptEvent float	getNumPositions();
+scriptEvent float	getNumOccupiedPositions();
+scriptEvent entity	getPositionPlayer( float index );
+scriptEvent string	getSurfaceType();
+
+scriptEvent void	selectVehicleWeapon( entity p, string name );
+
+scriptEvent object	getObject( string objectName );
+
+// Thruster component
+scriptEvent void	setThrust( float thrust );
+
+// Scripted part
+scriptEvent string	getJoint();
+scriptEvent entity	getParent();
+
+scriptEvent void	setDeathThroeHealth( float amount );
+scriptEvent float	getMinDisplayHealth();
+
+scriptEvent boolean	isEMPed();
+scriptEvent boolean	isWeaponEMPed();
+scriptEvent boolean	applyEMPDamage( float time, float weaponTime );
+scriptEvent float	getRemainingEMP();
+
+scriptEvent boolean	isWeaponDisabled();
+scriptEvent void	setWeaponDisabled( boolean disabled );
+
+scriptEvent void	setLockAlarmActive( boolean active );
+scriptEvent void	setImmobilized( boolean immobile );
+scriptEvent boolean	getLandingGearDown();
+scriptEvent boolean inSiegeMode();
+
+scriptEvent float	getArmor();
+scriptEvent void	setArmor( float value );
+
+scriptEvent float	getNumVehicleWeapons();
+scriptEvent object	getVehicleWeapon( float index );
+
+scriptEvent void	setTrackerEntity( entity ent );
+scriptEvent boolean	isPlayerBanned( entity p );
+scriptEvent void	banPlayer( entity p, float time );
+
+scriptEvent void	clearLastAttacker();
+scriptEvent void	enablePart( string partName );
+scriptEvent void	disablePart( string partName );
+
+scriptEvent float	destructionTime();
+scriptEvent boolean	directionWarning();
+
+scriptEvent boolean	isTeleporting();
+
+/***********************************************************************
+
+	vehicle_rigidbody
+
+***********************************************************************/
+scriptEvent void	setDamageDealtScale( float scale );
+
+/***********************************************************************
+
+	Vehicle weapons
+
+***********************************************************************/
+
+scriptEvent entity	getPlayer();
+scriptEvent void	setTarget( vector target, boolean enabled );
+
+/***********************************************************************
+
+	Jump Jets
+
+***********************************************************************/
+
+scriptEvent float	getChargeFraction();
+
+/***********************************************************************
+
+	script entities
+
+***********************************************************************/
+
+scriptEvent void	addHelper( float stringMapIndex );
+scriptEvent entity	getBoundPlayer( float index );
+scriptEvent void	removeBoundPlayer( entity other );
+
+scriptEvent void	chSetNumLines( float count );
+scriptEvent float	chAddLine();
+scriptEvent float	chGetDistance();
+scriptEvent void	chSetLineText( float index, wstring text );
+scriptEvent void	chSetLineTextIndex( float index, handle textIndex );
+scriptEvent void	chSetLineMaterial( float index, string material );
+scriptEvent void	chSetLineColor( float index, vector color, float alpha );
+scriptEvent void	chSetLineSize( float index, float x, float y );
+scriptEvent void	chSetLineFraction( float index, float fraction );
+scriptEvent void	chSetLineType( float index, float type );
+
+scriptEvent void	freeLayers();
+scriptEvent float	allocRadarLayer();
+scriptEvent float	allocJammerLayer();
+
+scriptEvent void	radarSetLayerRange( float index, float range );
+scriptEvent void	radarSetLayerMaxAngle( float index, float maxAngle );
+scriptEvent void	radarSetLayerMask( float index, float mask );
+
+scriptEvent void	setRemoteViewAngles( vector angles, entity refEntity );
+scriptEvent vector	getRemoteViewAngles( entity refEntity );
+
+scriptEvent void	pathFind( string pathName, vector target, float startTime, float direction, float cornerX, float cornerY, float heightOffset, boolean append );
+scriptEvent float	pathFindVampire( vector runStart, vector runEnd, float runHeight );
+scriptEvent void	pathLevel( float maxSlopeAngle, float startIndex, float endIndex );
+scriptEvent void	pathStraighten();
+scriptEvent float	pathGetNumPoints();
+scriptEvent vector	pathGetPoint( float index );
+scriptEvent float	pathGetLength();
+scriptEvent vector	pathGetPosition( float position );
+scriptEvent vector	pathGetDirection( float position );
+scriptEvent vector	pathGetAngles( float position );
+scriptEvent float	getVampireBombPosition( vector targetPos, float gravity, float pathSpeed, float stepDist, float pathLength );
+scriptEvent vector	getVampireBombAcceleration();
+scriptEvent float	getVampireBombFallTime();
+
+scriptEvent void	forceRunPhysics();
+
+scriptEvent void	setGroundPosition( vector position );
+
+scriptEvent void	setXPShareInfo( entity sharer, float scale );
+
+scriptEvent void	setBoxClipModel( vector mins, vector maxs, float mass );
+
+scriptEvent float	getTeamDamageDone();
+scriptEvent void	setTeamDamageDone( float value );
+
+scriptEvent void	forceAnimUpdate( boolean value );
+
+scriptEvent void	setIKTarget( entity other, float index );
+
+scriptEvent void	hideInLocalView();
+scriptEvent void	showInLocalView();
+
+scriptEvent void	setClipOriented( boolean oriented );
+
+scriptEvent void	setIconMaterial( string materialName );
+scriptEvent void	setIconSize( float width, float height );
+scriptEvent void	setIconColorMode( float colorMode );
+scriptEvent void	setIconPosition( float position );
+scriptEvent void	setIconEnabled( boolean enabled );
+scriptEvent void	setIconCutoff( float distance );
+scriptEvent void	setIconAlphaScale( float alphaScale );
+
+scriptEvent void	enableCollisionPush();
+scriptEvent void	disableCollisionPush();
+
+/***********************************************************************
+
+	objective manager
+
+***********************************************************************/
+
+scriptEvent void	setObjectiveState( object team, float objectiveIndex, float state );
+scriptEvent void	setObjectiveIcon( object team, float objectiveIndex, string icon );
+scriptEvent float	getObjectiveState( object team, float objectiveIndex );
+scriptEvent void	setNextObjective( object team, float objectiveIndex );
+scriptEvent float	getNextObjective( object team );
+scriptEvent void	setShortDescription( object team, float objectiveIndex, handle description );
+scriptEvent handle	getShortDescription( object team, float objectiveIndex );
+scriptEvent object	createMapScript();
+scriptEvent void	logObjectiveCompletion( float objectiveIndex );
+
+
+/***********************************************************************
+
+	bots objective manager - interface to the bots action system
+
+***********************************************************************/
+
+scriptEvent void deactivateBotActionGroup( float actionGroupNum );
+scriptEvent void activateBotActionGroup( float actionGroupNum );
+scriptEvent void setBotActionStateForEvent( float actionState, entity triggerEntity );
+scriptEvent void deactivateBotAction( string actionName );
+scriptEvent void activateBotAction( string actionName );
+scriptEvent void setBotCriticalClass( float playerTeam, float criticalClassType );
+scriptEvent void botUpdateForEvent( float playerTeamLimiter, float playerClassType, float eventType ); //mal: eventType will usually == ACTION_STATE_NULL for events that were completed! 
+scriptEvent void setAttackingTeam( float playerTeam );
+scriptEvent void setPrimaryTeamAction( float playerTeam, string actionName );
+scriptEvent void setSecondaryTeamAction( float playerTeam, string actionName );
+scriptEvent void setTeamNeededClass( float playerTeam, float neededClass, float sampleClass, float minNeeded, boolean priority, boolean storeRequest );
+scriptEvent void setBotSightDist( float sightDist );
+scriptEvent void disableRouteGroup( float routeGroupNum );
+scriptEvent void enableRouteGroup( float routeGroupNum );
+scriptEvent void enableRoute( string routeName );
+scriptEvent void disableRoute( string routeName );
+scriptEvent void setMapHasMCPGoal( boolean hasMCP );
+scriptEvent void setSpawnActionOwner( float playerTeam, entity self );
+scriptEvent void setActionObjState( float objectiveState, float ownerTeam, entity self, entity carrier );
+scriptEvent void enableNode( string nodeName );
+scriptEvent void disableNode( string nodeName );
+scriptEvent void setNodeTeam( string nodeName, float playerTeam );
+scriptEvent void teamSuicideIfNotNearAction( string actionName, float requiredDist, float playerTeam );
+scriptEvent float isActionGroupActive( float actionGroupNum );
+scriptEvent float isActionActive( string actionName );
+scriptEvent void switchTeamWeapons( float playerTeam, float playerClass, float curWeapType, float desiredWeapType, boolean randomly );
+scriptEvent void killBotActionGroup( float actionGroupNum );
+scriptEvent void killBotAction( string actionName );
+scriptEvent void setTeamUseRearSpawn( float playerTeam, boolean useSpawn );
+scriptEvent void setTeamUseRearSpawnPercentage( float playerTeam, float percentageUsed );
+scriptEvent float getNumBotsOnTeam( float playerTeam );
+scriptEvent void setActionPriority( string actionName, boolean isPriority );
+scriptEvent void setTeamAttacksDeployables ( float playerTeam, boolean attacksDeployables );
+scriptEvent void setActionHumanGoal( string actionName, float humanGoal );
+scriptEvent void setActionStroggGoal( string actionName, float stroggGoal );
+scriptEvent void clearTeamBotBoundEntities( float playerTeam );
+scriptEvent void setBotTeamRetreatTime( float playerTeam, float retreatTime );
+scriptEvent void setTeamMinePlantIsPriority( float playerTeam, boolean isPriority );
+scriptEvent void setBotActionVehicleType( string actionName, float vehicleType );
+scriptEvent void setBotActionGroupVehicleType( float actionGroupNum, float vehicleType );
+scriptEvent void disableAASAreaInLocation( float aasType, vector location );
+scriptEvent float getBotCriticalClass( float playerTeam );
+scriptEvent float getNumClassPlayers( float playerTeam, float playerClass );
+
+/***********************************************************************
+
+	bots training objective manager 
+
+***********************************************************************/
+scriptEvent void gameIsOnFinalObjective();
+scriptEvent void mapIsTraingingMap();
+scriptEvent void setActorPrimaryAction( string actionName, boolean isDeployableMission, float goalPauseTime );
+scriptEvent void setBriefingPauseTime( float pauseTime );
+scriptEvent void setPlayerIsOnFinalMission();
+scriptEvent void setTrainingBotsCanGrabForwardSpawns();
+
+
+
+/***********************************************************************
+
+	territories
+
+***********************************************************************/
+
+scriptEvent void	setActive( boolean active );
+
+/***********************************************************************
+
+	animated client entities
+
+***********************************************************************/
+
+scriptEvent void	setAnimFrame( string anim, float channel, float frame );
+scriptEvent float	getNumFrames( string anim );
+
+scriptEvent void	dispose(); // better than remove, will free up any assets, and schedule removal, client entity only atm
+
+/***********************************************************************
+
+	traces!
+
+***********************************************************************/
+
+scriptEvent float	getTraceFraction();
+scriptEvent vector	getTraceEndPos();
+scriptEvent vector	getTracePoint();
+scriptEvent vector	getTraceNormal();
+scriptEvent entity	getTraceEntity();
+scriptEvent float	getTraceSurfaceFlags();
+scriptEvent string	getTraceSurfaceType();
+scriptEvent vector	getTraceSurfaceColor();
+scriptEvent string	getTraceJoint();
+scriptEvent string	getTraceBody();
+
+/***********************************************************************
+
+	teams
+
+***********************************************************************/
+
+scriptEvent string	getName();
+scriptEvent handle	getTitle();
+scriptEvent void	registerDeployable( entity other );
+scriptEvent void	unRegisterDeployable( entity other );
+scriptEvent void	registerSpawnPoint( entity other );
+scriptEvent void	unRegisterSpawnPoint( entity other );
+
+/***********************************************************************
+
+	bot team related stuff
+
+***********************************************************************/
+
+scriptEvent void	setTeamRearSpawn( entity teamRearSpawn ); //mal: wheres our spawn at?
+
+
+/***********************************************************************
+
+	tasks
+
+***********************************************************************/
+
+// taskmanager
+scriptEvent object	allocEntityTask( float taskIndex, entity o );
+
+// task
+scriptEvent void	complete();
+scriptEvent void	setTimeout( float duration );
+scriptEvent void	free();
+scriptEvent entity	getTaskEntity();
+scriptEvent void	setUserCreated();
+scriptEvent boolean	isUserCreated();
+scriptEvent void	setLocation( float index, vector position );
+scriptEvent void	setWayPointState( float index, boolean state );
+scriptEvent	string	getKey( string key );
+scriptEvent	float	getIntKey( string key );
+scriptEvent	float	getFloatKey( string key );
+scriptEvent	vector	getVectorKey( string key );
+scriptEvent	entity	getEntityKey( string key );
+scriptEvent	string	getKeyWithDefault( string key, string defaultValue );
+scriptEvent	float	getIntKeyWithDefault( string key, float defaultValue );
+scriptEvent	float	getFloatKeyWithDefault( string key, float defaultValue );
+scriptEvent	vector	getVectorKeyWithDefault( string key, vector defaultValue );
+scriptEvent	void	giveObjectiveProficiency( float count, string reason );
+scriptEvent void	flashWorldIcon( float time );
+
+/***********************************************************************
+
+	teleporters
+
+***********************************************************************/
+
+scriptEvent void	enableTeam( string name );
+scriptEvent void	disableTeam( string name );
+
+/***********************************************************************
+
+	repair drone
+
+***********************************************************************/
+
+scriptEvent void	setTargetPosition( vector newOrigin, float timeDelta );
+scriptEvent void	setEffectOrigins( vector start, vector end, boolean active );
+scriptEvent void	setEntities( entity repair, entity owner );
+scriptEvent entity	getRepairTarget();
+scriptEvent entity	getOwnerEntity();
+scriptEvent void	hideThrusters();
+
+/***********************************************************************
+
+	parachute
+
+***********************************************************************/
+
+scriptEvent void	setOwner( entity owner );
+scriptEvent void	setDeployStart( float t );
+scriptEvent boolean	isMovingTooSlow();
+
+
+/***********************************************************************
+***********************************************************************/
+
+scriptEvent void	setForceShieldState( boolean v, entity p );
+
+/***********************************************************************
+
+	mask edit session
+
+***********************************************************************/
+
+scriptEvent void	openMask( string maskName );
+scriptEvent void	updateProjection( vector position );
+scriptEvent void	setDecalMaterial( string materialName );
+scriptEvent void	setStampSize( float size );
+scriptEvent boolean	stamp( vector position, boolean save, boolean state );
+scriptEvent void	saveAll();
+
+/***********************************************************************
+
+	cvar
+
+***********************************************************************/
+
+scriptEvent float	getFloatValue();
+scriptEvent string	getStringValue();
+scriptEvent float	getIntValue();
+scriptEvent boolean	getBoolValue();
+scriptEvent vector	getVectorValue();
+
+scriptEvent void	setFloatValue( float value );
+scriptEvent void	setStringValue( string value );
+scriptEvent void	setIntValue( float value );
+scriptEvent void	setBoolValue( boolean value );
+scriptEvent void	setVectorValue( vector value );
+
+scriptEvent void	setCallback( string value );
+
+/***********************************************************************
+
+	defence turrets
+
+***********************************************************************/
+
+scriptEvent void	setDisabled( boolean value );
+scriptEvent boolean	isDisabled();
+scriptEvent vector	getTargetPosition( entity other );
+scriptEvent entity	getEnemy();
+scriptEvent void	setTurretEnemy( entity other, float turnDelay );
+
+/***********************************************************************
+
+	delivery vehicles
+
+***********************************************************************/
+
+scriptEvent void	startJotunDelivery( float startTime, float pathSpeed, float leadTime );
+scriptEvent void	startJotunReturn( float startTime, float pathSpeed, float leadTime );
+scriptEvent void	startMagogDelivery( float startTime, float pathSpeed, float leadTime, vector endPoint, float itemRotation );
+scriptEvent void	startMagogReturn( float startTime, float pathSpeed, float leadTime, vector endPoint );
+
+/***********************************************************************
+
+	Virtual Functions
+
+***********************************************************************/
+
+virtual void		vArm( entity p );
+virtual void		vHack( entity p );
+virtual void		vPossess( entity p );
+
+virtual void		vOnShowOverlay( entity p );
+virtual void		vOnHideOverlay( entity p, entity mcp );
+
+virtual void		vOnDeploy();
+virtual void		vOnUnDeploy();
+virtual void		vDoneDeploy();
+virtual void		vSetManualDeploy();
+virtual void		vSetDeploymentParms( float deploymentItemIndex, float playerIndex, vector target, float rotation );
+
+virtual void		vApplyEmpDamage( entity attacker, float time, float weaponTime );
+
+virtual void		vSetTargetEntity( entity other );
+virtual void		vSetParent( entity p );
+virtual void		vSetOwner( entity o );
+virtual entity		vGetOwner();
+
+virtual void		vConstruct( entity p );
+virtual void		vSetConstructionState( float newState );
+
+virtual void		vLock();
+virtual void		vUnlock();
+
+virtual void		vRepair( float count, entity p );
+virtual vector		vGetLastRepairOrigin();
+virtual void		vDismantle( entity p );
+
+virtual boolean		vCustomOrbitRadius();
+virtual float		vGetOrbitRadius();
+virtual boolean		vOrbitUnderneath();
+virtual boolean		vRepairDroneIgnoreHidden();
+
+// used by vehicles to indicate they need repaired, landmines that need armed, etc
+virtual boolean		vCheckActionCode( entity p, float actionCode );
+
+virtual void		vOnCaptured( entity p );
+
+virtual entity		vGetCurrentTarget();
+virtual void		vSetNewTarget( entity newTarget );
+virtual void		vTargetLockAlarm( entity other );
+virtual void		vStopTargetLockAlarm( entity other );
+virtual void		vTargetLockAttack( entity other );
+virtual float		vGetTargetLockCount();
+virtual float		vGetTargetLockCountBasedefence();
+virtual boolean		vTargetLockDisabled();
+
+virtual boolean		vNeedsRevive( entity p );
+virtual boolean		vRevive( entity p, float healthScale );
+virtual boolean		vShouldCreateSpawnHost( entity p );
+virtual void		vForceRespawn();
+virtual boolean		vCreateSpawnHost( entity other, string hostName );
+virtual void		vSetSpawnHostSpawned();
+
+virtual float		vGetPliersProgressBarValue( float action );			// range [0,1]
+
+virtual boolean		vTargetPlayerEligible( entity p );
+virtual boolean		vTargetGetValid( vector pos );
+virtual void		vTargetSetTarget( vector targetPos, entity targetEnt );
+
+virtual void		vFinishObjective();
+virtual void		vStartObjective();
+
+virtual boolean		vIsDeployed();
+virtual void		vStartMagogDrop();
+
+virtual entity		vGetDeployableOwner();
+virtual void		vSetDeployableOwner( entity other );
+
+virtual boolean		vIgnoreMagogCollsion();
+
+virtual void		vSetCurrentObjective( float objectiveIndex );
+virtual void		vObjectiveSuccess( float objectiveIndex, object team );
+
+virtual void		vHideNormalChargeBar( boolean h );
+
+virtual entity		vGetCarrier();
+virtual entity		vGetItem();
+virtual void		vOnItemDeployed( float itemIndex, entity item );
+
+virtual void		vMakeSticky( entity collisionEnt, vector collisionNormal, string surfaceType, boolean allowTripmine, string joint );
+
+virtual boolean		vChargePlaced( entity charge, entity other );
+virtual void		vChargeExploded( entity charge, entity other );
+virtual void		vChargeDisarmed( entity charge, entity other );
+
+virtual void		vBomberAttack( vector target, vector attackDir, float attackHeight, entity attacker );
+
+virtual void		vActivateTeleportation();
+virtual void		vCancelTeleportation();
+virtual boolean		vIsTeleporting();
+virtual void		vSetCharge( float amount );
+
+virtual boolean		vSelectActionItem( float code );
+virtual boolean		vHasActionItem( float code );
+virtual string		vGetActionItem( float code );
+virtual string		vGetActionIcon( float code );
+
+virtual float		vGetSteerScale();
+
+virtual void		vSetActive( boolean a );
+
+virtual void		vSetConstructed( boolean a );
+virtual void		vSetState( float newState );
+
+virtual void		vOnPassengerPain( entity inflictor, entity attacker, float damage, vector direction, float location );
+
+virtual boolean		vFireScud( entity firer, entity target );
+virtual void		vSetDelay( float time );
+
+virtual void		vOnVehicleDestroyed();
+virtual void		vSetDeployer( entity other );
+
+virtual void		vSetScopeState( boolean up );
+
+virtual void		vCheckProficiency();
+
+virtual void		vOnTargetDestroyed();
+
+virtual boolean		vTriggerTripmine();
+virtual float		vGetMineCreationTime();
+
+virtual void		vForceStayOpen( boolean force );
+
+virtual void		vCancelFire();
+
+virtual void		vCancelDeployForPlayer( float playerIndex );
+
+virtual target_marker	vCreateTargetMarker();
+
+virtual boolean		vIsDestructibleObjective();
+
+virtual void		vOnBindMasterDestroyed();
+virtual void		vBindToEntity( entity ent );
+
+virtual boolean		vSkipDeployDrop();
+
+virtual void		vOnContextKill( entity p );
+virtual void		vOnContextRepair( entity p );
+virtual void		vOnContextSpawnHost( entity p );
+virtual void		vOnContextDisarm( entity p );
+virtual void		vOnContextDestroy( entity p );
+virtual void		vOnContextNeedPassenger( entity p );
+virtual void		vOnContextConstruct( entity p );
+virtual void		vOnContextDefend( entity p );
+virtual void		vOnContextHack( entity p );
+
+virtual void		vOnRemovePlayersKillTask( entity p );
+
+virtual void		vMakePrimaryObjective( boolean value );
+
+virtual float		vGetFuseRemaining();
+virtual float		vGetFuseLength();
+
+virtual void		vSetDestroyed();
+virtual boolean		vGetDestroyed();
+
+virtual boolean		vDisablePlantCharge();
+virtual boolean		vGetIsSelfArm();
+virtual void		vSetSpotTime( float time );
+virtual void		vStartRegenThread();
+
+virtual void		vStartBoundsKillThread();
+virtual void		vCallDrop( vector location, vector angles );
+
+virtual void		vSetGoalMarker( entity _goalMarker );
+virtual void		vSetPathTargets( vector start, vector end );
+
+virtual void		vSetObjectiveString( string message );
+virtual string		vGetObjectiveString();
+
+virtual void		vSetObjectiveReminderTime( float time );
+
+virtual float		vGetDestroyProficiency();
+virtual float		vGetDisarmProficiency();
+
+virtual void		vGiveSpotProficiency();
+
+virtual void		vOnSpawnWavePassed();
+
+virtual void		vOnLocalTeamChanged();
+virtual void		vOnLocalMapRestart();
+virtual void		vOnEndGame();
+
+virtual void		vCreateMission();
+virtual void		vFreeMission();
+virtual void		vCompleteMission();
+virtual void		vCompleteSubMission( entity other );
+virtual void		vInitDefendMission( object missionTask );
+
+virtual void		vRemoveObject();
+
+virtual boolean		vDisablePlant();
+
+virtual void		vTriggerParticleEffect( float index );
+
+virtual void		vOnPlayerKilled( entity p );
+
+virtual boolean		vIsSupplyDrop();
+virtual float		vGetSupplyDropCreationTime();
+virtual entity		vGetCarryableItem();
+
+virtual string		vGetQuickChatString( entity p );
+
+virtual void		vCancel();
+
+virtual float		vGetVehicleCredit();
+virtual void		vUseVehicleCredit( float fraction );
+
+virtual float		vGetFireSupportMode();
+virtual float		vGetTimerState();
+virtual float		vGetFiringStatus( object traceObject );
+virtual void		vUpdateFiringStatusObject( entity localPlayer );
+
+virtual void		vDelayDeployment( float delay );
+
+virtual void		vOnCockpitCreated();
+virtual void		vOnCockpitDestroyed();
+
+virtual void		vPlayFFWarning( string sound, float nextPlayTime );
+
+virtual void		vSetBody( entity body );
+
+virtual boolean		vIsPrimaryObjective();
+
+virtual boolean		vBlockVehicleSpawn();
+
+virtual float		vGetTransmitProgress();
+
+virtual boolean		vDropItemTrace( vector tStart, vector tEnd, entity passEntity, vector targetPos );
+virtual boolean		vAllowDrop();
+
+virtual float		vGetChargeTime();
+
+virtual void		vCaptured();
+
+virtual boolean		vInhibitStats();
+
+virtual boolean		vDecayBody();
+
+virtual entity		vGetSpectateEntity();
+virtual boolean		vIsObjectiveComplete();

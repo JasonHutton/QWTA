@@ -1,0 +1,894 @@
+
+/*
+===============================================================================
+
+player_context.script
+
+script callbacks for driving the context sensitive menu
+
+===============================================================================
+*/
+
+
+object player {
+	// context sensitive categories
+	string	ContextUpdateVehicle( string parm );
+	string	ContextUpdateStroyent( string parm );
+	string	ContextUpdateHealth( string parm );
+	string	ContextUpdateSupport( string parm );
+	string	ContextUpdateRepair( string parm );
+	string	ContextUpdateWaypoint( string parm );
+	string	ContextUpdateClass( string parm );
+	string	ContextUpdateMCP( string parm );
+	string	ContextCheckAbility( string parm );
+	string	ContextCheckDisguised( string parm );
+
+	// context sensitive order system - target based
+	string	ContextUpdateOrder( string parm );
+	string	ContextUpdateOrder_Player( player other, boolean friendly, boolean needsHealth );
+	string	ContextUpdateOrder_Vehicle( vehicle_base other, boolean friendly, boolean needsHealth );
+	string	ContextUpdateOrder_Deployable( deployable_base other, boolean friendly, boolean needsHealth );
+
+	// objectivey things
+	void	ContextRepairThing( entity target );
+	void	ContextConstruct( entity target );
+	void	ContextDestroy( entity target );
+	void	ContextDisarm( entity target );
+	void	ContextHack( entity target );
+	void	ContextDefend( entity target );
+
+	// general things
+	void	ContextKill( entity target );
+	void	ContextRevive( entity target );
+	void	ContextHeal( entity target );
+	void	ContextAmmo( entity target );
+	void	ContextSpawnHost( entity target );
+	void	ContextPickup( entity target );
+	void	ContextEscortMCP( entity target );
+	void	ContextProtectMCP( entity target );
+	void	ContextSupplies();
+	void	ContextWaypoint();
+	void	ContextRepairMyVehicle();
+
+	// these aren't just from the context menu, but from the ordinary menu too
+	void	RequestPassenger();
+	void	RequestRevive();
+	void	RequestMedic();
+	void	RequestAmmo();
+	void	RequestPickup();
+	
+
+	void	ContextStroyentDropped();
+	void	ContextHealthDropped();
+	void	ContextAmmoDropped();
+	void	ContextFollowMe( entity other );
+
+	void	QC_FlashCMIconFriend();
+
+	float	nextRequestVehicleUpdate;
+	boolean	canRequestVehicle;
+
+	entity	lastKillTaskEnt;
+};
+
+/*
+===============================================================================
+
+ Helper functions so that you don't have to mash up the strings yourself
+ 
+===============================================================================
+*/
+string	MakeItemString( player p, string title, string material, string command, string commandData, boolean enabled, entity target ) {
+	string id;
+	string newTitle = title;
+	string enabledString = "0";
+	if( enabled ) {
+		enabledString = "1";
+	}
+	
+	if ( target != $null_entity ) {
+		id = target.getSpawnID();
+	} else {
+		id = "Invalid";
+	}
+	
+	team_base team = p.getGameTeam();
+	if( team != $null_entity ) {	
+		newTitle = team.getName() + "/" + newTitle;		
+	}
+	
+	return newTitle + "|" + material + "|" + command + "|" + commandData + "|" + enabledString + "|" + id;
+}
+string	MakeChatString( player p, string title, string material, string chat ) {
+	return MakeItemString( p, title, material, "quickChat", chat, true, $null_entity );
+}
+string	MakeContextString( player p, string title, string material, string chat, entity target ) {
+	return MakeItemString( p, title, material, "globalContextChat", chat, true, target );
+}
+string	MakeInvalidString( player p, string title ) {
+	return MakeItemString( p, title, "", "", "", false, $null_entity );
+}
+
+string	MakePageString( player p, string title, string material, string page ) {
+	return MakeItemString( p, title, material, "setPage", page, true, $null_entity );
+}
+
+/*
+===============================================================================
+
+ The actual updaters
+ 
+===============================================================================
+*/
+
+/*
+=====================================================================
+ ContextUpdateOrder
+=====================================================================
+*/
+string player::ContextUpdateOrder( string parm ) {
+	if ( getHealth() <= 0 ) {
+		return MakeInvalidString( self, "quickchat/context/order" );
+	}
+
+	entity xhEnt = sys.getContextEntity();
+	if( xhEnt == $null_entity ) {
+		xhEnt = getCrosshairEntity();
+	}
+
+	if ( xhEnt != $null_entity ) {
+		boolean friendly = true;
+		if ( getEntityAllegiance( xhEnt ) != TA_FRIEND ) {
+			friendly = false;
+		}
+		
+		boolean needsHealth = false;
+		if ( xhEnt.getHealth() < xhEnt.getMaxHealth() ) {
+			needsHealth = true;
+		}
+		
+		//
+		// cast the entity down to figure out what it is, then act accordingly
+		//
+		player xhPlayer = xhEnt;
+		if ( xhPlayer != $null_entity ) {
+			return ContextUpdateOrder_Player( xhPlayer, friendly, needsHealth );
+		}
+		
+		vehicle_base xhVehicle = xhEnt;
+		if ( xhVehicle != $null_entity ) {
+			return ContextUpdateOrder_Vehicle( xhVehicle, friendly, needsHealth );
+		}
+
+		deployable_base xhDeployable = xhEnt;
+		if ( xhDeployable != $null_entity ) {
+			deployable_basedefence xhDefenceTurret = xhDeployable;
+			if ( xhDefenceTurret == $null_entity ) {
+				return ContextUpdateOrder_Deployable( xhDeployable, friendly, needsHealth );
+			}
+		}
+
+		string qcString = xhEnt.vGetQuickChatString( self );
+		if( qcString != "" ) {
+			if ( qcString == "invalid" ) {
+				return MakeInvalidString( self, "quickchat/context/order" );
+			} else {
+				return MakeContextString( self, qcString, "", qcString, xhEnt );
+			}
+		}
+
+		hackable_objective xhHackable = xhEnt;
+		if ( xhHackable != $null_entity ) {
+			if ( xhHackable.HasHackContext( self ) ) {
+				return MakeContextString( self, "quickchat/objectives/hack", "", "quickchat/context/hack", xhEnt );
+			} else if ( friendly ) {
+				return MakeContextString( self, "quickchat/objectives/defend", "", "quickchat/context/defend", xhEnt );
+			}
+		}
+		
+		destructible_objective xhDestructible = xhEnt;
+		if ( xhDestructible != $null_entity ) {
+			if ( xhDestructible.HasDestroyContext( self ) ) {
+				return MakeContextString( self, "quickchat/objectives/destroy", "", "quickchat/context/destroy", xhEnt );				
+			} else if ( friendly ) {
+				return MakeContextString( self, "quickchat/objectives/defend", "", "quickchat/context/defend", xhEnt );
+			}
+		}
+
+		constructible_objective xhConstructible = xhEnt;
+		if ( xhConstructible != $null_entity ) {
+			if ( friendly ) {
+				return MakeContextString( self, "quickchat/objectives/construct", "", "quickchat/context/construct", xhEnt );				
+			} else {
+				return MakeContextString( self, "quickchat/objectives/defend", "", "quickchat/context/defend", xhEnt );
+			}
+		}
+
+		projectile_armable xhArmable = xhEnt;
+		if ( xhArmable != $null_entity ) {
+			if ( xhArmable.HasDisarmContext( self ) ) {
+				return MakeContextString( self, "quickchat/objectives/disarmexplosives", "", "quickchat/context/disarmexplosives", xhEnt );				
+			}
+		}
+
+		dead_body xhBody = xhEnt;
+		if ( xhBody != $null_entity && self.IsStrogg() ) {
+			if ( xhBody.IsSpawnHostable() ) {
+				return MakeContextString( self, "quickchat/context/spawnhost", "", "quickchat/context/spawnhost", xhEnt );
+			}
+		}
+	} else if ( isFireTeamLeader() ) {
+		if ( FindWaypointObject() == $null ) {
+			return MakeContextString( self, "quickchat/fireteam/waypoint/attack", "", "quickchat/context/waypoints", $null_entity );
+		} else {
+			return MakeContextString( self, "quickchat/fireteam/waypoint/regroup", "", "quickchat/fireteam/waypoint/regroup", $null_entity );
+		}
+	}
+
+	return MakeInvalidString( self,"quickchat/context/order" );
+}
+
+/*
+=====================================================================
+ ContextUpdateOrder_Player
+=====================================================================
+*/
+string player::ContextUpdateOrder_Player( player other, boolean friendly, boolean needsHealth ) {
+	if ( friendly || !other.isDisguised() ) {
+		if ( !friendly ) {
+			if ( IsGDF() ) {
+				if ( other.getHealth() > 0 ) {
+					return MakeContextString( self, "quickchat/context/attacktarget", "", "quickchat/context/attack/enemy", other );
+				}
+			} else {
+				if ( other.getHealth() <= 0 ) {
+					return MakeContextString( self, "quickchat/context/spawnhost", "", "quickchat/context/spawnhost", other );
+				} else {
+					return MakeContextString( self, "quickchat/context/attacktarget", "", "quickchat/context/attack/enemy", other );
+				}
+			}
+		} else {
+			if ( other.needsRevive() ) {
+				return MakeInvalidString( self, "quickchat/context/order" );
+			}
+			
+			
+			if ( other.getHealth() > 0 ) {
+				if ( other.isBot() ) {
+					return MakeContextString( self, "quickchat/context/followme", "", "quickchat/context/followme", other );
+				}
+			}
+			
+
+			/*
+			if ( IsGDF() ) {
+				if ( needsHealth ) {
+					return MakeContextString( self, "quickchat/context/health", "", "quickchat/context/health_other", other );
+				}
+
+				if ( other.getAmmoFraction() < 1.0f ) {
+					return MakeContextString( self, "quickchat/context/ammo", "", "quickchat/context/ammo_other", other );			
+				}
+			} else {
+				if ( needsHealth || other.getAmmoFraction() < 1.0f ) {
+					return MakeContextString( self, "quickchat/context/health", "", "quickchat/context/stroyent_other", other );
+				}
+			}
+			*/
+		}
+	}
+	
+	return MakeInvalidString( self, "quickchat/context/order" );
+}
+
+/*
+=====================================================================
+ ContextUpdateOrder_Vehicle
+=====================================================================
+*/
+string player::ContextUpdateOrder_Vehicle( vehicle_base other, boolean friendly, boolean needsHealth ) {
+	vehicle_mcp	mcpOther = other;
+
+	if ( !friendly && other != $null_entity ) {
+		if ( mcpOther != $null_entity ) {
+			if ( !mcpOther.isDeployed ) {
+				return MakeContextString( self, "quickchat/objectives/stopmcp", "", "quickchat/context/stopmcp", other );
+			} else {
+				return MakeInvalidString( self, "quickchat/context/order" );
+			}
+		} else {
+			string qcStr = other.vGetQuickChatString( self );
+			if ( qcStr != "" ) {
+				return MakeContextString( self, "quickchat/context/attacktarget", "", qcStr, other );
+			}
+
+			return MakeInvalidString( self, "quickchat/context/order" );
+		}
+	} else {
+		if ( mcpOther != $null_entity ) {
+			if ( needsHealth ) {
+				return MakeContextString( self, "quickchat/objectives/repairmcp", "", "quickchat/context/repairmcp", mcpOther );			
+			}
+			
+			if ( !mcpOther.isDeployed ) {
+				return MakeContextString( self, "quickchat/objectives/escortmcp", "", "quickchat/context/escortmcp", mcpOther );			
+			}
+		}
+
+		if ( needsHealth ) {
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/vehicle_other", other );
+		} else if ( !other.isEmpty() ) {
+			if ( getProxyEntity() == $null_entity ) {
+				return MakeContextString( self, "quickchat/context/pickup", "", "quickchat/context/pickup", other );
+			}
+		}
+	}
+	
+	return MakeInvalidString( self, "quickchat/context/order" );
+}
+
+/*
+=====================================================================
+ ContextUpdateOrder_Deployable
+=====================================================================
+*/
+string player::ContextUpdateOrder_Deployable( deployable_base other, boolean friendly, boolean needsHealth ) {
+	float pct = other.getHealth() / other.getMaxHealth();
+	if ( pct < 0.8f ) {
+		needsHealth = true;
+	} else {
+		needsHealth = false;
+	}
+
+	if ( !friendly ) {
+		string qcString = other.vGetQuickChatString( self );
+		if( qcString != "" ) {
+			return MakeContextString( self, "quickchat/context/attacktarget", "", qcString, other );
+		} else {
+			return MakeContextString( self, "quickchat/context/attacktarget", "", "quickchat/context/attack/deployable", other );		
+		}
+	} else {
+		if ( needsHealth ) {
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/deployable_other", other );			
+		}
+	}
+
+	return MakeInvalidString( self, "quickchat/context/order" );
+}
+
+/*
+=====================================================================
+ ContextUpdateClass
+=====================================================================
+*/
+string player::ContextUpdateClass( string parm ) {
+	string chat = getClassName();
+	if ( chat == "spec" || getHealth() <= 0 ) {
+		return MakeInvalidString( self, "quickchat/self/imspec" );
+	}
+	
+	chat = "quickchat/self/im" + getClassName();
+	return MakeChatString( self, chat, "", chat );
+}
+
+/*
+=====================================================================
+ ContextUpdateVehicle
+=====================================================================
+*/
+string player::ContextUpdateVehicle( string parm ) {
+	entity proxy = getProxyEntity();
+	vehicle_base vehicleProxy = proxy;
+
+	if ( getHealth() <= 0 ) {
+		return MakeInvalidString( self,"quickchat/context/vehicle" );
+	}
+
+	if ( isLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "vehicles.vehicle_charge", vGetVehicleCredit() );
+	}
+
+	if ( proxy == $null_entity ) {
+		// not in vehicle	
+		if ( sys.getTime() >= nextRequestVehicleUpdate ) {
+			nextRequestVehicleUpdate = sys.getTime() + 1;
+
+			string objectName;
+			if ( parm == "vehicle_husky" ) {
+				objectName = "deployobject_husky";
+			} else if ( parm == "vehicle_icarus" ) {
+				objectName = "deployobject_icarus";
+			}
+
+			if ( CheckCanRequestVehicle( objectName ) ) {
+				canRequestVehicle = true;
+			} else {
+				canRequestVehicle = false;
+			}
+		}
+
+		if ( canRequestVehicle ) {
+			return MakeChatString( self,"quickchat/vehicles/needvehicle", "", "quickchat/vehicles/needvehicle" );
+		} else {
+			return MakeChatString( self, "quickchat/vehicles/needpickup", "", "quickchat/vehicles/needpickup" );
+		}
+	} else if ( vehicleProxy != $null_entity ) {
+		// in vehicle
+		entity driver = vehicleProxy.getDriver();
+		if ( driver == $null_entity ) {
+			return MakeChatString( self, "quickchat/vehicles/needdriver", "", "quickchat/context/needdriver" );
+		}
+
+		float spots = vehicleProxy.getNumPositions();
+		float usedSpots = vehicleProxy.getNumOccupiedPositions();
+		float emptySpots = spots - usedSpots;
+		if ( emptySpots > 0 ) {
+			if ( vehicleProxy.NeedGunner() ) {
+				return MakeChatString( self,"quickchat/vehicles/needgunner", "", "quickchat/context/needgunner" );
+			} else {
+				return MakeChatString( self,"quickchat/vehicles/needpassenger", "", "quickchat/context/needpassenger" );
+			}
+		}
+	}
+	return MakeInvalidString( self,"quickchat/context/vehicle" );
+}
+
+/*
+=====================================================================
+ ContextUpdateStroyent
+=====================================================================
+*/
+string player::ContextUpdateStroyent( string parm ) {
+	entity vehicle = getVehicle();
+	if ( vehicle != $null_entity ) {
+		if ( vehicle.getHealth() < vehicle.getMaxHealth() ) {
+			return MakeChatString( self, "quickchat/context/repair", "", "quickchat/context/repair/vehicle" );
+		} else {
+			return MakeInvalidString( self, "quickchat/context/repair" );
+		}
+	}
+
+	float health = getHealth();
+	if ( needsRevive() ) {
+		return MakeChatString( self, "quickchat/need/technician", "", "quickchat/context/revive" );
+	} else if ( health > 0 ) {
+		if ( getPlayerClass() == g_playerClassTechnician ) {
+			return MakeChatString( self, "quickchat/self/items/stroyentdropped", "", "quickchat/self/items/stroyentdropped" );
+		}
+
+		float maxHealth = getMaxHealth();
+		if ( health < maxHealth ) {
+			return MakeChatString( self, "quickchat/need/stroyent", "", "quickchat/context/stroyent" );
+		}
+
+		if ( getAmmoFraction() < 1.0f ) {
+			return MakeChatString( self, "quickchat/need/stroyent", "", "quickchat/context/stroyent" );
+		}
+	}
+
+	return MakeInvalidString( self, "quickchat/need/stroyent" );
+}
+
+/*
+=====================================================================
+ ContextUpdateHealth
+=====================================================================
+*/
+string player::ContextUpdateHealth( string parm ) {
+
+	entity vehicle = getVehicle();
+	if ( vehicle != $null_entity ) {
+		if ( vehicle.getHealth() < vehicle.getMaxHealth() ) {
+			return MakeChatString( self, "quickchat/context/repair", "", "quickchat/context/repair/vehicle" );
+		} else {
+			return MakeInvalidString( self, "quickchat/context/repair" );
+		}
+	}
+
+	float health = getHealth();
+	if ( needsRevive() ) {
+		return MakeChatString( self, "quickchat/need/medic", "", "quickchat/context/revive" );
+	} else if ( health > 0 ) {
+		if ( getPlayerClass() == g_playerClassMedic ) {
+			return MakeChatString( self, "quickchat/self/items/medpacksdropped", "", "quickchat/self/items/medpacksdropped" );
+		}
+
+		float maxHealth = getMaxHealth();
+		if ( health < maxHealth ) {
+			return MakeChatString( self,"quickchat/context/health", "", "quickchat/context/health" );
+		}
+	}
+
+	return MakeInvalidString( self, "quickchat/context/health" );
+}
+
+/*
+=====================================================================
+ ContextUpdateSupport
+=====================================================================
+*/
+string player::ContextUpdateSupport( string parm ) {
+	if( getVehicle() != $null_entity ) {
+		return MakeInvalidString( self, "quickchat/context/support" );
+	}
+
+	if ( getHealth() <= 0 ) {
+		return MakeInvalidString( self, "quickchat/context/support" );
+	}
+
+	if( IsStrogg() ) {
+		return MakeInvalidString( self, "quickchat/context/support" );
+	}
+
+	if ( needsRevive() ) {
+		return MakeInvalidString( self, "quickchat/context/support" );
+	}
+
+	if ( getPlayerClass() == g_playerClassFieldOps ) {
+		return MakeChatString( self, "quickchat/self/items/ammopacksdropped", "", "quickchat/self/items/ammopacksdropped" );
+	}
+
+	if ( getAmmoFraction() < 1.0f ) {
+		return MakeChatString( self,"quickchat/need/ammo", "", "quickchat/need/ammo" );
+	}
+
+	return MakeInvalidString( self, "quickchat/context/support" );
+}
+
+/*
+=====================================================================
+ ContextUpdateRepair
+=====================================================================
+*/
+string player::ContextUpdateRepair( string parm ) {
+	entity proxy = getProxyEntity();
+	
+	if ( getHealth() <= 0 ) {
+		return MakeInvalidString( self, "quickchat/context/repair" );
+	}
+	
+	// don't show redundant info if you're looking at something
+	entity xhEnt = getCrosshairEntity();
+	if( xhEnt != $null_entity ) {
+		return MakeInvalidString( self, "quickchat/context/repair" );
+	}
+
+	if ( proxy != $null_entity ) {
+		if ( proxy.getHealth() < proxy.getMaxHealth() ) {
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/vehicle", proxy );
+		}
+	}
+
+	if ( targetingItem != $null_entity ) {
+		if ( targetingItem.IsDisabled() ) {
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/deployable_other", targetingItem );
+		}
+	}
+/*
+	these are made redundant by the "default" context item	
+	
+	deployable_base item = xhEnt;
+
+	if ( item != $null_entity ) {
+		if ( item.isDisabled() ) {
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/deployable_other", item );
+		}
+	} else {
+		if ( xhEnt.getHealth() < xhEnt.getMaxHealth() ) {
+			return MakeContextString( self, "quickchat/context/repair", "", "quickchat/context/repair/vehicle_other", xhEnt );
+		}	
+	}
+*/	
+	return MakeInvalidString( self, "quickchat/context/repair" );
+}
+
+/*
+=====================================================================
+ ContextUpdateWaypoints
+=====================================================================
+*/
+string player::ContextUpdateWaypoint( string parm ) {
+	return MakeInvalidString( self, "quickchat/context/waypoints" );
+}
+
+/*
+=====================================================================
+ ContextUpdateMCP
+=====================================================================
+*/
+string player::ContextUpdateMCP( string parm ) {
+	entity mcp;
+	string retStr;
+	boolean isDeployed;
+
+	float count = entitiesOfCollection( "mcp" );
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		mcp = getBoundsCacheEntity( i );
+		if ( mcp.vIsDeployed() ) {
+			isDeployed = true;
+		}
+	}
+
+	if ( parm == "stopmcp" ) {
+		retStr = "quickchat/objectives/stopmcp";
+	} else if ( parm == "disablemcp" ) {
+		retStr = "quickchat/objectives/disablemcp";
+	} else if ( parm == "escortmcp" ) {
+		retStr = "quickchat/objectives/escortmcp";
+	} else if ( parm == "repairmcp" ) {
+		retStr = "quickchat/objectives/repairmcp";
+		isDeployed = false;
+	} else if ( parm == "repairingmcp" ) {
+		retStr = "quickchat/self/repairing/mcp";
+	} else {
+		sys.assert( false );
+	}
+
+	if ( count > 0 && !isDeployed ) {
+		return MakeChatString( self, retStr, "", retStr );
+	}
+
+	return MakeInvalidString( self, retStr );
+}
+
+/*
+=====================================================================
+ ContextCheckAbility
+=====================================================================
+*/
+string player::ContextCheckAbility( string parm ) {
+	sys.setActionCommand( parm );
+
+	boolean page;
+	float abilityIndex = 0;
+	float chatIndex = 1;
+	if ( sys.argc() == 3 ) {
+		page = true;
+		abilityIndex = 1;
+		chatIndex = 2;
+	}
+
+	if ( hasAbility( sys.argv( abilityIndex ) ) ) {
+		if ( page ) {
+			return MakePageString( self, sys.argv( chatIndex ), "", sys.argv( 0 ) );
+		} else {
+			return MakeChatString( self, sys.argv( chatIndex ), "", sys.argv( chatIndex ) );
+		}
+	}
+
+	return MakeInvalidString( self, sys.argv( chatIndex ) );
+}
+
+/*
+=====================================================================
+ ContextCheckDisguised
+=====================================================================
+*/
+string player::ContextCheckDisguised( string parm ) {
+
+	sys.setActionCommand( parm );
+
+	player p = sys.getLocalPlayer();
+	if ( p != $null_entity ) {
+		if ( p.isDisguised() ) {
+			return MakeChatString( self, sys.argv( 0 ), "", sys.argv( 0 ) );
+		}
+	}
+
+	return MakeInvalidString( self, sys.argv( 0 ) );
+}
+
+/*
+===============================================================================
+
+ Callbacks and waypoint scripts for contextual actions
+ 
+===============================================================================
+*/
+
+void player::ContextRepairThing( entity target ) {
+	target.vOnContextRepair( self );
+
+	if ( !sys.isClient() ) {
+		self.setPlayerRepairTarget( target ); //mal: let the bots know this entity is marked for repair
+	}
+}
+
+void player::ContextRepairMyVehicle() {
+	entity vehicle = getVehicle();
+	sys.assert( vehicle != $null_entity );
+	vehicle.vOnContextRepair( self );
+
+	if ( !sys.isClient() ) {
+		self.setPlayerRepairTarget( vehicle ); //mal: let the bots know this entity is marked for repair
+	}
+}
+
+void player::ContextConstruct( entity target ) {
+	target.vOnContextConstruct( self );
+
+	if ( !sys.isClient() ) {
+		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
+	}	
+}
+
+void player::ContextDefend( entity target ) {
+	target.vOnContextDefend( self );
+}
+
+void player::ContextDestroy( entity target ) {
+	target.vOnContextDestroy( self );
+
+	if ( !sys.isClient() ) { //mal: first, lets check to see what our target is....
+		spawn_host spawnHostTarget = target;
+		if ( spawnHostTarget != $null_entity ) {
+			self.setPlayerSpawnHostTarget( target ); //mal: let the bots see the player's command to destroy this spawnhost.
+		} else {
+			self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command for this target
+		}
+	}	
+}
+
+void player::ContextDisarm( entity target ) {
+	target.vOnContextDisarm( self );
+
+	if ( !sys.isClient() ) {
+		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
+	}	
+}
+
+void player::ContextHack( entity target ) {
+	target.vOnContextHack( self );
+
+	if ( !sys.isClient() ) {
+		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
+	}	
+}
+
+void player::ContextKill( entity target ) {
+	if ( lastKillTaskEnt != $null_entity ) {
+		lastKillTaskEnt.vOnRemovePlayersKillTask( self );
+	}
+	lastKillTaskEnt = target;
+	target.vOnContextKill( self );
+
+	if ( !sys.isClient() ) {
+		self.setPlayerKillTarget( target ); //mal: let the bots know this entity is marked for death!
+	}
+}
+
+void player::RequestPassenger() {
+	vehicle_base vehicle = getVehicle();
+	if ( vehicle != $null_entity ) {
+		vehicle.vOnContextNeedPassenger( self );
+	}
+}
+
+void player::RequestRevive() {
+	if ( commandMapMedicIcon != -1.0f ) {
+		sys.flashCMIcon( commandMapMedicIcon, -1, SPOTTED_FLASH_TIME, -1 );
+	}
+}
+
+void player::ContextRevive( entity target ) {
+	player playerTarget = target;
+	if ( playerTarget != $null_entity ) {
+		playerTarget.RequestRevive();
+	}
+}
+
+void player::RequestMedic() {
+	if ( IsStrogg() ) {
+		SetupRequestIcon( "mtr_cm_icon_need_stroyent", "require_view_health" );
+	} else {
+		SetupRequestIcon( "mtr_cm_icon_need_health", "require_view_health" );
+	}
+	thread RequestIconThread( 5.f );
+
+	AllocHealTask();
+}
+
+void player::ContextHeal( entity target ) {
+	player playerTarget = target;
+	if ( playerTarget != $null_entity ) {
+		playerTarget.RequestMedic();
+	}
+}
+
+void player::ContextSpawnHost( entity target ) {
+	target.vOnContextSpawnHost( self );
+}
+
+void player::RequestAmmo() {
+	SetupRequestIcon( "mtr_cm_icon_need_ammo", "require_view_need_ammo" );
+	thread RequestIconThread( 5.f );
+
+	AllocSupplyTask();
+}
+
+void player::ContextAmmo( entity target ) {
+	player playerTarget = target;
+	if ( playerTarget != $null_entity ) {
+		playerTarget.RequestAmmo();
+	}
+}
+
+void player::RequestPickup() {
+	AllocPickupTask();
+	FlashCMIcon( self, TA_FRIEND, -1 );
+	
+	if ( !sys.isClient() ) { //mal: let the bots see the pickup request.
+		self.setPlayerPickupRequestTime( $null_entity );
+	}
+}
+
+void player::ContextPickup( entity target ) {
+	// request pickup on self regardless of target
+	RequestPickup();
+
+	if ( !sys.isClient() ) { //mal: let the bots see the pickup request.
+		self.setPlayerPickupRequestTime( target );
+	}
+}
+
+void player::ContextEscortMCP( entity target ) {
+	if ( !sys.isClient() ) {
+		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
+	}
+}
+
+void player::ContextProtectMCP( entity target ) {
+	if ( !sys.isClient() ) {
+		self.setPlayerCommandRequestTime(); //mal: let the bots see the player's command
+	}
+}
+
+void player::ContextSupplies() {
+}
+
+void player::ContextWaypoint() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	vector traceStart = getViewOrigin();
+	vector traceEnd = getCrosshairEndPos();
+	traceEnd = ( traceEnd - traceStart ) * 1.1f + traceEnd;
+
+	sys.tracePoint( traceStart, traceEnd, MASK_SHOT_RENDERMODEL | CONTENTS_SHADOWCOLLISION | CONTENTS_SLIDEMOVER | CONTENTS_BODY | CONTENTS_PROJECTILE | CONTENTS_CROSSHAIRSOLID, self );
+	if ( sys.getTraceFraction() < 1.0f ) {
+		vector normal = sys.getTraceNormal();
+		if ( normal_z >= 0.0f ) {
+			if ( !( sys.getTraceSurfaceFlags() & SURF_NOIMPACT ) ) {
+				vector endPos = sys.getTraceEndPos();
+				InitWaypointObject( endPos );
+			}
+		}
+	}
+}
+
+void player::ContextStroyentDropped() {
+	SetupRequestIcon( "mtr_cm_icon_need_stroyent", "require_view_dropped_health" );
+	thread RequestIconThread( 5.f );
+}
+
+void player::ContextHealthDropped() {
+	SetupRequestIcon( "mtr_cm_icon_need_health", "require_view_dropped_health" );
+	thread RequestIconThread( 5.f );
+}
+
+void player::ContextAmmoDropped() {
+	SetupRequestIcon( "mtr_cm_icon_need_ammo", "require_view_dropped_ammo" );
+	thread RequestIconThread( 5.f );
+}
+
+void player::ContextFollowMe( entity other ) {
+	if ( other.isBot() ) {
+		setBotEscort( other );
+	}
+}
+
+void player::QC_FlashCMIconFriend() {
+	FlashCMIcon( self, TA_FRIEND, -1 );
+}
