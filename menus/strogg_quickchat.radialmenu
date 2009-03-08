@@ -1,0 +1,316 @@
+
+#include "quickchat.include"
+
+radialMenuDef strogg_context {
+	page "strogg/quickchat/context"							// 0
+}
+
+radialMenuDef strogg/quickchat/context {
+	title "strogg/quickchat/context"
+
+	_chat_item_script_icon( "strogg", "context/order", 		"O", "", "ContextUpdateOrder", "", "drawContext" )
+	_chat_item_icon( "strogg", "need/coveringfire", 		"C", "", "drawYes" )
+	_chat_item_icon( "strogg", "global/yes", 				"Y", "", "drawYes" )
+	_chat_item_icon( "strogg", "global/no", 				"N", "", "drawNo" )
+	_chat_item_icon( "strogg", "global/thanks", 			"T", "", "drawThanks" )
+	_chat_item_icon( "strogg", "global/sorry",				"S", "", "drawSorry" )	
+	_chat_item_script_icon( "strogg", "context/health",		"H", "", "ContextUpdateStroyent", "", "drawHealth" )	
+	_chat_item_script_icon( "strogg", "context/support",	"A", "", "ContextUpdateSupport", "", "drawAmmo" )
+	_chat_item_script_icon( "strogg", "context/vehicle",	"V", "", "ContextUpdateVehicle", "vehicle_icarus", "drawVehicle" )
+}
+radialMenuDef strogg_quickchat {
+	
+	page "strogg/quickchat/radio"							// 0
+	page "strogg/quickchat/global"							// 1
+	page "strogg/quickchat/global/cheers"					// 2
+	page "strogg/quickchat/global/taunts"					// 3
+	page "strogg/quickchat/global/taunts/more_taunts"		// 4
+	page "strogg/quickchat/responses"						// 5
+	page "strogg/quickchat/need"							// 6
+	page "strogg/quickchat/need/team"						// 7
+	page "strogg/quickchat/vehicles"						// 8
+	page "strogg/quickchat/enemy"							// 0
+	page "strogg/quickchat/enemy/deployables"				// 10
+	page "strogg/quickchat/commands"						// 11
+	page "strogg/quickchat/objectives"						// 12
+	page "strogg/quickchat/self"							// 13
+	page "strogg/quickchat/self/disguise"					// 14
+	page "strogg/quickchat/self/deploying"					// 15
+	page "strogg/quickchat/self/deployed"					// 16
+	page "strogg/quickchat/self/items"						// 17
+	page "strogg/quickchat/self/repairing"					// 18
+	page "strogg/quickchat/self/repaired"					// 19
+	page "strogg/quickchat/fireteam"						// 20
+}
+
+radialMenuDef strogg/quickchat/radio {
+	title "strogg/quickchat/radio"
+
+	_chat_page( "strogg/quickchat/global", 		"1", 	"G" )
+	_chat_page( "strogg/quickchat/responses", 	"5", 	"R" )
+	_chat_page( "strogg/quickchat/need", 		"6", 	"N" )
+	_chat_page( "strogg/quickchat/vehicles", 	"8", 	"V" )
+	_chat_page( "strogg/quickchat/enemy", 		"9", 	"E" )
+	_chat_page( "strogg/quickchat/commands", 	"11", 	"C" )
+	_chat_page( "strogg/quickchat/objectives", 	"12", 	"O" )
+	_chat_page( "strogg/quickchat/self", 		"13", 	"S" )
+}
+
+radialMenuDef strogg/quickchat/global {
+	title "strogg/quickchat/global"
+
+	_chat_item( "strogg", "global/yes", 				"Y" )
+	_chat_item( "strogg", "global/no", 					"N" )
+	_chat_item( "strogg", "global/thanks", 				"A" )
+	_chat_item( "strogg", "global/youwelcome", 			"W" )
+	_chat_item( "strogg", "global/sorry", 				"S" )
+	_chat_item( "strogg", "global/hi", 					"H" )
+	_chat_item( "strogg", "global/go", 					"B" )
+	_chat_item( "strogg", "global/quiet", 				"Q" )
+
+	_chat_page( "strogg/quickchat/global/cheers", "2",	"C" )
+	_chat_page( "strogg/quickchat/global/taunts", "3",	"T" )
+}
+
+radialMenuDef strogg/quickchat/global/cheers {
+	title "strogg/quickchat/global/cheers"
+
+	_chat_item( "strogg", "global/cheers/greatshot", 	"S" )
+	_chat_item( "strogg", "global/cheers/forthemakron", "F" )
+	_chat_item( "strogg", "global/cheers/wellplayed",	"W" )
+	_chat_item( "strogg", "global/cheers/awesome", 		"A" )
+	_chat_item( "strogg", "global/cheers/goodgame", 	"G" )
+	_chat_item( "strogg", "global/cheers/strogg", 		"T" )
+	_chat_item( "strogg", "global/cheers/yourock", 		"R" )
+	_chat_item( "strogg", "global/cheers/alright", 		"L" )
+	_chat_item( "strogg", "global/cheers/accurate", 	"B" )
+}
+
+radialMenuDef strogg/quickchat/global/taunts {
+	title "strogg/quickchat/global/taunts"
+
+	_chat_item( "strogg", "global/taunts/ohdear", 					"O" )
+	_chat_item( "strogg", "global/taunts/oops", 					"W" )
+	_chat_item( "strogg", "global/taunts/theycrumble", 				"E" )
+	_chat_item( "strogg", "global/taunts/theyfleeterror", 			"R" )
+	_chat_item( "strogg", "global/taunts/eatthathuman", 			"A" )
+	_chat_item( "strogg", "global/taunts/killhumanfood", 			"K" )
+	_chat_item( "strogg", "global/taunts/thwarted", 				"D" )
+	_chat_item( "strogg", "global/taunts/rrr", 						"G" )
+	_chat_item( "strogg", "global/taunts/cough", 					"C" )
+
+	_chat_page( "strogg/quickchat/global/taunts/more_taunts", "4", 	"T" )
+}
+
+radialMenuDef strogg/quickchat/global/taunts/more_taunts {
+	title "strogg/quickchat/global/taunts/more_taunts"
+
+	_chat_item( "strogg", "global/taunts/awkward", 			"A" )
+	_chat_item( "strogg", "global/taunts/awyeahohno", 		"Y" )
+	_chat_item( "strogg", "global/taunts/awnoheyyeah", 		"N" )
+	_chat_item( "strogg", "global/taunts/owned", 			"O" )
+	_chat_item( "strogg", "global/taunts/thathurt", 		"H" )
+	_chat_item( "strogg", "global/taunts/thathadtohurt", 	"U" )
+	_chat_item( "strogg", "global/taunts/meh", 				"M" )
+	_chat_item( "strogg", "global/taunts/ihadworse", 		"I" )
+}
+
+radialMenuDef strogg/quickchat/responses {
+	title "strogg/quickchat/responses"
+
+	_chat_item( "strogg", "responses/acknowledged", 	"A" )
+	_chat_item( "strogg", "responses/declined", 		"D" )
+	_chat_item( "strogg", "responses/onit", 			"I" )
+	_chat_item( "strogg", "responses/onmyway", 			"O" )
+	_chat_item( "strogg", "responses/sorry", 			"S" )
+	_chat_item( "strogg", "responses/dontcare", 		"C" )
+	_chat_item( "strogg", "responses/unabletoassist", 	"U" )
+	_chat_item( "strogg", "responses/outofrange", 		"R" )
+	_chat_item( "strogg", "responses/thanks", 			"T" )
+	_chat_item( "strogg", "responses/youwelcome", 		"W" )
+}
+
+radialMenuDef strogg/quickchat/need {
+	title "strogg/quickchat/need"
+
+	_chat_item( "strogg", "need/technician", 		"M" )
+	_chat_item( "strogg", "need/stroyent", 			"A" )
+	_chat_item( "strogg", "need/constructor", 		"E" )
+	_chat_item( "strogg", "need/backup", 			"B" )
+	_chat_item( "strogg", "need/coveringfire", 		"C" )
+	_chat_item( "strogg", "need/firesupport", 		"F" )
+	_chat_item( "strogg", "need/mines", 			"N" )
+
+	_chat_page( "strogg/quickchat/need/team", "7", 	"T" )
+}
+
+radialMenuDef strogg/quickchat/need/team {
+	title "strogg/quickchat/need/team"
+	
+	_chat_item( "strogg", "need/team/technician", 		"T" )
+	_chat_item( "strogg", "need/team/oppressor",		"O" )
+	_chat_item( "strogg", "need/team/constructor", 		"C" )
+	_chat_item( "strogg", "need/team/infiltrator", 		"I" )
+	_chat_item( "strogg", "need/team/aggressor", 		"A" )
+	_chat_item( "strogg", "need/team/radar", 			"R" )
+	_chat_item( "strogg", "need/team/apt", 				"P" )
+	_chat_item( "strogg", "need/team/avt",		 		"V" )
+	_chat_item( "strogg", "need/team/ait", 				"L" )
+	_chat_item( "strogg", "need/team/snipersupport", 	"N" )
+}
+
+radialMenuDef strogg/quickchat/vehicles {
+	title "strogg/quickchat/vehicles"
+
+	_chat_item( "strogg", "vehicles/needvehicle", 			"N" )
+	_chat_item( "strogg", "vehicles/needgunner", 			"G" )
+	_chat_item( "strogg", "vehicles/needdriver", 			"D" )
+	_chat_item( "strogg", "vehicles/needpilot", 			"P" )
+	_chat_item( "strogg", "vehicles/needrepairs", 			"R" )
+	_chat_item( "strogg", "vehicles/needpickup", 			"I" )
+	_chat_item( "strogg", "vehicles/vehicleready", 			"V" )
+	_chat_item( "strogg", "vehicles/holdvehicle", 			"H" )
+	_chat_item( "strogg", "vehicles/bailout", 				"B" )
+}
+
+radialMenuDef strogg/quickchat/enemy {
+	title "strogg/quickchat/enemy"
+
+	_chat_item( "strogg", "enemy/infantryspotted", 				"I" )
+	_chat_item( "strogg", "enemy/indisguise", 					"G" )
+	_chat_item( "strogg", "enemy/vehiclespotted", 				"V" )
+	_chat_item( "strogg", "enemy/armorspotted", 				"A" )
+	_chat_item( "strogg", "enemy/aircraftspotted", 				"R" )
+	_chat_item( "strogg", "enemy/covertopsspotted", 			"C" )
+	_chat_item( "strogg", "enemy/minesspotted", 				"M" )
+	_chat_item( "strogg", "enemy/incomingairstrike", 			"S" )
+	_chat_item( "strogg", "enemy/incomingbombardment", 			"B" )
+
+	_chat_page( "strogg/quickchat/enemy/deployables", "10", 	"D" )
+}
+
+radialMenuDef strogg/quickchat/enemy/deployables {
+	title "strogg/quickchat/enemy/deployables"
+
+	_chat_item( "strogg", "enemy/deployables/aitspotted", 			"A" )
+	_chat_item( "strogg", "enemy/deployables/firesupportspotted", 	"F" )
+	_chat_item( "strogg", "enemy/deployables/aptspotted", 			"P" )
+	_chat_item( "strogg", "enemy/deployables/avtspotted", 			"V" )
+	_chat_item( "strogg", "enemy/deployables/radarspotted", 		"R" )
+}
+
+radialMenuDef strogg/quickchat/commands {
+	title "strogg/quickchat/commands"
+
+	_chat_item( "strogg", "commands/move", 					"M" )
+	_chat_item( "strogg", "commands/letsgo", 				"L" )
+	_chat_item( "strogg", "commands/followme", 				"F" )
+	_chat_item( "strogg", "commands/clearmines", 			"C" )
+	_chat_item( "strogg", "commands/captureforwardspawn", 	"S" )
+	_chat_item( "strogg", "commands/holdfire", 				"O" )
+}
+
+radialMenuDef strogg/quickchat/objectives {
+	title "strogg/quickchat/objectives"
+
+	_chat_item( "strogg", "objectives/attack", 			"A" )
+	_chat_item( "strogg", "objectives/defend", 			"D" )
+	_chat_item( "strogg", "objectives/destroy", 		"Y" )
+	_chat_item( "strogg", "objectives/hack", 			"H" )
+	_chat_item( "strogg", "objectives/construct", 		"C" )
+	_chat_item( "strogg", "objectives/take", 			"T" )
+	_chat_item( "strogg", "objectives/return", 			"U" )
+	_chat_item( "strogg", "objectives/disarmexplosives","S" )
+	_chat_item_script( "strogg", "objectives/stopmcp", 	"E", "ContextUpdateMCP", "stopmcp" )
+	_chat_item_script( "strogg", "objectives/disablemcp", "R", "ContextUpdateMCP", "disablemcp" )
+
+}
+
+radialMenuDef strogg/quickchat/self {
+	title "strogg/quickchat/self"
+
+	_chat_item( "strogg", "self/imattacking", 						"A" )
+	_chat_item( "strogg", "self/imdefending", 						"D" )
+	_chat_item_script( "strogg", "self/imspec", 					"C", "ContextUpdateClass", "" )
+
+	_chat_page( "strogg/quickchat/self/disguise", 			"14", 	"G" )
+	_chat_page_script( "strogg/quickchat/self/deploying", 	"15", 	"E", "ContextCheckAbility", "canDeploy quickchat/self/deploying" )
+	_chat_page_script( "strogg/quickchat/self/deployed", 	"16", 	"F", "ContextCheckAbility", "canDeploy quickchat/self/deployed" )
+	_chat_page_script( "strogg/quickchat/self/items", 		"17", 	"I", "ContextCheckAbility", "qcItems quickchat/self/items" )
+	_chat_page_script( "strogg/quickchat/self/repairing", 	"18", 	"R", "ContextCheckAbility", "repair quickchat/self/repairing" )
+	_chat_page_script( "strogg/quickchat/self/repaired",	"19", 	"P", "ContextCheckAbility", "repair quickchat/self/repaired" )
+}
+
+radialMenuDef strogg/quickchat/self/disguise {
+	title "strogg/quickchat/self/disguise"
+
+	_chat_item_script( "strogg", "self/disguise/imindisguise", 		"G", "ContextCheckDisguised", "quickchat/self/disguise/imindisguise" )
+	_chat_item( "strogg", "self/disguise/enemydisguisedasme", 		"E" )
+}
+
+radialMenuDef strogg/quickchat/self/deploying {
+	title "strogg/quickchat/self/deploying"
+
+	_chat_item_script( "strogg", "self/deploying/radar", 		"R", "ContextCheckAbility", "infiltrator quickchat/self/deploying/radar" )
+	_chat_item_script( "strogg", "self/deploying/apt", 			"P", "ContextCheckAbility", "constructor quickchat/self/deploying/apt" )
+	_chat_item_script( "strogg", "self/deploying/avt", 			"V", "ContextCheckAbility", "constructor quickchat/self/deploying/avt" )
+	_chat_item_script( "strogg", "self/deploying/ait", 			"B", "ContextCheckAbility", "constructor quickchat/self/deploying/ait" )
+	_chat_item_script( "strogg", "self/deploying/railhowitzer",	"A", "ContextCheckAbility", "oppressor quickchat/self/deploying/railhowitzer" )
+	_chat_item_script( "strogg", "self/deploying/plasmamortar",	"O", "ContextCheckAbility", "oppressor quickchat/self/deploying/plasmamortar" )
+	_chat_item_script( "strogg", "self/deploying/dmc", 			"H", "ContextCheckAbility", "oppressor quickchat/self/deploying/dmc" )
+}
+
+radialMenuDef strogg/quickchat/self/deployed {
+	title "strogg/quickchat/self/deployed"
+
+	_chat_item_script( "strogg", "self/deployed/radar", 		"R", "ContextCheckAbility", "infiltrator quickchat/self/deployed/radar" )
+	_chat_item_script( "strogg", "self/deployed/apt", 			"P", "ContextCheckAbility", "constructor quickchat/self/deployed/apt" )
+	_chat_item_script( "strogg", "self/deployed/avt", 			"V", "ContextCheckAbility", "constructor quickchat/self/deployed/avt" )
+	_chat_item_script( "strogg", "self/deployed/ait", 			"B", "ContextCheckAbility", "constructor quickchat/self/deployed/ait" )
+	_chat_item_script( "strogg", "self/deployed/railhowitzer",	"A", "ContextCheckAbility", "oppressor quickchat/self/deployed/railhowitzer" )
+	_chat_item_script( "strogg", "self/deployed/plasmamortar", 	"O", "ContextCheckAbility", "oppressor quickchat/self/deployed/plasmamortar" )
+	_chat_item_script( "strogg", "self/deployed/dmc", 			"H", "ContextCheckAbility", "oppressor quickchat/self/deployed/dmc" )
+}
+
+radialMenuDef strogg/quickchat/self/items {
+	title "strogg/quickchat/self/items"
+	
+	_chat_item_script( "strogg", "self/items/plantingmines", 		"P", "ContextCheckAbility", "constructor quickchat/self/items/plantingmines" )
+	_chat_item_script( "strogg", "self/items/disarmingmines", 		"D", "ContextCheckAbility", "constructor quickchat/self/items/disarmingmines" )
+	_chat_item_script( "strogg", "self/items/spawnhostcreated", 	"S", "ContextCheckAbility", "technician quickchat/self/items/spawnhostcreated" )
+	_chat_item_script( "strogg", "self/items/stroyentdropped", 		"H", "ContextCheckAbility", "technician quickchat/self/items/stroyentdropped" )
+	_chat_item_script( "strogg", "self/items/shielddeployed", 		"M", "ContextCheckAbility", "oppressor quickchat/self/items/shielddeployed" )
+	
+}
+
+radialMenuDef strogg/quickchat/self/repairing {
+	title "strogg/quickchat/self/repairing"
+
+	_chat_item( "strogg", "self/repairing/radar", 			"R" )
+	_chat_item( "strogg", "self/repairing/apt", 			"P" )
+	_chat_item( "strogg", "self/repairing/avt", 			"V" )
+	_chat_item( "strogg", "self/repairing/ait", 			"B" )
+	_chat_item( "strogg", "self/repairing/railhowitzer",	"A" )
+	_chat_item( "strogg", "self/repairing/plasmamortar", 	"O" )
+	_chat_item( "strogg", "self/repairing/dmc", 			"H" )
+}
+
+radialMenuDef strogg/quickchat/self/repaired {
+	title "strogg/quickchat/self/repaired"
+	
+	_chat_item( "strogg", "self/repaired/radar", 			"R" )
+	_chat_item( "strogg", "self/repaired/apt", 				"P" )
+	_chat_item( "strogg", "self/repaired/avt", 				"V" )
+	_chat_item( "strogg", "self/repaired/ait", 				"B" )
+	_chat_item( "strogg", "self/repaired/railhowitzer", 	"A" )
+	_chat_item( "strogg", "self/repaired/plasmamortar", 	"O" )
+	_chat_item( "strogg", "self/repaired/dmc", 				"H" )	
+}
+
+radialMenuDef strogg/quickchat/fireteam {
+	title "strogg/quickchat/fireteam"
+
+	_chat_item( "strogg", "fireteam/waypoint/attack", 		"A" )
+	_chat_item( "strogg", "fireteam/waypoint/defend", 		"D" )
+	_chat_item( "strogg", "fireteam/waypoint/regroup", 	"R" )
+}

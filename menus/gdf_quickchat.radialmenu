@@ -1,0 +1,322 @@
+
+#include "quickchat.include"
+
+radialMenuDef gdf_context {
+	page "gdf/quickchat/context"						// 0
+}
+
+radialMenuDef gdf/quickchat/context {
+	title "gdf/quickchat/context"
+
+	_chat_item_script_icon( "gdf", "context/order", 	"O", "", "ContextUpdateOrder", "", "drawContext" )
+	_chat_item_icon( "gdf", "need/coveringfire", 		"C", "", "drawYes" )
+	_chat_item_icon( "gdf", "global/yes", 				"Y", "", "drawYes" )
+	_chat_item_icon( "gdf", "global/no", 				"N", "", "drawNo" )
+	_chat_item_icon( "gdf", "global/thanks", 			"T", "", "drawThanks" )
+	_chat_item_icon( "gdf", "global/sorry", 			"S", "", "drawSorry" )	
+	_chat_item_script_icon( "gdf", "context/health", 	"H", "", "ContextUpdateHealth", "", "drawHealth" )	
+	_chat_item_script_icon( "gdf", "context/support", 	"A", "", "ContextUpdateSupport", "", "drawAmmo" )
+	_chat_item_script_icon( "gdf", "context/vehicle", 	"V", "", "ContextUpdateVehicle", "vehicle_husky", "drawVehicle" )
+	
+}
+	
+radialMenuDef gdf_quickchat {
+	page "gdf/quickchat/radio"							// 0
+	page "gdf/quickchat/global"							// 1
+	page "gdf/quickchat/global/cheers"					// 2
+	page "gdf/quickchat/global/taunts"					// 3
+	page "gdf/quickchat/global/taunts/more_taunts"		// 4
+	page "gdf/quickchat/responses"						// 5
+	page "gdf/quickchat/need"							// 6
+	page "gdf/quickchat/need/team"						// 7
+	page "gdf/quickchat/vehicles"						// 8
+	page "gdf/quickchat/enemy"							// 9
+	page "gdf/quickchat/enemy/deployables"				// 10
+	page "gdf/quickchat/commands"						// 11
+	page "gdf/quickchat/objectives"						// 12
+	page "gdf/quickchat/self"							// 13
+	page "gdf/quickchat/self/disguise"					// 14
+	page "gdf/quickchat/self/deploying"					// 15
+	page "gdf/quickchat/self/deployed"					// 16
+	page "gdf/quickchat/self/items"						// 17
+	page "gdf/quickchat/self/repairing"					// 18
+	page "gdf/quickchat/self/repaired"					// 19
+	page "gdf/quickchat/fireteam"						// 20
+}
+
+radialMenuDef gdf/quickchat/radio {
+	title "gdf/quickchat/radio"
+
+	_chat_page( "gdf/quickchat/global", 	"1", 	"G" )
+	_chat_page( "gdf/quickchat/responses", 	"5", 	"R" )
+	_chat_page( "gdf/quickchat/need", 		"6", 	"N" )
+	_chat_page( "gdf/quickchat/vehicles", 	"8", 	"V" )
+	_chat_page( "gdf/quickchat/enemy", 		"9", 	"E" )
+	_chat_page( "gdf/quickchat/commands", 	"11", 	"C" )
+	_chat_page( "gdf/quickchat/objectives", "12", 	"O" )
+	_chat_page( "gdf/quickchat/self", 		"13", 	"S" )
+}
+
+radialMenuDef gdf/quickchat/global {
+	title "gdf/quickchat/global"
+
+	_chat_item( "gdf", "global/yes", 				"Y" )
+	_chat_item( "gdf", "global/no", 				"N" )
+	_chat_item( "gdf", "global/thanks", 			"A" )
+	_chat_item( "gdf", "global/youwelcome", 		"W" )
+	_chat_item( "gdf", "global/sorry", 				"S" )
+	_chat_item( "gdf", "global/hi", 				"H" )
+	_chat_item( "gdf", "global/bye", 				"B" )
+	_chat_item( "gdf", "global/quiet", 				"Q" )
+
+	_chat_page( "gdf/quickchat/global/cheers", "2", "C" )
+	_chat_page( "gdf/quickchat/global/taunts", "3", "T" )
+}
+
+radialMenuDef gdf/quickchat/global/cheers {
+	title "gdf/quickchat/global/cheers"
+
+	_chat_item( "gdf", "global/cheers/awesome", 		"A" )
+	_chat_item( "gdf", "global/cheers/greatshot", 		"S" )
+	_chat_item( "gdf", "global/cheers/freedomofearth", 	"F" )
+	_chat_item( "gdf", "global/cheers/wellplayed", 		"W" )
+	_chat_item( "gdf", "global/cheers/goodgame", 		"G" )
+	_chat_item( "gdf", "global/cheers/gdf", 			"T" )
+	_chat_item( "gdf", "global/cheers/yourock", 		"R" )
+	_chat_item( "gdf", "global/cheers/alright", 		"L" )
+	_chat_item( "gdf", "global/cheers/bullseye", 		"B" )
+}
+
+radialMenuDef gdf/quickchat/global/taunts {
+	title "gdf/quickchat/global/taunts"
+
+	_chat_item( "gdf", "global/taunts/ohdear", 					"O" )
+	_chat_item( "gdf", "global/taunts/oops", 					"W" )
+	_chat_item( "gdf", "global/taunts/enemyweakened", 			"E" )
+	_chat_item( "gdf", "global/taunts/theyrunningaway", 		"R" )
+	_chat_item( "gdf", "global/taunts/eatthatstrogg", 			"A" )
+	_chat_item( "gdf", "global/taunts/killalienscum", 			"K" )
+	_chat_item( "gdf", "global/taunts/denied", 					"D" )
+	_chat_item( "gdf", "global/taunts/grr", 					"G" )
+	_chat_item( "gdf", "global/taunts/cough", 					"C" )
+
+	_chat_page( "gdf/quickchat/global/taunts/more_taunts", "4", "T" )
+}
+
+radialMenuDef gdf/quickchat/global/taunts/more_taunts {
+	title "gdf/quickchat/global/taunts/more_taunts"
+
+	_chat_item( "gdf", "global/taunts/awkward", 		"A" )
+	_chat_item( "gdf", "global/taunts/awyeahohno", 		"Y" )
+	_chat_item( "gdf", "global/taunts/awnoheyyeah", 	"N" )
+	_chat_item( "gdf", "global/taunts/owned", 			"O" )
+	_chat_item( "gdf", "global/taunts/thathurt", 		"H" )
+	_chat_item( "gdf", "global/taunts/thathadtohurt", 	"U" )
+	_chat_item( "gdf", "global/taunts/meh", 			"M" )
+	_chat_item( "gdf", "global/taunts/ihadworse", 		"I" )
+}
+
+radialMenuDef gdf/quickchat/responses {
+	title "gdf/quickchat/responses"
+
+	_chat_item( "gdf", "responses/acknowledged", 	"A" )
+	_chat_item( "gdf", "responses/declined", 		"D" )
+	_chat_item( "gdf", "responses/onit", 			"I" )
+	_chat_item( "gdf", "responses/onmyway", 		"O" )
+	_chat_item( "gdf", "responses/sorry", 			"S" )
+	_chat_item( "gdf", "responses/dontcare", 		"C" )
+	_chat_item( "gdf", "responses/unabletoassist", 	"U" )
+	_chat_item( "gdf", "responses/outofrange", 		"R" )
+	_chat_item( "gdf", "responses/thanks", 			"T" )
+	_chat_item( "gdf", "responses/youwelcome", 		"W" )
+}
+
+radialMenuDef gdf/quickchat/need {
+	title "gdf/quickchat/need"
+
+	_chat_item( "gdf", "need/medic", 			"M" )
+	_chat_item( "gdf", "need/ammo", 			"A" )
+	_chat_item( "gdf", "need/engineer", 		"E" )
+	_chat_item( "gdf", "need/backup", 			"B" )
+	_chat_item( "gdf", "need/coveringfire", 	"C" )
+	_chat_item( "gdf", "need/firesupport", 		"F" )
+	_chat_item( "gdf", "need/mines", 			"N" )
+	_chat_item( "gdf", "need/supplystation",	"S" )
+
+	_chat_page( "gdf/quickchat/need/team", "7", "T" )
+}
+
+radialMenuDef gdf/quickchat/need/team {
+	title "gdf/quickchat/need/team"
+	
+	_chat_item( "gdf", "need/team/medic", 			"M" )
+	_chat_item( "gdf", "need/team/fieldops",		"F" )
+	_chat_item( "gdf", "need/team/engineer", 		"E" )
+	_chat_item( "gdf", "need/team/covertops", 		"C" )
+	_chat_item( "gdf", "need/team/soldier", 		"S" )
+	_chat_item( "gdf", "need/team/radar", 			"R" )
+	_chat_item( "gdf", "need/team/apt", 			"P" )
+	_chat_item( "gdf", "need/team/avt",		 		"V" )
+	_chat_item( "gdf", "need/team/ait", 			"L" )
+	_chat_item( "gdf", "need/team/snipersupport", 	"N" )
+}
+
+radialMenuDef gdf/quickchat/vehicles {
+	title "gdf/quickchat/vehicles"
+
+	_chat_item( "gdf", "vehicles/needvehicle", 			"N" )
+	_chat_item( "gdf", "vehicles/needgunner", 			"G" )
+	_chat_item( "gdf", "vehicles/needdriver", 			"D" )
+	_chat_item( "gdf", "vehicles/needpilot", 			"P" )
+	_chat_item( "gdf", "vehicles/needrepairs", 			"R" )
+	_chat_item( "gdf", "vehicles/needpickup", 			"I" )
+	_chat_item( "gdf", "vehicles/vehicleready", 		"V" )
+	_chat_item( "gdf", "vehicles/holdvehicle", 			"H" )
+	_chat_item( "gdf", "vehicles/bailout", 				"B" )
+}
+
+radialMenuDef gdf/quickchat/enemy {
+	title "gdf/quickchat/enemy"
+
+	_chat_item( "gdf", "enemy/infantryspotted", 			"I" )
+	_chat_item( "gdf", "enemy/indisguise", 					"G" )
+	_chat_item( "gdf", "enemy/vehiclespotted", 				"V" )
+	_chat_item( "gdf", "enemy/armorspotted", 				"A" )
+	_chat_item( "gdf", "enemy/aircraftspotted", 			"R" )
+	_chat_item( "gdf", "enemy/infiltratorspotted", 			"C" )
+	_chat_item( "gdf", "enemy/minesspotted", 				"M" )
+	_chat_item( "gdf", "enemy/incomingairstrike", 			"S" )
+	_chat_item( "gdf", "enemy/incomingbombardment", 		"B" )
+
+	_chat_page( "gdf/quickchat/enemy/deployables", "10", 	"D" )
+}
+
+radialMenuDef gdf/quickchat/enemy/deployables {
+	title "gdf/quickchat/enemy/deployables"
+
+	_chat_item( "gdf", "enemy/deployables/aitspotted", 			"A" )
+	_chat_item( "gdf", "enemy/deployables/firesupportspotted", 	"F" )
+	_chat_item( "gdf", "enemy/deployables/aptspotted", 			"P" )
+	_chat_item( "gdf", "enemy/deployables/avtspotted", 			"V" )
+	_chat_item( "gdf", "enemy/deployables/radarspotted", 		"R" )
+}
+
+radialMenuDef gdf/quickchat/commands {
+	title "gdf/quickchat/commands"
+
+	_chat_item( "gdf", "commands/move", 					"M" )
+	_chat_item( "gdf", "commands/letsgo", 					"L" )
+	_chat_item( "gdf", "commands/followme", 				"F" )
+	_chat_item( "gdf", "commands/clearmines", 				"C" )
+	_chat_item( "gdf", "commands/captureforwardspawn", 		"S" )
+	_chat_item( "gdf", "commands/constructguardtower", 		"G" )
+	_chat_item( "gdf", "commands/holdfire", 				"O" )
+}
+
+
+radialMenuDef gdf/quickchat/objectives {
+	title "gdf/quickchat/objectives"
+
+	_chat_item( "gdf", "objectives/attack", 			"A" )
+	_chat_item( "gdf", "objectives/defend", 			"D" )
+	_chat_item( "gdf", "objectives/destroy", 			"Y" )
+	_chat_item( "gdf", "objectives/hack", 				"H" )
+	_chat_item( "gdf", "objectives/construct", 			"C" )
+	_chat_item( "gdf", "objectives/take", 				"T" )
+	_chat_item( "gdf", "objectives/return", 			"U" )
+	_chat_item( "gdf", "objectives/disarmexplosives", 	"S" )
+	_chat_item_script( "gdf", "objectives/escortmcp", 	"E", "ContextUpdateMCP", "escortmcp" )
+	_chat_item_script( "gdf", "objectives/repairmcp", 	"R", "ContextUpdateMCP", "repairmcp" )
+
+}
+
+radialMenuDef gdf/quickchat/self {
+	title "gdf/quickchat/self"
+
+	_chat_item( "gdf", "self/imattacking", 						"A" )
+	_chat_item( "gdf", "self/imdefending", 						"D" )
+	_chat_item_script( "gdf", "self/imspec", 					"C", "ContextUpdateClass", "" )
+
+	_chat_page( "gdf/quickchat/self/disguise", 			"14", 	"G" )
+	_chat_page_script( "gdf/quickchat/self/deploying", 	"15", 	"E", "ContextCheckAbility", "canDeploy quickchat/self/deploying" )
+	_chat_page_script( "gdf/quickchat/self/deployed", 	"16", 	"F", "ContextCheckAbility", "canDeploy quickchat/self/deployed" )
+	_chat_page_script( "gdf/quickchat/self/items", 		"17", 	"I", "ContextCheckAbility", "qcItems quickchat/self/items" )
+	_chat_page_script( "gdf/quickchat/self/repairing", 	"18", 	"R", "ContextCheckAbility", "repair quickchat/self/repairing" )
+	_chat_page_script( "gdf/quickchat/self/repaired",	"19", 	"P", "ContextCheckAbility", "repair quickchat/self/repaired" )
+}
+
+radialMenuDef gdf/quickchat/self/disguise {
+	title "gdf/quickchat/self/disguise"
+
+	_chat_item_script( "gdf", "self/disguise/imindisguise", 	"G", "ContextCheckDisguised", "quickchat/self/disguise/imindisguise" )
+	_chat_item( "gdf", "self/disguise/enemydisguisedasme", 		"E" )
+}
+
+radialMenuDef gdf/quickchat/self/deploying {
+	title "gdf/quickchat/self/deploying"
+
+	_chat_item_script( "gdf", "self/deploying/radar", 		"R", "ContextCheckAbility", "covertops quickchat/self/deploying/radar" )
+	_chat_item_script( "gdf", "self/deploying/apt", 		"P", "ContextCheckAbility", "engineer quickchat/self/deploying/apt" )
+	_chat_item_script( "gdf", "self/deploying/avt", 		"V", "ContextCheckAbility", "engineer quickchat/self/deploying/avt" )
+	_chat_item_script( "gdf", "self/deploying/ait", 		"B", "ContextCheckAbility", "engineer quickchat/self/deploying/ait" )
+	_chat_item_script( "gdf", "self/deploying/artillery", 	"A", "ContextCheckAbility", "fieldops quickchat/self/deploying/artillery" )
+	_chat_item_script( "gdf", "self/deploying/rockets", 	"O", "ContextCheckAbility", "fieldops quickchat/self/deploying/rockets" )
+	_chat_item_script( "gdf", "self/deploying/hammer", 		"H", "ContextCheckAbility", "fieldops quickchat/self/deploying/hammer" )
+}
+
+radialMenuDef gdf/quickchat/self/deployed {
+	title "gdf/quickchat/self/deployed"
+
+	_chat_item_script( "gdf", "self/deployed/radar", 		"R", "ContextCheckAbility", "covertops quickchat/self/deployed/radar" )
+	_chat_item_script( "gdf", "self/deployed/apt", 			"P", "ContextCheckAbility", "engineer quickchat/self/deployed/apt" )
+	_chat_item_script( "gdf", "self/deployed/avt", 			"V", "ContextCheckAbility", "engineer quickchat/self/deployed/avt" )
+	_chat_item_script( "gdf", "self/deployed/ait", 			"B", "ContextCheckAbility", "engineer quickchat/self/deployed/ait" )
+	_chat_item_script( "gdf", "self/deployed/artillery", 	"A", "ContextCheckAbility", "fieldops quickchat/self/deployed/artillery" )
+	_chat_item_script( "gdf", "self/deployed/rockets", 		"O", "ContextCheckAbility", "fieldops quickchat/self/deployed/rockets" )
+	_chat_item_script( "gdf", "self/deployed/hammer", 		"H", "ContextCheckAbility", "fieldops quickchat/self/deployed/hammer" )
+}
+
+radialMenuDef gdf/quickchat/self/items {
+	title "gdf/quickchat/self/items"
+	
+	_chat_item_script( "gdf", "self/items/plantingmines", 		"P", "ContextCheckAbility", "engineer quickchat/self/items/plantingmines" )
+	_chat_item_script( "gdf", "self/items/disarmingmines", 		"D", "ContextCheckAbility", "engineer quickchat/self/items/disarmingmines" )
+	_chat_item_script( "gdf", "self/items/suppliesdropped", 	"S", "ContextCheckAbility", "medic quickchat/self/items/suppliesdropped" )
+	_chat_item_script( "gdf", "self/items/medpacksdropped", 	"M", "ContextCheckAbility", "medic quickchat/self/items/medpacksdropped" )
+	_chat_item_script( "gdf", "self/items/ammopacksdropped", 	"A", "ContextCheckAbility", "fieldops quickchat/self/items/ammopacksdropped" )
+	
+}
+
+radialMenuDef gdf/quickchat/self/repairing {
+	title "gdf/quickchat/self/repairing"
+
+	_chat_item( "gdf", "self/repairing/radar", 		"R" )
+	_chat_item( "gdf", "self/repairing/apt", 		"P" )
+	_chat_item( "gdf", "self/repairing/avt", 		"V" )
+	_chat_item( "gdf", "self/repairing/ait", 		"B" )
+	_chat_item( "gdf", "self/repairing/artillery", 	"A" )
+	_chat_item( "gdf", "self/repairing/rockets", 	"O" )
+	_chat_item( "gdf", "self/repairing/hammer", 	"H" )
+	_chat_item_script( "gdf", "self/repairing/mcp", "M", "ContextUpdateMCP", "repairingmcp" )
+}
+
+radialMenuDef gdf/quickchat/self/repaired {
+	title "gdf/quickchat/self/repaired"
+	
+	_chat_item( "gdf", "self/repaired/radar", 		"R" )
+	_chat_item( "gdf", "self/repaired/apt", 		"P" )
+	_chat_item( "gdf", "self/repaired/avt", 		"V" )
+	_chat_item( "gdf", "self/repaired/ait", 		"B" )
+	_chat_item( "gdf", "self/repaired/artillery", 	"A" )
+	_chat_item( "gdf", "self/repaired/rockets", 	"O" )
+	_chat_item( "gdf", "self/repaired/hammer", 		"H" )	
+}
+
+
+radialMenuDef gdf/quickchat/fireteam {
+	title "gdf/quickchat/fireteam"
+
+	_chat_item( "gdf", "fireteam/waypoint/attack", 	"A" )
+	_chat_item( "gdf", "fireteam/waypoint/defend", 	"D" )
+	_chat_item( "gdf", "fireteam/waypoint/regroup", 	"R" )
+} 
