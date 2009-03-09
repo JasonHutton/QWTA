@@ -70,3 +70,18 @@ new script functions added...
 19. Optimize the 3rd eye to only update its radar when its pos has actually changed.
 20. Add in 'blurry' effects when wounded, and fade-to-black when dead.
 21. Use the heavy lift heli-plane-thing for some GDF vehicle drops.
+
+
+Todo for v0.3 release:
+
+1. Fix issue with DMG freezing in midair without detonation.
+2. Fix cheats of teleport drop not checking for all known issues before dropping.
+3. Hyperblaster should not give target lock or respond to flares. Faster lockon would be nice but nonessential. Turn off locational damage.
+4. Class number limit improvements: force to limbo on death/force bots to switch on death when on a class with slots overused.
+5. Tie vehicle drop types to something. Campaign ranks? To stop the synced swarm-deploy of vehicles. (Aha, amount of charge allowed per rank!)
+6. Get realistic damage defs setup, so we don't have to obliterate the nonreal damages.
+7. Implement realistic damages for all weapons.
+8. Magog drops for heavy GDF vehicles.
+9. Radar restrictions.
+10. Megatexture autodownload.
+11. Linux version.
