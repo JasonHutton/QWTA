@@ -1,0 +1,639 @@
+/***********************************************************************
+
+projectile_missile.script
+
+***********************************************************************/
+
+#define MS_NORMAL		0
+#define MS_EXPLODED		1
+#define MS_AIRBURST		2
+
+object projectile_missile {
+	void			init();
+	void			preinit();
+	void			destroy();
+	void			syncFields();
+
+	void			Idle();
+
+	void			Explode( object traceObject, entity collisionEnt );
+	void			ExplodeVel( object traceObject, entity collisionEnt, vector velocity, float newState );
+	void			Fizzle();
+	void			AirBurst();
+
+	float			OnCollide( object traceObject, vector velocity, float bodyId );
+	void			OnKilled();
+	void			OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint );
+	void			OnTouch( entity other, object traceObject );
+	void			OnRest();
+	void			OnLaunchTimeChanged();
+	void			OnPostThink();
+
+	float			GetDamagePower() { return getDamagePower(); }
+
+	void			KillFuseThread();
+	void			FuseThread();
+
+	void			SetRadiusDamageIgnoreEntity( entity collisionEnt );
+
+	void			DoWaterExplosion( vector position, string surfaceType, vector normal );
+
+	void			ProjectileMissile_OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint );
+	
+	void			CancelThreads();
+
+	void			ScheduleExplosion( float delay, float newState );
+	void			ExplosionThread( float delay, float newState );
+	void			CancelExplosion();
+
+	void			BotOnExplode() { ; } //mal: do nothing here - landmines and grenades will define their own version of this function.
+
+	void			ScheduleFizzle( float delay );
+	void			FizzleThread( float delay );
+	void			CancelFizzle();
+	
+	void			CancelMonitorTrail();
+	void			MonitorTrail();
+	
+	float			CollideEffect( object traceObject, entity collisionEnt, vector velocity );
+	void			DoExplodeEffect( entity collisionEnt );
+	boolean			PendingRemoval();
+	void			ScheduleRemoval( float delay );
+	void			DoRadiusDamage();
+	void			MakeInactive();
+	void			SetupContents();
+	void			SetupContents_Base();
+	void			OnStateChanged();
+	void			RemoveThread( float delay );
+	
+	void			vOnBindMasterDestroyed() { remove(); }
+
+	void			vSetDestroyed();
+	boolean			vGetDestroyed();
+	float			vGetDestroyProficiency();
+	
+	boolean			vDisablePlantCharge() { return true; }
+
+	void			MissileBounce( vector velocity );
+	void			OnUnbind();
+
+	void			FuseSoundThread( float fuseTimer );
+	float			soundPreDelay;
+
+	boolean			detonateOnWorld;
+	boolean			detonateOnActor;
+	boolean			detonateOnFuse;
+	boolean			detonateOnDeath;
+	boolean			detonateOnRest;
+	boolean			stickOnContact;
+	boolean			detonateUpwards;
+	boolean			noTrail;
+	boolean			useAirBurst;
+	boolean			trailUnderWater;
+	boolean			removeTrailAtRest;
+
+	float			removeThread;
+
+	float			damageIndex;
+	float			splashDamageIndex;
+	float			airBurstDamageIndex;
+	
+	float			destroyProficiency; // XP for destroying this via anti-missile
+
+	entity			radiusDamageIgnoreEntity;
+
+	float			fuse;
+	boolean			stuck;
+	float			armTime;
+	float			state;
+	
+	boolean			destroyed;
+
+	float			lastBounceSound;
+	float			nextBounceTime;
+
+	boolean			inactive;
+}
+
+void projectile_missile::syncFields() {
+	syncBroadcast( "state" );
+	syncCallback( "state", "OnStateChanged" );
+}
+
+void projectile_missile::preinit() {
+	removeThread		= -1;
+	stuck				= false;
+
+	fuse				= getFloatKey( "fuse" );
+	armTime				= getFloatKey( "arm_time" );
+
+	damageIndex			= GetDamage( getKey( "dmg_damage" ) );
+	splashDamageIndex	= GetDamage( getKey( "dmg_splash_damage" ) );
+	airBurstDamageIndex	= GetDamage( getKey( "dmg_splash_damage_air" ) );
+	if ( airBurstDamageIndex == -1 ) {
+		airBurstDamageIndex = splashDamageIndex;
+	}
+
+	detonateOnWorld		= getIntKey( "detonate_on_world" );
+	detonateOnActor		= getIntKey( "detonate_on_actor" );
+	detonateOnFuse		= getIntKey( "detonate_on_fuse" );
+	detonateOnDeath		= getIntKey( "detonate_on_death" );
+	detonateOnRest		= getIntKey( "detonate_on_rest" );
+	stickOnContact		= getIntKey( "stick_on_contact" );
+	detonateUpwards		= getIntKey( "detonate_upwards" );
+	noTrail				= getIntKey( "no_trail" );
+	trailUnderWater		= getIntKey( "trailUnderWater" );
+	useAirBurst			= getIntKey( "use_air_burst" );
+	removeTrailAtRest	= getIntKey( "removeTrailAtRest" );
+	soundPreDelay		= getFloatKey( "pre_delay_time" );
+	
+	
+	nextBounceTime		= 0;
+	
+	destroyProficiency	= GetProficiency( getKey( "prof_destroy" ) );
+
+	state				= MS_NORMAL;
+}
+
+void projectile_missile::SetupContents() {
+	SetupContents_Base();
+}
+
+void projectile_missile::SetupContents_Base() {
+	float contents = CONTENTS_PROJECTILE;
+
+	if ( getIntKey( "detonate_on_trigger" ) ) {
+		contents |= CONTENTS_TRIGGER;
+	}
+
+	setContents( contents );
+	setClipmask( MASK_PROJECTILE | CONTENTS_BODY | CONTENTS_SLIDEMOVER );
+}
+
+void projectile_missile::OnStateChanged() {
+	if ( state != MS_NORMAL ) {
+		ScheduleExplosion( sys.getFrameTime(), state );
+	}
+}
+
+void projectile_missile::init() {
+	SetupContents();
+	setState( "Idle" );
+}
+
+void projectile_missile::KillFuseThread() {
+	sys.killThread( "FuseThread_" + getName() );
+}
+
+void projectile_missile::FuseThread() {	
+	float launchTime = getLaunchTime();
+	
+	float delay = ( launchTime + fuse ) - sys.getTime();
+	
+	if ( delay > 0.f ) {
+		sys.wait( delay );
+	}
+	
+	if ( detonateOnFuse ) {
+		AirBurst();
+	} else {
+		Fizzle();
+	}
+}
+
+void projectile_missile::OnLaunchTimeChanged() {
+	KillFuseThread();
+	if ( fuse > 0 ) {
+		thread FuseThread();
+		
+		if ( soundPreDelay != 0.0f && ( fuse - soundPreDelay > 0 ) ) {
+			thread FuseSoundThread( fuse - soundPreDelay );
+		}
+	}
+}
+
+void projectile_missile::CancelMonitorTrail() {
+	sys.killThread( "MonitorTrail_" + getName() );
+}
+
+void projectile_missile::MonitorTrail() {
+	float nextTime = sys.getTime() + 0.5f;
+	while ( true ) {
+		if ( !trailUnderWater && isInWater() > 0.5f ) {
+			stopEffect( "fx_trail" );
+		}
+		vector velocity = getLinearVelocity();
+		float velSqr = sys.vecLengthSquared( velocity );
+		if ( velSqr > 5.f ) {
+			nextTime = sys.getTime() + 0.5f;
+		}
+		if ( nextTime < sys.getTime() && removeTrailAtRest ) {
+			if ( !noTrail ) {
+				stopEffect( "fx_trail" );
+				noTrail = true;
+			}
+		}
+		sys.waitFrame();
+	}
+}
+
+void projectile_missile::Idle() {
+	if ( !noTrail ) {
+		if ( trailUnderWater || isInWater() < 0.5f ) {
+			handle ent = playEffect( "fx_trail", "", 1 );
+			if ( getIntKey( "trail_unbindrotation" ) ) {
+				detachRotationBind( ent );
+			}
+			CancelMonitorTrail();
+			thread MonitorTrail();
+		}
+	}
+	startSound( "snd_fly", SND_WEAPON_FIRE );
+}
+
+void projectile_missile::destroy() {
+	if ( !noTrail ) {
+		stopEffect( "fx_trail" );
+	}
+	stopSound( SND_WEAPON_FIRE );
+}
+
+void projectile_missile::OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint ) {
+	ProjectileMissile_OnStick( collisionEnt, collisionNormal, surfaceType, joint );
+}
+
+void projectile_missile::ProjectileMissile_OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint ) {
+	startSound( "snd_stick", SND_WEAPON_BOUNCE );
+
+	stuck = true;
+	freeze( 1.f );
+	clearContacts();
+	putToRest();
+	if ( collisionEnt != $null_entity ) {
+		float jointHandle = collisionEnt.getJointHandle( joint );
+		if ( jointHandle != INVALID_JOINT ) {
+			bindToJoint( collisionEnt, joint, 1 );
+		} else {
+			bind( collisionEnt );
+		}
+	}
+}
+
+// NOTE: If this returns true, all momentum on the object will be cleared, otherwise, it will bounce
+float projectile_missile::OnCollide( object traceObject, vector velocity, float bodyId ) {
+	float shaderFlags;
+	entity collisionEnt;
+	vector dir;
+
+	if( stuck ) {
+		return 1.0f;
+	}
+
+	shaderFlags = traceObject.getTraceSurfaceFlags();
+	if( shaderFlags & SURF_NOIMPACT ) {
+		ScheduleRemoval( 0 );
+		return 1.0f;
+	}
+
+	if ( PendingRemoval() ) {
+		return 1.0f;
+	}
+
+	collisionEnt = traceObject.getTraceEntity();
+
+	player collisionPlayer = collisionEnt;
+
+	if ( stickOnContact && collisionPlayer == $null_entity ) {
+		if ( shaderFlags & SURF_NOPLANT ) {
+			return false;
+		}
+		
+		if ( collisionEnt.vDisablePlantCharge() ) {
+			return false;
+		}
+		
+		OnStick( collisionEnt, traceObject.getTraceNormal(), traceObject.getTraceSurfaceType(), traceObject.getTraceJoint() );
+		return 1.0f;
+	}
+
+	if ( ( armTime > 0 ) && ( ( getLaunchTime() + armTime ) > sys.getTime() ) ) {
+		MissileBounce( velocity );
+		return 0.0f;
+	}
+
+	if ( collisionPlayer != $null_entity ) {
+		if( !detonateOnActor ) {
+			return 0.f;
+		}
+	}
+
+	if ( !detonateOnWorld ) {
+	
+		if ( nextBounceTime < sys.getTime() ) {
+			string keyfx = getKey( "fx_bounce_"+traceObject.getTraceSurfaceType() );
+			if ( keyfx != "" ) {
+				sys.playWorldEffect( keyfx , '1 1 1', traceObject.getTraceEndPos(), traceObject.getTraceNormal() );
+			}
+			nextBounceTime = sys.getTime() + 1000;
+		}
+
+		MissileBounce( velocity );
+		return 0.0f;
+	}
+
+	return CollideEffect( traceObject, collisionEnt, velocity );
+}
+
+float projectile_missile::CollideEffect( object traceObject, entity collisionEnt, vector velocity ) {
+	vector dir;
+	
+	if ( collisionEnt != $null_entity ) {
+		if( collisionEnt.takesDamage() ) {
+			dir = sys.vecNormalize( velocity );
+			collisionEnt.applyDamage( self, getOwner(), dir, damageIndex, GetDamagePower(), traceObject );
+		}
+	}
+
+	ExplodeVel( traceObject, collisionEnt, velocity, MS_EXPLODED );
+
+	return 1.0f;
+}
+
+void projectile_missile::MakeInactive() {
+	inactive = true;
+	unbind();
+	hide();
+	clearContacts();
+	putToRest();
+	forceDisableClip();
+	setTakesDamage( false );
+	stuck = true;
+	freeze( 1.f );
+	stopAllEffects();
+	
+}
+
+void projectile_missile::SetRadiusDamageIgnoreEntity( entity collisionEnt ) {
+	radiusDamageIgnoreEntity = $null_entity;
+
+	if ( collisionEnt != $null_entity ) {
+		if ( collisionEnt.takesDamage() ) {
+			radiusDamageIgnoreEntity = collisionEnt;
+		}
+	}
+}
+
+void projectile_missile::DoExplodeEffect( entity collisionEnt ) {
+	float splashDelay;
+	float removeDelay;
+
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+
+	DoRadiusDamage();
+
+	ScheduleRemoval( removeDelay );
+}
+
+void projectile_missile::AirBurst() {
+	ExplodeVel( $null_entity, $null_entity, g_vectorZero, MS_AIRBURST );
+}
+
+void projectile_missile::Explode( object traceObject, entity collisionEnt ) {
+	ExplodeVel( traceObject, collisionEnt, g_vectorZero, MS_EXPLODED );
+}
+
+void projectile_missile::ExplodeVel( object traceObject, entity collisionEnt, vector velocity, float newState ) {
+	CancelThreads();
+	
+	if ( PendingRemoval() ) {
+		return;
+	}
+
+	if( !sys.isClient() ) {
+		BotOnExplode();
+		state = newState;
+		forceNetworkUpdate();
+	}
+
+	MakeInactive();
+
+	vector newOrg = getWorldOrigin();
+	vector normal = '0 0 1';
+	vector materialColor = g_colorWhite;
+	string surfaceType;
+	boolean hasTraceResults = false;
+
+	if ( traceObject == $null_entity ) {
+		// scan down a little just to see if theres ground below
+		// it might be resting on the ground when this happens
+		vector currentPos = getWorldOrigin();
+		if ( sys.tracePoint( currentPos + '0 0 1', currentPos - '0 0 16', MASK_SHOT_RENDERMODEL, self ) < 1.0f ) {
+			newOrg = sys.getTraceEndPos();
+			normal = sys.getTraceNormal();
+			materialColor = sys.getTraceSurfaceColor();
+			surfaceType = sys.getTraceSurfaceType();
+			hasTraceResults = true;
+		}
+	} else {
+		newOrg = traceObject.getTraceEndPos();
+		normal = traceObject.getTraceNormal();
+		materialColor = traceObject.getTraceSurfaceColor();
+		surfaceType = traceObject.getTraceSurfaceType();
+		hasTraceResults = true;
+	}
+
+	vector effectNormal = normal;
+	if ( detonateUpwards ) {
+		effectNormal = '0 0 1';
+	}
+	
+	if ( !noTrail ) {
+		stopEffect( "fx_trail" );
+	}
+	stopSound( SND_WEAPON_FIRE );
+
+	if ( isInWater() > 0.5f ) {
+		DoWaterExplosion( newOrg, surfaceType, '0 0 1' );
+	} else {
+		vector reflvel = effectNormal;
+		
+		string effectName;
+		if ( newState == MS_AIRBURST && useAirBurst ) {
+			effectName = "fx_airburst";
+		} else {
+			effectName = "fx_explode";
+		}
+
+		effectName = lookupEffect( effectName, surfaceType );
+		if ( effectName != "" ) {
+			sys.playWorldEffect( effectName, '1 1 1', newOrg, reflvel );
+		}
+
+		if ( hasTraceResults ) {
+			addCheapDecal( collisionEnt, newOrg, normal, "dec_impact", surfaceType );// Will play on the world
+		}
+	}
+
+	DoExplodeEffect( collisionEnt );
+}
+
+void projectile_missile::DoWaterExplosion( vector position, string surfaceType, vector normal ) {
+	entitiesOfClass( sys.getTypeHandle( "sdLiquid" ), 0 );
+	float count = filterEntitiesByTouching( 1 );
+
+	if ( count > 0 ) {
+		entity other = getBoundsCacheEntity( 0 );
+		vector top = other.getAbsMaxs();
+		
+		position_z = top_z;
+	}
+	
+	playOriginEffect( "fx_explode_water", surfaceType, position, normal, 0 );
+}
+
+void projectile_missile::Fizzle() {
+	CancelThreads();
+
+	if ( PendingRemoval() ) {
+		return;
+	}
+
+	MakeInactive();
+
+	if ( !noTrail ) {
+		stopEffect( "fx_trail" );
+	}
+	stopSound( SND_WEAPON_FIRE );
+
+	ScheduleRemoval( 0 );
+}
+
+boolean projectile_missile::PendingRemoval() {
+	return removeThread != -1;
+}
+
+void projectile_missile::RemoveThread( float delay ) {
+	if( delay <= 0 ) {
+		delay = sys.getFrameTime();
+	}
+	sys.wait( delay );
+	if( !sys.isClient() ) {
+		remove();
+	}
+}
+
+void projectile_missile::ScheduleRemoval( float delay ) {
+	removeThread = thread RemoveThread( delay );
+}
+
+void projectile_missile::DoRadiusDamage() {
+	float damageIndex = splashDamageIndex;
+	if ( state == MS_AIRBURST ) {
+		damageIndex = airBurstDamageIndex;
+	}
+
+	if ( damageIndex != -1 ) {
+		sys.applyRadiusDamage( getWorldOrigin(), self, getOwner(), radiusDamageIgnoreEntity, self, damageIndex, GetDamagePower(), 1.f );
+	}
+}
+
+void projectile_missile::OnKilled() {
+	if( PendingRemoval() ) {
+		return;
+	}
+
+	if( detonateOnDeath ) {
+		Explode( $null_entity, $null_entity );
+	} else {
+		Fizzle();
+	}
+}
+
+void projectile_missile::OnTouch( entity other, object traceObject ) {
+}
+
+void projectile_missile::OnRest() {
+	if ( inactive ) {
+		return;
+	}
+
+	if ( detonateOnRest ) {
+		ExplodeVel( $null_entity, $null_entity, g_vectorZero, MS_EXPLODED );
+	}
+}
+
+void projectile_missile::MissileBounce( vector velocity ) {
+
+	if( sys.vecLengthSquared( velocity ) < ( 50.f * 50.f ) ) {
+		return;
+	}
+
+	if( lastBounceSound < sys.getTime() ) {
+		startSound( "snd_bounce", SND_WEAPON_BOUNCE );
+		lastBounceSound = sys.getTime() + 0.2f;
+	}
+}
+
+void projectile_missile::ScheduleExplosion( float delay, float newState ) {
+	CancelExplosion();
+	thread ExplosionThread( delay, newState );
+}
+
+void projectile_missile::ExplosionThread( float delay, float newState ) {
+	sys.wait( delay );	
+	thread ExplodeVel( $null_entity, $null_entity, g_vectorZero, newState );
+}
+
+void projectile_missile::CancelExplosion() {
+	sys.killThread( "ExplosionThread_" + getName() );
+}
+
+void projectile_missile::ScheduleFizzle( float delay ) {
+	CancelFizzle();
+	
+	thread FizzleThread( delay );
+}
+
+void projectile_missile::FizzleThread( float delay ) {
+	sys.wait( delay );
+	thread Fizzle(); // in a thread because fizzle will kill this thread
+}
+
+void projectile_missile::CancelFizzle() {
+	sys.killThread( "FizzleThread_" + getName() );
+}
+
+void projectile_missile::CancelThreads() {
+	CancelExplosion();
+	CancelFizzle();
+	CancelMonitorTrail();
+}
+
+void projectile_missile::vSetDestroyed() {
+	destroyed = true;
+	AirBurst();
+}
+
+boolean projectile_missile::vGetDestroyed() {
+	return destroyed;
+}
+
+float projectile_missile::vGetDestroyProficiency() {
+	return destroyProficiency;
+}
+
+void projectile_missile::OnUnbind() {
+	Fizzle();
+}
+
+void projectile_missile::OnPostThink() {
+	if ( isBound() ) {
+		forceRunPhysics();
+	}
+}
+
+void projectile_missile::FuseSoundThread( float fuseTimer ) {
+	sys.wait( fuseTimer );
+	startSound( "snd_pre_delay", SND_WEAPON_ARM );
+}
