@@ -324,6 +324,8 @@ void game_main() {
 	g_mineIconSize				= sys.getCVar( "g_mineIconSize", "" );
 	g_mineIconAlphaScale		= sys.getCVar( "g_mineIconAlphaScale", "" );
 
+	g_realisticDamage			= sys.getCVar( "g_realisticDamage", "" );
+
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

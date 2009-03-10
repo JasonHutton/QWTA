@@ -150,6 +150,8 @@ cvar	g_mineIconAlphaScale;
 
 //cvar	g_aptWarning;
 
+cvar	g_realisticDamage;
+
 object gameplay_base;
 gameplay_base gameplayManager;
 
