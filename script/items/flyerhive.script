@@ -1,0 +1,917 @@
+/***********************************************************************
+
+flyerhive.script
+
+***********************************************************************/
+
+#define FLYER_HIVE_TIME 30.0f
+
+object flyer_hive {
+	void				preinit();
+	void				init();
+	void				destroy();
+	void				syncFields();
+
+	void				vRemoveObject();
+	void				vOnEndGame();
+
+	boolean				vDisablePlantCharge() { return true; }
+
+	void				OnEndTimeChanged();
+	void				OnDeactivateTimeChanged();
+
+	void				RemoveThread( float removeTime );
+	
+	void				Idle();
+	void				SelfDestruct();
+	void				Fizzle();
+
+	void				DoWaterExplosion( vector position, string surfaceType, vector normal );
+	
+	void				Activate( entity p );
+	void				Deactivate();
+
+	void				SoundThread();
+
+	void				vOnPassengerPain( entity inflictor, entity attacker, float damage, vector direction, float location );
+	void				OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+
+	void				ClearCamera();
+
+	void				FreeGui();
+	void				OnBecomeRemoteCamera();
+	void				OnFinishRemoteCamera();
+	
+	float				OnUpdateCrosshairInfo( entity p );
+
+	float				vGetPliersProgressBarValue( float action );
+
+	void				ShowIcon();
+	void				FreeIcon();
+
+	entity				owner;
+	boolean				active;
+	float				deactivateTime;
+	float				endTime;
+	boolean				selfDestructing;
+	
+	float				cameraGUIHandle;
+
+	float				commandMapIcon;	
+}
+
+object tool_flyer_hive : weapon_base {
+	void					init();
+	void					destroy();
+
+	void					ClearFlyer();
+	entity					FindFlyer();
+
+	void					Cleanup();
+
+	void					Idle();
+	void					Attack();
+	boolean					CheckAttack();
+	boolean					CheckForWalls();
+	
+	void					SetAnimPrefixMode( boolean mode );
+
+	entity					FindFlyer();
+
+	void					Destruct( float delay );
+	
+	void					OwnerDied();
+
+	void					ToolTipThread_Raise();
+	void					ToolTipThread_Deployed();
+	
+	boolean					cancelFire;
+	void					vCancelFire() { cancelFire = true; }
+	
+	void					OnBadPosition();
+	
+	boolean					inRemoteView;
+
+	float					cameraGUIHandle;
+
+	boolean					lastAttack;
+	boolean					lastAltFire;
+	
+	boolean					animPrefixMode;
+
+	float					destructDelay;
+	float					deploymentTime;
+}
+
+/***********************************************************************
+
+tool_flyer_hive implementation
+
+***********************************************************************/
+
+void tool_flyer_hive::init() {
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+
+	cameraGUIHandle = -1;
+	inRemoteView = false;
+
+	destructDelay		= getFloatKey( "destruct_delay" );
+	deploymentTime				= -1;
+
+	weaponState( "Raise", 0 );
+}
+
+void tool_flyer_hive::destroy() {
+	sys.killThread( "ToolTipThread_Raise_" + getName() );
+	sys.killThread( "ToolTipThread_Deployed_" + getName() );
+}
+
+void tool_flyer_hive::ClearFlyer() {
+	SetAnimPrefixMode( false );
+
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	startSound( "snd_cancel", SND_WEAPON_FIRE );
+
+	entity other = FindFlyer();
+	if ( other != $null_entity ) {
+		myPlayer.binRemove( other );
+	}
+}
+
+entity tool_flyer_hive::FindFlyer() {
+	float i;
+	float num = myPlayer.binGetSize();
+
+	for ( i = 0; i < num; i++ ) {
+		flyer_hive other = myPlayer.binGet( i );
+		if ( other != $null_entity ) {
+			return other;
+		}
+	}
+	
+	return $null_entity;
+}
+
+void tool_flyer_hive::Cleanup() {
+	flyer_hive activeFlyer = FindFlyer();
+	if ( activeFlyer != $null ) {
+		activeFlyer.Fizzle();
+		ClearFlyer();
+	}
+}
+
+void tool_flyer_hive::Idle() {
+	flyer_hive activeFlyer;
+	boolean hadFlyer;
+
+	weaponReady();
+
+	StartIdleEffect();
+	
+	float flyerClass = sys.getTypeHandle( "sdRepairDrone" );
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+
+	while( true ) {
+		float now = sys.getTime();
+
+		if ( WEAPON_LOWERWEAPON ) {
+			StopIdleEffect();
+			weaponState( "Lower", 4 );
+		}
+
+		activeFlyer = FindFlyer();
+
+		if ( activeFlyer == $null_entity ) {		
+			SetAnimPrefixMode( false );
+			sys.killThread( "ToolTipThread_Deployed_" + getName() );
+
+			if ( sys.isClient() ) {
+				if ( hadFlyer ) {
+					weaponState( "Raise", 1 );					
+				}
+			}
+		} else {
+			hadFlyer = true;
+			if ( deploymentTime == -1 ) {
+				deploymentTime = sys.getTime();
+			}
+
+			SetAnimPrefixMode( true );
+		}
+
+		if ( WEAPON_ATTACK ) {
+			if ( !lastAttack ) {
+				lastAttack = true;
+
+				if ( activeFlyer == $null_entity ) {
+					if ( CheckAttack() ) {
+						if ( myPlayer.isLocalPlayer() ) {
+							thread ToolTipThread_Deployed();
+						}
+						StopIdleEffect();
+						weaponState( "Attack", 1 );
+					}
+				} else {
+					float time = sys.getTime() - deploymentTime;
+					if ( sys.getTime() - deploymentTime > destructDelay ) {
+						Destruct( 0.f );
+					}
+
+					weaponState( "Raise", 1 );
+				}
+			}
+		} else {
+			lastAttack = false;
+		}
+
+		if ( WEAPON_ALTFIRE ) {
+			if ( !lastAltFire ) {
+				lastAltFire = true;
+
+				if ( activeFlyer != $null_entity ) {
+					activeFlyer.Deactivate();
+					ClearFlyer();
+
+					weaponState( "Raise", 1 );
+				}
+			}
+		} else {
+			lastAltFire = false;
+		}
+
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+#define FLYERHIVE_THROW_DISTANCE			64
+#define FLYERHIVE_THROW_DISTANCE_BOUNDARY	32
+
+boolean tool_flyer_hive::CheckAttack() {
+	if ( !CanRemove( chargePerUse ) ) {
+		if ( myPlayer.isLocalPlayer() ) {
+			myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+			sys.startSoundDirect( getKey( "snd_need_charge" ), SND_WEAPON_FIRE_LOCAL );
+			G_NotifyNoCharge( myPlayer );
+		}
+		return false;
+	}
+	
+	if ( !CheckForWalls() ) {
+		OnBadPosition();
+		return false;
+	}
+	return true;
+}
+
+boolean tool_flyer_hive::CheckForWalls() {
+	vector hive_mins = getVectorKeyWithDefault( "hive_mins", '-8 -8 -4' );
+	vector hive_maxs = getVectorKeyWithDefault( "hive_maxs", '8 8 4' );
+	
+	// expand the bounds slightly
+	hive_mins += '-1 -1 -1';
+	hive_maxs += '1 1 1';
+	
+	vector start = myPlayer.getViewOrigin();
+	vector directionAngles =  myPlayer.getViewAngles();
+	vector end = start + ( sys.angToForward( directionAngles ) * ( FLYERHIVE_THROW_DISTANCE + FLYERHIVE_THROW_DISTANCE_BOUNDARY ) );
+
+	float fraction = sys.trace( start, end, hive_mins, hive_maxs, MASK_SHOT_BOUNDINGBOX | MASK_PROJECTILE, myPlayer );
+	return fraction >= 1.0f;
+}
+
+void tool_flyer_hive::Attack() {
+	SetAnimPrefixMode( true );
+	cancelFire = false;
+
+	playAnim( ANIMCHANNEL_ALL, "fire" );
+	playEffect( "fx_fire", idleEffectJoint, 0 );
+	while ( 1 ) {
+		sys.waitFrame();
+		if ( !CheckForWalls() ) {
+			OnBadPosition();
+			weaponState( "Idle", 4 );
+		}
+		if ( animDone( ANIMCHANNEL_ALL, 4 ) ) {
+			break;
+		}
+		if ( cancelFire ) {
+			break;
+		}
+	}
+	
+	if ( !cancelFire ) {
+		fired();
+		
+		if ( !sys.isClient() ) {
+			Remove( chargePerUse );
+
+			// spawn a flyer
+			float flyerIndex = GetEntityDef( getKey( "def_flyer" ) );
+			
+			flyer_hive activeFlyer = sys.spawnType( flyerIndex );
+			
+			vector flyerAngles =  myPlayer.getViewAngles();
+			vector flyerOrigin = myPlayer.getViewOrigin() + ( sys.angToForward( flyerAngles ) * FLYERHIVE_THROW_DISTANCE );
+
+			myPlayer.setPlayerCovertToolState( activeFlyer, false );
+			
+			activeFlyer.setOrigin( flyerOrigin );
+			
+			activeFlyer.setAngles( flyerAngles );
+			activeFlyer.setRemoteViewAngles( flyerAngles, myPlayer );		
+			activeFlyer.Activate( myPlayer );
+			myPlayer.setRemoteCamera( activeFlyer );
+			activeFlyer.setGameTeam( myPlayer.getGameTeam() );
+
+			myPlayer.binAdd( activeFlyer );
+		}
+	}
+
+	weaponState( "Idle", 4 );
+}
+
+void tool_flyer_hive::Destruct( float delay ) {
+	flyer_hive activeFlyer;
+	
+	activeFlyer = FindFlyer();
+	if ( activeFlyer == $null_entity ) {
+		return;
+	}
+	
+	if ( delay > 0.f ) {
+		wait( delay );
+	}
+	
+	activeFlyer = FindFlyer();
+	if ( activeFlyer == $null_entity ) {
+		return;
+	}
+	
+	activeFlyer.SelfDestruct();
+	ClearFlyer();
+}
+
+void tool_flyer_hive::OwnerDied() {
+	flyer_hive activeFlyer = FindFlyer();
+	if ( activeFlyer != $null_entity ) {
+		activeFlyer.Fizzle();
+		ClearFlyer();
+	}
+}
+
+void tool_flyer_hive::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	if ( FindFlyer() == $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	}
+	
+	WAIT_FOR_TOOLTIP;
+	if ( FindFlyer() == $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+	}
+}
+
+void tool_flyer_hive::ToolTipThread_Deployed() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	if ( FindFlyer() != $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_deployed_1" ) ) );
+	}
+	
+	//WAIT_FOR_TOOLTIP;
+	if ( FindFlyer() != $null_entity ) {
+		//myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_deployed_2" ) ) );
+	}
+}
+
+void tool_flyer_hive::OnBadPosition() {
+	// invalid position, play a sound to indicate that
+	if ( myPlayer == sys.getLocalPlayer() ) {
+		sys.startSoundDirect( getKey( "snd_badLocation" ), SND_WEAPON_FIRE );
+		if ( !myPlayer.isToolTipPlaying() ) {
+			myPlayer.sendToolTip( GetToolTip( getKey( "tt_badLocation" ) ) );
+		}
+	}
+}
+
+void tool_flyer_hive::SetAnimPrefixMode( boolean mode ) {
+	if ( animPrefixMode == mode ) {
+		return;
+	}
+	animPrefixMode = mode;
+	if ( animPrefixMode ) {
+		setupAnimClass( "anim_prefix_alt" );
+	} else {
+		setupAnimClass( "anim_prefix" );
+	}
+}
+
+/***********************************************************************
+
+flyer_hive implementation
+
+***********************************************************************/
+
+
+void flyer_hive::preinit() {
+	cameraGUIHandle = -1;
+
+	commandMapIcon = -1;
+	
+	if ( !sys.isClient() ) {
+		endTime = sys.getTime() + FLYER_HIVE_TIME;
+		OnEndTimeChanged();
+	}
+}
+
+void flyer_hive::init() {	
+	// idle until the owner has been sent by the server
+	owner = $null_entity;
+	while ( true ) {
+		owner = getOwnerEntity();
+		if ( owner != $null_entity ) {
+			break;
+		}
+		sys.waitFrame();
+	}
+
+	setGameTeam( owner.getGameTeam() );
+
+	active = false;
+
+	setNetworkSynced( true );
+
+	thread SoundThread();
+
+	setState( "Idle" );
+}
+
+void flyer_hive::destroy() {
+	player p = owner;
+	if ( p == sys.getLocalPlayer() && p != $null_entity ) {
+		SetProgressBarVisible( false );
+	}
+
+	FreeIcon();
+	FreeGui();
+}
+
+void flyer_hive::syncFields() {
+	syncBroadcast( "deactivateTime" );
+	syncBroadcast( "endTime" );
+	
+	syncCallback( "endTime", "OnEndTimeChanged" );
+	syncCallback( "deactivateTime", "OnDeactivateTimeChanged" );
+}
+
+void flyer_hive::vRemoveObject() {
+	if ( !sys.isClient() ) {
+		Deactivate();
+	}
+}
+
+void flyer_hive::vOnEndGame() {
+	if ( !sys.isClient() ) {
+		Deactivate();
+	}
+}
+
+void flyer_hive::OnEndTimeChanged() {
+	// Gordon: insert gui update stuff here
+}
+
+void flyer_hive::OnDeactivateTimeChanged() {
+	if ( deactivateTime != 0.0f ) {
+		if ( owner == sys.getLocalPlayer() && owner != $null_entity ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.flyerhiveEndTime", sys.toGuiTime( sys.getTime() ) + 2 );
+		}
+	}
+}
+
+void flyer_hive::Idle() {
+	setClipmask( CONTENTS_SOLID|CONTENTS_FLYERHIVECLIP|CONTENTS_SLIDEMOVER|CONTENTS_PROJECTILE );
+
+	boolean wasActive = active;
+	
+	while( true ) {
+		float time = sys.getTime();
+
+		owner = getOwnerEntity();
+		if ( owner != $null_entity ) {
+			if ( owner == self ) {
+				owner = $null_entity;
+			} else if ( owner.needsRevive() ) {
+				owner = $null_entity;
+			}
+
+			if ( time >= endTime ) {
+				if ( deactivateTime == 0.f ) {
+					if ( !sys.isClient() ) {
+						Deactivate();
+					}
+				}
+			}
+		}
+
+		if ( owner != $null_entity ) {			
+			active = true;
+		} else {
+			active = false;
+		}
+
+		if ( active ) {
+			if ( !wasActive ) {
+				setFriction( 0.0f, 0.0f, 0.0f );
+			}
+			
+			if ( sys.getFrameTime() > 0 ) {
+			
+				vector angles = owner.getCameraViewAngles();
+				
+				//
+				// Orientation
+				//
+				vector currentUp = getWorldAxis( 2 );
+				vector myAngles = getAngles();
+				
+				float aimYaw = angles_y - 90.0f;
+				float yawDiff = sys.angleNormalize180( aimYaw - myAngles_y );
+				float maxYawVel = 180.0f;	
+				float yawVelNeeded = yawDiff / sys.getFrameTime();
+				CLAMP( yawVelNeeded, -maxYawVel, maxYawVel );
+				yawVelNeeded = DEG2RAD( yawVelNeeded );
+				
+				vector angVel = getAngularVelocity();
+				float yawVel = angVel * currentUp;
+				
+				float yawVelDiff = yawVelNeeded - yawVel;
+				vector extraAngVel = yawVelDiff*currentUp;	
+				setAngularVelocity( extraAngVel * 0.5f + angVel );
+				
+				//
+				// Movement
+				//
+				
+				vector myPos = getWorldOrigin();
+				
+				// figure out what direction to move in 
+				vector directions = owner.getMove();
+				directions_y = -directions_y;
+				float upmove = directions_z;
+				directions_z = 0.0f;
+				directions = sys.rotateVecByAngles( directions, angles );
+				directions_z += upmove;
+				
+				// re-normalize directions
+				float length = sys.vecLength( directions );
+				if ( length > 1.0f ) {
+					directions = directions * ( 1.0f / length );
+				}
+			
+				// aim to be roughly the same speed as a sprinting player
+				// it will vary around this point because of the hovering logic
+				vector desiredPos = myPos + directions * ( 320.0f * sys.getFrameTime() );
+				setTargetPosition( desiredPos, sys.getFrameTime() );
+				
+				// calculate how fast it needs to go to be perfect noclip style movement
+				vector desiredVelocity = ( desiredPos - myPos ) * ( 1.0f / sys.getFrameTime() );
+				
+				// blend that with the current velocity (repair drone motion stuff) 
+				// to get a slightly bobby noclip type movement :)
+				vector myVelocity = getLinearVelocity();
+				setLinearVelocity( desiredVelocity * 0.1f + myVelocity * 0.9f );
+			}
+		} else {
+			if ( wasActive ) {
+				disable();
+			}
+			
+			// negative time means it'll be inactive
+			setTargetPosition( vec3_origin, -100 );
+
+			if ( deactivateTime != 0.f ) {
+				if ( time > deactivateTime + 3.0f ) {
+					Fizzle();
+					break;
+				}
+			}
+		}
+		
+		wasActive = active;
+
+		if ( owner == sys.getLocalPlayer() && owner != $null_entity ) {
+			player p = owner;
+			p.ShowProgressBar( self, -1 );
+		}
+		
+		sys.waitFrame();
+	}
+}
+
+void flyer_hive::ClearCamera() {
+
+	if ( !sys.isClient() ) {
+		player p = owner;
+		if ( p != $null_entity ) {
+			p.setPlayerCovertToolState( self, true );
+		}
+	}
+
+	if ( owner != $null_entity ) {
+		if ( owner.getRemoteCamera() == self ) {
+			owner.setRemoteCamera( $null_entity );
+		}
+	}
+}
+
+void flyer_hive::SelfDestruct() {
+	if ( active ) {
+		entity attacker = getOwnerEntity();
+		
+		selfDestructing = true;
+		sys.applyRadiusDamage( getWorldOrigin(), self, attacker, $null_entity, self, GetDamage( getKey( "dmg_self_destruct" ) ), 1.f, 1.f );
+
+		if ( isInWater() > 0.5f ) {
+			DoWaterExplosion( getWorldOrigin(), "", '0 0 1' );
+		} else {
+			playMaterialEffect( "fx_explode", g_colorWhite, "", "", 0 );
+		}
+	}
+	ClearCamera();
+	
+	hide();
+
+	if ( !sys.isClient() ) {
+		thread RemoveThread( 0.5 );
+	}
+}
+
+void flyer_hive::Fizzle() {
+	playEffect( "fx_fizzle", "", 0 );
+
+	ClearCamera();
+	
+	hide();
+
+	if ( !sys.isClient() ) {
+		thread RemoveThread( 0.5 );
+	}
+}
+
+void flyer_hive::DoWaterExplosion( vector position, string surfaceType, vector normal ) {
+	entitiesOfClass( sys.getTypeHandle( "sdLiquid" ), 0 );
+	float count = filterEntitiesByTouching( 1 );
+
+	if ( count > 0 ) {
+		entity other = getBoundsCacheEntity( 0 );
+		vector top = other.getAbsMaxs();
+		
+		position_z = top_z;
+	}
+	
+	playOriginEffect( "fx_explode_water", surfaceType, position, normal, 0 );
+}
+
+void flyer_hive::Activate( entity p ) {
+	setEntities( p, p );
+	owner = p;
+}
+
+void flyer_hive::Deactivate() {
+	deactivateTime = sys.getTime();
+	setEntities( self, self );
+	ClearCamera();
+
+	OnDeactivateTimeChanged();
+}
+
+void flyer_hive::SoundThread() {
+	float hiveSpeedPitch = getFloatKeyWithDefault( "hive_speed_pitch", 1.f ) * 0.001f;
+
+	float hiveSpeed;
+	float newPitch;
+
+	startSound( "snd_idle", SND_WEAPON_IDLE );
+
+	while( true ) {
+		sys.waitFrame();
+
+		hiveSpeed = sys.fabs( sys.vecLength( getLinearVelocity() ) );
+		newPitch = ( hiveSpeed * hiveSpeedPitch ) + 1.f;
+		setChannelPitchShift( SND_WEAPON_IDLE, newPitch );
+	}
+}
+
+void flyer_hive::RemoveThread( float removeTime ) {
+	sys.wait( removeTime );
+	remove();
+}
+
+void flyer_hive::vOnPassengerPain( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	if ( cameraGUIHandle != -1 ) {
+		// tell the gui that the driver got hurt
+		sys.guiPostNamedEvent( cameraGUIHandle, "", "onDriverHurt" );
+	}
+}
+
+void flyer_hive::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	if ( !selfDestructing ) {
+		// apply damage to the owner
+		entity ownerEnt = getOwnerEntity();
+		if ( ownerEnt != self && ownerEnt != $null_entity ) {
+			string destroyedDamage = getKey( "dmg_destroyed" );
+			ownerEnt.applyDamage( self, attacker, g_vectorZero, GetDamage( destroyedDamage ), 1.0f, $null_entity );
+			
+			if ( !sys.isClient() ) {
+				sys.broadcastToolTip( GetToolTip( getKey( "tt_feedback" ) ), ownerEnt, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+			}
+		}
+		
+		// explode (not fizzle)
+		SelfDestruct();
+	}
+}
+
+
+
+
+
+void flyer_hive::FreeGui() {
+	if ( cameraGUIHandle != -1 ) {
+		sys.freeHudModule( cameraGUIHandle );
+		cameraGUIHandle = -1;
+	}
+}
+
+void flyer_hive::OnBecomeRemoteCamera() {
+	FreeGui();
+
+	ShowIcon();
+
+	cameraGUIHandle = sys.allocHudModule( getKey( "gui_camera_view" ), getFloatKeyWithDefault( "hud_sort", 0 ), false );
+
+	hide();
+	hideThrusters();
+
+	float count = entitiesOfCollection( "droneview" );
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		ent.show();
+	}
+}
+
+void flyer_hive::OnFinishRemoteCamera() {
+	FreeGui();
+
+	FreeIcon();
+
+	show();
+
+	float count = entitiesOfCollection( "droneview" );
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		ent.hide();
+	}
+}
+
+float flyer_hive::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	chSetNumLines( 0 );
+
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float index;
+
+	if ( range < 15 ) {
+		index = chAddLine();
+		chSetLineText( index, sys.localizeStringArgs( "game/weapons/drone_flyer" ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;
+}
+
+void flyer_hive::ShowIcon() {
+	if ( commandMapIcon == -1 ) {
+		commandMapIcon = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
+		sys.setCMIconUnknownMaterial( commandMapIcon, GetMaterial( getKey( "mtr_commandmapicon" ) ) );
+		sys.setCMIconMaterial( commandMapIcon, GetMaterial( getKey( "mtr_commandmapicon" ) ) );
+		sys.setCMIconDrawMode( commandMapIcon, DM_MATERIAL );
+		sys.setCMIconSize( commandMapIcon, 8.0f );
+		sys.setCMIconFlag( commandMapIcon, CMF_TEAMONLY );
+	}
+}
+
+void flyer_hive::FreeIcon() {
+	if( commandMapIcon != -1 ) {
+		sys.freeCMIcon( self, commandMapIcon );
+		commandMapIcon = -1;
+	}
+}
+
+
+float flyer_hive::vGetPliersProgressBarValue( float action ) {
+	float frac = ( endTime - sys.getTime() ) / FLYER_HIVE_TIME;
+	if ( frac > 1.0f ) {
+		frac = 1.0f;
+	} else if ( frac < 0.0f ) {
+		frac = 0.0f;
+	}
+
+	return frac;
+}
+
+
+
+object hint_flyerdrone {
+	float				OnUpdateCrosshairInfo( entity p );
+	float				OnActivate( entity p, float distance );
+	float				GetActivateCode( entity p, float distance );
+	
+	void				init();
+}
+
+void hint_flyerdrone::init() {
+}
+
+
+float hint_flyerdrone::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float distance = chGetDistance();
+
+	chSetNumLines( 0 );
+
+	if ( p != $null_entity ) {
+		// see if theres a valid action to perform
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE && p.vHasActionItem( code ) ) {
+			float index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+		}
+	}
+
+	return 1.f;
+}
+
+float hint_flyerdrone::OnActivate( entity p, float distance ) {
+	float code = GetActivateCode( p, distance );
+	if ( code == AK_NONE ) {
+		return 0.f;
+	}
+
+	p.vSelectActionItem( code );
+	return 1.f;
+}
+
+float hint_flyerdrone::GetActivateCode( entity p, float distance ) {
+	if ( objManager.gameState != GS_GAMEON ) {
+		return AK_INWARMUP;
+	}
+
+	if ( p.getViewingEntity() != p ) {
+		return AK_NONE;
+	}
+
+	if ( p.getHealth() <= 0 ) {
+		return AK_NONE;
+	}
+
+	if ( distance > DISTANCE_FOR_ACTION ) {
+		return AK_NONE;
+	}
+
+	return AK_FLYERDRONE;
+}

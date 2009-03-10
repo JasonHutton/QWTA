@@ -1,0 +1,1765 @@
+
+#include <script/deployables/base_defines.include>
+
+object deployable_base {
+	void			syncFields();
+	void			init();
+	void			preinit();
+	void			destroy();
+
+	void			DoDeploy();
+	void			vOnDeploy();
+	void			vDoneDeploy();
+
+	void			OnDeployedChanged();
+	void			OnOwnerChanged();
+	void			OnDisableEndTimeChanged();
+	
+	void			IncreaseUseCount();
+	
+	void			SetupStats();
+
+	void			SetDisableEndTime( float t );
+	
+	void			Base_TargetSetTarget( vector targetPos, entity targetEnt );
+
+	void			OnPostDamage( entity attacker, float oldHealth, float newHealth );
+	void			UpdateDisabledStats( entity attacker, boolean oldDisabled );
+	void			UpdateState( float health );
+	void			UpdateGui();
+	void			SetDeployableState( float newState );
+	
+	void			SetupRequestIcon( string key, string requirement );
+	void			FreeRequestIcon();
+	void			RequestIconThread( float timeout );
+
+	float			OnActivate( entity p, float distance );
+	float			GetActivateCode( entity p, float distance );
+
+	void			OnStateDisabled();
+	void			OnStateDamaged();
+	void			OnStateNormal();
+
+	void			DeployableBase_OnStateNormal();
+	void			DeployableBase_OnStateDamaged();
+	void			DeployableBase_OnStateDisabled();
+
+	void			DeployableBase_OnKilled( entity attacker, entity inflictor );
+	void			DeployableBase_Deploy();
+
+	void			DoHack( entity hacker, float time );
+	
+	float			GetChargePerUse();
+
+	float			OnUpdateCrosshairInfo( entity p );
+
+	float			vGetPliersProgressBarValue( float action );
+
+	boolean			vCheckActionCode( entity p, float actionCode );
+	void			vRepair( float count, entity p );
+	vector			vGetLastRepairOrigin();
+
+	void			SelfDestruct();
+
+	boolean			IsDeployed();
+	boolean			IsDisabled();
+	
+	float 			vGetFiringStatus( object traceObject );
+	void			vUpdateFiringStatusObject( entity localPlayer );
+	float			GetCoolDownFraction();
+	float 			vGetTimerState();
+	float			vGetChargeTime();
+	float 			GetLockTime();
+	float 			GetLockGraceTime();
+
+	void			SetupCommandMap();
+	void			FreeCommandMap();
+
+	void			vDismantle( entity p );
+
+	void			vHack( entity p );
+
+	boolean			vIsDeployed();
+	
+	void			SetDeployingFinished();
+
+	void			vCheckProficiency();
+	
+	void			vApplyEmpDamage( entity attacker, float time, float weaponTime );
+
+	entity			vGetDeployableOwner();
+
+	entity			GetOwner();
+	void			vSetDeployableOwner( entity other );
+
+	void			DeployableBase_CheckProficiency();
+
+	void			OnSpotted( entity spotter );
+
+	void			OnSetTeam( object oldTeam, object newTeam );
+	void			OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+
+	void			InitDestroyTask( boolean highCommand );
+	void			FreeDestroyTask();
+	void			CompleteDestroyTask();
+
+	void			InitDisableTask( boolean highCommand );
+	void			FreeDisableTask();
+	void			CompleteDisableTask();
+
+	void			InitRepairTask( boolean highCommand );
+	void			FreeRepairTask();
+	void			CompleteRepairTask();
+	
+	boolean			NeedsRepair();
+	
+	void			vOnContextKill( entity p );
+	void			vOnContextRepair( entity p );
+	
+	void			vOnRemovePlayersKillTask( player p );
+
+	void			UpdateDisabled();
+	void			CreateDisableThread();
+	void			KillDisableThread();
+	void			DisableThread();
+	boolean			DeployableBase_CalculateDisabledState();
+	boolean			CalculateDisabledState();
+	void			SetDisabled( boolean newDisabledState );
+
+	void			OnDisabled();
+	void			OnReEnabled();
+
+	string			vGetQuickChatString( entity p );
+
+	void			FlashCMIcon( entity p, float requiredTeam, float flashTime );
+
+	void			UpdateAnimThread();
+
+	float			currentState;
+
+	boolean			isDeploying;
+	handle			objectTitle;
+
+	float			hackCount;
+	float			maxHackCount;
+	float			damageHackCount;
+	float			maxDamageHackCount;
+	float			hackDisableTime;
+
+	task			disableTask;
+	task			destroyTask;
+	task			repairTask;
+	
+	player			killTaskRequestee;
+
+	boolean			manualDeploy;
+
+	float			commandMapHandle;	
+
+	float			fireSupportState;
+
+	boolean			finishedDeploying;
+
+	boolean			playTracerFX;
+
+	string			localFireSound;
+
+	float			disableEndTime;
+	float			repairMultiplier;
+	
+	float			disableProficiency;
+	float			hackProficiency;
+		
+	// variables for the repair drone
+	float			orbitUnderneath;
+	float			orbitRadius;
+
+	boolean			vCustomOrbitRadius();
+	float			vGetOrbitRadius();
+	boolean			vOrbitUnderneath();
+
+	player			owner;
+
+	boolean			OverridePreventDeployment( entity p ) { return p == owner; }
+	
+	float			timerHandle;	// Gordon: FIXME: These should not be a part of the base
+	float			timerStartHandle;
+	float			timerLength;
+	float			gracePeriod;
+	
+	float			commandMapRequest;
+	
+	void			DestroyThread();
+	void			CreateDestroyThread();
+	void			DoBoundsDamageThread();
+	void			KillBoundsDamageThread();
+	
+	float			useMeToolTip1_Hack;
+	float			useMeToolTip2_Hack;
+	
+	// Gordon: why on earth is this here?
+	string			colorMaterial;
+	string			desatMaterial;
+	
+	boolean			disabledState;
+	
+	handle			statTimeUsed;
+	handle			statUseCount;
+	handle			statNumDestroyed;
+	handle			statNumDisabled;
+	float			deployFinishedTime;
+	
+	fireSupportStatus fsStatus;
+
+	float			empJointHandle;
+	
+	boolean			IsDamageHackTime();
+	float			GetCurrentMaxHackCount();
+	float			GetCurrentHackCount();
+	void			SetCurrentHackCount( float hack );
+	float			disableHackHealth;
+	
+	float			disableHackedTime;
+	void			OnDisableHackedTimeChanged();
+}
+
+void deployable_base::syncFields() {
+	syncBroadcast( "isDeploying" );
+	syncBroadcast( "finishedDeploying" );
+	syncBroadcast( "owner" );
+	syncBroadcast( "disableEndTime" );
+	syncCallback( "disableEndTime", "OnDisableEndTimeChanged" );
+	syncCallback( "isDeploying", "OnDeployedChanged" );
+	syncCallback( "owner", "OnOwnerChanged" );
+
+	sync( "hackCount" );
+	sync( "damageHackCount" );
+	sync( "disableHackedTime" );
+	syncCallback( "disableHackedTime", "OnDisableHackedTimeChanged" );
+}
+
+void deployable_base::OnOwnerChanged() {
+	if ( owner != $null_entity ) {
+		owner.SetTargetingItem( self );
+	}
+	
+	setXPShareInfo( owner, 0.5f );
+	
+	vCheckProficiency();
+
+	if ( owner == sys.getLocalPlayer() ) {
+		sys.killThread( "UpdateGui_" + getName() );
+		thread UpdateGui();	
+	}
+}
+
+void deployable_base::destroy() {
+	if ( owner != $null_entity ) {
+		if	( owner == sys.getLocalPlayer() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_REMOVED );	
+		}
+		
+		owner.binRemove( self );
+	}
+	
+	KillBoundsDamageThread();
+
+	FreeCommandMap();
+	FreeDestroyTask();
+	FreeDisableTask();
+	FreeRequestIcon();
+	FreeRepairTask();
+	
+	if ( deployFinishedTime != -1 && owner != $null_entity ) {
+		sys.increaseStatInt( statTimeUsed, owner.getEntityNumber(), sys.getTime() - deployFinishedTime );
+	}
+
+	object team = getGameTeam();
+	if ( team != $null ) {
+		team.unRegisterDeployable( self );
+	}
+}
+
+void deployable_base::vSetDeployableOwner( entity other ) {
+	owner = other;
+	OnOwnerChanged();
+}
+
+entity deployable_base::vGetDeployableOwner() {
+	return owner;
+}
+
+entity deployable_base::GetOwner() {
+	return owner;
+}
+
+void deployable_base::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+void deployable_base::SetupCommandMap() {
+	commandMapHandle		= sys.allocCMIcon( self, 10 );
+
+	sys.setCMIconShaderParm( commandMapHandle, 5, 1 );
+
+	float commandMapSize = getFloatKey( "icon_size_cm" );
+
+	sys.setCMIconSize( commandMapHandle, commandMapSize );
+	sys.setCMIconColorMode( commandMapHandle, CM_ALLEGIANCE );
+
+	sys.setCMIconMaterial( commandMapHandle, GetMaterial( getKey( "mtr_commandmap" ) ) );
+	sys.setCMIconUnknownMaterial( commandMapHandle, GetMaterial( getKey( "mtr_commandmap_unknown" ) ) );
+	sys.setCMIconUnknownSize( commandMapHandle, getFloatKeyWithDefault( "icon_unknown_size_cm", commandMapSize ) );
+	sys.setCMIconFlag( commandMapHandle, CMF_FOLLOWROTATION );
+	sys.setCMIconDrawMode( commandMapHandle, DM_ROTATED_MATERIAL );
+}
+
+void deployable_base::FreeCommandMap() {
+	if( commandMapHandle != -1 ) {
+		sys.freeCMIcon( self, commandMapHandle );
+		commandMapHandle = -1;	
+	}
+}
+
+void deployable_base::OnDeployedChanged() {
+	vOnDeploy();
+}
+
+void deployable_base::OnDisableEndTimeChanged() {
+	SetDisableEndTime( disableEndTime );
+}
+
+void deployable_base::OnSpotted( entity spotter ) {
+	if ( IsDeployed() ) {
+		killTaskRequestee = $null_entity;
+		InitDestroyTask( true );
+		InitDisableTask( true );
+		G_GiveSpottingProficiency( spotter );
+	}
+}
+
+void deployable_base::preinit() {
+	objectTitle			= sys.localizeString( getKeyWithDefault( "ch_name", getKey( "task_name" ) ) );
+	playTracerFX		= getFloatKey( "use_tracers" ) != 0;
+	repairMultiplier	= getFloatKeyWithDefault( "repair_multiplier", 1.f );
+
+	maxHackCount		= getFloatKeyWithDefault( "max_hack_count", 16 );
+	maxDamageHackCount	= getFloatKeyWithDefault( "max_hack_count", 24 );
+	hackDisableTime		= getFloatKeyWithDefault( "hack_disable_time", 60 );
+
+	localFireSound		= getKey( "snd_fire_local" );
+
+	fireSupportState	= MPS_NONE_ACTIVE;
+
+	orbitUnderneath		= getFloatKey( "drone_orbit_underneath" );
+	orbitRadius			= getFloatKey( "drone_orbit_radius" );
+
+	currentState		= DS_NORMAL;
+
+	colorMaterial		= getKey( "mtr_color" );
+	desatMaterial		= getKey( "mtr_desat" );
+	
+	timerHandle			= sys.allocTargetTimer( FIRESUPPORT_TIMER_NAME );
+	timerStartHandle	= sys.allocTargetTimer( FIRESUPPORT_TIMER_START_NAME );
+	timerLength			= getFloatKey( "target_length" );
+	gracePeriod			= getFloatKey( "target_lostgraceperiod" );
+
+	useMeToolTip1_Hack	= GetToolTip( getKey( "tt_intro_use_me_1_hack" ) );
+	useMeToolTip2_Hack	= GetToolTip( getKey( "tt_intro_use_me_2_hack" ) );
+	
+	disableProficiency	= GetProficiency( getKey( "prof_disable" ) );
+	hackProficiency		= GetProficiency( getKey( "prof_hack" ) );
+	
+	commandMapRequest	= -1;
+
+	empJointHandle			= getJointHandle( getKey( "emp_effect_joint" ) );
+
+	disableHackHealth	= getMaxHealth() * 0.5f;
+	
+	SetupStats();
+
+	SetupCommandMap();
+	
+	if ( getFloatKey( "freeze_on_spawn" ) != 0.0f ) {
+		setComeToRest( true );
+	}
+}
+
+void deployable_base::IncreaseUseCount() {
+	if ( owner == $null_entity ) {
+		return;
+	}
+	
+	sys.increaseStatInt( statUseCount, owner.getEntityNumber(), 1 );
+}
+
+void deployable_base::SetupStats() {
+	statTimeUsed		= -1;
+	statNumDestroyed	= -1;
+	statNumDisabled		= -1;
+	statUseCount		= -1;
+	deployFinishedTime	= -1;
+	
+	string statName = getKey( "stat_name" );
+	if ( statName == "" ) {
+		return;
+	}
+	
+	statTimeUsed		= sys.allocStatInt( statName + "_time_used" );
+	statNumDestroyed	= sys.allocStatInt( statName + "_killed" );
+	statNumDisabled		= sys.allocStatInt( statName + "_disabled" );
+	statUseCount		= sys.allocStatInt( statName + "_uses" );
+}
+
+float deployable_base::OnActivate( entity p, float distance ) {
+	if ( distance > 128.f ) {
+		return 0.f;
+	}
+	
+	float code = GetActivateCode( p, distance );
+	if ( code == AK_HACK ) {
+		if ( p.isDisguised() ) {
+			p.disguise( $null_entity );
+		}
+	}
+	
+	if ( p.vSelectActionItem( code ) ) {
+		return 1.f;
+	}
+	
+	return 0.f;
+}
+
+void deployable_base::vOnContextRepair( entity p ) {
+	if ( currentState == DS_NORMAL ) {
+		SetupRequestIcon( "mtr_cm_icon_need_repair", "require_view_repair" );
+		thread RequestIconThread( 5.f );
+	}
+	InitRepairTask( false );
+}
+
+void deployable_base::vOnContextKill( entity p ) {
+	if ( IsDeployed() ) {
+		if ( destroyTask == $null && disableTask == $null ) {
+			killTaskRequestee = $null_entity;
+			InitDestroyTask( true );
+			InitDisableTask( true );
+		}
+
+		FlashCMIcon( p, TA_ENEMY, -1 );			
+	}
+}
+
+void deployable_base::vOnRemovePlayersKillTask( player p ) {
+	if ( p == killTaskRequestee ) {
+		FreeDestroyTask();
+		FreeDisableTask();
+	}
+}
+
+float deployable_base::GetActivateCode( entity p, float distance ) {
+	if ( p.getViewingEntity() != p ) {
+		return AK_NONE;
+	}
+	
+	if ( p.getHealth() <= 0 ) {
+		return AK_NONE;
+	}
+
+	if ( p.getVehicle() != $null_entity ) {
+		return AK_NONE;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+
+	if ( distance < DISTANCE_FOR_ACTION ) {
+		if ( allegiance == TA_ENEMY ) {
+			if ( !disabledState || getHealth() > disableHackHealth ) {
+				if ( p.hasAbility( "hack" ) ) {
+					return AK_HACK;
+				}
+			}
+			
+			if ( p.vHasActionItem( AK_PLANT ) ) {
+				return AK_PLANT;
+			}
+		} else {
+			if ( p.vHasActionItem( AK_REPAIR ) ) {
+				float health = getHealth();
+				if ( ( health > 0 ) && ( health < getMaxHealth() ) ) {
+					return AK_REPAIR;
+				}
+			}
+		}
+	}
+
+	return AK_NONE;
+}
+
+void deployable_base::InitDestroyTask( boolean highCommand ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( destroyTask != $null_entity ) {
+		if ( !highCommand ) {
+			return;
+		}
+		if ( !destroyTask.isUserCreated() ) {
+			return;
+		}
+		destroyTask.free();
+	}
+
+	float taskHandle = GetPlayerTask( getKey( "task_destroy" ) );
+	if ( taskHandle != -1 ) {
+		
+		destroyTask = taskManager.allocEntityTask( taskHandle, self );
+		if ( !highCommand ) {
+			destroyTask.setUserCreated();
+		}
+	}
+}
+
+void deployable_base::FreeDestroyTask() {
+	killTaskRequestee = $null_entity;
+	if ( destroyTask != $null_entity ) {
+		destroyTask.free();
+	}
+}
+
+void deployable_base::CompleteDestroyTask() {
+	if ( destroyTask != $null_entity ) {
+		destroyTask.complete();
+		destroyTask.setTimeout( 1.f );
+		destroyTask = $null_entity;
+	}
+}
+
+void deployable_base::InitRepairTask( boolean highCommand ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+	
+	if ( getHealth() <= 0 ) {
+		FreeRepairTask();
+		return;
+	}
+
+	if ( repairTask != $null_entity ) {
+		if ( !highCommand ) {
+			return;
+		}
+		if ( !repairTask.isUserCreated() ) {
+			return;
+		}
+		repairTask.free();
+	}
+	
+	float taskHandle = GetPlayerTask( getKey( "task_repair" ) );
+	if ( taskHandle != -1 ) {
+		repairTask	= taskManager.allocEntityTask( taskHandle, self );
+		if ( !highCommand ) {
+			repairTask.setUserCreated();
+		}
+	}
+}
+
+void deployable_base::FreeRepairTask() {
+	if ( repairTask != $null ) {
+		repairTask.free();
+	}
+}
+
+void deployable_base::CompleteRepairTask() {
+	if ( repairTask != $null_entity ) {
+		repairTask.complete();
+		repairTask.setTimeout( 1.f );
+		repairTask = $null_entity;
+	}
+}
+
+void deployable_base::InitDisableTask( boolean highCommand ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( disableEndTime > sys.getTime() ) {
+		return;
+	}
+
+	if ( disableTask != $null_entity ) {
+		if ( !highCommand ) {
+			return;
+		}
+		if ( !disableTask.isUserCreated() ) {
+			return;
+		}
+		disableTask.free();
+	}
+	
+	float taskHandle = GetPlayerTask( getKey( "task_hack" ) );
+	if ( taskHandle != -1 ) {
+		disableTask	= taskManager.allocEntityTask( taskHandle, self );
+		if ( !highCommand ) {
+			disableTask.setUserCreated();
+		}
+	}
+}
+
+void deployable_base::FreeDisableTask() {
+	killTaskRequestee = $null_entity;
+	if ( disableTask != $null_entity ) {
+		disableTask.free();
+	}
+}
+
+void deployable_base::CompleteDisableTask() {
+	if ( disableTask != $null_entity ) {
+		disableTask.complete();
+		disableTask.setTimeout( 1.f );
+		disableTask = $null_entity;
+	}
+}
+
+void deployable_base::DeployableBase_OnKilled( entity attacker, entity inflictor ) {
+	FreeRepairTask();
+
+	if ( !sys.isClient() ) {
+		CompleteDestroyTask();
+
+		// need to check for things like HE/Plasma charges still being on the deployable
+		float c = entitiesInBounds( getAbsMins(), getAbsMaxs(), MASK_ALL, 1 );
+		float i = 0;
+		for ( i = 0; i < c; i++ ) {
+			entity e = getBoundsCacheEntity( i );
+			if ( e.getMaster() == self ) {
+				e.vOnTargetDestroyed();
+			}
+		}
+	}
+	
+	player attackPlayer = attacker;
+	if ( attackPlayer != $null_entity ) {
+		if ( getEntityAllegiance( inflictor ) == TA_ENEMY ) {
+			sys.increaseStatInt( statNumDestroyed, attackPlayer.getEntityNumber(), 1 );
+		}
+	}
+
+	CreateDestroyThread();
+}
+
+void deployable_base::init() {
+	string teamName = getKey( "team" );
+	if ( teamName != "" ) {
+		setGameTeam( sys.getTeam( teamName ) );
+	}
+
+	setTakesDamage( 0.f );
+
+	playAnim( ANIMCHANNEL_ALL, "undeployed" );
+
+	if ( !sys.isClient() ) {
+		if ( !manualDeploy ) {
+			vOnDeploy();
+		} else {
+			thread DoBoundsDamageThread();
+		}
+	}
+}
+
+float deployable_base::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float health = getHealth();
+
+	chSetNumLines( 0 );
+	float index;
+
+	// define length of health bar
+	float healthBarLength;
+	float maxHealth = getMaxHealth();
+	if ( maxHealth >= 2000.f ) {
+		healthBarLength = 150.f;
+	} else if ( maxHealth >= 1000.f ) {
+		healthBarLength = 100.f;
+	} else {
+		healthBarLength = 75.f;
+	}
+
+	team_base team;
+
+	if ( p != $null_entity ) {
+		// see if theres a valid action to perform
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE ) {
+			index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+
+			if ( p.isLocalPlayer() ) {
+				if ( !p.isToolTipPlaying() ) {
+					if ( sys.getTime() - p.getCrosshairStartTime() > 1.f ) {
+						if ( p.getCurrentWeapon() != p.vGetActionItem( code ) ) {
+							if ( code == AK_HACK ) {
+								p.sendToolTip( useMeToolTip1_Hack );
+							}
+						} else {
+							if ( code == AK_HACK ) {
+								p.sendToolTip( useMeToolTip2_Hack );
+							}
+						}
+					}
+				}
+			}		
+		}
+	}
+
+	vector disabledColor;
+	if ( allegiance == TA_ENEMY || allegiance == TA_FRIEND ) {
+		disabledColor = g_colorYellow;
+	} else {
+		disabledColor = color;
+	}
+
+	index = chAddLine();
+	chSetLineTextIndex( index, objectTitle );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+	
+	if ( owner != $null_entity ) {
+		if ( allegiance == TA_FRIEND ) {
+			index = chAddLine();
+			sys.pushLocString( sys.toWStr( owner.getCleanUserName() ) );
+			chSetLineText( index, sys.localizeStringArgs( "game/deployable_owner" ) );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	}
+
+	if ( health <= 0 ) {
+		if ( maxHealth != 0.f ) {
+			index = chAddLine();
+			chSetLineTextIndex( index, g_locStr_Destroyed );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	} else {
+		if ( disabledState ) {
+			index = chAddLine();
+			
+			float diff = disableEndTime - sys.getTime();			
+			if ( diff > 0 ) {
+				sys.pushLocString( int( diff ) );
+				chSetLineText( index, sys.localizeStringArgs( "game/disabled_info" ) );
+			} else {
+				chSetLineTextIndex( index, g_locStr_Disabled );
+			}
+
+			chSetLineColor( index, disabledColor, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+
+		index = chAddLine();
+		chSetLineColor( index, color, 0.5f );
+		chSetLineType( index, CI_BAR );
+		chSetLineFraction( index, getHealth() / getMaxHealth() );
+		chSetLineSize( index, healthBarLength, CROSSHAIR_INFO_BAR_HEIGHT );
+
+		if ( !disabledState ) {
+			G_StringForFireSupportState( fireSupportState );
+
+			index = chAddLine();
+			chSetLineTextIndex( index, g_fireSupportStateStr );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+
+		if ( range <= 100 ) {
+			index = chAddLine();
+			chSetLineText( index, G_BuildRangeStr( range ) );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	}
+
+	return 1.f;
+}
+
+float deployable_base::vGetPliersProgressBarValue( float action ) {
+	if ( action == AC_HACK ) {
+		if ( !IsDamageHackTime() || damageHackCount == 0 ) {
+			return hackCount / maxHackCount;
+		} else {
+			return damageHackCount / maxDamageHackCount;
+		}
+	}
+
+	if ( action == AC_REPAIR ) {
+		return getHealth() / getMaxHealth();
+	}
+	
+	return 0.f;
+}
+
+boolean deployable_base::vCheckActionCode( entity p, float actionCode ) {
+	if ( actionCode == AC_HACK ) {
+		if ( getEntityAllegiance( p ) != TA_ENEMY ) {
+			return false;
+		}
+		if ( !disabledState ) {
+			return true;
+		}
+		if ( getHealth() > disableHackHealth ) {
+			return true;
+		} 
+		return false;
+	}
+
+	if ( actionCode == AC_REPAIR ) {
+		if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+			return false;
+		}
+		float health = getHealth();
+		return ( health > 0 ) && ( health < getMaxHealth() );
+	}
+	
+	if ( actionCode == AC_ENEMY_REPAIR ) {
+		if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+			return true;
+		}
+	}
+
+	if ( actionCode == AC_DISMANTLE ) {
+		if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+			return false;
+		}
+		return true;
+	}
+
+	return false;
+}
+
+boolean deployable_base::NeedsRepair() {
+	return getHealth() < getMaxHealth();
+}
+
+float deployable_base::GetCurrentMaxHackCount() {
+	if ( IsDamageHackTime() ) {
+		return maxDamageHackCount;
+	}
+	return maxHackCount;
+}
+float deployable_base::GetCurrentHackCount() {
+	if ( IsDamageHackTime() ) {
+		return damageHackCount;
+	}
+	return hackCount;
+}
+void deployable_base::SetCurrentHackCount( float hack ) {
+	if ( IsDamageHackTime() ) {
+		damageHackCount = hack;
+	} else {
+		hackCount = hack;
+	}
+}
+
+boolean deployable_base::IsDamageHackTime() {
+	return disabledState;
+}
+
+void deployable_base::OnDisableHackedTimeChanged() {
+	if  ( sys.getTime() - disableHackedTime < 2 ) {
+		playJointEffect( "fx_damage_hacked", empJointHandle, 0 );	
+	}
+}
+
+void deployable_base::vHack( entity p ) {
+	float maxHack = GetCurrentMaxHackCount();
+	float hack = GetCurrentHackCount();
+
+	if ( hack >= maxHack ) {
+		hack = 0;
+	}
+	if ( !IsDamageHackTime() ) {
+		// make sure damage hack got reset
+		damageHackCount = 0;
+	}
+	
+	float count = 1;
+	team_base team = p.getGameTeam();
+	if ( team.HasFastHackBonus( p ) ) {
+		count = count * 1.25f;
+	}
+	hack = hack + count;
+	SetCurrentHackCount( hack );
+
+	if ( hack >= maxHack && !sys.isClient() ) {
+		sys.increaseStatInt( sys.allocStatInt( team.getName() + "_hack_uses" ), p.getEntityNumber(), 1 );
+		if ( hackProficiency != -1 ) {
+			p.giveProficiency( hackProficiency, 1.f, disableTask, "hack success" );
+		}
+
+		if ( !IsDamageHackTime() ) {
+			boolean oldDisabled = disabledState;
+			DoHack( p, hackDisableTime );
+
+			UpdateDisabledStats( p, oldDisabled );
+		} else {
+			// cancel the hack
+			SetDisableEndTime( sys.getTime() );
+			
+			// damage to the disable hack health
+			setTakesDamage( 1.f );
+			float neededScale = getHealth() - disableHackHealth;
+			applyDamage( $null_entity, $null_entity, vec3_up, GetDamage( "damage_deployable_disable" ), neededScale, $null_entity );
+			disableHackedTime = sys.getTime();
+			OnDisableHackedTimeChanged();
+			
+			sys.increaseStatInt( statNumDisabled, p.getEntityNumber(), 1 );
+		}
+	}
+}
+
+void deployable_base::SelfDestruct() {
+//	sys.wait( 4.f );
+	setTakesDamage( 1.f );
+	applyDamage( $null_entity, $null_entity, vec3_up, GetDamage( "damage_deployable_destruct" ), 1.f, $null_entity );
+}
+
+void deployable_base::vDismantle( entity p ) {
+	thread SelfDestruct();
+}
+
+void deployable_base::vRepair( float count, entity p ) {
+	count = count * repairMultiplier;
+
+	float maxHealth = getMaxHealth();
+	float health = getHealth();
+	float lost = maxHealth - health;
+	if ( count > lost ) {
+		count = lost;
+	}
+	
+	float teamDamageCount = getTeamDamageDone();
+
+	float repairCount = count - teamDamageCount;
+	if ( repairCount > 0 ) {	
+		team_base team = p.getGameTeam();
+		if ( team != $null_entity ) {
+			team.GiveRepairProficiency( p, repairTask, repairCount );
+		}
+	}
+	
+	setTeamDamageDone( teamDamageCount - count );
+	
+	float total = health + count;
+	setHealth( total );
+	if ( total >= getMaxHealth() ) {
+		CompleteRepairTask();
+	}
+}
+
+vector deployable_base::vGetLastRepairOrigin() {
+	vector mins = getAbsMins();
+	vector maxs = getAbsMaxs();
+	return (mins + maxs) * 0.5;
+}
+
+boolean deployable_base::vOrbitUnderneath() {
+	return orbitUnderneath;
+}
+
+boolean deployable_base::vCustomOrbitRadius() {
+	return true;
+}
+
+float deployable_base::vGetOrbitRadius() {
+	if ( orbitRadius == 0 ) {
+		vector size = getAbsMaxs() - getAbsMins();
+		orbitRadius = 0.7 * sys.sqrt( size_x * size_x + size_y * size_x );
+	}
+
+	return orbitRadius;
+}
+
+void deployable_base::DoHack( entity hacker, float time ) {
+	CompleteDisableTask();
+
+	float newEndTime = sys.getTime() + time;
+	if ( newEndTime > disableEndTime ) {
+		SetDisableEndTime( newEndTime );
+	}
+}
+
+void deployable_base::DeployableBase_Deploy() {
+	if ( !sys.isClient() ) {
+		if ( owner != $null_entity ) {
+			// add self to the bin
+			owner.binAdd( self );
+
+			G_GiveDeployBonus( owner, self );
+		}
+		
+		if ( isSpotted() ) {
+			killTaskRequestee = $null_entity;
+			InitDisableTask( true );
+			InitDestroyTask( true );
+		}
+	}
+
+	vDoneDeploy();
+}
+
+void deployable_base::vDoneDeploy() {
+	SetDeployingFinished();
+}
+
+void deployable_base::vOnDeploy() {		
+	thread DoDeploy();
+}
+
+void deployable_base::DoDeploy() {
+	// Gordon: only do this if we haven't been spawned from the console
+	if ( manualDeploy ) {
+		// if the territory has been captured since we were called in, shouldn't deploy
+		if ( sys.getTerritoryForPoint( getWorldOrigin(), getGameTeam(), 1.f, 0.f ) == $null_entity ) {
+			vDismantle( $null_entity );
+			return;
+		}
+	}
+
+	if ( !sys.isClient() ) {
+		isDeploying = true;
+	}
+
+	float hitGroundEffect = getFloatKey( "play_hitground_effect" );
+	if ( hitGroundEffect ) {
+		startSound( "snd_drop", SND_DEPLOYABLE_IDLE );
+		playEffect( "fx_hitground", "origin", false );
+	}
+
+	preventDeployment( 1.f );
+
+	KillBoundsDamageThread();
+	
+	forceAnimUpdate( true );
+
+	float i;
+	float numHelpers = getFloatKeyWithDefault( "num_ik", 0.f );
+
+	if ( numHelpers > 0.f ) {
+		playAnim( ANIMCHANNEL_ALL, "pre_ik" );
+
+		while ( isAnimating() ) {
+			sys.waitFrame();
+		}
+
+		playAnim( ANIMCHANNEL_ALL, "post_ik" );
+
+		for( i = 0; i < numHelpers; i++ ) {
+			addHelper( GetStringMap( getKey( "str_ik" + i ) ) );
+		}
+
+		while ( isAnimating() ) {
+			sys.waitFrame();
+		}
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "deploy" );
+
+		while ( isAnimating() ) {
+			sys.waitFrame();
+		}
+	}
+
+	forceAnimUpdate( false );
+
+	DeployableBase_Deploy();
+}
+
+void deployable_base::vApplyEmpDamage( entity attacker, float time, float weaponTime ) {
+	boolean oldDisabled = disabledState;
+
+	DoHack( attacker, time );
+	UpdateDisabledStats( attacker, oldDisabled );
+	if ( disableProficiency != -1 ) {
+		attacker.giveProficiency( disableProficiency, 1.f, disableTask, "emp on deployable" );
+	}
+
+	player playerAttacker = attacker;	
+	if ( playerAttacker != $null_entity ) {
+		team_base team = attacker.getGameTeam();
+		if ( team != $null ) {
+			team.LogEmpUsage( playerAttacker );
+		}
+	}
+}
+
+void deployable_base::OnSetTeam( object oldTeam, object newTeam ) {
+	if ( oldTeam != $null ) {
+		oldTeam.unRegisterDeployable( self );
+	}
+	if ( newTeam != $null ) {
+		newTeam.registerDeployable( self );
+	}
+}
+
+boolean deployable_base::vIsDeployed() {
+	return IsDeployed();
+}
+
+boolean deployable_base::IsDeployed() {
+	return finishedDeploying;
+}
+
+void deployable_base::SetDeployingFinished() {
+	finishedDeploying = true;
+	deployFinishedTime = sys.getTime();
+	fireSupportState = MPS_READY;
+
+	if ( getHealth() > 0 ) {
+		setTakesDamage( 1.f );
+
+		// ao: only do this if we haven't been spawned from the console
+		if ( manualDeploy ) {
+			// if the territory has been captured since we were called in, shouldn't deploy
+			if ( sys.getTerritoryForPoint( getWorldOrigin(), getGameTeam(), 1.f, 0.f ) == $null_entity ) {
+				vDismantle( $null_entity );
+				return;
+			}
+		}
+	}
+	
+	if ( owner != $null_entity ) {
+		if ( owner.isLocalPlayer() ) {
+			owner.sendToolTip( GetToolTip( getKey( "tt_deploy_finished" ) ) );
+		}
+	}
+}
+
+void deployable_base::UpdateDisabledStats( entity attacker, boolean oldDisabled ) {
+	if ( !sys.isClient() ) {
+		if ( !oldDisabled && disabledState ) {
+			player attackerPlayer = attacker;
+			if ( attackerPlayer != $null_entity ) {
+				sys.increaseStatInt( statNumDisabled, attackerPlayer.getEntityNumber(), 1 );
+			}
+		}
+	}
+}
+
+void deployable_base::OnPostDamage( entity attacker, float oldHealth, float newHealth ) {
+	boolean oldDisabled = disabledState;
+	UpdateState( newHealth );	
+	UpdateDisabledStats( attacker, oldDisabled );
+}
+
+void deployable_base::UpdateState( float health ) {
+	float maxHealth = getMaxHealth();
+	if ( maxHealth == 0.f ) {
+		return;
+	}
+
+	float frac = health / maxHealth;
+
+	float newState;
+
+	player p = sys.getLocalPlayer();
+
+	boolean showHealthStatus = false;
+	if ( p != $null_entity ) {
+		team_base team = p.getGameTeam();
+		float allegiance = getEntityAllegiance( p );
+		if ( allegiance == TA_FRIEND ) {
+			showHealthStatus = true;
+		}
+	}
+
+	float healthStatusParm = 0;
+
+	healthStatusParm = frac;
+	if ( frac < ( 1.f / 3.f ) ) {
+		newState = DS_DISABLED;
+	} else if ( frac < ( 2.f / 3.f ) ) {
+		newState = DS_DAMAGED;
+	} else {
+		newState = DS_NORMAL;
+	}
+	
+	if ( showHealthStatus && !disabledState ) {
+		sys.setCMIconShaderParm( commandMapHandle, 5, healthStatusParm );
+	}	
+	
+	SetDeployableState( newState );
+}
+
+void deployable_base::SetDeployableState( float newState ) {
+	if ( currentState == newState ) {
+		return;
+	}
+
+	if ( newState == DS_NORMAL ) {
+		OnStateNormal();
+	} else if ( newState == DS_DAMAGED ) {
+		OnStateDamaged();
+		InitRepairTask( true );
+	} else if ( newState == DS_DISABLED ) {
+		OnStateDisabled();
+		InitRepairTask( true );
+	}
+
+	currentState = newState;
+	
+	UpdateDisabled();
+}
+
+void deployable_base::DeployableBase_OnStateNormal() {
+	playAnim( ANIMCHANNEL_ALL, "base" );
+	thread UpdateAnimThread();
+	stopEffect( "fx_damaged" );
+
+	FreeRequestIcon();	
+	if ( owner == sys.getLocalPlayer() && disableEndTime <= sys.getTime() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_NORMAL );	
+	}
+}
+
+void deployable_base::DeployableBase_OnStateDamaged() {
+	float numDamageJoints;
+	string jointName;
+
+	playAnim( ANIMCHANNEL_ALL, "damaged" );
+	thread UpdateAnimThread();
+
+	// Is it being damage or being repaired?
+	if ( currentState == DS_NORMAL ) {
+		numDamageJoints = getFloatKeyWithDefault( "numDamageJoints", 0 );
+		if ( numDamageJoints ) {
+			jointName = getKey( "damageJoint" + int( sys.random( numDamageJoints ) ) );
+			playEffect( "fx_damaged", jointName, true );
+		}
+	} else {
+		stopEffect( "fx_damaged" );
+	}
+
+	SetupRequestIcon( "mtr_cm_icon_need_repair", "require_view_repair" );
+	thread RequestIconThread( 5.f );
+	if( owner == sys.getLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_DISABLED );
+	}	
+}
+
+void deployable_base::DeployableBase_OnStateDisabled() {
+	float numDamageJoints;
+	string jointName;
+
+	playAnim( ANIMCHANNEL_ALL, "destroyed" );
+	thread UpdateAnimThread();
+
+	numDamageJoints = getFloatKeyWithDefault( "numDamageJoints", 0 );
+	if ( numDamageJoints ) {
+		jointName = getKey( "damageJoint" + int( sys.random( numDamageJoints ) ) );
+		playEffect( "fx_damaged", jointName, true );
+	}
+}
+
+void deployable_base::OnStateNormal() {
+	DeployableBase_OnStateNormal();
+}
+
+void deployable_base::OnStateDamaged() {
+	DeployableBase_OnStateDamaged();
+}
+
+void deployable_base::OnStateDisabled() {	
+	DeployableBase_OnStateDisabled();
+}
+
+void deployable_base::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	DeployableBase_OnKilled( attacker, inflictor );
+}
+
+void deployable_base::CreateDestroyThread() {
+	thread DestroyThread();
+}
+
+void deployable_base::DestroyThread() {
+	playEffect( "fx_death", "" , 0 );
+	hide();
+	forceDisableClip();
+
+	sys.wait( 5.0f );
+	
+	if( !sys.isClient() ) {
+		remove();
+	}
+}
+
+void deployable_base::UpdateGui() {
+	sys.setGUIString( GUI_GLOBALS_HANDLE, "deployables.statusMaterial", colorMaterial );
+	sys.setGUIString( GUI_GLOBALS_HANDLE, "deployables.statusDesatMaterial", desatMaterial );
+	sys.setGUIString( GUI_GLOBALS_HANDLE, "deployables.deployableName", getKey( "title" ) );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.maxHealth", getMaxHealth() );	
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_NORMAL );	
+		
+	while( true ) {
+		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.health", getHealth() );	
+		
+		sys.waitFrame();
+	}
+}
+
+float deployable_base::GetChargePerUse() {
+	if ( owner != $null_entity ) {
+		team_base team = owner.getGameTeam();
+		if ( team != $null ) {
+			if ( team.HasFastFireSupportRecharge( owner ) ) {
+				return 0.80f;
+			}
+		}
+	}
+	return 1.f;
+}
+
+void deployable_base::Base_TargetSetTarget( vector targetPos, entity targetEnt ) {
+	if( !sys.isClient() ) {
+		owner.EnergyBar_Remove( GetChargePerUse() );
+		G_DelayFireSupport( owner, self, timerLength );
+	}
+	
+	IncreaseUseCount();
+}
+
+// Gordon: FIXME: This stuff doesn't even make sense
+float deployable_base::vGetFiringStatus( object traceObject ) {
+	if ( disabledState ) {
+		return MPS_DISABLED;	
+	}
+	                            	                                                        	
+	float state					= MPS_DISABLED;
+	float thisState				= fireSupportState;
+	
+	if ( thisState == MPS_FIRING_PREPARE || thisState == MPS_FIRING ) {
+		return MPS_FIRING;
+	}
+
+	if ( thisState == MPS_READY ) {
+		if( traceObject == $null ) {
+			state = MPS_READY;
+		} else if ( vTargetGetValid( traceObject.getTraceEndPos() ) ) {
+			state = MPS_READY;
+		} else {
+			thisState = MPS_OUT_OF_RANGE;
+		}
+	}
+
+	if ( state != MPS_OUT_OF_RANGE && thisState > state ) {
+		state = thisState;
+	}	
+	
+	if ( GetCoolDownFraction() > 0.f ) {
+		return MPS_RELOADING;
+	}
+	
+	if ( state == MPS_READY ) {
+		// explicitly look up firesupport timer value
+
+		// FIXME: hardcoded instead of looking up in weapon def
+		string energyKey = "energy_firesupport";
+		
+		// find timer and recharge time
+		float chargeTimer = sys.allocTargetTimer( energyKey );
+		float energyChargeTime = GetGlobalFloat( energyKey + "_time" );
+		if ( energyChargeTime <= 0.f ) {
+			energyChargeTime = 1.f;
+		}
+
+		// find charge used		
+		float chargeUsed = sys.getTargetTimerValue( chargeTimer, owner ) - sys.getTime();
+		if ( chargeUsed < 0 ) {
+			chargeUsed = 0;
+		} else {
+			chargeUsed = chargeUsed / energyChargeTime;
+		}
+
+		// change state if we can't remove charge
+		if( ( chargeUsed + GetChargePerUse() ) > 1.f ) {
+			state = MPS_WAITING;
+		}
+	}
+	
+	return state;
+}
+
+float deployable_base::GetCoolDownFraction() {
+	float coolDownTime = sys.getTargetTimerValue( timerHandle, owner );
+	float coolDownStartTime = sys.getTargetTimerValue( timerStartHandle, owner );
+	
+	float temp = ( coolDownTime - sys.getTime() );
+	if ( temp > 0.f ) {
+		return temp / ( coolDownTime - coolDownStartTime );
+	}
+	return 0.f;
+}
+
+float deployable_base::vGetTimerState() {
+	return GetCoolDownFraction();
+}
+
+float deployable_base::vGetChargeTime() {
+	float coolDownTime = sys.getTargetTimerValue( timerHandle, owner );
+	float coolDownStartTime = sys.getTargetTimerValue( timerStartHandle, owner );
+	
+	float temp = ( coolDownTime - coolDownStartTime );
+	if ( temp > 0.f ) {
+		return temp;
+	}
+	return 0.f;
+}
+
+float deployable_base::GetLockTime() {
+	float lockTime = getFloatKey( "target_locktime" );
+	team_base team = owner.getGameTeam();
+	if ( team.HasFastFireSupportLock( owner ) ) {
+		lockTime = lockTime * 0.8f;
+	}
+	return lockTime;
+}
+
+float deployable_base::GetLockGraceTime() {
+	return gracePeriod;
+}
+
+
+/*
+=====================
+deployable_base::SetupRequestIcon
+=====================
+*/
+void deployable_base::SetupRequestIcon( string key, string requirement ) {	
+	FreeRequestIcon();
+	
+	commandMapRequest = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
+	
+	sys.setCMIconMaterial( commandMapRequest, GetMaterial( getKey( key ) ) );
+	sys.setCMIconUnknownMaterial( commandMapRequest, GetMaterial( getKey( key ) ) );
+	sys.addCMIconRequirement( commandMapRequest, getKey( requirement ) );
+	sys.setCMIconColorMode( commandMapRequest, CM_NORMAL );
+	sys.setCMIconDrawMode( commandMapRequest, DM_ROTATED_MATERIAL );
+	sys.setCMIconSize( commandMapRequest, 24.0f );
+	sys.setCMIconUnknownSize( commandMapRequest, 16.0f );
+	sys.setCMIconColor( commandMapRequest, '1 1 1', 1.0f );
+	sys.flashCMIcon( commandMapRequest, -1, SPOTTED_FLASH_TIME, -1 );
+}
+
+/*
+=====================
+deployable_base::FreeRequestIcon
+=====================
+*/
+void deployable_base::FreeRequestIcon() {
+	if( commandMapRequest != -1 ) {
+		sys.freeCMIcon( self, commandMapRequest );
+		commandMapRequest = -1;
+	}
+	sys.killThread( "RequestIconThread_" + getName() );
+}
+
+/*
+=====================
+deployable_base::RequestIconThread
+=====================
+*/
+void deployable_base::RequestIconThread( float timeout ) {
+	sys.wait( timeout );
+	FreeRequestIcon();
+}
+
+/*
+=====================
+deployable_base::vCheckProficiency
+=====================
+*/
+void deployable_base::vCheckProficiency() {
+	DeployableBase_CheckProficiency();
+}
+
+/*
+=====================
+deployable_base::DeployableBase_CheckProficiency
+=====================
+*/
+void deployable_base::DeployableBase_CheckProficiency() {
+}
+
+/*
+=====================
+deployable_base::SetDisableEndTime
+=====================
+*/
+void deployable_base::SetDisableEndTime( float t ) {
+	disableEndTime = t;
+	
+	KillDisableThread();	
+	if ( disableEndTime > sys.getTime() ) {
+		CreateDisableThread();
+	}
+	
+	UpdateDisabled();
+}
+
+/*
+=====================
+deployable_base::DeployableBase_CalculateDisabledState
+=====================
+*/
+boolean deployable_base::DeployableBase_CalculateDisabledState() {
+	boolean newDisabledState = false;
+
+	if ( currentState != DS_NORMAL ) {
+		newDisabledState = true;
+	} else if ( disableEndTime > sys.getTime() ) {
+		newDisabledState = true;		
+	}
+
+	return newDisabledState;
+}
+
+/*
+=====================
+deployable_base::CalculateDisabledState
+=====================
+*/
+boolean deployable_base::CalculateDisabledState() {
+	return DeployableBase_CalculateDisabledState();
+}
+
+/*
+=====================
+deployable_base::UpdateDisabled
+=====================
+*/
+void deployable_base::UpdateDisabled() {
+	SetDisabled( CalculateDisabledState() );
+}
+
+/*
+=====================
+deployable_base::IsDisabled
+=====================
+*/
+boolean deployable_base::IsDisabled() {
+	return disabledState;
+}
+
+/*
+=====================
+deployable_base::SetDisabled
+=====================
+*/
+void deployable_base::SetDisabled( boolean newDisabledState ) {
+	if ( disabledState == newDisabledState ) {
+		return;
+	}
+	disabledState = newDisabledState;
+	
+	if ( disabledState ) {
+		OnDisabled();
+		FreeDisableTask();
+	} else {
+		OnReEnabled();
+		if ( isSpotted() ) {
+			killTaskRequestee = $null_entity;
+			InitDisableTask( true );
+		}
+	}
+}
+
+/*
+=====================
+deployable_base::OnDisabled
+=====================
+*/
+void deployable_base::OnDisabled() {
+	sys.setCMIconShaderParm( commandMapHandle, 5, 0 );
+	if ( owner != $null_entity ) {
+		if ( owner.isLocalPlayer() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_DISABLED );
+		}
+	}
+}
+
+/*
+=====================
+deployable_base::OnReEnabled
+=====================
+*/
+void deployable_base::OnReEnabled() {
+	sys.setCMIconShaderParm( commandMapHandle, 5, 1 );
+	if ( owner != $null_entity ) {
+		if ( owner.isLocalPlayer() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_NORMAL );
+		}
+	}
+}
+
+/*
+=====================
+deployable_base::KillDisableThread
+=====================
+*/
+void deployable_base::KillDisableThread() {
+	sys.killThread( "DisableThread_" + getName() );
+	stopEffect( "fx_emped" );
+}
+
+/*
+=====================
+deployable_base::CreateDisableThread
+=====================
+*/
+void deployable_base::CreateDisableThread() {
+	KillDisableThread();
+	thread DisableThread();
+}
+
+/*
+=====================
+deployable_base::DisableThread
+=====================
+*/
+void deployable_base::DisableThread() {
+	if ( empJointHandle != -1 ) {
+		playJointEffect( "fx_emped", empJointHandle, 1 );
+	}
+
+	float delay = disableEndTime - sys.getTime();
+	if ( delay > 0.f ) {
+		sys.wait( delay );
+	}
+
+	stopEffect( "fx_emped" );
+	sys.waitFrame();
+	
+	sys.threadName( "DisableThreadDead" );
+	
+	UpdateDisabled();
+}
+
+/*
+=====================
+deployable_base::DoBoundsDamageThread
+=====================
+*/
+void deployable_base::DoBoundsDamageThread() {
+	float dmgIndex = GetDamage( getKey( "dmg_falling" ) );
+	while ( 1 ) {
+		vector mins = self.getAbsMins();
+		vector maxs = self.getAbsMaxs();
+		mins_z = mins_z - 64;
+		
+		//sys.debugBounds( g_colorRed, mins, maxs, 0 );
+		
+		float count = self.entitiesInBounds( mins, maxs, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, 1 );
+		float index;
+		for ( index = 0; index < count; index++ ) {
+			entity other = self.getBoundsCacheEntity( index );
+			if ( other == self ) {
+				continue;
+			}
+			if ( other != $null_entity ) {
+				if ( self.touchesBounds( other ) ) {
+					other.applyDamage( $null_entity, self, vec3_down, dmgIndex, 1.f, $null_entity );
+					if ( other.inCollection( "mcp" ) ) {
+						SelfDestruct();
+					}
+				}
+			}
+		}
+		sys.waitFrame();
+	}
+}
+
+/*
+=====================
+deployable_base::KillBoundsDamageThread
+=====================
+*/
+void deployable_base::KillBoundsDamageThread() {
+	sys.killThread( "DoBoundsDamageThread_" + getName() );
+}
+
+/*
+=====================
+deployable_base::vGetQuickChatString
+=====================
+*/
+string deployable_base::vGetQuickChatString( entity p ) {
+	if ( getEntityAllegiance( p ) == TA_FRIEND ) {
+		return getKey( "contextmenu_quickchat_friendly" );
+	}
+	return getKey( "contextmenu_quickchat_enemy" );
+}
+
+/*
+=====================
+deployable_base::vUpdateFiringStatusObject
+=====================
+*/
+void deployable_base::vUpdateFiringStatusObject( entity localPlayer ) {
+	if( fsStatus != $null ) {
+		fsStatus.Update( localPlayer, $null, TARGET_LOCK_NOT_LOCKED, 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.timerValue", fsStatus.timerStatus );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.guiState", fsStatus.guiStatus );
+	}
+}
+
+/*
+=====================
+deployable_base::FlashCMIcon
+=====================
+*/
+void deployable_base::FlashCMIcon( entity p, float requiredTeam, float flashTime ) {
+	entity local = sys.getLocalViewPlayer();
+	if ( local == $null_entity ) {
+		return;
+	}
+
+	if ( flashTime == -1 ) {
+		flashTime = SPOTTED_FLASH_TIME;
+	}
+
+	if ( getEntityAllegiance( local ) == requiredTeam ) {
+		float flags = sys.getCMIconFlags( commandMapHandle );
+		if ( requiredTeam == TA_ENEMY ) {
+			flags = flags | CMF_ENEMYALWAYSKNOWN;
+		}
+		sys.flashCMIcon( commandMapHandle, -1, flashTime, flags );
+	}
+}
+
+/*
+=====================
+deployable_base::UpdateAnimThread
+=====================
+*/
+void deployable_base::UpdateAnimThread() {
+	forceAnimUpdate( true );
+	waitUntil( !isAnimating() );
+	forceAnimUpdate( false );
+}
