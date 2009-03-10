@@ -705,7 +705,13 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	// find some joints in the model for locating effects
 	barrelJointView		= animator.GetJointHandle( "muzzle" );
 
-	const char* damagename = spawnArgs.GetString( "dmg_melee" );
+	const char* damagename;
+	if ( g_realisticDamage.GetBool() ) {
+		damagename = spawnArgs.GetString( "dmg_realistic_melee", spawnArgs.GetString( "dmg_melee" ) );
+	}
+	else {
+		damagename = spawnArgs.GetString( "dmg_melee" );
+	}
 	if ( *damagename ) {
 		meleeDamage = gameLocal.declDamageType.LocalFind( damagename, false );
 		if ( !meleeDamage ) {
@@ -713,7 +719,12 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 		}
 	}
 
-	damagename = spawnArgs.GetString( "dmg_melee_special" );
+	if ( g_realisticDamage.GetBool() ) {
+		damagename = spawnArgs.GetString( "dmg_realistic_melee_special", spawnArgs.GetString( "dmg_melee_special" ) );
+	}
+	else {
+		damagename = spawnArgs.GetString( "dmg_melee_special" );
+	}
 	if ( *damagename ) {
 		meleeSpecialDamage = gameLocal.declDamageType.LocalFind( damagename, false );
 		if ( !meleeSpecialDamage ) {

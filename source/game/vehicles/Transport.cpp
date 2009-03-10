@@ -3597,13 +3597,23 @@ void sdTransport::Spawn( void ) {
 	
 	const char* damageName;
 	
-	damageName			= spawnArgs.GetString( "dmg_kill_players" );	
+	if ( g_realisticDamage.GetBool() ) {
+		damageName			= spawnArgs.GetString( "dmg_realistic_kill_players", spawnArgs.GetString( "dmg_kill_players" ) );
+	}
+	else {
+		damageName			= spawnArgs.GetString( "dmg_kill_players" );	
+	}
 	killPlayerDamage	= gameLocal.declDamageType[ damageName ];
 	if ( !killPlayerDamage ) {
 		gameLocal.Warning( "sdVehicle::Spawn Invalid Kill Player Damage Type '%s'", damageName );
 	}
 
-	damageName			= spawnArgs.GetString( "dmg_flipped" );
+	if ( g_realisticDamage.GetBool() ) {
+		damageName			= spawnArgs.GetString( "dmg_realistic_flipped", spawnArgs.GetString( "dmg_flipped" ) );
+	}
+	else {
+		damageName			= spawnArgs.GetString( "dmg_flipped" );
+	}
 	flippedDamage		= gameLocal.declDamageType[ damageName ];
 	if ( !flippedDamage ) {
 		gameLocal.Warning( "sdVehicle::Spawn Invalid Flipped Damage Type '%s'", damageName );
@@ -3636,7 +3646,12 @@ void sdTransport::Spawn( void ) {
 	vehicleFlags.amphibious				= spawnArgs.GetBool( "amphibious" );
 	vehicleFlags.weaponDisabled			= false;
 
-	damageName			= spawnArgs.GetString( "dmg_water" );	
+	if ( g_realisticDamage.GetBool() ) {
+		damageName			= spawnArgs.GetString( "dmg_realistic_water", spawnArgs.GetString( "dmg_water" ) );	
+	}
+	else {
+		damageName			= spawnArgs.GetString( "dmg_water" );	
+	}
 	waterDamageDecl		= gameLocal.declDamageType[ damageName ];
 	if ( !waterDamageDecl ) {
 		gameLocal.Warning( "sdVehicle::Spawn Couldn't find water Damage Type '%s'", damageName );

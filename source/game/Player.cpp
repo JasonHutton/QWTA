@@ -1654,7 +1654,13 @@ void idPlayer::Spawn( void ) {
 	damageXPScale						= spawnArgs.GetFloat( "damage_xp_scale", "1" );
 
 	oobDamageInterval					= spawnArgs.GetInt( "oob_damage_interval", "500" );
-	const char* oobDamageName			= spawnArgs.GetString( "dmg_oob" );
+	const char* oobDamageName;
+	if( g_realisticDamage.GetBool() ) {
+		oobDamageName			= spawnArgs.GetString( "dmg_realistic_oob", spawnArgs.GetString( "dmg_oob" ) );
+	}
+	else {
+		oobDamageName			= spawnArgs.GetString( "dmg_oob" );
+	}
 
 	healthCheckTickTime					= SEC2MS( spawnArgs.GetFloat( "health_check_interval" ) );
 	healthCheckTickCount				= spawnArgs.GetInt( "health_check_count" );

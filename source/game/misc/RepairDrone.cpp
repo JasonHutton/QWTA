@@ -117,7 +117,12 @@ void sdRepairDrone::Spawn( void ) {
 
 	lastWaterDamageTime = 0;
 	submergeTime		= 0;
-	damageName			= spawnArgs.GetString( "dmg_water" );	
+	if ( g_realisticDamage.GetBool() ) {
+		damageName			= spawnArgs.GetString( "dmg_realistic_water", spawnArgs.GetString( "dmg_water" ) );	
+	}
+	else {
+		damageName			= spawnArgs.GetString( "dmg_water" );	
+	}
 	waterDamageDecl		= gameLocal.declDamageType[ damageName ];
 	if ( !waterDamageDecl ) {
 		gameLocal.Warning( "sdRepairDrone::Spawn Couldn't find water Damage Type '%s'", damageName );

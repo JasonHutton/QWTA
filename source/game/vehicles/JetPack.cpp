@@ -233,7 +233,13 @@ void sdJetPack::Spawn( void ) {
 		visuals->SetOrigin( GetPhysics()->GetOrigin() );
 	}
 
-	const char* damagename = spawnArgs.GetString( "dmg_collide" );
+	const char* damagename;
+	if ( g_realisticDamage.GetBool() ) {
+		damagename = spawnArgs.GetString( "dmg_realistic_collide", spawnArgs.GetString( "dmg_collide" ) );
+	}
+	else {
+		damagename = spawnArgs.GetString( "dmg_collide" );
+	}
 	if ( *damagename ) {
 		collideDamage = gameLocal.declDamageType.LocalFind( damagename, false );
 		if( !collideDamage ) {
@@ -241,7 +247,12 @@ void sdJetPack::Spawn( void ) {
 		}
 	}
 
-	damagename = spawnArgs.GetString( "dmg_fall" );
+	if ( g_realisticDamage.GetBool() ) {
+		damagename = spawnArgs.GetString( "dmg_realistic_fall", spawnArgs.GetString( "dmg_fall" ) );
+	}
+	else {
+		damagename = spawnArgs.GetString( "dmg_fall" );
+	}
 	if ( *damagename ) {
 		fallDamage = gameLocal.declDamageType.LocalFind( damagename, false );
 		if( !fallDamage ) {

@@ -92,7 +92,12 @@ sdVehicle_RigidBody::Spawn
 void sdVehicle_RigidBody::Spawn( void ) {
 	const char* damagename;
 
-	damagename = spawnArgs.GetString( "dmg_collide" );
+	if ( g_realisticDamage.GetBool() ) {
+		damagename = spawnArgs.GetString( "dmg_realistic_collide", spawnArgs.GetString( "dmg_collide" ) );
+	}
+	else {
+		damagename = spawnArgs.GetString( "dmg_collide" );
+	}
 	if ( *damagename ) {
 		collideDamage = gameLocal.declDamageType.LocalFind( damagename, false );
 		if( !collideDamage ) {
@@ -102,7 +107,12 @@ void sdVehicle_RigidBody::Spawn( void ) {
 		collideDamage = NULL;
 	}
 
-	damagename = spawnArgs.GetString( "dmg_collide_fatal" );
+	if ( g_realisticDamage.GetBool() ) {
+		damagename = spawnArgs.GetString( "dmg_realistic_collide_fatal", spawnArgs.GetString( "dmg_collide_fatal" ) );
+	}
+	else {
+		damagename = spawnArgs.GetString( "dmg_collide_fatal" );
+	}
 	if ( *damagename ) {
 		collideFatalDamage = gameLocal.declDamageType.LocalFind( damagename, false );
 		if( !collideFatalDamage ) {
