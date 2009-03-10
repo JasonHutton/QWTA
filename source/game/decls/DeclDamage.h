@@ -141,6 +141,9 @@ protected:
 	} damageFlags_t;
 
 	damageFlags_t			flags;
+
+	private:
+		void				CopyDecl( const sdDeclDamage* decl );
 };
 
 #define DAMAGE_FOR_NAME( name ) sdDeclDamage::DamageForName( name, true )

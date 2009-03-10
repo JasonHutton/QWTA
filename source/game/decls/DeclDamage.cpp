@@ -84,12 +84,55 @@ float sdDeclDamage::GetDamage( idEntity* entity, bool& noScale ) const {
 }
 
 /*
+=====================
+sdDamageDef::CopyDecl
+=====================
+*/
+void sdDeclDamage::CopyDecl( const sdDeclDamage *decl ) {
+	FreeData();
+
+	damage					= decl->damage;
+	push					= decl->push;
+	teamKillCVar			= decl->teamKillCVar;
+	obituary				= decl->obituary;
+	selfObituary			= decl->selfObituary;
+	teamKillObituary		= decl->teamKillObituary;
+	unknownObituary			= decl->unknownObituary;
+	unknownFriendlyObituary = decl->unknownFriendlyObituary;
+
+	damageBonus			= decl->damageBonus;
+
+	radius				= decl->radius;
+	knockback			= decl->knockback;
+	damageKnockback		= decl->damageKnockback;
+	kickTime			= decl->kickTime;
+	kickAmplitude		= decl->kickAmplitude;
+
+	selfDamageScale		= decl->selfDamageScale;
+
+	sounds				= decl->sounds;
+	//sounds.Clear();
+
+	blobTime			= decl->blobTime;
+	blobRect			= decl->blobRect;
+	//blobRect.Zero();
+	blobMaterial		= decl->blobMaterial;
+
+	kickDir				= decl->kickDir;
+
+	flags				= decl->flags;
+
+	stats				= decl->stats;
+}
+
+/*
 ================
 sdDeclDamage::Parse
 ================
 */
 bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 	idToken token;
+	idToken token2;
 	idParser src;
 
 	src.SetFlags( DECL_LEXER_FLAGS );
@@ -104,7 +147,23 @@ bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 			return false;
 		}
 
-		if( !token.Icmp( "damage" ) ) {
+		if ( !token.Icmp( "inherit" ) ) {
+			if( !src.ReadToken( &token2 ) ) {
+				src.Warning( "Unexpected end of file" );
+				return false;
+			}
+			
+			const sdDeclDamage* copy = gameLocal.declDamageType.LocalFind( token2, false );
+			if ( !copy ) {
+				src.Warning( "Unknown damageDef '%s' inherited by '%s'", token2.c_str(), GetName() );
+			} else if ( copy->GetState() == DS_DEFAULTED ) {
+				src.Warning( "inherited damageDef '%s' defaulted", token2.c_str() );
+				return false;
+			} else {
+				CopyDecl( copy );
+			}
+		}
+		else if( !token.Icmp( "damage" ) ) {
 
 			if ( !src.ReadToken( &token ) ) {
 				src.Error( "sdDeclDamageFilter::ParseLevel Missing Parm for 'damage'" );
