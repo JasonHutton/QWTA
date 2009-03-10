@@ -343,7 +343,17 @@ GetDamage
 ==================
 */
 float GetDamage( string value ) {
-	return sys.getDeclIndex( sys.getDeclType( "damageDef" ), value );
+	float index = -1;
+
+	if ( g_realisticDamage.getBoolValue() ) {
+		index = sys.getDeclIndex( sys.getDeclType( "damageDef" ), "realistic_" + value );
+	}
+
+	if ( index == -1 ) {
+		index = sys.getDeclIndex( sys.getDeclType( "damageDef" ), value );
+	}
+
+	return index;
 }
 
 /*
