@@ -55,6 +55,13 @@ pm_realisticMovement cvar added. Controls if strafejumping works or not.
 raduspull functions need work...
 new script functions added...
 
+g_realisticDamage added.
+Any damageDef can be automatically converted to use a different damageDef when g_realisticDamage is 1(It's a little kludgey but it works.), by creating a new damageDef with "realistic_" prepended to the base name. eg: "railgun_damage" becomes "realistic_railgun_damage". defs should also reference the appropriate damageDef with the appropriate keys: "dmg_damage" -> "dmg_realistic_damage". The prefix for keys is "dmg_realistic_".
+Both steps are required for proper operation and future-safety, not just one.
+
+damageDefs may now use the "inherit" key/value to inherit values from an existing damageDef. This simplifies realistic damageDefs.
+
+A damageFilter is still required, and where the main changes of a realistic damageDef exist.
 
 1. Proper hyperblaster visual/audio effects. (Fly sound?)
 8. Crank the BFG's max targets up to around 16 or 32.
