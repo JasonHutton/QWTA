@@ -118,6 +118,7 @@ object weapon_base {
 	float		fireRate;
 	float		fovSpeed;
 	float		fovSpread;
+	float		realisticFovSpread;
 	float		fovTime;
 	float		fovZoom;
 	float		lowAmmo;
@@ -170,7 +171,7 @@ object weapon_base {
 
 	string		crosshairPrimary;
 	string		crosshairSecondary;
-	
+
 	float		fireChannelUpto;
 };
 
@@ -191,6 +192,7 @@ void weapon_base::preinit() {
 	fovTime = getFloatKeyWithDefault( "fov_time", 0.25f );
 	fovSpeed = getFloatKeyWithDefault( "fov_speed", 0.5f );
 	fovSpread = getFloatKeyWithDefault( "fov_spread", 0.5f );
+	realisticFovSpread = getFloatKeyWithDefault( "realistic_fov_spread", fovSpread );
 	spreadModifier = getFloatKeyWithDefault( "spread_bonus", 0.8f );
 	overheatLength = getFloatKeyWithDefault( "overheat_length", 5 );
 	overheatPerShot = getFloatKeyWithDefault( "overheat_per_shot", 0.5 );
@@ -318,7 +320,12 @@ void weapon_base::destroy() {
 
 float weapon_base::GetFovSpread() {
 	if ( ironSightsEnabled ) {
-		return fovSpread;
+		if ( g_realisticSpread.getBoolValue() ) {
+			return realisticFovSpread;
+		}
+		else {
+			return fovSpread;
+		}
 	}
 	return 1.f;
 }
@@ -393,7 +400,7 @@ void weapon_base::DisableIronSights_Private( boolean allowWait ) {
 	RemoveLocalIronSightsEffects();
 
 	myPlayer.setSpeedModifier( speedMod );
-	
+
 	ironSightsEnabled = false;
 	myPlayer.SetIronSightUp( ironSightsEnabled );
 	ironSightsTimeout = sys.getTime() + 0.5f;
@@ -436,12 +443,12 @@ void weapon_base::EnableIronSights_Private( boolean allowWait ) {
 	} else {
 		setFovStart( sys.getDefaultFov(), fovZoom, fovTime * 0.0f, fovTime * 0.6f );
 	}
-	
+
 	localIronSightsEffectsActive = true;
 	AddLocalIronSightsEffects();
 
 	myPlayer.setSpeedModifier( speedMod * fovSpeed );
-	
+
 	ironSightsEnabled = true;
 	myPlayer.SetIronSightUp( ironSightsEnabled );
 	ironSightsTimeout = sys.getTime() + 0.5f;
@@ -465,12 +472,12 @@ void weapon_base::CheckIronSights() {
 			} else {
 				DisableIronSights_Private( false );
 			}
-			
+
 			setBlendFrames( ANIMCHANNEL_ALL, 4 );
 			PlayIdleAnim();
 		}
 	}
-		
+
 	if ( WEAPON_ALTFIRE ) {
 		if( !altFireDown  ) {
 			ToggleIronSights();
@@ -496,7 +503,7 @@ void weapon_base::CreateIronSightsThread() {
 	if ( ironSightsThreadActive ) {
 		return;
 	}
-	
+
 	ironSightsThreadActive = true;
 	thread IronSightsThread();
 }
@@ -650,7 +657,7 @@ void weapon_base::AmmoCheck( float modIndex ) {
 
 void weapon_base::PlayFireSound() {
 //	float diversePitch = 0.75f + sys.random( 0.5f );
-	
+
 	fireChannelUpto = fireChannelUpto + 1;
 	if ( fireChannelUpto > SND_WEAPON_FIRE_NUM - 1 ) {
 		fireChannelUpto = 0;
@@ -852,7 +859,7 @@ void weapon_base::LeaveSprint( string newState, float blend ) {
 	if ( WEAPON_ATTACK ) {
 		mainFireDown = false;
 	}
-	
+
 	PlayLeaveSprintAnim( newState, blend );
 
 	weaponState( newState, blend );
