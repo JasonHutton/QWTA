@@ -311,11 +311,23 @@ idWeapon::idWeapon() {
 	aimValues[ WAV_IRONSIGHTS ].lagscalepitch	= 0.9f;
 	aimValues[ WAV_IRONSIGHTS ].speedlr			= 0.f;
 
+	realisticAimValues[ WAV_IRONSIGHTS ].bobscaleyaw = aimValues[ WAV_IRONSIGHTS ].bobscaleyaw;
+	realisticAimValues[ WAV_IRONSIGHTS ].bobscalepitch = aimValues[ WAV_IRONSIGHTS ].bobscalepitch;
+	realisticAimValues[ WAV_IRONSIGHTS ].lagscaleyaw = aimValues[ WAV_IRONSIGHTS ].lagscaleyaw;
+	realisticAimValues[ WAV_IRONSIGHTS ].lagscalepitch = aimValues[ WAV_IRONSIGHTS ].lagscalepitch;
+	realisticAimValues[ WAV_IRONSIGHTS ].speedlr = aimValues[ WAV_IRONSIGHTS ].speedlr;
+
 	aimValues[ WAV_NORMAL ].bobscaleyaw			= -0.1f;
 	aimValues[ WAV_NORMAL ].bobscalepitch		= 0.2f;
 	aimValues[ WAV_NORMAL ].lagscaleyaw			= 0.91f;
 	aimValues[ WAV_NORMAL ].lagscalepitch		= 0.91f;
 	aimValues[ WAV_NORMAL ].speedlr				= 0.01f;
+
+	realisticAimValues[ WAV_NORMAL ].bobscaleyaw = aimValues[ WAV_NORMAL ].bobscaleyaw;
+	realisticAimValues[ WAV_NORMAL ].bobscalepitch = aimValues[ WAV_NORMAL ].bobscalepitch;
+	realisticAimValues[ WAV_NORMAL ].lagscaleyaw = aimValues[ WAV_NORMAL ].lagscaleyaw;
+	realisticAimValues[ WAV_NORMAL ].lagscalepitch = aimValues[ WAV_NORMAL ].lagscalepitch;
+	realisticAimValues[ WAV_NORMAL ].speedlr = aimValues[ WAV_NORMAL ].speedlr;
 
 	driftScale				= 1.f;
 
@@ -923,11 +935,43 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	aimValues[ WAV_IRONSIGHTS ].lagscalepitch = spawnArgs.GetFloat( "wlagscalepitch_aim", "0.9" );
 	aimValues[ WAV_IRONSIGHTS ].speedlr = spawnArgs.GetFloat( "wspeedrl_aim", "0" );
 
+	if ( !spawnArgs.GetFloat( "realistic_wbobscaleyaw_aim", "", realisticAimValues[ WAV_IRONSIGHTS ].bobscaleyaw ) ) {
+		realisticAimValues[ WAV_IRONSIGHTS ].bobscaleyaw = aimValues[ WAV_IRONSIGHTS ].bobscaleyaw;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wbobscalepitch_aim", "", realisticAimValues[ WAV_IRONSIGHTS ].bobscalepitch ) ) {
+		realisticAimValues[ WAV_IRONSIGHTS ].bobscalepitch = aimValues[ WAV_IRONSIGHTS ].bobscalepitch;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wlagscaleyaw_aim", "", realisticAimValues[ WAV_IRONSIGHTS ].lagscaleyaw ) ) {
+		realisticAimValues[ WAV_IRONSIGHTS ].lagscaleyaw = aimValues[ WAV_IRONSIGHTS ].lagscaleyaw;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wlagscalepitch_aim", "", realisticAimValues[ WAV_IRONSIGHTS ].lagscalepitch ) ) {
+		realisticAimValues[ WAV_IRONSIGHTS ].lagscalepitch = aimValues[ WAV_IRONSIGHTS ].lagscalepitch;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wspeedrl_aim", "", realisticAimValues[ WAV_IRONSIGHTS ].speedlr ) ) {
+		realisticAimValues[ WAV_IRONSIGHTS ].speedlr = aimValues[ WAV_IRONSIGHTS ].speedlr;
+	}
+
 	aimValues[ WAV_NORMAL ].bobscaleyaw = spawnArgs.GetFloat( "wbobscaleyaw", "-0.1" );
 	aimValues[ WAV_NORMAL ].bobscalepitch = spawnArgs.GetFloat( "wbobscalepitch", "0.2" );
 	aimValues[ WAV_NORMAL ].lagscaleyaw = spawnArgs.GetFloat( "wlagscaleyaw", "0.91" );
 	aimValues[ WAV_NORMAL ].lagscalepitch = spawnArgs.GetFloat( "wlagscalepitch", "0.91" );
 	aimValues[ WAV_NORMAL ].speedlr = spawnArgs.GetFloat( "wspeedrl", "0.01" );
+
+	if ( !spawnArgs.GetFloat( "realistic_wbobscaleyaw", "", realisticAimValues[ WAV_NORMAL ].bobscaleyaw ) ) {
+		realisticAimValues[ WAV_NORMAL ].bobscaleyaw = aimValues[ WAV_NORMAL ].bobscaleyaw;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wbobscalepitch", "", realisticAimValues[ WAV_NORMAL ].bobscalepitch ) ) {
+		realisticAimValues[ WAV_NORMAL ].bobscalepitch = aimValues[ WAV_NORMAL ].bobscalepitch;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wlagscaleyaw", "", realisticAimValues[ WAV_NORMAL ].lagscaleyaw ) ) {
+		realisticAimValues[ WAV_NORMAL ].lagscaleyaw = aimValues[ WAV_NORMAL ].lagscaleyaw;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wlagscalepitch", "", realisticAimValues[ WAV_NORMAL ].lagscalepitch ) ) {
+		realisticAimValues[ WAV_NORMAL ].lagscalepitch = aimValues[ WAV_NORMAL ].lagscalepitch;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_wspeedrl", "", realisticAimValues[ WAV_NORMAL ].speedlr ) ) {
+		realisticAimValues[ WAV_NORMAL ].speedlr = aimValues[ WAV_NORMAL ].speedlr;
+	}
 
 	if ( g_realisticSpread.GetBool() ) {
 		spreadCurrentValue = realisticSpreadValues[ WSV_STANDING ].min;
@@ -939,6 +983,17 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	crosshairSpreadMin = spawnArgs.GetFloat( "crosshair_spread_min", "0" );
 	crosshairSpreadMax = spawnArgs.GetFloat( "crosshair_spread_max", "1" );
 	crosshairSpreadScale = spawnArgs.GetFloat( "crosshair_spread_scale", "1" );
+
+	if ( !spawnArgs.GetFloat( "realistic_crosshair_spread_min", "", realisticCrosshairSpreadMin ) ) {
+		realisticCrosshairSpreadMin = crosshairSpreadMin;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_crosshair_spread_max", "", realisticCrosshairSpreadMax ) ) {
+		realisticCrosshairSpreadMax = crosshairSpreadMax;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_crosshair_spread_scale", "", realisticCrosshairSpreadScale ) ) {
+		realisticCrosshairSpreadScale = crosshairSpreadScale;
+	}
+
 
 	SetupStats( spawnArgs.GetString( "stat_name" ) );
 

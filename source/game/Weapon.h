@@ -212,9 +212,9 @@ public:
 
 	float					GetSpreadValue() const;
 	float					GetSpreadValueNormalized( bool useGlobalMax = true ) const;
-	float					GetCrosshairSpreadMin() const { return crosshairSpreadMin; }
-	float					GetCrosshairSpreadMax() const { return crosshairSpreadMax; }
-	float					GetCrosshairSpreadScale() const { return crosshairSpreadScale; }
+	float					GetCrosshairSpreadMin() const { return g_realisticSpread.GetBool() ? realisticCrosshairSpreadMin : crosshairSpreadMin; }
+	float					GetCrosshairSpreadMax() const { return g_realisticSpread.GetBool() ? realisticCrosshairSpreadMax : crosshairSpreadMax; }
+	float					GetCrosshairSpreadScale() const { return g_realisticSpread.GetBool() ? realisticCrosshairSpreadScale : crosshairSpreadScale; }
 
 	int						GetGrenadeFuseTime( void );
 
@@ -246,7 +246,7 @@ public:
 	const playerWeaponTypes_t&		GetPlayerWeaponNum( void ) const { return playerWeaponNum; }
 	bool							IsIronSightsEnabled( void );
 
-	const weaponAimValues_t&		GetAimValues( weaponAimValueIndex_t index ) { return aimValues[ index ]; }
+	const weaponAimValues_t&		GetAimValues( weaponAimValueIndex_t index ) { return g_realisticSpread.GetBool() ? realisticAimValues[ index ] : aimValues[ index ]; }
 
 	virtual sdNetworkInterface*			GetNetworkInterface( void ) { return &networkInterface; }
 
@@ -362,6 +362,7 @@ private:
 	weaponSpreadValues_t	spreadValues[ WSV_NUM ];
 	weaponSpreadValues_t	realisticSpreadValues[ WSV_NUM ];
 	weaponAimValues_t		aimValues[ WAV_NUM ];
+	weaponAimValues_t		realisticAimValues[ WAV_NUM ];
 	float					spreadValueMax;				// used to normalize against
 	bool					spreadEvalVelocity;
 	bool					spreadEvalView;
@@ -372,6 +373,10 @@ private:
 	float					crosshairSpreadMin;
 	float					crosshairSpreadMax;
 	float					crosshairSpreadScale;
+
+	float					realisticCrosshairSpreadMin;
+	float					realisticCrosshairSpreadMax;
+	float					realisticCrosshairSpreadScale;
 
 	float					driftScale;
 
