@@ -325,7 +325,7 @@ void game_main() {
 	g_mineIconAlphaScale		= sys.getCVar( "g_mineIconAlphaScale", "" );
 
 	g_realisticDamage			= sys.getCVar( "g_realisticDamage", "" );
-	g_realisticSpread			= sys.getCVar) "g_realisticSpread", "" );
+	g_realisticSpread			= sys.getCVar( "g_realisticSpread", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );
