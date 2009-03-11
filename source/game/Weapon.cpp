@@ -294,6 +294,15 @@ idWeapon::idWeapon() {
 		spreadValues[ i ].viewRateMin = 0;
 		spreadValues[ i ].viewRateMax = 0;
 		spreadValues[ i ].viewRateInc = 0;
+
+		realisticSpreadValues[ i ].min = spreadValues[ i ].min;
+		realisticSpreadValues[ i ].max = spreadValues[ i ].max;
+		realisticSpreadValues[ i ].inc = spreadValues[ i ].inc;
+		realisticSpreadValues[ i ].numIgnoreRounds = spreadValues[ i ].numIgnoreRounds;
+		realisticSpreadValues[ i ].maxSettleTime = spreadValues[ i ].maxSettleTime;
+		realisticSpreadValues[ i ].viewRateMin = spreadValues[ i ].viewRateMin;
+		realisticSpreadValues[ i ].viewRateMax = spreadValues[ i ].viewRateMax;
+		realisticSpreadValues[ i ].viewRateInc = spreadValues[ i ].viewRateInc;
 	}
 
 	aimValues[ WAV_IRONSIGHTS ].bobscaleyaw		= -0.01f;
@@ -781,6 +790,31 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	spreadValues[ WSV_STANDING ].viewRateMax = spawnArgs.GetFloat( "spread_viewrate_max", "150" );
 	spreadValues[ WSV_STANDING ].viewRateInc = spawnArgs.GetFloat( "spread_viewrate_inc", "10" );
 
+	if ( !spawnArgs.GetFloat( "realistic_spread_min", "", realisticSpreadValues[ WSV_STANDING ].min ) ) {
+		realisticSpreadValues[ WSV_STANDING ].min = spreadValues[ WSV_STANDING ].min;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_max", "", realisticSpreadValues[ WSV_STANDING ].max ) ) {
+		realisticSpreadValues[ WSV_STANDING ].max = spreadValues[ WSV_STANDING ].max;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_inc", "", realisticSpreadValues[ WSV_STANDING ].inc ) ) {
+		realisticSpreadValues[ WSV_STANDING ].inc = spreadValues[ WSV_STANDING ].inc;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_ignore", "", realisticSpreadValues[ WSV_STANDING ].numIgnoreRounds ) ) {
+		realisticSpreadValues[ WSV_STANDING ].numIgnoreRounds = spreadValues[ WSV_STANDING ].numIgnoreRounds;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_max_settle_time", "", realisticSpreadValues[ WSV_STANDING ].maxSettleTime ) ) {
+		realisticSpreadValues[ WSV_STANDING ].maxSettleTime = spreadValues[ WSV_STANDING ].maxSettleTime;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_viewrate_min", "", realisticSpreadValues[ WSV_STANDING ].viewRateMin ) ) {
+		realisticSpreadValues[ WSV_STANDING ].viewRateMin = spreadValues[ WSV_STANDING ].viewRateMin;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_viewrate_max", "", realisticSpreadValues[ WSV_STANDING ].viewRateMax ) ) {
+		realisticSpreadValues[ WSV_STANDING ].viewRateMax= spreadValues[ WSV_STANDING ].viewRateMax;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_viewrate_inc", "", realisticSpreadValues[ WSV_STANDING ].viewRateInc ) ) {
+		realisticSpreadValues[ WSV_STANDING ].viewRateInc = spreadValues[ WSV_STANDING ].viewRateInc;
+	}
+
 	spreadValues[ WSV_CROUCHING ].min = spawnArgs.GetFloat( "spread_crouch_min", "0.5" );
 	spreadValues[ WSV_CROUCHING ].max = spawnArgs.GetFloat( "spread_crouch_max", "6" );
 	spreadValues[ WSV_CROUCHING ].inc = spawnArgs.GetFloat( "spread_crouch_inc", "1" );
@@ -789,6 +823,31 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	spreadValues[ WSV_CROUCHING ].viewRateMin = spawnArgs.GetFloat( "spread_crouch_viewrate_min", "15" );
 	spreadValues[ WSV_CROUCHING ].viewRateMax = spawnArgs.GetFloat( "spread_crouch_viewrate_max", "75" );
 	spreadValues[ WSV_CROUCHING ].viewRateInc = spawnArgs.GetFloat( "spread_crouch_viewrate_inc", "8" );
+
+	if ( !spawnArgs.GetFloat( "realistic_spread_crouch_min", "", realisticSpreadValues[ WSV_CROUCHING ].min ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].min = spreadValues[ WSV_CROUCHING ].min;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_crouch_max", "", realisticSpreadValues[ WSV_CROUCHING ].max ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].max = spreadValues[ WSV_CROUCHING ].max;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_crouch_inc", "", realisticSpreadValues[ WSV_CROUCHING ].inc ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].inc = spreadValues[ WSV_CROUCHING ].inc;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_crouch_ignore", "", realisticSpreadValues[ WSV_CROUCHING ].numIgnoreRounds ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].numIgnoreRounds = spreadValues[ WSV_CROUCHING ].numIgnoreRounds;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_crouch_max_settle_time", "", realisticSpreadValues[ WSV_CROUCHING ].maxSettleTime ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].maxSettleTime = spreadValues[ WSV_CROUCHING ].maxSettleTime;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_crouch_viewrate_min", "", realisticSpreadValues[ WSV_CROUCHING ].viewRateMin ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].viewRateMin = spreadValues[ WSV_CROUCHING ].viewRateMin;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_crouch_viewrate_max", "", realisticSpreadValues[ WSV_CROUCHING ].viewRateMax ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].viewRateMax = spreadValues[ WSV_CROUCHING ].viewRateMax;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_crouch_viewrate_inc", "", realisticSpreadValues[ WSV_CROUCHING ].viewRateInc ) ) {
+		realisticSpreadValues[ WSV_CROUCHING ].viewRateInc = spreadValues[ WSV_CROUCHING ].viewRateInc;
+	}
 
 	spreadValues[ WSV_PRONE ].min = spawnArgs.GetFloat( "spread_prone_min", "0.5" );
 	spreadValues[ WSV_PRONE ].max = spawnArgs.GetFloat( "spread_prone_max", "5" );
@@ -799,6 +858,31 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	spreadValues[ WSV_PRONE ].viewRateMax = spawnArgs.GetFloat( "spread_prone_viewrate_max", "37.5" );
 	spreadValues[ WSV_PRONE ].viewRateInc = spawnArgs.GetFloat( "spread_prone_viewrate_inc", "6" );
 
+	if ( !spawnArgs.GetFloat( "realistic_spread_prone_min", "", realisticSpreadValues[ WSV_PRONE ].min ) ) {
+		realisticSpreadValues[ WSV_PRONE ].min = spreadValues[ WSV_PRONE ].min;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_prone_max", "", realisticSpreadValues[ WSV_PRONE ].max ) ) {
+		realisticSpreadValues[ WSV_PRONE ].max = spreadValues[ WSV_PRONE ].max;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_prone_inc", "", realisticSpreadValues[ WSV_PRONE ].inc ) ) {
+		realisticSpreadValues[ WSV_PRONE ].inc = spreadValues[ WSV_PRONE ].inc;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_prone_ignore", "", realisticSpreadValues[ WSV_PRONE ].numIgnoreRounds ) ) {
+		realisticSpreadValues[ WSV_PRONE ].numIgnoreRounds = spreadValues[ WSV_PRONE ].numIgnoreRounds;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_prone_max_settle_time", "", realisticSpreadValues[ WSV_PRONE ].maxSettleTime ) ) {
+		realisticSpreadValues[ WSV_PRONE ].maxSettleTime = spreadValues[ WSV_PRONE ].maxSettleTime;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_prone_viewrate_min", "", realisticSpreadValues[ WSV_PRONE ].viewRateMin ) ) {
+		realisticSpreadValues[ WSV_PRONE ].viewRateMin = spreadValues[ WSV_PRONE ].viewRateMin;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_prone_viewrate_max", "", realisticSpreadValues[ WSV_PRONE ].viewRateMax ) ) {
+		realisticSpreadValues[ WSV_PRONE ].viewRateMax = spreadValues[ WSV_PRONE ].viewRateMax;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_prone_viewrate_inc", "", realisticSpreadValues[ WSV_PRONE ].viewRateInc ) ) {
+		realisticSpreadValues[ WSV_PRONE ].viewRateInc = spreadValues[ WSV_PRONE ].viewRateInc;
+	}
+
 	spreadValues[ WSV_JUMPING ].min = spawnArgs.GetFloat( "spread_jump_min", "10" );
 	spreadValues[ WSV_JUMPING ].max = spawnArgs.GetFloat( "spread_jump_max", "15" );
 	spreadValues[ WSV_JUMPING ].inc = spawnArgs.GetFloat( "spread_jump_inc", "1" );
@@ -808,6 +892,31 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	spreadValues[ WSV_JUMPING ].viewRateMax = spawnArgs.GetFloat( "spread_jump_viewrate_max", "300" );
 	spreadValues[ WSV_JUMPING ].viewRateInc = spawnArgs.GetFloat( "spread_jump_viewrate_inc", "10" );
 
+	if ( !spawnArgs.GetFloat( "realistic_spread_jump_min", "", realisticSpreadValues[ WSV_JUMPING ].min ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].min = spreadValues[ WSV_JUMPING ].min;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_jump_max", "", realisticSpreadValues[ WSV_JUMPING ].max ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].max = spreadValues[ WSV_JUMPING ].max;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_jump_inc", "", realisticSpreadValues[ WSV_JUMPING ].inc ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].inc = spreadValues[ WSV_JUMPING ].inc;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_jump_ignore", "", realisticSpreadValues[ WSV_JUMPING ].numIgnoreRounds ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].numIgnoreRounds = spreadValues[ WSV_JUMPING ].numIgnoreRounds;
+	}
+	if ( !spawnArgs.GetInt( "realistic_spread_jump_max_settle_time", "", realisticSpreadValues[ WSV_JUMPING ].maxSettleTime ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].maxSettleTime = spreadValues[ WSV_JUMPING ].maxSettleTime;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_jump_viewrate_min", "", realisticSpreadValues[ WSV_JUMPING ].viewRateMin ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].viewRateMin = spreadValues[ WSV_JUMPING ].viewRateMin;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_jump_viewrate_max", "", realisticSpreadValues[ WSV_JUMPING ].viewRateMax ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].viewRateMax = spreadValues[ WSV_JUMPING ].viewRateMax;
+	}
+	if ( !spawnArgs.GetFloat( "realistic_spread_jump_viewrate_inc", "", realisticSpreadValues[ WSV_JUMPING ].viewRateInc ) ) {
+		realisticSpreadValues[ WSV_JUMPING ].viewRateInc = spreadValues[ WSV_JUMPING ].viewRateInc;
+	}
+	
 	aimValues[ WAV_IRONSIGHTS ].bobscaleyaw = spawnArgs.GetFloat( "wbobscaleyaw_aim", "-0.01f" );
 	aimValues[ WAV_IRONSIGHTS ].bobscalepitch = spawnArgs.GetFloat( "wbobscalepitch_aim", "0.005" );
 	aimValues[ WAV_IRONSIGHTS ].lagscaleyaw = spawnArgs.GetFloat( "wlagscaleyaw_aim", "0.9" );
@@ -820,7 +929,12 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	aimValues[ WAV_NORMAL ].lagscalepitch = spawnArgs.GetFloat( "wlagscalepitch", "0.91" );
 	aimValues[ WAV_NORMAL ].speedlr = spawnArgs.GetFloat( "wspeedrl", "0.01" );
 
-	spreadCurrentValue = spreadValues[ WSV_STANDING ].min;
+	if ( g_realisticSpread.GetBool() ) {
+		spreadCurrentValue = realisticSpreadValues[ WSV_STANDING ].min;
+	}
+	else {
+		spreadCurrentValue = spreadValues[ WSV_STANDING ].min;
+	}
 
 	crosshairSpreadMin = spawnArgs.GetFloat( "crosshair_spread_min", "0" );
 	crosshairSpreadMax = spawnArgs.GetFloat( "crosshair_spread_max", "1" );
@@ -856,11 +970,21 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	activateAttack = spawnArgs.GetBool( "activate_attack" );
 
 	spreadValueMax = 0;
-	for( int i = 0; i < WSV_NUM; i++ ) {
-		if( spreadValueMax < spreadValues[ i ].max ) {
-			spreadValueMax = spreadValues[ i ].max;
+
+	if ( g_realisticSpread.GetBool() ) {
+		for( int i = 0; i < WSV_NUM; i++ ) {
+			if( spreadValueMax < realisticSpreadValues[ i ].max ) {
+				spreadValueMax = realisticSpreadValues[ i ].max;
+			}
 		}
-	}	
+	}
+	else {
+		for( int i = 0; i < WSV_NUM; i++ ) {
+			if( spreadValueMax < spreadValues[ i ].max ) {
+				spreadValueMax = spreadValues[ i ].max;
+			}
+		}
+	}
 
 	const char* objectType;
 	if ( !spawnArgs.GetString( "weapon_scriptobject", NULL, &objectType ) ) {
@@ -999,15 +1123,35 @@ void idWeapon::UpdateSpreadValue() {
 		return;
 	}
 
-	if ( spreadCurrentValue < spreadValues[ ownerStanceState ].min ) {
+	float minSpread;
+	
+	if ( g_realisticSpread.GetBool() ) {
+		minSpread = realisticSpreadValues[ ownerStanceState ].min;
+	}
+	else {
+		minSpread = spreadValues[ ownerStanceState ].min;
+	}
+
+	if ( spreadCurrentValue < minSpread ) {
 		// can happen after stance transitions
-		spreadCurrentValue = spreadValues[ ownerStanceState ].min;
-	} else if ( spreadCurrentValue > spreadValues[ ownerStanceState ].min ) {
+		spreadCurrentValue = minSpread;
+	} else if ( spreadCurrentValue > minSpread ) {
 		// decrease spread based on stance
-		float minSpread = spreadValues[ ownerStanceState ].min;
-		float maxSpread = spreadValues[ ownerStanceState ].max;
+		float maxSpread;
+		if ( g_realisticSpread.GetBool() ) {
+			maxSpread = realisticSpreadValues[ ownerStanceState ].max;
+		}
+		else {
+			maxSpread = spreadValues[ ownerStanceState ].max;
+		}
 		float diffSpread = maxSpread - minSpread;
-		float maxSettleTime = spreadValues[ ownerStanceState ].maxSettleTime;
+		float maxSettleTime;
+		if ( g_realisticSpread.GetBool() ) {
+			maxSettleTime = realisticSpreadValues[ ownerStanceState ].maxSettleTime;
+		}
+		else {
+			maxSettleTime = spreadValues[ ownerStanceState ].maxSettleTime;
+		}
 
 		if ( diffSpread < 0.0001f || maxSettleTime < 0.0001f ) {
 			spreadCurrentValue = minSpread;
@@ -1019,8 +1163,8 @@ void idWeapon::UpdateSpreadValue() {
 			float nextSpread;
 			float currentTime;
 
-			if ( spreadCurrentValue > spreadValues[ ownerStanceState ].max ) {
-				currentSpread = spreadValues[ ownerStanceState ].max;
+			if ( spreadCurrentValue > maxSpread ) {
+				currentSpread = maxSpread;
 				currentTime = 0.0f;
 			} else {
 				float spreadFraction = ( spreadCurrentValue - minSpread ) / diffSpread;
@@ -1059,7 +1203,15 @@ void idWeapon::UpdateSpreadValue( const idVec3& velocity, const idAngles& angles
 		return;
 	}
 
-	if ( spreadCurrentValue >= spreadValues[ ownerStanceState ].max ) {
+	float maxSpread;
+	if ( g_realisticSpread.GetBool() ) {
+		maxSpread = realisticSpreadValues[ ownerStanceState].max;
+	}
+	else {
+		maxSpread = spreadValues[ ownerStanceState ].max;
+	}
+
+	if ( spreadCurrentValue >= maxSpread ) {
 		// spread is bad enough already
 		return;
 	}
@@ -1080,9 +1232,27 @@ void idWeapon::UpdateSpreadValue( const idVec3& velocity, const idAngles& angles
 		}
 	}
 
-	float viewRateMin = spreadValues[ ownerStanceState ].viewRateMin;
-	float viewRateRange = spreadValues[ ownerStanceState ].viewRateMax - viewRateMin;
-	float viewRateInc = spreadValues[ ownerStanceState ].viewRateInc;
+	float viewRateMin;
+	if ( g_realisticSpread.GetBool() ) {
+		viewRateMin = realisticSpreadValues[ ownerStanceState ].viewRateMin;
+	}
+	else {
+		viewRateMin = spreadValues[ ownerStanceState ].viewRateMin;
+	}
+	float viewRateRange;
+	if ( g_realisticSpread.GetBool() ) {
+		viewRateRange = realisticSpreadValues[ ownerStanceState ].viewRateMax - viewRateMin;
+	}
+	else {
+		viewRateRange = spreadValues[ ownerStanceState ].viewRateMax - viewRateMin;
+	}
+	float viewRateInc;
+	if ( g_realisticSpread.GetBool() ) {
+		viewRateInc = realisticSpreadValues[ ownerStanceState ].viewRateInc;
+	}
+	else {
+		viewRateInc = spreadValues[ ownerStanceState ].viewRateInc;
+	}
 
 	// convert to movement / msec
 	if ( gameLocal.msec > 0 ) {
@@ -1096,8 +1266,8 @@ void idWeapon::UpdateSpreadValue( const idVec3& velocity, const idAngles& angles
 
 	// update spread
 	spreadCurrentValue += MS2SEC( gameLocal.msec ) * viewChange * viewRateInc;
-	if ( spreadCurrentValue > spreadValues[ ownerStanceState ].max ) {
-		spreadCurrentValue = spreadValues[ ownerStanceState ].max;
+	if ( spreadCurrentValue > maxSpread ) {
+		spreadCurrentValue = maxSpread;
 	}
 }
 
@@ -1438,9 +1608,17 @@ float idWeapon::GetSpreadValueNormalized( bool useGlobalMax ) const {
 			return 0.0f;
 		}
 	}
+
+	float maxSpread;
+	if ( g_realisticSpread.GetBool() ) {
+		maxSpread = realisticSpreadValues[ ownerStanceState ].max;
+	}
+	else {
+		maxSpread = spreadValues[ ownerStanceState ].max;
+	}
 	
-	if ( spreadValues[ ownerStanceState ].max > 0.0f ) {
-		return spreadCurrentValue / spreadValues[ ownerStanceState ].max;
+	if ( maxSpread > 0.0f ) {
+		return spreadCurrentValue / maxSpread;
 	} else {
 		return 0.0f;
 	}
@@ -3173,9 +3351,18 @@ idWeapon::Event_IncreaseSpreadValue
 */
 void idWeapon::Event_IncreaseSpreadValue( void ) {
 	float oldSpread = spreadCurrentValue;
-	spreadCurrentValue += spreadValues[ ownerStanceState ].inc;
-	if ( spreadCurrentValue >= spreadValues[ ownerStanceState ].max && oldSpread <= spreadValues[ ownerStanceState ].max ) {
-		spreadCurrentValue = spreadValues[ ownerStanceState ].max;
+
+	if ( g_realisticSpread.GetBool() ) {
+		spreadCurrentValue += realisticSpreadValues[ ownerStanceState ].inc;
+		if ( spreadCurrentValue >= realisticSpreadValues[ ownerStanceState ].max && oldSpread <= realisticSpreadValues[ ownerStanceState ].max ) {
+			spreadCurrentValue = realisticSpreadValues[ ownerStanceState ].max;
+		}
+	}
+	else {
+		spreadCurrentValue += spreadValues[ ownerStanceState ].inc;
+		if ( spreadCurrentValue >= spreadValues[ ownerStanceState ].max && oldSpread <= spreadValues[ ownerStanceState ].max ) {
+			spreadCurrentValue = spreadValues[ ownerStanceState ].max;
+		}
 	}
 }
 

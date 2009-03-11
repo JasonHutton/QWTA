@@ -360,6 +360,7 @@ private:
 	weaponSpreadValueIndex_t	ownerStanceState;
 
 	weaponSpreadValues_t	spreadValues[ WSV_NUM ];
+	weaponSpreadValues_t	realisticSpreadValues[ WSV_NUM ];
 	weaponAimValues_t		aimValues[ WAV_NUM ];
 	float					spreadValueMax;				// used to normalize against
 	bool					spreadEvalVelocity;

@@ -453,6 +453,7 @@ extern idCVar	g_noTVChat;
 #endif // SD_SUPPORT_REPEATER
 
 extern idCVar	g_realisticDamage;
+extern idCVar	g_realisticSpread;
 
 extern idCVar	g_trainingMode;
 
