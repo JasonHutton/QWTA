@@ -61,7 +61,7 @@ deployObject deployobject_trojan {
 	"title"							"trojan"
 	"wait_time"						"1000"
 	"def_deployable"				"vehicle_trojan"
-	"def_deployable_carrier"		"vehicle_cargoplane"
+	"def_deployable_carrier"		"vehicle_magog_npc"
 	"str_placement"					""
 	"mask"							"dm_default"
 	"object_radius"					"2048"

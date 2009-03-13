@@ -48,7 +48,7 @@ deployObject deployobject_bumblebee {
 	"title"							"Bumblebee"
 	"wait_time"						"1000"
 	"def_deployable"				"vehicle_bumblebee"
-	"def_deployable_carrier"		"vehicle_cargoplane"
+	"def_deployable_carrier"		"vehicle_magog_npc"
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"

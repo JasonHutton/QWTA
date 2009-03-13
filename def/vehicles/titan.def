@@ -50,7 +50,7 @@ deployObject deployobject_titan {
 	"title"							"game/vec/titan"
 	"wait_time"						"1000"
 	"def_deployable"				"vehicle_titan"
-	"def_deployable_carrier"		"vehicle_cargoplane"
+	"def_deployable_carrier"		"vehicle_magog_npc"
 	"str_placement"					""
 	"mask"							"dm_default"
 	"object_radius"					"2048"
