@@ -63,6 +63,14 @@ damageDefs may now use the "inherit" key/value to inherit values from an existin
 
 A damageFilter is still required, and where the main changes of a realistic damageDef exist.
 
+radar is now split into two distinct types. radar, and infrared detectors.
+Radar cannot detect infantry.
+Infrared can only detect infantry(but everything that uses it has radar too).
+Psi Radar/GDF Radar: Radar only. Cannot detect infantry.
+3rd Eye Camera: Radar + Infrared. Detects everything.
+MCP: Radar + Infrared. Detects everything.
+GDF Command Center/Strogg Domihub: Radar + Infrared. Detects everything.
+
 1. Proper hyperblaster visual/audio effects. (Fly sound?)
 8. Crank the BFG's max targets up to around 16 or 32.
 9. Get vehicle drops working as part of campaign rewards and such.
@@ -89,6 +97,6 @@ Todo for v0.3 release:
 6. Get realistic damage defs setup, so we don't have to obliterate the nonreal damages.
 7. Implement realistic damages for all weapons.
 8. Magog drops for heavy GDF vehicles.
-9. Radar restrictions.
+++++++++++++++++++++++++++++++++++++9. Radar restrictions.
 10. Megatexture autodownload.
 11. Linux version.
