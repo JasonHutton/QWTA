@@ -1,0 +1,328 @@
+/************************************************************************
+
+	reexportModels items/third_eye.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix THIRDEYE_ -sourcedir models/items/third_eye/dev_sd -destdir models/items/third_eye/
+
+		mesh	third_eye_camera_raise.mb		-dest models/items/third_eye/third_eye_camera_view.md5mesh -range 0 0
+
+		/*
+		anim	third_eye_camera_idle.mb		-dest models/items/third_eye/third_eye_camera_idle.md5anim
+		anim	third_eye_camera_fire.mb		-dest models/items/third_eye/third_eye_camera_fire.md5anim
+		anim	third_eye_camera_raise.mb		-dest models/items/third_eye/third_eye_camera_raise.md5anim
+
+
+	 	anim	third_eye_camera_lower.mb		-dest models/items/third_eye/third_eye_camera_lower.md5anim
+
+
+	 	anim	third_eye_camera_zoom_in.mb		-dest models/items/third_eye/third_eye_camera_zoom_in.md5anim
+	 	anim	third_eye_camera_zoom_out.mb		-dest models/items/third_eye/third_eye_camera_zoom_out.md5anim
+	 	anim	third_eye_camera_pda_idle.mb		-dest models/items/third_eye/third_eye_camera_pda_idle.md5anim
+	 	anim	third_eye_camera_pda_raise.mb		-dest models/items/third_eye/third_eye_camera_pda_raise.md5anim
+	 	anim	third_eye_camera_pda_lower.mb		-dest models/items/third_eye/third_eye_camera_pda_lower.md5anim
+	 	anim	third_eye_camera_pda_select1.mb		-dest models/items/third_eye/third_eye_camera_pda_select1.md5anim
+	 	anim	third_eye_camera_pda_select2.mb		-dest models/items/third_eye/third_eye_camera_pda_select2.md5anim
+	 	anim	third_eye_camera_pda_select3.mb		-dest models/items/third_eye/third_eye_camera_pda_select3.md5anim
+
+		anim	third_eye_camera_pda_hack_loop2.mb	-dest models/items/third_eye/third_eye_camera_pda_hack_into_loop.md5anim -range 24 33
+		anim	third_eye_camera_pda_hack_loop2.mb	-dest models/items/third_eye/third_eye_camera_pda_hack_loop.md5anim -range 33 80
+		anim	third_eye_camera_pda_hack_loop2.mb	-dest models/items/third_eye/third_eye_camera_pda_hack_from_loop.md5anim -range 80 88
+*/
+}
+/*
+export hauser {
+	options -prefix TEC_ -sourcedir models/items/third_eye/dev_sd -destdir models/items/third_eye -rotate 180
+
+		mesh	third_eye.mb		-dest models/items/third_eye/third_eye_camera_world.md5mesh
+		anim	third_eye.mb		-dest models/items/third_eye/third_eye_camera_world.md5anim
+}
+
+*/
+// ========================================================================
+// view Models
+//
+
+model viewmodel_item_third_eye {
+	mesh					models/items/third_eye/third_eye_camera_view.md5mesh
+	anim raise 				models/items/third_eye/third_eye_camera_raise.md5anim {
+		frame begin					sound_channel snd_weapon_raise snd_raise
+	}
+	anim idle 				models/items/third_eye/third_eye_camera_idle.md5anim
+	anim putaway 			models/items/third_eye/third_eye_camera_lower.md5anim
+	anim fire				models/items/third_eye/third_eye_camera_fire.md5anim
+	anim zoomin				models/items/third_eye/third_eye_camera_zoom_in.md5anim
+	anim zoomout			models/items/third_eye/third_eye_camera_zoom_out.md5anim
+
+	anim pda_idle			models/items/third_eye/third_eye_camera_pda_idle.md5anim
+	anim pda_raise			models/items/third_eye/third_eye_camera_pda_raise.md5anim
+	anim pda_lower			models/items/third_eye/third_eye_camera_pda_lower.md5anim
+	anim pda_select1		models/items/third_eye/third_eye_camera_pda_select2.md5anim
+	anim pda_select2		models/items/third_eye/third_eye_camera_pda_select1.md5anim
+	anim pda_select3		models/items/third_eye/third_eye_camera_pda_select3.md5anim
+}
+
+// ========================================================================
+// world Models
+//
+
+
+model worldmodel_item_third_eye {
+	mesh					models/items/third_eye/third_eye_camera_world.md5mesh
+	anim idle				models/items/third_eye/third_eye_camera_world.md5anim
+}
+
+invItemDef inventory/items/third_eye {
+	type						"item"
+	slot						"item"
+	name						"game/weapons/third_eye_camera"
+
+	data {
+
+		"model_view" 			"viewmodel_item_third_eye"
+		"model_world" 			"models/items/third_eye/third_eye.lwo"
+		"joint_attach"			"RightHand"
+
+		"view_offset"			"1 -1 -0.5"
+
+		"anim_prefix"			"grenade"
+		"anim_prefix_class"		"tool"
+
+		"anim_prefix_alt"		"hacker_thirdeye"
+		"anim_prefix_alt_class"	"tool"
+
+		"weapon_scriptobject"	"item_third_eye"
+
+		"snd_start"				"sounds/tools/thirdeye/viewer/start"
+		"snd_stop"				"sounds/tools/thirdeye/viewer/stop"
+		"snd_raise"				"sounds/tools/thirdeye/viewer/raise"
+		"snd_invalid"			"sounds/tools/generic/error"
+		"snd_zoom"				"sounds/tools/thirdeye/viewer/zoom"
+		"snd_need_charge"		"sounds/ui/main/cannot"
+
+		"num_projectiles"		"1"
+
+		"hide_clip"				"1"
+		"show_charge"			"1"
+
+		"mtr_weaponmenu"		"guis/assets/icons/weapons/thirdeye"
+
+		"tt_intro_1"			"third_eye_intro_1"
+		"tt_intro_2"			"third_eye_intro_2"
+		"tt_deployed_intro_1"	"third_eye_deployed_intro_1"
+		"tt_deployed_intro_2"	"third_eye_deployed_intro_2"
+		"tt_need_charge"		"third_eye_need_charge"
+		"tt_outofrange"			"third_eye_outofrange"
+
+		"climate_skin_key"				"weapon_gdf"
+		"crosshair"						"none"
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"throw_time"			"0.1"
+
+		"gui"					"guis/tools/third_eye_viewer"
+
+		"melee_distance"		"128"
+		"timer_charge"			"energy_device"
+		"charge_per_use"		"100"
+
+		"num_zoom_levels"		"4"
+		"zoom_fov_1"			"90"
+		"zoom_fov_2"			"45"
+		"zoom_fov_3"			"25"
+		"zoom_fov_4"			"10"
+		"zoom_scale_1"			"2.5"
+		"zoom_scale_2"			"5"
+		"zoom_scale_3"			"10"
+		"zoom_scale_4"			"20"
+		"zoom_time"				"0.2"
+
+		"player_weapon_num"		"26"
+
+		"def_camera"			"projectile_third_eye"
+	}
+
+	clip {
+		"projectile"			"projectile_third_eye"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectile_third_eye {
+	"spawnclass"				"sdScriptEntity"
+	"scriptObject"				"projectile_camera"
+
+	"mins"						"-0.1 -0.1 0.1"
+	"maxs"						"0.1 0.1 0.1"
+
+	"scale"						"0.1"
+
+	"model"						"worldmodel_item_third_eye"
+
+	"maxVistDist"				"2048"
+
+	"icon_sort_cm"				"-99"
+	"mtr_commandmapicon"		"hud/commandmap/player_remote"
+
+	"collection_explodable"		"explodable"
+	"collection_camera"			"camera"
+
+	"launchFromBarrel"			"1"
+	"health"					"50"
+	"velocity"					"1000 0 0"
+	"angular_velocity"			"0 0 0"
+	"bounce"					"0"
+	"gravity"					"1066"
+	"fuse"						"-1"
+	"mass"						"2"
+	"linear_friction"			"0"
+	"contact_friction"			"0"
+	"angular_friction"			"0"
+	"buoyancy"					"0.3"
+	"thrust"					"0"
+	"thrust_start"				"0"
+	"thrust_end"				"0"
+	"bouncyness"				"0.01"
+
+	"detonate_on_fuse"			"0"
+	"detonate_on_death"			"0"
+	"detonate_on_world"			"0"
+	"detonate_on_actor"			"0"
+	"detonate_on_trigger"		"0"
+	"detonate_delay"			"1"
+
+	"range"						"2048"
+	"mask"						"5"
+	"mtr_radar"					"hud/commandmap/radar"
+
+	"stick_on_contact"					"1"
+	"option_radar_interface"			"1"
+	"option_simple_rigid_body_physics"	"1"
+	"option_write_bind"					"1"
+	"option_write_viewangles"			"1"
+	"option_crosshair_interface"		"1"
+	"option_combat_model"				"1"
+	"option_unlock_interpolate"			"1"
+
+	"gui_camera_view"			"game/sights/third_eye"
+	"hud_sort"					"999"
+
+//	"stick_align"				"1"
+
+	"snd_start"					"sounds/tools/thirdeye/camera"
+	"snd_trigger"				"sounds/tools/thirdeye/camera/charge"
+
+	"dmg_self_destruct"			"damage_camera_explode"
+	"fx_explode"				"effects/items/thirdeyecamera_explode"
+	"fx_splash"					"effects/base/impact_water_large"
+	"fx_explode_water"			"effects/water/explosion"
+	"fx_trail"					"effects/grenades/generic_trail"
+	"trailUnderWater"			"0"
+
+	"push_out_scale"			"0"
+
+	"joint_camera"				"camera"
+}
+
+damageDef damage_camera_explode {
+	damage							"damage_camera_explode"
+	radius							400
+	knockback						0
+	push							500000
+
+	prof_damage						"pro_covertops_damage"
+
+	stat_name						"third_eye"
+
+	team_kill_cvar					"g_allowComplaint_explosives"
+
+	tt_obituary						"tooltips/killmsgs/weapons/thirdeye"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/thirdeye/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/thirdeye/self"
+}
+
+damageFilter damage_camera_explode {
+	type {
+		target						"target_camera"
+		damage						300
+	}
+
+	type {
+		target						"target_player_all"
+		damage						300
+	}
+
+	type {
+		target						"target_veh_all"
+		damage 						1000
+	}
+
+	type {
+		target						"target_deployables_all"
+		damage						1600
+	}
+
+	type {
+		target						"target_explodable"
+		damage						400
+	}
+}
+
+#include "templates/tooltips.include"
+
+toolTip third_eye_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/third_eye_1"
+}
+
+toolTip third_eye_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_deploy_item"
+}
+
+toolTip third_eye_deployed_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/third_eye_deployed_1"
+}
+
+toolTip third_eye_deployed_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/third_eye_deployed_2"
+}
+
+toolTip third_eye_need_charge {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+toolTip third_eye_outofrange {
+	alwaysPlay
+	sound "sounds/ui/main/bad"
+	text "game/tt/intro/third_eye_outofrange"
+}
