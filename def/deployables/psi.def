@@ -115,7 +115,7 @@ entityDef deployable_psi {
 	"action_time"					"10"
 
 	"range"							"8500" // "15000"
-	"mask"							"5"
+	"mask"							"1"
 	"global"						"0"
 
 	"snd_idle"						"sounds/deployables/psi/idle"
