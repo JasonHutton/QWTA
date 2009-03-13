@@ -96,7 +96,7 @@ Todo for v0.3 release:
 5. Tie vehicle drop types to something. Campaign ranks? To stop the synced swarm-deploy of vehicles. (Aha, amount of charge allowed per rank!)
 6. Get realistic damage defs setup, so we don't have to obliterate the nonreal damages.
 7. Implement realistic damages for all weapons.
-8. Magog drops for heavy GDF vehicles.
+++++++++++++++++++++++++++++++++++++8. Magog drops for heavy GDF vehicles.
 ++++++++++++++++++++++++++++++++++++9. Radar restrictions.
 10. Megatexture autodownload.
 11. Linux version.
