@@ -3187,7 +3187,10 @@ idEntity::IsInRadar
 */
 bool idEntity::IsInRadar( idPlayer* player ) {
 	sdTeamInfo* team = player->GetGameTeam();
+
 	if ( team ) {
+		idPlayer *selfPlayer = botThreadData.ClientIsValid(this->entityNumber) ? gameLocal.GetClient( this->entityNumber ) : NULL;
+
 		sdTeamInfo* localTeam = GetGameTeam();
 		if ( localTeam ) {
 			if ( localTeam->PointInJammer( GetPhysics()->GetOrigin(), RM_RADAR ) ) {
@@ -3195,8 +3198,15 @@ bool idEntity::IsInRadar( idPlayer* player ) {
 			}
 		}
 
-		if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_RADAR ) ) {
-			return true;
+		if ( selfPlayer == NULL ) {
+			if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_RADAR ) ) {
+				return true;
+			}
+		}
+		else {
+			if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_INFRARED ) ) {
+				return true;
+			}
 		}
 	}
 

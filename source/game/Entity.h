@@ -22,6 +22,7 @@
 
 typedef enum radarMasks_e {
 	RM_RADAR		= BITT< 0 >::VALUE,
+	RM_INFRARED		= BITT< 1 >::VALUE,
 } radarMasks_t;
 
 extern const idEventDefInternal EV_PostSpawn;
