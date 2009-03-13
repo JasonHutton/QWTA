@@ -220,7 +220,7 @@ deployObject deployobject_goliath {
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"
-	"credit_required"				"0.8"
+	"credit_required"				"1"
 }
 
 entityDef vehicle_goliath {
