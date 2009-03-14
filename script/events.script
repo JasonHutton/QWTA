@@ -376,6 +376,7 @@ scriptEvent void	freeHudModule( float handle );
 scriptEvent boolean	requestDeployment( entity p, float deployObjectIndex, vector position, float yaw, float delay );
 scriptEvent boolean	requestCheckedDeployment( entity p, float deployObjectIndex, float yaw, float delay );
 scriptEvent float	getDeploymentCredit( float deployObjectIndex );
+scriptEvent float	getDeploymentRankRequirement( float deployObjectIndex );
 scriptEvent string	getDeploymentTitle( float deployObjectIndex );
 
 scriptEvent vector	getWorldMins();
@@ -1234,6 +1235,7 @@ scriptEvent string	getClassName();
 scriptEvent string	getCachedClassName();
 scriptEvent float	getPlayerClass();
 scriptEvent handle	getRankName();
+scriptEvent float	getRankLevel();
 scriptEvent handle	getShortRankName();
 scriptEvent float	getMaxHealth();
 scriptEvent entity	getCrosshairEntity();
