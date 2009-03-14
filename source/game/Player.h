@@ -592,6 +592,7 @@ public:
 
 	float					GetVehicleCredit( void );
 	void					UseVehicleCredit( float amount );
+	int						GetRankLevel( void );
 
 	qhandle_t				GetUserGroup( void );
 	void					SetUserGroup( qhandle_t group );

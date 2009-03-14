@@ -10205,14 +10205,7 @@ idPlayer::Event_GetRankLevel
 ===============
 */
 void idPlayer::Event_GetRankLevel( void ) {
-	int level = -1;
-	const sdDeclRank* rank = GetProficiencyTable().GetRank();
-	
-	if ( rank != NULL) {
-		level = rank->GetLevel();
-	}
-
-	sdProgram::ReturnInteger( level );
+	sdProgram::ReturnInteger( GetRankLevel() );
 }
 
 /*
@@ -12576,6 +12569,22 @@ void idPlayer::UseVehicleCredit( float amount ) {
 	}
 
 	gameLocal.SetTargetTimer( clientInfo.scriptHandler.vehicleCreditTimer, this, SEC2MS(MS2SEC(gameLocal.time) + ( ( 1.0f - newFrac ) * botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime ) ) );
+}
+
+/*
+============
+idPlayer::GetRankLevel
+============
+*/
+int idPlayer::GetRankLevel( void ) {
+	int level = -1;
+	const sdDeclRank* rank = GetProficiencyTable().GetRank();
+	
+	if ( rank != NULL) {
+		level = rank->GetLevel();
+	}
+
+	return level;
 }
 
 /*

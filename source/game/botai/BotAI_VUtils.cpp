@@ -170,13 +170,15 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		return -1;
 	}
 
-	float vCredit = player->GetVehicleCredit();//botThreadData.GetBotWorldState()->clientInfo[ botNum ].vehicleCreditUsed;
-	if(vCredit >= object->GetCreditRequired()) {
-		//gameLocal.Printf("DEBUG: %s: Can afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
-		if(gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 )) {
-			player->UseVehicleCredit(object->GetCreditRequired());
-			//gameLocal.Printf("Credit used: %f Remaining: %f\n", object->GetCreditRequired(), player->GetVehicleCredit());
-			return 1;
+	if ( player->GetRankLevel() >= object->GetRankLevelRequired() ) {
+		float vCredit = player->GetVehicleCredit();//botThreadData.GetBotWorldState()->clientInfo[ botNum ].vehicleCreditUsed;
+		if(vCredit >= object->GetCreditRequired()) {
+			//gameLocal.Printf("DEBUG: %s: Can afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
+			if(gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 )) {
+				player->UseVehicleCredit(object->GetCreditRequired());
+				//gameLocal.Printf("Credit used: %f Remaining: %f\n", object->GetCreditRequired(), player->GetVehicleCredit());
+				return 1;
+			}
 		}
 	}
 /*	else {
