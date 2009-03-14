@@ -71,6 +71,9 @@ Psi Radar/GDF Radar: Radar only. Cannot detect infantry.
 MCP: Radar + Infrared. Detects everything.
 GDF Command Center/Strogg Domihub: Radar + Infrared. Detects everything.
 
+in addition to vehicle credit, campaign rank is required in order to summon vehicles.
+Still need to make bots aware of that.
+
 1. Proper hyperblaster visual/audio effects. (Fly sound?)
 8. Crank the BFG's max targets up to around 16 or 32.
 9. Get vehicle drops working as part of campaign rewards and such.
