@@ -91,6 +91,7 @@ deployObject deployobject_anansi {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"1"
+	"rank_required"					"third_lieutenant"
 }
 
 entityDef vehicle_anansi {

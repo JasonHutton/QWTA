@@ -56,6 +56,7 @@ deployObject deployobject_titan {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"1"
+	"rank_required"					"master_chief"
 }
 
 entityDef vehicle_titan {

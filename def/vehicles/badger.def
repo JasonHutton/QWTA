@@ -42,6 +42,7 @@ deployObject deployobject_badger {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"0.4"
+	"rank_required"					"lance_corporal"
 }
 
 entityDef vehicle_badger {

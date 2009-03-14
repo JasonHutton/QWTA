@@ -67,6 +67,7 @@ deployObject deployobject_trojan {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"0.6"
+	"rank_required"					"sergeant"
 }
 
 entityDef vehicle_trojan {

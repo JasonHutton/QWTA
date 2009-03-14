@@ -221,6 +221,7 @@ deployObject deployobject_goliath {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"1"
+	"rank_required"					"master_chief"
 }
 
 entityDef vehicle_goliath {

@@ -44,6 +44,7 @@ deployObject deployobject_husky {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"0.2"
+	"rank_required"					"private"
 }
 
 entityDef vehicle_husky {

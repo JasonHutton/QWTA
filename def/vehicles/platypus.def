@@ -65,6 +65,7 @@ deployObject deployobject_platypus {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"0.2"
+	"rank_required"					"lance_corporal"
 }
 
 entityDef vehicle_platypus {

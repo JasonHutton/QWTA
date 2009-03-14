@@ -57,6 +57,7 @@ deployObject deployobject_desecrator {
 	"object_radius"					"2048"
 	"category"						"vehicles"
 	"credit_required"				"0.6"
+	"rank_required"					"gunnery_sergeant"
 }
 
 entityDef vehicle_desecrator {
