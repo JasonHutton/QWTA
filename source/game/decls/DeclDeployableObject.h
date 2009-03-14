@@ -5,6 +5,7 @@
 #define __DECLDEPLOYABLEOBJECT_H__
 
 #include "../../framework/declManager.h"
+#include "decls/DeclRank.h"
 
 class sdDeclStringMap;
 
@@ -26,6 +27,7 @@ public:
 	qhandle_t						GetDeploymentMask( void ) const { return mask; }
 	float							GetObjectSize( void ) const { return objectSize; }
 	float							GetCreditRequired( void ) const { return creditRequired; }
+	int								GetRankLevelRequired( void ) const { return rankRequired != NULL ? rankRequired->GetLevel() : -1; }
 	static void						CacheFromDict( const idDict& dict );
 	bool							AllowRotation( void ) const { return allowRotation; }
 
@@ -41,6 +43,7 @@ private:
 	float							objectSize;
 	bool							allowRotation;
 	float							creditRequired;
+	const sdDeclRank*				rankRequired;
 };
 
 #endif // __DECLDEPLOYABLEOBJECT_H__

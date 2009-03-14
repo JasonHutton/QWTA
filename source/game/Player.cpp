@@ -404,6 +404,7 @@ const idEventDef EV_Player_GetCachedClassName( "getCachedClassName", 's', DOC_TE
 const idEventDef EV_Player_GetPlayerClass( "getPlayerClass", 'd', DOC_TEXT( "Returns the index of the player's current $decl:playerClass$." ), 0, "If the player does not current have a $decl:playerClass$ the result will be -1." );
 const idEventDef EV_Player_GetShortRank( "getShortRankName", 'h', DOC_TEXT( "Returns a localized string for the abbreviated version of the player's rank." ), 0, NULL );
 const idEventDef EV_Player_GetRank( "getRankName", 'h', DOC_TEXT( "Returns a localized string for the player's rank." ), 0, NULL );
+const idEventDef EV_Player_GetRankLevel( "getRankLevel", 'd', DOC_TEXT( "Returns the player's current rank's level." ), 0, NULL );
 const idEventDef EV_Player_GetProficiency( "getProficiency", 'd', DOC_TEXT( "Returns the level the player has achieved in the specified $decl:proficiencyType$." ), 1, "If the index is out of range, the game will likely crash or return garbage data.", "d", "index", "Index of the $decl:proficiencyType$." );
 const idEventDef EV_Player_GetXP( "getXP", 'f', DOC_TEXT( "Returns the amount of XP the player has been awarded in the specified $decl:proficiencyType$." ), 2, "If the index is -1, the overall total XP will be returned.\nIf the index is otherwise out of range, the game will likely crash or return garbage data.\nThe fromBase setting only matters in campaign mode, and does not apply when the index is -1.", "d", "index", "Index of the $decl:proficiencyType$, or -1.", "b", "fromBase", "If set, only the XP from this map will be returned." );
 const idEventDef EV_Player_GetCrosshairEntity( "getCrosshairEntity", 'e', DOC_TEXT( "Returns the entity under the player's crosshair, or $null$ if none." ), 0, NULL );
@@ -559,6 +560,7 @@ CLASS_DECLARATION( idActor, idPlayer )
 	EVENT( EV_Player_GetPlayerClass,		idPlayer::Event_GetPlayerClass )
 	EVENT( EV_Player_GetShortRank,			idPlayer::Event_GetShortRank )
 	EVENT( EV_Player_GetRank,				idPlayer::Event_GetRank )
+	EVENT( EV_Player_GetRankLevel,			idPlayer::Event_GetRankLevel )
 	EVENT( EV_Player_GetProficiency,		idPlayer::Event_GetProficiencyLevel )
 	EVENT( EV_Player_GetXP,					idPlayer::Event_GetXP )
 	EVENT( EV_Player_GetCrosshairEntity,	idPlayer::Event_GetCrosshairEntity )
@@ -10195,6 +10197,22 @@ void idPlayer::Event_GetRank( void ) {
 	const sdDeclRank* rank = GetProficiencyTable().GetRank();
 	const sdDeclLocStr* str = rank != NULL ? rank->GetTitle() : NULL;
 	sdProgram::ReturnHandle( str != NULL ? str->Index() : -1 );
+}
+
+/*
+===============
+idPlayer::Event_GetRankLevel
+===============
+*/
+void idPlayer::Event_GetRankLevel( void ) {
+	int level = -1;
+	const sdDeclRank* rank = GetProficiencyTable().GetRank();
+	
+	if ( rank != NULL) {
+		level = rank->GetLevel();
+	}
+
+	sdProgram::ReturnInteger( level );
 }
 
 /*

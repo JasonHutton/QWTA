@@ -230,6 +230,7 @@ const idEventDef EV_Thread_FreeHudModule( "freeHudModule", '\0', DOC_TEXT( "Free
 const idEventDef EV_Thread_RequestDeployment( "requestDeployment", 'b', DOC_TEXT( "Tries to request deployment of an object at the given location, for a player, and returns whether the request succeeded or not." ), 5, "This does not check the deployment grid for a valid location, to do that, use $event:requestCheckedDeployment$.", "e", "player", "Player the request is for.", "d", "object", "Index of the $decl:deployObject$ to use.", "v", "porition", "Position to request deployment at.", "f", "yaw", "Angle to deploy the object at.", "f", "delay", "Extra delay in seconds to add to the deployment time." );
 const idEventDef EV_Thread_RequestCheckedDeployment( "requestCheckedDeployment", 'b', DOC_TEXT( "Tries to request deployment of an object at the location they are currently looking at, and returns whether the request succeeded or not." ), 4, NULL, "e", "player", "Player the request is for.", "d", "object", "Index of the $decl:deployObject$ to use.", "f", "yaw", "Angle to deploy the object at.", "f", "delay", "Extra delay in seconds to add to the deployment time." );
 const idEventDef EV_Thread_GetDeploymentCredit( "getDeploymentCredit", 'f', DOC_TEXT( "Returns the cost of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
+const idEventDef EV_Thread_GetDeploymentRankRequirement( "getDeploymentRankRequirement", 'd', DOC_TEXT( "Returns the rank requirement of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 const idEventDef EV_Thread_GetDeploymentTitle( "getDeploymentTitle", 's', DOC_TEXT( "Returns the title of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 
 const idEventDef EV_Thread_GetWorldMins( "getWorldMins", 'v', DOC_TEXT( "Returns the mins of the world collision model." ), 0, NULL );
@@ -482,6 +483,7 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 	EVENT( EV_Thread_RequestDeployment,				sdSysCallThread::Event_RequestDeployment )
 	EVENT( EV_Thread_RequestCheckedDeployment,		sdSysCallThread::Event_RequestCheckedDeployment )
 	EVENT( EV_Thread_GetDeploymentCredit,			sdSysCallThread::Event_GetDeploymentCredit )
+	EVENT( EV_Thread_GetDeploymentRankRequirement,	sdSysCallThread::Event_GetDeploymentRankRequirement )
 	EVENT( EV_Thread_GetDeploymentTitle,			sdSysCallThread::Event_GetDeploymentTitle )
 
 	EVENT( EV_Thread_GetWorldMins,					sdSysCallThread::Event_GetWorldMins )
@@ -2765,6 +2767,22 @@ void sdSysCallThread::Event_GetDeploymentCredit( int deploymentObjectIndex ) {
 	}
 
 	sdProgram::ReturnFloat( object->GetCreditRequired() );
+}
+
+/*
+===============
+sdSysCallThread::Event_GetDeploymentRankRequirement
+===============
+*/
+void sdSysCallThread::Event_GetDeploymentRankRequirement( int deploymentObjectIndex ) {
+	const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( deploymentObjectIndex );
+	if ( !object ) {
+		gameLocal.Warning( "sdSysCallThread::Event_GetDeploymentRankRequirement Deployment Object Index OOB" );
+		sdProgram::ReturnInteger( -1 );
+		return;
+	}
+
+	sdProgram::ReturnInteger( object->GetRankLevelRequired() );
 }
 
 /*

@@ -201,6 +201,7 @@ public:
 	void						Event_RequestDeployment( idEntity* other, int deploymentObjectIndex, const idVec3& position, float yaw, float extraDelay );
 	void						Event_RequestCheckedDeployment( idEntity* other, int deploymentObjectIndex, float yaw, float extraDelay );
 	void						Event_GetDeploymentCredit( int deploymentObjectIndex );
+	void						Event_GetDeploymentRankRequirement( int deploymentObjectIndex );
 	void						Event_GetDeploymentTitle( int deploymentObjectIndex );
 
 	void						Event_GetWorldMins( void );

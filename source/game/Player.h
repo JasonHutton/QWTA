@@ -1273,6 +1273,7 @@ public:
 	void					Event_GetPlayerClass( void );
 	void					Event_GetShortRank( void );
 	void					Event_GetRank( void );
+	void					Event_GetRankLevel( void );
 	void					Event_GetProficiencyLevel( int index );
 	void					Event_GetXP( int index, bool base );
 	void					Event_GetMaxHealth( void );

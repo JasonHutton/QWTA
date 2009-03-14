@@ -6,6 +6,7 @@
 #pragma hdrstop
 
 #include "DeclDeployableObject.h"
+#include "GameDeclIdentifiers.h"
 #include "../Game_local.h"
 
 #include "../../framework/DeclParseHelper.h"
@@ -74,6 +75,14 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 
 	creditRequired	= temp.GetFloat( "credit_required", "0.1" );
 
+	idStr		rankRequiredString;
+	if ( temp.GetString( "rank_required", "", rankRequiredString ) ) {
+		rankRequired	= static_cast<const sdDeclRank*>( declManager->FindType( declManager->GetDeclTypeHandle( declRankIdentifier ), rankRequiredString, false ) );
+		if ( rankRequired == NULL ) {
+			gameLocal.Warning( "sdDeclDeployableObject::Parse: Unknown rank def '%s' for deployable", rankRequiredString.c_str() );
+		}
+	}
+
 	const char* entityType;
 
 	entityType	= temp.GetString( "def_deployable" );
@@ -135,6 +144,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	objectSize			= 0.f;
 	allowRotation		= true;
 	creditRequired		= 0.1f;
+	rankRequired		= NULL;
 }
 
 
