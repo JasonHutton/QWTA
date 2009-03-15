@@ -1,0 +1,266 @@
+/***********************************************************************
+
+	reexportModels weapons/grenade_frag.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix FRAG_ -sourcedir models/weapons/n36_frag_grenade/dev_sd -destdir models/weapons/n36_frag_grenade/ -keep muzzle
+
+
+	mesh	frag_grenade_base_file.mb	-dest models/weapons/n36_frag_grenade/n36_frag_grenade_view.md5mesh
+	anim	frag_grenade_idle.mb		-dest models/weapons/n36_frag_grenade/n36_frag_grenade_idle.md5anim -xyzprecision 0.00001
+
+
+	/*
+
+	anim	frag_grenade_raise.mb			-dest models/weapons/n36_frag_grenade/n36_frag_grenade_raise.md5anim
+ 	anim	frag_grenade_lower.mb			-dest models/weapons/n36_frag_grenade/n36_frag_grenade_lower.md5anim
+   	anim	frag_grenade_quick_throw.mb		-dest models/weapons/n36_frag_grenade/n36_frag_grenade_fire.md5anim
+   	anim	frag_grenade_start_throw.mb		-dest models/weapons/n36_frag_grenade/n36_frag_grenade_start.md5anim
+   	anim	frag_grenade_throw.mb			-dest models/weapons/n36_frag_grenade/n36_frag_grenade_throw.md5anim
+   	anim	frag_grenade_quick_throw.mb		-dest models/weapons/n36_frag_grenade/n36_frag_grenade_fastthrow.md5anim
+
+   	*/
+
+    anim	frag_grenade_alt_throw.mb	-dest models/weapons/n36_frag_grenade/n36_frag_grenade_alt_start.md5anim -range 0 14
+   	anim	frag_grenade_alt_throw.mb		-dest models/weapons/n36_frag_grenade/n36_frag_grenade_alt_throw.md5anim -range 21 40
+   	anim	frag_grenade_alt_quick_throw.mb		-dest models/weapons/n36_frag_grenade/n36_frag_grenade_alt_quick_throw.md5anim
+
+   //anim	frag_grenade_lower.mb			-dest models/weapons/n36_frag_grenade/n36_frag_grenade_start_sprint.md5anim
+   	//anim	frag_grenade_raise.mb			-dest models/weapons/n36_frag_grenade/n36_frag_grenade_leave_sprint.md5anim
+
+
+}
+
+// ========================================================================
+// view Models
+//
+model viewmodel_grenade_frag {
+	mesh							models/weapons/n36_frag_grenade/n36_frag_grenade_view.md5mesh
+
+	anim raise 						models/weapons/n36_frag_grenade/n36_frag_grenade_raise.md5anim {
+		frame 1							sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim idle 						models/weapons/n36_frag_grenade/n36_frag_grenade_idle.md5anim {
+	}
+
+	anim putaway 					models/weapons/n36_frag_grenade/n36_frag_grenade_lower.md5anim {
+	}
+
+	anim fire 						models/weapons/n36_frag_grenade/n36_frag_grenade_fire.md5anim {
+	}
+
+ 	anim throw_start 				models/weapons/n36_frag_grenade/n36_frag_grenade_start.md5anim {
+ 		frame 3							sound_channel snd_weapon_mech snd_pin
+ 	}
+
+	anim throw 						models/weapons/n36_frag_grenade/n36_frag_grenade_throw.md5anim {
+		frame 3							sound_channel snd_weapon_fire snd_throw
+	}
+
+	anim throw_quick 				models/weapons/n36_frag_grenade/n36_frag_grenade_fastthrow.md5anim {
+		frame 1							sound_channel snd_weapon_mech snd_pin
+		frame 7							sound_channel snd_weapon_fire snd_throw
+	}
+	anim alt_throw_start 			models/weapons/n36_frag_grenade/n36_frag_grenade_alt_start.md5anim {
+	 	frame 3							sound_channel snd_weapon_mech snd_pin
+	}
+
+	anim alt_throw 					models/weapons/n36_frag_grenade/n36_frag_grenade_alt_throw.md5anim {
+		frame 3							sound_channel snd_weapon_fire snd_throw
+	}
+
+	anim alt_throw_quick 			models/weapons/n36_frag_grenade/n36_frag_grenade_alt_quick_throw.md5anim {
+		frame 1							sound_channel snd_weapon_mech snd_pin
+		frame 7							sound_channel snd_weapon_fire snd_throw
+	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/grenades/frag {
+	type						"grenade"
+	slot						"grenade"
+	name						"game/weapons/grenade_frag"
+
+	data {
+		"model_view"			"viewmodel_grenade_frag"
+		"model_world" 			"models/weapons/grenades/stun_grenade_thirdperson.lwo"
+
+		"joint_attach"			"weapon_attach"
+ 		"view_offset"			"-1 -2 -2"
+ 		"view_foreshorten"		"1"
+
+		"anim_prefix"			"grenade"
+
+		"speed_mod"				"1.1"
+
+		"weapon_scriptobject"	"weapon_grenade"
+
+		"def_explode_inhand"	"projectile_grenade_frag"
+
+		"snd_reload"			"sounds/weapons/grenades/reload"
+		"snd_grenade_timer"		"sounds/weapons/grenades/timer"
+		"snd_throw"				"sounds/weapons/grenades/throw"
+		"snd_pin"				"sounds/weapons/grenades/pin"
+		"snd_raise"				"sounds/weapons/grenades/gdf_bringup"
+		"snd_fireinthehole"		"sounds/players/gdf/botchat/generic/grenade"
+
+		"num_projectiles"		"1"
+		"hide_clip"				"1"
+		"show_all_ammo"			"1"
+
+		"allow_alt_fire"		"1"
+		"roll_alt_fire"			"1"
+		"roll_velocity"			"0 0 -150"
+
+		"mtr_weaponmenu"		"guis/assets/icons/weapons/fraggrenade"
+		"crosshair"				"none"
+
+		"tt_intro_1"			"grenade_frag_intro_1"
+		"tt_intro_2"			"generic_weapon_grenade_fire"
+
+		"stat_name"				"grenade_frag"
+
+		"climate_skin_key"			"weapon_gdf"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"clip_based"				"0"
+
+		"fire_rate"					"1"
+
+		"player_weapon_num"			"3"
+	}
+
+	clip {
+		"projectile"			"projectile_grenade_frag"
+		"type"					"grenade"
+		"ammo_per_shot"			"1"
+		"max_ammo"				"8"
+	}
+
+	clip {
+		"projectile"			"projectile_grenade_frag_roll"
+		"type"					"grenade"
+		"ammo_per_shot"			"1"
+		"max_ammo"				"0"
+	}
+}
+
+toolTip grenade_frag_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/grenade_frag_1"
+}
+
+entityDef projectile_grenade_frag {
+	"inherit"					"projectile_grenade"
+	
+	"dmg_splash_damage"			"damage_grenade_frag_splash"
+
+	"buoyancy"					"0"
+
+	"model" 					"models/weapons/grenades/stun_grenade_world.lwo"
+
+	"detonate_upwards"			"1"
+
+	"removeTrailAtRest"			"1"
+  	"fx_explode"				"effects/impacts/frag/explosion_default"
+	"fx_explode_pavement"		"effects/impacts/frag/explosion_pavement"
+ 	"fx_explode_stone"			"effects/impacts/frag/explosion_pavement"
+ 	"fx_explode_concrete"		"effects/impacts/frag/explosion_pavement"
+	"fx_explode_dirt"			"effects/impacts/frag/explosion_dirt"
+	"fx_explode_mud"			"effects/impacts/frag/explosion_dirt"
+//	"fx_explode_flesh"			"effects/impacts/bullets_small/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/frag/explosion_metal"
+	"fx_explode_ice"			"effects/impacts/frag/explosion_metal"
+// 	"fx_explode_gravel"			"effects/impacts/bullets_small/impact_stone"
+	"fx_explode_metal"			"effects/impacts/frag/explosion_metal"
+	"fx_explode_metal_thick"	"effects/impacts/frag/explosion_metal"
+	"fx_explode_dusty_road"		"effects/impacts/frag/explosion_sand"
+	"fx_explode_sand"			"effects/impacts/frag/explosion_sand"
+	"fx_explode_snow"			"effects/impacts/frag/explosion_snow"
+//	"fx_explode_wood"			"effects/impacts/bullets_small/impact_wood"
+//	"fx_explode_wood_thick"		"effects/impacts/bullets_small/impact_wood"
+ 	"fx_explode_liquid"			"effects/impacts/frag/explosion_water"
+ 	"fx_explode_water"			"effects/impacts/frag/explosion_water"
+ 	"fx_explode_water_interior"	"effects/impacts/frag/explosion_water_interior"
+//	"fx_explode_forcefield"		"effects/base/bullets/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/frag/explosion_grass"
+// 	"fx_explode_plastic"		"effects/impacts/bullets_small/impact_plastic"
+}
+
+entityDef projectile_grenade_frag_roll {
+	"inherit"					"projectile_grenade_frag"
+
+	"velocity"					"500 0 0"
+
+	"bounce"					"0.3"
+	"linear_friction"			"0.5"
+	"contact_friction"			"0.3"
+}
+
+damageDef damage_grenade_frag_splash {
+	damage						"damage_grenade_frag_splash"
+	radius						320 // was 256
+	knockback					100
+
+	push						20000000
+
+	noheadshot
+
+	stat_name					"grenade_frag"
+
+	prof_damage					"pro_light_weapons_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary					"tooltips/killmsgs/weapons/grenades/frag"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/frag/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/frag/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/frag/unknown"
+}
+
+damageFilter damage_grenade_frag_splash {
+	type {
+		target	"target_player_all"
+		damage	192
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	600
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	600
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}

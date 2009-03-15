@@ -1,0 +1,262 @@
+/***********************************************************************
+
+	reexportModels weapons/grenade_emp.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix EMP_ 				-sourcedir models/weapons/gdf_emp_grenade/dev_sd -destdir models/weapons/gdf_emp_grenade/ -keep muzzle
+/*
+	mesh	emp_base_file.mb			-dest models/weapons/gdf_emp_grenade/emp_grenade_view.md5mesh
+*/
+	anim	emp_idle.mb					-dest models/weapons/gdf_emp_grenade/emp_grenade_idle.md5anim
+	anim	emp_raise.mb				-dest models/weapons/gdf_emp_grenade/emp_grenade_raise.md5anim
+ 	anim	emp_lower.mb				-dest models/weapons/gdf_emp_grenade/emp_grenade_lower.md5anim
+
+   	anim	emp_start_throw.mb			-dest models/weapons/gdf_emp_grenade/emp_grenade_start.md5anim
+   	anim	emp_start_throw_short.mb	-dest models/weapons/gdf_emp_grenade/emp_grenade_start_short.md5anim
+
+
+   	anim	emp_throw.mb				-dest models/weapons/gdf_emp_grenade/emp_grenade_throw.md5anim
+   	anim	emp_throw_short.mb			-dest models/weapons/gdf_emp_grenade/emp_grenade_fastthrow.md5anim
+
+
+
+
+}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_grenade_emp {
+	mesh						models/weapons/gdf_emp_grenade/emp_grenade_view.md5mesh
+
+	anim raise 					models/weapons/gdf_emp_grenade/emp_grenade_raise.md5anim {
+		frame begin					sound_channel snd_weapon_raise	snd_raise
+	}
+	anim idle 					models/weapons/gdf_emp_grenade/emp_grenade_idle.md5anim {
+	}
+
+	anim putaway 				models/weapons/gdf_emp_grenade/emp_grenade_lower.md5anim{
+	}
+
+ 	anim throw_start 			models/weapons/gdf_emp_grenade/emp_grenade_start.md5anim {
+		frame 3						sound_channel snd_weapon_arm snd_arm
+	}
+	anim throw 					models/weapons/gdf_emp_grenade/emp_grenade_throw.md5anim {
+		frame 3						sound_channel snd_weapon_fire snd_throw
+	}
+
+	anim throw_quick 			models/weapons/gdf_emp_grenade/emp_grenade_fastthrow.md5anim {
+		frame begin					sound_channel snd_weapon_arm snd_arm
+		frame 3						sound_channel snd_weapon_fire snd_throw
+	}
+
+	 	anim    alt_throw_start 		models/weapons/gdf_emp_grenade/emp_grenade_start_short.md5anim {
+		 	frame	1					sound_channel snd_weapon_reload snd_gren_up
+		}
+		anim    alt_throw 				models/weapons/gdf_emp_grenade/emp_grenade_fastthrow.md5anim {
+		 	frame	3					sound_channel snd_weapon_mech snd_throw
+		}
+		anim    alt_throw_quick 		models/weapons/gdf_emp_grenade/emp_grenade_fastthrow.md5anim {
+		 	//frame	1					sound_channel snd_weapon_reload snd_gren_up
+		 	frame	11					sound_channel snd_weapon_mech snd_throw
+	}
+
+}
+
+// ========================================================================
+// world Models
+//
+
+model worldmodel_grenade_emp {
+	mesh						models/md5/weapons/grenade_world/worldgrenade.md5mesh
+
+	anim idle 					models/md5/weapons/grenade_world/grenade_idle.md5anim
+	anim fire					models/md5/weapons/grenade_world/grenade_throw.md5anim
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/grenades/emp {
+	type						"grenade"
+	slot						"grenade"
+	name						"game/weapons/grenade_emp"
+
+	data {
+		"model_view"				"viewmodel_grenade_emp"
+		"model_world" 				"models/weapons/grenades/emp_grenade_thirdperson.lwo"
+
+		"joint_attach"				"weapon_attach"
+ 		"view_offset"				"3 0 -3"
+ 		"view_foreshorten"			"0.9"
+
+		"anim_prefix"				"grenade"
+
+		"speed_mod"					"1.1"
+
+		"weapon_scriptobject"		"weapon_grenade"
+
+		"def_explode_inhand"		"projectile_grenade_emp"
+
+		"snd_raise"					"sounds/weapons/grenades/emp/raise"
+		"snd_arm"					"sounds/weapons/grenades/emp/arm"
+		"snd_throw"					"sounds/weapons/grenades/throw"
+		"snd_reload"				"sounds/weapons/grenades/reload"
+		"snd_grenade_timer"			"sounds/weapons/grenades/timer"
+		"snd_fireinthehole"			"sounds/players/gdf/botchat/generic/grenade"
+
+		"num_projectiles"			"1"
+		"hide_clip"					"1"
+		"show_all_ammo"				"1"
+
+		"allow_alt_fire"			"1"
+		"roll_alt_fire"				"1"
+		"roll_velocity"				"0 0 -150"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/empgrenade"
+
+		"climate_skin_key"			"weapon_gdf"
+
+		"crosshair"					"none"
+
+		"tt_intro_1"				"emp_grenade_intro_1"
+		"tt_intro_2"				"emp_grenade_intro_2"
+
+		"stat_name"					"grenade_emp"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"fire_rate"					"1"
+
+		"clip_based"				"0"
+
+		"player_weapon_num"			"4"
+
+		"fx_idle"					"effects/weapons/grenades/emp/idle"
+		"idle_effect_joint"			"emp"
+	}
+
+	clip {
+		"projectile"			"projectile_grenade_emp"
+		"type"					"grenade"
+		"ammo_per_shot"			"1"
+		"max_ammo"				"5"
+	}
+
+	clip { // uses clip 0 for info
+		"projectile"			"projectile_grenade_emp_roll"
+		"type"					"grenade"
+		"ammo_per_shot"			"1"
+		"max_ammo"				"0"
+	}
+}
+
+entityDef projectile_grenade_emp {
+	"inherit"					"projectile_grenade"
+	"scriptObject"				"projectile_emp"
+
+	"dmg_splash_damage"			"damage_grenade_emp_splash"
+
+	"model" 					"models/weapons/grenades/emp_grenade_world.lwo"
+
+	"emp_radius"				"384"
+	"emp_time"					"30"
+	"emp_weapon_time"			"5"
+
+
+	"removeTrailAtRest"			"1"
+	"fx_trail"					"effects/weapons/grenades/emp/trail"
+	"fx_explode"				"effects/weapons/grenades/emp/explosion"
+}
+
+entityDef projectile_grenade_emp_roll {
+	"inherit"					"projectile_grenade_emp"
+
+	"velocity"					"500 0 0"
+
+	"bounce"					"0.3"
+	"linear_friction"			"0.5"
+	"contact_friction"			"0.3"
+}
+
+damageDef damage_grenade_emp_splash {
+	damage						"damage_grenade_emp_splash"
+	radius						320
+	knockback					100
+
+	push						50000
+
+	noheadshot
+
+	prof_damage					"pro_covertops_damage_half"
+
+	stat_name					"grenade_emp"
+
+	team_kill_cvar				"g_allowComplaint_explosives"
+
+	tt_obituary					"tooltips/killmsgs/weapons/grenades/emp"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/emp/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/emp/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/emp/unknown"
+}
+
+damageFilter damage_grenade_emp_splash {
+	type {
+		target	"target_emp_kill"
+		damage	100%
+		noScale
+	}
+
+	type {
+		target	"target_player_all"
+		damage	125
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	200
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	200
+	}
+
+	type {
+		target	"target_explodable_emp"
+		damage	100
+	}
+}
+
+toolTip emp_grenade_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/emp_grenade_1"
+}
+
+toolTip emp_grenade_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_throw_item"
+}
+
