@@ -299,12 +299,27 @@ damageDef damage_hyperblaster_hornet {
 	templates/vehicles/weapons/hyperblaster/damage( "hornet_weapons", "pro_vehicle_damage" )
 }
 
+damageDef realistic_damage_hyperblaster_hornet {
+	inherit								"damage_hyperblaster_hornet"
+	damage								"realistic_damage_hyperblaster_hornet"
+}
+
 damageDef damage_hyperblaster_hog {
 	templates/vehicles/weapons/hyperblaster/damage( "hog_weapons", "pro_vehicle_damage" )
 }
 
+damageDef realistic_damage_hyperblaster_hog {
+	inherit								"damage_hyperblaster_hog"
+	damage								"realistic_damage_hyperblaster_hog"
+}
+
 damageDef damage_hyperblaster_desecrator {
 	templates/vehicles/weapons/hyperblaster/damage( "desecrator_weapons", "pro_vehicle_damage" )
+}
+
+damageDef realistic_damage_hyperblaster_desecrator {
+	inherit								"damage_hyperblaster_desecrator"
+	damage								"realistic_damage_hyperblaster_desecrator"
 }
 
 damageDef damage_hyperblaster {
@@ -313,11 +328,34 @@ damageDef damage_hyperblaster {
 	record_hit_stats
 }
 
+damageDef realistic_damage_hyperblaster {
+	inherit								"damage_hyperblaster"
+	damage								"realistic_damage_hyperblaster"
+}
+
 damageFilter damage_hyperblaster {
 
 	type {
 		target							"target_player_all"
 		damage							30
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							30
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							30
+	}
+}
+
+damageFilter realistic_damage_hyperblaster {
+
+	type {
+		target							"target_player_all"
+		damage							90
 	}
 
 	type {
