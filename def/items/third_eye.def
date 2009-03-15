@@ -235,6 +235,7 @@ entityDef projectile_third_eye {
 	"snd_trigger"				"sounds/tools/thirdeye/camera/charge"
 
 	"dmg_self_destruct"			"damage_camera_explode"
+	"dmg_realistic_self_destruct"		"realistic_damage_camera_explode"
 	"fx_explode"				"effects/items/thirdeyecamera_explode"
 	"fx_splash"					"effects/base/impact_water_large"
 	"fx_explode_water"			"effects/water/explosion"
@@ -263,6 +264,11 @@ damageDef damage_camera_explode {
 	tt_obituary_self				"tooltips/killmsgs/weapons/thirdeye/self"
 }
 
+damageDef realistic_damage_camera_explode {
+	inherit							"damage_camera_explode"
+	damage							"realistic_damage_camera_explode"
+}
+
 damageFilter damage_camera_explode {
 	type {
 		target						"target_camera"
@@ -272,6 +278,33 @@ damageFilter damage_camera_explode {
 	type {
 		target						"target_player_all"
 		damage						300
+	}
+
+	type {
+		target						"target_veh_all"
+		damage 						1000
+	}
+
+	type {
+		target						"target_deployables_all"
+		damage						1600
+	}
+
+	type {
+		target						"target_explodable"
+		damage						400
+	}
+}
+
+damageFilter realistic_damage_camera_explode {
+	type {
+		target						"target_camera"
+		damage						300
+	}
+
+	type {
+		target						"target_player_all"
+		damage						600
 	}
 
 	type {

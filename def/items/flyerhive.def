@@ -132,6 +132,7 @@ entityDef flyer_hive {
 	"health"						"3"
 
 	"dmg_self_destruct"				"damage_flyerhive_selfdestruct"
+	"dmg_realistic_self_destruct"			"realistic_damage_flyerhive_selfdestruct"
 	"dmg_destroyed"					"damage_flyerhive_destroyed"
 	"dmg_water"						"damage_vehicle_water"
 
@@ -206,6 +207,21 @@ damageFilter damage_flyerhive_selfdestruct {
 	}
 }
 
+damageFilter realistic_damage_flyerhive_selfdestruct {
+	type {
+		target					"target_all"
+		damage					400
+	}
+	type {
+		target					"target_flyer_damage"
+		damage					1
+	}
+	type {
+		target					"target_mountables"
+		damage					200
+	}
+}
+
 damageDef damage_flyerhive_selfdestruct {
 	damage							"damage_flyerhive_selfdestruct"
 	radius							160
@@ -223,6 +239,11 @@ damageDef damage_flyerhive_selfdestruct {
 	tt_obituary_self				"tooltips/killmsgs/weapons/flyerhive/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/flyerhive"
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/flyerhive/teamkill"
+}
+
+damageDef realistic_damage_flyerhive_selfdestruct {
+	inherit							"damage_flyerhive_selfdestruct"
+	damage							"realistic_damage_flyerhive_selfdestruct"
 }
 
 damageFilter damage_flyerhive_destroyed {
