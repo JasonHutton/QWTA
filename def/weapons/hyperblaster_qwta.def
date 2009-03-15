@@ -192,12 +192,12 @@ damageFilter realistic_damage_hyperblaster_splash {
 
 	type {
 		target	"target_veh_all"
-		damage	30
+		damage	90
 	}
 
 	type {
 		target	"target_deployables_all"
-		damage	30
+		damage	90
 	}
 
 	type {
