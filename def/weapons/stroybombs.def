@@ -9,7 +9,9 @@ entityDef projectile_stroybomb {
 
 	"model" 							"models/weapons/strogg_stroybomb/strogg_stroybomb.lwo"
 	"dmg_damage"						"damage_stroybomb_splash"
+	"dmg_realistic_damage"					"realistic_damage_stroybomb_splash"
 	"dmg_splash_damage"					"damage_stroybomb_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_stroybomb_splash"
 
 	"launchFromBarrel"					"0"
 	"health"							"0"
@@ -60,6 +62,11 @@ damageDef damage_stroybomb_splash {
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/stroybomb/unknown"
 }
 
+damageDef realistic_damage_stroybomb_splash {
+	inherit								"damage_stroybomb_splash"
+	damage								"realistic_damage_stroybomb_splash"
+}
+
 damageFilter damage_stroybomb {
 
 	type {
@@ -83,3 +90,25 @@ damageFilter damage_stroybomb {
 	}
 }
 
+damageFilter realistic_damage_stroybomb {
+
+	type {
+		target	"target_player_all"
+		damage	384
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	400
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	400
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}

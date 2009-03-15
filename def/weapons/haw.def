@@ -18,7 +18,9 @@ entityDef projectile_haw {
 	"model" 							"models/md5/vehicles/anansi/haw.lwo"
 
 	"dmg_damage"						"damage_haw"
+	"dmg_realistic_damage"					"realistic_damage_haw"
 	"dmg_splash_damage"					"damage_haw_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_haw_splash"
 
 	"launchFromBarrel"					"1"
 	"health"							"0"
@@ -69,6 +71,11 @@ damageDef damage_haw {
 	noheadshot	
 }
 
+damageDef realistic_damage_haw {
+	inherit							"damage_haw"
+	damage							"realistic_damage_haw"
+}
+
 damageDef damage_haw_splash {
 	damage								"damage_haw"
 	radius								512
@@ -81,11 +88,39 @@ damageDef damage_haw_splash {
 	noheadshot
 }
 
+damageDef realistic_damage_haw_splash {
+	inherit							"damage_haw_splash"
+	damage							"realistic_damage_haw"
+}
+
 damageFilter damage_haw {
 
 	type {
 		target	"target_player_all"
 		damage	500
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	250
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter realistic_damage_haw {
+
+	type {
+		target	"target_player_all"
+		damage	1000
 	}
 
 	type {
