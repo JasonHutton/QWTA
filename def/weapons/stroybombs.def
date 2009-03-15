@@ -1,0 +1,85 @@
+//
+// projectile_stroybomb
+//
+
+entityDef projectile_stroybomb {
+	"inherit"							"projectile_grenade"
+
+	"aor_layout"						"missile"
+
+	"model" 							"models/weapons/strogg_stroybomb/strogg_stroybomb.lwo"
+	"dmg_damage"						"damage_stroybomb_splash"
+	"dmg_splash_damage"					"damage_stroybomb_splash"
+
+	"launchFromBarrel"					"0"
+	"health"							"0"
+	"velocity"							"100 0 0"
+	"bounce"							"0.2"
+	"gravity"							"600"
+	"fuse"								"2.5"
+	"arm_time"							"2"
+	"mass"								"10"
+	"linear_friction"					"0.5"
+	"contact_friction"					"0.75"
+	"angular_friction"					"0.75"
+	"buoyancy"							"0"
+	"detonate_upwards"					"1"
+
+	"fx_explode"						"effects/impacts/shrap/explosion_default"
+	"fx_explode_sand"					"effects/impacts/shrap/explosion_default"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+	
+	"is_stroybomb"						"1"
+
+	"removeTrailAtRest"					"1"
+	"fx_trail"							"effects/weapons/stroybomb_trail"
+	"snd_fly"							"sounds/vehicles/icarus/bomb_fly"
+}
+
+damageDef damage_stroybomb_splash {
+	damage								"damage_stroybomb"
+	radius								256
+	knockback							100
+
+	push								20000000
+
+	noheadshot
+
+	stat_name							"icarus_weapons"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/stroybomb"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/stroybomb/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/stroybomb/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/stroybomb/unknown"
+}
+
+damageFilter damage_stroybomb {
+
+	type {
+		target	"target_player_all"
+		damage	192
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	400
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	400
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+

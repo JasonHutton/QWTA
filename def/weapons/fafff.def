@@ -1,0 +1,138 @@
+/***********************************************************************
+
+	vehicles_weapons_fafff.def
+
+***********************************************************************/
+
+entityDef projectile_fafff {
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_missile"
+
+	"aor_layout"						"missile"
+
+	"mins"								"-3 -3 -6"
+	"maxs"								"3 3 6"
+	
+	"cone"								"3"
+	
+	"model" 							"models/weapons/rocketlauncher/rocket.lwo"
+
+	"dmg_damage"						"damage_fafff"
+	"dmg_splash_damage"					"damage_fafff_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"velocity"							"4000 0 0"
+	"angular_velocity"					"0 0 0"
+	"thrust"							"0"
+	"thrust_start"						"0"
+	"thrust_end"						"0"
+	"linear_friction"					"0"
+	"angular_friction"					"0"
+	"contact_friction"					"0"
+	"bounce"							"0"
+	"mass"								"5"
+	"gravity"							"0"
+	"fuse"								"4"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_death"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+	
+	"collection_mdfExport"				"mdfExport"
+
+	"snd_fly"							"sounds/weapons/fafff/fly"
+	"fx_trail"							"effects/base/missile_trail"
+
+  	"fx_explode"						"effects/anansi_rocket"
+  	"fx_explode_sand"					"effects/anansi_rocket"
+
+	"fx_explode_water"					"effects/water/explosion"
+}
+
+damageDef damage_fafff {
+	damage								"damage_fafff"
+
+	push								100000
+
+	noheadshot
+	
+	stat_name							"anansi_weapons"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/fafff"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/fafff/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/fafff/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/fafff/unknown"
+}
+
+damageDef damage_fafff_splash {
+	damage								"damage_fafff_splash"
+	radius								256
+
+	knockback							100
+	push								100000
+
+	noheadshot
+	
+	stat_name							"anansi_weapons"
+	
+ 	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/fafff"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/fafff/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/fafff/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/fafff/unknown"
+}
+
+damageFilter damage_fafff {
+
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	200
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	200
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter damage_fafff_splash {
+
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	150
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	150
+	}
+
+	type {
+		target	"target_explodable"
+		damage	150
+	}
+}
