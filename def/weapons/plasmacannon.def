@@ -53,7 +53,7 @@ damageDef damage_plasmacannon_desecrator {
 
 damageDef realistic_damage_plasmacannon_desecrator {
 	inherit							"damage_plasmacannon_desecrator"
-	damage							"realistic_damage_plasmacannon_desecrator"
+	damage							"realistic_damage_plasmacannon"
 }
 
 damageDef damage_plasmacannon_splash_desecrator {
@@ -62,7 +62,7 @@ damageDef damage_plasmacannon_splash_desecrator {
 
 damageDef realistic_damage_plasmacannon_splash_desecrator {
 	inherit							"damage_plasmacannon_splash_desecrator"
-	damage							"realistic_damage_plasmacannon_splash_desecrator"
+	damage							"realistic_damage_plasmacannon_splash"
 }
 
 // -------------------------------------------
@@ -81,7 +81,7 @@ damageDef damage_plasmacannon_goliath {
 
 damageDef realistic_damage_plasmacannon_goliath {
 	inherit							"damage_plasmacannon_goliath"
-	damage							"realistic_damage_plasmacannon_goliath"
+	damage							"realistic_damage_plasmacannon"
 }
 
 damageDef damage_plasmacannon_splash_goliath {
@@ -90,7 +90,7 @@ damageDef damage_plasmacannon_splash_goliath {
 
 damageDef realistic_damage_plasmacannon_splash_goliath {
 	inherit							"damage_plasmacannon_splash_goliath"
-	damage							"realistic_damage_plasmacannon_splash_goliath"
+	damage							"realistic_damage_plasmacannon_splash"
 }
 
 // -------------------------------------------
