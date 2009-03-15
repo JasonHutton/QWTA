@@ -239,7 +239,9 @@ entityDef projectile_obliterator {
 	"scriptObject"						"projectile_homingmissile"
 
 	"dmg_damage"						"damage_obliterator"
+	"dmg_realistic_damage"					"realistic_damage_obliterator"
 	"dmg_splash_damage"					"damage_obliterator_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_obliterator_splash"
 
 	"launchFromBarrel"					"1"
 	"health"							"0"
@@ -271,7 +273,9 @@ entityDef projectile_obliterator_arcing {
 	"inherit"							"projectile_rocket_base"
 
 	"dmg_damage"						"damage_obliterator"
+	"dmg_realistic_damage"					"realistic_damage_obliterator"
 	"dmg_splash_damage"					"damage_obliterator_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_obliterator_splash"
 
 	"launchFromBarrel"					"1"
 	"health"							"0"
@@ -318,6 +322,11 @@ damageDef damage_obliterator {
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/obliterator/unknown"
 }
 
+damageDef realistic_damage_obliterator {
+	inherit								"damage_obliterator"
+	damage								"realistic_damage_law"
+}
+
 damageDef damage_obliterator_splash {
 	damage								"damage_law_splash"
 
@@ -337,6 +346,11 @@ damageDef damage_obliterator_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/obliterator/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/obliterator/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/obliterator/unknown"
+}
+
+damageDef realistic_damage_obliterator_splash {
+	inherit								"damage_obliterator_splash"
+	damage								"realistic_damage_law_splash"
 }
 
 toolTip obliterator_intro_1 {
