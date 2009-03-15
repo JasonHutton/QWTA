@@ -203,7 +203,7 @@ entityDef projectile_grenade_shrap {
 	"detonate_upwards"			"1"
 
 	"dmg_splash_damage"			"damage_grenade_shrap_splash"
-	"dmg_realistic_splash_damage		"realistic_damage_grenade_shrap_splash"
+	"dmg_realistic_splash_damage"		"realistic_damage_grenade_shrap_splash"
 
 	"snd_pre_delay"				"sounds/weapons/grenades/sgrenade_warning"
 
