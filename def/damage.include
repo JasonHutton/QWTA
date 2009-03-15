@@ -38,6 +38,8 @@ $template templates/vehicles/weapons/hyperblaster/damage( STATNAME, PROFICIENCY 
 	kick_time							100
 	kick_amplitude						0
 	kickDir								( 1 0 0 )
+	
+	noheadshot
 
 	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
@@ -57,6 +59,8 @@ $template templates/vehicles/weapons/hyperblaster/damage_splash( STATNAME, PROFI
 	kick_time							100
 	kick_amplitude						0
 	kickDir								( 1 0 0 )
+	
+	noheadshot
 
 	tt_obituary						"tooltips/killmsgs/weapons/hyperblaster"
 	tt_obituary_team_kill					"tooltips/killmsgs/weapons/hyperblaster/teamkill"
