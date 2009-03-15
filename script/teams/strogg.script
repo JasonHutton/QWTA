@@ -1,3 +1,4 @@
+#define QWTA_STROGG_RESPAWN_MULTIPLIER 2
 
 object team_strogg {
 	void	preinit();
@@ -47,7 +48,7 @@ object team_strogg {
 	boolean	HasEfficientDecoys( entity p );
 	boolean	HasSpreadBonus( entity p );
 	boolean	CanStab( entity p );
-	
+
 	void	CreatePersonnelAuras( entity p );
 
 	boolean	CanTransferStroyent( entity p );
@@ -89,7 +90,7 @@ void team_strogg::preinit() {
 	plantItem					= "inventory/items/plasma_charge";
 	flyerDroneItem				= "inventory/items/flyer_hive";
 
-	respawnWait					= 20.f;
+	respawnWait					= 20.f * QWTA_STROGG_RESPAWN_MULTIPLIER;
 
 	structureName				= sys.localizeString( "game/struct/dominationhub" );
 
@@ -322,16 +323,16 @@ float team_strogg::GetHealthBoost( entity p ) {
 	} else if ( playerClass == g_playerClassTechnician ) {
 		//bonus = bonus - 10.f;
 	}
-		
+
 	if ( p.getProficiency( g_proficiencyBattleSense ) >= 2 ) {
 		bonus = bonus + 25;
 	}
-	
+
 	return bonus;
 }
 
 void team_strogg::SetRespawnWait( float time ) {
-	respawnWait = time;
+	respawnWait = time * QWTA_STROGG_RESPAWN_MULTIPLIER;
 }
 
 void team_strogg::CreatePersonnelAuras( entity p ) {
@@ -348,12 +349,12 @@ void team_strogg::RegenPulse( entity p ) {
 	if ( current >= limit ) {
 		return;
 	}
-	
+
 	current = current + 5.f;
 	if ( current > limit ) {
 		current = limit;
 	}
-	
+
 	p.setAmmo( g_ammoStroyent, current );
 }
 
@@ -368,7 +369,7 @@ float team_strogg::GetFireSupportDelayScale() {
 
 void team_strogg::UpdateStealth( entity p ) {
 	p.disableFootsteps( false );
-	
+
 	if ( p.getPlayerClass() == g_playerClassInfiltrator ) {
 		if ( !p.isDisguised() ) {
 			if ( p.getProficiency( g_proficiencyInfiltrator ) >= 1 ) {

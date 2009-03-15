@@ -1,3 +1,4 @@
+#define QWTA_GDF_RESPAWN_MULTIPLIER 2
 
 object team_gdf {
 	void	preinit();
@@ -39,7 +40,7 @@ object team_gdf {
 	boolean	HasFastTargetLock( entity p );
 	float	GetMaxSupplies( entity p );
 	boolean	CanStab( entity p );
-	
+
 	void	CreatePersonnelAuras( entity p );
 
 	float	GetFireSupportDelayScale();
@@ -85,7 +86,7 @@ void team_gdf::preinit() {
 	plantItem					= "inventory/items/he_charge";
 	spawnHostDisarmItem			= "inventory/tools/defibrillator";
 
-	respawnWait					= 20.f;
+	respawnWait					= 20.f * QWTA_GDF_RESPAWN_MULTIPLIER;
 
 	structureName				= sys.localizeString( "game/struct/commandcenter" );
 
@@ -237,7 +238,7 @@ void team_gdf::OnCovertOpsUpgrade( entity p, float oldLevel, float newLevel, boo
 			if ( other == $null_entity ) {
 				continue;
 			}
-			
+
 			other.vOnLocalTeamChanged();
 		}
 	}
@@ -323,7 +324,7 @@ boolean	team_gdf::CanRequestVehicle( entity p ) {
 boolean	team_gdf::HasEfficientDecoys( entity p ) {
 	return p.getProficiency( g_proficiencyVehicle ) >= 2;
 }
-	
+
 boolean	team_gdf::HasSpreadBonus( entity p ) {
 	return p.getProficiency( g_proficiencyLightWeapons ) >= 3;
 }
@@ -356,7 +357,7 @@ float team_gdf::GetHealthBoost( entity p ) {
 	if ( playerClass == g_playerClassSoldier ) {
 		bonus = bonus + 20.f;
 	}
-	
+
 	float maxClients = sys.getMaxClients();
 	float index;
 	float boost = 0;
@@ -379,14 +380,14 @@ float team_gdf::GetHealthBoost( entity p ) {
 			}
 		}
 	}
-	
+
 	bonus = bonus + boost;
 
 	return bonus;
 }
 
 void team_gdf::SetRespawnWait( float time ) {
-	respawnWait = time;
+	respawnWait = time * QWTA_GDF_RESPAWN_MULTIPLIER;
 }
 
 void team_gdf::CreatePersonnelAuras( entity p ) {
