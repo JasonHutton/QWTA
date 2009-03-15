@@ -293,6 +293,7 @@ entityDef projectile_blaster {
  	"fx_explode_plastic"				"effects/impacts/blaster/impact_plastic"
 
 	"dmg_damage"						"damage_blaster"
+	"dmg_realistic_damage"					"realistic_damage_blaster"
 }
 
 damageDef damage_blaster {
@@ -316,6 +317,11 @@ damageDef damage_blaster {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/blaster/teamkill"
 }
 
+damageDef realistic_damage_blaster {
+	inherit								"damage_blaster"
+	damage								"realistic_damage_blaster"
+}
+
 damageFilter damage_blaster {
 
 	type {
@@ -331,6 +337,29 @@ damageFilter damage_blaster {
 	type {
 		target							"target_veh_heavy_all"
 		damage							13
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							18
+	}
+}
+
+damageFilter realistic_damage_blaster {
+
+	type {
+		target							"target_player_all"
+		damage							54
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							18
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
 	}
 
 	type {

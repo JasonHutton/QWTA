@@ -330,6 +330,7 @@ entityDef projectile_machinepistol {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_machinepistol"
+	"dmg_realistic_damage"					"realistic_damage_machinepistol"
 }
 
 damageDef damage_machinepistol {
@@ -349,6 +350,11 @@ damageDef damage_machinepistol {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/machinepistol/teamkill"
 }
 
+damageDef realistic_damage_machinepistol {
+	inherit								"damage_machinepistol"
+	damage								"realistic_damage_machinepistol"
+}
+
 entityDef projectile_machinepistol_silenced {
 	"spawnclass"						"idProjectile"
 	"inherit"							"projectile_bullet_base"
@@ -357,6 +363,7 @@ entityDef projectile_machinepistol_silenced {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_machinepistol_silenced"
+	"dmg_realistic_damage"					"realistic_damage_machinepistol_silenced"
 }
 
 damageDef damage_machinepistol_silenced {
@@ -376,6 +383,11 @@ damageDef damage_machinepistol_silenced {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/machinepistol/silenced/teamkill"
 }
 
+damageDef realistic_damage_machinepistol_silenced {
+	inherit								"damage_machinepistol_silenced"
+	damage								"realistic_damage_machinepistol"
+}
+
 damageFilter damage_machinepistol {
 
 	type {
@@ -391,6 +403,29 @@ damageFilter damage_machinepistol {
 	type {
 		target							"target_veh_heavy_all"
 		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							13
+	}
+}
+
+damageFilter realistic_damage_machinepistol {
+
+	type {
+		target							"target_player_all"
+		damage							39
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							13
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
 	}
 
 	type {

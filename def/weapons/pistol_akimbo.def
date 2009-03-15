@@ -345,6 +345,7 @@ entityDef projectile_pistol_akimbo {
 	"min_damage_percent"					"10"
 
 	"dmg_damage"							"damage_pistol_akimbo"
+	"dmg_realistic_damage"						"realistic_damage_pistol_akimbo"
 }
 
 entityDef projectile_pistol_akimbo_silenced {
@@ -355,6 +356,7 @@ entityDef projectile_pistol_akimbo_silenced {
 	"min_damage_percent"					"10"
 
 	"dmg_damage"							"damage_pistol_akimbo_silenced"
+	"dmg_realistic_damage"						"realistic_damage_pistol_akimbo_silenced"
 }
 
 damageDef damage_pistol_akimbo_silenced {
@@ -382,6 +384,11 @@ damageDef damage_pistol_akimbo_silenced {
 	tt_obituary_team_kill					"tooltips/killmsgs/weapons/pistol_akimbo_silenced/teamkill"
 }
 
+damageDef realistic_damage_pistol_akimbo_silenced {
+	inherit									"damage_pistol_akimbo_silenced"
+	damage									"realistic_damage_pistol_akimbo"
+}
+
 damageDef damage_pistol_akimbo {
 	damage									"damage_pistol_akimbo"
 	kickDir									( 1 0 0 )
@@ -407,6 +414,11 @@ damageDef damage_pistol_akimbo {
 	tt_obituary_team_kill					"tooltips/killmsgs/weapons/pistol_akimbo/teamkill"
 }
 
+damageDef realistic_damage_pistol_akimbo {
+	inherit									"damage_pistol_akimbo"
+	damage									"realistic_damage_pistol_akimbo"
+}
+
 damageFilter damage_pistol_akimbo {
 
 	type {
@@ -417,6 +429,29 @@ damageFilter damage_pistol_akimbo {
 	type {
 		target								"target_veh_all"
 		damage								15
+	}
+
+	type {
+		target								"target_deployables_all"
+		damage								15
+	}
+}
+
+damageFilter realistic_damage_pistol_akimbo {
+
+	type {
+		target								"target_player_all"
+		damage								45
+	}
+
+	type {
+		target								"target_veh_light_all"
+		damage								15
+	}
+
+	type {
+		target								"target_veh_heavy_all"
+		damage								0
 	}
 
 	type {

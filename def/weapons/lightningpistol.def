@@ -217,6 +217,7 @@ invItemDef inventory/weapons/lightningpistol {
 		"hide_crosshair"				"0"
 		
 		"dmg_lightning"					"damage_lightningpistol"
+		"dmg_realistic_lightning"			"realistic_damage_lightningpistol"
 	}
 
 	clip {
@@ -244,11 +245,39 @@ damageDef damage_lightningpistol {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lightningpistol/teamkill"
 }
 
+damageDef realistic_damage_lightningpistol {
+	inherit								"damage_lightningpistol"
+	damage								"realistic_damage_lightningpistol"
+}
+
 damageFilter damage_lightningpistol {
 
 	type {
 		target							"target_player_all"
 		damage							9
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							9
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							9
+	}
+}
+
+damageFilter realistic_damage_lightningpistol {
+
+	type {
+		target							"target_player_all"
+		damage							18
 	}
 
 	type {
