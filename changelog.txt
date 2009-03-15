@@ -72,7 +72,6 @@ MCP: Radar + Infrared. Detects everything.
 GDF Command Center/Strogg Domihub: Radar + Infrared. Detects everything.
 
 in addition to vehicle credit, campaign rank is required in order to summon vehicles.
-Still need to make bots aware of that.
 
 1. Proper hyperblaster visual/audio effects. (Fly sound?)
 8. Crank the BFG's max targets up to around 16 or 32.
@@ -96,7 +95,7 @@ Todo for v0.3 release:
 2. Fix cheats of teleport drop not checking for all known issues before dropping.
 3. Hyperblaster should not give target lock or respond to flares. Faster lockon would be nice but nonessential. Turn off locational damage.
 4. Class number limit improvements: force to limbo on death/force bots to switch on death when on a class with slots overused.
-5. Tie vehicle drop types to something. Campaign ranks? To stop the synced swarm-deploy of vehicles. (Aha, amount of charge allowed per rank!)
+++++++++++++++++++++++++++++++++++++5. Tie vehicle drop types to something. Campaign ranks? To stop the synced swarm-deploy of vehicles. (Aha, amount of charge allowed per rank!)
 6. Get realistic damage defs setup, so we don't have to obliterate the nonreal damages.
 7. Implement realistic damages for all weapons.
 ++++++++++++++++++++++++++++++++++++8. Magog drops for heavy GDF vehicles.
