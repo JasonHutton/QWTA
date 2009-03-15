@@ -139,7 +139,7 @@ damageDef damage_hyperblaster_hornet_splash {
 
 damageDef realistic_damage_hyperblaster_hornet_splash {
 	inherit								"damage_hyperblaster_hornet_splash"
-	damage								"realistic_damage_hyperblaster_hornet_splash"
+	damage								"realistic_damage_hyperblaster_splash"
 }
 
 damageDef damage_hyperblaster_hog_splash {
@@ -148,7 +148,7 @@ damageDef damage_hyperblaster_hog_splash {
 
 damageDef realistic_damage_hyperblaster_hog_splash {
 	inherit								"damage_hyperblaster_hog_splash"
-	damage								"realistic_damage_hyperblaster_hog_splash"
+	damage								"realistic_damage_hyperblaster_splash"
 }
 
 damageDef damage_hyperblaster_desecrator_splash {
@@ -157,7 +157,7 @@ damageDef damage_hyperblaster_desecrator_splash {
 
 damageDef realistic_damage_hyperblaster_desecrator_splash {
 	inherit								"damage_hyperblaster_desecrator_splash"
-	damage								"realistic_damage_hyperblaster_desecrator_splash"
+	damage								"realistic_damage_hyperblaster_splash"
 }
 
 damageFilter damage_hyperblaster_splash {

@@ -301,7 +301,7 @@ damageDef damage_hyperblaster_hornet {
 
 damageDef realistic_damage_hyperblaster_hornet {
 	inherit								"damage_hyperblaster_hornet"
-	damage								"realistic_damage_hyperblaster_hornet"
+	damage								"realistic_damage_hyperblaster"
 }
 
 damageDef damage_hyperblaster_hog {
@@ -310,7 +310,7 @@ damageDef damage_hyperblaster_hog {
 
 damageDef realistic_damage_hyperblaster_hog {
 	inherit								"damage_hyperblaster_hog"
-	damage								"realistic_damage_hyperblaster_hog"
+	damage								"realistic_damage_hyperblaster"
 }
 
 damageDef damage_hyperblaster_desecrator {
@@ -319,7 +319,7 @@ damageDef damage_hyperblaster_desecrator {
 
 damageDef realistic_damage_hyperblaster_desecrator {
 	inherit								"damage_hyperblaster_desecrator"
-	damage								"realistic_damage_hyperblaster_desecrator"
+	damage								"realistic_damage_hyperblaster"
 }
 
 damageDef damage_hyperblaster {
