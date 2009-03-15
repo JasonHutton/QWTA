@@ -1,0 +1,290 @@
+/***********************************************************************
+
+	N80 Assault Rifle with Grenade Launcher
+
+***********************************************************************/
+
+invItemDef inventory/weapons/assaultrifle/grenade {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/assaultrifle_grenade"
+	model								"models/weapons/gdf_assault_rifle/assault_player_grenade.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_assaultrifle_grenade_rework"
+		"model_world" 					"worldmodel_assaultrifle_grenade"
+		"anim_limbomenu"				"menu_assault"
+
+		"view_offset"					"-2 0.5 0.79"
+		"view_foreshorten"				"0.8"
+
+		"joint_attach"					"weapon"
+		"anim_prefix"					"machinegun"
+		"anim_prefix_class"				"machinegun"
+
+		"anim_prefix_alt"				"grenadelauncher"
+		"anim_prefix_alt_class"			"machinegun"
+
+		"weapon_scriptobject"			"weapon_assaultrifle_gren"
+
+		"muzzle_kick_time"				"0.1"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"-1 0 0"
+		"muzzle_kick_offset"			"0.3 0 0.2"
+
+		"recoilTime"					"150"
+		"recoilAngles"					"-0.25 0 0"
+		"kickback"						"0.5"
+		"kickback_prone"				"0.25"
+
+		"stat_name"						"assaultrifle"
+		"stat_name_grenade"				"assaultrifle_grenade"
+
+		"fx_muzzle_flash"				"effects/weapons/assaultrifle_muzzleflash_view"
+		"fx_muzzle_flash_world"			"effects/weapons/assaultrifle_muzzleflash_world"
+		"fx_muzzle_flash_gren"			"effects/weapons/assaultrifle_grenade_view"
+		"fx_muzzle_flash_world_gren"	"effects/weapons/assaultrifle_grenade_world"
+
+		"fx_tracer"						"effects/base/tracers_small"
+		"effectchance fx_tracer"		"0.1"
+
+		"snd_fire"						"sounds/weapons/assaultrifle/fire"
+		"snd_fire_far"					"sounds/weapons/assaultrifle/fire/far"
+		"snd_fire_local"				"sounds/weapons/assaultrifle/fire/local"
+		"snd_fire_gren"					"sounds/weapons/assaultrifle/gren/fire"
+		"snd_fire_gren_far"				"sounds/weapons/assaultrifle/gren/fire/far"
+		"snd_fire_gren_local"			"sounds/weapons/assaultrifle/gren/fire/local"
+		"snd_safe"						"sounds/weapons/assaultrifle/safe"
+		"snd_cock"						"sounds/weapons/assaultrifle/cock"
+		"snd_reload"					"sounds/weapons/assaultrifle/reload"
+		"snd_mech"						"sounds/weapons/assaultrifle/mech"
+		"snd_modeswitch"				"sounds/weapons/misc/mode_switch"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_raise"						"sounds/weapons/assaultrifle/raise"
+		"snd_sights_up"					"sounds/weapons/assaultrifle/sights/up"
+		"snd_sights_down"				"sounds/weapons/assaultrifle/sights/down"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+		"snd_gren_eject"				"sounds/weapons/assaultrifle/gren/eject"
+		"snd_gren_reload"				"sounds/weapons/assaultrifle/gren/reload"
+
+		"fov_zoom"						"60"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.5"
+
+		"fire_rate"						"0.15"
+		"num_projectiles"				"1"
+
+		"fire_rate_single"				"3"
+
+		"low_ammo"						"8"
+
+		"gui_sight"						"game/sights/assaultrifle_scope"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/assaultrifle_launcher"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"crosshair"						"large"
+		"crosshair_secondary"			"grenade_launcher"
+
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"4"
+		"crosshair_spread_scale"		"2"
+
+		"spread_min"					"1"
+		"spread_max"					"4"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"4"
+		"spread_viewrate_inc"			"2.5"
+
+		"spread_max_settle_time"		"700" // settles slower than standard assault rifle (extra weight of grenade launcher)
+
+		"spread_crouch_min"				"0.75"
+		"spread_crouch_max"				"3"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"0.75"
+		"spread_crouch_viewrate_max"	"3"
+		"spread_crouch_viewrate_inc"	"2.5"
+
+		"spread_crouch_max_settle_time"	"650"
+
+		"spread_prone_min"				"0.5"
+		"spread_prone_max"				"2"
+		"spread_prone_inc"				"1"
+
+		"spread_prone_viewrate_min"		"0.5"
+		"spread_prone_viewrate_max"		"2"
+		"spread_prone_viewrate_inc"		"2.5"
+
+		"spread_prone_max_settle_time"	"600"
+
+		"spread_jump_min"					"4"
+		"spread_jump_max"					"4"
+		"spread_jump_inc"					"4"
+
+		"spread_jump_max_settle_time"		"600"
+
+		"tt_intro_1"					"assaultrifle_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"assaultriflegrenade_1"
+		"tt_intro_ironsights_2"			"assaultriflegrenade_2"
+		"tt_intro_reload"				"generic_weapon_reload"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"2"
+	}
+
+	clip {
+		"projectile"					"projectile_assaultrifle_gren_bullet"
+		"client_projectile"				"projectile_bullet"
+		"type"							"assaultrifle"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"40"
+	}
+
+	clip {
+		"projectile"					"projectile_assaultrifle_gren"
+		"type"							"grenade_rifle"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"5"
+	}
+}
+
+toolTip assaultriflegrenade_intro_1 {
+	length 5
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/assaultriflegrenade_1"
+}
+
+toolTip assaultriflegrenade_1 {
+	length 5
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/assaultriflegrenade_grenade_1"
+}
+
+toolTip assaultriflegrenade_2 {
+	length 5
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/assaultriflegrenade_grenade_2"
+}
+
+entityDef projectile_assaultrifle_gren {
+	"inherit"							"projectile_grenade"
+
+	"model" 							"models/weapons/gdf_assault_rifle/grenade.lwo"
+
+	"dmg_damage"						"damage_assaultrifle_gren"
+	"dmg_splash_damage"					"damage_assaultrifle_gren_splash"
+
+	"launchFromBarrel"					"1"					// launch from barrel
+	"health"							"5"					// amount of damage projectile can take if damaged (0 means it can't be destroyed)
+	"velocity"							"1800 0 0"			// how fast the projectile leaves the gun (or distance if fuse is 0)
+	"bounce"							"0.35"
+	"gravity"							"700"				// how much gravity affects the trajectory.  gravity direction is same as the entity that fired it.
+	"fuse"								"4"					// how long before the projectile is removed or self-detonates.  Use 0 for beam weapons (velocity == distance).
+	"arm_time"							"1"
+
+	"contact_friction"					"0"
+
+	"detonate_on_fuse"					"1"					// whether projectile should detonate when it's fuse runs out
+	"detonate_on_death"					"1"					// whether projectile should detonate when it's "killed" (health runs out)
+	"detonate_on_world"					"1"					// whether projectile should detonate when it hits an obstacle
+	"detonate_on_actor"					"1"					// whether projectile should detonate when it hits a character in the game
+	"detonate_on_rest"					"0"
+
+	"fx_trail"							"effects/base/grenade_trail"
+
+	"snd_bounce"						"sounds/weapons/grenades/bounce_metal"
+	"fx_explode"						"effects/base/explosion"
+}
+
+damageDef damage_assaultrifle_gren {
+	damage								"damage_assaultrifle_gren"
+
+	push								20000000
+
+	noheadshot
+
+	prof_damage							"pro_light_weapons_damage"
+
+	stat_name							"assaultrifle_grenade"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/grenadelauncher"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/grenadelauncher/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/grenadelauncher/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/grenadelauncher/unknown"
+}
+
+damageDef damage_assaultrifle_gren_splash {
+	damage								"damage_assaultrifle_gren_splash"
+	radius								320
+	knockback							100
+
+	push								20000000
+
+	noheadshot
+
+	prof_damage							"pro_light_weapons_damage"
+
+	stat_name							"assaultrifle_grenade"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/grenadelauncher"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/grenadelauncher/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/grenadelauncher/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/grenadelauncher/unknown"
+}
+
+damageFilter damage_assaultrifle_gren {
+
+	type {
+		target							"target_player_all"
+		damage							150
+	}
+
+	type {
+		target							"target_veh_all"
+		damage						 	800
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							800
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}
+
+damageFilter damage_assaultrifle_gren_splash {
+
+	type {
+		target							"target_player_all"
+		damage							150
+	}
+
+	type {
+		target							"target_veh_all"
+		damage						 	800
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							800
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}

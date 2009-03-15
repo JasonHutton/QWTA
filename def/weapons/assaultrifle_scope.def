@@ -1,0 +1,270 @@
+/***********************************************************************
+
+	N80 Assault Rifle with Scope
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix ASSAULT_ -sourcedir models/weapons/gdf_assault_rifle/dev_sd -destdir models/weapons/gdf_assault_rifle/ -keep muzzle
+
+addoptions -keepmesh Assault_Rifle_Mesh Trigger_Mesh bino_lens Magazine_Mesh Scope_mesh Charge_Mesh r_hand m_l_hand r_arm m_l_gui_mount m_l_arm m_l_gui_cover
+
+	mesh	assault_rifle_scoped_base_file.mb			-dest models/weapons/gdf_assault_rifle/scoped_view.md5mesh
+
+
+	anim	assault_rifle_scoped_idle.mb				-dest models/weapons/gdf_assault_rifle/scoped_idle.md5anim
+	anim	assault_rifle_scoped_raise.mb				-dest models/weapons/gdf_assault_rifle/scoped_raise.md5anim
+ 	anim	assault_rifle_scoped_lower.mb				-dest models/weapons/gdf_assault_rifle/scoped_lower.md5anim
+   	anim	assault_rifle_scoped_fire.mb				-dest models/weapons/gdf_assault_rifle/scoped_fire.md5anim
+ 	anim	assault_rifle_reload.mb				-dest models/weapons/gdf_assault_rifle/scoped_reload.md5anim
+ 	anim	assault_rifle_scoped_start_sprint.mb			-dest models/weapons/gdf_assault_rifle/scoped_start_sprint.md5anim
+ 	anim	assault_rifle_scoped_leave_sprint.mb			-dest models/weapons/gdf_assault_rifle/scoped_leave_sprint.md5anim
+
+ 	anim	assault_rifle_scoped_zoom_in.mb				-dest models/weapons/gdf_assault_rifle/scoped_zoom_in.md5anim
+ 	anim	assault_rifle_scoped_zoom_out.mb			-dest models/weapons/gdf_assault_rifle/scoped_zoom_out.md5anim
+ 	anim	assault_rifle_scoped_idle_zoom.mb			-dest models/weapons/gdf_assault_rifle/scoped_idle_zoom.md5anim
+ 	anim	assault_rifle_scoped_fire_zoom.mb			-dest models/weapons/gdf_assault_rifle/scoped_fire_zoom.md5anim
+ 	anim	assault_rifle_basic_idle_zoom.mb			-dest models/weapons/gdf_assault_rifle/scoped_idle_zoom.md5anim
+ 	anim	assault_rifle_basic_fire_zoom.mb			-dest models/weapons/gdf_assault_rifle/scoped_fire_zoom.md5anim
+ 	anim	assault_rifle_basic_zoom_in.mb				-dest models/weapons/gdf_assault_rifle/scoped_zoom_in.md5anim
+ 	anim	assault_rifle_basic_zoom_out.mb				-dest models/weapons/gdf_assault_rifle/scoped_zoom_out.md5anim
+
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_assaultrifle_scoped {
+	mesh								models/weapons/gdf_assault_rifle/scoped_view.md5mesh
+
+	anim idle							models/weapons/gdf_assault_rifle/scoped_idle.md5anim {
+	}
+
+	anim raise							models/weapons/gdf_assault_rifle/scoped_raise.md5anim {
+		frame 4								sound_channel snd_weapon_raise snd_safe
+	}
+
+	anim putaway						models/weapons/gdf_assault_rifle/scoped_lower.md5anim {
+		frame 4								sound_channel snd_weapon_raise snd_safe
+	}
+
+	anim fire 							models/weapons/gdf_assault_rifle/scoped_fire.md5anim {
+		frame 1								sound_channel snd_weapon_mech snd_mech
+	}
+
+	anim reload							models/weapons/gdf_assault_rifle/scoped_reload.md5anim {
+		frame 10							sound_channel snd_weapon_reload snd_movement01
+		frame 40							sound_channel snd_weapon_reload snd_movement02
+	}
+
+	anim start_sprint					models/weapons/gdf_assault_rifle/scoped_start_sprint.md5anim {
+	}
+
+	anim leave_sprint					models/weapons/gdf_assault_rifle/scoped_leave_sprint.md5anim {
+	}
+
+	anim zoomin 						models/weapons/gdf_assault_rifle/scoped_zoom_in.md5anim {
+		frame 1								sound_channel snd_weapon_reload snd_zoomin01
+	}
+
+	anim zoomout 						models/weapons/gdf_assault_rifle/scoped_zoom_out.md5anim {
+		frame 1								sound_channel snd_weapon_reload snd_zoomout01
+	}
+
+	anim idle_zoom						models/weapons/gdf_assault_rifle/scoped_idle_zoom.md5anim {
+	}
+
+	anim fire_zoom 						models/weapons/gdf_assault_rifle/scoped_fire_zoom.md5anim {
+		frame 1								sound_channel snd_weapon_zoom snd_mech
+	}
+}
+
+
+
+//=============================================================================================================================================
+//=============================================================================================================================================
+
+invItemDef inventory/weapons/assaultrifle/scoped {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/assaultrifle_scoped"
+	model								"models/weapons/gdf_assault_rifle/assault_player_scope.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_assaultrifle_scope_rework"
+		"model_world" 					"worldmodel_assaultrifle_scope"
+		"anim_limbomenu"				"menu_assault"
+
+		"view_offset"					"-2 0.5 0.77"
+		"view_foreshorten"				"0.8"
+
+		"joint_attach"					"weapon"
+		"anim_prefix"					"machinegun"
+		"anim_prefix_class"				"twohanded"
+
+		"weapon_scriptobject"			"weapon_assaultrifle_scope"
+
+		"muzzle_kick_time"				"0.1"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"-1 0 0"
+		"muzzle_kick_offset"			"0.3 0 0.2"
+
+		"recoilTime"					"150"
+		"recoilAngles"					"-0.13 0 0"
+
+		"kickback"						"0.13"
+		"kickback_prone"				"0.06"
+
+		"stat_name"						"assaultrifle_scoped"
+
+		"fx_muzzle_flash"				"effects/weapons/assaultrifle_muzzleflash_view"
+		"fx_muzzle_flash_novisuals" 	"effects/weapons/assaultrifle_muzzleflash_view_novisuals"
+		"fx_muzzle_flash_world"			"effects/weapons/assaultrifle_muzzleflash_world"
+
+		"snd_fire"						"sounds/weapons/assaultrifle/fire"
+		"snd_fire_far"					"sounds/weapons/assaultrifle/fire/far"
+		"snd_fire_local"				"sounds/weapons/assaultrifle/fire/local"
+		"snd_cock"						"sounds/weapons/assaultrifle/cock"
+		"snd_safe"						"sounds/weapons/assaultrifle/safe"
+		"snd_reload"					"sounds/weapons/assaultrifle/reload"
+		"snd_mech"						"sounds/weapons/assaultrifle/mech"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_modeswitch"				"sounds/weapons/misc/mode_switch"
+		"snd_raise"						"sounds/weapons/assaultrifle/raise"
+		"snd_sights_up"					"sounds/weapons/assaultrifle/sights/up"
+		"snd_sights_down"				"sounds/weapons/assaultrifle/sights/down"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+
+		"trigger_delay"					"0"
+		"fire_rate"						"0.15"
+		"num_projectiles"				"1"
+
+		"low_ammo"						"8"
+
+		"def_scopemodel"				"scope_sniperrifle"
+		"gui_sniper_scope"				"game/sights/assaultrifle_scope"
+		"hud_sort"						"999"
+
+		"zoom_fov"						"45"
+		"zoom_time"						"0.25"
+
+		"zoom_pitch_amplitude"			"0.5"
+		"zoom_pitch_frequency"			"0.24"
+		"zoom_pitch_min_amplitude"		"0.13"
+		"zoom_yaw_amplitude"			"3.2"
+		"zoom_yaw_frequency"			"0.12"
+		"zoom_yaw_min_amplitude"		"0.23"
+
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.1"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/assaultrifle_scope"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"hide_crosshair"				"0"
+
+		"crosshair"						"large"
+		"crosshair_secondary"			"none"
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"4"
+		"crosshair_spread_scale"		"2"
+
+		"spread_min"					"1"
+		"spread_max"					"3"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"3"
+		"spread_viewrate_inc"			"2.5"
+
+		"spread_max_settle_time"		"600"
+
+		"spread_crouch_min"				"0.75"
+		"spread_crouch_max"				"2.2"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"0.75"
+		"spread_crouch_viewrate_max"	"2.2"
+		"spread_crouch_viewrate_inc"	"2.5"
+
+		"spread_crouch_max_settle_time"	"550"
+
+		"spread_prone_min"				"0.5"
+		"spread_prone_max"				"1.75"
+		"spread_prone_inc"				"1"
+
+		"spread_prone_viewrate_min"		"0.5"
+		"spread_prone_viewrate_max"		"1.75"
+		"spread_prone_viewrate_inc"		"2.5"
+
+		"spread_prone_max_settle_time"	"500"
+
+		"spread_jump_min"					"4"
+		"spread_jump_max"					"4"
+		"spread_jump_inc"					"4"
+
+		"spread_jump_max_settle_time"		"600"
+
+		"tt_intro_1"					"assaultrifle_scoped_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"assaultrifle_ironsights"
+		"tt_intro_ironsights_2"			"generic_weapon_ironsights"
+		"tt_intro_reload"				"generic_weapon_reload"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"13"
+	}
+
+	clip {
+		"projectile"					"projectile_assaultrifle_scoped"
+		"client_projectile"				"projectile_bullet"
+		"type"							"assaultrifle"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"40"
+	}
+}
+
+toolTip assaultrifle_scoped_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/assaultrifle_scoped_1"
+}
+
+
+//==================
+//Entity Defs
+//==================
+
+entityDef projectile_assaultrifle_scoped {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"12288"
+
+	"min_damage_percent"				"10"
+
+	"dmg_damage"						"damage_assaultrifle_scoped"
+}
+
+damageDef damage_assaultrifle_scoped {
+	damage								"damage_assaultrifle"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	knockback							1
+	push								5000
+
+	record_hit_stats
+
+	stat_name							"assaultrifle_scoped"
+
+	tt_obituary							"tooltips/killmsgs/weapons/assaultrifle/scoped"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/assaultrifle/scoped/teamkill"
+}
