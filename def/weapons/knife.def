@@ -1,0 +1,272 @@
+/***********************************************************************
+
+	weapons/knife.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+
+export hauser {
+	options -prefix KNIFE_ -sourcedir models/weapons/knife/dev_sd -destdir models/weapons/knife/ -keep muzzle
+
+
+	mesh	knife_base_file.mb				-dest models/weapons/knife/view.md5mesh -range 0 0
+	anim	knife_idle.mb					-dest models/weapons/knife/idle.md5anim
+ 	anim	knife_raise.mb					-dest models/weapons/knife/raise.md5anim
+ 	anim	knife_lower.mb					-dest models/weapons/knife/lower.md5anim
+ 	anim	knife_fire.mb					-dest models/weapons/knife/fire.md5anim
+ 	anim	knife_fire2.mb					-dest models/weapons/knife/fire2.md5anim
+ 	anim	knife_fire3.mb					-dest models/weapons/knife/fire3.md5anim
+ 	anim	knife_fire4.mb					-dest models/weapons/knife/fire4.md5anim
+ 	anim	knife_fire5.mb					-dest models/weapons/knife/fire5.md5anim
+ 	anim	knife_fire6.mb					-dest models/weapons/knife/fire6.md5anim
+ 	anim	knife_sprint.mb					-dest models/weapons/knife/start_sprint.md5anim -range 13 18
+	anim	knife_sprint.mb					-dest models/weapons/knife/leave_sprint.md5anim -range 18 23
+
+/*
+ 	anim	knife_fire_screen.mb			-dest models/weapons/knife/fire_screen.md5anim -range 4 4
+*/
+
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_knife {
+	mesh					models/weapons/knife/view.md5mesh
+	anim raise				models/weapons/knife/raise.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim idle 				models/weapons/knife/idle.md5anim {
+	}
+
+	anim fire 				models/weapons/knife/fire.md5anim {
+	}
+
+	anim fire2 				models/weapons/knife/fire2.md5anim {
+	}
+
+	anim fire3 				models/weapons/knife/fire3.md5anim {
+	}
+
+	anim fire4 				models/weapons/knife/fire4.md5anim {
+	}
+
+	anim fire5 				models/weapons/knife/fire5.md5anim {
+	}
+
+	anim fire6 				models/weapons/knife/fire6.md5anim {
+	}
+
+	anim putaway 			models/weapons/knife/lower.md5anim {
+	}
+
+	anim start_sprint 		models/weapons/knife/start_sprint.md5anim {
+	}
+
+	anim leave_sprint		models/weapons/knife/leave_sprint.md5anim {
+	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/knife/strogg {
+	type								"melee"
+	slot								"melee"
+	name								"game/weapons/knife"
+
+	data {
+		"inherit1"						"inventory/weapons/knife"
+		"stat_name"						"spikes"
+	}
+}
+
+invItemDef inventory/weapons/knife {
+	type								"melee"
+	slot								"melee"
+	name								"game/weapons/knife"
+
+	data {
+		"model_view" 					"viewmodel_knife"
+		"model_world" 					"models/weapons/knife/knife_thirdperson.lwo"
+		"joint_attach"					"weapon_attach"
+		"view_offset"		 		  	"4 -2 0"
+		"view_foreshorten"				"0.6"
+
+		"weapon_scriptobject"			"weapon_fists"
+		"dmg_melee"						"damage_knife"
+		"dmg_melee_special"				"damage_knife_stab"
+		"melee_distance"				"88"
+		"flashRadius"					"0"
+		"anim_prefix"					"knife"
+		"anim_prefix_class"				"tool"
+
+		"speed_mod"						"1.1"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/knife"
+
+		"stat_name"						"knife"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"show_charge"					"1"
+
+		"crosshair"						"none"
+
+		"finish_fire_anim"				"1"
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"snd_fire"						"sounds/weapons/knife/fire"
+		"snd_raise"						"sounds/weapons/knife/raise"
+		"snd_lower"						"sounds/weapons/knife/lower"
+
+		"autoswitch_priority"			"15"
+
+		"rot_fire"						"0 0 0"
+		"rot_fire2"						"0 0 90"
+		"rot_fire3"						"0 0 100"
+		"rot_fire4"						"0 0 95"
+		"rot_fire5"						"0 0 40"
+		"rot_fire6"						"0 0 145"
+
+		// these sounds need to be set up properly
+		"snd_miss"						"sounds/weapons/knife/fire"
+		"snd_hit"						"sounds/weapons/knife/fire"
+		"snd_hit_flesh"					"sounds/weapons/knife/fire"
+ 		"snd_hit_water"					"sounds/weapons/knife/fire"
+ 		"snd_hit_water_interior"		"sounds/weapons/knife/fire"
+ 		"snd_hit_plastic"				"sounds/weapons/knife/fire"
+		"snd_hit_sand"					"sounds/weapons/knife/fire"
+ 		"snd_hit_stone"					"sounds/weapons/knife/fire"
+		"snd_hit_pavement"				"sounds/weapons/knife/fire"
+		"snd_hit_metal"					"sounds/weapons/knife/fire"
+		"snd_hit_grass"					"sounds/weapons/knife/fire"
+		"snd_hit_glass"					"sounds/weapons/knife/fire"
+		"snd_hit_wood"					"sounds/weapons/knife/fire"
+
+		"tt_intro_1"					"knife_intro_1"
+		"tt_intro_1_backstab"			"knife_intro_1_backstab"
+		"tt_intro_2"					"generic_weapon_fire"
+
+  		"fx_hit"						"effects/impacts/knife/impact_default"
+		"fx_hit_flesh"					"effects/impacts/knife/impact_flesh"
+ 		"fx_hit_water"					"effects/impacts/knife/impact_liquid"
+ 		"fx_hit_water_interior"			"effects/impacts/knife/impact_liquid"
+ 		"fx_hit_plastic"				"effects/impacts/knife/impact_plastic"
+		"fx_hit_sand"					"effects/impacts/knife/impact_sand"
+ 		"fx_hit_stone"					"effects/impacts/knife/impact_stone"
+		"fx_hit_pavement"				"effects/impacts/knife/impact_pavement"
+		"fx_hit_metal"					"effects/impacts/knife/impact_metal"
+		"fx_hit_metal_thick"			"effects/impacts/knife/impact_metal"
+		"fx_hit_grass"					"effects/impacts/knife/impact_grass"
+		"fx_hit_glass"					"effects/impacts/knife/impact_glass"
+		"fx_hit_wood"					"effects/impacts/knife/impact_wood"
+		"fx_hit_forcefield"				"effects/base/bullets/impact_forcefield"
+
+		"player_weapon_num"				"0"
+	}
+}
+
+damageDef damage_knife {
+	damage								"damage_knife"
+	melee
+
+	kickDir								( -1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							20
+	push								7500
+
+	noheadshot
+
+	kick_time							400
+	kick_amplitude						0.5
+
+	stat_name							"knife"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/knife"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/knife/teamkill"
+}
+
+damageFilter damage_knife {
+
+	type {
+		target	"target_player_all"
+		damage	20
+	}
+
+	type {
+		target	"target_all"
+		damage	1
+	}
+}
+
+damageDef damage_knife_stab {
+	damage								"damage_knife_stab"
+	melee
+
+	kickDir								( -1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							20
+	push								7500
+
+	noheadshot
+
+	kick_time							400
+	kick_amplitude						0.5
+
+	stat_name							"knife"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/knife/backstab"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/knife/backstab/teamkill"
+}
+
+damageFilter damage_knife_stab {
+	type {
+		target	"target_player_all"
+		damage	100%
+		noScale
+	}
+}
+
+toolTip knife_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/knife_1"
+}
+
+toolTip knife_intro_1_backstab {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/knife_1_backstab"
+}

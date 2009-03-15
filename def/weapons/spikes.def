@@ -1,0 +1,316 @@
+/***********************************************************************
+
+	weapons/spikes.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+
+export hauser {
+	options -prefix SPIKE_ -sourcedir models/weapons/strogg_forearm_spike/dev_sd -destdir models/weapons/strogg_forearm_spike/ -keep r_finger_2_1
+
+/*
+	mesh	strogg_forearm_spike_base_file.mb		-dest models/weapons/strogg_forearm_spike/view.md5mesh
+	anim	strogg_forearm_spike_idle.mb			-dest models/weapons/strogg_forearm_spike/idle.md5anim
+ 	anim	strogg_forearm_spike_raise.mb			-dest models/weapons/strogg_forearm_spike/raise.md5anim
+ */
+ anim	strogg_forearm_spike_lower.mb			-dest models/weapons/strogg_forearm_spike/lower.md5anim
+
+
+ /*
+ anim	strogg_forearm_spike_fire1.mb			-dest models/weapons/strogg_forearm_spike/fire1.md5anim
+ 	anim	strogg_forearm_spike_fire2.mb			-dest models/weapons/strogg_forearm_spike/fire2.md5anim
+ 	anim	strogg_forearm_spike_fire3.mb			-dest models/weapons/strogg_forearm_spike/fire3.md5anim
+ 	anim	strogg_forearm_spike_fire4.mb			-dest models/weapons/strogg_forearm_spike/fire4.md5anim
+
+ 	anim	strogg_forearm_spike_start_sprint.mb		-dest models/weapons/strogg_forearm_spike/start_sprint.md5anim
+ 	anim	strogg_forearm_spike_leave_sprint.mb		-dest models/weapons/strogg_forearm_spike/leave_sprint.md5anim
+*/
+}
+/*
+//====forearm with no attachments===== -->
+
+export hauser {
+	options -prefix HANDS_ -sourcedir models/weapons/strogg_hands/dev_sd -destdir models/weapons/strogg_hands/ -keep muzzle
+
+
+	mesh	strogg_hands_base_file.mb		-dest models/weapons/strogg_hands/view.md5mesh
+	anim	strogg_hands_idle.mb			-dest models/weapons/strogg_hands/idle.md5anim
+ 	anim	strogg_hands_raise.mb			-dest models/weapons/strogg_hands/raise.md5anim
+ 	anim	strogg_hands_lower.mb			-dest models/weapons/strogg_hands/lower.md5anim
+ 	anim	strogg_hands_fire.mb			-dest models/weapons/strogg_hands/fire.md5anim
+ 	anim	strogg_hands_fire2.mb			-dest models/weapons/strogg_hands/fire2.md5anim
+ 	anim	strogg_hands_stroyent_inject.mb		-dest models/weapons/strogg_hands/stroyent_inject.md5anim
+}
+*/
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_spikes {
+	mesh						models/weapons/strogg_forearm_spike/view.md5mesh
+
+	anim raise					models/weapons/strogg_forearm_spike/raise.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_raise
+		frame 1					effect fx_raise r_finger_2_1
+	}
+
+	anim idle 					models/weapons/strogg_forearm_spike/idle.md5anim {
+//		frame 10						effect fx_snow r_wrist
+	}
+
+	anim fire 					models/weapons/strogg_forearm_spike/fire4.md5anim {
+//		frame 2						sound_channel snd_weapon_fire snd_fire
+			frame 3						sound_channel snd_weapon_fire snd_fire
+//		frame 3						effect fx_snow r_wrist
+	}
+
+
+	anim fire2 					models/weapons/strogg_forearm_spike/fire2.md5anim {
+//		frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim fire3 					models/weapons/strogg_forearm_spike/fire3.md5anim {
+//		frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+	anim fire4 					models/weapons/strogg_forearm_spike/fire1.md5anim {
+				frame 3						sound_channel snd_weapon_fire snd_fire
+				frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim putaway 				models/weapons/strogg_forearm_spike/lower.md5anim {
+	}
+
+	anim leave_sprint			models/weapons/strogg_forearm_spike/leave_sprint.md5anim {
+	}
+
+	anim start_sprint			models/weapons/strogg_forearm_spike/start_sprint.md5anim {
+	}
+}
+
+
+/*
+//====old with no attachments=====
+
+model viewmodel_spikes {
+	mesh						models/weapons/strogg_hands/view.md5mesh
+	anim raise					models/weapons/strogg_hands/raise.md5anim {
+	}
+	anim idle 					models/weapons/strogg_hands/idle.md5anim {
+	}
+	anim fire 					models/weapons/strogg_hands/fire.md5anim {
+		frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+	anim fire2 					models/weapons/strogg_hands/fire2.md5anim {
+		frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+	anim putaway 				models/weapons/strogg_hands/lower.md5anim {
+	}
+	anim stroyent_inject			models/weapons/strogg_hands/stroyent_inject.md5anim {
+	}
+
+}
+*/
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/spikes/gdf {
+	type								"weapon"
+	slot								"melee"
+	name								"game/weapons/spikes"
+
+	data {
+		"inherit1"						"inventory/weapons/spikes"
+		"stat_name"						"knife"
+	}
+}
+
+invItemDef inventory/weapons/spikes {
+	type								"weapon"
+	slot								"melee"
+	name								"game/weapons/spikes"
+
+	data {
+		"model_view" 					"viewmodel_spikes"
+		"model_world" 					"models/weapons/strogg_forearm_spike/forearm_spike_thirdperson.lwo"
+		"joint_attach"					"RightForeArmRoll"
+
+
+		"view_offset"					"-8.3 0 5"
+		"view_foreshorten"				"1"
+
+		"weapon_scriptobject"			"weapon_fists"
+		"dmg_melee"						"damage_spikes"
+		"dmg_melee_special"				"damage_spikes_stab"
+		"melee_distance"				"88"
+		"flashRadius"					"0"
+		"anim_prefix"					"hands_spikes"
+		"anim_prefix_class"				"hands"
+
+		"speed_mod"						"1.1"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/spikes"
+		"crosshair"						"none"
+		"show_charge"					"1"
+
+		"stat_name"						"spikes"
+
+		"fx_raise"						"effects/weapons/spikes_raise"
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"finish_fire_anim"				"10"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"hide_clip"						"1"
+
+		"snd_fire"						"sounds/weapons/spikes/fire"
+		"snd_raise"						"sounds/weapons/spikes/raise"
+
+		"autoswitch_priority"			"15"
+		
+		"rot_fire"						"0 0 50"
+		"rot_fire2"						"0 0 90"
+		"rot_fire3"						"0 0 10"
+		"rot_fire4"						"0 0 145"
+		
+
+ 		// these sounds need to be set up properly
+
+		"snd_miss"						"sounds/weapons/spikes/fire"
+		"snd_hit"						"sounds/weapons/spikes/impact_default"
+		"snd_hit_flesh"					"sounds/weapons/spikes/impact_flesh"
+		"snd_hit_water"					"sounds/weapons/spikes/fire"
+		"snd_hit_water_interior"		"sounds/weapons/spikes/fire"
+ 		"snd_hit_plastic"				"sounds/weapons/spikes/impact_default"
+		"snd_hit_sand"					"sounds/weapons/spikes/impact_ground"
+ 		"snd_hit_stone"					"sounds/weapons/spikes/impact_default"
+		"snd_hit_pavement"				"sounds/weapons/spikes/impact_default"
+		"snd_hit_metal"					"sounds/weapons/spikes/impact_default"
+		"snd_hit_grass"					"sounds/weapons/spikes/impact_ground"
+		"snd_hit_glass"					"sounds/weapons/spikes/impact_default"
+		"snd_hit_wood"					"sounds/weapons/spikes/impact_wood"
+
+		"tt_intro_1"					"spikes_intro_1"
+		"tt_intro_1_backstab"			"spikes_intro_1_backstab"
+		"tt_intro_2"					"generic_weapon_fire"
+
+ 		"fx_snow"						"effects/based/atmospherics/ark2"
+ 		"fx_hit"						"effects/impacts/spikes/impact_default"
+		"fx_hit_flesh"					"effects/impacts/spikes/impact_flesh"
+ 		"fx_hit_water"					"effects/impacts/spikes/impact_liquid"
+ 		"fx_hit_water_interior"			"effects/impacts/spikes/impact_liquid"
+ 		"fx_hit_plastic"				"effects/impacts/spikes/impact_plastic"
+		"fx_hit_sand"					"effects/impacts/spikes/impact_sand"
+ 		"fx_hit_stone"					"effects/impacts/spikes/impact_stone"
+		"fx_hit_pavement"				"effects/impacts/spikes/impact_pavement"
+		"fx_hit_metal"					"effects/impacts/spikes/impact_metal"
+		"fx_hit_grass"					"effects/impacts/spikes/impact_grass"
+		"fx_hit_glass"					"effects/impacts/spikes/impact_glass"
+		"fx_hit_wood"					"effects/impacts/spikes/impact_wood"
+		"fx_hit_forcefield"				"effects/base/bullets/impact_forcefield"
+
+		"player_weapon_num"				"0"
+	}
+}
+
+damageDef damage_spikes {
+	damage								"damage_spikes"
+	melee
+
+	kickDir								( -1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							20
+
+	push								12500
+
+	noheadshot
+
+	kick_time							400
+	kick_amplitude						0.5
+
+	stat_name							"spikes"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/spikes"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/spikes/teamkill"
+}
+
+damageFilter damage_spikes {
+	type {
+		target	"target_player_all"
+		damage	25
+	}
+
+	type {
+		target	"target_all"
+		damage	1
+	}
+}
+
+damageDef damage_spikes_stab {
+	damage								"damage_spikes_stab"
+	melee
+
+	kickDir								( -1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							20
+	push								12500
+
+	noheadshot
+
+	kick_time							400
+	kick_amplitude						0.5
+
+	stat_name							"spikes"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/spikes/backstab"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/spikes/backstab/teamkill"
+}
+
+damageFilter damage_spikes_stab {
+	type {
+		target	"target_player_all"
+		damage	100%
+		noScale
+	}
+}
+
+toolTip spikes_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/spikes_1"
+}
+
+toolTip spikes_intro_1_backstab {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/spikes_1_backstab"
+}
