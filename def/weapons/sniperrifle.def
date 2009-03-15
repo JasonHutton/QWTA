@@ -254,6 +254,7 @@ entityDef projectile_sniperrifle {
 	"min_damage_percent"				"25"
 
 	"dmg_damage"						"damage_sniperrifle"
+	"dmg_realistic_damage"					"realistic_damage_sniperrifle"
 
 	"fx_explode"						"effects/sniperrifle/bullets/impacts/pavement"
 	"fx_explode_flesh"					"effects/sniperrifle/bullets/impacts/flesh"
@@ -285,6 +286,7 @@ entityDef projectile_sniperrifle_scoped {
 	"min_damage_percent"				"25"
 
 	"dmg_damage"						"damage_sniperrifle_scoped"
+	"dmg_realistic_damage"					"realistic_damage_sniperrifle_scoped"
 
 	"fx_explode"						"effects/sniperrifle/bullets/impacts/pavement"
 	"fx_explode_flesh"					"effects/sniperrifle/bullets/impacts/flesh"
@@ -340,6 +342,10 @@ damageDef damage_sniperrifle {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sniperrifle/teamkill"
 }
 
+damageDef realistic_damage_sniperrifle {
+	inherit								"damage_sniperrifle"
+	damage								"realistic_damage_sniperrifle"
+}
 
 damageDef damage_sniperrifle_scoped {
 	damage								"damage_sniperrifle_scoped"
@@ -365,6 +371,10 @@ damageDef damage_sniperrifle_scoped {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sniperrifle/teamkill"
 }
 
+damageDef realistic_damage_sniperrifle_scoped {
+	inherit								"damage_sniperrifle_scoped"
+	damage								"realistic_damage_sniperrifle_scoped"
+}
 
 damageFilter damage_sniperrifle {
 
@@ -384,11 +394,47 @@ damageFilter damage_sniperrifle {
 	}
 }
 
+damageFilter realistic_damage_sniperrifle {
+
+	type {
+		target							"target_player_all"
+		damage							140
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							150
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							150
+	}
+}
+
 damageFilter damage_sniperrifle_scoped {
 
 	type {
 		target							"target_player_all"
 		damage							70
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							150
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							150
+	}
+}
+
+damageFilter realistic_damage_sniperrifle_scoped {
+
+	type {
+		target							"target_player_all"
+		damage							140
 	}
 
 	type {

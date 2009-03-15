@@ -251,6 +251,7 @@ entityDef projectile_railgun {
 	"min_damage_percent"				"25"
 
 	"dmg_damage"						"damage_railgun"
+	"dmg_realistic_damage"					"realistic_damage_railgun"
 
   	"fx_explode"				"effects/impacts/railgun/impact_default"
 	"fx_explode_pavement"		"effects/impacts/railgun/impact_pavement"
@@ -291,6 +292,7 @@ entityDef projectile_railgun_scoped {
 	"min_damage_percent"				"25"
 
 	"dmg_damage"						"damage_railgun_scoped"
+	"dmg_realistic_damage"					"realistic_damage_railgun_scoped"
 
   	"fx_explode"				"effects/impacts/railgun/impact_default"
 	"fx_explode_pavement"		"effects/impacts/railgun/impact_pavement"
@@ -347,6 +349,11 @@ damageDef damage_railgun {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railgun/teamkill"
 }
 
+damageDef realistic_damage_railgun {
+	inherit								"damage_railgun"
+	damage								"realistic_damage_railgun"
+}
+
 damageDef damage_railgun_scoped {
 	damage								"damage_railgun"
 	kickDir								( 1 0 0 )
@@ -371,6 +378,11 @@ damageDef damage_railgun_scoped {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railgun/teamkill"
 }
 
+damageDef realistic_damage_railgun_scoped {
+	inherit								"damage_railgun_scoped"
+	damage								"realistic_damage_railgun_scoped"
+}
+
 damageFilter damage_railgun {
 	type {
 		target							"target_player_all"
@@ -386,10 +398,40 @@ damageFilter damage_railgun {
 	}
 }
 
+damageFilter realistic_damage_railgun {
+	type {
+		target							"target_player_all"
+		damage							160
+	}
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
 damageFilter damage_railgun_scoped {
 	type {
 		target							"target_player_all"
 		damage							80
+	}
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
+damageFilter realistic_damage_railgun_scoped {
+	type {
+		target							"target_player_all"
+		damage							160
 	}
 	type {
 		target							"target_veh_all"
