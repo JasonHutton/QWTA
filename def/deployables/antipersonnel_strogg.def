@@ -472,6 +472,7 @@ entityDef projectile_deployable_antipersonnel_strogg {
 	"range"							"4096"
 
 	"dmg_damage"					"damage_deployable_antipersonnel_strogg"
+	"dmg_realistic_damage"				"realistic_damage_deployable_antipersonnel_strogg"
 }
 
 damageDef damage_deployable_antipersonnel_strogg {
@@ -491,4 +492,9 @@ damageDef damage_deployable_antipersonnel_strogg {
 	tt_obituary_self				"tooltips/killmsgs/turrets/apt/self"
 	tt_obituary_team_kill			"tooltips/killmsgs/turrets/apt/teamkill"
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/apt/self"
+}
+
+damageDef realistic_damage_deployable_antipersonnel_strogg {
+	inherit							"damage_deployable_antipersonnel_strogg"
+	damage							"realistic_damage_deployable_antipersonnel"
 }

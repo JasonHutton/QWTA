@@ -281,7 +281,9 @@ entityDef projectile_deployable_antiarmour_strogg {
 	"scriptObject"					"projectile_homingmissile"
 
 	"dmg_damage"					"damage_deployable_antiarmour_strogg"
+	"dmg_realistic_damage"				"realistic_damage_deployable_antiarmour_strogg"
 	"dmg_splash_damage"				"damage_deployable_antiarmour_splash_strogg"
+	"dmg_realistic_splash_damage"			"realistic_damage_deployable_antiarmour_splash_strogg"
 
 	"health"						"1"
 	"angular_velocity"				"0 0 0"
@@ -319,6 +321,11 @@ damageDef damage_deployable_antiarmour_strogg {
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
 }
 
+damageDef realistic_damage_deployable_antiarmour_strogg {
+	inherit							"damage_deployable_antiarmour_strogg"
+	damage							"realistic_damage_deployable_antiarmour"
+}
+
 damageDef damage_deployable_antiarmour_splash_strogg {
 	damage							"damage_deployable_antiarmour"
 	push							10000000
@@ -334,4 +341,9 @@ damageDef damage_deployable_antiarmour_splash_strogg {
 	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
 
+}
+
+damageDef realistic_damage_deployable_antiarmour_splash_strogg {
+	inherit							"damage_deployable_antiarmour_splash_strogg"
+	damage							"realistic_damage_deployable_antiarmour"
 }

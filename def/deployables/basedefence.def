@@ -162,12 +162,14 @@ entityDef projectile_deployable_basedefence {
 	"inherit"						"projectile_deployable_antipersonnel"
 
 	"dmg_damage"					"damage_deployable_basedefence"
+	"dmg_realistic_damage"				"realistic_damage_deployable_basedefence"
 }
 
 entityDef projectile_deployable_basedefence_strogg {
 	"inherit"						"projectile_deployable_antipersonnel_strogg"
 
 	"dmg_damage"					"damage_deployable_basedefence_strogg"
+	"dmg_realistic_damage"				"realistic_damage_deployable_basedefence_strogg"
 }
 
 damageFilter damage_deployable_basedefence {
@@ -175,6 +177,14 @@ damageFilter damage_deployable_basedefence {
 	type {
 		target	"target_all"
 		damage	8
+	}
+}
+
+damageFilter realistic_damage_deployable_basedefence {
+
+	type {
+		target	"target_all"
+		damage	24
 	}
 }
 
@@ -196,6 +206,11 @@ damageDef damage_deployable_basedefence {
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_gdf_team"
 }
 
+damageDef realistic_damage_deployable_basedefense {
+	inherit							"damage_deployable_basedefence"
+	damage							"realistic_damage_deployable_basedefence"
+}
+
 damageDef damage_deployable_basedefence_strogg {
 	damage							"damage_deployable_basedefence"
 
@@ -212,4 +227,9 @@ damageDef damage_deployable_basedefence_strogg {
 
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/basedefence_strogg"
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_strogg_team"
+}
+
+damageDef realistic_damage_deployable_basedefense_strogg {
+	inherit							"damage_deployable_basedefence_strogg"
+	damage							"realistic_damage_deployable_basedefence"
 }
