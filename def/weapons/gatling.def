@@ -11,21 +11,25 @@ entityDef projectile_gatling {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_gatling"
+	"dmg_realistic_damage"					"realistic_damage_gatling"
 }
 
 entityDef projectile_gatling_bumblebee {
 	"inherit"							"projectile_gatling"
 	"dmg_damage"						"damage_gatling_bumblebee"
+	"dmg_realistic_damage"					"realistic_damage_gatling_bumblebee"
 }
 
 entityDef projectile_gatling_anansi {
 	"inherit"							"projectile_gatling"
 	"dmg_damage"						"damage_gatling_anansi"
+	"dmg_realistic_damage"					"realistic_damage_gatling_anansi"
 }
 
 entityDef projectile_gatling_titan {
 	"inherit"							"projectile_gatling"
 	"dmg_damage"						"damage_gatling_titan"
+	"dmg_realistic_damage"					"realistic_damage_gatling_titan"
 }
 
 damageDef damage_gatling {
@@ -45,7 +49,10 @@ damageDef damage_gatling {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
 }
 
-
+damageDef realistic_damage_gatling {
+	inherit								"damage_gatling"
+	damage								"realistic_damage_gatling"
+}
 
 damageDef damage_gatling_bumblebee {
 	damage								"damage_gatling"
@@ -64,6 +71,10 @@ damageDef damage_gatling_bumblebee {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
 }
 
+damageDef realistic_damage_gatling_bumblebee {
+	inherit								"damage_gatling_bumblebee"
+	damage								"realistic_damage_gatling_bumblebee"
+}
 
 damageDef damage_gatling_anansi {
 	damage								"damage_gatling"
@@ -80,6 +91,11 @@ damageDef damage_gatling_anansi {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gatling"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+}
+
+damageDef realistic_damage_gatling_anansi {
+	inherit								"damage_gatling_anansi"
+	damage								"realistic_damage_gatling_anansi"
 }
 
 damageDef damage_gatling_titan {
@@ -99,6 +115,11 @@ damageDef damage_gatling_titan {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
 }
 
+damageDef realistic_damage_gatling_titan {
+	inherit								"damage_gatling_titan"
+	damage								"realistic_damage_gatling_titan"
+}
+
 damageFilter damage_gatling {
 	type {
 		target	"target_player_all"
@@ -114,10 +135,40 @@ damageFilter damage_gatling {
 	}
 }
 
+damageFilter realistic_damage_gatling {
+	type {
+		target	"target_player_all"
+		damage	75
+	}
+	type {
+		target	"target_veh_all"
+		damage	25
+	}
+	type {
+		target	"target_deployables_all"
+		damage	25
+	}
+}
+
 damageFilter damage_gatling_mcp {
 	type {
 		target	"target_player_all"
 		damage	25
+	}
+	type {
+		target	"target_veh_all"
+		damage	40
+	}
+	type {
+		target	"target_deployables_all"
+		damage	40
+	}
+}
+
+damageFilter realistic_damage_gatling_mcp {
+	type {
+		target	"target_player_all"
+		damage	75
 	}
 	type {
 		target	"target_veh_all"
