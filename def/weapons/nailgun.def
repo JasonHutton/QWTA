@@ -247,6 +247,7 @@ entityDef projectile_nailgun {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_nailgun"
+	"dmg_realistic_damage"					"realistic_damage_nailgun"
 
 	"tracer_chance"						"1"
 	"fx_tracer"							"effects/weapons/nailgun_tracer"
@@ -303,6 +304,11 @@ damageDef damage_nailgun {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/nailgun/teamkill"
 }
 
+damageDef realistic_damage_nailgun {
+	inherit								"damage_nailgun"
+	damage								"realistic_damage_nailgun"
+}
+
 damageFilter damage_nailgun {
 	type {
 		target							"target_player_all"
@@ -317,6 +323,28 @@ damageFilter damage_nailgun {
 	type {
 		target							"target_veh_heavy_all"
 		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							10
+	}
+}
+
+damageFilter realistic_damage_nailgun {
+	type {
+		target							"target_player_all"
+		damage							20
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							10
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
 	}
 
 	type {

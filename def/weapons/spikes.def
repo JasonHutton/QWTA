@@ -147,7 +147,9 @@ invItemDef inventory/weapons/spikes {
 
 		"weapon_scriptobject"			"weapon_fists"
 		"dmg_melee"						"damage_spikes"
+		"dmg_realistic_melee"					"realistic_damage_spikes"
 		"dmg_melee_special"				"damage_spikes_stab"
+		"dmg_realistic_melee_special"			"realistic_damage_spikes_stab"
 		"melee_distance"				"88"
 		"flashRadius"					"0"
 		"anim_prefix"					"hands_spikes"
@@ -259,6 +261,11 @@ damageDef damage_spikes {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/spikes/teamkill"
 }
 
+damageDef realistic_damage_spikes {
+	inherit								"damage_spikes"
+	damage								"realistic_damage_spikes"
+}
+
 damageFilter damage_spikes {
 	type {
 		target	"target_player_all"
@@ -268,6 +275,18 @@ damageFilter damage_spikes {
 	type {
 		target	"target_all"
 		damage	1
+	}
+}
+
+damageFilter realistic_damage_spikes {
+	type {
+		target	"target_player_all"
+		damage	75
+	}
+
+	type {
+		target	"target_all"
+		damage	0
 	}
 }
 
@@ -297,7 +316,20 @@ damageDef damage_spikes_stab {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/spikes/backstab/teamkill"
 }
 
+damageDef realistic_damage_spikes_stab {
+	inherit								"damage_spikes_stab"
+	damage								"realistic_damage_spikes_stab"
+}
+
 damageFilter damage_spikes_stab {
+	type {
+		target	"target_player_all"
+		damage	100%
+		noScale
+	}
+}
+
+damageFilter realistic_damage_spikes_stab {
 	type {
 		target	"target_player_all"
 		damage	100%

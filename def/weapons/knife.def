@@ -102,7 +102,9 @@ invItemDef inventory/weapons/knife {
 
 		"weapon_scriptobject"			"weapon_fists"
 		"dmg_melee"						"damage_knife"
+		"dmg_realistic_melee"					"realistic_damage_knife"
 		"dmg_melee_special"				"damage_knife_stab"
+		"dmg_realistic_melee_special"			"realistic_damage_knife_stab"
 		"melee_distance"				"88"
 		"flashRadius"					"0"
 		"anim_prefix"					"knife"
@@ -214,6 +216,11 @@ damageDef damage_knife {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/knife/teamkill"
 }
 
+damageDef realistic_damage_knife {
+	inherit								"damage_knife"
+	damage								"realistic_damage_knife"
+}
+
 damageFilter damage_knife {
 
 	type {
@@ -224,6 +231,19 @@ damageFilter damage_knife {
 	type {
 		target	"target_all"
 		damage	1
+	}
+}
+
+damageFilter realistic_damage_knife {
+
+	type {
+		target	"target_player_all"
+		damage	60
+	}
+
+	type {
+		target	"target_all"
+		damage	0
 	}
 }
 
@@ -253,7 +273,20 @@ damageDef damage_knife_stab {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/knife/backstab/teamkill"
 }
 
+damageDef realistic_damage_knife_stab {
+	inherit								"damage_knife_stab"
+	damage								"realistic_damage_knife_stab"
+}
+
 damageFilter damage_knife_stab {
+	type {
+		target	"target_player_all"
+		damage	100%
+		noScale
+	}
+}
+
+damageFilter realistic_damage_knife_stab {
 	type {
 		target	"target_player_all"
 		damage	100%

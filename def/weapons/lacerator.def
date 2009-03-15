@@ -316,6 +316,7 @@ entityDef projectile_lacerator {
  	"fx_explode_plastic"				"effects/impacts/lacerator/impact_plastic"
 
 	"dmg_damage"						"damage_lacerator"
+	"dmg_realistic_damage"					"realistic_damage_lacerator"
 }
 
 // Needs to be exactly like the projectile_lacerator,
@@ -323,6 +324,7 @@ entityDef projectile_lacerator {
 entityDef projectile_lacerator_gren_bullet {
 	"inherit"					"projectile_lacerator"
 	"dmg_damage"				"damage_lacerator_gren_bullet"
+	"dmg_realistic_damage"			"realistic_damage_lacerator_gren_bullet"
 }
 
 damageDef damage_lacerator {
@@ -339,6 +341,11 @@ damageDef damage_lacerator {
 
 	tt_obituary							"tooltips/killmsgs/weapons/lacerator"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lacerator/teamkill"
+}
+
+damageDef realistic_damage_lacerator {
+	inherit								"damage_lacerator"
+	damage								"realistic_damage_lacerator"
 }
 
 // Needs to be exactly like the damage_lacerator,
@@ -359,6 +366,11 @@ damageDef damage_lacerator_gren_bullet {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railchucker/teamkill"
 }
 
+damageDef realistic_damage_lacerator_gren_bullet {
+	inherit								"damage_lacerator_gren_bullet"
+	damage								"realistic_damage_lacerator"
+}
+
 damageFilter damage_lacerator {
 	type {
 		target							"target_player_all"
@@ -373,6 +385,28 @@ damageFilter damage_lacerator {
 	type {
 		target							"target_veh_heavy_all"
 		damage							13
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							18
+	}
+}
+
+damageFilter realistic_damage_lacerator {
+	type {
+		target							"target_player_all"
+		damage							54
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							18
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
 	}
 
 	type {

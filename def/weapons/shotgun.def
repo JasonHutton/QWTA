@@ -244,6 +244,7 @@ entityDef projectile_shotgun {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_shotgun"
+	"dmg_realistic_damage"					"realistic_damage_shotgun"
 }
 
 damageDef damage_shotgun {
@@ -274,6 +275,11 @@ damageDef damage_shotgun {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/shotgun/teamkill"
 }
 
+damageDef realistic_damage_shotgun {
+	inherit								"damage_shotgun"
+	damage								"realistic_damage_shotgun"
+}
+
 damageFilter damage_shotgun {
 
 	type {
@@ -289,6 +295,29 @@ damageFilter damage_shotgun {
 	type {
 		target							"target_veh_heavy_all"
 		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							10
+	}
+}
+
+damageFilter realistic_damage_shotgun {
+
+	type {
+		target							"target_player_all"
+		damage							20
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							10
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
 	}
 
 	type {

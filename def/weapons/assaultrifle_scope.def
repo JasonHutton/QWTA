@@ -251,6 +251,7 @@ entityDef projectile_assaultrifle_scoped {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_assaultrifle_scoped"
+	"dmg_realistic_damage"					"realistic_damage_assaultrifle_scoped"
 }
 
 damageDef damage_assaultrifle_scoped {
@@ -267,4 +268,9 @@ damageDef damage_assaultrifle_scoped {
 
 	tt_obituary							"tooltips/killmsgs/weapons/assaultrifle/scoped"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/assaultrifle/scoped/teamkill"
+}
+
+damageDef realistic_damage_assaultrifle_scoped {
+	inherit								"damage_assaultrifle_scoped"
+	damage								"realistic_damage_assaultrifle"
 }

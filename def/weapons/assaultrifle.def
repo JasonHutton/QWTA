@@ -471,6 +471,7 @@ entityDef projectile_assaultrifle {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_assaultrifle"
+	"dmg_realistic_damage"					"realistic_damage_assaultrifle"
 }
 
 // Needs to be exactly like the projectile_assaultrifle,
@@ -478,6 +479,7 @@ entityDef projectile_assaultrifle {
 entityDef projectile_assaultrifle_gren_bullet {
 	"inherit"							"projectile_assaultrifle"
 	"dmg_damage"						"damage_assaultrifle_gren_bullet"
+	"dmg_realistic_damage"					"realistic_damage_assaultrifle_gren_bullet"
 }
 
 damageDef damage_assaultrifle {
@@ -496,6 +498,11 @@ damageDef damage_assaultrifle {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/assaultrifle/teamkill"
 }
 
+damageDef realistic_damage_assaultrifle {
+	inherit								"damage_assaultrifle"
+	damage								"realistic_damage_assaultrifle"
+}
+
 // Needs to be exactly like the damage_assaultrifle,
 // but with the grenade launcher obituary text
 damageDef damage_assaultrifle_gren_bullet {
@@ -512,6 +519,11 @@ damageDef damage_assaultrifle_gren_bullet {
 
 	tt_obituary							"tooltips/killmsgs/weapons/grenadelauncher"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/grenadelauncher/teamkill"
+}
+
+damageDef realistic_damage_assaultrifle_gren_bullet {
+	inherit								"damage_assaultrifle_gren_bullet"
+	damage								"realistic_damage_assaultrifle"
 }
 
 damageFilter damage_assaultrifle {
@@ -536,3 +548,24 @@ damageFilter damage_assaultrifle {
 	}
 }
 
+damageFilter realistic_damage_assaultrifle {
+	type {
+		target							"target_player_all"
+		damage							39
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							15
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							15
+	}
+}

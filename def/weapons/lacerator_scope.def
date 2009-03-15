@@ -255,6 +255,7 @@ entityDef projectile_lacerator_scoped {
 	"min_damage_percent"				"1"
 
 	"dmg_damage"						"damage_lacerator_scoped"
+	"dmg_realistic_damage"					"realistic_damage_lacerator_scoped"
 }
 
 damageDef damage_lacerator_scoped {
@@ -271,4 +272,9 @@ damageDef damage_lacerator_scoped {
 
 	tt_obituary							"tooltips/killmsgs/weapons/lacerator_scoped"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lacerator_scoped/teamkill"
+}
+
+damageDef realistic_damage_lacerator_scoped {
+	inherit								"damage_lacerator_scoped"
+	damage								"realistic_damage_lacerator_scoped"
 }
