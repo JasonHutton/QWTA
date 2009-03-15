@@ -1,0 +1,361 @@
+/************************************************************************
+
+	reexportModels weapons/obliterator.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix OBLITERATOR_ -sourcedir models/weapons/strogg_obliterator/dev_sd -destdir models/weapons/strogg_obliterator/ -keep muzzle
+/*
+	mesh    obliterator_rework_base_file.mb				-dest models/weapons/strogg_obliterator/view.md5mesh
+
+	anim	obliterator_rework_base_file.mb				-dest models/weapons/strogg_obliterator/base.md5anim
+	anim	obliterator_rework_idle.mb					-dest models/weapons/strogg_obliterator/idle.md5anim
+ 	anim	obliterator_rework_raise.mb					-dest models/weapons/strogg_obliterator/raise.md5anim
+ 	anim	obliterator_rework_lower.mb					-dest models/weapons/strogg_obliterator/lower.md5anim
+*/
+ 	anim	obliterator_rework_fire.mb					-dest models/weapons/strogg_obliterator/fire.md5anim -range 22 35
+ 	anim	obliterator_rework_fire.mb					-dest models/weapons/strogg_obliterator/reload.md5anim -range 36 132
+/*
+ 	anim	obliterator_rework_sprint.mb				-dest models/weapons/strogg_obliterator/start_sprint.md5anim -range 1 8
+ 	anim	obliterator_rework_sprint.mb				-dest models/weapons/strogg_obliterator/leave_sprint.md5anim -range 8 14
+ 	anim	obliterator_rework_zoom_in.mb				-dest models/weapons/strogg_obliterator/zoom_in.md5anim
+ 	anim	obliterator_rework_zoom_in.mb				-dest models/weapons/strogg_obliterator/zoom_out.md5anim
+*/
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_obliterator {
+	mesh						models/weapons/strogg_obliterator/view.md5mesh
+	anim idle 					models/weapons/strogg_obliterator/idle.md5anim {
+	}
+	anim fire 					models/weapons/strogg_obliterator/fire.md5anim {
+	}
+	anim reload 					models/weapons/strogg_obliterator/reload.md5anim {
+		frame begin					sound_channel snd_weapon_reload snd_reload
+	 	frame 1					sound_channel snd_weapon_reload snd_gren_up
+		frame 2					sound_channel snd_weapon_reload snd_gren_up
+	 	frame 34					sound_channel snd_weapon_raise snd_raise
+ 		frame 38					sound_channel snd_weapon_raise snd_raise
+		frame 54					sound_channel snd_weapon_raise snd_raise
+		frame 58					sound_channel snd_weapon_raise snd_raise
+		frame 96					sound_channel snd_weapon_reload snd_gren_up
+		frame 112					sound_channel snd_weapon_reload snd_gren_up
+
+	}
+	anim raise					models/weapons/strogg_obliterator/raise.md5anim {
+		frame begin					sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway					models/weapons/strogg_obliterator/lower.md5anim {
+	}
+	anim start_sprint				models/weapons/strogg_obliterator/start_sprint.md5anim {
+	}
+	anim leave_sprint				models/weapons/strogg_obliterator/leave_sprint.md5anim {
+	}
+	anim zoomout					models/weapons/strogg_obliterator/zoom_out.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_unzoom
+	}
+	anim zoomin						models/weapons/strogg_obliterator/zoom_in.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_initzoom
+	}
+	anim idle_zoom					models/weapons/strogg_obliterator/zoom_in.md5anim {
+	}
+	anim fire_zoom					models/weapons/strogg_obliterator/fire.md5anim {
+	}
+}
+
+
+model worldmodel_obliterator {
+	mesh		 				models/weapons/strogg_obliterator/obliterator_world.md5mesh
+
+	anim raise					models/weapons/strogg_obliterator/obliterator_world.md5anim {
+	}
+	anim idle 					models/weapons/strogg_obliterator/obliterator_world.md5anim {
+	}
+	anim aim					models/weapons/strogg_obliterator/obliterator_world.md5anim {
+	}
+	anim fire1 					models/weapons/strogg_obliterator/obliterator_world_fire.md5anim {
+	}
+	anim reload					models/weapons/strogg_obliterator/obliterator_world_reload.md5anim {
+	}
+	anim noammo					models/weapons/strogg_obliterator/obliterator_world.md5anim {
+	}
+ 	anim putaway				models/weapons/strogg_obliterator/obliterator_world.md5anim {
+ 	}
+}
+
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/obliterator {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/obliterator"
+	model								"models/weapons/strogg_obliterator/obliterator_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_obliterator"
+		"model_world" 					"worldmodel_obliterator"
+		"anim_limbomenu"				"menu"
+
+		"view_offset"					"0.7 2 -1"
+		"view_foreshorten"				"0.75"
+
+		"joint_attach"					"weapon_attach"
+
+		"anim_prefix"					"2h_obliterator"
+		"anim_prefix_class"				"2h"
+
+		"weapon_scriptobject"			"weapon_obliterator"
+
+		"recoilTime"					"1000"
+		"recoilAngles"					"-0.25 0 0"
+		"kickback"						"5"
+
+		"fx_muzzle_flash"				"effects/weapons/obliterator_muzzleflash"
+		"fx_muzzle_flash_world"				"effects/weapons/obliterator_muzzleflash_world"
+
+		"fx_charge"						"effects/weapons/obliterator_charge"
+
+		"stat_name"						"obliterator"
+
+		"snd_reload"					"sounds/weapons/obliterator/reload"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_target_locking"			"sounds/weapons/misc/target_track_short"
+		"snd_target_locked"				"sounds/weapons/misc/target_lock"
+		"snd_fire"				        "sounds/weapons/obliterator/fire"
+		"snd_fire_local"				"sounds/weapons/obliterator/fire/local"
+		"snd_fire_far"					"sounds/weapons/obliterator/fire/far"
+		"snd_charge"					"sounds/weapons/obliterator/chargeup"
+		"snd_charge_local"				"sounds/weapons/obliterator/chargeup_local"
+		"snd_initzoom"					"sounds/weapons/obliterator/zoomin"
+		"snd_unzoom"					"sounds/weapons/obliterator/unzoom"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+		"snd_raise"						"sounds/weapons/obliterator/raise"
+				"snd_gren_up"				"sounds/weapons/grenades/strogg_up"
+		"snd_gren_prime"			"sounds/weapons/grenades/strogg_prime"
+
+		"lock_distance"					"8192"
+		"lock_filter"					"target_lock_filter"
+
+		"speed_mod"						"0.7"
+
+		"fov_zoom"						"60"
+		"fov_time"						"0.4"
+		"fov_speed"						"0.54"
+		"fov_spread"					"0.25"
+
+		"tt_intro_1"					"obliterator_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"obliterator_ironsights_1"
+		"tt_intro_ironsights_2"			"obliterator_ironsights_2"
+		"tt_prone_failed"				"obliterator_prone_failed"
+
+		"fire_rate"						"6"
+		"trigger_delay"					"1"
+		"num_projectiles"				"1"
+		"low_ammo"						"2"
+		"hide_clip"						"1"
+		"show_all_ammo"					"1"
+		"clip_based"					"0"
+
+		"gui_sniper_scope"				"game/sights/obliterator_scope"
+		"hud_sort"						"999"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/obliterator"
+
+		"crosshair"						"explosive"
+		"crosshair_spread_min"			"1"
+		"crosshair_spread_max"			"1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"1"
+		"spread_max"					"1"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"1"
+		"spread_viewrate_inc"			"1"
+
+		"spread_max_settle_time"		"2500"
+
+		"spread_crouch_min"				"1"
+		"spread_crouch_max"				"1"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"1"
+		"spread_crouch_viewrate_max"	"1"
+		"spread_crouch_viewrate_inc"	"1"
+
+		"spread_crouch_max_settle_time"	"2000"
+
+		"spread_jump_min"				"1"
+		"spread_jump_max"				"1"
+		"spread_jump_inc"				"1"
+
+		"spread_jump_max_settle_time"	"2000"
+
+		"allow_prone"					"0"
+
+		"autoswitch_priority"			"5"
+		"autoswitch_isexplosive"		"1"
+
+		"hide_crosshair"				"0"
+
+		"require_use"					"stance_prone != true"
+
+		"player_weapon_num"				"5"
+
+	}
+
+	clip {
+		"projectile"					"projectile_obliterator"
+		"type"							"stroyent_packet"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"1"
+	}
+
+	clip {
+		"projectile"					"projectile_obliterator_arcing"
+		"type"							"stroyent_packet"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"1"
+	}
+}
+
+entityDef projectile_obliterator {
+	"inherit"							"projectile_rocket_base"
+
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_homingmissile"
+
+	"dmg_damage"						"damage_obliterator"
+	"dmg_splash_damage"					"damage_obliterator_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"velocity"							"4000 0 0"
+	"face_velocity"						"1"
+	"gravity"							"0"
+	"mass"								"10"
+	"fuse"								"3"
+	"thrust_power"						"15000"
+	"has_thrust"						"1"
+
+	"model"								""
+	"snd_fly"							"sounds/weapons/obliterator/fly"
+	"fx_trail"							"effects/weapons/obliterator_trail"
+
+	"fx_explode"						"effects/impacts/rocket/explosion_default"
+	"fx_explode_sand"					"effects/impacts/rocket/explosion_sand"
+
+	"fx_splash"							"effects/base/impact_water_large"
+
+	"use_air_burst"						"1"
+	"fx_airburst"						"effects/weapons/obliterator_explosion_air"
+
+	"collection_decoy_target"			"decoy_target"
+	"collection_mdfExport"				"mdfExport"
+}
+
+entityDef projectile_obliterator_arcing {
+	"inherit"							"projectile_rocket_base"
+
+	"dmg_damage"						"damage_obliterator"
+	"dmg_splash_damage"					"damage_obliterator_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"velocity"							"2000 0 0"
+	"face_velocity"						"1"
+	"gravity"							"120"
+	"mass"								"10"
+	"fuse"								"4"
+
+    "snd_fire"							"sounds/weapons/obliterator/fire"
+
+	"model"								""
+	"snd_fly"							"sounds/weapons/obliterator/fly"
+	"fx_trail"							"effects/weapons/obliterator_trail"
+
+	"fx_explode"						"effects/weapons/obliterator_explosion"
+	"fx_explode_sand"					"effects/weapons/obliterator_explosion"
+
+	"use_air_burst"						"1"
+	"fx_airburst"						"effects/weapons/obliterator_explosion_air"
+
+}
+
+entityDef projectile_obliterator_arcing_firesound {
+
+        "snd_fire"						"sounds/weapons/obliterator/fire"
+        "snd_fire_local"				"sounds/weapons/obliterator/fire/local"
+}
+
+damageDef damage_obliterator {
+	damage								"damage_law"
+
+	stat_name							"obliterator"
+
+	noheadshot
+
+	prof_damage							"pro_aggressor_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/obliterator"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/obliterator/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/obliterator/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/obliterator/unknown"
+}
+
+damageDef damage_obliterator_splash {
+	damage								"damage_law_splash"
+
+	radius								480
+	knockback							50
+	push								30000000
+
+	noheadshot
+
+	stat_name							"obliterator"
+
+	prof_damage							"pro_aggressor_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/obliterator"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/obliterator/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/obliterator/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/obliterator/unknown"
+}
+
+toolTip obliterator_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/obliterator_1"
+}
+
+toolTip obliterator_ironsights_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}
+
+toolTip obliterator_ironsights_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/obliterator_ironsights_1"
+}
+
+toolTip obliterator_prone_failed {
+	alwaysPlay
+	sound "sounds/ui/main/bad"
+	text "game/tt/cannot_prone_obliterator"
+}

@@ -1,0 +1,513 @@
+/***********************************************************************
+
+	weapons/law.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+export hauser {
+	options -prefix N72 -sourcedir models/weapons/gdf_rocketlauncher/dev_sd -destdir models/weapons/gdf_rocketlauncher/ -keep muzzle
+
+	mesh	N72_rocketlauncher_base_file.mb		-dest models/weapons/gdf_rocketlauncher/view.md5mesh
+	anim	N72_rocketlauncher_idle.mb			-dest models/weapons/gdf_rocketlauncher/idle.md5anim
+	anim	N72_rocketlauncher_raise.mb			-dest models/weapons/gdf_rocketlauncher/raise.md5anim
+ 	anim	N72_rocketlauncher_lower.mb			-dest models/weapons/gdf_rocketlauncher/lower.md5anim
+   	anim	N72_rocketlauncher_fire.mb			-dest models/weapons/gdf_rocketlauncher/fire.md5anim
+ 	anim	N72_rocketlauncher_reload.mb		-dest models/weapons/gdf_rocketlauncher/reload.md5anim
+ 	anim	N72_rocketlauncher_zoom_in.mb		-dest models/weapons/gdf_rocketlauncher/zoom_in.md5anim
+ 	anim	N72_rocketlauncher_zoom_out.mb		-dest models/weapons/gdf_rocketlauncher/zoom_out.md5anim
+ 	anim	N72_rocketlauncher_idle_zoom.mb		-dest models/weapons/gdf_rocketlauncher/idle_zoom.md5anim
+ 	anim	N72_rocketlauncher_fire_zoom.mb		-dest models/weapons/gdf_rocketlauncher/fire_zoom.md5anim
+ 	anim	N72_rocketlauncher_start_sprint.mb	-dest models/weapons/gdf_rocketlauncher/start_sprint.md5anim
+ 	anim	N72_rocketlauncher_leave_sprint.mb	-dest models/weapons/gdf_rocketlauncher/leave_sprint.md5anim
+}
+
+// ========================================================================
+// VIEW Models
+//
+model viewmodel_law
+{
+	mesh						models/weapons/gdf_rocketlauncher/view.md5mesh
+
+	anim idle 					models/weapons/gdf_rocketlauncher/idle.md5anim {
+	}
+	anim fire 					models/weapons/gdf_rocketlauncher/fire.md5anim {
+	}
+	anim reload 				models/weapons/gdf_rocketlauncher/reload.md5anim {
+		frame 26					sound_channel snd_weapon_reload snd_reload_start
+		frame 52					sound_channel snd_weapon_reload snd_reload_stop
+		frame 105					sound_channel snd_weapon_arm snd_arm
+	}
+	anim raise					models/weapons/gdf_rocketlauncher/raise.md5anim {
+		frame 5						sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway				models/weapons/gdf_rocketlauncher/lower.md5anim {
+		frame 1						sound_channel snd_weapon_lower snd_lower
+	}
+	anim zoomin					models/weapons/gdf_rocketlauncher/zoom_in.md5anim {
+		frame	7					sound_channel snd_weapon_reload snd_zoomin
+	}
+	anim zoomout				models/weapons/gdf_rocketlauncher/zoom_out.md5anim {
+		frame	7					sound_channel snd_weapon_reload snd_zoomout
+	}
+	anim idle_zoom 				models/weapons/gdf_rocketlauncher/idle_zoom.md5anim {
+	}
+	anim fire_zoom				models/weapons/gdf_rocketlauncher/fire_zoom.md5anim {
+	}
+	anim start_sprint 			models/weapons/gdf_rocketlauncher/start_sprint.md5anim {
+	}
+	anim leave_sprint			models/weapons/gdf_rocketlauncher/leave_sprint.md5anim {
+	}
+}
+
+// ========================================================================
+// WORLD Models
+//
+model worldmodel_law {
+	mesh		 				models/weapons/gdf_rocketlauncher/rocket_launcher.md5mesh
+
+	anim raise					models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+	}
+	anim idle 					models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+	}
+	anim aim					models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+	}
+	anim fire1 					models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+	}
+	anim reload					models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+	}
+	anim noammo					models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+	}
+ 	anim putaway			 	models/weapons/gdf_rocketlauncher/rocket_launcher.md5anim {
+ 	}
+}
+
+
+// ========================================================================
+// Entity DEFS
+//
+invItemDef inventory/weapons/law {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/rocketlauncher"
+	model								"models/weapons/gdf_rocketlauncher/player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_law"
+		"model_world" 					"models/weapons/gdf_rocketlauncher/world.lwo"
+
+		"anim_limbomenu"				"menu_law"
+
+		"view_offset"					"-2 0.5 -0.9"
+ 		"view_foreshorten"				"0.85"
+
+ 		"hide_distance"					"-30"
+
+		"joint_attach"					"weapon" //F
+		"anim_prefix"					"rocketlauncher"
+		"anim_prefix_class"				"rocket"
+
+		"fx_muzzle_flash"				"effects/weapons/law_muzzleflash_view"
+		"fx_muzzle_flash_world"			"effects/weapons/law_muzzleflash_world"
+
+
+		"weapon_scriptobject"			"weapon_law"
+
+		"recoilTime"					"1000"
+		"recoilAngles"					"-0.2 0 0"
+		"kickback"						"5"
+
+		"stat_name"						"rocketlauncher"
+
+		"snd_reload_start"				"sounds/weapons/law/reload/start"
+		"snd_reload_stop"				"sounds/weapons/law/reload/end"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_target_locking"			"sounds/weapons/misc/target_track_short"
+		"snd_target_locked"				"sounds/weapons/misc/target_lock"
+		"snd_fire"						"sounds/weapons/law/fire"
+		"snd_fire_local"				"sounds/weapons/law/fire/local"
+		"snd_fire_far"					"sounds/weapons/law/fire/far"
+		"snd_charge"					"sounds/weapons/law/charge_up"
+		"snd_raise"						"sounds/weapons/law/raise"
+		"snd_lower"						"sounds/weapons/law/lower"
+		"snd_zoomin"					"sounds/weapons/law/zoom_in"
+		"snd_zoomout"					"sounds/weapons/law/zoom_out"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+		"snd_arm"						"sounds/tools/hecharge/remote/arm"
+
+		"def_scopemodel"				"scope_law"
+		"gui_sniper_scope"				"game/sights/law"
+		"hud_sort"						"999"
+		"zoom_fov"						"60"
+		"zoom_time"						"0.25"
+
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.25"
+
+		"lock_distance"					"8192"
+		"lock_filter"					"target_lock_filter"
+
+		"speed_mod"						"0.75"
+		"fire_rate"						"6"
+		"trigger_delay"					"1"
+		"low_ammo"						"2"
+		"show_all_ammo"					"1"
+		"hide_clip"						"1"
+		"clip_based"					"0"
+		"reload_on_fire"				"1"
+
+		"clamp_yaw_min"					"-50"
+		"clamp_yaw_max"					"50"
+		"clamp_yaw_rate"				"90"
+		"clamp_pitch_min"				"-40"
+		"clamp_pitch_max"				"20"
+		"clamp_pitch_rate"				"90"
+
+		"tt_intro_1"					"rocketlauncher_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_scope"				"rocketlauncher_scope"
+		"tt_intro_scope_up_1"			"rocketlauncher_scoped_1"
+		"tt_intro_scope_up_2"			"rocketlauncher_scoped_2"
+		"tt_prone_failed"				"rocketlauncher_prone_failed"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/law"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"hide_crosshair"				"0"
+
+		"crosshair"						"explosive"
+		"crosshair_secondary"			"none"
+		"crosshair_spread_min"			"1"
+		"crosshair_spread_max"			"1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"1"
+		"spread_max"					"1"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"1"
+		"spread_viewrate_inc"			"1"
+
+		"spread_max_settle_time"		"2500"
+
+		"spread_crouch_min"				"1"
+		"spread_crouch_max"				"1"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"1"
+		"spread_crouch_viewrate_max"	"1"
+		"spread_crouch_viewrate_inc"	"1"
+
+		"spread_crouch_max_settle_time"	"2000"
+
+		"spread_jump_min"				"1"
+		"spread_jump_max"				"1"
+		"spread_jump_inc"				"1"
+
+		"spread_jump_max_settle_time"	"2000"
+
+		"allow_prone"					"0"
+
+		"autoswitch_priority"			"5"
+		"autoswitch_isexplosive"		"1"
+
+		"require_use"					"stance_prone != true"
+
+		"player_weapon_num"				"5"
+	}
+
+	clip {
+		"projectile"					"projectile_law"
+		"type"							"rocketlauncher"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"1"
+	}
+
+	clip {
+		"projectile"					"projectile_law_arcing"
+		"type"							"rocketlauncher"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"0"
+	}
+}
+
+entityDef scope_law {
+	"spawnclass"				"sdClientAnimated"
+	"scriptobject"				"default"
+	"model" 					"models/scopes/scope_law.lwo"
+	"fov"						"150"
+}
+
+entityDef projectile_law {
+	"inherit"							"projectile_rocket_base"
+
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_homingmissile"
+
+	"dmg_damage"						"damage_law"
+	"dmg_splash_damage"					"damage_law_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"velocity"							"4000 0 0"
+	"face_velocity"						"1"
+	"gravity"							"0"
+	"fuse"								"3"
+	"thrust_power"						"15000"
+	"has_thrust"						"1"
+
+	"snd_fly"							"sounds/weapons/law/fly"
+
+  	"fx_trail"							"effects/base/missile_trail"
+
+	"fx_explode"						"effects/impacts/rocket/explosion_default"
+	"fx_explode_sand"					"effects/impacts/rocket/explosion_sand"
+	"fx_explode_metal"					"effects/impacts/rocket/explosion_metal"
+	"fx_explode_snow"					"effects/impacts/rocket/explosion_snow"
+	"fx_explode_leaves"					"effects/impacts/rocket/explosion_leaves"
+	"fx_explode_pine"					"effects/impacts/rocket/explosion_pine"
+
+	"use_air_burst"						"1"
+	"fx_airburst"						"effects/impacts/rocket/explosion_air"
+
+	"collection_decoy_target"			"decoy_target"
+	"collection_mdfExport"				"mdfExport"
+}
+
+entityDef projectile_anansi_law {
+	"inherit"							"projectile_law"
+
+	"dmg_damage"						"damage_law_anansi"
+	"dmg_splash_damage"					"damage_law_splash_anansi"
+
+	"fx_trail"							"effects/weapons/law_anansi_missile_trail"
+
+	"fx_explode"						"effects/anansi_haw"
+}
+
+entityDef projectile_law_arcing {
+	"inherit"							"projectile_rocket_base"
+
+	"dmg_damage"						"damage_law"
+	"dmg_splash_damage"					"damage_law_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"velocity"							"2000 0 0"
+	"face_velocity"						"1"
+	"gravity"							"120"
+	"fuse"								"4"
+
+	"snd_fly"							"sounds/weapons/law/fly"
+  	"fx_trail"							"effects/base/missile_trail"
+
+	"fx_explode"						"effects/impacts/rocket/explosion_default"
+	"fx_explode_sand"					"effects/impacts/rocket/explosion_sand"
+	"fx_explode_metal"					"effects/impacts/rocket/explosion_metal"
+	"fx_explode_snow"					"effects/impacts/rocket/explosion_snow"
+
+	"use_air_burst"						"1"
+	"fx_airburst"						"effects/impacts/rocket/explosion_air"
+}
+
+damageDef damage_law {
+	damage								"damage_law"
+
+	push								30000000
+
+	noheadshot
+
+	prof_damage							"pro_soldier_damage"
+
+	stat_name							"rocketlauncher"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/rocketlauncher"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/rocketlauncher/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/rocketlauncher/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/rocketlauncher/unknown"
+}
+
+damageDef damage_law_splash {
+	damage								"damage_law_splash"
+	radius								480
+
+	knockback							50
+
+	push								30000000
+
+	noheadshot
+
+	prof_damage							"pro_soldier_damage"
+
+	stat_name							"rocketlauncher"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/rocketlauncher"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/rocketlauncher/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/rocketlauncher/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/rocketlauncher/unknown"
+}
+
+damageDef damage_law_anansi {
+	damage								"damage_law_anansi"
+
+	push								30000000
+
+	noheadshot
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"anansi_weapons"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/law"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/law/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/law/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/law/unknown"
+}
+
+damageDef damage_law_splash_anansi {
+	damage								"damage_law_anansi_splash"
+	radius								512
+	knockback							50
+
+	push								30000000
+
+	noheadshot
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"anansi_weapons"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/law"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/law/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/law/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/law/unknown"
+}
+
+damageFilter damage_law {
+	type {
+		target							"target_player_all"
+		damage							300
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							1000
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							1000
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+
+damageFilter damage_law_splash {
+	type {
+		target							"target_player_all"
+		damage							135
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							1000
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							1000
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+damageFilter damage_law_anansi {
+	type {
+		target							"target_player_all"
+		damage							300
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							1000
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							650
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+
+damageFilter damage_law_anansi_splash {
+	type {
+		target							"target_player_all"
+		damage							135
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							1000
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							650
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+toolTip rocketlauncher_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/rocketlauncher_1"
+}
+
+toolTip rocketlauncher_scope {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/scope_weapon"
+}
+
+toolTip rocketlauncher_scoped_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/rocketlauncher_lockon"
+}
+
+toolTip rocketlauncher_scoped_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/descope_weapon"
+}
+
+toolTip rocketlauncher_prone_failed {
+	alwaysPlay
+	sound "sounds/ui/main/bad"
+	text "game/tt/cannot_prone_rocketlauncher"
+}
