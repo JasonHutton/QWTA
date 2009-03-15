@@ -1,0 +1,287 @@
+ /***********************************************************************
+FLYER HIVE
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix FLYERHIVE_ -sourcedir models/items/strogg_tools/flyer_hive/dev_sd -destdir models/items/flyer_hive/
+
+
+	mesh	flyer_hive_base_file.mb		-dest models/items/flyer_hive/flyer_hive_view.md5mesh
+	anim	flyer_hive_idle.mb			-dest models/items/flyer_hive/flyer_hive_idle.md5anim
+	anim	flyer_hive_raise.mb			-dest models/items/flyer_hive/flyer_hive_raise.md5anim
+ 	anim	flyer_hive_lower.mb			-dest models/items/flyer_hive/flyer_hive_lower.md5anim
+ 	anim	flyer_hive_fire.mb			-dest models/items/flyer_hive/flyer_hive_fire.md5anim
+   	}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_flyer_hive {
+	mesh						models/items/flyer_hive/flyer_hive_view.md5mesh
+	anim idle 					models/items/flyer_hive/flyer_hive_idle.md5anim
+	anim raise					models/items/flyer_hive/flyer_hive_raise.md5anim {
+		frame 1						sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway				models/items/flyer_hive/flyer_hive_lower.md5anim
+	anim fire					models/items/flyer_hive/flyer_hive_fire.md5anim {
+		frame 8						sound_channel snd_weapon_fire snd_fire
+	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+invItemDef inventory/items/flyer_hive {
+	type							"item"
+	slot							"item"
+	name							"game/weapons/drone_flyer"
+
+	data {
+ 		"model_view" 				"viewmodel_flyer_hive"
+		"model_world" 				"models/items/flyer_hive/flyer_hive_off.lwo"
+		"joint_attach"				"LeftHand"
+
+		"view_offset"				"-6 7 -3"
+
+		"anim_prefix"				"hands_grenades"
+		"anim_prefix_class"			"hands"
+
+		"anim_prefix_alt"			"hands_flyercontrol"
+
+		"weapon_scriptobject"		"tool_flyer_hive"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/flyerhive"
+
+		"crosshair"					"none"
+
+		"tt_intro_1"				"flyerhive_intro_1"
+		"tt_intro_2"				"flyerhive_intro_2"
+		"tt_need_charge"			"flyerhive_need_charge"
+		"tt_badLocation"			"flyerhive_badLocation"
+		"tt_intro_deployed_1"		"flyerhive_deployed_intro_1"
+		"tt_intro_deployed_2"		"flyerhive_deployed_intro_2"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"def_flyer"					"flyer_hive"
+
+		"timer_charge"				"energy_device"
+		"charge_per_use"			"100"
+
+		"hide_clip"					"1"
+		"show_charge"				"1"
+
+		"player_weapon_num"			"24"
+
+		"fx_idle"					"effects/items/flyerhive_idle"
+		"idle_effect_joint"			"body_joint"
+
+		"snd_raise"					"sounds/tools/flyerhive/raise"
+		"snd_fire"					"sounds/tools/flyerhive/fire"
+		"snd_badLocation"			"sounds/tools/generic/error"
+		"snd_need_charge"			"sounds/tools/generic/error"
+		"snd_cancel"				"sounds/tools/flyerhive/cancel"
+		
+		"destruct_delay"			"0.8"
+		
+		// NOTE: Needs updating if the flyer hive's mins & maxs are updated
+		"hive_mins"					"-8 -8 -4"
+		"hive_maxs"					"8 8 4"
+	}
+}
+
+entityDef flyer_hive {
+	"spawnclass"					"sdRepairDrone"
+	"scriptobject"					"flyer_hive"
+
+	"model"							"models/items/flyer_hive/flyer_hive.lwo"
+
+	// NOTE: The tool's hive_mins & hive_maxs need updating if these are changed
+	"mins"							"-8 -8 -4"
+	"maxs"							"8 8 4"
+
+	"option_simple_rigid_body_physics"	"1"
+	"option_network_interface"			"1"
+	"option_write_viewangles"			"1"
+	"option_crosshair_interface"		"1"
+	"option_unlock_interpolate"			"1"
+
+	"icon_sort_cm"					"-99"
+	"mtr_commandmapicon"			"hud/commandmap/player_remote"
+
+	"bouncyness"					"0"
+	"apply_collision_impulse"		"0"
+	"gravity"						"1066"
+	"mass"							"100"
+
+	"health"						"3"
+
+	"dmg_self_destruct"				"damage_flyerhive_selfdestruct"
+	"dmg_destroyed"					"damage_flyerhive_destroyed"
+	"dmg_water"						"damage_vehicle_water"
+
+	// the forward two jets are first
+	"jet1_position"					"8 -8 0"
+	"jet2_position"					"8 8 0"
+	"jet3_position"					"-8 -8 0"
+	"jet4_position"					"-8 8 0"
+
+	"tt_feedback"					"flyerhive_feedback"
+
+	"force_needed_scale"			"0.05"
+	"velocity_dampening"			"5000"
+
+	"throttle_max"					"35000"
+	"throttle_min"					"20000"
+	"throttle_vel_scale"			"12"
+
+	"velocity_to_angle"				"0.05"
+	"direction_recovery"			"10"
+	"angle_max"						"6"
+	"angle_to_force"				"2"
+
+	"max_side_velocity"				"60"
+	"max_up_velocity"				"80"
+
+	"debug_info"					"0"
+	"debug_force_scale"				"0.0003"
+
+	"hive_speed_pitch"				"1.75"
+
+	"fx_engine"						"effects/tools/repairdrone/engine"
+	"fx_repairbeam"					"effects/tools/repairdrone/beam"
+	"snd_idle"						"sounds/tools/flyerhive/fly"
+
+	"fx_explode"					"effects/tools/repairdrone/explode"
+	"fx_explode_water"				"effects/impacts/frag/explosion_water"
+	"fx_fizzle"						"effects/tools/repairdrone/fizzle"
+	"fx_splash"						"effects/player/splash"
+
+	"push_scale"					"0.1"
+
+	"option_take_oob_damage"		"1"
+	"oob_damage_interval"			"500"
+
+	"collection_oob"				"oob"
+	"collection_basedefense_attack"	"basedefense_attack"
+	"collection_vehicles"			"vehicles"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_he"					"he"
+	"collection_arty"				"arty"
+	"collection_ss"					"ss"
+	"collection_flyer_hive"			"flyer_hive"
+	"collection_gamereviewwatch"	"gamereviewwatch"
+
+	"gui_camera_view"				"guis/vehicles/strogg_flyerhive"
+	"hud_sort"						"999"
+}
+
+damageFilter damage_flyerhive_selfdestruct {
+	type {
+		target					"target_all"
+		damage					200
+	}
+	type {
+		target					"target_flyer_damage"
+		damage					1
+	}
+	type {
+		target					"target_mountables"
+		damage					200
+	}
+}
+
+damageDef damage_flyerhive_selfdestruct {
+	damage							"damage_flyerhive_selfdestruct"
+	radius							160
+	push							10000000
+
+	noheadshot
+	
+	prof_damage						"pro_infiltrator_damage"
+
+	stat_name						"flyerhive"
+
+	team_kill_cvar					"g_allowComplaint_explosives"
+
+	tt_obituary						"tooltips/killmsgs/weapons/flyerhive"
+	tt_obituary_self				"tooltips/killmsgs/weapons/flyerhive/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/flyerhive"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/flyerhive/teamkill"
+}
+
+damageFilter damage_flyerhive_destroyed {
+	type {
+		target					"target_player_all"
+		damage					20
+	}
+}
+
+damageDef damage_flyerhive_destroyed {
+	damage							"damage_flyerhive_destroyed"
+	push							0
+
+	tt_obituary						"tooltips/killmsgs/weapons/flyerhive"
+	tt_obituary_self				"tooltips/killmsgs/weapons/flyerhive/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/flyerhive/unknown"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/flyerhive/teamkill"
+}
+
+#include "templates/tooltips.include"
+
+toolTip flyerhive_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/flyerhive_1"
+}
+
+toolTip flyerhive_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_deploy_item"
+}
+
+toolTip flyerhive_feedback {
+	sound "sounds/ui/main/bad"
+	text "game/tt/intro/flyerhive_feedback"
+}
+
+toolTip flyerhive_need_charge {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+toolTip flyerhive_badLocation {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text	"game/tt/flyerhive_badLocation"
+}
+
+toolTip flyerhive_deployed_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/flyerhive_deployed_1"
+}
+
+toolTip flyerhive_deployed_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/flyerhive_deployed_2"
+}
