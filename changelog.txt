@@ -112,3 +112,5 @@ All heavy weapons x3 damage to players.
 All explosive weapons x2 damage to players.
 Shotguns x2 damage to players.
 Snipers x2 damage to players.
+
+Lockons with hyperblaster should NOT occur on disguised GDF. :|
