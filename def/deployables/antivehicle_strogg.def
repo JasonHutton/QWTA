@@ -1,0 +1,337 @@
+// ========================================================================
+// Export
+/*
+reexportmodels deployables/antiarmour_strogg.def
+testmodel deployable_antivehicle_strogg
+*/
+
+export hauser {
+	options -prefix STAV_ -rotate 90 -scale 1.05 -sourcedir models/structures/strogg/deployables/weapons/antivehicle_turret/dev_sd -destdir models/structures/strogg/deployables/weapons/antivehicle_turret/
+
+	addoptions -keep pilot cam muzzle left_front_ik left_rear_ik left_middle_ik right_front_ik right_rear_ik right_middle_ik
+/*
+
+	mesh	turret_lod0.mb		-dest strogg_av_turret.md5mesh			-range 50 50
+
+	anim	SAV_anims.mb			-dest strogg_av_turret.md5anim 		-range 120 120
+	anim	SAV_anims.mb			-dest undeployed.md5anim			-range 1 1
+	anim	SAV_anims.mb			-dest deploy.md5anim				-range 1 50
+
+
+
+	anim	SAV_anims.mb			-dest preik.md5anim					-range 1 30
+	anim	SAV_anims.mb			-dest postik.md5anim				-range 31 50
+
+
+
+	anim	SAV_anims.mb			-dest idle.md5anim					-range 50 50
+	anim	SAV_anims.mb			-dest fire.md5anim					-range 50 63
+	anim	SAV_anims.mb			-dest reload.md5anim				-range 70 105
+
+	anim	SAV_damage_states.mb	-dest damaged.md5anim 				-range 1 30
+*/
+	anim	SAV_damage_states.mb	-dest disabled.md5anim 				-range 35 130
+/*
+	anim	SAV_damage_states.mb	-dest disabled_to_damaged.md5anim	-range 30 30
+	anim	SAV_anims.mb			-dest damaged_to_idle.md5anim		-range 50 50
+
+
+	addoptions -noJoints
+
+	mesh	turret_lod1.mb			-dest strogg_av_turret_lod1.md5mesh
+	mesh	turret_lod2.mb			-dest strogg_av_turret_lod2.md5mesh
+	mesh	turret_lod3.mb			-dest strogg_av_turret_lod3.md5mesh
+
+
+
+
+	//mesh	turret_lod1.ma		-dest strogg_av_turret_lod1_boned.md5mesh
+	//mesh	turret_lod2.ma		-dest strogg_av_turret_lod2_boned.md5mesh
+	//mesh	turret_lod3.ma		-dest strogg_av_turret_lod3_boned.md5mesh
+*/
+}
+
+// ========================================================================
+// Models
+//
+
+model deployable_antivehicle_strogg {
+	mesh				models/structures/strogg/deployables/weapons/antivehicle_turret/strogg_av_turret.md5mesh
+
+	anim undeployed					models/structures/strogg/deployables/weapons/antivehicle_turret/idle.md5anim {
+	}
+
+	anim deploy						models/structures/strogg/deployables/weapons/antivehicle_turret/deploy.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim base						models/structures/strogg/deployables/weapons/antivehicle_turret/idle.md5anim {
+	}
+
+	anim damaged					models/structures/strogg/deployables/weapons/antivehicle_turret/damaged.md5anim {
+	}
+
+	anim destroyed					models/structures/strogg/deployables/weapons/antivehicle_turret/disabled.md5anim {
+	}
+
+	anim fire						models/structures/strogg/deployables/weapons/antivehicle_turret/fire.md5anim {
+	}
+
+	anim reload						models/structures/strogg/deployables/weapons/antivehicle_turret/reload.md5anim {
+	}
+
+	anim disabled_to_damaged		models/structures/strogg/deployables/weapons/antivehicle_turret/disabled_to_damaged.md5anim {
+	}
+
+	anim damaged_to_idle			models/structures/strogg/deployables/weapons/antivehicle_turret/damaged_to_idle.md5anim {
+	}
+}
+
+// ========================================================================
+// Entity Def
+//
+
+deployObject deployobject_antiarmour_strogg {
+	"name"							"avt"
+	"title"							"game/deploy/avt_long"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_antiarmour_strogg"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					"deployitem_antiarmour_strogg_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"defences"
+}
+
+stringMap deployitem_antiarmour_strogg_placement_model {
+	"model"							"models/structures/strogg/deployables/weapons/antivehicle_turret/antivehicle_turret.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+stringMap deployable_antiarmour_strogg_aimer {
+	"min_yaw_turn"					"90"
+	"max_yaw_turn"					"240"
+
+	"min_pitch_turn"				"90"
+	"max_pitch_turn"				"240"
+
+	"min_pitch"						"-90"
+	"max_pitch"						"30"
+
+	"joint_yaw"						"pivot"
+	"joint_pitch"					"pitch"
+	"joint_barrel"					"muzzle"
+
+	"deployed_anim"					"base"
+}
+
+entityDef deployable_antiarmour_strogg {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_strogg"
+
+	"title"							"game/deploy/avt_long"
+
+	"collection_gui_count"			"deployable_antiarmour_strogg"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The Strogg Anti Vehicle Turret."
+	"editor_mins"					"-128 -144 0"
+	"editor_maxs"					"168 144 512"
+
+	"spawnclass"					"sdDefenceTurret"
+	"scriptobject"					"deployable_antiarmour"
+
+	"model"							"deployable_antivehicle_strogg"
+	"cm_model"						"models/structures/strogg/deployables/weapons/antivehicle_turret/antivehicle_turret_clip.lwo"
+
+	"stat_name"						"antivehicle_strogg"
+
+	"task_name"						"game/deploy/avt"
+
+	"ch_name"						"game/deploy/avt_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 128"
+//	"option_usable_interface"		"1"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"defense_turret"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_def_deploy"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_def_deploy"
+
+	"icon_size_cm"					"8"
+
+	"health"						"4000"
+	"repair_multiplier"				"1.5"
+
+	"str_aim_data"					"deployable_antiarmour_strogg_aimer"
+
+	"joint_barrel"					"muzzle"
+
+	"use_tracers"					"0"
+
+	"fireRate"						"1.25"
+	"fireDelay"						"4"
+	"charge_time"					"10"
+	"charge_per_shot"				"0.6"
+	"spread"						"0"
+	"numProjectiles"				"1"
+
+	"missile_velocity"				"2000"
+
+	"range_min"						"10"
+	"range_firing"					"100"
+	"range_max"						"115"
+
+	"def_projectile"				"projectile_deployable_antiarmour_strogg"
+
+	"fx_death"						"effects/deployables/antivehicle_destroy"
+	"fx_fire"						"effects/deployables/strogg_anti_armour_fire"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"hull"
+
+	"snd_deploy"					"sounds/deployables/avt_strogg/deploy"
+
+	"mtr_color"						"guis/assets/deploy/icons/strogg_av"
+	"mtr_desat"						"guis/assets/deploy/icons/strogg_av_desat"
+	"mtr_half_desat"				"guis/assets/deploy/icons/strogg_av_half_desat"
+	"mtr_full_desat"				"guis/assets/deploy/icons/strogg_av_bright_desat"
+
+	"ti_target_info"				"target_veh_all"
+	"target_delta"					"0.9"
+
+	"tt_turret_enter"				"avt_intro_enter"
+
+	"do_object"						"deployobject_antipersonnel_strogg"
+
+//	"num_positions"					"1"
+//	"str_position0"					"deployable_avt_strogg_position_0"
+//	"crosshair"						"blank"
+//	"gui_usable_overlay"			"guis/game/deployables/strogg/antiarmor"
+
+	"num_muzzlejoints"				"1"
+	"joint_muzzle1"					"muzzle"
+
+	"numDamageJoints"				"18"
+	"damageJoint0"					"left_front_leg"
+	"damageJoint1"					"left_front_knee"
+	"damageJoint2"					"left_front_foot"
+	"damageJoint3"					"left_middle_leg"
+	"damageJoint4"					"left_middle_knee"
+	"damageJoint5"					"left_middle_foot"
+	"damageJoint6"					"left_rear_leg"
+	"damageJoint7"					"left_rear_knee"
+	"damageJoint8"					"left_rear_foot"
+	"damageJoint9"					"right_front_leg"
+	"damageJoint10"					"right_front_knee"
+	"damageJoint11"					"right_front_foot"
+	"damageJoint12"					"right_middle_leg"
+	"damageJoint13"					"right_middle_knee"
+	"damageJoint14"					"right_middle_foot"
+	"damageJoint15"					"right_rear_leg"
+	"damageJoint16"					"right_rear_knee"
+	"damageJoint17"					"right_rear_foot"
+
+	"deployable_type"				"16"
+
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/avtspotted"
+
+	"deploybonus_requireactive"		"1"
+	"prof_deploybonus"				"pro_constructor_deploy_bonus"
+
+	"prof_hack"						"pro_covertops_hack_deployable_big"
+}
+
+stringMap deployable_avt_strogg_position_0 {
+	"thirdperson"					"0"
+	"thirdperson_distance"			"0"  //125  (use for testing player anim)
+	"thirdperson_height"			"0" //-125 (use for testing player anim)
+
+	"joint_view"					"cam"
+	"fov"							"90"
+	"show_player"					"1"
+	"player_anim"					"DeployableStroggAntivehicle"
+	"attach_joint"					"pilot"
+
+	"snd_target_locking"			"sounds/weapons/misc/target_track_short"
+	"snd_target_locked"				"sounds/weapons/misc/target_lock"
+	"lock_enabled"					"1"
+	"lock_distance"					"8192"
+	"lock_filter"					"target_lock_filter"
+	"weapon_name"					"game/deploy/avt_long"
+	"take_damage"					"1"
+	"hide_decoy_info"				"1"
+	"show_targeting_info"			"1"
+
+
+	"clamp_pitch"					"-90 30"
+}
+
+entityDef projectile_deployable_antiarmour_strogg {
+	"inherit"						"projectile_rocket_base"
+
+	"spawnclass"					"idProjectile_RigidBody"
+	"scriptObject"					"projectile_homingmissile"
+
+	"dmg_damage"					"damage_deployable_antiarmour_strogg"
+	"dmg_splash_damage"				"damage_deployable_antiarmour_splash_strogg"
+
+	"health"						"1"
+	"angular_velocity"				"0 0 0"
+	"face_velocity"					"1"
+	"gravity"						"0"
+	"fuse"							"10"
+	"has_thrust"					"1"
+
+	"detonate_on_death"				"0"
+
+	"mtr_detonate"					"textures/decals/blastmark"
+
+	"target_forget"					"5"
+
+	"snd_fly"						"sounds/deployables/avt_strogg/fire"
+	"fx_trail"						"effects/weapons/stroggket_fly"
+	"model"							""
+
+	"collection_decoy_target"		"decoy_target"
+
+	"no_damage_feedback"			"1"
+}
+
+damageDef damage_deployable_antiarmour_strogg {
+	damage							"damage_deployable_antiarmour"
+	no_complaint
+
+	prof_damage						"pro_constructor_turret_damage_avt"
+
+	stat_name						"antivehicle_strogg"
+
+	tt_obituary						"tooltips/killmsgs/turrets/avt"
+	tt_obituary_self				"tooltips/killmsgs/turrets/avt/self"
+	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
+}
+
+damageDef damage_deployable_antiarmour_splash_strogg {
+	damage							"damage_deployable_antiarmour"
+	push							10000000
+	radius							256
+	no_complaint
+
+	prof_damage						"pro_constructor_turret_damage_avt"
+
+	stat_name						"antivehicle_strogg"
+
+	tt_obituary						"tooltips/killmsgs/turrets/avt"
+	tt_obituary_self				"tooltips/killmsgs/turrets/avt/self"
+	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
+
+}

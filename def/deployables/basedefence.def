@@ -1,0 +1,215 @@
+
+model deployable_basedefence {
+	mesh 							models/weapons/gdf_mountedminigun/gdf_mountedminigun_view.md5mesh
+
+	anim base 						models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+
+	anim undeployed					models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+
+	anim deploy						models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+
+	anim damaged					models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+
+	anim destroyed					models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+
+	anim disabled_to_damaged		models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+
+	anim damaged_to_idle			models/weapons/gdf_mountedminigun/gdf_mountedminigun_base.md5anim {
+	}
+}
+
+/*
+
+model deployable_basedefence2 {
+	mesh 					models/weapons/strogg_mounted_hyperblaster/strogg_mounted_hyperblaster.md5mesh
+
+	anim base 				models/weapons/strogg_mounted_hyperblaster/strogg_mounted_hyperblaster.md5anim {
+	}
+}
+
+*/
+
+
+stringMap deployable_basedefence_aimer {
+	"min_yaw_turn"					"120"
+	"max_yaw_turn"					"180"
+
+	"min_pitch_turn"				"120"
+	"max_pitch_turn"				"180"
+
+	"min_pitch"						"-30"
+	"max_pitch"						"90"
+
+	"joint_yaw"						"mount_1"
+	"joint_pitch"					"mount_2"
+	"joint_barrel"					"muzzle"
+
+	"deployed_anim"					"base"
+}
+
+entityDef deployable_basedefence {
+	"inherit"						"deployable_base"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"Base Defence Turret."
+	"editor_mins"					"-32 -64 0"
+	"editor_maxs"					"32 64 64"
+
+	"spawnclass"					"sdDefenceTurret"
+	"scriptobject"					"deployable_basedefence"
+
+	"model"							"deployable_basedefence"
+
+	"task_name"						"game/deploy/bdt"
+
+	"ch_name"						"game/deploy/bdt_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 128"
+
+	"health"						"0"
+
+	"fireRate"						"0.048"
+
+	"spread"						"1"
+	"numProjectiles"				"1"
+	"missile_velocity"				"1"
+
+	"use_brass"						"1"
+
+	"str_aim_data"					"deployable_basedefence_aimer"
+
+	"range_min"						"5"
+	"range_max"						"75"
+
+	"joint_barrel"					"muzzle"
+	"joint_brass"					"muzzle"
+
+	"def_projectile"				"projectile_deployable_basedefence"
+
+	"fx_fire"						"effects/deployables/antipersonnel_fire"
+	"fx_muzzle"						"effects/deployables/antipersonnel_muzzleflash"
+	"fx_tracer"						"effects/base/tracers_small"
+	"fx_death"						"effects/deployables/gdf_antipersonnel_destroy"
+
+	"snd_deploy"					"sounds/deployables/apt_gdf/deploy"
+	"snd_fire_start"				"sounds/deployables/gdf/apt/fire"
+	"snd_fire_stop"					"sounds/deployables/gdf/apt/fire/stop"
+	"snd_fire_far"					"sounds/deployables/gdf/apt/fire/far"
+	"snd_fire_far_stop"				"sounds/deployables/gdf/apt/fire/far/stop"
+
+	"num_tracerjoints"				"0"
+	"joint_tracer0"					"muzzle"
+
+	"ti_target_info"				"target_player_all"
+	"target_delta"					"0.95"
+
+	"pitch_angle"					"180"
+	"attack_front_only"				"0"
+	
+	"collection_basedefence"		"basedefence"
+}
+
+entityDef deployable_basedefence_gdf {
+	"inherit"						"deployable_basedefence"
+	"inherit1"						"deployable_gdf"
+
+	"task_hack"						""
+	"task_repair"					""
+	"task_destroy"					""
+	"prof_disable"					""
+}
+
+entityDef deployable_basedefence_strogg {
+	"inherit"						"deployable_basedefence"
+	"inherit1"						"deployable_strogg"
+
+	"model"							"deployable_basedefence_hyperblaster"
+
+	"def_projectile"				"projectile_deployable_basedefence_strogg"
+
+
+	"fx_muzzle"						"effects/deployables/antipersonnel_muzzleflash_strogg"
+	"fx_tracer"						"effects/base/tracers_strogg"
+	"fx_fire"						"effects/deployables/basedefense_strogg_fire"
+
+
+	"snd_fire_start"				"sounds/weapons/hyperblaster/fire"
+	//"snd_fire_stop"					"sounds/deployables/strogg/apt/fire/stop"
+	"snd_fire_far"					"sounds/deployables/strogg/apt/fire/far"
+	//"snd_fire_far_stop"				"sounds/deployables/strogg/apt/fire/far/stop"
+
+	"task_hack"						""
+	"task_repair"					""
+	"task_destroy"					""
+	"prof_disable"					""
+
+	"pitch_angle"					"180"
+	"attack_front_only"				"1"
+}
+
+// Projectile
+// ========================================================================
+
+entityDef projectile_deployable_basedefence {
+	"inherit"						"projectile_deployable_antipersonnel"
+
+	"dmg_damage"					"damage_deployable_basedefence"
+}
+
+entityDef projectile_deployable_basedefence_strogg {
+	"inherit"						"projectile_deployable_antipersonnel_strogg"
+
+	"dmg_damage"					"damage_deployable_basedefence_strogg"
+}
+
+damageFilter damage_deployable_basedefence {
+
+	type {
+		target	"target_all"
+		damage	8
+	}
+}
+
+damageDef damage_deployable_basedefence {
+	damage							"damage_deployable_basedefence"
+
+	prof_damage						""
+
+	stat_name						"basedefence_gdf"
+
+	knockback						10
+	kick_time						100
+	kick_amplitude					0
+	kickDir							( 1 0 0 )
+	
+	team_damage
+
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/basedefence_gdf"
+	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_gdf_team"
+}
+
+damageDef damage_deployable_basedefence_strogg {
+	damage							"damage_deployable_basedefence"
+
+	prof_damage						""
+
+	stat_name						"basedefence_strogg"
+
+	knockback						10
+	kick_time						100
+	kick_amplitude					0
+	kickDir							( 1 0 0 )
+
+	team_damage
+
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/basedefence_strogg"
+	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_strogg_team"
+}
