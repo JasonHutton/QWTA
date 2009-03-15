@@ -18,6 +18,7 @@ Hyperblaster(Infantry, and Vehicle(Tormentor/Desecrator/Hog) versions.) now has 
 Needs work still: faster lockon, I think it still triggers the target lock alarm... It shouldn't, and flares should never work on it.
 Non-instant-hit projectiles, slower firing rate, splash damage, lockons, higher damage. (Change sound effect to classic nailgun sound? What to use for the nailgun sound then?)
 
+Hyperblaster cannot do headshots anymore. (Its detrimental to lockons and splash damage, to use it.)
 
 Shogun and Nailgun basic behavior returned to ETQW v1.2 style behavior: fires slower but fires more pellets per shot, and can do damage farther away, lessenned spread, more damage.
 
