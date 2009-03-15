@@ -1,0 +1,274 @@
+/***********************************************************************
+
+	Lacerator
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix LACERATOR_ -sourcedir models/weapons/strogg_lacerator/dev_sd -destdir models/weapons/strogg_lacerator/ -keep joint_main_gun joint_lower_slide joint_top_needle joint_lower_needle joint_muzzle_cover joint_tube_root joint15 joint16 joint17 joint18 joint19 joint20 joint21 joint22 joint8 joint9 joint10 joint11 joint12 joint13 joint23 joint24 joint25 joint_bayonet joint_rail_chucker joint_sight muzzle r_upper_arm r_elbow r_elbow_2 r_wrist r_finger_1_1 r_finger_3_1 r_finger_2_1 l_upper_arm l_elbow l_elbow_2 l_wrist l_finger_1_1 l_finger_1_2 l_finger_1_3 l_finger_2_1 l_finger_2_2 l_finger_2_3 l_finger_3_1 l_finger_3_2 l_finger_3_3 l_finger_4_1 l_finger_4_2 l_finger_4_3 l_thumb_1 l_thumb_2 l_thumb_3
+
+	addoptions -keepmesh StoggArmRight small_tube main_tube top_needle bayonet main_gun muzzle_cover lower_slide lower_needle sharp_shooter_sight strogg_left_arm_mesh
+/*
+	//mesh	lazor_rifle_base_file.mb			-dest models/weapons/strogg_lacerator/view.md5mesh
+	anim	lazor_rifle_idle.mb					-dest models/weapons/strogg_lacerator/idle.md5anim
+ 	anim	lazor_rifle_raise.mb				-dest models/weapons/strogg_lacerator/raise.md5anim
+ 	anim	lazor_rifle_lower.mb				-dest models/weapons/strogg_lacerator/lower.md5anim
+*/
+ 	anim	lazor_rifle_fire.mb					-dest models/weapons/strogg_lacerator/fire.md5anim
+/*
+ 	anim	lazor_rifle_overheat.mb				-dest models/weapons/strogg_lacerator/reload.md5anim
+ 	anim	lazor_rifle_overheat2.mb				-dest models/weapons/strogg_lacerator/reload2.md5anim
+
+ 	anim	lazor_rifle_start_sprint.mb			-dest models/weapons/strogg_lacerator/start_sprint.md5anim
+ 	anim	lazor_rifle_leave_sprint.mb			-dest models/weapons/strogg_lacerator/leave_sprint.md5anim
+	anim	lazor_rifle_zoom.mb					-dest models/weapons/strogg_lacerator/zoom.md5anim
+
+*/
+
+
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_lacerator_scoped {
+	mesh						models/weapons/strogg_lacerator/view.md5mesh
+
+	anim idle 					models/weapons/strogg_lacerator/idle.md5anim {
+	}
+	anim fire 					models/weapons/strogg_lacerator/fire.md5anim {
+	}
+	anim overheat 					models/weapons/strogg_lacerator/reload2.md5anim {
+		frame 13					sound_channel snd_weapon_foley snd_punch
+		frame 30					sound_channel snd_weapon_mech snd_slideoff
+		frame 35					effect fx_overheat joint_muzzle_cover
+		frame 35					sound_channel snd_weapon_mech snd_steam
+		frame 60					sound_channel snd_weapon_mech snd_slideon
+	}
+
+	anim raise					models/weapons/strogg_lacerator/raise.md5anim {
+		frame begin					sound_channel snd_weapon_raise snd_raise
+		frame 2						sound_channel snd_weapon_foley snd_scopeup
+	}
+	anim putaway					models/weapons/strogg_lacerator/lower.md5anim {
+	}
+	anim start_sprint				models/weapons/strogg_lacerator/start_sprint.md5anim {
+	}
+	anim leave_sprint				models/weapons/strogg_lacerator/leave_sprint.md5anim {
+	}
+
+	anim zoomout					models/weapons/strogg_lacerator/zoom.md5anim {
+		frame 1				sound_channel snd_weapon_raise snd_unzoom
+	}
+
+	anim zoomin					models/weapons/strogg_lacerator/zoom.md5anim {
+		frame 1				sound_channel snd_weapon_raise snd_init
+	}
+
+	anim idle_zoom					models/weapons/strogg_lacerator/idle.md5anim {
+
+	}
+
+	anim fire_zoom					models/weapons/strogg_lacerator/fire.md5anim {
+	}
+
+}
+
+model worldmodel_lacerator_scope {
+	mesh		 				models/weapons/strogg_lacerator/lacerator_scope_world.md5mesh
+
+	anim raise					models/weapons/strogg_lacerator/lacerator_scope_world.md5anim {
+	}
+	anim idle 					models/weapons/strogg_lacerator/lacerator_scope_world.md5anim {
+	}
+	anim aim					models/weapons/strogg_lacerator/lacerator_scope_world.md5anim {
+	}
+	anim fire 					models/weapons/strogg_lacerator/lacerator_scope_world.md5anim {
+	}
+	anim overheat				models/weapons/strogg_lacerator/lacerator_world_reload.md5anim {
+	}
+	anim noammo					models/weapons/strogg_lacerator/lacerator_scope_world.md5anim {
+	}
+ 	anim putaway				models/weapons/strogg_lacerator/lacerator_scope_world.md5anim {
+ 	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/lacerator/scoped {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/lacerator_scoped"
+	model								"models/weapons/strogg_lacerator/lacerator_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_lacerator_scoped"
+		"model_world" 					"worldmodel_lacerator_scope"
+		"anim_limbomenu"				"menu"
+		"joint_attach"					"weapon_attach"
+		"view_offset"					"-5 1 0"
+		"view_foreshorten"				"0.8"
+		"anim_prefix"					"2h_lacerator"
+		"anim_prefix_class"				"2h"
+
+		"weapon_scriptobject"			"weapon_lacerator_scope"
+
+		"muzzle_kick_time"				"0.2"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"0 0 0"
+		"muzzle_kick_offset"			"1 1 2"
+
+		"recoilTime"					"180"
+		"recoilAngles"					"-0.13 0 0"
+
+		"kickback"						"0.13"
+		"kickback_prone"				"0.06"
+
+		"stat_name"						"lacerator_scoped"
+
+		"fx_overheat"					"effects/weapons/lacerator_steam"
+		"fx_overheat_world"				"effects/weapons/lacerator_steam"
+
+		"fx_muzzle_flash"				"effects/weapons/lacerator_muzzleflash_view"
+		"fx_muzzle_flash_world"			"effects/weapons/lacerator_muzzleflash_world"
+
+		"fx_tracer"						"effects/base/tracers_strogg"
+		"effectchance fx_tracer"		"1"
+
+		"snd_fire"						"sounds/weapons/hlacerator/fire"
+		"snd_fire_far"					"sounds/weapons/lacerator/fire/far"
+		//"snd_fire_local"				"sounds/weapons/lacerator/fire/local"
+		"snd_punch"						"sounds/weapons/lacerator/reload_hit"
+		"snd_fire_local"				"sounds/weapons/hlacerator/fire_local"
+		"snd_cock"						"sounds/weapons/assaultrifle/cock"
+		"snd_reload"					"sounds/weapons/assaultrifle/reload"
+		"snd_steam"						"sounds/weapons/lacerator/overheat"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_init"						"sounds/weapons/railgun/init"
+		"snd_unzoom"					"sounds/weapons/railgun/unzoom"
+		"snd_slideoff"					"sounds/weapons/lacerator/slide_off"
+		"snd_slideon"					"sounds/weapons/lacerator/slide_on"
+		"snd_raise"						"sounds/weapons/lacerator/bring_up"
+		"snd_scopeup"					"sounds/weapons/lacerator/scope_up"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.1"
+
+		"fire_rate"						"0.18"
+		"num_projectiles"				"1"
+
+		"low_ammo"						"8"
+		"hide_clip"						"1"
+		"show_all_ammo"					"1"
+		"clip_based"					"0"
+
+		"gui_sniper_scope"				"game/sights/lacerator_scope"
+		"hud_sort"						"999"
+		"hide_crosshair"				"0"
+
+		"zoom_fov"						"45"
+		"zoom_time"						"0.25"
+
+		"zoom_pitch_amplitude"			"0.5"
+		"zoom_pitch_frequency"			"0.24"
+		"zoom_pitch_min_amplitude"		"0.13"
+		"zoom_yaw_amplitude"			"3.2"
+		"zoom_yaw_frequency"			"0.12"
+		"zoom_yaw_min_amplitude"		"0.23"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/lacerator_scope"
+
+		"crosshair"						"large"
+
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"4"
+		"crosshair_spread_scale"		"2"
+
+		"spread_min"					"1"
+		"spread_max"					"3"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"3"
+		"spread_viewrate_inc"			"2.5"
+
+		"spread_max_settle_time"		"600"
+
+		"spread_crouch_min"				"0.75"
+		"spread_crouch_max"				"2.2"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"0.75"
+		"spread_crouch_viewrate_max"	"2.2"
+		"spread_crouch_viewrate_inc"	"2.5"
+
+		"spread_crouch_max_settle_time"	"550"
+
+		"spread_prone_min"				"0.5"
+		"spread_prone_max"				"1.75"
+		"spread_prone_inc"				"1"
+
+		"spread_prone_viewrate_min"		"0.5"
+		"spread_prone_viewrate_max"		"1.75"
+		"spread_prone_viewrate_inc"		"2.5"
+
+		"spread_prone_max_settle_time"	"500"
+
+		"spread_jump_min"					"4"
+		"spread_jump_max"					"4"
+		"spread_jump_inc"					"4"
+
+		"spread_jump_max_settle_time"		"650"
+
+		"overheat_length"				"5"
+		"overheat_per_shot"				"0.36"
+		"timer_heat"					"heat_lacerator"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"13"
+	}
+
+	clip {
+		"projectile"					"projectile_lacerator_scoped"
+		"client_projectile"				"projectile_bullet"
+		"type"							"stroyent"
+		"ammo_per_shot"					"5"
+		"max_ammo"						"-1"
+	}
+}
+
+entityDef projectile_lacerator_scoped {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_lacerator"
+
+	"range"								"12288"
+	"min_damage_percent"				"1"
+
+	"dmg_damage"						"damage_lacerator_scoped"
+}
+
+damageDef damage_lacerator_scoped {
+	damage								"damage_lacerator"
+
+	knockback							1
+	push								5000
+
+	stat_name							"lacerator_scoped"
+
+	record_hit_stats
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/lacerator_scoped"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lacerator_scoped/teamkill"
+}

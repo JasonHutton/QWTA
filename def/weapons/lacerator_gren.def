@@ -1,0 +1,442 @@
+/***********************************************************************
+
+	Lacerator with RailChucker
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix LACERATOR_ -sourcedir models/weapons/strogg_lacerator/dev_sd -destdir models/weapons/strogg_lacerator/ -keep joint_main_gun joint_lower_slide joint_top_needle joint_lower_needle joint_muzzle_cover joint_tube_root joint15 joint16 joint17 joint18 joint19 joint20 joint21 joint22 joint8 joint9 joint10 joint11 joint12 joint13 joint23 joint24 joint25 joint_bayonet joint_rail_chucker joint_sight muzzle r_upper_arm r_elbow r_elbow_2 r_wrist r_finger_1_1 r_finger_3_1 r_finger_2_1 l_upper_arm l_elbow l_elbow_2 l_wrist l_finger_1_1 l_finger_1_2 l_finger_1_3 l_finger_2_1 l_finger_2_2 l_finger_2_3 l_finger_3_1 l_finger_3_2 l_finger_3_3 l_finger_4_1 l_finger_4_2 l_finger_4_3 l_thumb_1 l_thumb_2 l_thumb_3
+
+	addoptions -keepmesh StoggArmRight small_tube main_tube fin1 fin2 fin3 bayonet main_gun muzzle_cover lower_slide lower_needle rail_chucker_attachment strogg_left_arm_mesh rail_chucker_attachment
+
+	//mesh	lazor_rifle_railchucker_base_file.mb			-dest models/weapons/strogg_lacerator/railchucker_view.md5mesh
+/*
+	anim	lazor_rifle_railchucker_idle.mb					-dest models/weapons/strogg_lacerator/railchucker_idle.md5anim
+
+	anim	lazor_rifle_switch_to_railchucker.mb			-dest models/weapons/strogg_lacerator/railchucker_switch_to_lacerator.md5anim -range 22 47
+
+ 	anim	lazor_rifle_railchucker_raise.mb				-dest models/weapons/strogg_lacerator/railchucker_raise.md5anim
+ 	anim	lazor_rifle_railchucker_lower.mb				-dest models/weapons/strogg_lacerator/railchucker_lower.md5anim
+ 	anim	lazor_rifle_railchucker_fire.mb					-dest models/weapons/strogg_lacerator/railchucker_fire.md5anim
+
+ 	anim	lazor_rifle_railchucker_reload.mb				-dest models/weapons/strogg_lacerator/railchucker_reload.md5anim
+
+ 	anim	lazor_rifle_railchucker_start_sprint.mb			-dest models/weapons/strogg_lacerator/railchucker_start_sprint.md5anim
+ 	anim	lazor_rifle_railchucker_leave_sprint.mb			-dest models/weapons/strogg_lacerator/railchucker_leave_sprint.md5anim
+ 	anim	lazor_rifle_railchucker_zoom_in.mb				-dest models/weapons/strogg_lacerator/railchucker_zoom_in.md5anim
+ 	anim	lazor_rifle_railchucker_zoom_out.mb				-dest models/weapons/strogg_lacerator/railchucker_zoom_out.md5anim
+ 	anim	lazor_rifle_railchucker_idle_zoom.mb			-dest models/weapons/strogg_lacerator/railchucker_idle_zoom.md5anim
+ 	anim	lazor_rifle_railchucker_fire_zoom.mb			-dest models/weapons/strogg_lacerator/railchucker_fire_zoom.md5anim
+
+	anim	lazor_rifle_idle.mb								-dest models/weapons/strogg_lacerator/lacerator_with_chucker_idle.md5anim
+
+	anim	lazor_rifle_switch_to_railchucker.mb			-dest models/weapons/strogg_lacerator/lacerator_with_chucker_switch_to_chucker.md5anim -range 0 22
+
+	anim	lazor_rifle_no_atts_raise.mb					-dest models/weapons/strogg_lacerator/lacerator_with_chucker_raise.md5anim
+	anim	lazor_rifle_lower.mb							-dest models/weapons/strogg_lacerator/lacerator_with_chucker_lower.md5anim
+*/
+	anim	lazor_rifle_fire.mb								-dest models/weapons/strogg_lacerator/lacerator_with_chucker_fire.md5anim
+/*
+	anim	lazor_rifle_overheat.mb							-dest models/weapons/strogg_lacerator/lacerator_with_chucker_reload.md5anim
+	anim	lazor_rifle_overheat2.mb						-dest models/weapons/strogg_lacerator/lacerator_with_chucker_reload2.md5anim 		//NEWER,BETTER
+	anim	lazor_rifle_zoom.mb								-dest models/weapons/strogg_lacerator/lacerator_with_chucker_zoom.md5anim
+
+	anim	lazor_rifle_start_sprint.mb						-dest models/weapons/strogg_lacerator/lacerator_with_chucker_start_sprint.md5anim
+ 	anim	lazor_rifle_leave_sprint.mb						-dest models/weapons/strogg_lacerator/lacerator_with_chucker_leave_sprint.md5anim
+
+*/
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_lacerator_grenade {
+
+	mesh									models/weapons/strogg_lacerator/railchucker_view.md5mesh
+
+	// Normal mode anims
+
+	anim idle 								models/weapons/strogg_lacerator/lacerator_with_chucker_idle.md5anim {
+	}
+
+	anim fire 								models/weapons/strogg_lacerator/lacerator_with_chucker_fire.md5anim {
+	}
+
+	anim overheat 							models/weapons/strogg_lacerator/lacerator_with_chucker_reload2.md5anim {
+		frame 13					sound_channel snd_weapon_foley snd_punch
+		frame 30					sound_channel snd_weapon_mech snd_slideoff
+		frame 35					effect fx_overheat joint_muzzle_cover
+		frame 35					sound_channel snd_weapon_mech snd_steam
+		frame 60					sound_channel snd_weapon_mech snd_slideon
+	}
+
+	anim raise								models/weapons/strogg_lacerator/lacerator_with_chucker_raise.md5anim {
+		frame begin								sound_channel snd_weapon_foley snd_raise
+	}
+
+	anim putaway							models/weapons/strogg_lacerator/lacerator_with_chucker_lower.md5anim {
+	}
+
+	anim start_sprint						models/weapons/strogg_lacerator/lacerator_with_chucker_start_sprint.md5anim {
+	}
+
+	anim leave_sprint						models/weapons/strogg_lacerator/lacerator_with_chucker_leave_sprint.md5anim {
+	}
+
+	anim switch_to_grenade					models/weapons/strogg_lacerator/lacerator_with_chucker_switch_to_chucker.md5anim {
+		frame 4									sound_channel snd_weapon_foley snd_chucker_out
+	}
+
+
+	// Alt mode anims
+
+	anim alt_idle 							models/weapons/strogg_lacerator/railchucker_idle.md5anim {
+	}
+
+	anim alt_fire							models/weapons/strogg_lacerator/railchucker_fire.md5anim {
+	}
+
+	anim alt_reload							models/weapons/strogg_lacerator/railchucker_reload.md5anim {
+		frame 4							sound_channel snd_weapon_foley snd_chucker_in
+		frame 15								sound_channel snd_weapon_reload snd_chucker_reload
+		frame 42									sound_channel snd_weapon_foley snd_chucker_out
+	}
+
+	anim alt_raise							models/weapons/strogg_lacerator/railchucker_raise.md5anim {
+	}
+
+	anim alt_putaway						models/weapons/strogg_lacerator/railchucker_lower.md5anim {
+	}
+
+	anim alt_start_sprint					models/weapons/strogg_lacerator/railchucker_start_sprint.md5anim {
+	}
+
+	anim alt_leave_sprint					models/weapons/strogg_lacerator/railchucker_leave_sprint.md5anim {
+	}
+
+	anim switch_from_grenade				models/weapons/strogg_lacerator/railchucker_switch_to_lacerator.md5anim {
+		frame 5									sound_channel snd_weapon_foley snd_chucker_in
+	}
+}
+
+
+
+model worldmodel_lacerator_rail {
+	mesh		 				models/weapons/strogg_lacerator/lacerator_rail_world.md5mesh
+
+	anim raise					models/weapons/strogg_lacerator/lacerator_rail_world.md5anim {
+	}
+	anim idle 					models/weapons/strogg_lacerator/lacerator_rail_world.md5anim {
+	}
+	anim aim					models/weapons/strogg_lacerator/lacerator_rail_world.md5anim {
+	}
+	anim fire 					models/weapons/strogg_lacerator/lacerator_rail_world.md5anim {
+	}
+	anim overheat				models/weapons/strogg_lacerator/lacerator_world_reload.md5anim {
+	}
+	anim noammo					models/weapons/strogg_lacerator/lacerator_rail_world.md5anim {
+	}
+ 	anim putaway				models/weapons/strogg_lacerator/lacerator_rail_world.md5anim {
+ 	}
+}
+
+template inventory/weapons/laceratorgrenade_tooltip_template {
+	parameters<>
+    text {
+		data {
+			"tt_intro_1"						"lacerator_intro_1"
+			"tt_intro_2"						"generic_weapon_fire"
+			"tt_intro_ironsights_1"				"laceratorgrenade_1"
+			"tt_intro_ironsights_2"				"laceratorgrenade_2"
+			"tt_intro_heat"						"generic_weapon_heat"
+		}
+	}
+}
+
+invItemDef inventory/weapons/lacerator/grenade {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/plasma_launcher"
+	model								"models/weapons/strogg_lacerator/lacerator_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_lacerator_grenade"
+		"model_world" 					"worldmodel_lacerator_rail"
+		"anim_limbomenu"				"menu"
+		"joint_attach"					"weapon_attach"
+		"view_offset"					"-5 1 0"
+		"view_foreshorten"				"0.8"
+
+		"anim_prefix"					"2h_lacerator"
+		"anim_prefix_class"				"2h"
+
+		"anim_prefix_alt"				"2h_lacerator_railchucker"
+		"anim_prefix_alt_class"			"2h"
+
+		"weapon_scriptobject"			"weapon_railchucker"
+
+		"muzzle_kick_time"				"0.2"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"0 0 0"
+		"muzzle_kick_offset"			"1 1 2"
+
+		"recoilTime"					"180"
+		"recoilAngles"					"-0.25 0 0"
+		"kickback"						"0.5"
+		"kickback_prone"				"0.25"
+
+		"stat_name"						"lacerator"
+		"stat_name_grenade"				"plasma_launcher"
+
+		"fx_overheat"					"effects/weapons/blaster_steam"
+		"fx_overheat_world"				"effects/weapons/blaster_steam"
+
+		"fx_muzzle_flash"				"effects/weapons/lacerator_muzzleflash_view"
+		"fx_muzzle_flash_world"			"effects/weapons/lacerator_muzzleflash_world"
+		"fx_muzzle_flash_gren"			"effects/weapons/lacerator_grenade_view"
+		"fx_muzzle_flash_world_gren"	"effects/weapons/lacerator_grenade_world"
+
+		"fx_tracer"						"effects/base/tracers_strogg"
+		"effectchance fx_tracer"		"1"
+
+		"snd_fire"						"sounds/weapons/lacerator/fire"
+		"snd_fire_far"					"sounds/weapons/lacerator/fire/far"
+		"snd_fire_local"				"sounds/weapons/lacerator/fire/local"
+		"snd_fire_gren"					"sounds/weapons/lacerator/chucker/fire"
+		"snd_fire_gren_far"				"sounds/weapons/lacerator/chucker/fire/far"
+		"snd_fire_gren_local"			"sounds/weapons/lacerator/chucker/fire/local"
+		"snd_chucker_in"				"sounds/weapons/lacerator/chucker/in"
+		"snd_chucker_out"				"sounds/weapons/lacerator/chucker/out"
+		"snd_chucker_reload"			"sounds/weapons/lacerator/chucker/reload"
+		"snd_reload"					"sounds/weapons/lacerator/reload"
+		"snd_steam"						"sounds/weapons/lacerator/overheat"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_punch"						"sounds/weapons/lacerator/reload_hit"
+		"snd_slideoff"					"sounds/weapons/lacerator/slide_off"
+		"snd_slideon"					"sounds/weapons/lacerator/slide_on"
+		"snd_raise"						"sounds/weapons/lacerator/bring_up"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+
+		"fov_zoom"						"60"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.5"
+
+		"fire_rate"						"0.18"
+		"num_projectiles"				"1"
+
+		"fire_rate_single"				"3"
+
+		"low_ammo"						"8"
+		"hide_clip"						"1"
+		"show_all_ammo"					"1"
+		"clip_based"					"0"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/railchucker"
+
+		"crosshair"						"large"
+		"crosshair_secondary"			"grenade_launcher"
+
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"4"
+		"crosshair_spread_scale"		"2"
+
+		"spread_min"					"1"
+		"spread_max"					"3.6"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"3.6"
+		"spread_viewrate_inc"			"2.5"
+
+		"spread_max_settle_time"		"700" // settles slower than standard lacerator (extra weight of grenade launcher)
+
+		"spread_crouch_min"				"0.75"
+		"spread_crouch_max"				"2.8"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"0.75"
+		"spread_crouch_viewrate_max"	"2.8"
+		"spread_crouch_viewrate_inc"	"2.5"
+
+		"spread_crouch_max_settle_time"	"650"
+
+		"spread_prone_min"				"0.5"
+		"spread_prone_max"				"2"
+		"spread_prone_inc"				"1"
+
+		"spread_prone_viewrate_min"		"0.5"
+		"spread_prone_viewrate_max"		"2"
+		"spread_prone_viewrate_inc"		"2.5"
+
+		"spread_prone_max_settle_time"	"600"
+
+		"spread_jump_min"					"4"
+		"spread_jump_max"					"4"
+		"spread_jump_inc"					"4"
+
+		"spread_jump_max_settle_time"		"600"
+
+		"overheat_length"				"5"
+		"overheat_per_shot"				"0.38"
+		"overheat_per_shot_gren"		"6.0"
+		"timer_heat"					"heat_lacerator"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"2"
+
+		"hide_crosshair"				"0"
+
+	}
+
+	useTemplate inventory/weapons/laceratorgrenade_tooltip_template<>
+
+	clip {
+		"projectile"					"projectile_lacerator_gren_bullet"
+		"client_projectile"				"projectile_bullet"
+		"type"							"stroyent"
+		"ammo_per_shot"					"5"
+		"max_ammo"						"-1"
+	}
+
+	clip {
+		"projectile"					"projectile_lacerator_gren"
+		//"type"							"stroyent_packet"
+		//"ammo_per_shot"					"1"
+		//"max_ammo"						"1"
+		"type"							"stroyent"
+		"ammo_per_shot"					"80"
+		"max_ammo"						"160"
+	}
+}
+
+entityDef projectile_lacerator_gren {
+	"inherit"							"projectile_grenade"
+
+	"dmg_damage"						"damage_lacerator_gren"
+	"dmg_splash_damage"					"damage_lacerator_gren_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"5"
+	"velocity"							"1800 0 0"
+	"bounce"							"0.35"
+	"gravity"							"700"
+	"fuse"								"4"
+	"arm_time"							"1"
+	
+	"contact_friction"					"0"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_death"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+	"detonate_on_rest"					"0"
+
+	"snd_fly"							"sounds/weapons/lacerator/chucker/fly"
+	"snd_bounce"						"sounds/weapons/lacerator/chucker/bounce"
+	"fx_explode"						"effects/weapons/lacerator_explosion"
+	"fx_trail"							"effects/weapons/grenades/lacerator_trail"
+
+	"model"								""
+}
+
+damageDef damage_lacerator_gren {
+	damage								"damage_lacerator_gren"
+
+	push								20000000
+
+	stat_name							"plasma_launcher"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/railchucker"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railchucker/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/railchucker/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/railchucker/unknown"
+}
+
+damageDef damage_lacerator_gren_splash {
+	damage								"damage_lacerator_gren_splash"
+	radius								320
+
+	knockback							100
+	push								20000000
+
+	stat_name							"plasma_launcher"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/railchucker"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railchucker/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/railchucker/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/railchucker/unknown"
+}
+
+damageFilter damage_lacerator_gren {
+
+	type {
+		target							"target_player_all"
+		damage							170
+	}
+
+	type {
+		target							"target_veh_all"
+		damage						 	800
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							800
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}
+
+damageFilter damage_lacerator_gren_splash {
+
+	type {
+		target							"target_player_all"
+		damage							170
+	}
+
+	type {
+		target							"target_veh_all"
+		damage						 	800
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							800
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}
+
+toolTip laceratorgrenade_1 {
+	length 5
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/laceratorgrenade_1"
+}
+
+toolTip laceratorgrenade_2 {
+	length 10
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/laceratorgrenade_2"
+}
