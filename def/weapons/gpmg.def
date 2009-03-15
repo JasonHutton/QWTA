@@ -437,11 +437,13 @@ entityDef projectile_gpmg {
 	"min_damage_percent"				"10"
 
 	"dmg_damage"						"damage_gpmg"
+	"dmg_realistic_damage"					"realistic_damage_gpmg"
 }
 
 entityDef projectile_gpmg_mount {
 	"inherit"							"projectile_gpmg"
 	"dmg_damage"						"damage_gpmg_mount"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_mount"
 }
 
 entityDef projectile_gpmg_vehicle {
@@ -454,26 +456,31 @@ entityDef projectile_gpmg_vehicle {
 entityDef projectile_gpmg_badger {
 	"inherit"							"projectile_gpmg_vehicle"
 	"dmg_damage"						"damage_gpmg_badger"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_badger"
 }
 
 entityDef projectile_gpmg_trojan {
 	"inherit"							"projectile_gpmg_vehicle"
 	"dmg_damage"						"damage_gpmg_trojan"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_trojan"
 }
 
 entityDef projectile_gpmg_titan {
 	"inherit"							"projectile_gpmg_vehicle"
 	"dmg_damage"						"damage_gpmg_titan"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_titan"
 }
 
 entityDef projectile_gpmg_platypus {
 	"inherit"							"projectile_gpmg_vehicle"
 	"dmg_damage"						"damage_gpmg_platypus"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_platypus"
 }
 
 entityDef projectile_gpmg_mcp {
 	"inherit"							"projectile_gpmg_vehicle"
 	"dmg_damage"						"damage_gpmg_mcp"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_mcp"
 }
 
 entityDef projectile_gpmg_aircraft {
@@ -490,39 +497,76 @@ entityDef projectile_gpmg_aircraft {
 entityDef projectile_gpmg_anansi {
 	"inherit"							"projectile_gpmg_aircraft"
 	"dmg_damage"						"damage_gpmg_anansi"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_anansi"
 }
 
 entityDef projectile_gpmg_bumblebee {
 	"inherit"							"projectile_gpmg_aircraft"
 	"dmg_damage"						"damage_gpmg_bumblebee"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_bumblebee"
 }
 
 damageDef damage_gpmg_badger {
 	_vehicle_mg_damage( "badger_weapons" )
 }
 
+damageDef realistic_damage_gpmg_badger {
+	inherit							"damage_gpmg_badger"
+	damage							"realistic_damage_gpmg_badger"
+}
+
 damageDef damage_gpmg_trojan {
 	_vehicle_mg_damage( "trojan_weapons" )
+}
+
+damageDef realistic_damage_gpmg_trojan {
+	inherit							"damage_gpmg_trojan"
+	damage							"realistic_damage_gpmg_trojan"
 }
 
 damageDef damage_gpmg_titan {
 	_vehicle_mg_damage( "titan_weapons" )
 }
 
+damageDef realistic_damage_gpmg_titan {
+	inherit							"damage_gpmg_titan"
+	damage							"realistic_damage_gpmg_titan"
+}
+
 damageDef damage_gpmg_anansi {
 	_vehicle_mg_damage( "anansi_weapons" )
+}
+
+damageDef realistic_damage_gpmg_anansi {
+	inherit							"damage_gpmg_anansi"
+	damage							"realistic_damage_gpmg_anansi"
 }
 
 damageDef damage_gpmg_bumblebee {
 	_vehicle_mg_damage( "bumblebee_weapons" )
 }
 
+damageDef realistic_damage_gpmg_bumblebee {
+	inherit							"damage_gpmg_bumblebee"
+	damage							"realistic_damage_gpmg_bumblebee"
+}
+
 damageDef damage_gpmg_platypus {
 	_vehicle_mg_damage( "platypus_weapons" )
 }
 
+damageDef realistic_damage_gpmg_platypus {
+	inherit							"damage_gpmg_platypus"
+	damage							"realistic_damage_gpmg_platypus"
+}
+
 damageDef damage_gpmg_mcp {
 	_vehicle_mg_damage( "mcp_weapons" )
+}
+
+damageDef realistic_damage_gpmg_mcp {
+	inherit							"damage_gpmg_mcp"
+	damage							"realistic_damage_gpmg_mcp"
 }
 
 damageDef damage_gpmg {
@@ -550,6 +594,11 @@ damageDef damage_gpmg {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gpmg/teamkill"
 }
 
+damageDef realistic_damage_gpmg {
+	inherit								"damage_gpmg"
+	damage								"realistic_damage_gpmg"
+}
+
 damageDef damage_gpmg_mount {
 	damage								"damage_gpmg_mount"
 	kickDir								( 1 0 0 )
@@ -573,6 +622,11 @@ damageDef damage_gpmg_mount {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gpmg/teamkill"
 }
 
+damageDef realistic_damage_gpmg_mount {
+	inherit								"damage_gpmg_mount"
+	damage								"realistic_damage_gpmg_mount"
+}
+
 damageFilter damage_gpmg {
 
 	type {
@@ -591,10 +645,45 @@ damageFilter damage_gpmg {
 	}
 }
 
+damageFilter realistic_damage_gpmg {
+
+	type {
+		target							"target_player_all"
+		damage							51
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							25
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							25
+	}
+}
+
 damageFilter damage_gpmg_mount {
 	type {
 		target							"target_player_all"
 		damage							21
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							30
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							30
+	}
+}
+
+damageFilter realistic_damage_gpmg_mount {
+	type {
+		target							"target_player_all"
+		damage							63
 	}
 
 	type {
