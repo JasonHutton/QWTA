@@ -92,7 +92,7 @@ in addition to vehicle credit, campaign rank is required in order to summon vehi
 
 Todo for v0.3 release:
 
-1. Fix issue with DMG freezing in midair without detonation.
+++++++++++++++++++++++++++++++++++++1. Fix issue with DMG freezing in midair without detonation.
 2. Fix cheats of teleport drop not checking for all known issues before dropping.
 3. Hyperblaster should not give target lock or respond to flares. Faster lockon would be nice but nonessential. Turn off locational damage.
 4. Class number limit improvements: force to limbo on death/force bots to switch on death when on a class with slots overused.
