@@ -18,6 +18,8 @@ object projectile_ssg : projectile_ssm {
 	void		Idle();
 
 	void			preinit();
+	
+	void			SetupContents();
 
 	void			OnPostThink();
 
@@ -38,6 +40,12 @@ void projectile_ssg::preinit() {
 	splashDamagePushIndex	= GetDamage( getKey( "dmg_splash_damage_push" ) );
 	splashDamagePullIndex	= GetDamage( getKey( "dmg_splash_damage_pull" ) );
 	splashDamageProxBurnIndex	= GetDamage( getKey( "dmg_splash_damage_prox_burn" ) );
+}
+
+void projectile_ssg::SetupContents() {
+	SetupContents_Base();
+
+	setClipmask( CONTENTS_SOLID | CONTENTS_FORCEFIELD );
 }
 
 void projectile_ssg::Idle() {

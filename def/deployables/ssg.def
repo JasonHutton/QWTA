@@ -270,8 +270,7 @@ entityDef projectile_deployable_ssg {
 	"detonate_on_fuse"				"0"
 	"detonate_on_death"				"1"
 	"detonate_on_world"				"1"
-	//"detonate_on_actor"				"1"
-	"detonate_on_actor"				"0"
+	"detonate_on_actor"				"1"
 
 	"face_velocity"					"1"
 
@@ -427,7 +426,7 @@ damageDef damage_ssg_prox_burn{
 }
 
 damageDef realistic_damage_ssg_prox_burn {
-	inherit							"damage_ssg_burn"
+	inherit							"damage_ssg_prox_burn"
 	damage							"realistic_damage_ssg_burn"
 }
 
