@@ -114,3 +114,48 @@ Shotguns x2 damage to players.
 Snipers x2 damage to players.
 
 Lockons with hyperblaster should NOT occur on disguised GDF. :|
+
+http://community.enemyterritory.com/forums/showthread.php?p=447232
+==============================
+A post to cure temporary boredom. Some things may have been mentioned before.
+
+I think an expansion is in order, yes. An expansion like Q4 where the humans take the fight to Stroggos, and then eventually the next ET:QW where we fight not in the past nor the future but the present, Q5 if you will, following the events of Q4… chances are they’re going to make that a single player game however.
+
+Should there be an expansion I thought it would be fun to throw out some ideas for new items/weapons each class could get.
+
+-----
+
+Soldier – Flamethrower: Dominant close range weapon that can catch units on fire and deal damage over time. Secondary could make fire stick in a specific area like napalm. Going prone and crawling acts as a “stop drop and roll” action to make fire ware off faster?
+
+Aggressor – Lightning Cannon: The two-handed version of the lightning pistol. This weapon shoots farther, does more damage and takes longer to overheat. Chance to jolt target and slow movement? Hmm, interesting.
+
+-----
+
+Medic – Stimulant Injection: When given increases a player’s health and speed, would have a longer recharge time than the med packs. A full charge will allow the medic to use on two players.
+
+Technician – Spider Drones: Deployable medic aid that will latch onto a Strogg player and slowly heal them whenever they take damage. Only two of these can be deployed at a time and can be destroyed if they receive too much damage. Plus, it would be kind of creepy to see Strogg with metallic spiders crawling all over them.
+- OR -
+Stroyent Spikes: Slammed only into the torso of dead Strogg bodies, these spikes extract the remaining Stroyent (amount differs per body). Wounded allies can pick these spikes up and inject them into their bodies to replenish Stroyent. Strogg like to recycle, yes?
+
+Also, why not allow the Technician to slowly heal players with his revive tool? I mean he can revive a near dead Strogg with it but not do normal repairs? You could argue that Stroyent is needed; well why not just have the tool slowly drain your Stroyent supply… I mean it recharges anyway. (Note that I think this should have been in the game and not intended for an expansion, always bothers me that the revive tool does damage to allies)
+
+-----
+
+Engineer – Stick Bombs: A simple bomb that sticks to walls, deploables and vehicles. These bombs are enough to take out vehicles and nearly destroy deploables.
+
+I’ve got to say that I think it makes more sense to give the Engineer a smoke grenade than the Covert Ops but… whatever.
+
+Constructor – Protector Orb: Deploys a hovering machine turret that follows the Constructor around and fires at nearby enemies.
+
+-----
+
+Field Ops – Target Beacon – This device when thrown on enemy turrets and vehicles will allow allied aircraft to automatically lock their weapons on the object. This also allows a Field Ops to bypass the locking time for their deployable when targeting an object with a Target Beacon attached.
+
+Oppressor – Latcher – This weapon fires highly accurate spiked explosives that will latch onto walls, vehicles and GDF players (also causing damage) and then will explode after two seconds.
+
+-----
+
+Covert Ops – Cloaking Device: Allows a Covert Ops to cloak and become completely invisible when standing still and only slightly noticeable when moving. Device can only be active for so long and then will shut down. Useful for when you can’t disguise and need to sneak behind enemy lines… or out of enemy lines.
+
+Infiltrator – Slip Gate: An upgrade to the normal teleport device, this allows the Infiltrator to create a two way portal from their spawn to behind enemy positions. These devices take some time to establish a connection. GDF are also able to use active gates. The devices are obviously destroyable but can tip the scale of any battle. (Perhaps something should alert players on the opposite team if they have a radar operational)
+==============================
