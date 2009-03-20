@@ -99,7 +99,7 @@ void projectile_ssg::DoRadiusPull() {
 	//}
 
 	if ( damageIndex != -1 ) {
-		sys.applyRadiusPull( getWorldOrigin(), self, getOwner(), $null_entity, self, damageIndex, GetDamagePower(), 1.f );
+		sys.applyRadiusPush( getWorldOrigin(), self, getOwner(), $null_entity, self, damageIndex, GetDamagePower(), 1.f );
 	}
 }
 

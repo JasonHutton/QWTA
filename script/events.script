@@ -722,7 +722,6 @@ scriptEvent string	getDeclName( float declType, float declIndex );
 scriptEvent void	applyRadiusDamage( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
 // QWTA
 scriptEvent void	applyRadiusPush( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
-scriptEvent void	applyRadiusPull( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePull, float damageIndex, float damageScale, float radiusScale );
 // QWTA
 scriptEvent boolean	filterEntity( float filterIndex, entity other );
 scriptEvent float	getTableCount( float tableIndex );

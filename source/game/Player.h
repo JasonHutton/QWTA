@@ -481,7 +481,6 @@ public:
 	void					UpdatePlayZoneInfo( void );
 
 	virtual void			ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius );
-	virtual void			ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius );
 
 	void					SendUnLocalisedMessage( const wchar_t* message );
 	void					SendLocalisedMessage( const sdDeclLocStr* locStr, const idWStrList& parms );

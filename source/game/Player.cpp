@@ -8037,35 +8037,12 @@ idPlayer::ApplyRadiusPush
 void idPlayer::ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius ) {
 	// scale the push for the inflictor
 	// scale by the push scale of the entity
-	idVec3 impulse = entityOrigin - pushOrigin;
-	float dist = impulse.Normalize();
- 	if ( dist > radius ) {
-		return;
+	idVec3 impulse;
+	if ( damageDecl != NULL && damageDecl->GetNegativePush() ) {
+		impulse = pushOrigin - entityOrigin;
+	} else {
+		impulse = entityOrigin - pushOrigin;
 	}
-
-	float distScale = Square( 1.0f - dist / radius );
-	float scale = distScale * pushScale * g_knockback.GetFloat();
-	if ( damageDecl != NULL ) {
-		scale *= damageDecl->GetKnockback();
-	}
-	if ( idMath::Fabs( scale ) < idMath::FLT_EPSILON ) {
-		return;
-	}
-	impulse *= scale;
-
-	physicsObj.SetLinearVelocity( physicsObj.GetLinearVelocity() + impulse );
-	physicsObj.SetKnockBack( 100 );
-}
-
-/*
-============
-idPlayer::ApplyRadiusPull
-============
-*/
-void idPlayer::ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius ) {
-	// scale the push for the inflictor
-	// scale by the push scale of the entity
-	idVec3 impulse = pushOrigin - entityOrigin;//entityOrigin - pushOrigin;
 	float dist = impulse.Normalize();
  	if ( dist > radius ) {
 		return;

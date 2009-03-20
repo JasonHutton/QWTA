@@ -90,7 +90,6 @@ public :
 	void					UpdateVisibility( void );
 
 	virtual bool			DoRadiusPush( void ) const { return false; }
-	virtual bool			DoRadiusPull( void ) const { return false; }
 
 	virtual bool			CanCollide( const idEntity* other, int traceId ) const;
 

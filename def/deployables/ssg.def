@@ -401,6 +401,8 @@ damageDef damage_ssg_splash_pull{
 	
 	knockback						800
 	push							80000000
+	
+	negativePush
 
 	tt_obituary						"tooltips/killmsgs/weapons/ssg"
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"

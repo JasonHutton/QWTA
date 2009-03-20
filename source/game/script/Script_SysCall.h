@@ -114,7 +114,6 @@ public:
 	void						Event_GetDeclName( int declTypeHandle, int index );
 	void						Event_ApplyRadiusDamage( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale );
 	void						Event_ApplyRadiusPush( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale );
-	void						Event_ApplyRadiusPull( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale );
 	void						Event_FilterEntity( int filterIndex, idEntity* entity );
 	void						Event_GetTableCount( int tableIndex );
 	void						Event_GetTableValue( int tableIndex, int valueIndex );

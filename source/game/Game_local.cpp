@@ -6368,53 +6368,6 @@ void idGameLocal::RadiusPush( const idVec3 &origin, float radius, const sdDeclDa
 
 /*
 ==============
-idGameLocal::RadiusPull - QWTA
-==============
-*/
-void idGameLocal::RadiusPull( const idVec3 &origin, float radius, const sdDeclDamage* damageDecl, float pushScale, const idEntity *inflictor, const idEntity *ignore, int flags, bool saveEvent ) {
-	if ( isClient && saveEvent ) {
-		new sdPhysicsEvent_RadiusPull( physicsEvents, origin, radius, damageDecl, pushScale, inflictor, ignore, flags );
-	}
-
-	idEntity* entityList[ MAX_GENTITIES ];
-
-	idVec3 dir;
-	dir.Set( 0.0f, 0.0f, 1.0f );
-
-	idBounds bounds = idBounds( origin ).Expand( radius );
-
-	// get all the entities touching the bounds
-	int numListedEntities = clip.EntitiesTouchingBounds( bounds, -1, entityList, MAX_GENTITIES );
-
-	// apply impact to all the entities
-	for ( int i = 0; i < numListedEntities; i++ ) {
-		idEntity* ent = entityList[ i ];
-		if ( ent == ignore ) {
-			continue;
-		}
-
-		if ( !ent->DoRadiusPull() ) {
-			continue;
-		}
-
-		if ( flags & RP_GROUNDONLY ) {
-			if ( !ent->GetPhysics()->HasGroundContacts() ) {
-				continue;
-			}
-		}
-
-		modelTrace_t result;
-		idVec3 otherOrigin = ent->GetPhysics()->GetAbsBounds().GetCenter();
-		if ( gameRenderWorld->FastWorldTrace( result, origin, otherOrigin ) ) {
-			continue;
-		}
-
-		ent->ApplyRadiusPull( origin, otherOrigin, damageDecl, pushScale, radius );
-	}
-}
-
-/*
-==============
 idGameLocal::RadiusPushClipModel
 ==============
 */
@@ -6472,64 +6425,6 @@ void idGameLocal::RadiusPushClipModel( const idVec3 &origin, const float push, c
 
 /*
 ==============
-idGameLocal::RadiusPullClipModel
-==============
-*/
-void idGameLocal::RadiusPullClipModel( const idVec3 &origin, const float push, const idClipModel *clipModel ) {
-	int i, j;
-	float dot, dist, area;
-	const idTraceModel *trm;
-	const traceModelPoly_t *poly;
-	idFixedWinding w;
-	idVec3 v, localOrigin, center, impulse;
-
-	trm = clipModel->GetTraceModel();
-	if ( !trm || 1 ) {
-		impulse = origin - clipModel->GetAbsBounds().GetCenter();//clipModel->GetAbsBounds().GetCenter() - origin;
-		impulse.Normalize();
-		impulse.z += 1.0f;
-		clipModel->GetEntity()->AddForce( world, clipModel->GetId(), clipModel->GetOrigin(), push * impulse );
-		return;
-	}
-
-	localOrigin = ( clipModel->GetOrigin()- origin ) * clipModel->GetAxis().Transpose();//( origin - clipModel->GetOrigin() ) * clipModel->GetAxis().Transpose();
-	for ( i = 0; i < trm->numPolys; i++ ) {
-		poly = &trm->polys[i];
-
-		center.Zero();
-		for ( j = 0; j < poly->numEdges; j++ ) {
-			v = trm->verts[ trm->edges[ abs(poly->edges[j]) ].v[ INTSIGNBITSET( poly->edges[j] ) ] ];
-			center += v;
-			v -= localOrigin;
-			v.NormalizeFast();	// project point on a unit sphere
-			w.AddPoint( v );
-		}
-		center /= poly->numEdges;
-		v = center - localOrigin;
-		dist = v.NormalizeFast();
-		dot = v * poly->normal;
-		if ( dot > 0.0f ) {
-			continue;
-		}
-		area = w.GetArea();
-		// impulse in polygon normal direction
-		impulse = poly->normal * clipModel->GetAxis();
-		// always push up for nicer effect
-		impulse.z -= 1.0f;
-		// scale impulse based on visible surface area and polygon angle
-		impulse *= push * ( dot * area * ( 1.0f / ( 4.0f * idMath::PI ) ) );
-		// scale away distance for nicer effect
-		impulse *= ( dist * 2.0f );
-		// impulse is applied to the center of the polygon
-		center = clipModel->GetOrigin() + center * clipModel->GetAxis();
-
-		clipModel->GetEntity()->AddForce( world, clipModel->GetId(), center, impulse );
-	}
-}
-
-
-/*
-==============
 idGameLocal::RadiusPushEntities
 ==============
 */
@@ -6543,37 +6438,6 @@ void idGameLocal::RadiusPushEntities( const idVec3& origin, float force, float r
 	int i;
 	for( i = 0; i < count; i++ ) {
 		idVec3 dist = origin - ents[ i ]->GetPhysics()->GetOrigin();
-
-		float len = dist.LengthSqr();
-		if( len > rSquared ) {
-			continue;
-		}
-
-		len = dist.Normalize();
-		len = len / radius;
-		len *= len;
-
-		idVec3 f = dist * force * len;
-
-		ents[ i ]->GetPhysics()->AddForce( 0, origin, f );
-	}
-}
-
-/*
-==============
-idGameLocal::RadiusPullEntities
-==============
-*/
-void idGameLocal::RadiusPullEntities( const idVec3& origin, float force, float radius ) {
-	float rSquared = Square( radius );
-
-	const int MAX_PUSH_ENTS = 32;
-	idEntity* ents[ MAX_PUSH_ENTS ];
-
-	int count = EntitiesWithinRadius( origin, radius, ents, MAX_PUSH_ENTS );
-	int i;
-	for( i = 0; i < count; i++ ) {
-		idVec3 dist = ents[ i ]->GetPhysics()->GetOrigin() - origin;//origin - ents[ i ]->GetPhysics()->GetOrigin();
 
 		float len = dist.LengthSqr();
 		if( len > rSquared ) {

@@ -76,6 +76,8 @@ public:
 
 	bool					IsTeamDamage( void ) const { return flags.isTeamDamage; }
 
+	bool					GetNegativePush( void ) const { return pushFlags.negativePush; }
+
 	float					GetSelfDamageScale( void ) const { return selfDamageScale; }
 
 	static const sdDeclDamage* DamageForName( const char* name, bool makeDefault );
@@ -141,6 +143,12 @@ protected:
 	} damageFlags_t;
 
 	damageFlags_t			flags;
+
+	typedef struct pushFlags_s {
+		bool				negativePush		: 1;
+	} pushFlags_t;
+
+	pushFlags_t				pushFlags;
 
 	private:
 		void				CopyDecl( const sdDeclDamage* decl );

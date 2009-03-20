@@ -3826,7 +3826,13 @@ idEntity::ApplyRadiusPush
 void idEntity::ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius ) {
 	// scale the push for the inflictor
 	// scale by the push scale of the entity
-	idVec3 impulse = entityOrigin - pushOrigin;
+	idVec3 impulse;
+	if ( damageDecl != NULL && damageDecl->GetNegativePush() ) {
+		impulse = pushOrigin - entityOrigin;
+	} else {
+		impulse = entityOrigin - pushOrigin;
+	}
+	
 	float dist = impulse.Normalize();
 	if ( dist > radius ) {
 		return;
@@ -3838,34 +3844,7 @@ void idEntity::ApplyRadiusPush( const idVec3& pushOrigin, const idVec3& entityOr
 	if ( damageDecl != NULL ) {
 		scale *= damageDecl->GetPush();
 	}
-	if ( idMath::Fabs( scale ) < idMath::FLT_EPSILON ) {
-		return;
-	}
-
-	// push the force application point closer to the entity so it causes less rotation
-	GetPhysics()->AddForce( 0, ( pushOrigin + entityOrigin ) * 0.5f, impulse * scale );
-}
-
-/*
-============
-idEntity::ApplyRadiusPull - QWTA
-============
-*/
-void idEntity::ApplyRadiusPull( const idVec3& pushOrigin, const idVec3& entityOrigin, const sdDeclDamage* damageDecl, float pushScale, float radius ) {
-	// scale the push for the inflictor
-	// scale by the push scale of the entity
-	idVec3 impulse = pushOrigin - entityOrigin;//entityOrigin - pushOrigin;
-	float dist = impulse.Normalize();
-	if ( dist > radius ) {
-		return;
-	}
-
-	float distScale = Square( 1.0f - dist / radius );
-	impulse.z += 1.0f;
-	float scale = distScale * pushScale * GetRadiusPushScale();
-	if ( damageDecl != NULL ) {
-		scale *= damageDecl->GetPush();
-	}
+	
 	if ( idMath::Fabs( scale ) < idMath::FLT_EPSILON ) {
 		return;
 	}

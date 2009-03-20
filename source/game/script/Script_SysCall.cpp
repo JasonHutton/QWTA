@@ -145,7 +145,6 @@ const idEventDef EV_Thread_GetDeclName( "getDeclName", 's', DOC_TEXT( "Returns t
 const idEventDef EV_Thread_GetDeclCount( "getDeclCount", 'd', DOC_TEXT( "Returns the $decl$ count for a specified $decl$ type." ), 1, "If the $decl$ type is invalid, the result will be 0.", "d", "type", "Index of the $decl$ type." );
 const idEventDef EV_Thread_ApplyRadiusDamage( "applyRadiusDamage", '\0', DOC_TEXT( "Applies radius damage to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the damage.", "E", "attacker", "Entity responsible for the damage.", "E", "ignore", "Entity to not apply damage to.", "E", "pushIgnore", "Entity to not apply push to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by." );
 const idEventDef EV_Thread_ApplyRadiusPush( "applyRadiusPush", '\0', DOC_TEXT( "Applies radius push to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the push.", "E", "attacker", "Entity responsible for the push.", "E", "ignore", "Entity to not apply push to.", "E", "pushIgnore", "Entity to not apply push to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by." );
-const idEventDef EV_Thread_ApplyRadiusPull( "applyRadiusPull", '\0', DOC_TEXT( "Applies radius pull to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the pull.", "E", "attacker", "Entity responsible for the pull.", "E", "ignore", "Entity to not apply pull to.", "E", "pushIgnore", "Entity to not apply pull to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied pull by." );
 const idEventDef EV_Thread_FilterEntity( "filterEntity", 'b', DOC_TEXT( "Returns whether the entity is caught by a $decl:targetInfo$." ), 2, "If the $decl:targetInfo$ is invalid or the entity is $null$, the result will be true.", "d", "index", "Index of the $decl:targetInfo$.", "E", "entity", "The entity to check." );
 const idEventDef EV_Thread_GetTableCount( "getTableCount", 'd', DOC_TEXT( "Returns the number of entries in $decl:table$." ), 1, "If the $decl:table$ is invalid, then the result will be 0.", "d", "index", "Index of the $decl:table$." );
 const idEventDef EV_Thread_GetTableValue( "getTableValue", 'f', DOC_TEXT( "Returns an entry from a $decl:table$." ), 2, "This is the direct value from the table and does not do a lookup for interpolation, etc. To do that, use $event:getTableValueExact$.\nIf the index is -1, the result will be 0.\nIf the index is otherwise out of range, the game will likely crash or return garbage data.", "d", "index", "Index of the $decl:table$.", "d", "value", "Which value to look up." );
@@ -395,7 +394,6 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 	EVENT( EV_Thread_GetDeclCount,					sdSysCallThread::Event_GetDeclCount )
 	EVENT( EV_Thread_ApplyRadiusDamage,				sdSysCallThread::Event_ApplyRadiusDamage )
 	EVENT( EV_Thread_ApplyRadiusPush,				sdSysCallThread::Event_ApplyRadiusPush )
-	EVENT( EV_Thread_ApplyRadiusPull,				sdSysCallThread::Event_ApplyRadiusPull )
 	EVENT( EV_Thread_FilterEntity,					sdSysCallThread::Event_FilterEntity )
 	EVENT( EV_Thread_GetTableCount,					sdSysCallThread::Event_GetTableCount )
 	EVENT( EV_Thread_GetTableValue,					sdSysCallThread::Event_GetTableValue )
@@ -1793,24 +1791,6 @@ void sdSysCallThread::Event_ApplyRadiusPush( const idVec3& origin, idEntity *inf
 
 	// push physics objects
 	gameLocal.RadiusPush( origin, radius, damageDecl, damagePower, attacker, ignorePush, 0, true );
-}
-
-/*
-================
-sdSysCallThread::Event_ApplyRadiusPull - QWTA
-================
-*/
-void sdSysCallThread::Event_ApplyRadiusPull( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale ) {
-	const sdDeclDamage *damageDecl = gameLocal.declDamageType[ damageIndex ];
-	if ( damageDecl == NULL ) {
-		gameLocal.Warning( "Event_ApplyRadiusPull: damageDecl is NULL" );
-		return;
-	}
-
-	float radius	= Max( 1.f, damageDecl->GetRadius() * radiusScale );
-
-	// push physics objects
-	gameLocal.RadiusPull( origin, radius, damageDecl, damagePower, attacker, ignorePush, 0, true );
 }
 
 /*

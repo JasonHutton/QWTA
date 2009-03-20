@@ -223,6 +223,10 @@ bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 
 			flags.noDirection = true;
 
+		} else if ( !token.Icmp( "negativePush" ) ) {
+			
+			pushFlags.negativePush = true;
+
 		} else if( !token.Icmp( "kickDir" ) ) {
 
 			if( !src.Parse1DMatrix( 3, kickDir.ToFloatPtr() ) ) {
@@ -497,6 +501,8 @@ void sdDeclDamage::FreeData( void ) {
 	flags.recordHitStats		= false;
 	flags.isTeamDamage			= false;
 	flags.noDirection			= false;
+
+	pushFlags.negativePush	= false;
 
 	stats.damage		= NULL;
 	stats.shotsHit		= NULL;
