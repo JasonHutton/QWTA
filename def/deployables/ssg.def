@@ -258,8 +258,8 @@ entityDef projectile_deployable_ssg {
 	"dmg_splash_damage_prox_burn"			"damage_ssg_prox_burn"
 	"dmg_realistic_splash_damage_prox_burn"		"realistic_damage_ssg_prox_burn"
 
-	"damageRate"					"0.04"
-	"delay_splash"					"0.45"
+	"damageRate"					"0.0335"
+	"delay_splash"					"0.25"
 
 	"health"						"400"
 	"velocity"						"0 0 0"
@@ -403,7 +403,7 @@ damageDef damage_ssg_splash_pull{
 	team_kill_cvar					"g_allowComplaint_firesupport"
 
 	knockback						800
-	push							75000000
+	push							80000000
 
 	negativePush
 
