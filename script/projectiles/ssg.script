@@ -7,6 +7,8 @@ projectile_ssg.script
 #define DMG_GRAVITY_ACTIVATION_DELAY 5.0f
 
 object projectile_ssg : projectile_ssm {
+	void		DoDelayedExplosion();
+
 	void		DoExplodeEffect_ssg( entity collisionEnt );
 	void		DoExplodeEffect( entity collisionEnt ) {
 		DoExplodeEffect_ssg( collisionEnt );
@@ -28,24 +30,30 @@ object projectile_ssg : projectile_ssm {
 	float			splashDamageProxBurnIndex;
 
 	boolean			gravitySucks;
+	boolean			delayingExplosion;
 	boolean			completelyDone;
 	float			launchTime;
 
 	float			damageRate;
 	float			nextDamageTime;
+	float			delaySplash;
+	float			splashTime;
 }
 
 void projectile_ssg::preinit() {
 	gravitySucks = false;
+	delayingExplosion = false;
 	completelyDone = false;
 	launchTime = -1;
 	nextDamageTime = 0.0;
+	splashTime = 0.0;
 
 	splashDamagePushIndex	= GetDamage( getKey( "dmg_splash_damage_push" ) );
 	splashDamagePullIndex	= GetDamage( getKey( "dmg_splash_damage_pull" ) );
 	splashDamageProxBurnIndex	= GetDamage( getKey( "dmg_splash_damage_prox_burn" ) );
 
 	damageRate = getFloatKey( "damageRate" );
+	delaySplash = getFloatKey( "delay_splash" );
 }
 
 void projectile_ssg::SetupContents() {
@@ -62,16 +70,26 @@ void projectile_ssg::Idle() {
 }
 
 void projectile_ssg::OnPostThink() {
-	if( gravitySucks && sys.getTime() > nextDamageTime ) {
-		nextDamageTime = sys.getTime() + damageRate;
-		DoRadiusPull();
-		DoProxBurn();
-	}
-	else if( !completelyDone ) {
-		if( ( sys.getTime() - launchTime ) > DMG_GRAVITY_ACTIVATION_DELAY ) {
-			gravitySucks = true;
+	if ( !completelyDone ) {
+		gravitySucks = true;
+
+		if( gravitySucks && sys.getTime() > nextDamageTime ) {
+			nextDamageTime = sys.getTime() + damageRate;
+			DoRadiusPull();
+			DoProxBurn();
+		}
+
+		if( delayingExplosion && sys.getTime() > splashTime ) {
+			completelyDone = true;
+			DoDelayedExplosion();
 		}
 	}
+}
+
+void projectile_ssg::DoDelayedExplosion() {
+	//sys.print("Doing delayed explosion " + sys.getTime() + "\n");
+	DoRadiusPush();
+	DoRadiusDamage();
 }
 
 void projectile_ssg::DoExplodeEffect_ssg( entity collisionEnt ) {
@@ -79,10 +97,9 @@ void projectile_ssg::DoExplodeEffect_ssg( entity collisionEnt ) {
 	SetRadiusDamageIgnoreEntity( collisionEnt );
 
 	gravitySucks = false;
-	completelyDone = true;
-
-	DoRadiusPush();
-	DoRadiusDamage();
+	delayingExplosion = true;
+	splashTime = sys.getTime() + delaySplash;
+	//sys.print("Timing delayed explosion from " + sys.getTime() + "(" + delaySplash + ")\n");
 
 	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
 	ScheduleRemoval( removeDelay );
