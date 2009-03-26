@@ -18,7 +18,7 @@ object projectile_ssg : projectile_ssm {
 	void		Idle();
 
 	void			preinit();
-	
+
 	void			SetupContents();
 
 	void			OnPostThink();
@@ -30,16 +30,22 @@ object projectile_ssg : projectile_ssm {
 	boolean			gravitySucks;
 	boolean			completelyDone;
 	float			launchTime;
+
+	float			damageRate;
+	float			nextDamageTime;
 }
 
 void projectile_ssg::preinit() {
 	gravitySucks = false;
 	completelyDone = false;
 	launchTime = -1;
+	nextDamageTime = 0.0;
 
 	splashDamagePushIndex	= GetDamage( getKey( "dmg_splash_damage_push" ) );
 	splashDamagePullIndex	= GetDamage( getKey( "dmg_splash_damage_pull" ) );
 	splashDamageProxBurnIndex	= GetDamage( getKey( "dmg_splash_damage_prox_burn" ) );
+
+	damageRate = getFloatKey( "damageRate" );
 }
 
 void projectile_ssg::SetupContents() {
@@ -56,7 +62,8 @@ void projectile_ssg::Idle() {
 }
 
 void projectile_ssg::OnPostThink() {
-	if( gravitySucks ) {
+	if( gravitySucks && sys.getTime() > nextDamageTime ) {
+		nextDamageTime = sys.getTime() + damageRate;
 		DoRadiusPull();
 		DoProxBurn();
 	}

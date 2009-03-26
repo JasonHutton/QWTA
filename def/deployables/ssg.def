@@ -210,7 +210,7 @@ entityDef deployable_ssg {
 	"fx_fire"						"effects/deployables/ssg/fire"
 	"fx_death"						"effects/deployables/ssg_destroy"
 	"fx_emped"						"effects/generic_smoke/emp"
-	
+
 	"emp_effect_joint"				"h_aim"
 
 	"collection_firesupport_ssg"	"firesupport_ssg"
@@ -227,9 +227,9 @@ entityDef deployable_ssg {
 	"def_marker"					"target_marker"
 	"mtr_marker_cm"					"hud/objectives/firesupport"
 	"cm_marker_sort"				"0"
-	
+
 	"deployable_type"				"4"
-	
+
 	"contextmenu_quickchat_enemy"	"quickchat/context/attack/firesupportspotted"
 
 	"deploybonus_requireactive"		"0"
@@ -257,6 +257,9 @@ entityDef projectile_deployable_ssg {
 	"dmg_splash_damage_pull"			"damage_ssg_splash_pull"
 	"dmg_splash_damage_prox_burn"			"damage_ssg_prox_burn"
 	"dmg_realistic_splash_damage_prox_burn"		"realistic_damage_ssg_prox_burn"
+
+	"damageRate"					"0.05"
+	"delay_splash"					"0.45"
 
 	"health"						"400"
 	"velocity"						"0 0 0"
@@ -298,7 +301,7 @@ entityDef projectile_deployable_ssg {
 	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
 
 	"prof_destroy"					"pro_engineer_antimissile_ssg"
-	
+
 	// QWTA
 	"has_postthink"					"1"
 }
@@ -378,7 +381,7 @@ damageDef damage_ssg_splash_push {
 	stat_name						"ssg"
 
 	team_kill_cvar					"g_allowComplaint_firesupport"
-	
+
 	knockback						4000
 	push							100000000
 
@@ -398,10 +401,10 @@ damageDef damage_ssg_splash_pull{
 	stat_name						"ssg"
 
 	team_kill_cvar					"g_allowComplaint_firesupport"
-	
+
 	knockback						800
 	push							80000000
-	
+
 	negativePush
 
 	tt_obituary						"tooltips/killmsgs/weapons/ssg"
@@ -420,7 +423,7 @@ damageDef damage_ssg_prox_burn{
 	stat_name						"ssg"
 
 	team_kill_cvar					"g_allowComplaint_firesupport"
-	
+
 	tt_obituary						"tooltips/killmsgs/weapons/ssg"
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
