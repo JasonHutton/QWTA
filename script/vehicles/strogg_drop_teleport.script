@@ -7,6 +7,7 @@ object strogg_drop_teleport : strogg_drop {
 void strogg_drop_teleport::Idle() {
 	float height;
 	float flightTime;
+	float teleportTime;
 	float dropTime;
 	float endTime;
 	float soundTime;
@@ -45,17 +46,17 @@ void strogg_drop_teleport::Idle() {
 	}
 	playEffect( "fx_booster", "", false );
 
+	stopEffect( "fx_trail" );
 	playEffect( "fx_teleport_start", "", false );
-	setOrigin( itemTargetPos );
-	playEffect( "fx_teleport_end", "", false );
+	teleportTime = sys.getTime();
 
 	//
 	// Part 2 just a linear fall
 	//
-	dropTime = sys.getTime() - launchTime;
+	dropTime = sys.getTime() - teleportTime;//launchTime;
 	while ( dropTime < STROGG_DROP_TELEPORT_TRANSITION_TIME ) {
 		sys.waitFrame();
-		dropTime = sys.getTime() - launchTime;
+		dropTime = sys.getTime() - teleportTime;//launchTime;
 
 		if( !ContinueDrop() ) {
 			// player switched teams before we've deployed
@@ -79,9 +80,11 @@ void strogg_drop_teleport::Idle() {
 		}
 	}
 
+	setOrigin( itemTargetPos );
+	playEffect( "fx_teleport_end", "", false );
 	item.setOrigin( itemTargetPos );
 
-	stopEffect( "fx_trail" );
+	//stopEffect( "fx_trail" );
 	stopEffect( "fx_booster" );
 	playEffect( "fx_hitground", "", false );
 	startSound( "snd_impact", SND_VEHICLE_IDLE );
