@@ -161,9 +161,9 @@ entityDef vehicle_platypus {
 	"engine_accel_yaw_vol_mult"		"0.0"
 	"engine_accel_yaw_pitch"		"60.0"
 	"engine_accel_yaw_pitch_mult"	"0.0"
-	
+
 	//----------------------------------------------------------
-	
+
 	"sound_control"					"speedboat"
 
 	"steering_angle"				"40"
@@ -205,7 +205,7 @@ entityDef vehicle_platypus {
 	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_platypus"
 
 	"fx_emped"						"effects/generic_smoke/emp_small"
-	
+
 	"emp_effect_joint"				"throttle_joint"
 
 	"damage_smoke"					"70"
@@ -282,6 +282,8 @@ entityDef vehicle_platypus {
 	"vehicle_flags"					"16"
 
 	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
+
+	"always_drop"					"1"
 }
 
 toolTip vehicle_platypus_enter {
@@ -320,5 +322,5 @@ damageFilter damage_platypus_collide {
 	type {
 		target	"target_deployables_all"
 		damage	200
-	}	
+	}
 }
