@@ -82,7 +82,7 @@ in addition to vehicle credit, campaign rank is required in order to summon vehi
 12. See if being on a class-restriction-okay team and having the restriction go down, how it behaves immediately and on respawn... (Should probably let someone continue using it until death, then force them to the class menu?)
 13. Get the DMC working nicer in general. (Gravity effects, blast, muzzleflash.)
 15. Get realistic damages in place.
-16. Nuclear Hammer (blinding flash + brief large-radius EMP)
+16. Nuclear Hammer (blinding flash + brief large-radius EMP + lingering radiation)
 17. Megatexture autodownload!
 18. Get the "enemy x spotted!" chat displaying the actual name of the vehicle in text.
 19. Optimize the 3rd eye to only update its radar when its pos has actually changed.
