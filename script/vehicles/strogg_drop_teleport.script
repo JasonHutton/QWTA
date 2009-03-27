@@ -1,4 +1,4 @@
-#define STROGG_DROP_TELEPORT_TRANSITION_TIME	5
+#define STROGG_DROP_TELEPORT_TRANSITION_TIME	2
 
 object strogg_drop_teleport : strogg_drop {
 	void			Idle();
