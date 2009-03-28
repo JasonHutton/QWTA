@@ -360,11 +360,7 @@ effect effects/weapons/dmg/fly
 	{
 		soundShader	"sounds/weapons/dmg/fly"
 	}
-}
-
-
-
-effect effects/weapons/dmg/explode
+}effect effects/weapons/dmg/explode
 {
 	size	7595
 
@@ -389,12 +385,13 @@ effect effects/weapons/dmg/explode
 		duration	1,1
 		count		50,50
 		attenuateEmitter
-		attenuation	1024,4000
+		attenuation	1024,4096
 
 		sprite
 		{
-			duration	4,6
+			duration	4,8
 			blend	add
+			persist
 			material	"textures/effects/energy_sparks/spark_blue"
 			trailRepeat	1
 
@@ -464,13 +461,50 @@ effect effects/weapons/dmg/explode
 			lineHit
 		}
 	}
+	spawner "firecloud"
+	{
+		count		30,30
+
+		sprite
+		{
+			duration	3,6
+			blend	add
+			material	"textures/effects/weapons/plasma1"
+			generatedOriginNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				velocity { box 80,0,0,120,0,0 }
+				size { box 100,100,150,150 }
+				tint { point 0.407843,0.305882,0.447059 }
+				fade { point 0.8 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				tint { envelope explosion_cloud }
+				fade { envelope explosion_cloud }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { box 140,140,200,200 }
+				tint { point 0.294118,0.223529,0.32549 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
 	emitter "inner_darkspehere"
 	{
 		duration	1,1
 		count		70,70
 		locked
-		attenuateEmitter
-		attenuation	1024,4000
 
 		oriented
 		{
@@ -583,6 +617,40 @@ effect effects/weapons/dmg/explode
 				size { point 350,350 }
 				fade { point 0.8 }
 				rotate { box -0.000138889,0,0,0.000138889,0,0 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "distort"
+	{
+		detail		0.5
+		duration	1,1
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	6,6
+			material	"textures/effects/ssm_shockwave2"
+			trailRepeat	1
+
+			start
+			{
+				size { point 600,600 }
+				tint { point 0.886275,0.886275,0.886275 }
+			}
+
+			motion
+			{
+				size { envelope shamus_fastinslowout offset 0.4,0.4 }
+				tint { envelope convexfade }
+				fade { envelope shamus_fastinslowout }
+			}
+
+			end
+			{
+				size { point 200,200 }
+				fade { point 1 }
 			}
 			lineHit
 		}
@@ -752,8 +820,9 @@ effect effects/weapons/dmg/explode_air
 
 		sprite
 		{
-			duration	4,6
+			duration	4,8
 			blend	add
+			persist
 			material	"textures/effects/energy_sparks/spark_blue"
 			trailRepeat	1
 
@@ -823,13 +892,50 @@ effect effects/weapons/dmg/explode_air
 			lineHit
 		}
 	}
+	spawner "firecloud"
+	{
+		count		30,30
+
+		sprite
+		{
+			duration	3,6
+			blend	add
+			material	"textures/effects/weapons/plasma1"
+			generatedOriginNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -10,-10,-10,10,10,10 }
+				velocity { box 80,0,0,120,0,0 }
+				size { box 100,100,150,150 }
+				tint { point 0.407843,0.305882,0.447059 }
+				fade { point 0.8 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				tint { envelope explosion_cloud }
+				fade { envelope explosion_cloud }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { box 140,140,200,200 }
+				tint { point 0.294118,0.223529,0.32549 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
 	emitter "inner_darkspehere"
 	{
 		duration	1,1
 		count		70,70
 		locked
-		attenuateEmitter
-		attenuation	1024,4096
 
 		oriented
 		{
@@ -946,6 +1052,40 @@ effect effects/weapons/dmg/explode_air
 			lineHit
 		}
 	}
+	emitter "distort"
+	{
+		detail		0.5
+		duration	1,1
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	6,6
+			material	"textures/effects/ssm_shockwave2"
+			trailRepeat	1
+
+			start
+			{
+				size { point 600,600 }
+				tint { point 0.886275,0.886275,0.886275 }
+			}
+
+			motion
+			{
+				size { envelope shamus_fastinslowout offset 0.4,0.4 }
+				tint { envelope convexfade }
+				fade { envelope shamus_fastinslowout }
+			}
+
+			end
+			{
+				size { point 200,200 }
+				fade { point 1 }
+			}
+			lineHit
+		}
+	}
 	spawner "dust shock"
 	{
 		count		50,50
@@ -991,6 +1131,8 @@ effect effects/weapons/dmg/explode_air
 		}
 	}
 }
+
+
 
 
 
