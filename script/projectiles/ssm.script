@@ -1,0 +1,29 @@
+/***********************************************************************
+
+projectile_ssm.script
+
+***********************************************************************/
+
+object projectile_ssm : projectile_missile {
+	void		DoExplodeEffect_ssm( entity collisionEnt );
+	void		DoExplodeEffect( entity collisionEnt ) { 
+		DoExplodeEffect_ssm( collisionEnt );
+	}
+
+	void		Idle();
+}
+
+void projectile_ssm::Idle() {
+	startSound( "snd_launch", SND_ANY );
+	playEffect( "fx_trail", "", 1 );
+}
+
+void projectile_ssm::DoExplodeEffect_ssm( entity collisionEnt ) {
+	float removeDelay;
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+
+	DoRadiusDamage();
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+	ScheduleRemoval( removeDelay );
+}
