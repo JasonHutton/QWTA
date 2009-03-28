@@ -207,7 +207,7 @@ entityDef deployable_ssg {
 	"target_lostgraceperiod"		"1"
 	"target_length"					"60"
 
-	"fx_fire"						"effects/deployables/ssg/fire"
+	"fx_fire"						"effects/deployables/dmg/fire"
 	"fx_death"						"effects/deployables/ssg_destroy"
 	"fx_emped"						"effects/generic_smoke/emp"
 
