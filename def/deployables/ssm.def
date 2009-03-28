@@ -1,0 +1,431 @@
+// Export
+// ========================================================================
+
+export hauser {
+	options -rotate 270 -scale 0.6 -sourcedir models/structures/edf/fsb/ssm/dev_sd -destdir models/structures/edf/fsb/ssm -prefix SSM_ -keep missile_spawn main joint1	joint16	joint14	ik_rear_right joint28 joint29 joint30 joint31 joint17 joint15 ik_rear_left joint6 joint7 joint8 joint9 joint18 joint12 ik_front_left joint24 joint25 joint26 joint27 joint19 joint13 ik_front_right joint20 joint21 joint22 joint23 joint2 joint3 lower_piston slider1 barrel_base upper_piston
+/*
+	//mesh ssm_lod0.mb		-dest ssm_base.md5mesh
+
+	anim ssm_anims.mb			-dest ssm_undeployed.md5anim		-range 0 0
+//	anim ssm_anims.mb			-dest ssm_deploy.md5anim		-range 0 100
+*/
+	anim ssm_anims.mb			-dest ssm_preik.md5anim		-range 0 70
+	anim ssm_anims.mb			-dest ssm_postik.md5anim	-range 71 100
+
+/*
+	anim ssm_anims.mb			-dest ssm_idle.md5anim 	 		-range 100 100
+
+	anim ssm_anims.mb			-dest ssm_raising.md5anim		-range 100 200
+	anim ssm_anims.mb			-dest ssm_raised.md5anim		-range 200 200
+	anim ssm_anims.mb			-dest ssm_lowering.md5anim		-range 200 304
+
+	anim ssm_anims.mb			-dest ssm_disabled_idle.md5anim		-range 700 700
+	anim ssm_anims.mb			-dest ssm_disabled_raised.md5anim	-range 670 700
+
+	anim ssm_anims.mb			-dest ssm_damaged_idle.md5anim		-range 666 675
+	anim ssm_anims.mb			-dest ssm_damaged_raising.md5anim	-range 320 420
+	anim ssm_anims.mb			-dest ssm_damaged_raised.md5anim	-range 420 420
+	anim ssm_anims.mb			-dest ssm_damaged_lowering.md5anim	-range 420 520
+
+
+	anim ssm_deploy_nerve.mb	-dest ssm_deploy.md5anim		-range 0 119
+	anim ssm_firing_nerve.mb	-dest ssm_firing.md5anim		-range 0 40
+*/
+}
+/*
+export hauser {
+	options -rotate 270 -scale 0.6 -nojoints -sourcedir models/structures/edf/fsb/ssm/dev_sd -destdir models/structures/edf/fsb/ssm -prefix SSM_ -keep missile_spawn main joint1	joint16	joint14	ik_rear_right joint28 joint29 joint30 joint31 joint17 joint15 ik_rear_left joint6 joint7 joint8 joint9 joint18 joint12 ik_front_left joint24 joint25 joint26 joint27 joint19 joint13 ik_front_right joint20 joint21 joint22 joint23 joint2 joint3 lower_piston slider1 barrel_base upper_piston
+
+	mesh ssm_lod1.mb		-dest ssm_base_lod1.md5mesh
+	mesh ssm_lod2.mb		-dest ssm_base_lod2.md5mesh
+}
+
+*/
+
+// Models
+// ========================================================================
+
+model deployable_ssm {
+	mesh							models/structures/edf/fsb/ssm/ssm_base.md5mesh
+
+	anim base						models/structures/edf/fsb/ssm/ssm_raised.md5anim {
+	}
+
+	anim undeployed					models/structures/edf/fsb/ssm/ssm_undeployed.md5anim {
+	}
+
+	anim deploy						models/structures/edf/fsb/ssm/ssm_deploy.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+		frame 65						sound_channel snd_deployable_deploy2 snd_deploy_feet
+	}
+
+	anim pre_ik						models/structures/edf/fsb/ssm/ssm_preik.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+		frame 65						sound_channel snd_deployable_deploy2 snd_deploy_feet
+	}
+
+	anim post_ik						models/structures/edf/fsb/ssm/ssm_postik.md5anim {
+	}
+
+	anim raising					models/structures/edf/fsb/ssm/ssm_raising.md5anim {
+	}
+
+	anim raised						models/structures/edf/fsb/ssm/ssm_raised.md5anim {
+	}
+
+	anim fire						models/structures/edf/fsb/ssm/ssm_firing.md5anim {
+			frame	1				effect fx_launch origin
+	}
+
+	anim lowering					models/structures/edf/fsb/ssm/ssm_lowering.md5anim {
+	}
+
+	anim damaged_idle				models/structures/edf/fsb/ssm/ssm_damaged_idle.md5anim {
+	}
+
+	anim damaged_raising			models/structures/edf/fsb/ssm/ssm_damaged_raising.md5anim {
+	}
+
+	anim damaged					models/structures/edf/fsb/ssm/ssm_damaged_idle.md5anim {
+	}
+
+	anim damaged_lowering			models/structures/edf/fsb/ssm/ssm_damaged_lowering.md5anim {
+	}
+
+	anim destroyed					models/structures/edf/fsb/ssm/ssm_disabled_raised.md5anim {
+	}
+
+	anim disabled_raised			models/structures/edf/fsb/ssm/ssm_disabled_raised.md5anim {
+	}
+}
+
+// Entity Def
+// ========================================================================
+
+deployObject deployobject_ssm {
+	"name"							"ssm"
+	"title"							"game/deploy/ssm_long"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_ssm"
+	"def_deployable_carrier"		"vehicle_magog_npc"
+	"str_placement"					"deployitem_ssm_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"mdl_scale_factor"				"0.6"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"firesupport"
+}
+
+stringMap deployitem_ssm_placement_model {
+	"model"							"models/structures/edf/fsb/ssm/ssm.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+entityDef ssm_barrel_clip_entity {
+	"spawnclass"					"sdScriptEntity"
+
+	"mins"							"-32 -32 -32"
+	"maxs"							"32 32 300"
+}
+
+entityDef deployable_ssm {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_gdf"
+
+	"collection_gui_count"			"deployable_ssm"
+	"title"							"game/deploy/ssm_long"
+
+	"climate_skin_key"				"deployable_ssm"
+
+	"editor_color"					".3 .3 1"
+	"editor_mins"					"-24 -24 0"
+	"editor_maxs"					"24 24 317"
+	"editor_usage"					"The GDF Hammer Launcher"
+
+	"spawnclass"					"sdScriptEntity"
+	"scriptobject"					"deployable_ssm"
+
+	"model"							"deployable_ssm"
+	"cm_model"						"models/structures/edf/fsb/ssm/clipmodel.lwo"
+
+	"dmg_crush"						"damage_ssm_crush"
+
+	"def_barrel_clip"				"ssm_barrel_clip_entity"
+	
+	"stat_name"						"hammer"
+
+	"task_name"						"game/deploy/ssm"
+
+	"ch_name"						"game/deploy/ssm_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 256"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"fire_support"
+
+	"def_firesupport_marker"		"firesupport_marker_ssm"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_atk_deploy"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_atk_deploy"
+
+	"icon_size_cm"					"10"
+
+	"health"						"3000"
+	"repair_multiplier"				"1.5"
+
+	"action_time"					"30"
+
+	"def_projectile"				"projectile_deployable_ssm"
+
+	"snd_deploy"					"sounds/deployables/ssm/deploy"
+	"snd_deploy_feet"				"sounds/deployables/ssm/deploy_feet"
+	"snd_raise"						"sounds/deployables/ssm/raise"
+	"snd_lower"						"sounds/deployables/ssm/lower"
+
+	"mtr_color"						"guis/binoculars/target_ssm_color"
+	"mtr_desat"						"guis/binoculars/target_ssm_desat"
+	"mtr_half_desat"				"guis/binoculars/target_ssm_half_desat"
+	"mtr_full_desat"				"guis/binoculars/target_ssm_bright_desat"
+
+	"target_timer"					"timer_ssm"
+	"target_locktime"				"4"
+	"target_lostgraceperiod"		"1"
+	"target_length"					"60"
+
+	"reload_time"					"40"
+
+	"joint_launch"					"missile_spawn"
+	"attach_height"					"128"
+	"joint_attach"					""
+	
+	"missile_anim"					"fire"
+	"missile_channel"				"0"
+
+	"target_height"					"8000"
+
+	"timer_name"					"timer_ssm"
+
+	"num_ik"						"4"
+	"str_ik0"						"sounds/deployables/ssm/leg_1_ik"
+	"str_ik1"						"sounds/deployables/ssm/leg_2_ik"
+	"str_ik2"						"sounds/deployables/ssm/leg_3_ik"
+	"str_ik3"						"sounds/deployables/ssm/leg_4_ik"
+
+
+	"collection_firesupport_ssm"	"firesupport_ssm"
+
+	"do_object"						"deployobject_ssm"
+
+	"mtr_decal"						"textures/decals/artilleryMarker"
+
+	"stay_lowered_time"				"15"
+
+	"fx_death"						"effects/deployables/ssm_destroy"
+	"fx_launch"						"effects/deployables/ssm_launch"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"main"
+
+	"def_marker"					"target_marker"
+	"mtr_marker_cm"					"hud/objectives/firesupport"
+	"cm_marker_sort"				"0"
+
+	"deployable_type"				"4"
+
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/firesupportspotted"
+
+	"selection_mins"				"-182 -106 0"
+	"selection_maxs"				"203 106 200"
+
+	"deploybonus_requireactive"		"0"
+	"prof_deploybonus"				"pro_fieldops_deploy_bonus"
+}
+
+
+stringMap sounds/deployables/ssm/leg_1_ik {
+	"joint_upper"					"joint17"
+	"joint_middle"					"joint15"
+	"joint_lower"					"ik_rear_left"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"60"
+	"max_down_trace"				"128"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/ssm/leg_2_ik {
+	"joint_upper"					"joint16"
+	"joint_middle"					"joint14"
+	"joint_lower"					"ik_rear_right"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"60"
+	"max_down_trace"				"128"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/ssm/leg_3_ik {
+	"joint_upper"					"joint18"
+	"joint_middle"					"joint12"
+	"joint_lower"					"ik_front_left"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"60"
+	"max_down_trace"				"128"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/ssm/leg_4_ik {
+	"joint_upper"					"joint19"
+	"joint_middle"					"joint13"
+	"joint_lower"					"ik_front_right"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"60"
+	"max_down_trace"				"128"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+// Projectile Entity Def
+// ========================================================================
+
+entityDef projectile_deployable_ssm {
+	"spawnclass"					"idProjectile_RigidBody"
+	"mins"							"-24 -24 -100"
+	"maxs"							"24 24 217"
+	"model"							"models/weapons/missiles/strike_missile/strike_small.lwo"
+
+	"scriptObject"					"projectile_ssm"
+
+	"dmg_damage"					"damage_ssm"
+	"dmg_splash_damage"				"damage_ssmSplash"
+
+	"health"						"400"
+	"velocity"						"0 0 0"
+	"mass"							"5"
+	"gravity"						"400"
+	"fuse"							"-1"
+	"targetRadius"					"1280"
+
+	"aor_layout"					"missile"
+
+	"detonate_on_fuse"				"0"
+	"detonate_on_death"				"1"
+	"detonate_on_world"				"1"
+	"detonate_on_actor"				"1"
+
+	"face_velocity"					"1"
+
+	"detonate_upwards"			"1"
+
+	"snd_launch"					"sounds/deployables/ssm/launch"
+	"fx_trail"						"effects/deployables/ssm_trail"
+
+ 	"fx_explode"					"effects/impacts/tactical/ssm"
+	"fx_explode_water"				"effects/water/explosion"
+	"fx_explode_water_interior"		"effects/water/explosion_interior"
+
+ 	"use_air_burst"					"1"
+	"fx_airburst"					"effects/impacts/tactical/ssm_air"
+
+	"collection_antiair"			"antiair"
+	"collection_mdfExport"			"mdfExport"
+	"collection_firesupport_gdf"	"firesupport_gdf"
+	"collection_antissm"			"antissm"
+
+	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
+
+	"prof_destroy"					"pro_constructor_antimissile_hammer"
+}
+
+damageDef damage_ssm {
+	damage							"damage_ssm"
+
+	stat_name						"hammer"
+
+	prof_damage						"pro_fieldops_damage"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssm"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssm/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssm/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssm/unknown"
+}
+
+damageDef damage_ssmSplash {
+	damage							"damage_ssm"
+	radius							2048
+
+	stat_name						"hammer"
+
+	prof_damage						"pro_fieldops_damage"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssm"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssm/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssm/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssm/unknown"
+}
+
+damageFilter damage_ssm {
+	type {
+		target	"target_all"
+		damage	4000
+	}
+
+	type {
+		target	"target_explodable"
+		damage	1000
+	}
+}
+
+damageFilter damage_ssm_crush {
+	type { 
+		target	"target_player_all"
+		damage	50000
+	}
+	
+	type {
+		target	"target_veh_all"
+		damage	50000
+	}
+	
+	type {
+		target	"target_flyer_hive"
+		damage	50000
+	}
+}
+
+damageDef damage_ssm_crush {
+	damage		"damage_ssm_crush"
+	noGod
+	noArmor
+	noPain
+	forcePassengerKill
+	
+	tt_obituary_unknown				"tooltips/killmsgs/self/deployable_falling"
+	tt_obituary_unknown_friendly	"tooltips/killmsgs/self/deployable_falling/friendly"
+}
