@@ -1,0 +1,160 @@
+// ========================================================================
+// Export for game
+/*
+reexportmodels deployables/vampire.def
+testmodel deployable_vampire
+testmodel vehicle_vampire
+*/
+
+export hauser {
+	options -prefix AWAX_ -sourcedir models/structures/edf/deployables/intel/dev_sd -destdir models/structures/edf/deployables/intel/ -keep lower_arm front_left_upper_leg front_left_hip front_right_upper_leg front_right_hip rear_left_upper_leg rear_left_hip rear_right_upper_leg rear_right_hip front_right_lower_leg rear_left_lower_leg rear_right_lower_leg front_left_lower_leg
+
+
+	//mesh	awacs_LOD0.ma			-dest awacs.md5mesh
+
+	anim	vampire_anims.mb		-dest undeployed.md5anim 	-range 	1 	1
+	anim	vampire_anims.mb		-dest pre_ik.md5anim 		-range  1 	44
+ 	anim	vampire_anims.mb		-dest post_ik.md5anim 		-range  45 	140
+   	anim	vampire_anims.mb		-dest idle.md5anim 		-range  140 140
+
+
+   	anim	vampire_anims.mb		-dest damaged.md5anim		-range  140 150
+   	anim	vampire_anims.mb		-dest disabled.md5anim		-range  150 190
+
+	anim	vampire_anims.mb		-dest disabled_to_damaged.md5anim	-range  150 150
+   	anim	vampire_anims.mb		-dest damaged_to_idle.md5anim		-range  140 140
+}
+
+//
+// Entity Def
+// ========================================================================
+
+entityDef vehicle_vampire {
+	"spawnclass"					"sdScriptEntity"
+	"scriptobject"					"vehicle_vampire"
+
+	"bomb_count"					"10"
+	"bomb_spread"					"396"
+	"bomb_delay"					"0.1"
+	"speed"							"5000"
+
+	"model"							"models/vehicles/gdf_vampire/vampire.lwo"
+
+	"arrivaldelay"					"0"
+	"arrivaldelay_random"			"0"
+
+	"health"						"100"
+
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+
+	"def_bomb_type"					"projectile_vampire"
+	"def_bomb_type_client"			"projectile_vampire_client"
+
+	"snd_bomb_targetacquired"		"chat_edf_misc_acquired"
+	"snd_bomb_targetdeclined"		"sounds/vehicles/vampire/declined"
+	"snd_flyby"						"sounds/vehicles/vampire/flyby"
+	"snd_flyby_far"					"sounds/vehicles/vampire/flyby_far"
+	"flyover_sndrange"				"6144"
+
+	"mtr_commandmap"				"guis/assets/qet/cm_vampire"
+	"mtr_commandmap_unknown"		"guis/assets/qet/cm_vampire"
+	"mtr_commandmap_sort"			"-103"
+
+	"def_firesupport_marker"		"firesupport_marker_vampire"
+
+	"overridenCoverage"				"1"
+	
+	"def_directionmarker"			"targetdirection_marker"
+}
+
+entityDef projectile_vampire {
+	"inherit"						"projectile_rocket_base"
+	"scriptobject"					"projectile_vampire"
+
+	"model" 						"models/weapons/missiles/air_strike/bomb.lwo"
+
+	"dmg_damage"					"damage_vampire"
+	"dmg_splash_damage"				"damage_vampire_splash"
+	
+	"maxVisDist"					"10000"
+
+	"health"						"0"
+	"velocity"						"0 0 0"
+	"face_velocity"					"1"
+	"gravity"						"1066"
+	"fuse"							"-1"
+
+	"detonate_use_collision_normal"	"1"
+
+	"snd_fly"						"sounds/vehicles/vampire/fly"
+	"fx_trail"						"effects/projectile_artillery_trail"
+	
+	"fx_explode"						"effects/weapons/sbc_explode"
+	"fx_explode_sand"					"effects/weapons/sbc_explode"
+	"fx_explode_metal"					"effects/weapons/sbc_explode_metal"
+	"fx_explode_snow"                                       "effects/sbc_explode_snow"
+}
+
+entityDef projectile_vampire_client {
+	"inherit"						"projectile_vampire"
+
+	"spawnclass"					"sdClientProjectile_Parabolic"
+	"scriptobject"					"projectile_vampire_client"
+}
+
+damageDef damage_vampire {
+	damage							"damage_vampire"
+
+	prof_damage						"pro_fieldops_damage"
+
+	stat_name						"vampire"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/vampire"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/vampire/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/vampire/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/vampire/unknown"
+}
+
+damageDef damage_vampire_splash {
+	damage							"damage_vampire_splash"
+	radius							640
+	
+	knockback						100
+	push							10000000
+
+	prof_damage						"pro_fieldops_damage"
+
+	stat_name						"vampire"
+		
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/vampire"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/vampire/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/vampire/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/vampire/unknown"
+}
+
+damageFilter damage_vampire {
+	type {
+		target						"target_all"
+		damage						2000
+	}
+}
+
+
+damageFilter damage_vampire_splash {
+	type {
+		target						"target_all"
+		damage						2000
+	}
+}
+
+entityDef deployable_awacs_gdf_awacs {
+	"model"							"models/structures/edf/deployables/intel/parts/awacs.lwo"
+	"cm_model"						"models/structures/edf/deployables/intel/parts/awacs.lwo"
+
+	"snd_bounce"					"vehicles/misc/debris/metal_med"
+}
