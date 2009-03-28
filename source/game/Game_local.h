@@ -1015,6 +1015,7 @@ public:
 
 	bool							NextMap( void );
 	virtual void					BeginLevelLoad();
+	void							extractMega( const idDict& serverInfo_ );
 	virtual	void					EndLevelLoad();
 
 	void							StartAutorecording();

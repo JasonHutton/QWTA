@@ -7044,12 +7044,102 @@ idGameLocal::BeginLevelLoad
 ================
 */
 void idGameLocal::BeginLevelLoad() {
+	extractMega( serverInfo );
+
 	reloadingSameMap = false;
 	//sdDynamicBlockManagerBase::CompactPools();
 
 	uiManager->Clear();
 	uiManager->BeginLevelLoad();
 }
+
+/*
+================
+idGameLocal::extractMega - Mxyzptlk's megatexture autodownload.
+================
+*/
+void idGameLocal::extractMega( const idDict& serverInfo_ )
+{
+    // transform 'maps/MAPNAME.entities' -> 'MAPNAME'
+    const idStr map = serverInfo_.GetString( "si_map" );
+    idStr mapName;
+    map.ExtractFileBase( mapName );
+
+    // transform 'MAPNAME' -> 'MAPNAME_lit' (our hardcoded default)
+    idStr baseName = mapName;
+    baseName.Append( "_lit" );
+
+    // if present, override basename from mapInfo data
+    const sdDeclMapInfo* const mi = gameLocal.declMapInfoType.LocalFind( mapName, false );
+    if (mi) {
+        idStr val = mi->GetData().GetString( "extractMegaBasename" );
+        if (!val.IsEmpty())
+            baseName = val;
+    }
+
+    // transform 'BASENAME' -> 'megatextures/BASENAME.dat'
+    idStr pakFileName = baseName;
+    pakFileName.Insert( "megatextures/", 0 );
+    pakFileName.Append( ".dat" );
+
+    // transform 'BASENAME' -> 'megatextures/BASENAME.mega'
+    idStr osFileName = baseName;
+    osFileName.Insert( "megatextures/", 0 );
+    osFileName.Append( ".mega" );
+
+    // bail if file is not found in PAK
+    if (!fileSystem->FileIsInPAK( pakFileName ))
+        return;
+
+    sdFilePtr pakFilePtr( fileSystem->OpenFileRead( pakFileName, false, NULL, true ));
+    if (!pakFilePtr.IsValid()) {
+        gameLocal.Error( "unable to read megatexture: %s\n", pakFileName.c_str() );
+        return; // not reached
+    }
+
+    idFile& pakFile = *pakFilePtr.Get();
+    const unsigned long pakSum = fileSystem->FileChecksum( &pakFile );
+
+    // bail if on dedicated server (must bail AFTER pak file is opened for reference purposes)
+    if (networkSystem->IsDedicated())
+        return;
+
+    const idStr osPathName = fileSystem->BuildOSPath(
+        fileSystem->GetSavePath(),
+        "base",
+        osFileName );
+
+    bool needCopy = true;
+    sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( osPathName ));
+    if (osFilePtr.IsValid())
+        needCopy = fileSystem->FileChecksum( osFilePtr.Get() ) != pakSum;
+
+    // bail if nothing to be done
+    if (!needCopy)
+        return;
+
+    gameLocal.Printf( "copy %s to %s\n", pakFileName.c_str(), osPathName.c_str() );
+
+    osFilePtr.Reset( fileSystem->OpenExplicitFileWrite( osPathName ));
+    if (!osFilePtr.IsValid()) {
+        gameLocal.Error( "failed to write megatexture: %s\n", osPathName.c_str() );
+        return; // not reached
+    }
+
+    const int bsz = 64*1024;
+    char buf[bsz];
+    int twrite = 0;
+
+    pakFile.Rewind();
+    for ( int nread = pakFile.Read( buf, bsz ); nread != 0; nread = pakFile.Read( buf, bsz ))
+        twrite += osFilePtr->Write( buf, nread );
+
+    if (twrite != pakFile.Length()) {
+        gameLocal.Error( "failed to write %d bytes to megatexture: %s\n", pakFile.Length(), osPathName.c_str() );
+        return; // not reached
+    }
+}
+
 
 /*
 ================
