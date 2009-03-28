@@ -64,7 +64,7 @@ entityDef vehicle_vampire {
 	"def_firesupport_marker"		"firesupport_marker_vampire"
 
 	"overridenCoverage"				"1"
-	
+
 	"def_directionmarker"			"targetdirection_marker"
 }
 
@@ -75,8 +75,10 @@ entityDef projectile_vampire {
 	"model" 						"models/weapons/missiles/air_strike/bomb.lwo"
 
 	"dmg_damage"					"damage_vampire"
+	"dmg_realistic_damage"			"realistic_damage_vampire"
 	"dmg_splash_damage"				"damage_vampire_splash"
-	
+	"dmg_realistic_splash_damage"	"realistic_damage_vampire_splash"
+
 	"maxVisDist"					"10000"
 
 	"health"						"0"
@@ -89,7 +91,7 @@ entityDef projectile_vampire {
 
 	"snd_fly"						"sounds/vehicles/vampire/fly"
 	"fx_trail"						"effects/projectile_artillery_trail"
-	
+
 	"fx_explode"						"effects/weapons/sbc_explode"
 	"fx_explode_sand"					"effects/weapons/sbc_explode"
 	"fx_explode_metal"					"effects/weapons/sbc_explode_metal"
@@ -118,23 +120,33 @@ damageDef damage_vampire {
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/vampire/unknown"
 }
 
+damageDef realistic_damage_vampire {
+	inherit							"damage_vampire"
+	damage							"realistic_damage_vampire"
+}
+
 damageDef damage_vampire_splash {
 	damage							"damage_vampire_splash"
 	radius							640
-	
+
 	knockback						100
 	push							10000000
 
 	prof_damage						"pro_fieldops_damage"
 
 	stat_name						"vampire"
-		
+
 	team_kill_cvar					"g_allowComplaint_firesupport"
 
 	tt_obituary						"tooltips/killmsgs/weapons/vampire"
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/vampire/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/vampire/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/vampire/unknown"
+}
+
+damageDef realistic_damage_vampire_splash {
+	inherit							"damage_vampire_splash"
+	damage							"realistic_damage_vampire_splash"
 }
 
 damageFilter damage_vampire {
@@ -144,8 +156,30 @@ damageFilter damage_vampire {
 	}
 }
 
+damageFilter realistic_damage_vampire {
+	type {
+		target						"target_player_all"
+		damage						4000
+	}
+	type {
+		target						"target_all"
+		damage						2000
+	}
+}
+
 
 damageFilter damage_vampire_splash {
+	type {
+		target						"target_all"
+		damage						2000
+	}
+}
+
+damageFilter realistic_damage_vampire_splash {
+	type {
+		target						"target_player_all"
+		damage						4000
+	}
 	type {
 		target						"target_all"
 		damage						2000

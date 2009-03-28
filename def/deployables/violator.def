@@ -81,7 +81,7 @@ entityDef vehicle_violator {
 	"beam_area_length"				"2600"
 	"beam_fizzle_duration"			"3"
 	"beam_effect_fizzle_duration"	"1.5"
-	
+
 	"beam_rotation_speed"			"200"
 
 	"def_directionmarker"			"targetdirection_marker"
@@ -92,7 +92,7 @@ entityDef vehicle_violator {
 	"snd_beam_stop"					"sounds/deployables/violator/beam/stop"
 	"fx_beam_start"					"effects/violator_beam_startup"
 	"fx_beam"					"effects/violator_beam"
-	
+
 	//"fx_groundeffect_none"				"effects/violator_groundeffect_dirt"
 	//"fx_groundeffect_grass"				"effects/violator_groundeffect_dirt"
 	//"fx_groundeffect_stone"				"effects/violator_groundeffect_dirt"
@@ -104,9 +104,9 @@ entityDef vehicle_violator {
 	//"fx_groundeffect_default"			"effects/violator_groundeffect_dirt"
 	"fx_groundeffect_water"				"effects/violator_groundeffect_water"
 	//"fx_groundeffect_snow"				"effects/violator_groundeffect_dirt"
-	
-	
-		
+
+
+
 
 
 }
@@ -126,10 +126,15 @@ damageDef damage_violator {
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/violator/unknown"
 }
 
+damageDef realistic_damage_violator {
+	inherit							"damage_violator"
+	damage							"realistic_damage_violator"
+}
+
 damageDef damage_violator_splash {
 	damage							"damage_violator_splash"
 	radius							768
-	
+
 	knockback						10
 	push							5000000
 
@@ -145,6 +150,11 @@ damageDef damage_violator_splash {
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/violator/unknown"
 }
 
+damageDef realistic_damage_violator_splash {
+	inherit							"damage_violator_splash"
+	damage							"realistic_damage_violator_splash"
+}
+
 damageFilter damage_violator {
 	type {
 		target	"target_all"
@@ -152,7 +162,29 @@ damageFilter damage_violator {
 	}
 }
 
+damageFilter realistic_damage_violator {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_all"
+		damage	50
+	}
+}
+
 damageFilter damage_violator_splash {
+	type {
+		target	"target_all"
+		damage	40
+	}
+}
+
+damageFilter realistic_damage_violator_splash {
+	type {
+		target	"target_player_all"
+		damage	80
+	}
 	type {
 		target	"target_all"
 		damage	40
