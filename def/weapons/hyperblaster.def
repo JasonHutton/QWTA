@@ -239,10 +239,10 @@ invItemDef inventory/weapons/hyperblaster {
 		"player_weapon_num"				"6"
 
 		"fx_idle"						"effects/weapons/hyperblaster_idle"
-		
-		"lock_distance"					"4096"
+
+		"lock_distance"					"8192"
 		"lock_filter"					"hyperblaster_lock_filter"
-		
+
 		"snd_target_locking"			"sounds/weapons/misc/target_track_short"
 		"snd_target_locked"				"sounds/weapons/misc/target_lock"
 	}
@@ -324,7 +324,7 @@ damageDef realistic_damage_hyperblaster_desecrator {
 
 damageDef damage_hyperblaster {
 	templates/vehicles/weapons/hyperblaster/damage( "hyperblaster", "pro_aggressor_damage" )
-	
+
 	record_hit_stats
 }
 
