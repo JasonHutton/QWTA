@@ -105,6 +105,12 @@ Todo for v0.3 release:
 11. Linux version.
 ++++++++++++++++++++++++++++++++++++12. Implement realistic weapon spreads for all weapons.
 
+Final todo:
+Clean up unconscious/death fading on scoreboard... Get something more global, ideally?
+Finish up DMC effects(explosion needs work+muzzle flash)
+Get linux going, test with that, test mega autodownload.
+Release?
+
 
 General damage change rules:
 All light weapons x3 damage to players.
