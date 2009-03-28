@@ -2235,7 +2235,13 @@ void idBotAI::Bot_CheckAttack() {
 
 	bool useLockon = ( botInfo->weapInfo.weapon == ROCKET && botWorld->clientInfo[ enemy ].proxyInfo.entNum != CLIENT_HAS_NO_VEHICLE ) ? true : false;
 
-	float minUseScopeDist = ( botInfo->weapInfo.weapon == HEAVY_MG ) ? 400.0f : 700.0f;
+	float minUseScopeDist;
+	if( g_realisticSpread.GetBool() ) {
+		minUseScopeDist = ( botInfo->weapInfo.weapon == HEAVY_MG ) ? 200.0f : 350.0f;
+	}
+	else {
+		minUseScopeDist = ( botInfo->weapInfo.weapon == HEAVY_MG ) ? 400.0f : 700.0f;
+	}
 
 	if ( botWorld->gameLocalInfo.botAimSkill > 0 ) {
 		if ( ( botInfo->xySpeed == 0.0f || botInfo->posture == IS_CROUCHED || botInfo->posture == IS_PRONE || combatMoveType == STAND_GROUND_ATTACK || useLockon || botInfo->weapInfo.weapon == HEAVY_MG ) && enemyInfo.enemyDist > minUseScopeDist ) {
