@@ -114,6 +114,14 @@ All explosive weapons x2 damage to players.
 Shotguns x2 damage to players.
 Snipers x2 damage to players.
 
+General spread change rules:
+Unscoped accuracies for all weapons save lightning pistols, shotguns, rocket launchers, grenades, tools, or the hyperblaster) changed:
+QWTA Min spread = BaseETQW max spread.
+QWTA Max spread = BaseETQW max spread + (BaseETQW max spread - BaseETQW min spread)
+Unscoped jumping accuracies doubled.
+Scoped accuracies for all weapons generall:
+x2 normal improvement over usual spreads.
+
 Lockons with hyperblaster should NOT occur on disguised GDF. :|
 
 http://community.enemyterritory.com/forums/showthread.php?p=447232
