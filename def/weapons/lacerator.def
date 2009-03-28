@@ -209,6 +209,7 @@ invItemDef inventory/weapons/lacerator {
 		"fov_time"						"0.25"
 		"fov_speed"						"0.5"
 		"fov_spread"					"0.5"
+		"realistic_fov_spread"			"0.25"
 
 		"fire_rate"						"0.15"
 		"num_projectiles"				"1"
@@ -229,7 +230,9 @@ invItemDef inventory/weapons/lacerator {
 		"crosshair_spread_scale"		"2"
 
 		"spread_min"					"1"
+		"realistic_spread_min"			"3.3"
 		"spread_max"					"3.3"
+		"realistic_spread_max"			"5.6"
 		"spread_inc"					"1"
 
 		"spread_viewrate_min"			"1"
@@ -239,7 +242,9 @@ invItemDef inventory/weapons/lacerator {
 		"spread_max_settle_time"		"600"
 
 		"spread_crouch_min"				"0.75"
+		"realistic_spread_crouch_min"	"2.7"
 		"spread_crouch_max"				"2.7"
+		"realistic_spread_crouch_max"	"4.65"
 		"spread_crouch_inc"				"1"
 
 		"spread_crouch_viewrate_min"	"0.75"
@@ -249,7 +254,9 @@ invItemDef inventory/weapons/lacerator {
 		"spread_crouch_max_settle_time"	"550"
 
 		"spread_prone_min"				"0.5"
+		"realistic_spread_prone_min"	"2"
 		"spread_prone_max"				"2"
+		"realistic_spread_prone_max"	"3.5"
 		"spread_prone_inc"				"1"
 
 		"spread_prone_viewrate_min"		"0.5"
@@ -259,7 +266,9 @@ invItemDef inventory/weapons/lacerator {
 		"spread_prone_max_settle_time"	"500"
 
 		"spread_jump_min"					"4"
+		"realistic_spread_jump_min"			"8"
 		"spread_jump_max"					"4"
+		"realistic_spread_jump_max"			"8"
 		"spread_jump_inc"					"4"
 
 		"spread_jump_max_settle_time"		"600"

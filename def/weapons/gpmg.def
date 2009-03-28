@@ -303,6 +303,7 @@ invItemDef inventory/weapons/gpmg {
 		"fov_time"						"0.25"
 		"fov_speed"						"0.5"
 		"fov_spread"					"0.1"
+		"realistic_fov_spread"			"0.05"
 
 		"trigger_delay"					"0"
 		"fire_rate"						"0.10"
@@ -330,7 +331,9 @@ invItemDef inventory/weapons/gpmg {
 		"crosshair_spread_scale"		"2.3"
 
 		"spread_min"					"3"
+		"realistic_spread_min"			"10"
 		"spread_max"					"10"
+		"realistic_spread_max"			"17"
 		"spread_inc"					"3"
 
 		"spread_viewrate_min"			"3"
@@ -340,7 +343,9 @@ invItemDef inventory/weapons/gpmg {
 		"spread_max_settle_time"		"1000"
 
 		"spread_crouch_min"				"1"
+		"realistic_spread_crouch_min"	"3"
 		"spread_crouch_max"				"3"
+		"realistic_spread_crouch_max"	"5"
 		"spread_crouch_inc"				"0.5"
 
 		"spread_crouch_viewrate_min"	"1"
@@ -350,7 +355,9 @@ invItemDef inventory/weapons/gpmg {
 		"spread_crouch_max_settle_time"	"450"
 
 		"spread_prone_min"				"0.25"
+		"realistic_spread_prone_min"	"1"
 		"spread_prone_max"				"1"
+		"realistic_spread_prone_max"	"1.75"
 		"spread_prone_inc"				"0.25"
 
 		"spread_prone_viewrate_min"		"0.25"
@@ -425,7 +432,7 @@ entityDef mountable_gdf_gpmg {
 	"fx_damaged"						"effects/generic_smoke"
 
 	"object_name"						"game/weapons/gpmg"
-	
+
 	"str_playerik"						"mountable_gdf_gpmg_ik"
 }
 
@@ -578,7 +585,7 @@ damageDef damage_gpmg {
 	blob_offset_x						400
 
 	knockback							3
-	
+
 	record_hit_stats
 
 	push								10000

@@ -273,6 +273,7 @@ template inventory/weapons/pistol_template {
 			"fov_time"							"0.25"
 			"fov_speed"							"0.5"
 			"fov_spread"						"0.5"
+			"realistic_fov_spread"				"0.25"
 
 			"fire_rate"							"0.12"
 			"low_ammo"							"4"
@@ -292,7 +293,9 @@ template inventory/weapons/pistol_template {
 			"crosshair_spread_scale"			"2"
 
 			"spread_min"						"1"
+			"realistic_spread_min"				"10"
 			"spread_max"						"10"
+			"realistic_spread_max"				"19"
 			"spread_inc"						"2"
 
 			"spread_viewrate_min"				"1"
@@ -302,7 +305,9 @@ template inventory/weapons/pistol_template {
 			"spread_max_settle_time"			"1200"
 
 			"spread_crouch_min"					"0.75"
+			"realistic_spread_crouch_min"		"8"
 			"spread_crouch_max"					"8"
+			"realistic_spread_crouch_max"		"15.25"
 			"spread_crouch_inc"					"1.75"
 
 			"spread_crouch_viewrate_min"		"0.75"
@@ -312,7 +317,9 @@ template inventory/weapons/pistol_template {
 			"spread_crouch_max_settle_time"		"1000"
 
 			"spread_prone_min"					"0.5"
+			"realistic_spread_prone_min"		"4"
 			"spread_prone_max"					"4"
+			"realistic_spread_prone_max"		"7.5"
 			"spread_prone_inc"					"1.5"
 
 			"spread_prone_viewrate_min"			"0.5"
