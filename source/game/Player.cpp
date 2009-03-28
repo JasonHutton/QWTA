@@ -2755,17 +2755,28 @@ idPlayer::CheckTargetLockValid
 */
 bool idPlayer::CheckTargetLockValid( idEntity* entity, const sdWeaponLockInfo* lockInfo ) {
 	assert( lockInfo );
+	idEntity* disguisedEntity = entity;
 
 	if ( entity->GetHealth() <= 0 || !entity->fl.takedamage ) {
 		return false;
 	}
 
+	disguisedEntity = entity->GetDisguiseEntity();
+
+	teamAllegiance_t entAlly = GetEntityAllegiance( entity );
+	teamAllegiance_t disguisedAlly = GetEntityAllegiance( disguisedEntity );
+
+	// friendlies know that the disguised guy is actually a friend
+	if ( disguisedAlly == TA_FRIEND ) {
+		entAlly = TA_FRIEND;
+	}
+
 	if ( !lockInfo->LockFriendly() ) {
-		if ( GetEntityAllegiance( entity ) == TA_FRIEND ) {
+		if ( entAlly == TA_FRIEND ) {
 			return false;
 		}
 	} else {
-		if ( GetEntityAllegiance( entity ) == TA_ENEMY ) {
+		if ( entAlly == TA_ENEMY ) {
 			return false;
 		}
 	}
