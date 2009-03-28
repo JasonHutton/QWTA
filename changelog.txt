@@ -101,7 +101,7 @@ Todo for v0.3 release:
 ++++++++++++++++++++++++++++++++++++7. Implement realistic damages for all weapons.
 ++++++++++++++++++++++++++++++++++++8. Magog drops for heavy GDF vehicles.
 ++++++++++++++++++++++++++++++++++++9. Radar restrictions.
-10. Megatexture autodownload.
+++++++++++++++++++++++++++++++++++++10. Megatexture autodownload.
 11. Linux version.
 12. Implement realistic weapon spreads for all weapons.
 
