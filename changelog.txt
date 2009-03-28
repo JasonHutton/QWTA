@@ -103,7 +103,7 @@ Todo for v0.3 release:
 ++++++++++++++++++++++++++++++++++++9. Radar restrictions.
 ++++++++++++++++++++++++++++++++++++10. Megatexture autodownload.
 11. Linux version.
-12. Implement realistic weapon spreads for all weapons.
+++++++++++++++++++++++++++++++++++++12. Implement realistic weapon spreads for all weapons.
 
 
 General damage change rules:
