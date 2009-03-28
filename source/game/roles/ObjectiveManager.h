@@ -138,6 +138,7 @@ public:
 	void												OnNetworkEvent( const char* message );
 
 	void												SetCriticalClass( const playerTeamTypes_t playerTeam, const playerClassTypes_t criticalClass );
+	playerClassTypes_t									GetCriticalClass( const playerTeamTypes_t playerTeam ) { return playerTeam == GDF ? gdfCriticalClass : stroggCriticalClass; }
 
 private:
 	const sdDeclPlayerClass*							GetPlayerClass( const playerTeamTypes_t playerTeam, const playerClassTypes_t playerClass );

@@ -2576,6 +2576,21 @@ int	sdGameRules::GetRoleLimitForTeam( playerClassTypes_t role, playerTeamTypes_t
 		gameLocal.Warning( "sdGameRules::GetRoleLimitForTeam Invalid team %i", team );
 	}
 
+	if( limit > -1 ) { // If the class is disallowed/0, allow it to be filled temporarily if critical.
+		bool bIsCritical = false;
+		if( team == GDF && role == sdObjectiveManager::GetInstance().GetCriticalClass( team ) ) {
+			bIsCritical = true;
+		}
+		else if ( /*team == STROGG &&*/ role == sdObjectiveManager::GetInstance().GetCriticalClass( team ) ) {
+			bIsCritical = true;
+		}
+		if( bIsCritical ) {
+			limit += 1;
+			if(clients > 5*2) { limit += 1; }
+			if(clients > 10*2) { limit += 1; }
+		}
+	}
+
 	return limit;
 }
 
