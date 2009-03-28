@@ -66,6 +66,10 @@ CHANGES:
 * Strafejumping elimintated. (pm_realisticMovement cvar added)
 * Realistic damages added. (g_realisticDamage cvar added)
 * Realistic weapon spreads added. (g_realisticSpread cvar added)
+* Spectator controls improved.
+  + Attack: Next player.
+  + AltAttack: Previous player.
+  + Jump: Freefly spectator.
 
 BUG FIXES:
 * Fixed BaseETQW bug: corpses were not considered to be "flesh".
