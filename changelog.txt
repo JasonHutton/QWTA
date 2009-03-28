@@ -1,176 +1,73 @@
-This is very improvised for the moment. Damn harddrive failure wiped out the SVN comments. So I'll start keeping notes in here. >.>
+QWTA v0.3:
+==========
+CHANGES:
+* Threw out all previous changes and restarted QWTA development from scratch.
+* Previous versions of QWTA: v0.21, v0.2, v0.11, and v0.1 not built off of.
+* QWTA is now compatible with ETQW v1.5.
+* Dark Matter Cannon now has Quake 4 Singleplayer-style Dark Matter Gun
+  visual/audio effects and gravity pull behavior.
+  + Projectile pulls nearby objects(players, vehicles) towards it.
+  + Projectile deals damage to nearby objects slowly.
+  + Projectile hurls nearby objects away from detonation point when exploding.
+  + Gravitational effects penetrate walls and other cover.
+* Hammer has a limited EMP effect upon exploding.
+* Hammer and Dark Matter Cannon warning text upon firing removed.
+* Vehicles no longer spawn into the map, they must be called in by players
+  via vehicle drop. (Use the quickchat menu->vehicles->vehicle drops.)
+* The ability to use vehicle drops is given freely to all players, however:
+* Vehicle drop charging now begins at zero and charges up from there.
+* Vehicle drops take longer to charge than in BaseETQW.
+* Vehicle drops have a campaign rank prerequisite before they can be dropped.
+  Generally, the more powerful the vehicle, the higher the rank required.
+* Vehicle drops make use multiple types of deployment transport:
+  + Jotun drops via parachute.
+  + Magog drops via cable.
+  + Strogg drops via orbital reentry.
+  + Strogg drops via teleport.
+* Bots have a rudimentary understanding of vehicle drops now.
+* Jupiter Assault Tank added.
+  + This is a heavy GDF tank that uses the BFG10k as a main cannon.
+* BFG10k added. (Vehicle weapon only for now.)
+  + Delay on firing.
+  + Projectile fires energy beams at nearby targets(Up to 8).
+  + Projectile detonates with high damage upon impact.
+  + BFG Effect operates upon targets(Up to 8) that have line of sight
+    between the detonation point, and the Jupiter tank, 0.5 seconds later.
+* Hyperblaster now behaves more like the Quake 4 Singleplayer-style weapon.
+  + Projectiles do not hit instantly.
+  + Hyperblaster ROF is slower.
+  + Splash damage occurs upon projectile impact.
+  + Hyperblaster damage raised, but can no longer do headshots.
+  + Hyperblaster scope can get rapid target locks upon any enemy unit.
+  + Hyperblater does not cause a lockon warning on target.
+  + Hyperblaster projectiles cannot be decoyed away with flares.
+* Shotgun and Nailgun core behavior returned to ETQW v1.2 style behavior:
+  + ROF slower.
+  + More pellets per shot.
+  + Smaller spread.
+  + More damage.
+  + Damage falls off less over distance.
+* Blood effects occur when players are shot or stabbed.
+* Removed minedots.
+* Removed "Mine Triggered" Mine HUD warning.
+* Removed "Anti-Personnel Lock" APT HUD warning.
+* Removed "Anti-Personnel Lock" BDT HUD warning.
+* Class number limits added.
+  + Class numbers restricted based upon class, and player count on server.
+  + Bots understand class number limits.
+* Screen fades to red when unconscious.
+* Screen fades to black when fully killed.
+* Radar split into two distinct types: Radar and Infrared.
+  + Radar cannot detect infantry.
+  + Infrared can only detect infantry.
+* Psi Radar/GDF Radar use only normal Radar.
+* 3rd Eye Camera, MCP, and command centers, use both radar and infrared.
+* Mxyzptlk's megatexture autodownload added.
+* Strafejumping elimintated. (pm_realisticMovement cvar added)
+* Realistic damages added. (g_realisticDamage cvar added)
+* Realistic weapon spreads added. (g_realisticSpread cvar added)
 
-
-Dark Matter Cannon now has Quake 4-style Dark Matter Gun visuals and gravity pull behavior.
-(Needs work still; use get bounds entities to grab pull targets, not a damagedef hack!. Pull through walls! Also don't detonate on impact with players/vehicles. Could stand 'dust suction' effects too?)
-
-All vehicles may be airdropped in now.
-Hog/Tormentor teleport-drop in. (Needs work still, to do proper allowed checks.) Probably get the heavy airlift for the titan and trojan maybe. Look into stopping parachute 'drift' too.
-
-vehicle proficiency level 1(vehicle drops) given freely to all players
-
-Jupiter Assault Tank added. (Using the Titan model still.) Fires BFG10k projectiles. Needs work still, remove the upper machinegun?
-BFG10k projectiles need work still. Should target more than 8 targets.
-
-vehicle teleport-drop option added.
-
-Hyperblaster(Infantry, and Vehicle(Tormentor/Desecrator/Hog) versions.) now has Quake 4-style Nailgun behavior.
-Needs work still: faster lockon, I think it still triggers the target lock alarm... It shouldn't, and flares should never work on it.
-Non-instant-hit projectiles, slower firing rate, splash damage, lockons, higher damage. (Change sound effect to classic nailgun sound? What to use for the nailgun sound then?)
-
-Hyperblaster cannot do headshots anymore. (Its detrimental to lockons and splash damage, to use it.)
-
-Shogun and Nailgun basic behavior returned to ETQW v1.2 style behavior: fires slower but fires more pellets per shot, and can do damage farther away, lessenned spread, more damage.
-
-Blood hit effects for gunshot wounds and knife stabs.
-Corpses now bleed like living bodies when injured. (BaseETQW bugfix)
-
-Removed minedots.
-Removed "mine triggered" HUD warning.
-Removed "anti-personell lock" HUD warning.
-Removed basedefence anti-personell HUD warning.
-
-Class number limits added. (Needs work still, for when conditions change, for bots in particular. Force players back to limbo when they're killed when on a class that has too many players on it... Get bots to switch too.)
-
-Screen fades to red when unconscious.
-Screen fades to black when dead. (Look into getting blurring working properly with these... Why does it disable one or the other when they're tinted+blurred but not when one or the other?)
-
-all vehicle drops added to quickchat menus
-
-"Hammer/Dark Matter Cannon" HUD warning text messages removed.
-
-3rd Eye camera now updates its radar origin when moved(such as when attached to a vehicle), so it can be a mobile radar now. (BaseETQW bugfix.)
-
-Vehicle spawnpoints within maps removed. You must vehicle drop a vehicle to get one.
-
-Vehicle credit charge bar now always starts at 0 and charges up slowly. Vehicles have different costs. Vehicledrop quickchat menu reflects which vehicles are purchasable at which time. (Needs work, seems to have a slight loading lag when initially entering that menu. Precache somehow?)
-
-Slight magog script fix to make dropping vehicles less glitchy.
-
-strogg vehicle drops have a momentary bounciness disable on them. Might want to remove that as unneccessary with the teledrop?
-
-Bots understand vehicle drops(In a retarded way, needs work.), and class number limits(Definitely needs more work too.).
-
-pm_realisticMovement cvar added. Controls if strafejumping works or not.
-
-raduspull functions need work...
-new script functions added...
-
-g_realisticDamage added.
-Any damageDef can be automatically converted to use a different damageDef when g_realisticDamage is 1(It's a little kludgey but it works.), by creating a new damageDef with "realistic_" prepended to the base name. eg: "railgun_damage" becomes "realistic_railgun_damage". defs should also reference the appropriate damageDef with the appropriate keys: "dmg_damage" -> "dmg_realistic_damage". The prefix for keys is "dmg_realistic_".
-Both steps are required for proper operation and future-safety, not just one.
-
-damageDefs may now use the "inherit" key/value to inherit values from an existing damageDef. This simplifies realistic damageDefs.
-
-A damageFilter is still required, and where the main changes of a realistic damageDef exist.
-
-radar is now split into two distinct types. radar, and infrared detectors.
-Radar cannot detect infantry.
-Infrared can only detect infantry(but everything that uses it has radar too).
-Psi Radar/GDF Radar: Radar only. Cannot detect infantry.
-3rd Eye Camera: Radar + Infrared. Detects everything.
-MCP: Radar + Infrared. Detects everything.
-GDF Command Center/Strogg Domihub: Radar + Infrared. Detects everything.
-
-in addition to vehicle credit, campaign rank is required in order to summon vehicles.
-
-1. Proper hyperblaster visual/audio effects. (Fly sound?)
-8. Crank the BFG's max targets up to around 16 or 32.
-9. Get vehicle drops working as part of campaign rewards and such.
-10. Get vehicle drops menu greying out unavailable things etc.
-12. Give critical classes a slight class restriction boost.
-12. See if being on a class-restriction-okay team and having the restriction go down, how it behaves immediately and on respawn... (Should probably let someone continue using it until death, then force them to the class menu?)
-13. Get the DMC working nicer in general. (Gravity effects, blast, muzzleflash.)
-15. Get realistic damages in place.
-16. Nuclear Hammer (blinding flash + brief large-radius EMP + lingering radiation)
-17. Megatexture autodownload!
-18. Get the "enemy x spotted!" chat displaying the actual name of the vehicle in text.
-19. Optimize the 3rd eye to only update its radar when its pos has actually changed.
-20. Add in 'blurry' effects when wounded, and fade-to-black when dead.
-21. Use the heavy lift heli-plane-thing for some GDF vehicle drops.
-
-
-Todo for v0.3 release:
-
-++++++++++++++++++++++++++++++++++++1. Fix issue with DMG freezing in midair without detonation.
-++++++++++++++++++++++++++++++++++++2. Fix cheats of teleport drop not checking for all known issues before dropping.
-++++++++++++++++++++++++++++++++++++3. Hyperblaster should not give target lock or respond to flares. Faster lockon would be nice but nonessential. Turn off locational damage.
-4. Class number limit improvements: force to limbo on death/force bots to switch on death when on a class with slots overused.
-++++++++++++++++++++++++++++++++++++5. Tie vehicle drop types to something. Campaign ranks? To stop the synced swarm-deploy of vehicles. (Aha, amount of charge allowed per rank!)
-++++++++++++++++++++++++++++++++++++6. Get realistic damage defs setup, so we don't have to obliterate the nonreal damages.
-++++++++++++++++++++++++++++++++++++7. Implement realistic damages for all weapons.
-++++++++++++++++++++++++++++++++++++8. Magog drops for heavy GDF vehicles.
-++++++++++++++++++++++++++++++++++++9. Radar restrictions.
-++++++++++++++++++++++++++++++++++++10. Megatexture autodownload.
-11. Linux version.
-++++++++++++++++++++++++++++++++++++12. Implement realistic weapon spreads for all weapons.
-
-Final todo:
-Clean up unconscious/death fading on scoreboard... Get something more global, ideally?
-Finish up DMC effects(explosion needs work+muzzle flash)
-Get linux going, test with that, test mega autodownload.
-Release?
-
-
-General damage change rules:
-All light weapons x3 damage to players.
-All light weapons damage to heavy vehicles = 0. (Except lightning pistol.)
-All heavy weapons x3 damage to players.
-All explosive weapons x2 damage to players.
-Shotguns x2 damage to players.
-Snipers x2 damage to players.
-
-General spread change rules:
-Unscoped accuracies for all weapons save lightning pistols, shotguns, rocket launchers, grenades, tools, or the hyperblaster) changed:
-QWTA Min spread = BaseETQW max spread.
-QWTA Max spread = BaseETQW max spread + (BaseETQW max spread - BaseETQW min spread)
-Unscoped jumping accuracies doubled.
-Scoped accuracies for all weapons generall:
-x2 normal improvement over usual spreads.
-
-Lockons with hyperblaster should NOT occur on disguised GDF. :|
-
-http://community.enemyterritory.com/forums/showthread.php?p=447232
-==============================
-A post to cure temporary boredom. Some things may have been mentioned before.
-
-I think an expansion is in order, yes. An expansion like Q4 where the humans take the fight to Stroggos, and then eventually the next ET:QW where we fight not in the past nor the future but the present, Q5 if you will, following the events of Q4… chances are they’re going to make that a single player game however.
-
-Should there be an expansion I thought it would be fun to throw out some ideas for new items/weapons each class could get.
-
------
-
-Soldier – Flamethrower: Dominant close range weapon that can catch units on fire and deal damage over time. Secondary could make fire stick in a specific area like napalm. Going prone and crawling acts as a “stop drop and roll” action to make fire ware off faster?
-
-Aggressor – Lightning Cannon: The two-handed version of the lightning pistol. This weapon shoots farther, does more damage and takes longer to overheat. Chance to jolt target and slow movement? Hmm, interesting.
-
------
-
-Medic – Stimulant Injection: When given increases a player’s health and speed, would have a longer recharge time than the med packs. A full charge will allow the medic to use on two players.
-
-Technician – Spider Drones: Deployable medic aid that will latch onto a Strogg player and slowly heal them whenever they take damage. Only two of these can be deployed at a time and can be destroyed if they receive too much damage. Plus, it would be kind of creepy to see Strogg with metallic spiders crawling all over them.
-- OR -
-Stroyent Spikes: Slammed only into the torso of dead Strogg bodies, these spikes extract the remaining Stroyent (amount differs per body). Wounded allies can pick these spikes up and inject them into their bodies to replenish Stroyent. Strogg like to recycle, yes?
-
-Also, why not allow the Technician to slowly heal players with his revive tool? I mean he can revive a near dead Strogg with it but not do normal repairs? You could argue that Stroyent is needed; well why not just have the tool slowly drain your Stroyent supply… I mean it recharges anyway. (Note that I think this should have been in the game and not intended for an expansion, always bothers me that the revive tool does damage to allies)
-
------
-
-Engineer – Stick Bombs: A simple bomb that sticks to walls, deploables and vehicles. These bombs are enough to take out vehicles and nearly destroy deploables.
-
-I’ve got to say that I think it makes more sense to give the Engineer a smoke grenade than the Covert Ops but… whatever.
-
-Constructor – Protector Orb: Deploys a hovering machine turret that follows the Constructor around and fires at nearby enemies.
-
------
-
-Field Ops – Target Beacon – This device when thrown on enemy turrets and vehicles will allow allied aircraft to automatically lock their weapons on the object. This also allows a Field Ops to bypass the locking time for their deployable when targeting an object with a Target Beacon attached.
-
-Oppressor – Latcher – This weapon fires highly accurate spiked explosives that will latch onto walls, vehicles and GDF players (also causing damage) and then will explode after two seconds.
-
------
-
-Covert Ops – Cloaking Device: Allows a Covert Ops to cloak and become completely invisible when standing still and only slightly noticeable when moving. Device can only be active for so long and then will shut down. Useful for when you can’t disguise and need to sneak behind enemy lines… or out of enemy lines.
-
-Infiltrator – Slip Gate: An upgrade to the normal teleport device, this allows the Infiltrator to create a two way portal from their spawn to behind enemy positions. These devices take some time to establish a connection. GDF are also able to use active gates. The devices are obviously destroyable but can tip the scale of any battle. (Perhaps something should alert players on the opposite team if they have a radar operational)
-==============================
+BUG FIXES:
+* Fixed BaseETQW bug: corpses were not considered to be "flesh".
+* Fixed BaseETQW bug: 3rd Eye Camera didn't update its radar origin if moved.
+* Fixed BaseETQW bug: Magog deployable dropping less glitchy with vehicles.
