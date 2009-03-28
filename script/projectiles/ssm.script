@@ -6,11 +6,22 @@ projectile_ssm.script
 
 object projectile_ssm : projectile_missile {
 	void		DoExplodeEffect_ssm( entity collisionEnt );
-	void		DoExplodeEffect( entity collisionEnt ) { 
+	void		DoExplodeEffect( entity collisionEnt ) {
 		DoExplodeEffect_ssm( collisionEnt );
 	}
 
 	void		Idle();
+	void			preinit();
+
+	float			empRadius;
+	float			empTime;
+	float			weaponEmpTime;
+}
+
+void projectile_ssm::preinit() {
+	empRadius		= getFloatKey( "emp_radius" );
+	empTime			= getFloatKey( "emp_time" );
+	weaponEmpTime	= getFloatKey( "emp_weapon_time" );
 }
 
 void projectile_ssm::Idle() {
@@ -23,6 +34,22 @@ void projectile_ssm::DoExplodeEffect_ssm( entity collisionEnt ) {
 	SetRadiusDamageIgnoreEntity( collisionEnt );
 
 	DoRadiusDamage();
+
+
+
+	entitiesOfCollection( "emp" );
+	filterEntitiesByRadius( getWorldOrigin(), empRadius, true );
+	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+
+	entity owner = getOwner();
+
+	float count = getBoundsCacheCount();
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		ent.vApplyEmpDamage( owner, empTime, weaponEmpTime );
+	}
+
 
 	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
 	ScheduleRemoval( removeDelay );

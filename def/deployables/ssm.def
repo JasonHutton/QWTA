@@ -154,7 +154,7 @@ entityDef deployable_ssm {
 	"dmg_crush"						"damage_ssm_crush"
 
 	"def_barrel_clip"				"ssm_barrel_clip_entity"
-	
+
 	"stat_name"						"hammer"
 
 	"task_name"						"game/deploy/ssm"
@@ -202,7 +202,7 @@ entityDef deployable_ssm {
 	"joint_launch"					"missile_spawn"
 	"attach_height"					"128"
 	"joint_attach"					""
-	
+
 	"missile_anim"					"fire"
 	"missile_channel"				"0"
 
@@ -228,7 +228,7 @@ entityDef deployable_ssm {
 	"fx_death"						"effects/deployables/ssm_destroy"
 	"fx_launch"						"effects/deployables/ssm_launch"
 	"fx_emped"						"effects/generic_smoke/emp"
-	
+
 	"emp_effect_joint"				"main"
 
 	"def_marker"					"target_marker"
@@ -356,6 +356,10 @@ entityDef projectile_deployable_ssm {
 
 	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
 
+	"emp_radius"					"2458"
+	"emp_time"						"10"
+	"emp_weapon_time"				"2"
+
 	"prof_destroy"					"pro_constructor_antimissile_hammer"
 }
 
@@ -403,16 +407,16 @@ damageFilter damage_ssm {
 }
 
 damageFilter damage_ssm_crush {
-	type { 
+	type {
 		target	"target_player_all"
 		damage	50000
 	}
-	
+
 	type {
 		target	"target_veh_all"
 		damage	50000
 	}
-	
+
 	type {
 		target	"target_flyer_hive"
 		damage	50000
@@ -425,7 +429,7 @@ damageDef damage_ssm_crush {
 	noArmor
 	noPain
 	forcePassengerKill
-	
+
 	tt_obituary_unknown				"tooltips/killmsgs/self/deployable_falling"
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/self/deployable_falling/friendly"
 }
