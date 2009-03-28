@@ -804,7 +804,7 @@ gui hud {
 			float	specUnconscious		= player.localView == false && player.viewDead;
 			float	selfDead		= player.limbo && player.spectator == false;
 			float	unconsciousTime		= globals.gameHud.unconsciousTime;
-			float	conditionals		= player.scoreboardActive == false && player.endGame == false && player.endGameCamera == false;
+			float	conditionals		= player.endGame == false && player.endGameCamera == false;
 			float	visible 		= (selfUnconscious || specUnconscious || selfDead) && conditionals;
 			float	tempValue		= 0;
 		}
@@ -841,7 +841,7 @@ gui hud {
 			float	selfDead		= player.limbo && player.spectator == false;
 			// Don't need to check for specDead. Can't spec the dead.
 			float	deadTime		= globals.gameHud.deadTime;
-			float	conditionals		= player.scoreboardActive == false && player.endGame == false && player.endGameCamera == false;
+			float	conditionals		= player.endGame == false && player.endGameCamera == false;
 			float	visible 		= selfDead && conditionals;
 			float	tempValue		= 0;
 		}
