@@ -87,7 +87,7 @@ entityDef globalConstants {
 	"energy_firesupport_time"			"60"
 	"energy_deployment_time"			"60"
 	"charge_explode_time"				"40" //mal: how long til HE/Plasma charge explodes.
-	"vehiclecredit_timer_time"			"200"
+	"vehiclecredit_timer_time"			"300"
 	"tripmine_beam_range"				"160"
 }
 
