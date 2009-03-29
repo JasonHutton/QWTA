@@ -545,7 +545,7 @@ idCVar net_serverDlBaseURL(			"net_serverDlBaseURL",			"",			CVAR_GAME | CVAR_AR
 idCVar net_serverDlTable(			"net_serverDlTable",			"",			CVAR_GAME | CVAR_ARCHIVE, "pak names for which download is provided, seperated by ; - use a * to mark all paks" );
 
 idCVar g_drawMineIcons(				"g_drawMineIcons",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE | CVAR_PROFILE,		"Draw icons on the HUD for mines." );
-idCVar g_allowMineIcons(			"g_allowMineIcons",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_RANKLOCKED, "Allow clients to draw icons on the HUD for mines." );
+idCVar g_allowMineIcons(			"g_allowMineIcons",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_RANKLOCKED, "Allow clients to draw icons on the HUD for mines." );
 idCVar g_mineIconSize(				"g_mineIconSize",				"10",		CVAR_FLOAT | CVAR_GAME | CVAR_ARCHIVE | CVAR_PROFILE,		"Size of the screen space mine icons. NOTE: Will only take effect for new mines, not those already existing.", 0, 20 );
 idCVar g_mineIconAlphaScale(		"g_mineIconAlphaScale",			"1",		CVAR_GAME | CVAR_FLOAT | CVAR_ARCHIVE | CVAR_PROFILE,		"Alpha scale to apply to mine icons. NOTE: Will only take effect for new mines, not those already existing." );
 
