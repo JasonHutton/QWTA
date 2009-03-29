@@ -46,6 +46,31 @@ void strogg_drop_teleport::Idle() {
 	}
 	playEffect( "fx_booster", "", false );
 
+	// nasty little workaround for icarus-through-the-wall exploiting.
+	vector fakePos = itemTargetPos;
+	vector iMins = item.getMins();
+	vector iMaxs = item.getMaxs();
+	fakePos_z += (iMaxs_z - iMins_z) / 2; // Elevate it a little bit to avoid detecting the terrain underneath.
+	float contents = sys.checkContents( fakePos, iMins, iMaxs, CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity );
+	if ( contents ) {
+		stopEffect( "fx_booster" );
+
+		if ( !sys.isClient() ) {
+			player plr = sys.getClient( deployPlayerIndex );
+			objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), plr );
+		}
+
+		ClearRequest();
+
+		if( !sys.isClient() ) {
+			item.remove();
+			remove();
+		}
+
+		return;
+	}
+
+
 	stopEffect( "fx_trail" );
 	playEffect( "fx_teleport_start", "", false );
 	teleportTime = sys.getTime();

@@ -123,6 +123,31 @@ void strogg_drop::Idle() {
 		soundTime += time_zero - STROGG_DROP_SOUND_TIME;
 	}
 
+	// nasty little workaround for icarus-through-the-wall exploiting.
+	vector fakePos = itemTargetPos;
+	vector iMins = item.getMins();
+	vector iMaxs = item.getMaxs();
+	fakePos_z += (iMaxs_z - iMins_z) / 2; // Elevate it a little bit to avoid detecting the terrain underneath.
+	float contents = sys.checkContents( fakePos, iMins, iMaxs, CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity );
+	if ( contents ) {
+		stopEffect( "fx_trail" );
+		stopEffect( "fx_booster" );
+
+		if ( !sys.isClient() ) {
+			player plr = sys.getClient( deployPlayerIndex );
+			objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), plr );
+		}
+
+		ClearRequest();
+
+		if( !sys.isClient() ) {
+			item.remove();
+			remove();
+		}
+
+		return;
+	}
+
 	//
 	// Part 2 just a linear fall
 	//
