@@ -129,7 +129,7 @@ gui context {
 			}
 			
 			onPropertyChanged "globals.vehicles.vehicle_charge" {
-				if ( globals.vehicles.vehicle_charge < 0.1f ) {
+				if ( globals.vehicles.vehicle_charge < 0.5f ) {
 					vehicleCreditColor = "1, 0, 0, 0.5";
 				} else {
 					vehicleCreditColor = "1, 1, 1, 0.5";
