@@ -134,7 +134,7 @@ damageDef realistic_damage_hyperblaster_splash {
 }
 
 damageDef damage_hyperblaster_hornet_splash {
-	templates/vehicles/weapons/hyperblaster/damage_splash( "hornet_weapons", "pro_vehicle_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage_splash( "hornet_weapons", "pro_vehicle_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_hornet_splash {
