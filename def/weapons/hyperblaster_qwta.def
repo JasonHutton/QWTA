@@ -125,7 +125,7 @@ entityDef projectile_hyperblaster_hornet {
 }
 
 damageDef damage_hyperblaster_splash {
-	templates/vehicles/weapons/hyperblaster/damage_splash( "hyperblaster", "pro_aggressor_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage_splash( "hyperblaster", "pro_aggressor_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_splash {
@@ -143,7 +143,7 @@ damageDef realistic_damage_hyperblaster_hornet_splash {
 }
 
 damageDef damage_hyperblaster_hog_splash {
-	templates/vehicles/weapons/hyperblaster/damage_splash( "hog_weapons", "pro_vehicle_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage_splash( "hog_weapons", "pro_vehicle_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_hog_splash {
@@ -152,7 +152,7 @@ damageDef realistic_damage_hyperblaster_hog_splash {
 }
 
 damageDef damage_hyperblaster_desecrator_splash {
-	templates/vehicles/weapons/hyperblaster/damage_splash( "desecrator_weapons", "pro_vehicle_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage_splash( "desecrator_weapons", "pro_vehicle_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_desecrator_splash {

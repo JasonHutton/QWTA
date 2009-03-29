@@ -297,7 +297,7 @@ entityDef mountable_strogg_hyperblaster {
 }
 
 damageDef damage_hyperblaster_hornet {
-	templates/vehicles/weapons/hyperblaster/damage( "hornet_weapons", "pro_vehicle_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage( "hornet_weapons", "pro_vehicle_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_hornet {
@@ -306,7 +306,7 @@ damageDef realistic_damage_hyperblaster_hornet {
 }
 
 damageDef damage_hyperblaster_hog {
-	templates/vehicles/weapons/hyperblaster/damage( "hog_weapons", "pro_vehicle_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage( "hog_weapons", "pro_vehicle_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_hog {
@@ -315,7 +315,7 @@ damageDef realistic_damage_hyperblaster_hog {
 }
 
 damageDef damage_hyperblaster_desecrator {
-	templates/vehicles/weapons/hyperblaster/damage( "desecrator_weapons", "pro_vehicle_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage( "desecrator_weapons", "pro_vehicle_damage" )
 }
 
 damageDef realistic_damage_hyperblaster_desecrator {
@@ -324,7 +324,7 @@ damageDef realistic_damage_hyperblaster_desecrator {
 }
 
 damageDef damage_hyperblaster {
-	templates/vehicles/weapons/hyperblaster/damage( "hyperblaster", "pro_aggressor_damage" )
+	_templates/vehicles/weapons/hyperblaster/damage( "hyperblaster", "pro_aggressor_damage" )
 
 	record_hit_stats
 }
