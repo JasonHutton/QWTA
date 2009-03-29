@@ -1,0 +1,306 @@
+
+#include <guis/game/hud/hud.include>
+#include <guis/common/colors.include>
+#include <guis/game/quickchat.include>
+#include <guis/mainmenu/components/window.include>
+
+gui context {
+
+	__quickchat_materials
+	_wnd_init
+
+	properties {
+		float flags	= immediate( flags ) | GUI_SHOWCURSOR | GUI_NON_FOCUSED_MOUSE_EVENTS | GUI_FULLSCREEN | GUI_USE_MOUSE_PITCH;
+		vec2	cursorSize = 0, 0;
+		float 	oldCrosshairFlags;
+		float	active = false;
+		string bindContext = "radialmenu";
+	}
+	events {
+		onCVarChanged "g_radialMenuMouseSensitivity" {
+			inputScale = getCVarFloat( "g_radialMenuMouseSensitivity" );
+		}
+		onCVarChanged "g_radialMenuStyle" {
+			desktop.drawStyle = getCVarInt( "g_radialMenuStyle" );
+		}
+		onCVarChanged "g_radialMenuUseNumberShortcuts" {
+			if( gui.getCVarBool( "g_radialMenuUseNumberShortcuts" ) ) {
+				desktop.flags = immediate( desktop.flags ) | RMF_USE_NUMBER_SHORTCUTS;
+			} else {
+				desktop.flags = immediate( desktop.flags ) & ~RMF_USE_NUMBER_SHORTCUTS;
+			}		
+		}
+		onActivate {
+			active = true;
+			playGameSound( "click" );
+			desktop.drawStyle = getCVarInt( "g_radialMenuStyle" );
+			if( gui.getCVarBool( "g_radialMenuUseNumberShortcuts" ) ) {
+				desktop.flags = immediate( desktop.flags ) | RMF_USE_NUMBER_SHORTCUTS;
+			} else {
+				desktop.flags = immediate( desktop.flags ) & ~RMF_USE_NUMBER_SHORTCUTS;
+			}
+			inputScale = getCVarFloat( "g_radialMenuMouseSensitivity" );
+
+			oldCrosshairFlags = immediate( globals.gameHud.activeCrosshairInfoFlags );
+			globals.gameHud.activeCrosshairInfoFlags = immediate( globals.gameHud.activeCrosshairInfoFlags ) & ~CF_CROSSHAIR;
+			
+			if ( desktop.drawStyle == DS_ARC ) {
+				globals.gameHud.hideCrosshairCounter = immediate( globals.gameHud.hideCrosshairCounter + 1 );			
+			}
+
+			desktop.clearPageStack();
+			desktop.clearTransitions( -1, -1 );
+			desktop.currentPage = -1;
+
+			desktop.pushPage( 0 );
+			desktop.currentItem = 0;
+		}
+		onDeactivate {
+			active = false;
+			globals.gameHud.hideCrosshairCounter = immediate( globals.gameHud.hideCrosshairCounter - 1 );
+			globals.gameHud.activeCrosshairInfoFlags = immediate( oldCrosshairFlags );
+			if ( globals.gameHud.hideCrosshairCounter < 0 ) {
+				globals.gameHud.hideCrosshairCounter = 0;
+			}
+			playGameSound( "click" );
+		}
+		onPropertyChanged "player.teamName" {
+			desktop.clear();
+			postNamedEvent( "initForTeam" );
+		}
+		onNamedEvent "initForTeam" {
+			desktop.loadFromDef( player.teamName + "_context" );
+			desktop.pushPage( 0 );
+		}
+		onPropertyChanged "desktop.currentItem" {
+			if( desktop.currentItem != - 1 && gui.active ) {
+				playGameSound( "click" );
+			}
+		}
+	}
+
+	materials {
+		"icon_context"			"guis/assets/mainmenu/sheet_fill, rect( 324, 165, 24, 24 )"
+		"icon_health"			"guis/assets/mainmenu/sheet_fill, rect( 345, 165, 24, 24 )"
+		"icon_ammo"				"guis/assets/mainmenu/sheet_fill, rect( 366, 165, 24, 24 )"
+		"icon_vehicle"			"guis/assets/mainmenu/sheet_fill, rect( 389, 165, 24, 24 )"
+		"icon_thanks"			"guis/assets/mainmenu/sheet_fill, rect( 413, 165, 24, 24 )"
+		"icon_sorry"			"guis/assets/mainmenu/sheet_fill, rect( 345, 211, 24, 24 )"
+		"icon_yes"				"guis/assets/mainmenu/sheet_fill, rect( 345, 186, 24, 24 )"
+		"icon_no"				"guis/assets/mainmenu/sheet_fill, rect( 368, 186, 24, 24 )"
+		"icon_repair"			"guis/assets/mainmenu/sheet_fill, rect( 368, 209, 24, 24 )"
+	}
+
+	windowDef desktop {
+		type radialmenu;
+
+		__quickchat_drawing
+
+		_med_text_props
+		properties {
+			rect	rect			= gui.screenCenter.x - ( 0.5 * rect.w ), gui.screenCenter.y - ( 0.5 * rect.h ), 3 * radius, 2 * radius;
+			float	flags 			= WF_CAPTURE_KEYS;
+			float	radius			= 48;			
+			handle	iconContext		= gui.cacheMaterial( "iconContext",	"_st icon_context" );
+			handle	iconYes			= gui.cacheMaterial( "iconYes", 	"_st icon_yes" );
+			handle	iconNo			= gui.cacheMaterial( "iconNo", 		"_st icon_no" );
+			handle	iconHealth		= gui.cacheMaterial( "iconHealth", 	"_st icon_health" );
+			handle	iconAmmo		= gui.cacheMaterial( "iconAmmo", 	"_st icon_ammo" );
+			handle	iconVehicle		= gui.cacheMaterial( "iconVehicle",	"_st icon_vehicle" );
+			handle	iconSorry		= gui.cacheMaterial( "iconSorry", 	"_st icon_sorry" );
+			handle	iconThanks		= gui.cacheMaterial( "iconThanks", 	"_st icon_thanks" );
+			handle	iconRepair		= gui.cacheMaterial( "iconRepair", 	"_st icon_repair" );
+			
+			rect 	contextIconRect		= textRect.x, textRect.y + ( textRect.h * 0.5f ) - 6, 12, 12;
+			rect 	contextContextIconRect	= textRect.x + 12, textRect.y + ( textRect.h * 0.5f ) - 8, 12, 12;
+			rect 	vehicleProgressRect	= textRect.x, textRect.y + 30, textRect.w, 4;
+			float	flasher			= 0;
+			
+			handle	lastContext		= floatToHandle( -1 );
+			
+			rect	deadRect		= CENTER_X - 160, CENTER_Y - 60, 320, 120;
+			
+			color	vehicleCreditColor	= "1, 1, 1, 0.5";
+		}
+
+		events {
+			onCreate {
+				gui.postNamedEvent( "initForTeam" );
+			}
+			
+			onPropertyChanged "globals.vehicles.vehicle_charge" {
+				if ( globals.vehicles.vehicle_charge < 0.1f ) {
+					vehicleCreditColor = "1, 0, 0, 0.5";
+				} else {
+					vehicleCreditColor = "1, 1, 1, 0.5";
+				}
+			}
+	
+			onDrawContext {
+				scratchRect = gui.scriptGetVec4Result();
+				if( drawStyle == DS_ARC && 
+					containsPoint( deadRect, scratchRect.x, scratchRect.y ) &&
+					containsPoint( deadRect, scratchRect.x + scratchRect.w, scratchRect.y + scratchRect.h ) ) {
+					return;
+				}
+
+				itemRect = scratchRect;
+				itemRect.w = 28;
+
+				itemRect.x = immediate( scratchRect.x - itemRect.w );
+				drawCachedMaterial( contextLeft, itemRect, COLOR_WHITE );
+
+				itemRect.x = immediate( scratchRect.x + scratchRect.w );
+				drawCachedMaterial( contextRight, itemRect, COLOR_WHITE );
+				
+				itemRect.x = scratchRect.x + scratchRect.w + 48;				
+				itemRect.y = scratchRect.y;
+				
+				if( itemRect.x <= 0 || itemRect.x >= SCREEN_WIDTH ) {
+					return;
+				}
+				
+				if( itemRect.y <= 0 || itemRect.y >= SCREEN_HEIGHT ) {
+					return;
+				}
+				
+				
+				if( isValidHandle( lastContext ) ) {
+					drawCachedMaterial( iconContext, "itemRect.x - 15, itemRect.y + 1, 16, 16", COLOR_BLACK );
+					drawCachedMaterial( iconContext, "itemRect.x - 16, itemRect.y, 16, 16", COLOR_WHITE );
+					drawLocalizedText( lastContext, itemRect, COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_DROPSHADOW );
+				}
+			}
+
+			onPagePopped {
+				if( currentPage == -1 ) {
+					gui.deactivate();
+				}
+			}
+			onKeyDown "mouse1" {
+				postCommand( -1, -1 );
+			}
+			onKeyDown "escape" "mouse2" {
+				popPage();
+			}
+			onKeyDown "mwheelup" {
+			}
+			onKeyDown "mwheeldown" {
+			}
+			onCommand "setPage" {
+				pushPage( toFloat( getItemData( -1, -1, 0 ) ) );
+				gui.playGameSound( "accept" );
+			}
+			onNamedEvent "itemSelected" {
+				//gui.playGameSound( "accept" );
+				gui.deactivate();
+			}
+
+			onKeyDown "bind_context" {
+				gui.deactivate();
+			}
+
+			onCommand "quickChat" {
+				gui.consoleCommand( "clientQuickChat " + getItemData( -1, -1, 0 ) + _newLine );
+				postNamedEvent( "itemSelected" );
+			}
+			onCommand "globalContextChat" {
+				gui.consoleCommand( "clientQuickChat " + getItemData( -1, -1, 0 ) + " " + getItemData( -1, -1, 1 ) + _newLine );
+				postNamedEvent( "itemSelected" );
+			}
+
+			onCommand "command" {
+				gui.consoleCommand( getItemData( -1, -1, 0 ) );
+				postNamedEvent( "itemSelected" );
+			}
+
+			onNamedEvent "drawContext" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )
+				lastContext = gui.copyHandle( itemTitle );
+				
+				if( drawStyle == DS_ARC ) {						
+					drawCachedMaterial( iconContext, contextContextIconRect, scratchColor );
+				} else {
+					drawCachedMaterial( iconContext, contextIconRect, scratchColor );
+				}
+			}			
+			onNamedEvent "drawYes" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )					
+				drawCachedMaterial( iconYes, contextIconRect, scratchColor );
+			}
+			onNamedEvent "drawNo" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )					
+				drawCachedMaterial( iconNo, contextIconRect, scratchColor );
+			}			
+			onNamedEvent "drawThanks" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )					
+				drawCachedMaterial( iconThanks, contextIconRect, scratchColor );
+			}
+			onNamedEvent "drawSorry" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )			
+				drawCachedMaterial( iconSorry, contextIconRect, scratchColor );
+			}
+			onNamedEvent "drawRepair" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )			
+				drawCachedMaterial( iconRepair, contextIconRect, scratchColor );
+			}
+			onNamedEvent "drawHealth" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )
+				
+				if( ( player.health / player.maxHealth ) < 0.3 ) {
+					scratchColor.r = flasher;
+					scratchColor.g = 0;
+					scratchColor.b = 0;
+				}
+				
+				drawCachedMaterial( iconHealth, contextIconRect, scratchColor );
+			}
+			onNamedEvent "drawAmmo" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )
+				
+				if( globals.gameHud.mediumAmmoFlash ) {
+					scratchColor.r = flasher;
+					scratchColor.g = 0.5;
+					scratchColor.b = 0;
+				}
+				if( globals.gameHud.lowAmmoFlash ) {
+					scratchColor.r = flasher;
+					scratchColor.g = 0;
+					scratchColor.b = 0;
+				}
+				drawCachedMaterial( iconAmmo, contextIconRect, scratchColor );
+			}
+			onNamedEvent "drawVehicle" {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )			
+				drawCachedMaterial( iconVehicle, contextIconRect, scratchColor );
+				if( drawStyle == DS_ARC ) {
+					drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y, vehicleProgressRect.w, 3", ".1,.1,.1,0.45" );
+					drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y, vehicleProgressRect.w * globals.vehicles.vehicle_charge, 3", vehicleCreditColor );
+				} else {
+					drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y - 14, vehicleProgressRect.w - 2, 3", ".1,.1,.1,0.45" );
+					drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y - 14, ( vehicleProgressRect.w - 2 ) * globals.vehicles.vehicle_charge, 3", vehicleCreditColor );
+				}
+			}
+		}
+		timeline {
+			onTime 0 {
+				flasher = transition( 0.6, 0.9, 350 );
+			}
+			onTime 350 {
+				flasher = transition( 0.9, 0.4, 350 );
+			}
+			onTime 700 {
+				resetTime( 0 );
+			}
+		}
+	}
+}

@@ -1,0 +1,578 @@
+
+#ifndef __quickchat__
+#define __quickchat__
+
+#define DEACTIVATE_TRANSITION_TIME 200
+
+#define SLIDE_TIME 250
+
+#define COLOR_RADIAL_FILL		"0.4, 0.4, 0.4, 0.5"
+#define COLOR_RADIAL_GRADIENT 		"0.2, 0.2, 0.2, 0.3"
+#define COLOR_RADIAL_LINES	 	"1, 1, 1, 0.2"
+#define COLOR_RADIAL_HI_FILL	 	"0.9, 0.4, 0, 1"
+#define COLOR_RADIAL_HI_GRADIENT	"0.9, 0.55, 0, 1"
+
+
+$template __dim_color( Color )
+	if( itemEnabled == false ) {
+		Color.a = immediate( Color.a * 0.3f );
+	}
+$endtemplate
+
+
+$template __quickchat_materials
+	materials {
+		// normal vertical sizes
+		"normal_v_fill_l"	"guis/quickchat/qchat_fill, rect( 152, 29, 26, 21 )"
+		"normal_v_fill_c"	"guis/quickchat/qchat_fill, rect( 176, 29, 4, 21 )"
+		"normal_v_fill_r"	"guis/quickchat/qchat_fill, rect( 249, 29, 5, 21 )"
+
+		"normal_v_grad_l"	"guis/quickchat/qchat_gradients, rect( 152, 29, 63, 21 )"
+		"normal_v_grad_c"	"guis/quickchat/qchat_gradients, rect( 219, 29, 1, 21 )"
+		"normal_v_grad_r"	"guis/quickchat/qchat_gradients, rect( 220, 29, 35, 21 )"
+
+		"normal_v_line_l"	"guis/quickchat/qchat_lines, rect( 152, 29, 26, 21 )"
+		"normal_v_line_c"	"guis/quickchat/qchat_lines, rect( 176, 29, 4, 21 )"
+		"normal_v_line_r"	"guis/quickchat/qchat_lines, rect( 249, 29, 5, 21 )"
+
+		"normal_v_high_l"	"guis/quickchat/qchat_highlight, rect( 152, 29, 26, 21 )"
+		"normal_v_high_c"	"guis/quickchat/qchat_highlight, rect( 176, 29, 4, 21 )"
+		"normal_v_high_r"	"guis/quickchat/qchat_highlight, rect( 249, 29, 5, 21 )"
+
+		// top center radial
+		"top_center_r_fill_tl"	"guis/quickchat/qchat_fill, rect( 2, 1, 31, 48 )"
+		"top_center_r_fill_l"	"guis/quickchat/qchat_fill, rect( 33, 1, 1, 48 )"
+		"top_center_r_fill_c"	"guis/quickchat/qchat_fill, rect( 33, 1, 37, 48 )"
+		"top_center_r_fill_r"	"guis/quickchat/qchat_fill, rect( 33, 1, 1, 48 )"
+		"top_center_r_fill_tr"	"guis/quickchat/qchat_fill, rect( 2, 1, 31, 48 ), flipX"
+
+		"top_center_r_grad_tl"	"guis/quickchat/qchat_gradients, rect( 2, 1, 31, 48 )"
+		"top_center_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 33, 1, 1, 48 )"
+		"top_center_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 33, 1, 37, 48 )"
+		"top_center_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 33, 1, 1, 48 )"
+		"top_center_r_grad_tr"	"guis/quickchat/qchat_gradients, rect( 2, 1, 31, 48 ), flipX"
+
+		"top_center_r_line_tl"	"guis/quickchat/qchat_lines, rect( 2, 1, 31, 48 )"
+		"top_center_r_line_l"	"guis/quickchat/qchat_lines, rect( 33, 1, 1, 48 )"
+		"top_center_r_line_c"	"guis/quickchat/qchat_lines, rect( 33, 1, 37, 48 )"
+		"top_center_r_line_r"	"guis/quickchat/qchat_lines, rect( 33, 1, 1, 48 )"
+		"top_center_r_line_tr"	"guis/quickchat/qchat_lines, rect( 2, 1, 31, 48 ), flipX"
+
+		"top_center_r_high_tl"	"guis/quickchat/qchat_highlight, rect( 2, 1, 31, 48 )"
+		"top_center_r_high_l"	"guis/quickchat/qchat_highlight, rect( 33, 1, 1, 48 )"
+		"top_center_r_high_c"	"guis/quickchat/qchat_highlight, rect( 33, 1, 37, 48 )"
+		"top_center_r_high_r"	"guis/quickchat/qchat_highlight, rect( 33, 1, 1, 48 )"
+		"top_center_r_high_tr"	"guis/quickchat/qchat_highlight, rect( 2, 1, 31, 48 ), flipX"
+
+		// bottom center radial
+		"bottom_center_r_fill_tl"	"guis/quickchat/qchat_fill, rect( 171, 84, 22, 42 )"
+		"bottom_center_r_fill_l"	"guis/quickchat/qchat_fill, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_fill_c"	"guis/quickchat/qchat_fill, rect( 192, 84, 41, 42 )"
+		"bottom_center_r_fill_r"	"guis/quickchat/qchat_fill, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_fill_tr"	"guis/quickchat/qchat_fill, rect( 171, 84, 22, 42 ), flipX"
+
+		"bottom_center_r_line_tl"	"guis/quickchat/qchat_lines, rect( 171, 84, 22, 42 )"
+		"bottom_center_r_line_l"	"guis/quickchat/qchat_lines, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_line_c"	"guis/quickchat/qchat_lines, rect( 192, 84, 41, 42 )"
+		"bottom_center_r_line_r"	"guis/quickchat/qchat_lines, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_line_tr"	"guis/quickchat/qchat_lines, rect( 171, 84, 22, 42 ), flipX"
+
+		"bottom_center_r_grad_tl"	"guis/quickchat/qchat_gradients, rect( 171, 84, 22, 42 )"
+		"bottom_center_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 192, 84, 41, 42 )"
+		"bottom_center_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_grad_tr"	"guis/quickchat/qchat_gradients, rect( 171, 84, 22, 42 ), flipX"
+
+		"bottom_center_r_high_tl"	"guis/quickchat/qchat_highlight, rect( 171, 84, 22, 42 )"
+		"bottom_center_r_high_l"	"guis/quickchat/qchat_highlight, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_high_c"	"guis/quickchat/qchat_highlight, rect( 192, 84, 41, 42 )"
+		"bottom_center_r_high_r"	"guis/quickchat/qchat_highlight, rect( 192, 84, 1, 42 )"
+		"bottom_center_r_high_tr"	"guis/quickchat/qchat_highlight, rect( 171, 84, 22, 42 ), flipX"
+
+
+		// top left side radial
+		"top_left_r_fill_l"	"guis/quickchat/qchat_fill, rect( 2, 50, 18, 24 )"
+		"top_left_r_fill_c"	"guis/quickchat/qchat_fill, rect( 20, 50, 1, 24 )"
+		"top_left_r_fill_r"	"guis/quickchat/qchat_fill, rect( 76, 50, 41, 24 )"
+
+		"top_left_r_line_l"	"guis/quickchat/qchat_lines, rect( 2, 50, 18, 24 )"
+		"top_left_r_line_c"	"guis/quickchat/qchat_lines, rect( 20, 50, 1, 24 )"
+		"top_left_r_line_r"	"guis/quickchat/qchat_lines, rect( 76, 50, 41, 24 )"
+
+		"top_left_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 2, 50, 64, 24 )"
+		"top_left_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 65, 50, 1, 24 )"
+		"top_left_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 67, 50, 49, 24 )"
+
+		"top_left_r_high_l"	"guis/quickchat/qchat_highlight, rect( 2, 50, 18, 24 )"
+		"top_left_r_high_c"	"guis/quickchat/qchat_highlight, rect( 20, 50, 1, 24 )"
+		"top_left_r_high_r"	"guis/quickchat/qchat_highlight, rect( 76, 50, 41, 24 )"
+
+		// top right side radial
+		"top_right_r_fill_l"	"guis/quickchat/qchat_fill, rect( 76, 50, 41, 24 ), flipX"
+		"top_right_r_fill_c"	"guis/quickchat/qchat_fill, rect( 20, 50, 1, 24 ), flipX"
+		"top_right_r_fill_r"	"guis/quickchat/qchat_fill, rect( 2, 50, 18, 24 ), flipX"
+
+		"top_right_r_line_l"	"guis/quickchat/qchat_lines, rect( 76, 50, 41, 24 ), flipX"
+		"top_right_r_line_c"	"guis/quickchat/qchat_lines, rect( 20, 50, 1, 24 ), flipX"
+		"top_right_r_line_r"	"guis/quickchat/qchat_lines, rect( 2, 50, 18, 24 ), flipX"
+
+		"top_right_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 67, 50, 49, 24 ), flipX"
+		"top_right_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 65, 50, 1, 24 ), flipX"
+		"top_right_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 2, 50, 64, 24 ), flipX"
+
+		"top_right_r_high_l"	"guis/quickchat/qchat_highlight, rect( 76, 50, 41, 24 ), flipX"
+		"top_right_r_high_c"	"guis/quickchat/qchat_highlight, rect( 20, 50, 1, 24 ), flipX"
+		"top_right_r_high_r"	"guis/quickchat/qchat_highlight, rect( 2, 50, 18, 24 ), flipX"
+
+		// bottom left side radial
+		"bottom_left_r_fill_l"	"guis/quickchat/qchat_fill, rect( 2, 50, 18, 24 ), flipY"
+		"bottom_left_r_fill_c"	"guis/quickchat/qchat_fill, rect( 20, 50, 1, 24 ), flipY"
+		"bottom_left_r_fill_r"	"guis/quickchat/qchat_fill, rect( 76, 50, 41, 24 ), flipY"
+
+		"bottom_left_r_line_l"	"guis/quickchat/qchat_lines, rect( 2, 50, 18, 24 ), flipY"
+		"bottom_left_r_line_c"	"guis/quickchat/qchat_lines, rect( 20, 50, 1, 24 ), flipY"
+		"bottom_left_r_line_r"	"guis/quickchat/qchat_lines, rect( 76, 50, 41, 24 ), flipY"
+
+		"bottom_left_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 2, 50, 64, 24 ), flipY"
+		"bottom_left_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 65, 50, 1, 24 ), flipY"
+		"bottom_left_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 67, 50, 49, 24 ), flipY"
+
+		"bottom_left_r_high_l"	"guis/quickchat/qchat_highlight, rect( 2, 50, 18, 24 ), flipY"
+		"bottom_left_r_high_c"	"guis/quickchat/qchat_highlight, rect( 20, 50, 1, 24 ), flipY"
+		"bottom_left_r_high_r"	"guis/quickchat/qchat_highlight, rect( 76, 50, 41, 24 ), flipY"
+
+		// bottom right side radial
+		"bottom_right_r_fill_l"	"guis/quickchat/qchat_fill, rect( 76, 50, 41, 24 ), flipX, flipY"
+		"bottom_right_r_fill_c"	"guis/quickchat/qchat_fill, rect( 20, 50, 1, 24 ), flipX, flipY"
+		"bottom_right_r_fill_r"	"guis/quickchat/qchat_fill, rect( 2, 50, 18, 24 ), flipX, flipY"
+
+		"bottom_right_r_line_l"	"guis/quickchat/qchat_lines, rect( 76, 50, 41, 24 ), flipX, flipY"
+		"bottom_right_r_line_c"	"guis/quickchat/qchat_lines, rect( 20, 50, 1, 24 ), flipX, flipY"
+		"bottom_right_r_line_r"	"guis/quickchat/qchat_lines, rect( 2, 50, 18, 24 ), flipX, flipY"
+
+		"bottom_right_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 67, 50, 49, 24 ), flipX, flipY"
+		"bottom_right_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 65, 50, 1, 24 ), flipX, flipY"
+		"bottom_right_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 2, 50, 64, 24 ), flipX, flipY"
+
+		"bottom_right_r_high_l"	"guis/quickchat/qchat_highlight, rect( 76, 50, 41, 24 ), flipX, flipY"
+		"bottom_right_r_high_c"	"guis/quickchat/qchat_highlight, rect( 20, 50, 1, 24 ), flipX, flipY"
+		"bottom_right_r_high_r"	"guis/quickchat/qchat_highlight, rect( 2, 50, 18, 24 ), flipX, flipY"
+
+		// left radial
+		"left_r_fill_l"		"guis/quickchat/qchat_fill, rect( 1, 75, 61, 18 )"
+		"left_r_fill_c"		"guis/quickchat/qchat_fill, rect( 62, 75, 1, 18 )"
+		"left_r_fill_r"		"guis/quickchat/qchat_fill, rect( 62, 75, 64, 18 )"
+
+		"left_r_line_l"		"guis/quickchat/qchat_lines, rect( 1, 75, 61, 18 )"
+		"left_r_line_c"		"guis/quickchat/qchat_lines, rect( 62, 75, 1, 18 )"
+		"left_r_line_r"		"guis/quickchat/qchat_lines, rect( 62, 75, 64, 18 )"
+
+		"left_r_grad_l"		"guis/quickchat/qchat_gradients, rect( 1, 75, 61, 18 )"
+		"left_r_grad_c"		"guis/quickchat/qchat_gradients, rect( 62, 75, 1, 18 )"
+		"left_r_grad_r"		"guis/quickchat/qchat_gradients, rect( 62, 75, 64, 18 )"
+
+		"left_r_high_l"		"guis/quickchat/qchat_highlight, rect( 1, 75, 61, 18 )"
+		"left_r_high_c"		"guis/quickchat/qchat_highlight, rect( 62, 75, 1, 18 )"
+		"left_r_high_r"		"guis/quickchat/qchat_highlight, rect( 62, 75, 64, 18 )"
+
+		// right radial
+		"right_r_fill_l"	"guis/quickchat/qchat_fill, rect( 62, 75, 64, 18 ), flipX"
+		"right_r_fill_c"	"guis/quickchat/qchat_fill, rect( 62, 75, 1, 18 ), flipX"
+		"right_r_fill_r"	"guis/quickchat/qchat_fill, rect( 1, 75, 61, 18 ), flipX"
+
+		"right_r_line_l"	"guis/quickchat/qchat_lines, rect( 62, 75, 64, 18 ), flipX"
+		"right_r_line_c"	"guis/quickchat/qchat_lines, rect( 62, 75, 1, 18 ), flipX"
+		"right_r_line_r"	"guis/quickchat/qchat_lines, rect( 1, 75, 61, 18 ), flipX"
+
+		"right_r_grad_l"	"guis/quickchat/qchat_gradients, rect( 62, 75, 64, 18 ), flipX"
+		"right_r_grad_c"	"guis/quickchat/qchat_gradients, rect( 62, 75, 1, 18 ), flipX"
+		"right_r_grad_r"	"guis/quickchat/qchat_gradients, rect( 1, 75, 61, 18 ), flipX"
+
+		"right_r_high_l"	"guis/quickchat/qchat_highlight, rect( 62, 75, 64, 18 ), flipX"
+		"right_r_high_c"	"guis/quickchat/qchat_highlight, rect( 62, 75, 1, 18 ), flipX"
+		"right_r_high_r"	"guis/quickchat/qchat_highlight, rect( 1, 75, 61, 18 ), flipX"
+
+		"context_l_t"		"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 ), flipX"		
+		"context_l_c"		"guis/nodraw"
+		"context_l_b"		"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 ), flipX, flipY"
+		
+		"context_r_t"		"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 )"
+		"context_r_c"		"guis/nodraw"
+		"context_r_b"		"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 ), flipY"
+
+		"chevron"			"hud/quick_chat/chevron"
+		
+		"deadzone_fill_l"	"guis/quickchat/qchat_fill, rect( 114, 93, 16, 32 )"
+		"deadzone_fill_c"	"guis/quickchat/qchat_fill, rect( 130, 93, 1, 32 )"
+		"deadzone_fill_r"	"guis/quickchat/qchat_fill, rect( 130, 93, 16, 32 )"
+		
+		"deadzone_grad_l"	"guis/quickchat/qchat_gradients, rect( 114, 93, 16, 32 )"
+		"deadzone_grad_c"	"guis/quickchat/qchat_gradients, rect( 130, 93, 1, 32 )"
+		"deadzone_grad_r"	"guis/quickchat/qchat_gradients, rect( 130, 93, 16, 32 )"
+
+	}
+$endtemplate
+
+$template __quickchat_drawing
+	properties {
+		handle	fill;
+		handle	grad;
+		handle	line;
+		handle	high;
+		
+		float	drawStyle = DS_INVALID;
+
+		handle 	contextLeft		= gui.cacheMaterial( "context_l", "_3v context_l" );
+		handle 	contextRight	= gui.cacheMaterial( "context_r", "_3v context_r" );
+
+		handle 	chevron			= gui.cacheMaterial( "chevron", "chevron" );
+
+		float	itemChevron;
+		float 	itemEnabled;
+		rect	itemRect;
+		wstring	itemShortcut;
+		handle	itemTitle;
+		float	itemIndex;
+		float	itemStyle;
+		string	itemDrawCallback;
+
+		vec2	backOffset;
+		vec2	itemSize;
+		vec4	scratchColor;
+		vec4	scratchRect;
+		vec4	iconRect		= 0, 0, 14, 14;
+		vec4	shortcutRect;
+		vec4	textRect;
+		float	scratchFloat;
+
+		float 	lastSelected 		= -1;
+		float	verticalPadding		= 8;		
+	}
+	events {
+		onMeasureItem {
+			itemIndex = gui.scriptGetFloatResult();
+			itemStyle = gui.scriptGetFloatResult();
+			itemSize = gui.scriptGetVec2Result();
+			
+			if( drawStyle == DS_ARC ) {
+				scratchFloat = 150;
+				if( itemStyle & ( RIS_LEFT | RIS_RIGHT | RIS_TOP | RIS_BOTTOM ) ) {
+					itemSize.y = 24;
+				}
+				if( itemStyle == RIS_LEFT || itemStyle == RIS_RIGHT ) {
+					itemSize.y = 18;
+				}
+				if( itemStyle == ( RIS_TOP | RIS_CENTER ) ) {
+					itemSize.y = 48;
+					scratchFloat = 140;
+				}
+				if( itemStyle == ( RIS_BOTTOM | RIS_CENTER ) ) {
+					itemSize.y = 48;
+					scratchFloat = 132;
+				}
+				
+				if( itemStyle == RIS_CENTER ) {
+					itemSize.y = 32;
+					scratchFloat = 96;
+				}
+			} else {				
+				scratchFloat = max( itemSize.x, 100 );
+				scratchFloat = immediate( scratchFloat + 32 );	// pad out a bit for icon/shortcuts keys
+				itemSize.y = 21;
+			}
+			scratchFloat = immediate( scratchFloat + 32 );
+
+			itemSize.x = max( itemSize.x, scratchFloat );
+
+			if( drawStyle == DS_VERTICAL ) {
+				rect.w = max( rect.w, itemSize.x );
+			}
+
+			gui.scriptPushVec2( itemSize );
+		}
+
+		onDrawItem {
+			itemShortcut = gui.scriptGetWStringResult();
+			itemTitle = floatToHandle( gui.scriptGetFloatResult() );
+			itemChevron = gui.scriptGetFloatResult();
+			itemEnabled = gui.scriptGetFloatResult();
+			itemRect = gui.scriptGetVec4Result();
+			itemIndex = gui.scriptGetFloatResult();
+			itemStyle = gui.scriptGetFloatResult();
+			itemDrawCallback = gui.scriptGetStringResult();
+
+			backOffset = 0, 0;
+
+			//drawRect( itemRect, "1,0,0,1", 1 );
+			textRect = itemRect;
+
+			if( drawStyle == DS_ARC ) {
+				if( itemStyle == ( RIS_CENTER ) ) {
+					fill = gui.cacheMaterial( "fill", "_3h deadzone_fill" );
+					grad = gui.cacheMaterial( "grad", "_3h deadzone_grad" );
+					line = floatToHandle( -1 );
+					high = floatToHandle( -1 );
+
+					backOffset.y = 0;
+					iconRect.x = itemRect.x + 8;
+					iconRect.y = itemRect.y + 18;
+
+					shortcutRect.x = itemRect.x + 6;
+					shortcutRect.y = itemRect.y + 16;
+				}
+				if( itemStyle == ( RIS_TOP | RIS_CENTER ) ) {
+					fill = gui.cacheMaterial( "fill", "_5h top_center_r_fill" );
+					grad = gui.cacheMaterial( "grad", "_5h top_center_r_grad" );
+					line = gui.cacheMaterial( "line", "_5h top_center_r_line" );
+					high = gui.cacheMaterial( "high", "_5h top_center_r_high" );
+
+					backOffset.y = 10;
+					iconRect.x = itemRect.x + 14;
+					iconRect.y = itemRect.y + 16;
+
+					textRect.x = itemRect.x + 26;
+					textRect.w = itemRect.w - 52;
+
+					shortcutRect.x = itemRect.x + 8;
+					shortcutRect.y = itemRect.y + 24;
+				}
+				if( itemStyle == ( RIS_BOTTOM | RIS_CENTER ) ) {
+					fill = gui.cacheMaterial( "fill", "_5h bottom_center_r_fill" );
+					grad = gui.cacheMaterial( "grad", "_5h bottom_center_r_grad" );
+					line = gui.cacheMaterial( "line", "_5h bottom_center_r_line" );
+					high = gui.cacheMaterial( "high", "_5h bottom_center_r_high" );
+
+					backOffset.y = -22;
+					iconRect.x = itemRect.x + 14;
+					iconRect.y = itemRect.y + 7;
+
+					textRect.x = itemRect.x + 26;
+					textRect.y = itemRect.y - 9;
+					textRect.w = itemRect.w - 52;
+
+					shortcutRect.x = itemRect.x + 8;
+					shortcutRect.y = itemRect.y + 13;
+				}
+				if( itemStyle == ( RIS_LEFT | RIS_TOP ) ) {
+					fill = gui.cacheMaterial( "fill", "_3h top_left_r_fill" );
+					line = gui.cacheMaterial( "line", "_3h top_left_r_line" );
+					grad = gui.cacheMaterial( "grad", "_3h top_left_r_grad" );
+					high = gui.cacheMaterial( "high", "_3h top_left_r_high" );
+
+					backOffset.y = 2;
+
+					iconRect.x = itemRect.x + 14;
+					iconRect.y = itemRect.y + 8;
+
+					textRect.x = itemRect.x + 26;
+					textRect.w = itemRect.w - 52;
+
+					shortcutRect.x = itemRect.x + 8;
+					shortcutRect.y = itemRect.y + 12;
+				}
+				if( itemStyle == ( RIS_RIGHT | RIS_TOP ) ) {
+					fill = gui.cacheMaterial( "fill", "_3h top_right_r_fill" );
+					line = gui.cacheMaterial( "line", "_3h top_right_r_line" );
+					grad = gui.cacheMaterial( "grad", "_3h top_right_r_grad" );
+					high = gui.cacheMaterial( "high", "_3h top_right_r_high" );
+
+					backOffset.y = 2;
+
+					iconRect.x = itemRect.x + 32;
+					iconRect.y = itemRect.y + 6;
+
+					textRect.x = itemRect.x + 44;
+					textRect.w = itemRect.w - 60;
+
+					shortcutRect.x = itemRect.x + itemRect.w - 8;
+					shortcutRect.y = itemRect.y + 12;
+				}
+				if( itemStyle == ( RIS_RIGHT | RIS_BOTTOM ) ) {
+					fill = gui.cacheMaterial( "fill", "_3h bottom_right_r_fill" );
+					line = gui.cacheMaterial( "line", "_3h bottom_right_r_line" );
+					grad = gui.cacheMaterial( "grad", "_3h bottom_right_r_grad" );
+					high = gui.cacheMaterial( "high", "_3h bottom_right_r_high" );
+					
+					backOffset.y = -3;
+
+					iconRect.x = itemRect.x + 32;
+					iconRect.y = itemRect.y + 6;
+
+					textRect.x = itemRect.x + 44;
+					textRect.w = itemRect.w - 58;
+
+					shortcutRect.x = itemRect.x + itemRect.w - 8;
+					shortcutRect.y = itemRect.y + 11;
+				}
+				if( itemStyle == ( RIS_LEFT | RIS_BOTTOM ) ) {
+					fill = gui.cacheMaterial( "fill", "_3h bottom_left_r_fill" );
+					line = gui.cacheMaterial( "line", "_3h bottom_left_r_line" );
+					grad = gui.cacheMaterial( "grad", "_3h bottom_left_r_grad" );
+					high = gui.cacheMaterial( "high", "_3h bottom_left_r_high" );
+					backOffset.y = -5;
+
+					iconRect.x = itemRect.x + 14;
+					iconRect.y = itemRect.y + 6;
+
+					textRect.x = itemRect.x + 26;
+					textRect.w = itemRect.w - 52;
+
+					shortcutRect.x = itemRect.x + 9;
+					shortcutRect.y = itemRect.y + 11;
+				}
+
+				if( itemStyle == RIS_LEFT ) {
+					fill = gui.cacheMaterial( "fill", "_3h left_r_fill" );
+					line = gui.cacheMaterial( "line", "_3h left_r_line" );
+					grad = gui.cacheMaterial( "grad", "_3h left_r_grad" );
+					high = gui.cacheMaterial( "high", "_3h left_r_high" );
+
+					iconRect.x = itemRect.x + 14;
+					iconRect.y = itemRect.y + 5;
+
+					textRect.x = itemRect.x + 26;
+					textRect.w = itemRect.w - 52;
+
+					shortcutRect.x = itemRect.x + 8;
+					shortcutRect.y = itemRect.y + 10;
+				}
+
+				if( itemStyle == RIS_RIGHT ) {
+					fill = gui.cacheMaterial( "fill", "_3h right_r_fill" );
+					line = gui.cacheMaterial( "line", "_3h right_r_line" );
+					grad = gui.cacheMaterial( "grad", "_3h right_r_grad" );
+					high = gui.cacheMaterial( "high", "_3h right_r_high" );
+
+					iconRect.x = itemRect.x + 32;
+					iconRect.y = itemRect.y + 5;
+
+					shortcutRect.x = itemRect.x + itemRect.w - 9;
+					shortcutRect.y = itemRect.y + 10;
+
+					textRect.x = itemRect.x + 44;
+					textRect.w = itemRect.w - 56;
+				}
+			} else {
+				fill = gui.cacheMaterial( "fill", "_3h normal_v_fill" );
+				grad = gui.cacheMaterial( "grad", "_3h normal_v_grad" );
+				line = gui.cacheMaterial( "line", "_3h normal_v_line" );
+				high = gui.cacheMaterial( "high", "_3h normal_v_high" );
+
+				iconRect.x = itemRect.x + 14;
+				iconRect.y = itemRect.y + 8;
+
+				shortcutRect.x = itemRect.x + 8;
+				shortcutRect.y = itemRect.y + 16;
+
+				textRect.x = itemRect.x + 28;
+				textRect.w = itemRect.w - 30;
+			}
+
+			if( drawStyle == DS_VERTICAL ) {
+				scratchRect = getItemTransitionVec4Result( RTP_PROPERTY_2, "0,0,0,0", itemIndex, currentPage );
+				itemRect.x = immediate( itemRect.x + scratchRect.x );
+			}
+
+			scratchRect = itemRect;
+			scratchRect.x = immediate( scratchRect.x + backOffset.x );
+			scratchRect.y = immediate( scratchRect.y + backOffset.y );
+
+			// fill
+			scratchColor = COLOR_RADIAL_FILL;
+			__dim_color( scratchColor )
+			drawCachedMaterial( fill, scratchRect, scratchColor );
+
+			// highlight
+			if( itemEnabled == true ) {
+				scratchColor = getItemTransitionVec4Result( RTP_PROPERTY_1, COLOR_INVISIBLE, itemIndex, currentPage );
+				drawCachedMaterial( fill, scratchRect, scratchColor );
+				drawCachedMaterial( high, scratchRect, scratchColor );
+			}
+			// gradient
+//			if( itemEnabled == true ) {
+			
+			scratchColor = getItemTransitionVec4Result( RTP_PROPERTY_0, COLOR_RADIAL_GRADIENT, itemIndex, currentPage );
+			__dim_color( scratchColor )
+			drawCachedMaterial( grad, scratchRect, scratchColor );
+//			}
+			// lines
+			scratchColor = COLOR_RADIAL_LINES;
+			__dim_color( scratchColor )
+			drawCachedMaterial( line, scratchRect, scratchColor );
+
+			// text
+			scratchColor = COLOR_WHITE;
+			__dim_color( scratchColor )
+
+			drawText( itemShortcut, shortCutRect, scratchColor, 12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+
+			// TODO: Icon
+			if( itemChevron ) {
+				scratchColor = COLOR_WHITE;
+				__dim_color( scratchColor )
+				drawCachedMaterial( chevron, iconRect, scratchColor );
+			} else {
+				//drawRect( iconRect, COLOR_WHITE, 1 );
+			}
+
+			drawLocalizedText( itemTitle, textRect, scratchColor, 12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+			
+			if( compare( itemDrawCallback, "" ) == false ) {
+				postOptionalNamedEvent( itemDrawCallback );
+			}
+		}
+		
+		onPropertyChanged "currentPage" {
+			callSuper();
+			clearTransitions( -1, -1 );
+			lastSelected = -1;
+			postNamedEvent( "transitionItems" );
+		}
+		onPropertyChanged "currentItem" {
+			postNamedEvent( "transitionItems" );
+			callSuper();
+		}		
+		onNamedEvent "transitionItems" {
+			if( lastSelected != -1 ) {
+				scratchColor = getItemTransitionVec4Result( RTP_PROPERTY_0, COLOR_RADIAL_GRADIENT, lastSelected, currentPage );
+				transitionItemVec4( RTP_PROPERTY_0, scratchColor, COLOR_RADIAL_GRADIENT, DEACTIVATE_TRANSITION_TIME, "", lastSelected, currentPage );
+
+				scratchColor = getItemTransitionVec4Result( RTP_PROPERTY_1, COLOR_INVISIBLE, lastSelected, currentPage );
+				transitionItemVec4( RTP_PROPERTY_1, scratchColor, COLOR_INVISIBLE, DEACTIVATE_TRANSITION_TIME, "", lastSelected, currentPage );
+
+				if( drawStyle == DS_VERTICAL ) {
+					scratchRect = getItemTransitionVec4Result( RTP_PROPERTY_2, "0,0,0,0", lastSelected, currentPage );
+					transitionItemVec4( RTP_PROPERTY_2, scratchRect, "0,0,0,0", SLIDE_TIME, "", lastSelected, currentPage );
+				}
+			}
+
+			if( currentItem != -1 ) {
+				scratchColor = getItemTransitionVec4Result( RTP_PROPERTY_0, COLOR_RADIAL_GRADIENT, currentItem, currentPage );
+				transitionItemVec4( RTP_PROPERTY_0, scratchColor, COLOR_RADIAL_HI_GRADIENT, ACTIVATE_TRANSITION_TIME, "", currentItem, currentPage );
+
+				scratchColor = getItemTransitionVec4Result( RTP_PROPERTY_1, COLOR_INVISIBLE, currentItem, currentPage );
+				transitionItemVec4( RTP_PROPERTY_1, scratchColor, COLOR_RADIAL_HI_FILL, ACTIVATE_TRANSITION_TIME, "", currentItem, currentPage );
+
+				if( drawStyle == DS_VERTICAL ) {
+					scratchRect = getItemTransitionVec4Result( RTP_PROPERTY_2, "0,0,0,0", currentItem, currentPage );
+					transitionItemVec4( RTP_PROPERTY_2, scratchRect, "-16,0,0,0", SLIDE_TIME, "", currentItem, currentPage );
+				}
+			}
+			lastSelected = immediate( currentItem );
+		}
+		onPropertyChanged "drawStyle" {
+			if( drawStyle == DS_ARC ) {
+				rect = gui.screenCenter.x - ( 0.5 * rect.w ), gui.screenCenter.y - ( 0.5 * rect.h ), 3 * radius, 2 * radius;
+				radius = 54;
+				return;
+			}
+			if( drawStyle == DS_VERTICAL ) {
+				rect = SCREEN_WIDTH - ( rect.w + 2 ), SCREEN_HEIGHT - ( 74 + rect.h ), 115, 220;
+				radius = 0;
+				return;
+			}
+		}
+	}
+$endtemplate
+
+#endif // !__quickchat__
