@@ -48,10 +48,28 @@ void strogg_drop_teleport::Idle() {
 
 	// Workaround for icarus-through-the-wall exploiting.
 	vector testPos = itemTargetPos;
-	vector iMins = item.getMins();
-	vector iMaxs = item.getMaxs();
 	while ( testPos_z < startPos_z ) {
-		if ( !sys.checkContents( testPos, iMins, iMaxs, CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity ) ) {
+		if ( sys.fabs( testPos_z - itemTargetPos_z ) > 128 ) {
+			sys.waitFrame();
+
+			stopEffect( "fx_trail" );
+			stopEffect( "fx_booster" );
+
+			if ( !sys.isClient() ) {
+				player pTemp = sys.getClient( deployPlayerIndex );
+				objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), pTemp );
+			}
+
+			ClearRequest();
+
+			if( !sys.isClient() ) {
+				item.remove();
+				remove();
+			}
+
+			return;
+		}
+		if ( !sys.checkContents( testPos, item.getMins(), item.getMaxs(), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity ) ) {
 			itemTargetPos = testPos;
 			break;
 		}
