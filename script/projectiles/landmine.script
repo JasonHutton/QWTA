@@ -68,8 +68,8 @@ object projectile_landmine : projectile_armable {
 	void		DisarmFizzleThread();
 	void		KillDisarmFizzleThread();
 
-	//void		SetupWorldIcon();
-	//boolean		worldIconSet;
+	void		SetupWorldIcon();
+	boolean		worldIconSet;
 
 	float		disarmProficiency;
 
@@ -185,7 +185,6 @@ void projectile_landmine::OnModeChanged() {
 	}
 }
 
-/*
 void projectile_landmine::SetupWorldIcon() {
 	if ( mode == LM_PROX && !worldIconSet ) {
 		if ( g_drawMineIcons.getBoolValue() && g_allowMineIcons.getBoolValue() ) {
@@ -203,7 +202,6 @@ void projectile_landmine::SetupWorldIcon() {
 		}
 	}
 }
-*/
 
 void projectile_landmine::OnTriggerTimeChanged() {
 	if ( triggerTime != 0 ) {
@@ -297,7 +295,7 @@ void projectile_landmine::UpdateFlag() {
 
 		setSkin( "" );
 
-		//SetupWorldIcon();
+		SetupWorldIcon();
 	}
 
 	if( oldShowBeam != showBeam ) {
@@ -366,7 +364,7 @@ void projectile_landmine::ArmEffects() {
 		}
 	}
 
-	//SetupWorldIcon();
+	SetupWorldIcon();
 }
 
 float projectile_landmine::EnemyCount() {
