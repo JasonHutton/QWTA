@@ -113,7 +113,7 @@ entityDef deployable_basedefence {
 
 	"pitch_angle"					"180"
 	"attack_front_only"				"0"
-	
+
 	"collection_basedefence"		"basedefence"
 }
 
@@ -199,14 +199,14 @@ damageDef damage_deployable_basedefence {
 	kick_time						100
 	kick_amplitude					0
 	kickDir							( 1 0 0 )
-	
+
 	team_damage
 
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/basedefence_gdf"
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_gdf_team"
 }
 
-damageDef realistic_damage_deployable_basedefense {
+damageDef realistic_damage_deployable_basedefence {
 	inherit							"damage_deployable_basedefence"
 	damage							"realistic_damage_deployable_basedefence"
 }
@@ -229,7 +229,7 @@ damageDef damage_deployable_basedefence_strogg {
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_strogg_team"
 }
 
-damageDef realistic_damage_deployable_basedefense_strogg {
+damageDef realistic_damage_deployable_basedefence_strogg {
 	inherit							"damage_deployable_basedefence_strogg"
 	damage							"realistic_damage_deployable_basedefence"
 }
