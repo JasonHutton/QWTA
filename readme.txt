@@ -77,7 +77,19 @@ Finally, find yourself a server that's running QWTA, and give things a try. :)
 
 4. Known Issues
 ================================
-
+* BFG10k will only target 8 targets simultaneously.
+* Hammer does not have a proper nuclear "blinding flash" on its explosion.
+* Maps that REQUIRE vehicles may be unplayable.
+* Magog-carried GDF vehicle drops on Island sometimes don't work properly.
+* Bots don't wait for their vehicle drop to arrive before moving on.
+* Jupiter tank is identical to Titan tank save for the main cannon.
+* Hyperblaster projectiles' "fly sound" uses small plasma fly sound.
+* Blood spurt effects aren't very visible at long range.
+* Blood effects do not look very "liquidy".
+* Blood effects do not create wall splatters or visible holes in players.
+* Class number limits do not expand to allow for more of a critical class.
+* 3rd Eye Camera updates its radar origin even when not moving.
+* Players killed by being smashed against walls don't attribute frags properly
 
 5. Credits
 ================================
