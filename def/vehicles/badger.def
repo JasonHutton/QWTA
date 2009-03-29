@@ -41,7 +41,7 @@ deployObject deployobject_badger {
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"
-	"credit_required"				"0.4"
+	"credit_required"				"1"
 	"rank_required"					"lance_corporal"
 }
 

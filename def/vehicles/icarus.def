@@ -45,7 +45,7 @@ deployObject deployobject_icarus {
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"
-	"credit_required"				"0.2"
+	"credit_required"				"0.5"
 	"rank_required"					"private"
 }
 

@@ -56,7 +56,7 @@ deployObject deployobject_desecrator {
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"
-	"credit_required"				"0.6"
+	"credit_required"				"1"
 	"rank_required"					"gunnery_sergeant"
 }
 
