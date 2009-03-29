@@ -45,7 +45,24 @@ impression it had on a lot of people.
 2. Features
 ================================
 
-
+* Optional realistic movement.
+* Optional realistic damages.
+* Optional realistic weapon aiming..
+* Other realism-oriented features...
+* Radar no longer detects infantry.
+* Adaptive class-number limiting.
+* Blood effects!
+* Death/unconscious screen tinting and fading.
+* Mxyzptlk's megatexture autodownload.
+* Improved spectator controls.
+* Dark Matter Cannon mimics Quake 4-singleplayer Dark Matter Gun.
+* Hammer missile behaves more like a tactical nuke.
+* Hyperblaster mimics Quake 4-singleplayer Nailgun.
+* Any vehicle may be airdropped.
+* Bot support for new features.
+* New vehicle: Jupiter Assault Tank.
+* BFG10k. (Jupiter tank's main cannon.)
+* BaseETQW bugfixes.
 
 3. Installation
 ================================
@@ -71,4 +88,5 @@ RR2
 Mxyzptlk
 reyalP
 jaybird
+TimeStar
 - A few other ETQW modders who've provided helpful advice and assistance.
