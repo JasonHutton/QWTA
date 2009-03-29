@@ -7,7 +7,8 @@ Contents
 1. About
 2. Features
 3. Installation
-4. Credits
+4. Known Issues
+5. Credits
 
 
 1. About
@@ -44,7 +45,6 @@ impression it had on a lot of people.
 
 2. Features
 ================================
-
 * Optional realistic movement.
 * Optional realistic damages.
 * Optional realistic weapon aiming..
@@ -75,7 +75,11 @@ Alternatively, you can start ETQW with the commandline: +set fs_game qwta
 
 Finally, find yourself a server that's running QWTA, and give things a try. :)
 
-4. Credits
+4. Known Issues
+================================
+
+
+5. Credits
 ================================
 Azuvector
 -  Hi, this is me. Programmer, scripter, mod-founder, readme-writer, whatever.
