@@ -242,6 +242,7 @@ invItemDef inventory/weapons/hyperblaster {
 
 		"lock_distance"					"8192"
 		"lock_filter"					"hyperblaster_lock_filter"
+		"lock_duration"					"0.25"
 
 		"snd_target_locking"			"sounds/weapons/misc/target_track_short"
 		"snd_target_locked"				"sounds/weapons/misc/target_lock"

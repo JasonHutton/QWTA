@@ -56,9 +56,6 @@ void weapon_hyperblaster::preinit() {
 }
 
 void weapon_hyperblaster::destroy() {
-	if ( myPlayer != $null_entity ) {
-		myPlayer.setTargetTimeScale( 1.0f );
-	}
 
 	stopSound( SND_WEAPON_FIRE2 );
 	stopSound( SND_WEAPON_FIRE3 );
@@ -66,7 +63,6 @@ void weapon_hyperblaster::destroy() {
 }
 
 void weapon_hyperblaster::Raise() {
-	myPlayer.setTargetTimeScale( 4.0f );
 
 	if ( hasHeat && ShouldRunGuis() ) {
 		CreateUpdateHeat();
@@ -81,7 +77,6 @@ void weapon_hyperblaster::Raise() {
 }
 
 void weapon_hyperblaster::Lower() {
-	myPlayer.setTargetTimeScale( 1.0f );
 
 	if ( ShouldRunGuis() ) {
 		KillUpdateHeat();
