@@ -102,3 +102,6 @@ BUG FIXES:
 * Fixed BaseETQW bug: Removed cause of a console error message with Magogs.
   + A $null_entity item wasn't being checked for in some circumstances,
     causing error messages to sometimes be printed to console.
+* Fixed BaseETQW bug: The "Volcano-Icarus Map Exploit" no longer works.
+  + A serious exploit exists in BaseETQW 1.5, that has been fixed in QWTA.
+  + Variations on maps other than Volcano are also addressed by this fix.
