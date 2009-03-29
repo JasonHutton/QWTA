@@ -4,6 +4,10 @@ CHANGES:
 * Threw out all previous changes and restarted QWTA development from scratch.
 * Previous versions of QWTA: v0.21, v0.2, v0.11, and v0.1 not built off of.
 * QWTA is now compatible with ETQW v1.5.
+* Spectator controls improved.
+  + Attack: Next player.
+  + AltAttack: Previous player.
+  + Jump: Freefly spectator.
 * Dark Matter Cannon now has Quake 4 Singleplayer-style Dark Matter Gun
   visual/audio effects and gravity pull behavior.
   + Projectile pulls nearby objects(players, vehicles) towards it.
@@ -18,13 +22,14 @@ CHANGES:
 * Vehicle drop charging now begins at zero and charges up from there.
 * Vehicle drops take longer to charge than in BaseETQW.
 * Vehicle drops have a campaign rank prerequisite before they can be dropped.
-  Generally, the more powerful the vehicle, the higher the rank required.
+  + Generally, the more powerful the vehicle, the higher the rank required.
 * Vehicle drops make use multiple types of deployment transport:
   + Jotun drops via parachute.
   + Magog drops via cable.
   + Strogg drops via orbital reentry.
   + Strogg drops via teleport.
 * Bots have a rudimentary understanding of vehicle drops now.
+  + They're pretty stupid about it, but they do call for vehicles sometimes.
 * Jupiter Assault Tank added.
   + This is a heavy GDF tank that uses the BFG10k as a main cannon.
 * BFG10k added. (Vehicle weapon only for now.)
@@ -39,7 +44,7 @@ CHANGES:
   + Splash damage occurs upon projectile impact.
   + Hyperblaster damage raised, but can no longer do headshots.
   + Hyperblaster scope can get rapid target locks upon any enemy unit.
-  + Hyperblater does not cause a lockon warning on target.
+  + Hyperblaster does not cause a lockon warning on target.
   + Hyperblaster projectiles cannot be decoyed away with flares.
 * Shotgun and Nailgun core behavior returned to ETQW v1.2 style behavior:
   + ROF slower.
@@ -47,31 +52,53 @@ CHANGES:
   + Smaller spread.
   + More damage.
   + Damage falls off less over distance.
-* Blood effects occur when players are shot or stabbed.
-* Removed minedots.
-* Removed "Mine Triggered" Mine HUD warning.
-* Removed "Anti-Personnel Lock" APT HUD warning.
-* Removed "Anti-Personnel Lock" BDT HUD warning.
+* Blood spurt effects occur when players or corpses are shot or stabbed.
 * Class number limits added.
   + Class numbers restricted based upon class, and player count on server.
   + Bots understand class number limits.
 * Screen fades to red when unconscious.
 * Screen fades to black when fully killed.
+  + This intentionally blocks the vision of the dead.
 * Radar split into two distinct types: Radar and Infrared.
   + Radar cannot detect infantry.
   + Infrared can only detect infantry.
 * Psi Radar/GDF Radar use only normal Radar.
 * 3rd Eye Camera, MCP, and command centers, use both radar and infrared.
 * Mxyzptlk's megatexture autodownload added.
-* Strafejumping elimintated. (pm_realisticMovement cvar added)
-* Realistic damages added. (g_realisticDamage cvar added)
-* Realistic weapon spreads added. (g_realisticSpread cvar added)
-* Spectator controls improved.
-  + Attack: Next player.
-  + AltAttack: Previous player.
-  + Jump: Freefly spectator.
+* Cvar pm_realisticMovement added.
+  + Default 1.
+  + Enables/disables "realistic movement".
+  + Enables/disables strafejumping.
+* Cvar g_realisticDamage added.
+  + Default 1.
+  + Enables/disables higher, "more realistic" weapon damages.
+  + GENERALLY, bullets do 3x normal damage and explosions do 2x normal,
+    when firing upon infantry.
+  + GENERALLY, vehicles take reduced damage from small arms fire.
+* Cvar g_realisticSpread added.
+  + Default 1.
+  + Enables/disables "more realistic" weapon spreads.
+  + GENERALLY, firing without aiming a weapon first is much more inaccurate.
+  + Bots are aware of this, and will aim more often when enabled.
+* Cvar bot_useStrafeJump redefaulted to 0.
+  + For use with pm_realisticMovement. Bots will not attempt to strafejump.
+* Cvar g_allowMineIcons redefaulted to 0.
+  + Disables minedots by default, serverside.
+* Cvar g_allowMineTriggerWarning added.
+  + Default 0.
+  + Enables/disables mine trigger warnings, serverside.
+* Cvar g_allowAPTWarning added.
+  + Default 0.
+  + Enables/disables APT and BDT(APT mode only) HUD warnings, serverside.
 
 BUG FIXES:
-* Fixed BaseETQW bug: corpses were not considered to be "flesh".
-* Fixed BaseETQW bug: 3rd Eye Camera didn't update its radar origin if moved.
-* Fixed BaseETQW bug: Magog deployable dropping less glitchy with vehicles.
+* Fixed BaseETQW bug: Corpses are now considered "flesh".
+  + BaseETQW doesn't consider corpses to be flesh, so they wouldn't bleed.
+* Fixed BaseETQW bug: 3rd Eye Camera now updates its radar origin when moved.
+  + BaseETQW doesn't update the 3rd Eye's radar origin, making attaching it
+    to vehicles or other moving objects, effectively useless for radar
+    purposes. (The commandmap radar area would move, but the actual radar
+    detection area would not.)
+* Fixed BaseETQW bug: Removed cause of a console error message with Magogs.
+  + A $null_entity item wasn't being checked for in some circumstances,
+    causing error messages to sometimes be printed to console.
