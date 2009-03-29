@@ -295,7 +295,7 @@ OPTCPPFLAGS = [ ]
 
 BASECPPFLAGS.append( '-pipe' )
 # warn all
-BASECPPFLAGS.append( '-Wall' )
+BASECPPFLAGS.append( '-w' )
 # this define is necessary to make sure threading support is enabled in X
 CORECPPFLAGS.append( '-DXTHREADS' )
 # don't wrap gcc messages
