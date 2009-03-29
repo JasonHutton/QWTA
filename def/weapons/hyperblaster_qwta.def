@@ -206,7 +206,7 @@ damageFilter realistic_damage_hyperblaster_splash {
 	}
 }
 
-targetInfo hyperblaster_lock_filter {
+targetInfo target_lock_filter_hyperblaster {
 	include collection "deployables"
 	include collection "players"
 	include collection "mountables"

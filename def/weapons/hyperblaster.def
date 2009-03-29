@@ -241,7 +241,7 @@ invItemDef inventory/weapons/hyperblaster {
 		"fx_idle"						"effects/weapons/hyperblaster_idle"
 
 		"lock_distance"					"8192"
-		"lock_filter"					"hyperblaster_lock_filter"
+		"lock_filter"					"target_lock_filter_hyperblaster"
 		"lock_duration"					"0.25"
 
 		"snd_target_locking"			"sounds/weapons/misc/target_track_short"
