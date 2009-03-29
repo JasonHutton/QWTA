@@ -774,27 +774,28 @@ gui hud {
 			}
 		}
 	}
-	//windowDef mineTriggerWarning {
-	//	properties {
-	//		handle	localizedText = localize( "guis/hud/mine_trigger_warning" );
-	//		color	foreColor = 1, 0, 0, 0;
-	//		float	fontSize = 16;
-	//		rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 8, 64, 12;
-	//		float	showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
-	//		float	visible = gui.targetLockIndicator.visible == false && showTrigger;
-	//	}
-	//
-	//	events {
-	//		onCVarChanged "g_mineTriggerWarning" {
-	//			showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
-	//		}
-	//		onPropertyChanged "globals.gameHud.mineWarningTime" {
-	//			if ( globals.gameHud.mineWarningTime > 0 ) {
-	//				foreColor = transition( "1, 0, 0, 1", "0.6, 0, 0, 0", 1000, "0.1, 0.9" );
-	//			}
-	//		}
-	//	}
-	//}
+	
+	windowDef mineTriggerWarning {
+		properties {
+			handle	localizedText = localize( "guis/hud/mine_trigger_warning" );
+			color	foreColor = 1, 0, 0, 0;
+			float	fontSize = 16;
+			rect	rect = ( SCREEN_WIDTH / 2 ) - 32, ( SCREEN_HEIGHT / 2 ) + 8, 64, 12;
+			float	showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+			float	visible = gui.targetLockIndicator.visible == false && showTrigger;
+		}
+	
+		events {
+			onCVarChanged "g_mineTriggerWarning" {
+				showTrigger = gui.getCVarBool( "g_mineTriggerWarning" );
+			}
+			onPropertyChanged "globals.gameHud.mineWarningTime" {
+				if ( globals.gameHud.mineWarningTime > 0 ) {
+					foreColor = transition( "1, 0, 0, 1", "0.6, 0, 0, 0", 1000, "0.1, 0.9" );
+				}
+			}
+		}
+	}
 	
 	windowDef unconsciousFading {
 		properties {

@@ -148,7 +148,9 @@ cvar	g_allowMineIcons;
 cvar	g_mineIconSize;
 cvar	g_mineIconAlphaScale;
 
-//cvar	g_aptWarning;
+cvar	g_allowMineTriggerWarning;
+cvar	g_allowAPTWarning;
+cvar	g_aptWarning;
 
 cvar	g_realisticDamage;
 cvar	g_realisticSpread;

@@ -13,14 +13,14 @@ object deployable_antipersonnel : deployable_turret {
 	boolean		TargetIsValid( entity targetEnt );
 
 	void		preinit();
-	//void		destroy();
+	void		destroy();
 	void		syncFields();
 
 	void		OnPostDamage_AP( entity attacker, float oldHealth, float newHealth );
 	void		OnPostDamage( entity attacker, float oldHealth, float newHealth ) {
 		OnPostDamage_AP( attacker, oldHealth, newHealth );
 	}
-	//void		OnSetTarget( entity oldTarget, entity newTarget );
+	void		OnSetTarget( entity oldTarget, entity newTarget );
 	void		CheckRetribution( entity attacker );
 
 	float		playerClass;
@@ -54,7 +54,7 @@ object deployable_antipersonnel : deployable_turret {
 	boolean		barrelThreadActive;
 
 	boolean		updateChargeThreadActive;
-	//entity		lockEntity;
+	entity		lockEntity;
 }
 
 void deployable_antipersonnel::preinit() {
@@ -77,12 +77,12 @@ void deployable_antipersonnel::preinit() {
 	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
 }
 
-//void deployable_antipersonnel::destroy() {
-//	if ( lockEntity != $null_entity ) {
-//		lockEntity.vStopTargetLockAlarm( self );
-//		lockEntity = $null_entity;
-//	}
-//}
+void deployable_antipersonnel::destroy() {
+	if ( lockEntity != $null_entity ) {
+		lockEntity.vStopTargetLockAlarm( self );
+		lockEntity = $null_entity;
+	}
+}
 
 void deployable_antipersonnel::syncFields() {
 	syncBroadcast( "cooldownTime" );
@@ -388,23 +388,23 @@ void deployable_antipersonnel::SpinBarrelThread() {
 	barrelThreadActive = false;
 }
 
-//void deployable_antipersonnel::OnSetTarget( entity oldTarget, entity newTarget ) {
-	//if ( g_aptWarning.getIntValue() == 0 ) {
-	//	return;
-	//}
-//
-//	if ( lockEntity != newTarget ) {
-//		if ( lockEntity != $null_entity ) {
-//			//lockEntity.vStopTargetLockAlarm( self );
-//			lockEntity = $null_entity;
-//		}
-//
-//		if ( newTarget != $null_entity ) {
-//			lockEntity = newTarget;
-//			//lockEntity.vTargetLockAlarm( self );
-//		}
-//	}
-//}
+void deployable_antipersonnel::OnSetTarget( entity oldTarget, entity newTarget ) {
+	if ( g_aptWarning.getIntValue() == 0 || !g_allowAPTWarning.getBoolValue() ) {
+		return;
+	}
+
+	if ( lockEntity != newTarget ) {
+		if ( lockEntity != $null_entity ) {
+			lockEntity.vStopTargetLockAlarm( self );
+			lockEntity = $null_entity;
+		}
+
+		if ( newTarget != $null_entity ) {
+			lockEntity = newTarget;
+			lockEntity.vTargetLockAlarm( self );
+		}
+	}
+}
 
 /*
 ===============================================================================

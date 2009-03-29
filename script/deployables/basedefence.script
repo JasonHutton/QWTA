@@ -183,23 +183,21 @@ void deployable_basedefence::OnEndAttack() {
 }
 
 void deployable_basedefence::OnSetTarget( entity oldTarget, entity newTarget ) {
-	//if ( g_aptWarning.getIntValue() == 0 ) {
-	//	return;
-	//}
+	if ( g_aptWarning.getIntValue() == 0 ) {
+		return;
+	}
 
 	player testPlayer = newTarget;
 
 	if ( lockEntity != newTarget ) {
 		if ( lockEntity != $null_entity ) {
-			if( testPlayer == $null_entity ) { // Indirect vehicle check.
-				lockEntity.vStopTargetLockAlarm( self );
-			}
+			lockEntity.vStopTargetLockAlarm( self );
 			lockEntity = $null_entity;
 		}
 
 		if ( newTarget != $null_entity ) {
-			lockEntity = newTarget;
-			if( testPlayer == $null_entity ) { // Indirect vehicle check.
+			if( testPlayer == $null_entity || g_allowAPTWarning.getBoolValue() ) { // Indirect vehicle check.
+				lockEntity = newTarget;
 				lockEntity.vTargetLockAlarm( self );
 			}
 		}

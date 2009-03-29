@@ -567,8 +567,10 @@ idCVar g_noTVChat(					"g_noTVChat",					"0",		CVAR_GAME | CVAR_ARCHIVE | CVAR_B
 #endif // SD_SUPPORT_REPEATER
 
 idCVar g_drawHudMessages(			"g_drawHudMessages",			"1",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Draw task, task success and objective text on HUD." );
-//idCVar g_mineTriggerWarning(		"g_mineTriggerWarning",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when triggering a proximity mine." );
-//idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when APT is locking on. 0: Off 1: Visual warning only 2: Beep only 3: Visual and beep" );
+idCVar g_allowMineTriggerWarning(	"g_allowMineTriggerWarning",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_RANKLOCKED, "Allow clients to draw warning text on the HUD for mine triggering." );
+idCVar g_mineTriggerWarning(		"g_mineTriggerWarning",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when triggering a proximity mine." );
+idCVar g_allowAPTWarning(			"g_allowAPTWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_RANKLOCKED, "Allow clients to draw warning text on the HUD for APT lock ons." );
+idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when APT is locking on. 0: Off 1: Visual warning only 2: Beep only 3: Visual and beep" );
 
 idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
 idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should weapon spreads ingame be realistic, or game-oriented?" );

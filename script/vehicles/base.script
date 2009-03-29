@@ -826,9 +826,9 @@ void vehicle_base::vTargetLockAlarm( entity other ) {
 		}
 	}
 
-	//if ( isBaseDefence == false || ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) ) {
+	if ( isBaseDefence == false || ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) ) {
 		setLockAlarmActive( true );
-	//}
+	}
 }
 
 void vehicle_base::vStopTargetLockAlarm( entity other ) {
@@ -1039,10 +1039,10 @@ float vehicle_base::vGetTargetLockCount() {
 }
 
 float vehicle_base::vGetTargetLockCountBasedefence() {
-	//if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
+	if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
 		return targetLockCountBasedefence;
-	//}
-	//return 0;
+	}
+	return 0;
 }
 
 void vehicle_base::DestroyThread() {

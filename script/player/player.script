@@ -164,7 +164,7 @@ object player {
 	void		vTargetLockAlarm( entity other );
 	void		vStopTargetLockAlarm( entity other );
 	void		vTargetLockAttack( entity other );
-	//void		vMineWarning( entity other );
+	void		vMineWarning( entity other );
 
 	float		reviveQuickChat; 				// FIXME: Move to team
 	float		reviveQuickChatAck;
@@ -3095,17 +3095,19 @@ player::vTargetLockAlarm
 */
 void player::vTargetLockAlarm( entity other ) {
 	if ( targetLockCount == 0 ) {
-		if ( isLocalPlayer() ) {
-			//if ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) {
+		if ( isLocalPlayer() && g_allowAPTWarning.getBoolValue() ) {
+			if ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) {
 				sys.startSoundDirect( getKey( "snd_target_lock_alarm" ), SND_PLAYER_ALARM );
-			//}
+			}
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockDeployableAttack", 0.0f );
 		}
 	}
 
-	//if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
-		targetLockCount++;
-	//}
+	if ( g_allowAPTWarning.getBoolValue() ) {
+		if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
+			targetLockCount++;
+		}
+	}
 }
 
 /*
@@ -3132,7 +3134,7 @@ player::vTargetLockAttack
 */
 void player::vTargetLockAttack( entity other ) {
 	if ( targetLockCount > 0 ) {
-		if ( isLocalPlayer() ) {
+		if ( isLocalPlayer() && g_allowAPTWarning.getBoolValue() ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockDeployableAttack", 1.0f );
 		}
 	}
@@ -3143,8 +3145,8 @@ void player::vTargetLockAttack( entity other ) {
 player::vMineWarning
 =====================
 */
-//void player::vMineWarning( entity other ) {
-//	if ( isLocalPlayer() ) {
-//		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.mineWarningTime", sys.getTime() );
-//	}
-//}
+void player::vMineWarning( entity other ) {
+	if ( isLocalPlayer() && g_allowMineTriggerWarning.getBoolValue() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.mineWarningTime", sys.getTime() );
+	}
+}

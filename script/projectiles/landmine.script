@@ -212,13 +212,13 @@ void projectile_landmine::OnTriggerTimeChanged() {
 				playEffect( "fx_trigger", "", false );
 				playTriggerEffect = false;
 
-				//player lPlayer = sys.getLocalViewPlayer();
-				//if ( lPlayer != $null_entity ) {
-				//	vector dir = lPlayer.getWorldOrigin() - getWorldOrigin();
-				//	if ( sys.vecLength( dir ) < range * 1.3 ) {
-				//		lPlayer.vMineWarning( self );
-				//	}
-				//}
+				player lPlayer = sys.getLocalViewPlayer();
+				if ( lPlayer != $null_entity ) {
+					vector dir = lPlayer.getWorldOrigin() - getWorldOrigin();
+					if ( sys.vecLength( dir ) < range * 1.3 ) {
+						lPlayer.vMineWarning( self );
+					}
+				}
 			}
 		 } else {
 			//

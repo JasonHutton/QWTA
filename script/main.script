@@ -317,7 +317,9 @@ void game_main() {
 	si_rules					= sys.getCVar( "si_rules", "" );
 	g_noVehicleSpawnInvulnerability	= sys.getCVar( "g_noVehicleSpawnInvulnerability", "" );
 	g_objectiveDecayTime		= sys.getCVar( "g_objectiveDecayTime", "5" );
-	//g_aptWarning				= sys.getCVar( "g_aptWarning", "3" );
+	g_allowMineTriggerWarning	= sys.getCVar( "g_allowMineTriggerWarning", "0" );
+	g_allowAPTWarning			= sys.getCVar( "g_allowAPTWarning", "0" );
+	g_aptWarning				= sys.getCVar( "g_aptWarning", "3" );
 
 	g_drawMineIcons				= sys.getCVar( "g_drawMineIcons", "" );
 	g_allowMineIcons			= sys.getCVar( "g_allowMineIcons", "" );
