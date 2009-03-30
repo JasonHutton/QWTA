@@ -90,6 +90,8 @@ CHANGES:
 * Cvar g_allowAPTWarning added.
   + Default 0.
   + Enables/disables APT and BDT(APT mode only) HUD warnings, serverside.
+* Autodetects the gametype other QWTA servers are using, hides the gametype
+  of other mods, including BaseETQW. (Easier to see on the server list.)
 
 BUG FIXES:
 * Fixed BaseETQW bug: Corpses are now considered "flesh".
