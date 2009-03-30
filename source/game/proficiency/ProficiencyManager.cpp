@@ -222,7 +222,7 @@ void sdProficiencyTable::UpdateLevel( int index ) {
 		idPlayer* player = gameLocal.GetClient( clientNum );
 		if ( player == NULL ) {
 //			assert( false );
-			gameLocal.Warning( "sdProficiencyTable::UpdateLevel: player %i is null, not a server or client", clientNum );
+//			gameLocal.Warning( "sdProficiencyTable::UpdateLevel: player %i is null, not a server or client", clientNum );
 		} else {
 			player->OnProficiencyLevelGain( type, oldLevel, levels[ index ] );
 		}
