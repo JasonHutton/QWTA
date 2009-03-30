@@ -1790,7 +1790,10 @@ void sdNetManager::UpdateSession( sdUIList& list, const sdNetSession& netSession
 		// Game Type
 		const char* fsGame = serverInfo.GetString( "fs_game" );
 
-		if ( *fsGame == '\0' || ( idStr::Icmp( fsGame, BASE_GAMEDIR ) == 0 ) ) {
+		if ( *fsGame == '\0' || ( idStr::Icmp( fsGame, BASE_GAMEDIR ) == 0 ) || ( idStr::Icmp( fsGame, cvarSystem->GetCVarString("fs_game") ) != 0 ) ) {
+			sdUIList::SetItemText( &list, L"<material = '_unknownGameType'>", index, BC_GAMETYPE_ICON );
+			tempWStr = va( L"%hs", *fsGame == '\0' ? "base" : fsGame );
+		} else {
 			const char* siRules = serverInfo.GetString( "si_rules" );
 			GetGameType( siRules, tempWStr );
 
@@ -1800,10 +1803,7 @@ void sdNetManager::UpdateSession( sdUIList& list, const sdNetSession& netSession
 			} else {
 				sdUIList::SetItemText( &list, L"", index, BC_GAMETYPE_ICON );
 			}
-		} else {
-			sdUIList::SetItemText( &list, L"<material = '_unknownGameType'>", index, BC_GAMETYPE_ICON );
-			tempWStr = va( L"%hs", fsGame );
-		}		
+		}
 
 		sdUIList::SetItemText( &list, tempWStr.c_str(), index, BC_GAMETYPE );
 
