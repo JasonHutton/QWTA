@@ -16,6 +16,7 @@ CHANGES:
   + Gravitational effects penetrate walls and other cover.
 * Hammer has a limited EMP effect upon exploding.
 * Hammer and Dark Matter Cannon warning text upon firing removed.
+* Player respawns now take twice the length of time they do in BaseETQW.
 * Vehicles no longer spawn into the map, they must be called in by players
   via vehicle drop. (Use the quickchat menu->vehicles->vehicle drops.)
 * The ability to use vehicle drops is given freely to all players, however:
