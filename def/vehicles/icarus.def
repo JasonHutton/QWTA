@@ -209,6 +209,7 @@ entityDef vehicle_icarus {
 	"damage_bonus_scale"			"0.25"
 
 	"always_drop"					"1"
+	"validate_drop"					"1"
 	"decals"						"0"
 
 //	"dmg_fall"						"damage_icarus_fall"

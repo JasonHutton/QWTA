@@ -280,6 +280,8 @@ entityDef vehicle_hornet {
 	"do_not_modify_ito"				"0 0 0"
 
 	"qc_spotted"					"quickchat/context/attack/aircraftspotted"
+	
+	"validate_drop"					"1"
 }
 
 entityDef vehicle_hornet_cockpit {

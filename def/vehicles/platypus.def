@@ -284,6 +284,8 @@ entityDef vehicle_platypus {
 	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
 
 	"always_drop"					"1"
+	
+	"validate_drop"					"1"
 }
 
 toolTip vehicle_platypus_enter {

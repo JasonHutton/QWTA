@@ -319,6 +319,7 @@ entityDef vehicle_hog {
 	"collide_dot_limit"				"-0.01"
 	
 	"always_drop"					"1"
+	"validate_drop"					"1"
 
 	// If you value your sanity, DO NOT MODIFY THESE.
 	// They are only here to prevent collision model modifications

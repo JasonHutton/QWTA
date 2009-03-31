@@ -482,6 +482,8 @@ entityDef vehicle_goliath {
 	"projectile_decoy_max"			"3"
 
 	"qc_spotted"					"quickchat/context/attack/armorspotted"
+	
+	"validate_drop"					"1"
 }
 
 damageDef damage_goliath_stomp {

@@ -207,6 +207,8 @@ entityDef vehicle_desecrator {
 	"vehicle_flags"					"22" //mal: can travel over water and ground, and is a tank.
 
 	"qc_spotted"					"quickchat/context/attack/armorspotted"
+	
+	"validate_drop"					"1"
 }
 
 damageDef damage_desecrator_collide {

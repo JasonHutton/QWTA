@@ -317,6 +317,8 @@ entityDef vehicle_badger {
 	"vehicle_flags"					"2" //mal: this is a small(er) ground based vehicle.
 	
 	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
+	
+	"validate_drop"					"1"
 }
 
 damageDef damage_badger_collide {

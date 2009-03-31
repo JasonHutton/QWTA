@@ -356,6 +356,8 @@ entityDef vehicle_trojan {
 	"vehicle_flags"					"86"
 
 	"qc_spotted"					"quickchat/context/attack/armorspotted"
+	
+	"validate_drop"					"1"
 }
 
 damageDef damage_trojan_collide {

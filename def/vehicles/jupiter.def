@@ -293,6 +293,8 @@ entityDef vehicle_jupiter {
 	"vehicle_flags"					"6"
 	
 	"qc_spotted"					"quickchat/context/attack/armorspotted"
+	
+	"validate_drop"					"1"
 }
 
 damageDef damage_jupiter_collide {

@@ -300,6 +300,7 @@ entityDef vehicle_husky {
 	"wake_point_3"					"-40 25 0"
 
 	"always_drop"					"1"
+	"validate_drop"					"1"
 
 	"push_scale"					"0.1"
 

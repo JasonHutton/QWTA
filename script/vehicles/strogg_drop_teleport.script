@@ -46,36 +46,37 @@ void strogg_drop_teleport::Idle() {
 	}
 	playEffect( "fx_booster", "", false );
 
-	// Workaround for icarus-through-the-wall exploiting.
-	vector testPos = itemTargetPos;
-	while ( testPos_z < startPos_z ) {
-		if ( sys.fabs( testPos_z - itemTargetPos_z ) > 128 ) {
-			sys.waitFrame();
+	if ( validateDrop ) {
+		// Workaround for icarus-through-the-wall exploiting.
+		vector testPos = itemTargetPos;
+		while ( testPos_z < startPos_z ) {
+			if ( sys.fabs( testPos_z - itemTargetPos_z ) > 128 ) {
+				sys.waitFrame();
 
-			stopEffect( "fx_trail" );
-			stopEffect( "fx_booster" );
+				stopEffect( "fx_trail" );
+				stopEffect( "fx_booster" );
 
-			if ( !sys.isClient() ) {
-				player pTemp = sys.getClient( deployPlayerIndex );
-				objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), pTemp );
+				if ( !sys.isClient() ) {
+					player pTemp = sys.getClient( deployPlayerIndex );
+					objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), pTemp );
+				}
+
+				ClearRequest();
+
+				if( !sys.isClient() ) {
+					item.remove();
+					remove();
+				}
+
+				return;
 			}
-
-			ClearRequest();
-
-			if( !sys.isClient() ) {
-				item.remove();
-				remove();
+			if ( !sys.checkContents( testPos, item.getMins(), item.getMaxs(), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity ) ) {
+				itemTargetPos = testPos;
+				break;
 			}
-
-			return;
+			testPos_z += 1.;
 		}
-		if ( !sys.checkContents( testPos, item.getMins(), item.getMaxs(), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity ) ) {
-			itemTargetPos = testPos;
-			break;
-		}
-		testPos_z += 1.;
 	}
-
 
 	stopEffect( "fx_trail" );
 	playEffect( "fx_teleport_start", "", false );
