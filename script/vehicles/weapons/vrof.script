@@ -1,4 +1,4 @@
-// More or less a copy of base's vehicle_weapon_stroybomb -- Azuvector
+
 object vehicle_weapon_vrof : vehicle_weapon_base {
 	void	preinit();
 	void	Fire();
@@ -37,36 +37,20 @@ void vehicle_weapon_vrof::preinit() {
 }
 
 void vehicle_weapon_vrof::Fire() {
+	
 	vector origin = vehicle.getJointPos( jointHandle );
-
-	vector vehicleVelocity = vehicle.getLinearVelocity();
-	vehicleVelocity_z = 0.f;
-
-	float velocityLength = sys.vecLength( velocity );
-	vector forward;
-	if ( user != $null_entity ) {
-		forward = sys.angToForward( user.getRenderViewAngles() );
-	} else {
-		forward = vehicle.jointToWorldSpace( jointHandle, velocity ) * ( 1 / velocityLength );
-	}
-
-	vector projectileVelocity = forward * velocityLength;
-
-	float forwardVelocity = vehicleVelocity * forward;
-	if ( forwardVelocity > 0.0f ) {
-		projectileVelocity += forward * forwardVelocity;
-	}
-
-	vehicle.launchMissileSimple( user, vehicle, $null_entity, projectileIndex, -1, spread, origin, projectileVelocity );
+	
+	vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, -1, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
+	//vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, -1, spread, origin, projectileVelocity );
 	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
 	if( user == sys.getLocalPlayer() ) {
 		vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
 	} else {
 		vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
 	}
-
+	
 	AddReFireDelay( fireRate );
 	RemoveCharge();
-
+	
 	GoToIdle();
 }
