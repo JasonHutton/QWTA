@@ -82,6 +82,7 @@ Finally, find yourself a server that's running QWTA, and give things a try. :)
 * Bots don't wait for their vehicle drop to arrive before moving on.
 * 3rd Eye Camera updates its radar origin even when not moving.
 * Players killed by being smashed against walls don't attribute frags properly
+* Dark Matter Cannon's gravity won't pull players away from mounted guns.
 
 5. Credits
 ================================
