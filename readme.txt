@@ -84,6 +84,7 @@ Finally, find yourself a server that's running QWTA, and give things a try. :)
 * 3rd Eye Camera updates its radar origin even when not moving.
 * Players killed by being smashed against walls don't attribute frags properly
 * Dark Matter Cannon's gravity won't pull players away from mounted guns.
+* Dark Matter Cannon will (very slightly) damage nearby objects when fired.
 
 5. Credits
 ================================
