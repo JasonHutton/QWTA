@@ -64,7 +64,7 @@ damageDef damage_stroybomb_splash {
 
 damageDef realistic_damage_stroybomb_splash {
 	inherit								"damage_stroybomb_splash"
-	damage								"realistic_damage_stroybomb_splash"
+	damage								"realistic_damage_stroybomb"
 }
 
 damageFilter damage_stroybomb {
