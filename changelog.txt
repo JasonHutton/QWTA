@@ -114,3 +114,5 @@ BUG FIXES:
 * Fixed BaseETQW bug: The "Volcano-Icarus Map Exploit" no longer works.
   + A serious exploit exists in BaseETQW 1.5, that has been fixed in QWTA.
   + Variations on maps other than Volcano are also addressed by this fix.
+* Fixed BaseETQW bug: Autorecordings now stopped on map change.
+  + Fix provided by TimeStar.
