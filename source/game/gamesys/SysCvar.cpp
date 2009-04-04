@@ -295,7 +295,7 @@ idCVar pm_deathThirdPersonAngle(	"pm_deathThirdPersonAngle",	"0",			CVAR_GAME | 
 idCVar pm_slidevelocity(			"pm_slidevelocity",			"1",			CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_RANKLOCKED, "what to do with velocity when hitting a surface at an angle. 0: use horizontal speed, 1: keep some of the impact speed to push along the slide" );
 idCVar pm_powerslide(				"pm_powerslide",			"0.09",			CVAR_GAME | CVAR_FLOAT | CVAR_NETWORKSYNC, "adjust the push when pm_slidevelocity == 1, set power < 1 -> more speed, > 1 -> closer to pm_slidevelocity 0", 0, 4 );
 
-idCVar g_showPlayerArrows(			"g_showPlayerArrows",		"1",			CVAR_GAME | CVAR_INTEGER | CVAR_NETWORKSYNC, "enable/disable arrows above the heads of players (0=off,1=all,2=friendly only)" );
+idCVar g_showPlayerArrows(			"g_showPlayerArrows",		"2",			CVAR_GAME | CVAR_INTEGER | CVAR_NETWORKSYNC, "enable/disable arrows above the heads of players (0=off,1=all,2=friendly only)" );
 idCVar g_showPlayerClassIcon(		"g_showPlayerClassIcon",	"0",			CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE, "Force drawing of player class icon above players in the fireteam." );
 
 idCVar g_showPlayerShadow(			"g_showPlayerShadow",		"1",			CVAR_GAME | CVAR_PROFILE | CVAR_ARCHIVE | CVAR_BOOL, "enables shadow of player model" );
