@@ -4670,6 +4670,10 @@ void idGameLocal::SetupFixedClientRank( int clientIndex ) {
 		return;
 	}
 
+	if ( g_ignorePersistentRanks.GetBool() ) {
+		return;
+	}
+
 	idPlayer* player = gameLocal.GetClient( clientIndex );
 	if ( player == NULL ) {
 		return;

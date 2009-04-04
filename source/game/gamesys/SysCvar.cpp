@@ -337,7 +337,9 @@ idCVar pm_vehicleSoundLerpScale(	"pm_vehicleSoundLerpScale",	"10",			CVAR_GAME |
 
 idCVar pm_waterSpeed(				"pm_waterSpeed",			"400",			CVAR_GAME | CVAR_FLOAT | CVAR_RANKLOCKED, "speed player will be pushed up in water when totally under water" );
 
-idCVar pm_realisticMovement(		"pm_realisticMovement",		"1",			CVAR_GAME | CVAR_BOOL /*| CVAR_RANKLOCKED*/, "Which player movement physics to use: 0=Quake-style, 1=Realistic-style" );
+idCVar pm_realisticMovement(		"pm_realisticMovement",		"1",			CVAR_GAME | CVAR_NETWORKSYNC | CVAR_BOOL | CVAR_ARCHIVE, "Which player movement physics to use: 0=Quake-style, 1=Realistic-style" );
+
+idCVar g_ignorePersistentRanks(		"g_ignorePersistentRanks",	"1",			CVAR_GAME | CVAR_BOOL | CVAR_INIT, "Whether or not persistent ranks are ignored for use in game purposes. 0=Use persistent ranks, 1=Ignore persistent ranks" );
 
 idCVar g_debugNetworkWrite(			"g_debugNetworkWrite",		"0",			CVAR_GAME | CVAR_BOOL, "" );
 idCVar g_debugProficiency(			"g_debugProficiency",		"0",			CVAR_GAME | CVAR_BOOL, "" );

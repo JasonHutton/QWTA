@@ -208,6 +208,8 @@ extern idCVar	pm_waterSpeed;
 
 extern idCVar	pm_realisticMovement;
 
+extern idCVar	g_ignorePersistentRanks;
+
 extern idCVar	pm_slidevelocity;
 extern idCVar	pm_powerslide;
 
