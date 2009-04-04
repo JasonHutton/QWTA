@@ -93,6 +93,12 @@ CHANGES:
   + Enables/disables APT and BDT(APT mode only) HUD warnings, serverside.
 * Autodetects the gametype other QWTA servers are using, hides the gametype
   of other mods, including BaseETQW. (Easier to see on the server list.)
+* Cvar g_ignorePersistentRanks added.
+  + Default 1.
+  + Allows QWTA to ignore persistent ranks for ingame purposes.
+  + This cvar may only be set from the commandline.
+  + This is important for the vehicle rank costs, to keep players from
+  + having an unfair advantage.
 
 BUG FIXES:
 * Fixed BaseETQW bug: Corpses are now considered "flesh".

@@ -59,6 +59,7 @@ impression it had on a lot of people.
 * Hammer missile behaves more like a tactical nuke.
 * Hyperblaster mimics Quake 4-singleplayer Nailgun.
 * Any vehicle may be airdropped.
+* Persistent ranks can be ignored in favour of campaign ranks.
 * Bot support for new features.
 * New vehicle: Jupiter Assault Tank.
 * BFG10k. (Jupiter tank's main cannon.)
