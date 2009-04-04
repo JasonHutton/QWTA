@@ -115,4 +115,5 @@ BUG FIXES:
   + A serious exploit exists in BaseETQW 1.5, that has been fixed in QWTA.
   + Variations on maps other than Volcano are also addressed by this fix.
 * Fixed BaseETQW bug: Autorecordings now stopped on map change.
+  + Autorecordings will now stop on map change, then start again next map.
   + Fix provided by TimeStar.
