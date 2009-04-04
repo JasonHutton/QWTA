@@ -261,8 +261,8 @@ object player {
 
 	float		nextStroyentTransferTime;
 
-	//float		vehicleCreditTimer;
-	//float		vehicleCreditChargeTime;
+	float		vehicleCreditTimer;
+	float		vehicleCreditChargeTime;
 
 	boolean		vTriggerTripmine() { return true; }
 
@@ -560,8 +560,8 @@ void player::preinit() {
 	vehicleWarningQuickChat = -1;
 	spawnHostSpawned		= false;
 	chargeTimer				= -1;
-	//vehicleCreditTimer		= sys.allocTargetTimer( VEHICLECREDIT_TIMER_NAME );
-	//vehicleCreditChargeTime		= GetGlobalFloat( VEHICLECREDIT_TIMER_NAME + "_time" );
+	vehicleCreditTimer		= sys.allocTargetTimer( VEHICLECREDIT_TIMER_NAME );
+	vehicleCreditChargeTime		= GetGlobalFloat( VEHICLECREDIT_TIMER_NAME + "_time" );
 
 	fireTeamLeaderToolTip		= GetToolTip( getKey( "tt_fireteam_become_leader" ) );
 
@@ -2836,8 +2836,8 @@ player::vGetVehicleCredit
 =====================
 */
 float player::vGetVehicleCredit() {
-	return self.getVehicleCredit();
-/*
+//	return self.getVehicleCredit();
+
 	float chargeUsed = sys.getTargetTimerValue( vehicleCreditTimer, self ) - sys.getTime();
 
 	if ( chargeUsed < 0 ) {
@@ -2845,7 +2845,6 @@ float player::vGetVehicleCredit() {
 	}
 
 	return 1 - ( chargeUsed / vehicleCreditChargeTime );
-*/
 }
 
 /*
@@ -2854,15 +2853,14 @@ player::vUseVehicleCredit
 =====================
 */
 void player::vUseVehicleCredit( float fraction ) {
-	self.useVehicleCredit( fraction );
-/*
+//	self.useVehicleCredit( fraction );
+
 	float newFrac = vGetVehicleCredit() - fraction;
 	if ( newFrac < 0.f ) {
 		newFrac = 0.f;
 	}
 
 	sys.setTargetTimerValue( vehicleCreditTimer, self, sys.getTime() + ( ( 1 - newFrac ) * vehicleCreditChargeTime ) );
-*/
 }
 
 
