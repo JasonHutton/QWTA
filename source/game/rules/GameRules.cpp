@@ -1231,6 +1231,7 @@ void sdGameRules::NewState( gameState_t news ) {
 			break;
 		}
 		case GS_NEXTMAP: {
+			gameLocal.StopAutorecording();
 			OnGameState_NextMap();
 			break;
 		}
