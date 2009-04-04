@@ -1,4 +1,4 @@
-#define QWTA_GDF_RESPAWN_MULTIPLIER 2
+#define QWTA_GDF_RESPAWN_MULTIPLIER 1
 
 object team_gdf {
 	void	preinit();
