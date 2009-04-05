@@ -101,3 +101,6 @@ reyalP
 jaybird
 TimeStar
 - A few other ETQW modders who've provided helpful advice and assistance.
+Id Software
+Splash Damage
+Raven Software
