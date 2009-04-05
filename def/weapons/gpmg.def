@@ -519,7 +519,7 @@ damageDef damage_gpmg_badger {
 
 damageDef realistic_damage_gpmg_badger {
 	inherit							"damage_gpmg_badger"
-	damage							"realistic_damage_gpmg_badger"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg_trojan {
@@ -528,7 +528,7 @@ damageDef damage_gpmg_trojan {
 
 damageDef realistic_damage_gpmg_trojan {
 	inherit							"damage_gpmg_trojan"
-	damage							"realistic_damage_gpmg_trojan"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg_titan {
@@ -537,7 +537,7 @@ damageDef damage_gpmg_titan {
 
 damageDef realistic_damage_gpmg_titan {
 	inherit							"damage_gpmg_titan"
-	damage							"realistic_damage_gpmg_titan"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg_anansi {
@@ -546,7 +546,7 @@ damageDef damage_gpmg_anansi {
 
 damageDef realistic_damage_gpmg_anansi {
 	inherit							"damage_gpmg_anansi"
-	damage							"realistic_damage_gpmg_anansi"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg_bumblebee {
@@ -555,7 +555,7 @@ damageDef damage_gpmg_bumblebee {
 
 damageDef realistic_damage_gpmg_bumblebee {
 	inherit							"damage_gpmg_bumblebee"
-	damage							"realistic_damage_gpmg_bumblebee"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg_platypus {
@@ -564,7 +564,7 @@ damageDef damage_gpmg_platypus {
 
 damageDef realistic_damage_gpmg_platypus {
 	inherit							"damage_gpmg_platypus"
-	damage							"realistic_damage_gpmg_platypus"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg_mcp {
@@ -573,7 +573,7 @@ damageDef damage_gpmg_mcp {
 
 damageDef realistic_damage_gpmg_mcp {
 	inherit							"damage_gpmg_mcp"
-	damage							"realistic_damage_gpmg_mcp"
+	damage							"realistic_damage_gpmg"
 }
 
 damageDef damage_gpmg {

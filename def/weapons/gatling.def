@@ -51,7 +51,7 @@ damageDef damage_gatling {
 
 damageDef realistic_damage_gatling {
 	inherit								"damage_gatling"
-	damage								"realistic_damage_gatling"
+	damage								"realistic_damage_gatling_mcp"
 }
 
 damageDef damage_gatling_bumblebee {
@@ -73,7 +73,7 @@ damageDef damage_gatling_bumblebee {
 
 damageDef realistic_damage_gatling_bumblebee {
 	inherit								"damage_gatling_bumblebee"
-	damage								"realistic_damage_gatling_bumblebee"
+	damage								"realistic_damage_gatling"
 }
 
 damageDef damage_gatling_anansi {
@@ -95,7 +95,7 @@ damageDef damage_gatling_anansi {
 
 damageDef realistic_damage_gatling_anansi {
 	inherit								"damage_gatling_anansi"
-	damage								"realistic_damage_gatling_anansi"
+	damage								"realistic_damage_gatling"
 }
 
 damageDef damage_gatling_titan {
@@ -117,7 +117,7 @@ damageDef damage_gatling_titan {
 
 damageDef realistic_damage_gatling_titan {
 	inherit								"damage_gatling_titan"
-	damage								"realistic_damage_gatling_titan"
+	damage								"realistic_damage_gatling"
 }
 
 damageFilter damage_gatling {
