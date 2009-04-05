@@ -577,7 +577,7 @@ idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVA
 idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
 idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should weapon spreads ingame be realistic, or game-oriented?" );
 
-idCVar	g_useFullKills(				"g_useFullKills",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Enables or disables certain attacks that don't normally fully kill, to do so." );
+idCVar	g_useGibKills(				"g_useGibKills",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Enables or disables certain attacks that don't normally gib, to do so." );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 
