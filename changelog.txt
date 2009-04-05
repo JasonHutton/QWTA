@@ -1,3 +1,24 @@
+QWTA v0.31:
+==========
+CHANGES:
+* Cvar g_showPlayerArrows redefaulted to 2.
+* Made some changes/improvements to the realistic damage fallback code.
+* Player respawn timers reverted to be identical to BaseETQW.
+  + Player feedback indicates BaseETQW gametypes are incompatible with
+  + long respawn timers. A single-life last-man-standing gametype is planned
+  + for a future QWTA release.
+* Cvar g_useGibKills added.
+  + Default 1.
+  + Allows certain attacks(Currently only Covert/Infiltrator backstabs)
+  + that don't normally instagib, to instagib so victims can't be revived.
+  
+BUG FIXES:
+* Fixed Dark Matter Cannon having zero range blast radius in realistic mode.
+* Fixed a variety of GDF GPMG and Gatling Gun vehicle weapon damage issues.
+* Fixed negativePush flag not being copied over to inherited damageDefs.
+* Fixed an unlikely potential crash by returning a BS value from a method.
+
+
 QWTA v0.3:
 ==========
 CHANGES:
