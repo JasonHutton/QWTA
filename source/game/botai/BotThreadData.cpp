@@ -2373,7 +2373,7 @@ void idBotThreadData::DynamicEntity_Think() {
 							idEntity *deployableEnt = gameLocal.entities[ deployableInfo.entNum ];
 
 							if ( deployableEnt != NULL ) {
-								deployableEnt->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_deployable_destruct" ), 1.0f, NULL );
+								deployableEnt->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_deployable_destruct", "damage_deployable_destruct" ), 1.0f, NULL );
 							}
 						}
 					}
@@ -2416,7 +2416,7 @@ void idBotThreadData::DynamicEntity_Think() {
 								idEntity *deployableEnt = gameLocal.entities[ deployableInfo.entNum ];
 
 								if ( deployableEnt != NULL ) {
-									deployableEnt->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_deployable_destruct" ), 1.0f, NULL );
+									deployableEnt->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_deployable_destruct", "damage_deployable_destruct" ), 1.0f, NULL );
 								}
 							}
 						}
@@ -5138,7 +5138,7 @@ void idBotThreadData::ClearClientBoundEntities( int clientNum ) {
 			continue;
 		}
 
-		deployableEnt->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_deployable_destruct" ), 1.0f, NULL );
+		deployableEnt->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_deployable_destruct", "damage_deployable_destruct" ), 1.0f, NULL );
 		break;
 	}
 
@@ -5164,7 +5164,7 @@ void idBotThreadData::ClearClientBoundEntities( int clientNum ) {
 		idEntity *covertTool = gameLocal.entities[ client.weapInfo.covertToolInfo.entNum ];
 
 		if ( covertTool != NULL ) {
-			covertTool->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_generic" ), 999.0f, NULL );
+			covertTool->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_generic", "damage_generic" ), 999.0f, NULL );
 		}
 	}
 
@@ -5172,7 +5172,7 @@ void idBotThreadData::ClearClientBoundEntities( int clientNum ) {
 		idEntity *supplyCrate = gameLocal.entities[ client.supplyCrate.entNum ];
 
 		if ( supplyCrate != NULL ) {
-			supplyCrate->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_grenade_frag_splash" ), 999.0f, NULL );
+			supplyCrate->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_grenade_frag_splash", "damage_grenade_frag_splash" ), 999.0f, NULL );
 		}
 	}
 }
@@ -5705,7 +5705,7 @@ bool idBotThreadData::DestroyClientDeployable( int clientNum ) {
 			break;
 		}
 
-		deployable->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_deployable_destruct" ), 1.0f, NULL );
+		deployable->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_deployable_destruct", "damage_deployable_destruct" ), 1.0f, NULL );
 		hasDeployable = true;
 		break;
 	}

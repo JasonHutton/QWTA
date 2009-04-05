@@ -1377,7 +1377,7 @@ void idBot::ActionUcmds( usercmd_t &ucmd ) {
 			idEntity *supplyCrate = gameLocal.entities[ clientInfo.supplyCrate.entNum ];
 
 			if ( supplyCrate != NULL ) {
-				supplyCrate->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), DAMAGE_FOR_NAME( "damage_grenade_frag_splash" ), 999.0f, NULL );
+				supplyCrate->Damage( NULL, NULL, idVec3( 0.0f, 0.0f, 1.0f ), REAL_DAMAGE_FOR_NAME( "realistic_damage_grenade_frag_splash", "damage_grenade_frag_splash" ), 999.0f, NULL );
 			}
 		}
 	}

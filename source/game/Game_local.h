@@ -1635,6 +1635,8 @@ public:
 
 	void					SetupMapMetaData( const char* mapName );
 
+	static const sdDeclDamage* RealFindDeclDamageType( const idDict& dict, const char* realName, const char* name );
+
 public:
 	idDeclTypeTemplate< idDeclModelDef,			&declModelDefInfo >			declModelDefType;
 	idDeclTypeTemplate< idDecl,					&declExportDefInfo >		declExportDefType;

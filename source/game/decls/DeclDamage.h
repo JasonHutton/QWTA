@@ -81,6 +81,7 @@ public:
 	float					GetSelfDamageScale( void ) const { return selfDamageScale; }
 
 	static const sdDeclDamage* DamageForName( const char* name, bool makeDefault );
+	static const sdDeclDamage* RealDamageForName( const char* realName, const char* name, bool makeDefault );
 
 	const sdDeclToolTip*	GetObituary( void ) const { return obituary; }
 	const sdDeclToolTip*	GetSelfObituary( void ) const { return selfObituary; }
@@ -156,5 +157,7 @@ protected:
 
 #define DAMAGE_FOR_NAME( name ) sdDeclDamage::DamageForName( name, true )
 #define DAMAGE_FOR_NAME_UNSAFE( name ) sdDeclDamage::DamageForName( name, false )
+#define REAL_DAMAGE_FOR_NAME( realName, name ) sdDeclDamage::RealDamageForName( realName, name, true )
+#define REAL_DAMAGE_FOR_NAME_UNSAFE( realName, name ) sdDeclDamage::RealDamageForName( realName, name, false )
 
 #endif // __DECLDAMAGE_H__

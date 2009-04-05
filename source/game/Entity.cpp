@@ -7367,18 +7367,7 @@ bool idEntity::LaunchBullet( idEntity* owner, idEntity* ignoreEntity, const idDi
 	}
 
 	// find out the damage def of the bullet
-	const sdDeclDamage* bulletDamage = NULL;
-
-	const char* damageDefName;
-	if ( g_realisticDamage.GetBool() ) {
-		damageDefName = projectileDict.GetString( "dmg_realistic_damage", projectileDict.GetString( "dmg_damage" ) );
-	}
-	else {
-		damageDefName = projectileDict.GetString( "dmg_damage" );
-	}
-	if ( *damageDefName ) {
-		bulletDamage = gameLocal.declDamageType[ damageDefName ];
-	}
+	const sdDeclDamage* bulletDamage = gameLocal.RealFindDeclDamageType( projectileDict, "dmg_realistic_damage", "dmg_damage" );
 
 	if ( bulletDamage == NULL ) {
 		return false;

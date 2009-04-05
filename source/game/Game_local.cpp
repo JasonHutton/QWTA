@@ -2934,6 +2934,34 @@ void idGameLocal::SetupMapMetaData( const char* mapName ) {
 	mapMetaData = mapMetaDataList->FindMetaData( strippedFileName.c_str(), &defaultMetaData );
 }
 
+const sdDeclDamage* idGameLocal::RealFindDeclDamageType( const idDict& dict, const char* realName, const char* name ) {
+
+	const sdDeclDamage* declDamage = NULL;
+	const char* damageDefName;
+
+	if ( g_realisticDamage.GetBool() ) {
+		damageDefName = dict.GetString( realName );
+		if ( *damageDefName ) {
+			declDamage = gameLocal.declDamageType[ damageDefName ];
+		}
+	}
+	if ( declDamage == NULL ) {
+		if ( g_realisticDamage.GetBool() ) {
+			gameLocal.Warning( "idGameLocal::RealFindDeclDamageType Couldn't find realistic Damage Type '%s', falling through to normal damage...", damageDefName );
+		}
+		damageDefName = dict.GetString( name );
+		if ( *damageDefName ) {
+			declDamage = gameLocal.declDamageType[ damageDefName ];
+		}
+	}
+
+	if ( !declDamage ) {
+		gameLocal.Warning( "idGameLocal::RealFindDeclDamageType Couldn't find Damage Type '%s'", damageDefName );
+	}
+
+	return declDamage;
+}
+
 /*
 ===================
 idGameLocal::OnMapStart
@@ -6225,7 +6253,7 @@ void idGameLocal::KillBox( idEntity *ent ) {
 		}
 
 		// nail it
-		hit->Damage( ent, ent, vec3_origin, DAMAGE_FOR_NAME( "damage_telefrag" ), 1.0f, NULL );
+		hit->Damage( ent, ent, vec3_origin, REAL_DAMAGE_FOR_NAME( "realistic_damage_telefrag", "damage_telefrag" ), 1.0f, NULL );
 	}
 }
 

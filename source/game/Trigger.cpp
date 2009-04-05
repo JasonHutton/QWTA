@@ -430,12 +430,7 @@ void idTrigger_Hurt::Spawn( void ) {
 	spawnArgs.GetBool( "on", "1", on );
 	delay = SEC2MS( spawnArgs.GetFloat( "delay", "1" ) );
 
-	if ( g_realisticDamage.GetBool() ) {
-		damageDecl = DAMAGE_FOR_NAME( spawnArgs.GetString( "dmg_realistic_damage", spawnArgs.GetString( "dmg_damage", "damage_painTrigger" ) ) );
-	}
-	else {
-		damageDecl = DAMAGE_FOR_NAME( spawnArgs.GetString( "dmg_damage", "damage_painTrigger" ) );
-	}
+	damageDecl = REAL_DAMAGE_FOR_NAME( spawnArgs.GetString( "dmg_realistic_damage", "realistic_damage_painTrigger" ), spawnArgs.GetString( "dmg_damage", "damage_painTrigger" ) );
 
 	Enable();
 }

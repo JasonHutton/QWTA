@@ -529,6 +529,17 @@ const sdDeclDamage* sdDeclDamage::DamageForName( const char* name, bool makeDefa
 	return gameLocal.declDamageType.LocalFind( name, makeDefault );
 };
 
+const sdDeclDamage* sdDeclDamage::RealDamageForName( const char* realName, const char* name, bool makeDefault ) {
+	const sdDeclDamage* declDamage = NULL;
+	if ( g_realisticDamage.GetBool() ) {
+		declDamage = gameLocal.declDamageType.LocalFind( realName, false );
+	}
+	if ( declDamage == NULL ) {
+		declDamage = gameLocal.declDamageType.LocalFind( name, makeDefault );
+	}
+	return declDamage;
+}
+
 /*
 ================
 sdDeclDamage::GetSound

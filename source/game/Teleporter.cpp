@@ -76,12 +76,7 @@ void sdTeleporter::Spawn( void ) {
 	deployLength	= spawnArgs.GetFloat( "deploy_length" );
 	deployWidth		= spawnArgs.GetFloat( "deploy_width" );
 
-	if ( g_realisticDamage.GetBool() ) {
-		telefragDamage	= DAMAGE_FOR_NAME( spawnArgs.GetString( "dmg_realistic_telefrag", spawnArgs.GetString( "dmg_telefrag" ) ) );
-	}
-	else {
-		telefragDamage	= DAMAGE_FOR_NAME( spawnArgs.GetString( "dmg_telefrag" ) );
-	}
+	telefragDamage	= REAL_DAMAGE_FOR_NAME( spawnArgs.GetString( "dmg_realistic_telefrag" ), spawnArgs.GetString( "dmg_telefrag" ) );
 
 	// set up the physics
 	const char* triggerModel = spawnArgs.GetString( "cm_trigger" );

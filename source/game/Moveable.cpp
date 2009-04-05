@@ -193,12 +193,8 @@ void idMoveable::Spawn( void ) {
 	nextCollideFxTime = 0;
 
 	fl.takedamage = true;
-	if ( g_realisticDamage.GetBool() ) {
-		damageDecl = DAMAGE_FOR_NAME_UNSAFE( spawnArgs.GetString( "dmg_realistic_damage", spawnArgs.GetString( "dmg_damage", "" ) ) );
-	}
-	else {
-		damageDecl = DAMAGE_FOR_NAME_UNSAFE( spawnArgs.GetString( "dmg_damage", "" ) );
-	}
+	damageDecl = REAL_DAMAGE_FOR_NAME_UNSAFE( spawnArgs.GetString( "dmg_realistic_damage" ), spawnArgs.GetString( "dmg_damage" ) );
+
 	canDamage = spawnArgs.GetBool( "damageWhenActive" ) ? false : true;
 	minDamageVelocity = spawnArgs.GetFloat( "minDamageVelocity", "100" );
 	maxDamageVelocity = spawnArgs.GetFloat( "maxDamageVelocity", "200" );
