@@ -78,7 +78,7 @@ public:
 
 	bool					GetNegativePush( void ) const { return pushFlags.negativePush; }
 
-	bool					GetCVarGib( void ) const { return g_backstabsGib.GetBool() ? cvarDamageFlags.cvarGib : false; }
+	bool					GetCVarFullKill( void ) const { return g_useFullKills.GetBool() ? cvarDamageFlags.cvarFullKill : false; }
 
 	float					GetSelfDamageScale( void ) const { return selfDamageScale; }
 
@@ -155,7 +155,7 @@ protected:
 
 	// These are meant to only include damage flags that are enabled/disabled by cvar.
 	typedef struct cvarDamageFlags_s {
-		bool				cvarGib				: 1;
+		bool				cvarFullKill		: 1;
 	} cvarDamageFlags_t;
 
 	cvarDamageFlags_t		cvarDamageFlags;

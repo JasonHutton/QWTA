@@ -227,9 +227,9 @@ bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 			
 			pushFlags.negativePush = true;
 		
-		} else if ( !token.Icmp( "cvarGib" ) ) {
+		} else if ( !token.Icmp( "cvarFullKill" ) ) {
 
-			cvarDamageFlags.cvarGib = true;
+			cvarDamageFlags.cvarFullKill = true;
 
 		} else if( !token.Icmp( "kickDir" ) ) {
 
@@ -508,7 +508,7 @@ void sdDeclDamage::FreeData( void ) {
 
 	pushFlags.negativePush	= false;
 
-	cvarDamageFlags.cvarGib = false;
+	cvarDamageFlags.cvarFullKill = false;
 
 	stats.damage		= NULL;
 	stats.shotsHit		= NULL;

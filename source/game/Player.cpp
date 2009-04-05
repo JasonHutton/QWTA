@@ -8178,7 +8178,7 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 
 			if ( health <= 0 ) {
 				// if you die from a damage decl that has "gib" set then you will be totally dead
-				if ( damageDecl->GetGib() || damageDecl->GetCVarGib() || health < -999 ) {
+				if ( damageDecl->GetGib() || health < -999 ) {
 					SetHealth( -999 );
 				}
 
