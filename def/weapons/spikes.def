@@ -304,6 +304,8 @@ damageDef damage_spikes_stab {
 	push								12500
 
 	noheadshot
+	
+	cvarGib
 
 	kick_time							400
 	kick_amplitude						0.5

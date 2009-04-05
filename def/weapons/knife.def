@@ -261,6 +261,8 @@ damageDef damage_knife_stab {
 	push								7500
 
 	noheadshot
+	
+	cvarGib
 
 	kick_time							400
 	kick_amplitude						0.5
