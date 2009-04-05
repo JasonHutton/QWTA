@@ -343,7 +343,7 @@ damageDef damage_ssg_splash {
 }
 
 damageDef realistic_damage_ssg_splash {
-	inherit							"damage_ssg"
+	inherit							"damage_ssg_splash"
 	damage							"realistic_damage_ssg"
 }
 
