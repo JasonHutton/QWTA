@@ -457,6 +457,8 @@ extern idCVar	g_noTVChat;
 extern idCVar	g_realisticDamage;
 extern idCVar	g_realisticSpread;
 
+extern idCVar	g_backstabsGib;
+
 extern idCVar	g_trainingMode;
 
 extern idCVar	g_noQuickChats;

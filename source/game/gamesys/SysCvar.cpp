@@ -577,6 +577,8 @@ idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVA
 idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
 idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should weapon spreads ingame be realistic, or game-oriented?" );
 
+idCVar	g_backstabsGib(				"g_backstabsGib",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Enables or disables covert/infiltrator knife/spikes backstabs instagibbing." );
+
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 
 idCVar g_objectiveDecayTime(		"g_objectiveDecayTime",			"5",		CVAR_GAME | CVAR_FLOAT | CVAR_RANKLOCKED,					"Length of time in seconds that it takes a construct/hack objective to decay once after the initial timeout is complete" );

@@ -78,6 +78,8 @@ public:
 
 	bool					GetNegativePush( void ) const { return pushFlags.negativePush; }
 
+	bool					GetCVarGib( void ) const { return g_backstabsGib.GetBool() ? cvarDamageFlags.cvarGib : false; }
+
 	float					GetSelfDamageScale( void ) const { return selfDamageScale; }
 
 	static const sdDeclDamage* DamageForName( const char* name, bool makeDefault );
@@ -148,8 +150,15 @@ protected:
 	typedef struct pushFlags_s {
 		bool				negativePush		: 1;
 	} pushFlags_t;
-
+	
 	pushFlags_t				pushFlags;
+
+	// These are meant to only include damage flags that are enabled/disabled by cvar.
+	typedef struct cvarDamageFlags_s {
+		bool				cvarGib				: 1;
+	} cvarDamageFlags_t;
+
+	cvarDamageFlags_t		cvarDamageFlags;
 
 	private:
 		void				CopyDecl( const sdDeclDamage* decl );
