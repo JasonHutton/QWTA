@@ -123,6 +123,10 @@ void sdDeclDamage::CopyDecl( const sdDeclDamage *decl ) {
 	flags				= decl->flags;
 
 	stats				= decl->stats;
+
+	pushFlags			= decl->pushFlags;
+
+	cvarDamageFlags		= decl->cvarDamageFlags;
 }
 
 /*
