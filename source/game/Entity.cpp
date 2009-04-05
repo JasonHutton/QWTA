@@ -5148,7 +5148,7 @@ float idEntity::Event_GetBouncyness( void ) {
 		return simpleRigidBody->GetBouncyness();
 	}
 
-	//return 1.0; // Bullshit default! :D
+	return 1.0; // Bullshit default! :D
 }
 
 /*
