@@ -1,69 +1,80 @@
+
 material textures/effects/weapons/boomboom
 {
-	noatmosphere
+	noselfShadow
 	noshadows
 	translucent
 	discrete
 	nonsolid
+	noimpact
 	{ 
 		blend add
 		map clamp textures/effects/weapons/boomboom
 		vertexcolor
+		maskAlpha
 	}
 }
 
 material textures/effects/weapons/boomboom2
 {
-	noatmosphere
+	noselfShadow
 	noshadows
 	translucent
 	discrete
 	nonsolid
+	noimpact
 	{
 		blend add
 		map clamp textures/effects/weapons/boomboom2
-		vertexcolor				
+		vertexcolor
+		maskAlpha
 	}
 }
 
 material textures/effects/weapons/boomboom3
 {
-	noatmosphere
+	noselfShadow
 	noshadows
 	translucent
 	discrete
 	nonsolid
+	noimpact
 	{
 		blend add
 		map clamp textures/effects/weapons/boomboom3
 		vertexcolor
+		maskAlpha
 	}
 }
 
 material textures/effects/weapons/boomboom4
 {
-	noatmosphere
-	noshadows	
+	noselfShadow
+	noshadows
 	translucent
 	discrete
 	nonsolid
+	noimpact
 	{
 		blend add
 		map clamp textures/effects/weapons/boomboom4
 		vertexcolor
+		maskAlpha
 	}
 }
 
 material textures/effects/weapons/bfgballblast
 {
-	noatmosphere
+	noselfShadow
 	noshadows
 	translucent
 	discrete
 	nonsolid
+	noimpact
 	{ 
 		blend add
 		map clamp textures/effects/weapons/bfgballblast
 		vertexcolor
+		maskAlpha
 	}
 }
