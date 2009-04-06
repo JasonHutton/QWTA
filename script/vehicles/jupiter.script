@@ -1,5 +1,5 @@
 
-object vehicle_jupiter : vehicle_titan {
+object vehicle_jupiter : vehicle_base {
 	void			preinit();
 	void			init();
 

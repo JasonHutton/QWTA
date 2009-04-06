@@ -1,4 +1,47 @@
 // ========================================================================
+// Export
+/*
+reexportmodels vehicles/titan.def
+testmodel vehicle_titan
+*/
+
+export karateka {
+	options -prefix TITAN_ -nomerge -scale 0.75 -rotate 90 -sourcedir models/vehicles/edf_titan/dev_sd -destdir models/vehicles/edf_titan/
+
+	addoptions 		 -keep left_hand_ik right_hand_ik gunner_vid_cam carrier_driver carrier_gunner1 gpmp_ejector gunner_cam gunner_gun gunner_attachment pilot_gun pilot_cam aft_gun_mount exit_point_01 exit_point_02 exit_point_03 exit_point_04 exit_point_05 exit_point_06 exit_point_07 exit_point_08 gpmg_root fore_hatch gpmg_muzzle gpmg_cam left_wheel_dynamix_01 left_wheel_dynamix_02 left_wheel_dynamix_03 left_wheel_dynamix_04 left_wheel_dynamix_05 left_wheel_dynamix_07 left_wheel_dynamix_08 right_wheel_dynamix_01 right_wheel_dynamix_02 right_wheel_dynamix_03 right_wheel_dynamix_04 right_wheel_dynamix_05 right_wheel_dynamix_07 right_wheel_dynamix_08 muzzle -parent gpmg_root aft_gun_mount
+
+	addoptions 		 -noAnimate m_left_wheel_dynamix_08 m_left_wheel_dynamix_01 m_right_wheel_dynamix_01 m_right_wheel_dynamix_08 m_left_wheel_dynamix_02 m_left_wheel_dynamix_03 m_left_wheel_dynamix_04 m_left_wheel_dynamix_05 m_left_wheel_dynamix_07 m_right_track_gaurd m_left_track_gaurd m_right_wheel_dynamix_07 m_right_wheel_dynamix_05 m_right_wheel_dynamix_04 m_right_wheel_dynamix_03 m_right_wheel_dynamix_02 m_left_side_skirt05 m_left_side_skirt04 m_left_side_skirt03 m_left_side_skirt02 m_left_side_skirt01 m_right_side_skirt05 m_right_side_skirt04 m_right_side_skirt03 m_right_side_skirt02 m_right_side_skirt01 m_hull m_right_rear_lights m_left_rear_lights m_pilotbox m_right_side_bin m_left_side_bin m_spade m_axe   s_right_track_gaurd s_left_track_gaurd  s_left_side_skirt05 s_left_side_skirt04 s_left_side_skirt03 s_left_side_skirt02 s_left_side_skirt01 s_right_side_skirt05 s_right_side_skirt04 s_right_side_skirt03 s_right_side_skirt02 s_right_side_skirt01 s_hull s_right_rear_lights s_left_rear_lights   s_right_side_bin s_left_side_bin
+
+    mesh titan_lod0.mb 		-dest titan.md5mesh
+ 	anim titan_lod0.mb 		-dest titan.md5anim -range 1 1
+ 	anim titan_lod0.mb 		-dest titan_fire.md5anim -range 2 30
+/*
+    mesh titan_lod1.mb		-dest titan_lod1_boned.md5mesh
+	mesh titan_lod2.mb		-dest titan_lod2_boned.md5mesh
+	mesh titan_lod3.mb		-dest titan_lod3_boned.md5mesh
+*/
+	addoptions 		-noJoints
+
+	mesh titan_lod3.mb		-dest titan_lod1.md5mesh
+ 	mesh titan_lod3.mb		-dest titan_lod2.md5mesh
+	mesh titan_lod3.mb		-dest titan_lod3.md5mesh
+
+
+}
+
+// ========================================================================
+// Models
+//
+
+model vehicle_jupiter {
+	mesh					models/vehicles/edf_titan/titan_mk2.md5mesh
+	anim base				models/vehicles/edf_titan/titan_mk2.md5anim
+	anim idle				models/vehicles/edf_titan/titan_mk2.md5anim
+	anim fire				models/vehicles/edf_titan/titan_mk2_fire.md5anim
+	anim ik_pose			models/vehicles/edf_titan/titan_mk2.md5anim
+}
+
+// ========================================================================
 // Entity Def
 //
 
@@ -17,7 +60,7 @@ deployObject deployobject_jupiter {
 }
 
 entityDef vehicle_jupiter {
-	"inherit"						"vehicle_titan"
+	"inherit"						"vehicle_base_gdf"
 
 	"editor_color"					"1 .5 0"
 	"editor_mins"					"-8 -8 -8"
@@ -26,7 +69,7 @@ entityDef vehicle_jupiter {
 	"editor_usage"					"Vehicle."
 
 	"spawnclass"					"sdVehicle_RigidBody"
-	"scriptObject"					"vehicle_titan"
+	"scriptObject"					"vehicle_jupiter"
 
 	"health"						"3500"
 
