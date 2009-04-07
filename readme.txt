@@ -85,6 +85,8 @@ Finally, find yourself a server that's running QWTA, and give things a try. :)
 * Players killed by being smashed against walls don't attribute frags properly
 * Dark Matter Cannon's gravity won't pull players away from mounted guns.
 * Dark Matter Cannon will (very slightly) damage nearby objects when fired.
+* bot_useVehicleDrops 1 can cause crashes on some maps. (Island, notably.)
+  This is being investigated still...
 
 5. Credits
 ================================
