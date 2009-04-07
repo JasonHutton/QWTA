@@ -12,8 +12,9 @@ CHANGES:
   + Allows certain attacks(Currently only Covert/Infiltrator backstabs)
   + that don't normally instagib, to instagib so victims can't be revived.
 * Cvar bot_useVehicleDrops added.
-  + Default 1.
+  + Default 0.
   + Enables/disables bots to attempt to call down new vehicles.
+  + WARNING: See "Known Issues" section of the readme before enabling!
 * Some technical changes to how the Jupiter is implemented.
   
 BUG FIXES:
