@@ -135,6 +135,10 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		return -1;
 	}
 
+	if(!botWorld->gameLocalInfo.botsUseVehicleDrops) {
+		return -1;
+	}
+
 	if(botVehicleInfo != NULL) {
 		return -1;
 	}

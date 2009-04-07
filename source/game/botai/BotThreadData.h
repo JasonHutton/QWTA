@@ -104,6 +104,7 @@ struct gameLocalInfo_t {
 	bool					botsUseTKRevive;
 	bool					botsCanStrafeJump;
 	bool					botsUseVehicles;
+	bool					botsUseVehicleDrops;
 	bool					botsUseAirVehicles;
 	bool					botsStayInVehicles;
 	bool					botsSillyWarmup;

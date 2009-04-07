@@ -323,6 +323,7 @@ extern idCVar	bot_doObjectives;
 extern idCVar	bot_useShotguns;
 extern idCVar	bot_useSniperWeapons;
 extern idCVar	bot_useVehicles;
+extern idCVar	bot_useVehicleDrops;
 extern idCVar	bot_allowObstacleDecay;
 extern idCVar	bot_godMode;
 extern idCVar	bot_stayInVehicles;

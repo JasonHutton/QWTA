@@ -920,6 +920,7 @@ void idBotThreadData::UpdateState() {
 	gameLocalInfo.debugBots = bot_debug.GetBool();
 	gameLocalInfo.debugObstacleAvoidance = bot_debugObstacleAvoidance.GetBool();
 	gameLocalInfo.botsUseVehicles = bot_useVehicles.GetBool();
+	gameLocalInfo.botsUseVehicleDrops = bot_useVehicleDrops.GetBool();
 	gameLocalInfo.botsUseAirVehicles = bot_useAirVehicles.GetBool();
 	gameLocalInfo.botsStayInVehicles = bot_stayInVehicles.GetBool();
 	gameLocalInfo.botsUseDeployables = bot_useDeployables.GetBool();
