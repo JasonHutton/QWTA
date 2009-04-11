@@ -458,6 +458,8 @@ extern idCVar	g_noTVChat;
 extern idCVar	g_realisticDamage;
 extern idCVar	g_realisticSpread;
 
+extern idCVar	g_useClassLimits;
+
 extern idCVar	g_useGibKills;
 
 extern idCVar	g_trainingMode;
