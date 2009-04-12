@@ -16,12 +16,16 @@ CHANGES:
   + Enables/disables bots to attempt to call down new vehicles.
   + WARNING: See "Known Issues" section of the readme before enabling!
 * Some technical changes to how the Jupiter is implemented.
+* Cvar g_useClassLimits added.
+  + Default 1.
+  + Enables/disables the use of class limits.
   
 BUG FIXES:
 * Fixed Dark Matter Cannon having zero range blast radius in realistic mode.
 * Fixed a variety of GDF GPMG and Gatling Gun vehicle weapon damage issues.
 * Fixed negativePush flag not being copied over to inherited damageDefs.
 * Fixed an unlikely potential crash by returning a BS value from a method.
+* Fixed some minor Limbo GUI issues.
 
 
 QWTA v0.3:
