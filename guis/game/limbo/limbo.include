@@ -111,13 +111,18 @@ $template _class_button( NameParm, TeamParm, XPos, YPos, ClassParm )
 			string	limitText	= "0";
 			float	limit		= -1;
 			float	isCritical 	= compare( player.TeamParm##CriticalClass, #NameParm );
+			float	useClassLimits	= 0;
 		}
 		
 		events {
 			onActivate {
+				useClassLimits = gui.getCVarBool( "g_useClassLimits" );
 				if ( isCritical && count == 0 ) {
 					timeline.criticalClassPulse.resetTime( 0 );
-				}
+				}	
+			}
+			onCVarChanged "g_useClassLimits" {
+				useClassLimits = gui.getCVarBool( "g_useClassLimits" );
 			}
 			onPreDraw {
 				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
@@ -125,14 +130,15 @@ $template _class_button( NameParm, TeamParm, XPos, YPos, ClassParm )
 				drawCachedMaterial( gui.btnGradMaterial, absoluteRect, gradColor );
 				drawCachedMaterial( logoMaterial, logoRect,		logoColor );
 
-				//drawText( countText, textRect, logoColor, 12, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
-				if( limit != 0 ) {
+				if( useClassLimits ) {
 					if( limit > -1 ) {
 						drawText( toWStr(countText + "/" + limitText), textRect, logoColor, 10, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
 					}
 					else {
 						drawText( toWStr(countText), textRect, logoColor, 10, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
 					}
+				} else {
+					drawText( toWStr(countText), textRect, logoColor, 12, DTF_RIGHT | DTF_BOTTOM | DTF_SINGLELINE );
 				}
 
 				drawCachedMaterial( gui.gradMaterial, absoluteRect, activeColor );
