@@ -2545,6 +2545,10 @@ int	sdGameRules::GetRoleLimitForTeam( playerClassTypes_t role, playerTeamTypes_t
 	int limit = -1;
 	int clients = NumActualClients(true, true);
 
+	if ( !g_useClassLimits.GetBool() ) {
+		return limit; // -1.
+	}
+
 	if ( team == GDF || team == STROGG) {
 		switch(role) {
 			case SOLDIER:
