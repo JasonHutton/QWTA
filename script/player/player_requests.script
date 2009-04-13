@@ -300,9 +300,11 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	team_base team = getGameTeam();
 
 	float credit = vGetVehicleCredit();
-	float currentRank = self.getRankLevel();
+	//float currentRank = self.getRankLevel();
+	float currentForceEscalation = sys.getForceEscalation();
 	float creditRequired = sys.getDeploymentCredit( GetDeployObject( objectName ) );
-	float rankRequired = sys.getDeploymentRankRequirement( GetDeployObject( objectName ) );
+	//float rankRequired = sys.getDeploymentRankRequirement( GetDeployObject( objectName ) );
+	float forceEscalationRequired = sys.getDeploymentForceEscalationRequirement( GetDeployObject( objectName ) );
 
 	entity proxy = getProxyEntity();
 
@@ -310,7 +312,9 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 		return false;
 	} else if ( proxy != $null_entity ) {
 		return false;
-	} else if ( currentRank < rankRequired ) {
+	//} else if ( currentRank < rankRequired ) {
+	//	return false;
+	} else if ( currentForceEscalation < forceEscalationRequired ) {
 		return false;
 	} else if ( credit < creditRequired ) {
 		return false;

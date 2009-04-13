@@ -96,6 +96,7 @@ deployObject deployobject_hornet {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"third_lieutenant"
+	"force_escalation_required"		"100"
 }
 
 entityDef vehicle_hornet {

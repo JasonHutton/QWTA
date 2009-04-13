@@ -232,6 +232,9 @@ const idEventDef EV_Thread_GetDeploymentCredit( "getDeploymentCredit", 'f', DOC_
 const idEventDef EV_Thread_GetDeploymentRankRequirement( "getDeploymentRankRequirement", 'd', DOC_TEXT( "Returns the rank requirement of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 const idEventDef EV_Thread_GetDeploymentTitle( "getDeploymentTitle", 's', DOC_TEXT( "Returns the title of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 
+const idEventDef EV_Thread_GetForceEscalation( "getForceEscalation", 'd', DOC_TEXT( "Returns an average amount of XP for all players on the server." ), 0, NULL );
+const idEventDef EV_Thread_GetDeploymentForceEscalationRequirement( "getDeploymentForceEscalationRequirement", 'd', DOC_TEXT( "Returns the force escalation requirement of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
+
 const idEventDef EV_Thread_GetWorldMins( "getWorldMins", 'v', DOC_TEXT( "Returns the mins of the world collision model." ), 0, NULL );
 const idEventDef EV_Thread_GetWorldMaxs( "getWorldMaxs", 'v', DOC_TEXT( "Returns the maxs of the world collision model." ), 0, NULL );
 
@@ -483,6 +486,9 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 	EVENT( EV_Thread_GetDeploymentCredit,			sdSysCallThread::Event_GetDeploymentCredit )
 	EVENT( EV_Thread_GetDeploymentRankRequirement,	sdSysCallThread::Event_GetDeploymentRankRequirement )
 	EVENT( EV_Thread_GetDeploymentTitle,			sdSysCallThread::Event_GetDeploymentTitle )
+
+	EVENT( EV_Thread_GetForceEscalation,			sdSysCallThread::Event_GetForceEscalation )
+	EVENT( EV_Thread_GetDeploymentForceEscalationRequirement,	sdSysCallThread::Event_GetDeploymentForceEscalationRequirement )
 
 	EVENT( EV_Thread_GetWorldMins,					sdSysCallThread::Event_GetWorldMins )
 	EVENT( EV_Thread_GetWorldMaxs,					sdSysCallThread::Event_GetWorldMaxs )
@@ -2779,6 +2785,32 @@ void sdSysCallThread::Event_GetDeploymentTitle( int deploymentObjectIndex ) {
 	}
 
 	sdProgram::ReturnString( object->GetTitle() );
+}
+
+/*
+===============
+sdSysCallThread::Event_GetForceEscalation
+===============
+*/
+void sdSysCallThread::Event_GetForceEscalation() {
+
+	sdProgram::ReturnInteger( gameLocal.GetForceEscalation() );
+}
+
+/*
+===============
+sdSysCallThread::Event_GetDeploymentForceEscalationRequirement
+===============
+*/
+void sdSysCallThread::Event_GetDeploymentForceEscalationRequirement( int deploymentObjectIndex ) {
+	const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( deploymentObjectIndex );
+	if ( !object ) {
+		gameLocal.Warning( "sdSysCallThread::Event_GetDeploymentForceEscalationRequirement Deployment Object Index OOB" );
+		sdProgram::ReturnInteger( -1 );
+		return;
+	}
+
+	sdProgram::ReturnInteger( object->GetForceEscalationRequired() );
 }
 
 /*

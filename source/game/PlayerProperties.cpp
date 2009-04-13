@@ -153,6 +153,7 @@ void sdPlayerProperties::Init( void ) {
 	properties.RegisterProperty( "role",					role );
 	properties.RegisterProperty( "roleTitle",				roleTitle );
 	properties.RegisterProperty( "xp",						xp );
+	properties.RegisterProperty( "fe",						fe );
 	properties.RegisterProperty( "rank",					rank );
 	properties.RegisterProperty( "rankMaterial",			rankMaterial );
 	properties.RegisterProperty( "yaw",						yaw );
@@ -755,6 +756,8 @@ void sdPlayerProperties::Update( idPlayer* player ) {
 		// experience
 		xp = idMath::Floor( player->GetProficiencyTable().GetXP() );
 
+		fe = gameLocal.GetForceEscalation();
+
 		const sdDeclRank* playerRank = player->GetProficiencyTable().GetRank();
 		if ( playerRank != NULL ) {
 			rank			= playerRank->GetTitle() != NULL ? playerRank->GetTitle()->Index() : -1;
@@ -766,6 +769,7 @@ void sdPlayerProperties::Update( idPlayer* player ) {
 	} else {
 		position = vec3_origin;
 		xp = 0.f;
+		fe = 0.f;
 		rank = -1;
 		rankMaterial = "";
 	}

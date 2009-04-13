@@ -1571,6 +1571,7 @@ public:
 	void					SetupFixedClientRank( int clientIndex );
 
 	const sdDeclRank*		FindRankForLevel( int rankLevel );
+	int						GetForceEscalation();
 
 	void					UpdateLoggedDecals( void );
 

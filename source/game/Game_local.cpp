@@ -4745,6 +4745,22 @@ const sdDeclRank* idGameLocal::FindRankForLevel( int rankLevel ) {
 	return rank;
 }
 
+int idGameLocal::GetForceEscalation() {
+	double forceEscalation = 0.0f;
+
+	for(int i = 0;i < MAX_CLIENTS;i++) {
+		idPlayer* player = GetClient( i );
+		if( !player ) {
+			continue;
+		}
+		forceEscalation += static_cast< double >( player->GetProficiencyTable().GetXP() );
+	}
+
+	forceEscalation /= numClients;
+
+	return static_cast< int >( ceil( forceEscalation ) );
+}
+
 /*
 ============
 idGameLocal::UpdateLoggedDecals

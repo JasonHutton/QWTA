@@ -38,4 +38,5 @@
 	"#str_qwta_00000021" "Jupiter Driver"
 	"#str_qwta_00000022" "Jupiter Gunner"
 	"#str_qwta_00000023" "Jupiter Passenger"
+	"#str_qwta_00000024" "FE" // Force Escalation
 }

@@ -1,4 +1,4 @@
-// str_qwta_00000023
+// str_qwta_00000024
 
 /*
 =================
@@ -34,6 +34,10 @@ locString guis/vehicles/jupiter_gunner {
 
 locString guis/vehicles/jupiter_passenger { 
 	text "#str_qwta_00000023" // "Jupiter Passenger"
+}
+
+locString guis/game/scoreboard/fe { 
+	text "#str_qwta_00000024" // "FE"
 }
 
 /*

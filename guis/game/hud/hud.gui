@@ -2481,6 +2481,10 @@ gui hud {
 			handle 	topFillMaterial		= gui.cacheMaterial( "htopFill", "_frame health_top_fill" );
 			handle 	topLineMaterial		= gui.cacheMaterial( "htopLine", "_frame health_top_line" );
 			handle 	topGradMaterial		= gui.cacheMaterial( "htopGrad", "_3h health_top_grad" );
+			
+			handle 	feFillMaterial		= gui.cacheMaterial( "htopFill", "_frame health_top_fill" );
+			handle 	feLineMaterial		= gui.cacheMaterial( "htopLine", "_frame health_top_line" );
+			handle 	feGradMaterial		= gui.cacheMaterial( "htopGrad", "_3h health_top_grad" );
 
 			handle 	botFillMaterial		= gui.cacheMaterial( "hbotFill", "_frame health_bottom_fill" );
 			handle 	botLineMaterial		= gui.cacheMaterial( "hbotLine", "_frame health_bottom_line" );
@@ -2496,6 +2500,9 @@ gui hud {
 			rect	topRect				= absoluteRect.x, absoluteRect.y, 58, 16;
 			rect	iconRect			= topRect.x + 5, topRect.y + 2, 12, 12;
 			rect	textRect			= topRect.x + 22, topRect.y + 1, 36, 16;
+			rect	feRect				= topRect.x + topRect.w + 27, topRect.y, 41, 16;
+			rect	feTextRect			= feRect.x + 4, feRect.y + 1, feRect.w - 5, feRect.h;
+			rect	feTextRectStr			= feRect.x + 4, feRect.y + 1, feRect.w - 6, feRect.h;
 			rect	dividerRect			= topRect.x + 22, ( topRect.y + topRect.h ) - 7, 1, 7;
 			rect	healthBarRect		= topRect.x, topRect.y + 15, 126, 13;
 			rect	botRect				= topRect.x, topRect.y + 28, 85, 21;
@@ -2520,6 +2527,10 @@ gui hud {
 				drawCachedMaterial( topFillMaterial, topRect, gui.dialogFillColor );
 				drawCachedMaterial( topGradMaterial, topRect, gui.barGradientColor );
 				drawCachedMaterial( topLineMaterial, topRect, gui.dialogLineColor );
+				
+				drawCachedMaterial( feFillMaterial, feRect, gui.dialogFillColor );
+				drawCachedMaterial( feGradMaterial, feRect, gui.barGradientColor );
+				drawCachedMaterial( feLineMaterial, feRect, gui.dialogLineColor );
 
 				drawCachedMaterial( botFillMaterial, botRect, gui.dialogFillColor );
 				drawCachedMaterial( botLineMaterial, botRect, gui.dialogLineColor );
@@ -2549,6 +2560,8 @@ gui hud {
 
 				drawLocalizedText( player.roleTitle, classTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
 				drawText( toWStr( toString( max( 0, player.health ), 0 ) ), textRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+				drawText( toWStr( toString( max( 0, player.fe ), 0 ) ), feTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				drawLocalizedText( localize( "guis/game/scoreboard/fe" ), feTextRectStr, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
 				drawText( toWStr( toString( player.xp, 0 ) ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
 				drawLocalizedText( localize( "guis/game/scoreboard/xp" ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
 

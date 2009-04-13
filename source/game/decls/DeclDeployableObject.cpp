@@ -82,6 +82,7 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 			gameLocal.Warning( "sdDeclDeployableObject::Parse: Unknown rank def '%s' for deployable", rankRequiredString.c_str() );
 		}
 	}
+	forceEscalationRequired = temp.GetInt( "force_escalation_required" );
 
 	const char* entityType;
 
@@ -145,6 +146,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	allowRotation		= true;
 	creditRequired		= 0.1f;
 	rankRequired		= NULL;
+	forceEscalationRequired = 0;
 }
 
 

@@ -173,7 +173,7 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		gameLocal.DWarning( "Client %i tried to drop a deployable that doesn't exist!", botNum );
 		return -1;
 	}
-
+/*
 	if ( player->GetRankLevel() >= object->GetRankLevelRequired() ) {
 		float vCredit = player->GetVehicleCredit();//botThreadData.GetBotWorldState()->clientInfo[ botNum ].vehicleCreditUsed;
 		if(vCredit >= object->GetCreditRequired()) {
@@ -184,10 +184,22 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 				return 1;
 			}
 		}
-	}
+	}*/
 /*	else {
 		gameLocal.Printf("DEBUG: %s: Can't afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
 	}*/
+
+	if ( gameLocal.GetForceEscalation() >= object->GetForceEscalationRequired() ) {
+		float vCredit = player->GetVehicleCredit();
+		if( vCredit >= object->GetCreditRequired() ) {
+			if( gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 ) ) {
+				
+				player->UseVehicleCredit( object->GetCreditRequired() );
+				
+				return 1;
+			}
+		}
+	}
 
 	return -1;
 }

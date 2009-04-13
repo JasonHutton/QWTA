@@ -66,6 +66,7 @@ deployObject deployobject_platypus {
 	"category"						"vehicles"
 	"credit_required"				"0.5"
 	"rank_required"					"lance_corporal"
+	"force_escalation_required"		"20"
 }
 
 entityDef vehicle_platypus {
