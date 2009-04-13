@@ -316,8 +316,10 @@ void sdGameRules::SetClass_f( const idCmdArgs &args ) {
 
 	// QWTA
 	idPlayer* botPlayer = NULL;
-	int classCount = botThreadData.GetNumClassOnTeam(pc->GetTeam()->GetBotTeam(), pc->GetPlayerClassNum());
+	//int classCount = botThreadData.GetNumClassOnTeam(pc->GetTeam()->GetBotTeam(), pc->GetPlayerClassNum());
+	int classCount = gameLocal.ClassCount(pc, NULL, pc->GetTeam());
 	int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), pc->GetTeam()->GetBotTeam());
+
 	if(limit >= 0 && classCount >= limit) {
 		for ( int i = 0; i < MAX_CLIENTS; i++ ) {
 			idPlayer* other = gameLocal.GetClient( i );
