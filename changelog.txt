@@ -1,4 +1,4 @@
-QWTA v0.31:
+QWTA v0.3.1:
 ==========
 CHANGES:
 * Cvar g_showPlayerArrows redefaulted to 2.
@@ -19,6 +19,13 @@ CHANGES:
 * Cvar g_useClassLimits added.
   + Default 1.
   + Enables/disables the use of class limits.
+* Force Escalation introduced as a concept.
+  + Vehicles no longer have Rank requirements to be called in.
+  + Force Escalation is an average XP count of all players on a server.
+  + Vehicle Drops now use Force Escalation to determine when each vehicle
+  + can be called in. Force Escalation reflects ongoing conflict in a battle,
+  + and as it becomes more pitched, FE rises as central command takes further
+  + notice of the hotspot, and lends more aid.
   
 BUG FIXES:
 * Fixed Dark Matter Cannon having zero range blast radius in realistic mode.
