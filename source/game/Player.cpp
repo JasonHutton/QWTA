@@ -3869,19 +3869,19 @@ void idPlayer::Event_Unheal( int count ) {
 idPlayer::CanGetClass
 ===============
 */
-bool idPlayer::CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked ) {
+bool idPlayer::CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked, const bool allowEqual ) {
 	idCVar* limitCVar = pc->GetLimitCVar();
 	int count = gameLocal.ClassCount( pc, this, GetGameTeam());
 
 	if ( limitCVar ) {
-		if ( count >= limitCVar->GetInteger() ) {
+		if ( allowEqual ? count > limitCVar->GetInteger() : count >= limitCVar->GetInteger() ) {
 			return false;
 		}
 	}
 
 	if(!unchecked) {
 		int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), GDF);
-		if(limit >= 0 && count >= limit) {
+		if( ( limit >= 0 ) && ( allowEqual ? count > limit : count >= limit ) ) {
 			return false;
 		}
 	}
@@ -11192,6 +11192,11 @@ void idPlayer::OnFullyKilled( bool noBody ) {
 	CallNonBlockingScriptEvent( onFullyKilledFunction, helper );
 
 	ownsVehicle = false; //mal: if player is killed into limbo, or taps, any vehicles he was driving no longer belongs to him.
+	
+	const sdDeclPlayerClass* pc = GetInventory().GetClass();
+	if ( pc && !CanGetClass( pc, false, true ) ) {
+		ChangeClass( gameLocal.rules->FindNeedyClassOnTeam( GetTeam() ), 0 );
+	}
 }
 
 /*

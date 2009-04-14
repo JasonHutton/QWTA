@@ -2509,8 +2509,7 @@ int	sdGameRules::GetRoleLimitForTeam( playerClassTypes_t role, playerTeamTypes_t
 	else { // team == NOTEAM
 		gameLocal.Warning( "sdGameRules::GetRoleLimitForTeam Invalid team %i", team );
 	}
-/*
-// TODO in next release. Don't worry about for now. QWTA fixme -- Azuvector
+
 	if( limit > -1 ) { // If the class is disallowed/0, allow it to be filled temporarily if critical.
 		bool bIsCritical = false;
 		if( team == GDF && role == sdObjectiveManager::GetInstance().GetCriticalClass( team ) ) {
@@ -2519,13 +2518,14 @@ int	sdGameRules::GetRoleLimitForTeam( playerClassTypes_t role, playerTeamTypes_t
 		else if ( role == sdObjectiveManager::GetInstance().GetCriticalClass( team ) ) {
 			bIsCritical = true;
 		}
+		// And if it's critical anyway, increase the slots available to it.
 		if( bIsCritical ) {
 			limit += 1;
 			if(clients > 5*2) { limit += 1; }
 			if(clients > 10*2) { limit += 1; }
 		}
 	}
-*/
+
 	return limit;
 }
 

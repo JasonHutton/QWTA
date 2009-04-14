@@ -842,7 +842,7 @@ public:
 
 	void					UpdateBriefingView();
 
-	bool					CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked = false );
+	bool					CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked = false, const bool allowEqual = false );
 
 	bool					Give( const char *statname, const char *value );
 	bool					GiveClass( const char* classname );
