@@ -33,6 +33,10 @@ BUG FIXES:
 * Fixed negativePush flag not being copied over to inherited damageDefs.
 * Fixed an unlikely potential crash by returning a BS value from a method.
 * Fixed some minor Limbo GUI issues.
+* Fixed issue with class limiter that was preventing bots from
+    giving up their spot to a human player when on a dedicated server.
+* Fixed issue with the class limiter that was allowing players to bypass it
+    by switching teams.
 
 
 QWTA v0.3:
