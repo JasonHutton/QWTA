@@ -314,89 +314,15 @@ void sdGameRules::SetClass_f( const idCmdArgs &args ) {
 		classOption = atoi( classOptionStr );
 	}
 
-	// QWTA
-	idPlayer* botPlayer = NULL;
-	//int classCount = botThreadData.GetNumClassOnTeam(pc->GetTeam()->GetBotTeam(), pc->GetPlayerClassNum());
-	int classCount = gameLocal.ClassCount(pc, NULL, pc->GetTeam());
-	int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), pc->GetTeam()->GetBotTeam());
-
-	if(limit >= 0 && classCount >= limit) {
-		for ( int i = 0; i < MAX_CLIENTS; i++ ) {
-			idPlayer* other = gameLocal.GetClient( i );
-			if ( other == NULL ) {
-				continue;
-			}
-
-			const sdInventory& inv = other->GetInventory();
-			const sdDeclPlayerClass* opc = inv.GetClass();
-			
-			if(!opc || stricmp(opc->GetName(), className) != 0) {
-				continue;
-			}
-
-			if ( !other->userInfo.isBot ) {
-				continue;
-			}
-
-			if ( botPlayer != NULL ) {
-				continue;
-			}
-
-			botPlayer = other;
-		}
-	}
-
-	idPlayer* lPlayer = gameLocal.GetLocalPlayer();
-	if(lPlayer) {
-		if(!lPlayer->CanGetClass(pc) && botPlayer == NULL) {
-			lPlayer->SendLocalisedMessage( declHolder.declLocStrType[ "teams/messages/toomanyofclass" ], idWStrList() );
-			return;
-		}
-	}
-	// QWTA
-
 	if ( gameLocal.isClient ) {
-		if(botPlayer == NULL) {
-			// Normal change.
-			sdReliableClientMessage msg( GAME_RELIABLE_CMESSAGE_CLASSSWITCH );
-			msg.WriteLong( pc->Index() );
-			msg.WriteLong( classOption );
-			msg.Send();
-		}
-		else {
-			// Stealing a bot's slot.
-			sdReliableClientMessage msg( GAME_RELIABLE_CMESSAGE_CLASSSWITCH_UNCHECKED );
-			msg.WriteLong( pc->Index() );
-			msg.WriteLong( classOption );
-			msg.Send();
-		}
+		sdReliableClientMessage msg( GAME_RELIABLE_CMESSAGE_CLASSSWITCH );
+		msg.WriteLong( pc->Index() );
+		msg.WriteLong( classOption );
+		msg.Send();
 	} else {
-		if ( lPlayer != NULL ) {
-			if(botPlayer == NULL) {
-				// A normal change.
-				lPlayer->ChangeClass( pc, classOption );
-			}
-			else {
-				// We're stealing a bot's slot.
-				lPlayer->ChangeClass( pc, classOption, true );
-			}
-		}
-	}
-
-	// QWTA
-	if ( botPlayer != NULL ) {
-		sdTeamInfo* newBotTeam = gameLocal.rules->FindNeedyTeam( botPlayer );
-		const sdDeclPlayerClass* newBotClass = gameLocal.rules->FindNeedyClassOnTeam( newBotTeam );
-		if( newBotClass != NULL ) {
-			// I think I'm doing something wrong here, but it seems to work, so I'm just going to leave it. -- Azuvector
-			botPlayer->SetGameTeam( newBotTeam );
-			botPlayer->ChangeClass( newBotClass, 0 );
-		}
-		else {
-			botPlayer->Kill( NULL );
-			botPlayer->SetGameTeam( newBotTeam );
-			botPlayer->SetWantSpectate( false );
-			botPlayer->ServerForceRespawn( false );
+		idPlayer* player = gameLocal.GetLocalPlayer();
+		if ( player != NULL ) {
+			player->ChangeClass( pc, classOption );
 		}
 	}
 }
@@ -1559,13 +1485,14 @@ sdGameRules::FindNeedyClassOnTeam - QWTA
 const sdDeclPlayerClass* sdGameRules::FindNeedyClassOnTeam( sdTeamInfo* team, idPlayer* ignore )
 {
 	const sdDeclPlayerClass* bestClass = NULL;
-	sdTeamManagerLocal& manager = sdTeamManager::GetInstance();
-	if( manager.GetTeamSafe( "gdf" ) ) {
+
+	if( team->GetBotTeam() == GDF ) {
 		bestClass = gameLocal.declPlayerClassType[ "soldier" ];
 	}
-	else if( manager.GetTeamSafe( "strogg" ) ) {
+	else if( team->GetBotTeam() == STROGG ) {
 		bestClass = gameLocal.declPlayerClassType[ "aggressor" ];
 	}
+
 	return bestClass;
 }
 

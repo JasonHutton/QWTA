@@ -3927,9 +3927,46 @@ void idPlayer::ChangeClass( const sdDeclPlayerClass* pc, int classOption, const 
 	if ( IsSpectator() ) {
 		return;
 	}
+	idPlayer* botPlayer = NULL;
 
-	if ( !CanGetClass( pc, unchecked ) ) {
-		return;
+	if ( !CanGetClass( pc ) ) {
+		if ( userInfo.isBot ) {
+			return;
+		}
+			
+		int classCount = gameLocal.ClassCount(pc, NULL, pc->GetTeam());
+		int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), pc->GetTeam()->GetBotTeam());
+
+		if(limit >= 0 && classCount >= limit) {
+			for ( int i = 0; i < MAX_CLIENTS; i++ ) {
+				idPlayer* other = gameLocal.GetClient( i );
+				if ( other == NULL ) {
+					continue;
+				}
+
+				const sdInventory& inv = other->GetInventory();
+				const sdDeclPlayerClass* opc = inv.GetClass();
+				
+				if(!opc || opc != pc ) {
+					continue;
+				}
+
+				if ( !other->userInfo.isBot ) {
+					continue;
+				}
+
+				if ( botPlayer != NULL ) {
+					continue;
+				}
+
+				botPlayer = other;
+			}
+		}
+
+		if( botPlayer == NULL ) {
+			SendLocalisedMessage( declHolder.declLocStrType[ "teams/messages/toomanyofclass" ], idWStrList() );
+			return;
+		}
 	}
 
 	sdTeamInfo* classTeam = pc->GetTeam();
@@ -3938,6 +3975,13 @@ void idPlayer::ChangeClass( const sdDeclPlayerClass* pc, int classOption, const 
 			return;
 		}
 	}
+
+	/*
+	idStr name = userInfo.name;
+	idStr curClass = GetInventory().GetClass() ? GetInventory().GetClass()->GetName() : "unknown";
+	idStr newClass = pc->GetName();
+	gameLocal.Printf("DEBUG: Player %s classchange: [%s]->[%s].\n", name.c_str(), curClass.c_str(), newClass.c_str());
+	*/
 
 	if ( gameLocal.rules->IsWarmup() && !IsDead() ) {
 		bool changed = GetInventory().GiveClass( pc, false );
@@ -3950,6 +3994,32 @@ void idPlayer::ChangeClass( const sdDeclPlayerClass* pc, int classOption, const 
 		changed |= GetInventory().SetCachedClassOption( 0, classOption, false );
 		if ( changed ) {
 			GetInventory().SendClassInfo( true );
+		}
+	}
+
+	if ( botPlayer != NULL ) {
+		sdTeamInfo* newBotTeam = gameLocal.rules->FindNeedyTeam( botPlayer );
+		const sdDeclPlayerClass* newBotClass = gameLocal.rules->FindNeedyClassOnTeam( newBotTeam );
+
+		/*
+		idStr botName = botPlayer->userInfo.name;
+		idStr curBotTeam = botPlayer->GetTeam() ? botPlayer->GetTeam()->GetLookupName() : "unknown";
+		idStr newBotTeamStr = newBotTeam ? newBotTeam->GetLookupName() : "unknown";
+		idStr curBotClass = botPlayer->GetInventory().GetClass() ? botPlayer->GetInventory().GetClass()->GetName() : "unknown";
+		idStr newBotClassStr = newBotClass ? newBotClass->GetName() : "unknown";
+		gameLocal.Printf("DEBUG: Bot %s being forced: [%s|%s]->[%s|%s]\n", botName.c_str(), curBotTeam.c_str(), curBotClass.c_str(), newBotTeamStr.c_str(), newBotClassStr.c_str());
+		*/
+
+		if( newBotClass != NULL ) {
+			// I think I'm doing something wrong here, but it seems to work, so I'm just going to leave it. -- Azuvector
+			botPlayer->SetGameTeam( newBotTeam );
+			botPlayer->ChangeClass( newBotClass, 0 );
+		}
+		else {
+			botPlayer->Kill( NULL );
+			botPlayer->SetGameTeam( newBotTeam );
+			botPlayer->SetWantSpectate( false );
+			botPlayer->ServerForceRespawn( false );
 		}
 	}
 }
