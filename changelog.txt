@@ -26,6 +26,9 @@ CHANGES:
   + can be called in. Force Escalation reflects ongoing conflict in a battle,
   + and as it becomes more pitched, FE rises as central command takes further
   + notice of the hotspot, and lends more aid.
+* Class limits will now dynamically adjust according to critical classes.
+* Players using temporary class limit increases will be kicked out of their
+  class upon death, after the temporary increase is removed.
   
 BUG FIXES:
 * Fixed Dark Matter Cannon having zero range blast radius in realistic mode.
@@ -34,9 +37,9 @@ BUG FIXES:
 * Fixed an unlikely potential crash by returning a BS value from a method.
 * Fixed some minor Limbo GUI issues.
 * Fixed issue with class limiter that was preventing bots from
-    giving up their spot to a human player when on a dedicated server.
+  giving up their spot to a human player when on a dedicated server.
 * Fixed issue with the class limiter that was allowing players to bypass it
-    by switching teams.
+  by switching teams.
 
 
 QWTA v0.3:
