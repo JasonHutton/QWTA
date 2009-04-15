@@ -1952,4 +1952,18 @@ gui mainMenu {
 		}
 	}
 	
+	windowDef modVersion {
+		properties {
+			float fontSize = 12;
+			rect	rect	= 0 + 2, SCREEN_HEIGHT - rect.h, BUTTON_WIDTH, fontSize;
+			float visible = compare( gui.activeDialog, "" ) == true || compare( gui.activeDialog, "login" );			
+			wstring modText = toWStr( gui.getCVar( "g_modVersion" ) );
+		}
+
+		events {
+			onPostDraw {
+				drawText( modText, "absoluteRect.x, absoluteRect.y, absoluteRect.w, absoluteRect.h", COLOR_TEXT, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+			}
+		}
+	}
 }
