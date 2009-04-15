@@ -36,7 +36,21 @@ struct gameVersion_t {
 	char	string[strSize];
 } gameVersion;
 
+#define MOD_NAME "QWTA"
+#define MOD_VERSION_MAJOR 0
+#define MOD_VERSION_MINOR 3
+#define MOD_VERSION_REVISION 1
+
+struct modVersion_t {
+	static const int strSize = 256;
+	modVersion_t( void ) {
+		idStr::snPrintf( string, strSize, "%s %d.%d.%d", MOD_NAME, MOD_VERSION_MAJOR, MOD_VERSION_MINOR, MOD_VERSION_REVISION );
+	}
+	char	string[strSize];
+} modVersion;
+
 idCVar g_version(					"g_version",				gameVersion.string,	CVAR_GAME | CVAR_ROM, "game version" );
+idCVar g_modVersion(				"g_modVersion",				modVersion.string,	CVAR_GAME | CVAR_ROM, "mod version" );
 
 // noset vars
 idCVar gamename(					"gamename",					GAME_VERSION,	CVAR_GAME | CVAR_SERVERINFO | CVAR_ROM, "" );
