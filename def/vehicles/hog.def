@@ -69,7 +69,7 @@ deployObject deployobject_hog {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"lance_corporal"
-	"force_escalation_required"		"80"
+	"force_escalation_required"		"30"
 }
 
 entityDef vehicle_hog {
