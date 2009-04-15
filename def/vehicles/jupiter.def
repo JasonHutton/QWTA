@@ -57,7 +57,7 @@ deployObject deployobject_jupiter {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"captain"
-	"force_escalation_required"		"160"
+	"force_escalation_required"		"120"
 }
 
 entityDef vehicle_jupiter {

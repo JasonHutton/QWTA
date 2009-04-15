@@ -47,7 +47,7 @@ deployObject deployobject_icarus {
 	"category"						"vehicles"
 	"credit_required"				"0.5"
 	"rank_required"					"private"
-	"force_escalation_required"		"20"
+	"force_escalation_required"		"15"
 }
 
 entityDef vehicle_icarus_visuals {

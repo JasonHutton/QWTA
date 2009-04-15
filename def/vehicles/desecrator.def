@@ -58,7 +58,7 @@ deployObject deployobject_desecrator {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"gunnery_sergeant"
-	"force_escalation_required"		"60"
+	"force_escalation_required"		"40"
 }
 
 entityDef vehicle_desecrator {

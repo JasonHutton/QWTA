@@ -68,7 +68,7 @@ deployObject deployobject_trojan {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"sergeant"
-	"force_escalation_required"		"60"
+	"force_escalation_required"		"40"
 }
 
 entityDef vehicle_trojan {

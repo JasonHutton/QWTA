@@ -54,7 +54,7 @@ deployObject deployobject_bumblebee {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"gunnery_sergeant"
-	"force_escalation_required"		"70"
+	"force_escalation_required"		"50"
 }
 
 entityDef vehicle_bumblebee {

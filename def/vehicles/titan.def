@@ -57,7 +57,7 @@ deployObject deployobject_titan {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"master_chief"
-	"force_escalation_required"		"80"
+	"force_escalation_required"		"60"
 }
 
 entityDef vehicle_titan {

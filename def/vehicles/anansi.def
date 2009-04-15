@@ -92,7 +92,7 @@ deployObject deployobject_anansi {
 	"category"						"vehicles"
 	"credit_required"				"1"
 	"rank_required"					"third_lieutenant"
-	"force_escalation_required"		"100"
+	"force_escalation_required"		"90"
 }
 
 entityDef vehicle_anansi {
