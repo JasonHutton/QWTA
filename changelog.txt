@@ -29,6 +29,8 @@ CHANGES:
 * Class limits will now dynamically adjust according to critical classes.
 * Players using temporary class limit increases will be kicked out of their
   class upon death, after the temporary increase is removed.
+* Cvar g_modVersion added. Reports the version of QWTA that is in use.
+* Current version of QWTA is now displayed in the lower-left of the main menu.
   
 BUG FIXES:
 * Fixed Dark Matter Cannon having zero range blast radius in realistic mode.
