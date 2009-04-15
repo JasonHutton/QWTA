@@ -1,5 +1,5 @@
 Quake Wars: Tactical Assault
-v0.31
+v0.3.1
 ================================
 http://qwta.moddb.com/
 
@@ -50,7 +50,7 @@ impression it had on a lot of people.
 * Optional realistic weapon aiming..
 * Other realism-oriented features...
 * Radar no longer detects infantry.
-* Adaptive class-number limiting.
+* Optional adaptive class-number limiting.
 * Blood effects!
 * Death/unconscious screen tinting and fading.
 * Mxyzptlk's megatexture autodownload.
