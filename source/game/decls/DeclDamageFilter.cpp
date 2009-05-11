@@ -81,6 +81,21 @@ bool sdDeclDamageFilter::ParseFilter( damageFilter_t& filter, idParser& src ) {
 				filter.mode = DFM_NORMAL;
 			}
 
+		} else if( !token.Icmp( "baseETQW12_damage" ) ) {
+			bool error;
+			filter.baseETQW12damage = src.ParseFloat( &error );
+			if ( error ) {
+				src.Error( "sdDeclDamageFilter::ParseLevel Invalid Parm for 'baseETQW12_damage'" );
+				return false;
+			}
+
+			if ( src.PeekTokenString( "%" ) ) {
+				src.ReadToken( &token );
+				filter.baseETQW12mode = DFM_PERCENT;
+			} else {
+				filter.baseETQW12mode = DFM_NORMAL;
+			}
+
 		} else if( !token.Icmp( "target" ) ) {
 
 			if ( !src.ReadToken( &token ) ) {
@@ -133,7 +148,9 @@ bool sdDeclDamageFilter::Parse( const char *text, const int textLength ) {
 			damageFilter_t& filter		= filters.Alloc();
 			filter.target				= NULL;
 			filter.damage				= 0.f;
+			filter.baseETQW12damage		= 0.f;
 			filter.mode					= DFM_NORMAL;
+			filter.baseETQW12mode		= DFM_NORMAL;
 			filter.noScale				= false;
 
 			if ( !ParseFilter( filter, src ) ) {

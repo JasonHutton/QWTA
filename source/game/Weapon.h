@@ -121,6 +121,14 @@ enum weaponSpreadValueIndex_t {
 	WSV_NUM,
 };
 
+enum weaponSpreadValueTypeIndex_t {
+	WSVT_BASE15, // BaseETQW 1.5
+	WSVT_BASE12, // BaseETQW 1.2
+	WSVT_REAL15, // Realistic BaseETQW 1.5
+	WSVT_REAL12, // Realistic BaseETQW 1.2
+	WSVT_NUM,
+};
+
 enum weaponAimValueIndex_t {
 	WAV_NORMAL,
 	WAV_IRONSIGHTS,
@@ -272,6 +280,11 @@ public:
 	bool					ActivateAttack( void ) const { return activateAttack; }
 
 private:
+	void					InitDefaultSpreads();
+	void					LoadWeaponSpreads( weaponSpreadValues_t (&spreads)[WSV_NUM], const weaponSpreadValues_t (&defaultSpreads)[WSV_NUM], const char* prefix );
+	idStr					BuildSpreadString( const char* keyPrefix, const char* wsviPrefix, const char* key );
+
+private:
 	void					SetupAnimClass( const char* prefix );
 
 	// script control
@@ -359,8 +372,11 @@ private:
 	
 	weaponSpreadValueIndex_t	ownerStanceState;
 
-	weaponSpreadValues_t	spreadValues[ WSV_NUM ];
-	weaponSpreadValues_t	realisticSpreadValues[ WSV_NUM ];
+	static weaponSpreadValues_t defaultSpreadValues[ WSV_NUM ]; // Default BaseETQW 1.5 spreads. Used to initialize spreadValues[].
+	static bool				defaultSpreadsInitialized;
+	weaponSpreadValues_t	(*pSpreadValues)[ WSV_NUM ]; // Currently-in-use Spread value set for this weapon.
+	weaponSpreadValues_t	spreadValues[ WSVT_NUM ][ WSV_NUM ];
+
 	weaponAimValues_t		aimValues[ WAV_NUM ];
 	weaponAimValues_t		realisticAimValues[ WAV_NUM ];
 	float					spreadValueMax;				// used to normalize against

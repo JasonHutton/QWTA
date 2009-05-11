@@ -182,6 +182,10 @@ boolean weapon_base::ShouldRunGuis() {
 void weapon_base::preinit() {
 	fireRate = getFloatKeyWithDefault( "fire_rate", 0.2f );
 	numProjectiles = getFloatKeyWithDefault( "num_projectiles", 1.f );
+	if ( g_useBaseETQW12Weapons.getBoolValue() ) {
+			fireRate = getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRate );
+			numProjectiles = getFloatKeyWithDefault( "baseETQW12_num_projectiles", numProjectiles );
+	}
 	range = getFloatKeyWithDefault( "range", 8192 );
 	triggerDelay = getFloatKeyWithDefault( "trigger_delay", 0.f );
 	reloadAmmo = getFloatKeyWithDefault( "reload_ammo", 1.f );

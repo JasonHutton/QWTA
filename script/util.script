@@ -154,6 +154,7 @@ cvar	g_aptWarning;
 
 cvar	g_realisticDamage;
 cvar	g_realisticSpread;
+cvar	g_useBaseETQW12Weapons;
 
 object gameplay_base;
 gameplay_base gameplayManager;

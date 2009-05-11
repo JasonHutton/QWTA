@@ -457,6 +457,7 @@ extern idCVar	g_noTVChat;
 
 extern idCVar	g_realisticDamage;
 extern idCVar	g_realisticSpread;
+extern idCVar	g_useBaseETQW12Weapons;
 
 extern idCVar	g_useClassLimits;
 

@@ -157,6 +157,10 @@ void weapon_clip::preinit() {
 	scopeGUIHandle	= -1;
 
 	fireRateAuto	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_useBaseETQW12Weapons.getBoolValue() ) {
+			fireRateAuto	= getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRateAuto );
+	}
+	
 	fireRateSingle	= 0.15f;
 
 	refireTime		= -1.0f;

@@ -7553,7 +7553,15 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* ignoreEntity, const id
 
 					float power = damagePower;
 
-					float cutoff = projectileDict.GetFloat( "min_damage_percent", "100" ) * 0.01;
+					float cutoff;
+					if ( g_useBaseETQW12Weapons.GetBool() ) {
+						if ( !projectileDict.GetFloat( "baseETQW12_min_damage_percent", "", cutoff ) ) {
+							cutoff = projectileDict.GetFloat( "min_damage_percent", "100" );
+						}
+						cutoff *= 0.01f;
+					} else {
+						cutoff = projectileDict.GetFloat( "min_damage_percent", "100" ) * 0.01;
+					}
 					if ( cutoff < 1.f && cutoff > 0.f ) {
 						if ( trace.fraction > cutoff ) {
 							float range = 1.f - cutoff;

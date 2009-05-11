@@ -14,7 +14,9 @@ enum damageFilterMode_t {
 typedef struct damageFilter_s {
 	const sdDeclTargetInfo*		target;
 	float						damage;
+	float						baseETQW12damage;
 	damageFilterMode_t			mode;
+	damageFilterMode_t			baseETQW12mode;
 	bool						noScale;
 } damageFilter_t;
 

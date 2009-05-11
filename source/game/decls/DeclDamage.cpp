@@ -69,12 +69,22 @@ float sdDeclDamage::GetDamage( idEntity* entity, bool& noScale ) const {
 
 		if ( filter.target->FilterEntity( entity ) ) {
 			noScale = filter.noScale;
-			switch ( filter.mode ) {
-				default:
-				case DFM_NORMAL:
-					return filter.damage;
-				case DFM_PERCENT:
-					return ( filter.damage * 0.01f ) * entity->GetMaxHealth();
+			if ( g_useBaseETQW12Weapons.GetBool() ) {
+				switch ( filter.baseETQW12mode ) {
+					default:
+					case DFM_NORMAL:
+						return filter.baseETQW12damage;
+					case DFM_PERCENT:
+						return ( filter.baseETQW12damage * 0.01f ) * entity->GetMaxHealth();
+				}
+			} else {
+				switch ( filter.mode ) {
+					default:
+					case DFM_NORMAL:
+						return filter.damage;
+					case DFM_PERCENT:
+						return ( filter.damage * 0.01f ) * entity->GetMaxHealth();
+				}
 			}
 		}
 	}
