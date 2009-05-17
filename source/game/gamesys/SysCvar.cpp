@@ -148,7 +148,7 @@ idCVar g_debugMask(					"g_debugMask",				"",				CVAR_GAME, "debugs a deployment
 idCVar g_debugLocations(			"g_debugLocations",			"0",			CVAR_GAME | CVAR_BOOL, "" );
 idCVar g_showActiveDeployZones(		"g_showActiveDeployZones",	"0",			CVAR_GAME | CVAR_BOOL, "" );
 
-idCVar g_disableVehicleSpawns(		"g_disableVehicleSpawns",	"0",			CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT | CVAR_RANKLOCKED, "disables vehicles spawning from construction pads" );
+idCVar g_disableVehicleSpawns(		"g_disableVehicleSpawns",	"1",			CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT | CVAR_RANKLOCKED, "disables vehicles spawning from construction pads" );
 
 idCVar g_frametime(					"g_frametime",				"0",			CVAR_GAME | CVAR_BOOL, "displays timing information for each game frame" );
 //idCVar g_timeentities(				"g_timeEntities",			"0",			CVAR_GAME | CVAR_FLOAT, "when non-zero, shows entities whose think functions exceeded the # of milliseconds specified" );
