@@ -805,7 +805,8 @@ gui hud {
 			float	specUnconscious		= player.localView == false && player.viewDead;
 			float	selfDead		= player.limbo && player.spectator == false;
 			float	unconsciousTime		= globals.gameHud.unconsciousTime;
-			float	conditionals		= player.endGame == false && player.endGameCamera == false;
+			float	showFading		= gui.getCVarBool( "g_useDeathFading" );
+			float	conditionals		= player.endGame == false && player.endGameCamera == false && showFading == true;
 			float	visible 		= (selfUnconscious || specUnconscious || selfDead) && conditionals;
 			float	tempValue		= 0;
 		}
@@ -817,6 +818,9 @@ gui hud {
 				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, foreColor );
 
 				gui.scriptPushFloat( false );
+			}
+			onCVarChanged "g_useDeathFading" {
+				showFading = gui.getCVarBool( "g_useDeathFading" );
 			}
 			onPropertyChanged "unconsciousTime" {
 				if(unconsciousTime > -1) {
@@ -842,7 +846,8 @@ gui hud {
 			float	selfDead		= player.limbo && player.spectator == false;
 			// Don't need to check for specDead. Can't spec the dead.
 			float	deadTime		= globals.gameHud.deadTime;
-			float	conditionals		= player.endGame == false && player.endGameCamera == false;
+			float	showFading		= gui.getCVarBool( "g_useDeathFading" );
+			float	conditionals		= player.endGame == false && player.endGameCamera == false && showFading == true;
 			float	visible 		= selfDead && conditionals;
 			float	tempValue		= 0;
 		}
@@ -854,6 +859,9 @@ gui hud {
 				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, foreColor );
 
 				gui.scriptPushFloat( false );
+			}
+			onCVarChanged "g_useDeathFading" {
+				showFading = gui.getCVarBool( "g_useDeathFading" );
 			}
 			onPropertyChanged "deadTime" {
 				if(deadTime > -1) {
