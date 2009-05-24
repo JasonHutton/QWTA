@@ -592,8 +592,8 @@ idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVA
 idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
 idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should weapon spreads ingame be realistic, or game-oriented?" );
 idCVar	g_useBaseETQW12Shotguns(	"g_useBaseETQW12Shotguns",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use BaseETQW v1.2 behaviour for shotgun and nailgun." );
-idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_BOOL,										"Use Quake 4-style Dark Matter weaponry." );
-idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL,										"Notify players of the launch of Hammer or DMC artillery." );
+idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,										"Use Quake 4-style Dark Matter weaponry." );
+idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,										"Notify players of the launch of Hammer or DMC artillery." );
 
 idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables class number limitations." );
 
