@@ -18,6 +18,7 @@ typedef struct damageFilter_s {
 	damageFilterMode_t			mode;
 	damageFilterMode_t			baseETQW12mode;
 	bool						noScale;
+	bool						baseETQW12dataLoaded;
 } damageFilter_t;
 
 class sdDeclDamageFilter : public idDecl {

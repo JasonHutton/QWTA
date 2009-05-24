@@ -96,6 +96,8 @@ bool sdDeclDamageFilter::ParseFilter( damageFilter_t& filter, idParser& src ) {
 				filter.baseETQW12mode = DFM_NORMAL;
 			}
 
+			filter.baseETQW12dataLoaded = true;
+
 		} else if( !token.Icmp( "target" ) ) {
 
 			if ( !src.ReadToken( &token ) ) {
@@ -152,6 +154,7 @@ bool sdDeclDamageFilter::Parse( const char *text, const int textLength ) {
 			filter.mode					= DFM_NORMAL;
 			filter.baseETQW12mode		= DFM_NORMAL;
 			filter.noScale				= false;
+			filter.baseETQW12dataLoaded	= false;
 
 			if ( !ParseFilter( filter, src ) ) {
 				src.Error( "sdDeclDamageFilter::Parse Error Parsing Filter %i", filters.Num() );
