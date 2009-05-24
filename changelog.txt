@@ -16,6 +16,14 @@ CHANGES:
     BaseETQW 1.2 Shotguns: 
     g_useBaseETQW12Shotguns 1; g_realisticDamage 0; g_realisticSpread 0
 * g_disableVehicleSpawns readded and redefaulted to 1.
+* Cvar g_artilleryWarning added.
+  + Default 0.
+  + Enables or disables the printed warning text onscreen when the Hammer or
+    Dark Matter Cannon is fired.
+* Cvar g_useQuake4DarkMatter added.
+  + Default 1.
+  + Controls whether the Dark Matter Cannon fires ETQW-style Dark Matter
+    projectiles, or Quake 4-style Dark Matter projectiles.
 
 BUG FIXES:
 
