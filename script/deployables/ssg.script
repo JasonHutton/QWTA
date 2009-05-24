@@ -391,7 +391,14 @@ void deployable_ssg::FireMissile() {
 void deployable_ssg::Launch() {
 	FireMissile();
 
-	string anim = getKey( "missile_anim" );
+	string anim;
+	
+	if ( g_useQuake4DarkMatter.getBoolValue() ) {
+		anim = getKey( "dmg_missile_anim" );
+	} else {
+		anim = getKey( "missile_anim" );
+	}
+	
 	if ( anim != "" ) {
 		playAnim( getIntKey( "missile_channel" ), anim );
 	}

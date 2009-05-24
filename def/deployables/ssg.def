@@ -70,6 +70,11 @@ model deployable_ssg {
 	anim fire						models/structures/strogg/deployables/weapons/ssg/ssg_fire.md5anim {
 		frame 1							effect fx_fire muzzle
 	}
+	
+	// This is a duplicate to help with cvar-support to changing this around. -- Azuvector
+	anim dmg_fire					models/structures/strogg/deployables/weapons/ssg/ssg_fire.md5anim {
+		frame 1							effect fx_dmg_fire muzzle
+	}
 
 	anim reload						models/structures/strogg/deployables/weapons/ssg/ssg_reload.md5anim {
 	}
@@ -189,6 +194,7 @@ entityDef deployable_ssg {
 	"target_height"					"8000"
 
 	"missile_anim"					"fire"
+	"dmg_missile_anim"				"dmg_fire"
 	"missile_channel"				"0"
 
 	"snd_deploy"					"sounds/deployables/ssg/deploy"
