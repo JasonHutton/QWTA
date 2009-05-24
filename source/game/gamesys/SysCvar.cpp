@@ -591,7 +591,7 @@ idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVA
 
 idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
 idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should weapon spreads ingame be realistic, or game-oriented?" );
-idCVar	g_useBaseETQW12Shotguns(		"g_useBaseETQW12Shotguns",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use BaseETQW v1.2 behaviour for shotgun and nailgun." );
+idCVar	g_useBaseETQW12Shotguns(	"g_useBaseETQW12Shotguns",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use BaseETQW v1.2 behaviour for shotgun and nailgun." );
 
 idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables class number limitations." );
 
