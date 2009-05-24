@@ -1,21 +1,20 @@
 QWTA v0.3.2:
 ==========
 CHANGES:
-* Cvar g_useBaseETQW12Weapons added.
+* Cvar g_useBaseETQW12Shotguns added.
   + Default 1.
-  + Controls whether certain weapons have a basic behaviour that follows the
+  + Controls whether shotguns have a basic behaviour that follows the
     BaseETQW 1.2 behaviour model, or the BaseETQW 1.5 behaviour model.
   + Enable for BaseETQW 1.2 behaviour, disable for BaseETQW 1.5 behaviour.
   + Works in conjunction with g_realisticSpread and g_realisticDamage,
     so a variety of weapon behaviour combinations are possible.
-  + Currently, only the Shotgun and Nailgun utilize this feature.
   + Examples: 
     Default QWTA Shotguns:
-    g_useBaseETQW12Weapons 1; g_realisticDamage 1; g_realisticSpread 1
+    g_useBaseETQW12Shotguns 1; g_realisticDamage 1; g_realisticSpread 1
     BaseETQW 1.5 Shotguns:
-    g_useBaseETQW12Weapons 0; g_realisticDamage 0; g_realisticSpread 0
+    g_useBaseETQW12Shotguns 0; g_realisticDamage 0; g_realisticSpread 0
     BaseETQW 1.2 Shotguns: 
-    g_useBaseETQW12Weapons 1; g_realisticDamage 0; g_realisticSpread 0
+    g_useBaseETQW12Shotguns 1; g_realisticDamage 0; g_realisticSpread 0
 * g_disableVehicleSpawns readded and redefaulted to 1.
 
 BUG FIXES:
