@@ -307,13 +307,13 @@ idWeapon::idWeapon() {
 
 	// Ensure the pSpreadValues pointer is initialized to something sensible.
 	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
 		}
 	} else {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
@@ -936,13 +936,13 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	LoadWeaponSpreads( spreadValues[ WSVT_REAL15 ], spreadValues[ WSVT_BASE15 ], "realistic" );
 	LoadWeaponSpreads( spreadValues[ WSVT_REAL12 ], spreadValues[ WSVT_REAL15 ], "baseETQW12_realistic" );
 	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
 		}
 	} else {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
@@ -1185,13 +1185,13 @@ void idWeapon::UpdateSpreadValue() {
 	}
 
 	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
 		}
 	} else {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
@@ -1260,13 +1260,13 @@ void idWeapon::UpdateSpreadValue( const idVec3& velocity, const idAngles& angles
 	}
 
 	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
 		}
 	} else {
-		if ( g_useBaseETQW12Weapons.GetBool() ) {
+		if ( g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
 		} else {
 			pSpreadValues = &spreadValues[ WSVT_BASE15 ];

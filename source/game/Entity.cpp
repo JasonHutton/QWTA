@@ -7554,7 +7554,7 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* ignoreEntity, const id
 					float power = damagePower;
 
 					float cutoff;
-					if ( g_useBaseETQW12Weapons.GetBool() ) {
+					if ( g_useBaseETQW12Shotguns.GetBool() ) {
 						if ( !projectileDict.GetFloat( "baseETQW12_min_damage_percent", "", cutoff ) ) {
 							cutoff = projectileDict.GetFloat( "min_damage_percent", "100" );
 						}

@@ -69,7 +69,7 @@ float sdDeclDamage::GetDamage( idEntity* entity, bool& noScale ) const {
 
 		if ( filter.target->FilterEntity( entity ) ) {
 			noScale = filter.noScale;
-			if ( g_useBaseETQW12Weapons.GetBool() ) {
+			if ( g_useBaseETQW12Shotguns.GetBool() ) {
 				switch ( filter.baseETQW12mode ) {
 					default:
 					case DFM_NORMAL:
