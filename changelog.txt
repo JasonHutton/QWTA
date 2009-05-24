@@ -24,6 +24,10 @@ CHANGES:
   + Default 1.
   + Controls whether the Dark Matter Cannon fires ETQW-style Dark Matter
     projectiles, or Quake 4-style Dark Matter projectiles.
+* Cvar g_useDeathFading added.
+  + Default 1.
+  + Controls whether fading effects are used when players are unconscious
+    or killed.
 
 BUG FIXES:
 
