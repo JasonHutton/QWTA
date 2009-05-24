@@ -329,6 +329,8 @@ void game_main() {
 	g_realisticDamage			= sys.getCVar( "g_realisticDamage", "" );
 	g_realisticSpread			= sys.getCVar( "g_realisticSpread", "" );
 	g_useBaseETQW12Weapons		= sys.getCVar( "g_useBaseETQW12Weapons", "" );
+	g_useQuake4DarkMatter		= sys.getCVar( "g_useQuake4DarkMatter", "" );
+	g_artilleryWarning			= sys.getCVar( "g_artilleryWarning", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

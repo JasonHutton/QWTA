@@ -97,6 +97,7 @@ object deployable_ssg : deployable_base {
 	vector	firingVelocity;
 	boolean	hasTarget;
 	float	projectileIndex;
+	float	dmgProjectileIndex;
 
 	entity	targetCapturer;
 
@@ -209,6 +210,8 @@ void deployable_ssg::preinit() {
 	jointBarrel		= getJointHandle( getKey( "joint_barrel" ) );
 
 	entityDeclIndex	= sys.getDeclType( "entityDef" );
+	
+	dmgProjectileIndex = sys.getDeclIndex( entityDeclIndex, getKey( "def_dmg_projectile" ) );
 	projectileIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_projectile" ) );
 
 	barrel			= getLocalJointPos( jointBarrel ) - getLocalJointPos( jointPitch );
@@ -378,7 +381,11 @@ void deployable_ssg::ServerFiring() {
 void deployable_ssg::FireMissile() {
 	vector org = getJointPos( jointPitch ) + firingOffset;
 
-	missile = launchMissileSimple( owner, self, $null_entity, projectileIndex, -1, 0.f, org, firingVelocity );
+	if ( g_useQuake4DarkMatter.getBoolValue() ) {
+		missile = launchMissileSimple( owner, self, $null_entity, dmgProjectileIndex, -1, 0.f, org, firingVelocity );
+	} else {
+		missile = launchMissileSimple( owner, self, $null_entity, projectileIndex, -1, 0.f, org, firingVelocity );
+	}
 }
 
 void deployable_ssg::Launch() {
@@ -389,7 +396,9 @@ void deployable_ssg::Launch() {
 		playAnim( getIntKey( "missile_channel" ), anim );
 	}
 
-	//objManager.CPrintEvent( sys.localizeString( "game/ssg_fired" ), $null );
+	if ( g_artilleryWarning.getBoolValue() ) {
+		objManager.CPrintEvent( sys.localizeString( "game/ssg_fired" ), $null );
+	}
 
 	team_base team = getGameTeam();
 	objManager.PlaySound( team.getKey( "snd_ssg_fired" ), team );

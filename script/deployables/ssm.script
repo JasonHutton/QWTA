@@ -288,7 +288,9 @@ void deployable_ssm::Launch() {
 		StartBarrelUpdateThread();
 	}
 
-	//objManager.CPrintEvent( sys.localizeString( "game/hammer_fired" ), $null );
+	if ( g_artilleryWarning.getBoolValue() ) {
+		objManager.CPrintEvent( sys.localizeString( "game/hammer_fired" ), $null );
+	}
 
 	if ( !sys.isClient() ) {
 		sync_reloadTime = sys.getTime() + reloadTime;
