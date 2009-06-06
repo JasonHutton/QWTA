@@ -20,6 +20,8 @@ public:
 	const char*					GetCallback( void ) const { return callback; }
 	int							GetType( void ) const { return type; }
 	bool						Check( idEntity* main, idEntity* other ) const { return requirements.Check( main, other ); }
+	bool						GetCVarAVD( void ) const { return cvarQuickchatFlags.cvarAVD; }
+	bool						GetCVarAVDEnabled( void ) const { return cvarQuickchatFlags.cvarAVDEnabled; }
 
 protected:
 	const sdDeclLocStr*			text;
@@ -29,6 +31,13 @@ protected:
 	idStr						callback;
 	int							type;
 	sdRequirementContainer		requirements;
+
+	typedef struct cvarQuickchatFlags_s {
+		bool					cvarAVD					: 1; // Must be enabled for cvarAVDEnabled to take effect.
+		bool					cvarAVDEnabled			: 1; // Disable or enable quickchat option based upon Advanced Vehicle Drop cvar setting.
+	} cvarQuickchatFlags_t;
+
+	cvarQuickchatFlags_t		cvarQuickchatFlags;
 };
 
 #endif // __DECLQUICKCHAT_H__

@@ -1,4 +1,4 @@
-// str_qwta_00000024
+// str_qwta_00000025
 
 /*
 =================
@@ -16,6 +16,10 @@ locString game/vec/jupiter {
 
 locString game/weapons/bfg10k {
 	text "#str_qwta_00000016" // "BFG10k"
+}
+
+locString game/voicechat/thisdisabled {
+	text "#str_qwta_00000025" // "This Voice Chat is disabled."
 }
 
 /*

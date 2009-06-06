@@ -33,6 +33,7 @@
 	"#str_qwta_00000017"	"That class has too many players already"
 	"#str_qwta_00000015" "Jupiter"
 	"#str_qwta_00000016" "BFG10k"
+	"#str_qwta_00000025" "This Voice Chat is disabled."
 	
 	// GUIs
 	"#str_qwta_00000021" "Jupiter Driver"

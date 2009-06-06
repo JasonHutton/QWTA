@@ -15228,6 +15228,21 @@ void idPlayer::RequestQuickChat( const sdDeclQuickChat* quickChatDecl, int targe
 		return;
 	}
 
+	if ( quickChatDecl->GetCVarAVD() ) {
+		if ( g_useAdvancedVehicleDrops.GetBool() ) {
+			if ( !quickChatDecl->GetCVarAVDEnabled() ) {
+				SendLocalisedMessage( declHolder.declLocStrType[ "game/voicechat/thisdisabled" ], idWStrList() );
+				return;
+			}
+		}
+		else {
+			if ( quickChatDecl->GetCVarAVDEnabled() ) {
+				SendLocalisedMessage( declHolder.declLocStrType[ "game/voicechat/thisdisabled" ], idWStrList() );
+				return;
+			}
+		}
+	}
+
 	int msOver = SEC2MS( g_maxVoiceChatsOver.GetInteger() );
 
 	int additionalOffset = ( msOver / ( float )value );

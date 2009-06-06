@@ -103,6 +103,9 @@ $template _chat_vdrop( dataParm, callbackParm, teamParm, botTypeParm, requiremen
 	$if ( botTypeParm != -1 ) 
 		type botTypeParm
 	$endif
+	
+	cvarAVD
+	cvarAVDEnabled
 $endtemplate
 
 #endif // !_QC_COMMON_INCLUDE

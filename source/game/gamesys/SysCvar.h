@@ -463,6 +463,8 @@ extern idCVar	g_useClassLimits;
 
 extern idCVar	g_useGibKills;
 
+extern idCVar	g_useAdvancedVehicleDrops;
+
 extern idCVar	g_trainingMode;
 
 extern idCVar	g_noQuickChats;
