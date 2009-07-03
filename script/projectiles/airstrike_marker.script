@@ -28,6 +28,8 @@ object airstrike_marker : projectile_missile {
 	float				toolTipUnknownTarget;
 
 	float				waitTime;
+	
+	float				reverse;
 }
 
 void airstrike_marker::preinit() {	
@@ -44,6 +46,8 @@ void airstrike_marker::preinit() {
 	toolTipUnknownTarget = GetToolTip( getKey( "tt_unknown_target" ) );
 
 	waitTime = getFloatKeyWithDefault( "airstrike_wait_time", 3.f );
+	
+	reverse = getFloatKeyWithDefault( "reverse", 0.f );
 }
 
 void airstrike_marker::syncFields() {
@@ -128,6 +132,9 @@ boolean airstrike_marker::CallForStrike() {
 	dir = sys.vecNormalize( pos - owner.getWorldOrigin() );
 	vector attackDir = sys.crossProduct( dir, vec3_up );
 
+	if ( reverse ) {
+		attackDir = -attackDir;
+	}
 /*	jrad - disabled randomness for now...
 	if ( sys.random( 1.f ) > .5f ) {
 		attackDir = -attackDir;

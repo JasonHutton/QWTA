@@ -20,7 +20,8 @@ invItemDef inventory/weapons/grenades/airstrike_marker_gdf {
 
 		"anim_prefix"					"grenade"
 
-		"weapon_scriptobject"			"item_smoke_grenade_firesupport"
+		"weapon_scriptobject"			"item_smoke_grenade_firesupport_qwta"
+		//"weapon_scriptobject"			"item_smoke_grenade_firesupport"
 
 		"def_explode_inhand"			"projectile_grenade_flash"
 
@@ -57,10 +58,18 @@ invItemDef inventory/weapons/grenades/airstrike_marker_gdf {
 		"charge_per_use"				"100"
 
 		"player_weapon_num"				"10"
+		
+		"allow_alt_fire"		"1"
 	}
 
 	clip {
 		"projectile"					"projectile_grenade_airstrike_marker_gdf"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+	
+	clip {
+		"projectile"					"projectile_grenade_airstrike_marker_gdf_reverse"
 		"type"							"infinite"
 		"ammo_per_shot"					"-1"
 	}
@@ -82,7 +91,8 @@ invItemDef inventory/weapons/grenades/airstrike_marker_strogg {
 		"anim_prefix"					"hands_beacon"
 		"anim_prefix_class"				"hands"
 
-		"weapon_scriptobject"			"item_smoke_grenade_firesupport"
+		"weapon_scriptobject"			"item_smoke_grenade_firesupport_qwta"
+		//"weapon_scriptobject"			"item_smoke_grenade_firesupport"
 
 		"def_explode_inhand"			"projectile_grenade_flash"
 
@@ -125,10 +135,18 @@ invItemDef inventory/weapons/grenades/airstrike_marker_strogg {
 
 		"fx_idle"						"effects/weapons/grenades/violator_beacon_idle"
 		"idle_effect_joint"				"joint1"
+		
+		"allow_alt_fire"		"1"
 	}
 
 	clip {
 		"projectile"					"projectile_grenade_airstrike_marker_strogg"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+	
+	clip {
+		"projectile"					"projectile_grenade_airstrike_marker_strogg_reverse"
 		"type"							"infinite"
 		"ammo_per_shot"					"-1"
 	}
@@ -164,6 +182,7 @@ entityDef projectile_grenade_airstrike_marker_base {
 	"fx_explode"						"effects/weapons/grenades/explode_smoke_blue"
 
 	"allow_defuse"						"0"
+	"reverse"							"0"
 }
 
 entityDef projectile_grenade_airstrike_marker_gdf {
@@ -187,6 +206,11 @@ entityDef projectile_grenade_airstrike_marker_gdf {
 
 	"snd_approved"						"sounds/vo/gdf/npc/vampire/approved"
 	"snd_unknown_target"				"sounds/vo/gdf/npc/vampire/invalid"
+}
+
+entityDef projectile_grenade_airstrike_marker_gdf_reverse {
+	"inherit"							"projectile_grenade_airstrike_marker_gdf"
+	"reverse"							"1"
 }
 
 entityDef projectile_grenade_airstrike_marker_strogg {
@@ -216,6 +240,10 @@ entityDef projectile_grenade_airstrike_marker_strogg {
 	"snd_unknown_target"				"sounds/vo/strogg/npc/violator/invalid"
 }
 
+entityDef projectile_grenade_airstrike_marker_strogg_reverse {
+	"inherit"							"projectile_grenade_airstrike_marker_strogg"
+	"reverse"							"1"
+}
 
 
 
