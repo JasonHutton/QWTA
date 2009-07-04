@@ -334,6 +334,7 @@ void game_main() {
 	g_useBaseETQW12Shotguns		= sys.getCVar( "g_useBaseETQW12Shotguns", "" );
 	g_useQuake4DarkMatter		= sys.getCVar( "g_useQuake4DarkMatter", "" );
 	g_artilleryWarning			= sys.getCVar( "g_artilleryWarning", "" );
+	g_useReverseAirstrikes		= sys.getCVar( "g_useReverseAirstrikes", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

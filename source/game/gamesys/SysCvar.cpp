@@ -595,6 +595,7 @@ idCVar	g_useBaseETQW12Shotguns(	"g_useBaseETQW12Shotguns",		"1",		CVAR_GAME | CV
 idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Use Quake 4-style Dark Matter weaponry." );
 idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Notify players of the launch of Hammer or DMC artillery." );
 idCVar	g_useDeathFading(			"g_useDeathFading",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use screen fading effects when dead or unconscious?" );
+idCVar	g_useReverseAirstrikes(		"g_useReverseAirstrikes",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use reversed airstrikes on the altfire of the Vampire and Violator?" );
 
 idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables class number limitations." );
 

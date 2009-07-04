@@ -28,6 +28,12 @@ CHANGES:
   + Default 1.
   + Controls whether fading effects are used when players are unconscious
     or killed.
+* Vampire and Violator now have an alt fire. Instead of the airstrike
+  proceeding from left to right from the thrower's position, the airstrike
+  instead moves right to left, when alt fire is used.
+* Cvar g_useReverseAirstrikes added.
+  + Default 1.
+  + Controls whether Vampire/Violator alt fire is permitted.
 
 BUG FIXES:
 

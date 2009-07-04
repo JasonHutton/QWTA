@@ -34,7 +34,7 @@ void item_smoke_grenade_qwta::Idle() {
 					}
 				}
 			}
-		} else if ( allowAltFire && WEAPON_ALTFIRE ) {
+		} else if ( g_useReverseAirstrikes.getBoolValue() && allowAltFire && WEAPON_ALTFIRE ) {
 			if ( !altFireDown ) {
 				myPlayer.disableSprint( 1.f );
 				altFireDown = true;
