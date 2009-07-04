@@ -36,6 +36,7 @@ CHANGES:
   + Controls whether Vampire/Violator alt fire is permitted.
 * Jupiter tank's minigun is no longer usable.
 * Jupiter tank can no longer accelerate using overdrive.
+* Added tooltip upon entering the Jupiter tank.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
