@@ -38,6 +38,10 @@ CHANGES:
 * Jupiter tank can no longer accelerate using overdrive.
 * Added tooltip upon entering the Jupiter tank.
 * Force Escalation is now rounded down.
+* Cvar g_useNuclearHammer added.
+  + Default 1.
+  + Controls whether the Hammer and SSM missiles bahave more like tactical
+    nukes. At the moment, this is just their EMP effects.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
