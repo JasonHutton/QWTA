@@ -36,6 +36,8 @@ CHANGES:
   + Controls whether Vampire/Violator alt fire is permitted.
 
 BUG FIXES:
+* Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
+
 
 QWTA v0.3.1:
 ==========
