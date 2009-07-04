@@ -1,4 +1,4 @@
-// str_qwta_00000025
+// str_qwta_00000028
 
 /*
 =================
@@ -144,4 +144,16 @@ locString game/obit/hyper_self {
 
 locString game/obit/hyper_unknown {
 	text "#str_qwta_00000001" // "^1[Hyperblaster] ^0%a"
+}
+
+locString game/obit/jupiter {
+	text "#str_qwta_00000026" // "%b^7 [Jupiter] %a"
+}
+
+locString game/obit/jupiter_empty {
+	text "#str_qwta_00000027" // "[Jupiter] %a"
+}
+
+locString game/obit/jupiter_team {
+	text "#str_qwta_00000028" // "%b^1 [Jupiter] ^7%a"
 }

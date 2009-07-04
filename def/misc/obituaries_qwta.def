@@ -71,3 +71,27 @@ tooltip tooltips/killmsgs/weapons/hyperblaster/teamkill {
 	text "game/obit/hyper_team"
 }
 */
+
+/*
+==================
+GDF Vehicles
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/jupiter {
+	text "game/obit/jupiter"
+}
+
+tooltip tooltips/killmsgs/vehicles/jupiter/empty {
+	text "game/obit/jupiter_empty"
+}
+
+/*
+==================
+GDF Vehicles Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/jupiter/teamkill {
+	text "game/obit/jupiter_team"
+}

@@ -11,6 +11,9 @@
 	"#str_qwta_00000018" "%b^0 &lbrBFG10k&rbr %a"
 	"#str_qwta_00000019" "^1&lbrBFG10k&rbr ^0%a"
 	"#str_qwta_00000020" "%b^1 &lbrBFG10k&rbr ^0%a"
+	"#str_qwta_00000026" "%b^0 &lbrJupiter&rbr %a"
+	"#str_qwta_00000027" "&lbrJupiter&rbr %a"
+	"#str_qwta_00000028" "%b^1 &lbrJupiter&rbr ^0%a"
 	
 	// Chat
 	"#str_qwta_00000002" "Request Armadillo"

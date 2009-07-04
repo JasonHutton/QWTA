@@ -350,9 +350,9 @@ damageDef damage_jupiter_collide {
 
 	stat_name							"titan_weapons"
 
-	tt_obituary							"tooltips/killmsgs/vehicles/titan"
-	tt_obituary_unknown					"tooltips/killmsgs/vehicles/titan/empty"
-	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/titan/teamkill"
+	tt_obituary							"tooltips/killmsgs/vehicles/jupiter"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/jupiter/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/jupiter/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
 }
 
