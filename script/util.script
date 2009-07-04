@@ -158,6 +158,7 @@ cvar	g_useBaseETQW12Shotguns;
 cvar	g_useQuake4DarkMatter;
 cvar	g_artilleryWarning;
 cvar	g_useReverseAirstrikes;
+cvar	g_useNuclearHammer;
 
 object gameplay_base;
 gameplay_base gameplayManager;
