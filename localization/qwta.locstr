@@ -1,4 +1,4 @@
-// str_qwta_00000028
+// str_qwta_00000029
 
 /*
 =================
@@ -156,4 +156,14 @@ locString game/obit/jupiter_empty {
 
 locString game/obit/jupiter_team {
 	text "#str_qwta_00000028" // "%b^1 [Jupiter] ^7%a"
+}
+
+/*
+==================
+ Tooltips
+==================
+*/
+
+locString game/tt/jupiter {
+	text "#str_qwta_00000029"
 }

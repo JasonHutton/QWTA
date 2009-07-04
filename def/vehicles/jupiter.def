@@ -378,5 +378,5 @@ damageFilter damage_jupiter_collide {
 
 toolTip vehicle_jupiter_enter {
 	length	5
-	text	"game/tt/titan"
+	text	"game/tt/jupiter"
 }
