@@ -244,82 +244,6 @@ vehicleDef jupiter {
 		}
 	}
 
-	positionDef {
-		name				"guis/vehicles/jupiter_passenger"
-		hudname				"guis/vehicles/jupiter_passenger"
-
-		data {
-			"joint_attach"	"aft_gun_mount"
-			"show_player"	"1"
-			"player_anim"	"VehicleTitanPassenger"
-			"take_damage"	"1"
-			"player_height"	"36"
-			"stat_name"		"titan_gunner"
-			"joint_icon"	"carrier_gunner1"
-			"cockpit"		"minigun"
-			"damage_scale"	"0.5"
-		}
-		
-		ik {
-			type		"sdVehicleIK_Steering"
-			parms {
-				"joint_left"		"left_hand_ik"
-				"joint_right"		"right_hand_ik"
-			}
-		}
-
-		view {
-			eyeJoint		"gpmg_cam"
-			eyeJointPivot	"aft_gun_mount"
-			type			"freepivot"
-			followYaw
-			followPitch
-			showcockpit
-			hideDecoyInfo
-
-			clamp pitch {
-				min			-60
-				max			10
-				rate		240
-			}
-
-			clamp yaw {
-				rate		240
-			}
-		}
-
-		view {
-			eyeJoint		"gpmg_cam"
-			eyeJointPivot	"aft_gun_mount"
-			type			"smooth_free"
-			cameraHeight	24
-			cameraDistance	125
-			thirdPerson
-
-			clamp pitch {
-				min			-40
-				max			10
-				rate		240
-			}
-
-			clamp yaw {
-				rate		240
-			}
-		}
-
-		weapon {
-			weapon			"vehicle_jupiter_weapon3"
-			type			"sdVehicleWeaponFixedMinigun"
-
-			clamp yaw {
-				rate		240
-			}
-			clamp pitch {
-				rate		240
-			}
-		}
-	}
-
 	exitDef {
 		joint			"exit_point_03"
 	}
@@ -435,11 +359,6 @@ vehicleDef jupiter {
 		"def_brokenPart"	"part_vehicle_jupiter_turret"
 		"health" 			"-1"
 	}
-
-	cockpit minigun {
-		"def_cockpit"		"vehicle_jupiter_minigun_cockpit"
-		"scriptobject"		"vehicle_gatling_cockpit"
-	}
 }
 
 entityDef part_vehicle_jupiter_barrel {
@@ -499,74 +418,12 @@ stringMap jupiterTestSuspension {
 	"lerp_scale"		".3"
 }
 
-stringMap vehicle_jupiter_weapon3 {
-	"gunName"					"game/weapons/gatling"
-	"weapon_name"				"gpmg_2"
-
-	"charge_max"				"10"
-	"charge_per_use"			"2"
-	"overheat_penalty"			"1"
-	"use_heat_bar"				"1"
-
-	"weapon1_muzzle"			"gpmg_muzzle"
-	"gunJointYaw"				"aft_gun_mount"
-	"gunJointPitch"				"gpmg_mount"
-	"gunJointShoulder"			"turret"
-
-	"muzzle"					"gpmg_muzzle"
-	"spin_joint"				"minigun_barrel"
-
-	"muzzle_flash"				"fx_gatling_muzzle"
-
-	"fire_start_sound"			"snd_gatling_fire_start"
-	"fire_stop_sound"			"snd_gatling_fire_stop"
-	"barrel_loop_sound"			"snd_gatling_barrel_loop"
-	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
-	"brass_start_sound"			"snd_gatling_brass_start"
-	"brass_stop_sound"			"snd_gatling_brass_stop"
-
-	"spin_fire"					"1440"
-	"spin_stop"					"30"
-
-	"velocity"					"1 0 0"
-	"fire_rate"					"0.08"
-	"trigger_delay"				"0.5"
-	"spread"					"0.5"
-
-	"surface_name"				"minigun"
-
-
-	"scriptobject"				"vehicle_weapon_gatling"
-	"def_projectile"			"projectile_gatling_titan"
-	"client_projectile"			"projectile_gatling_titan"
-
-	"crosshair"					"nospread"
-}
-
 entityDef vehicle_jupiter_cockpit {
 	"model"						"models/scopes/scope_titan.lwo"
 	"joint_attach"				"pilot_cam"
 	"offset"					"1 0 -0.5"
 	"passenger_id"				"1"
 }
-
-entityDef vehicle_jupiter_minigun_cockpit {
-	"model"						"viewmodel_minigun"
-
-	"passenger_id"				"2"
-
-	"climate_skin_key"			"weapon_gdf"
-
-	"fx_muzzle"					"effects/weapons/gatling_muzzleflash"
-	"joint_muzzle"				"muzzle"
-
-	"offset"					"0 1 0"
-
-	"joint_barrel"				"barrel"
-	"weapon_name"				"gpmg_2"
-	"surface_name"				"minigun"
-}
-
 
 stringMap vehicle_jupiter_weapon1 {
 	"gunName"					"game/weapons/bfg10k"
