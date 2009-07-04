@@ -530,6 +530,7 @@ void sdWheeledVehicleControl::Init( sdTransport* transport ) {
 	powerCurveScale		= transport->spawnArgs.GetFloat( "power_curve_scale", "0" );
 
 	overDriveFactor		= transport->spawnArgs.GetFloat( "overdrive_factor" );
+	allowOverDrive		= transport->spawnArgs.GetBool( "allow_overdrive", "1" );
 
 	steeringAngle			= transport->spawnArgs.GetFloat( "steering_angle" );
 
@@ -916,7 +917,7 @@ bool sdWheeledVehicleControl::CanThrust( idVec3& directions, bool braking, bool 
 
 	if ( driver ) {
 		if ( directions.x > 0 ) {
-			return driver->usercmd.buttons.btn.sprint && !braking && !handbraking;
+			return driver->usercmd.buttons.btn.sprint && !braking && !handbraking && allowOverDrive;
 		}
 	}
 
@@ -1662,7 +1663,7 @@ bool sdHogControl::CanThrust( idVec3& directions, bool braking, bool handbraking
 
 	bool canThrust = false;
 	if ( driver != NULL ) {
-		canThrust = driver->usercmd.buttons.btn.sprint && !braking && !handbraking && directions.x > 0.0f;
+		canThrust = driver->usercmd.buttons.btn.sprint && !braking && !handbraking && directions.x > 0.0f && allowOverDrive;
 	}
 
 	ramming = canThrust;

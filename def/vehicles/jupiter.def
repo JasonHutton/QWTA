@@ -110,6 +110,7 @@ entityDef vehicle_jupiter {
 	"overdrive_chargetime"			"30"
 	"overdrive_deadlength"			"2"
 	"overdrive_factor"				"1.2"
+	"allow_overdrive"				"0"
 
 	"gravity"						"1066"
 

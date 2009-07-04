@@ -34,6 +34,8 @@ CHANGES:
 * Cvar g_useReverseAirstrikes added.
   + Default 1.
   + Controls whether Vampire/Violator alt fire is permitted.
+* Jupiter tank's minigun is no longer usable.
+* Jupiter tank can no longer accelerate using overdrive.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

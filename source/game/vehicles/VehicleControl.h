@@ -295,6 +295,7 @@ protected:
 	int						nextBrakeSoundTime;
 
 	float					overDriveFactor;
+	bool					allowOverDrive;
 
 	// gears
 	const idDeclTable*		gearForceTable;
