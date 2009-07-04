@@ -4758,7 +4758,7 @@ int idGameLocal::GetForceEscalation() {
 
 	forceEscalation /= numClients;
 
-	return static_cast< int >( ceil( forceEscalation ) );
+	return static_cast< int >( floor( forceEscalation ) );
 }
 
 /*
