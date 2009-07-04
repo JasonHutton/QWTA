@@ -42,6 +42,9 @@ CHANGES:
   + Default 1.
   + Controls whether the Hammer and SSM missiles bahave more like tactical
     nukes. At the moment, this is just their EMP effects.
+* Bots are now aware(only somewhat on easy difficulties) that shooting at
+  heavy vehicles with light weapons does not accomplish much, when realistic
+  damages are enabled.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

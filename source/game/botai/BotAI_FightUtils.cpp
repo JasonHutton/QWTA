@@ -2295,6 +2295,22 @@ void idBotAI::Bot_CheckAttack() {
 		shotIsBlockedCounter++;
 	}
 
+	if ( g_realisticDamage.GetBool() ) {
+		if ( EntityIsHeavyVehicle( gunTargetEntNum, false, false) ) {
+			if ( botInfo->weapInfo.weapon == KNIFE ||
+				botInfo->weapInfo.weapon == PISTOL ||
+				botInfo->weapInfo.weapon == SMG ||
+				botInfo->weapInfo.weapon == SHOTGUN ||
+				botInfo->weapInfo.weapon == SCOPED_SMG ) {
+					if ( botThreadData.GetBotSkill() == BOT_SKILL_EASY || botThreadData.GetBotSkill() == BOT_SKILL_DEMO ) {
+						if ( botThreadData.random.RandomInt( 100 ) < 80 ) { botWantsToAttack = false; }
+					} else {
+						botWantsToAttack = false;
+					}
+			}
+		}
+	}
+
 	if ( !botWantsToAttack ) {
 		return;
 	}

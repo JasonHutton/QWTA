@@ -5375,6 +5375,37 @@ bool idBotAI::EntityIsVehicle( int entNum, bool enemyOnly, bool occupiedOnly ) {
 
 /*
 ==================
+idBotAI::EntityIsHeavyVehicle
+==================
+*/
+bool idBotAI::EntityIsHeavyVehicle( int entNum, bool enemyOnly, bool occupiedOnly ) {
+	proxyInfo_t vehicleInfo;
+	GetVehicleInfo( entNum, vehicleInfo );
+
+	if ( vehicleInfo.entNum == 0 ) {
+		return false;
+	}
+
+	if ( occupiedOnly ) {
+		if ( vehicleInfo.isEmpty ) {
+			return false;
+		}
+	}
+
+	if ( enemyOnly ) {
+		if ( vehicleInfo.team == botInfo->team ) {
+			return false;
+		}
+	}
+
+	if( !(vehicleInfo.flags & ARMOR) ) {
+		return false;
+	}
+	return true;
+}
+
+/*
+==================
 idBotAI::EntityIsDeployable
 ==================
 */

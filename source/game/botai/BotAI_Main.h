@@ -1206,6 +1206,7 @@ public:
 	bool					PointIsClearOfTeammates( const idVec3& point );
 	bool					EntityIsClient( int entNum, bool enemyOnly );
 	bool					EntityIsVehicle( int entNum, bool enemyOnly, bool occupiedOnly );
+	bool					EntityIsHeavyVehicle( int entNum, bool enemyOnly, bool occupiedOnly );
 	bool					EntityIsDeployable( int entNum, bool enemyOnly );
 	bool					SpawnHostIsUsed( int entNum );
 	bool					TeamMineInArea( const idVec3& org, float range );
