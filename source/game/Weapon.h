@@ -42,31 +42,50 @@ protected:
 
 class sdWeaponLockInfo {
 public:
-							sdWeaponLockInfo( void ) { lockingSound = NULL; lockedSound = NULL; lockDistance = 0.f; supported = false; lockFriendly = false; sticky = false; }
+							sdWeaponLockInfo( void ) { 
+								lockingSound = NULL; 
+								lockedSound = NULL; 
+								q4hyperLockingSound = NULL; 
+								q4hyperLockedSound = NULL; 
+								lockDistance = 0.f; 
+								q4hyperLockDistance = 0.f; 
+								supported = false; 
+								lockFriendly = false; 
+								q4hyperLockFriendly = false;
+								sticky = false;
+								q4hyperSticky = false;
+							}
 
 	void					Load( const idDict& dict );
 
 	void					SetSupported( bool value ) { supported = value; }
 
 	bool					IsSupported( void ) const { return supported; }
-	bool					IsSticky( void ) const { return sticky; }
-	float					GetLockDistance( void ) const { return lockDistance; }
-	const idSoundShader*	GetLockingSound( void ) const { return lockingSound; }
-	const idSoundShader*	GetLockedSound( void ) const { return lockedSound; }
-	int						GetLockDuration( void ) const { return lockDuration; }
-	bool					LockFriendly( void ) const { return lockFriendly; }
+	bool					IsSticky( void ) const;
+	float					GetLockDistance( void ) const;
+	const idSoundShader*	GetLockingSound( void ) const;
+	const idSoundShader*	GetLockedSound( void ) const;
+	int						GetLockDuration( void ) const;
+	bool					LockFriendly( void ) const;
 
-	const sdDeclTargetInfo*	GetLockFilter( void ) const { return lockFilter; }
+	const sdDeclTargetInfo*	GetLockFilter( void ) const;
 
 private:
 	const idSoundShader*	lockingSound;
 	const idSoundShader*	lockedSound;
+	const idSoundShader*	q4hyperLockingSound;
+	const idSoundShader*	q4hyperLockedSound;
 	float					lockDistance;
 	int						lockDuration;
+	float					q4hyperLockDistance;
+	int						q4hyperLockDuration;
 	bool					supported;
 	bool					lockFriendly;
+	bool					q4hyperLockFriendly;
 	bool					sticky;
+	bool					q4hyperSticky;
 	const sdDeclTargetInfo*	lockFilter;
+	const sdDeclTargetInfo* q4hyperLockFilter;
 };
 
 class idPlayer;

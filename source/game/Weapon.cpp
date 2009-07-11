@@ -45,11 +45,79 @@ void sdWeaponLockInfo::Load( const idDict& dict ) {
 	supported		= dict.GetBool( "lock_enabled" );
 	lockedSound		= gameLocal.declSoundShaderType[ dict.GetString( "snd_target_locked" ) ];
 	lockingSound	= gameLocal.declSoundShaderType[ dict.GetString( "snd_target_locking" ) ];
+	q4hyperLockedSound = gameLocal.declSoundShaderType[ dict.GetString( "q4hyper_snd_target_locked" ) ];
+	q4hyperLockingSound = gameLocal.declSoundShaderType[ dict.GetString( "q4hyper_snd_target_locking" ) ];
+
 	lockDuration	= SEC2MS( dict.GetFloat( "lock_duration", "1" ) );
 	lockDistance	= dict.GetFloat( "lock_distance", "2048" );
 	lockFriendly	= dict.GetBool( "lock_friendly" );
 	sticky			= dict.GetBool( "lock_sticky" );
 	lockFilter		= gameLocal.declTargetInfoType[ dict.GetString( "lock_filter" ) ];
+
+	float fTemp;
+	if ( dict.GetFloat( "q4hyper_lock_distance", "0", fTemp ) ) {
+		q4hyperLockDuration = SEC2MS( fTemp );
+	} else {
+		q4hyperLockDuration = lockDuration;
+	}
+	if ( dict.GetFloat( "q4hyper_lock_distance", "0", fTemp ) ) {
+		q4hyperLockDistance = fTemp;
+	} else {
+		q4hyperLockDistance = lockDistance;
+	}
+
+	bool bTemp;
+	if ( dict.GetBool( "q4hyper_lock_friendly", "0", bTemp ) ) {
+		q4hyperLockFriendly = bTemp;
+	} else {
+		q4hyperLockFriendly = lockFriendly;
+	}
+	if ( dict.GetBool( "q4hyper_lock_sticky", "0", bTemp ) ) {
+		q4hyperSticky = bTemp;
+	} else {
+		q4hyperSticky = sticky;
+	}
+
+	idStr sTemp;
+	if ( dict.GetString( "q4hyper_lock_filter", "", sTemp ) ) {
+		q4hyperLockFilter = gameLocal.declTargetInfoType[ sTemp.c_str() ];
+	} else {
+		q4hyperLockFilter = lockFilter;
+	}
+}
+
+bool sdWeaponLockInfo::IsSticky( void ) const {
+	return g_useQuake4Hyperblaster.GetBool() ? q4hyperSticky : sticky;
+}
+float sdWeaponLockInfo::GetLockDistance( void ) const {
+	return g_useQuake4Hyperblaster.GetBool() ? q4hyperLockDistance : lockDistance;
+}
+const idSoundShader*	sdWeaponLockInfo::GetLockingSound( void ) const { 
+	if ( g_useQuake4Hyperblaster.GetBool() && q4hyperLockingSound ) {
+		return q4hyperLockingSound;
+	} else {
+		return lockingSound;
+	}
+}
+
+const idSoundShader*	sdWeaponLockInfo::GetLockedSound( void ) const { 
+	if ( g_useQuake4Hyperblaster.GetBool() && q4hyperLockedSound ) {
+		return q4hyperLockedSound;
+	} else {
+		return lockedSound;
+	}
+}
+
+int	sdWeaponLockInfo::GetLockDuration( void ) const { 
+	return g_useQuake4Hyperblaster.GetBool() ? q4hyperLockDuration : lockDuration; 
+}
+
+bool	sdWeaponLockInfo::LockFriendly( void ) const { 
+	return g_useQuake4Hyperblaster.GetBool() ? q4hyperLockFriendly : lockFriendly;
+}
+
+const sdDeclTargetInfo*	sdWeaponLockInfo::GetLockFilter( void ) const {
+	return g_useQuake4Hyperblaster.GetBool() ? q4hyperLockFilter : lockFilter;
 }
 
 /***********************************************************************

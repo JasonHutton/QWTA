@@ -597,6 +597,7 @@ idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL
 idCVar	g_useDeathFading(			"g_useDeathFading",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use screen fading effects when dead or unconscious?" );
 idCVar	g_useReverseAirstrikes(		"g_useReverseAirstrikes",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use reversed airstrikes on the altfire of the Vampire and Violator?" );
 idCVar	g_useNuclearHammer(			"g_useNuclearHammer",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Make the Hammer and SSM missiles behave more like tactical nukes?" );
+idCVar	g_useQuake4Hyperblaster(	"g_useQuake4Hyperblaster",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Use Quake 4-style Hyperblaster weaponry?" );
 
 idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables class number limitations." );
 
