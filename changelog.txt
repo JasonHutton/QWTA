@@ -45,6 +45,11 @@ CHANGES:
 * Bots are now aware(only somewhat on easy difficulties) that shooting at
   heavy vehicles with light weapons does not accomplish much, when realistic
   damages are enabled.
+* Cvar g_useQuake4Hyperblaster added.
+  + Default 1.
+  + Controls whether the Hyperblaster fires ETQW-style hitscan bullets, or
+    Quake 4-Nailgun-style mini-plasma shells that explode on impact.
+  + Works in conjunction with g_realisticSpreads.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
