@@ -19,11 +19,15 @@ object weapon_hyperblaster : weapon_clip {
 	void		OnIronSightsDisabled();
 	
 	void		FireCommon();
+	float		GetFovSpread();
 
 	float		spinSpeed;
 	float		spinSpeedFire;
 
 	boolean		spinThreadActive;
+	
+	float		q4hyperFovSpread;
+	float		q4hyperRealisticFovSpread;
 }
 
 void weapon_hyperblaster::OnIronSightsDisabled() {
@@ -62,6 +66,9 @@ void weapon_hyperblaster::preinit() {
 
 	thread SpinThread();
 	spinThreadActive = true;
+	
+	q4hyperFovSpread = getFloatKeyWithDefault( "q4hyper_fov_spread", fovSpread );
+	q4hyperRealisticFovSpread = getFloatKeyWithDefault( "q4hyper_realistic_fov_spread", realisticFovSpread );
 }
 
 void weapon_hyperblaster::destroy() {
@@ -219,4 +226,20 @@ void weapon_hyperblaster::FireCommon() {
 	if ( hasHeat ) {
 		AddHeat();
 	}
+}
+
+float weapon_hyperblaster::GetFovSpread() {
+	if ( !g_useQuake4Hyperblaster.getBoolValue() ) {
+		return GetFovSpread_Base();
+	}
+	
+	if ( ironSightsEnabled ) {
+		if ( g_realisticSpread.getBoolValue() ) {
+			return q4hyperRealisticFovSpread;
+		}
+		else {
+			return q4hyperFovSpread;
+		}
+	}
+	return 1.f;
 }

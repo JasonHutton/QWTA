@@ -321,6 +321,26 @@ void sdWeaponNetworkInterface::HandleNetworkEvent( const char* message ) {
 bool idWeapon::defaultSpreadsInitialized = false;
 weaponSpreadValues_t idWeapon::defaultSpreadValues[ WSV_NUM ];
 
+void idWeapon::ChangeSpreadValueSet() {
+	if ( g_realisticSpread.GetBool() ) {
+		if ( this->playerWeaponNum == SHOTGUN && g_useBaseETQW12Shotguns.GetBool() ) {
+			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
+		} else if ( this->playerWeaponNum == HEAVY_MG && this->playerWeaponSubNum == 1 && g_useQuake4Hyperblaster.GetBool() ) {
+			pSpreadValues = &spreadValues[ WSVT_R_Q4HY ];
+		} else {
+			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
+		}
+	} else {
+		if ( this->playerWeaponNum == SHOTGUN && g_useBaseETQW12Shotguns.GetBool() ) {
+			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
+		} else if ( this->playerWeaponNum == HEAVY_MG && this->playerWeaponSubNum == 1 && g_useQuake4Hyperblaster.GetBool() ) {
+			pSpreadValues = &spreadValues[ WSVT_B_Q4HY ];
+		} else {
+			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
+		}
+	}
+}
+
 /*
 ================
 idWeapon::idWeapon
@@ -374,20 +394,8 @@ idWeapon::idWeapon() {
 	}
 
 	// Ensure the pSpreadValues pointer is initialized to something sensible.
-	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
-		}
-	} else {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
-		}
-	}
-
+	ChangeSpreadValueSet();
+	
 	aimValues[ WAV_IRONSIGHTS ].bobscaleyaw		= -0.01f;
 	aimValues[ WAV_IRONSIGHTS ].bobscalepitch	= 0.005f;
 	aimValues[ WAV_IRONSIGHTS ].lagscaleyaw		= 0.9f;
@@ -911,6 +919,7 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	} else {
 		playerWeaponNum = NULL_WEAP;
 	}
+	playerWeaponSubNum = spawnArgs.GetInt( "player_weapon_subnum", "0" );
 
 	// setup the view model
 	const char* vmodel = spawnArgs.GetString( "model_view" );
@@ -1003,19 +1012,10 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	LoadWeaponSpreads( spreadValues[ WSVT_BASE12 ], spreadValues[ WSVT_BASE15 ], "baseETQW12" );
 	LoadWeaponSpreads( spreadValues[ WSVT_REAL15 ], spreadValues[ WSVT_BASE15 ], "realistic" );
 	LoadWeaponSpreads( spreadValues[ WSVT_REAL12 ], spreadValues[ WSVT_REAL15 ], "baseETQW12_realistic" );
-	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
-		}
-	} else {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
-		}
-	}
+	LoadWeaponSpreads( spreadValues[ WSVT_B_Q4HY ], spreadValues[ WSVT_BASE15 ], "q4hyper" );
+	LoadWeaponSpreads( spreadValues[ WSVT_R_Q4HY ], spreadValues[ WSVT_REAL15 ], "q4hyper_realistic" );
+	
+	ChangeSpreadValueSet();
 
 	aimValues[ WAV_IRONSIGHTS ].bobscaleyaw = spawnArgs.GetFloat( "wbobscaleyaw_aim", "-0.01f" );
 	aimValues[ WAV_IRONSIGHTS ].bobscalepitch = spawnArgs.GetFloat( "wbobscalepitch_aim", "0.005" );
@@ -1252,19 +1252,7 @@ void idWeapon::UpdateSpreadValue() {
 		return;
 	}
 
-	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
-		}
-	} else {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
-		}
-	}
+	ChangeSpreadValueSet();
 
 	float minSpread = (*pSpreadValues)[ ownerStanceState ].min;
 	
@@ -1327,19 +1315,7 @@ void idWeapon::UpdateSpreadValue( const idVec3& velocity, const idAngles& angles
 		return;
 	}
 
-	if ( g_realisticSpread.GetBool() ) {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_REAL15 ];
-		}
-	} else {
-		if ( g_useBaseETQW12Shotguns.GetBool() ) {
-			pSpreadValues = &spreadValues[ WSVT_BASE12 ];
-		} else {
-			pSpreadValues = &spreadValues[ WSVT_BASE15 ];
-		}
-	}
+	ChangeSpreadValueSet();
 
 	float maxSpread = (*pSpreadValues)[ ownerStanceState ].max;
 

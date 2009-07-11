@@ -145,6 +145,8 @@ enum weaponSpreadValueTypeIndex_t {
 	WSVT_BASE12, // BaseETQW 1.2
 	WSVT_REAL15, // Realistic BaseETQW 1.5
 	WSVT_REAL12, // Realistic BaseETQW 1.2
+	WSVT_B_Q4HY, // BaseETQW-style spreads specifically for Quake 4-style Hyperblaster.
+	WSVT_R_Q4HY, // Realistic spreads specifically for Quake 4-style Hyperblaster.
 	WSVT_NUM,
 };
 
@@ -306,6 +308,8 @@ private:
 private:
 	void					SetupAnimClass( const char* prefix );
 
+	
+
 	// script control
 	idScriptBool			WEAPON_ATTACK;
 	idScriptBool			WEAPON_ALTFIRE;
@@ -347,6 +351,7 @@ private:
 	const sdProgram::sdFunction*		ironSightsEnabledFunc;
 
 	playerWeaponTypes_t					playerWeaponNum;
+	int									playerWeaponSubNum; // A type-specific special flag.
 
 	// precreated projectile
 	idEntity				*projectileEnt;
@@ -395,6 +400,8 @@ private:
 	static bool				defaultSpreadsInitialized;
 	weaponSpreadValues_t	(*pSpreadValues)[ WSV_NUM ]; // Currently-in-use Spread value set for this weapon.
 	weaponSpreadValues_t	spreadValues[ WSVT_NUM ][ WSV_NUM ];
+
+	void					ChangeSpreadValueSet();
 
 	weaponAimValues_t		aimValues[ WAV_NUM ];
 	weaponAimValues_t		realisticAimValues[ WAV_NUM ];

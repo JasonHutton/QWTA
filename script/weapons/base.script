@@ -20,6 +20,7 @@ object weapon_base {
 
 	void		WeaponBase_CheckProficiency();
 	void		UpdateSpreadModifiers();
+	float		GetFovSpread_Base();
 	float		GetFovSpread();
 	boolean		DisableSpread() { return false; }
 
@@ -328,16 +329,20 @@ void weapon_base::destroy() {
 	StopIdleEffect();
 }
 
-float weapon_base::GetFovSpread() {
+float weapon_base::GetFovSpread_Base() {
 	if ( ironSightsEnabled ) {
-		if ( g_realisticSpread.getBoolValue() ) {
-			return realisticFovSpread;
+			if ( g_realisticSpread.getBoolValue() ) {
+				return realisticFovSpread;
+			}
+			else {
+				return fovSpread;
+			}
 		}
-		else {
-			return fovSpread;
-		}
-	}
 	return 1.f;
+}
+
+float weapon_base::GetFovSpread() {
+	return GetFovSpread_Base();
 }
 
 void weapon_base::UpdateSpreadModifiers() {
