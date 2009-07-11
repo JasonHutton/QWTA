@@ -186,6 +186,9 @@ void weapon_base::preinit() {
 			fireRate = getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRate );
 			numProjectiles = getFloatKeyWithDefault( "baseETQW12_num_projectiles", numProjectiles );
 	}
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		fireRate = getFloatKeyWithDefault( "q4hyper_fire_rate", fireRate );
+	}
 	range = getFloatKeyWithDefault( "range", 8192 );
 	triggerDelay = getFloatKeyWithDefault( "trigger_delay", 0.f );
 	reloadAmmo = getFloatKeyWithDefault( "reload_ammo", 1.f );
@@ -200,6 +203,9 @@ void weapon_base::preinit() {
 	spreadModifier = getFloatKeyWithDefault( "spread_bonus", 0.8f );
 	overheatLength = getFloatKeyWithDefault( "overheat_length", 5 );
 	overheatPerShot = getFloatKeyWithDefault( "overheat_per_shot", 0.5 );
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		overheatPerShot = getFloatKeyWithDefault( "q4hyper_overheat_per_shot", overheatPerShot );
+	}
 	heatTimerHandle = sys.allocTargetTimer( getKeyWithDefault( "timer_heat", "heat_default" ) );
 	chargePerUse = getFloatKeyWithDefault( "charge_per_use", 10.f ) / 100.f;
 	showAllAmmo	= getFloatKeyWithDefault( "show_all_ammo", 0 ) == 1;

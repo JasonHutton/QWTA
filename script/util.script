@@ -159,6 +159,7 @@ cvar	g_useQuake4DarkMatter;
 cvar	g_artilleryWarning;
 cvar	g_useReverseAirstrikes;
 cvar	g_useNuclearHammer;
+cvar	g_useQuake4Hyperblaster;
 
 object gameplay_base;
 gameplay_base gameplayManager;

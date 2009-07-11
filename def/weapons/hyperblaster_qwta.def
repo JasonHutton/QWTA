@@ -2,7 +2,7 @@
 
 #include <def/damage.include>
 
-entityDef projectile_hyperblaster {
+entityDef projectile_hyperblaster_qwta {
 	"spawnclass"				"idProjectile_RigidBody"
 	//"scriptObject"				"projectile_missile"
 	"scriptObject"				"projectile_homingnail"

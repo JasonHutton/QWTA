@@ -17,6 +17,8 @@ object weapon_hyperblaster : weapon_clip {
 
 	void		OnIronSightsEnabled();
 	void		OnIronSightsDisabled();
+	
+	void		FireCommon();
 
 	float		spinSpeed;
 	float		spinSpeedFire;
@@ -43,12 +45,19 @@ void weapon_hyperblaster::OnIronSightsEnabled() {
 void weapon_hyperblaster::preinit() {
 	hasScope		= false;
 	hasIronSights	= true;
-	hasIronSightsLock	= true;
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		hasIronSightsLock	= true;
+	} else {
+		hasIronSightsLock = false;
+	}
 	hasEndFireAnim	= true;
 	hasHeat			= true;
 	usesStroyent	= true;
 
 	spinSpeedFire	= getFloatKeyWithDefault( "spin_fire", 360.f );
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		spinSpeedFire = getFloatKeyWithDefault( "q4hyper_spin_fire", spinSpeedFire );
+	}
 	spinSpeed		= 0;
 
 	thread SpinThread();
@@ -179,5 +188,35 @@ void weapon_hyperblaster::SpinThread() {
 		}
 
 		sys.waitFrame();
+	}
+}
+
+void weapon_hyperblaster::FireCommon() {
+	PlayFireEffect();
+	PlayFireSound();
+	PlayBrassSound();
+	PlayFireAnim();
+
+	burstCount++;
+	playingFireAnim = true;
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		launchProjectiles( numProjectiles, 1, getCurrentSpread(), 0, 1, 1 );
+	} else {
+		launchProjectiles( numProjectiles, 0, getCurrentSpread(), 0, 1, 1 );
+	}
+	increaseSpread();
+
+	if ( !infiniteAmmo ) {
+		if ( !usesStroyent ) {
+			UseAmmo( 0 );
+			AmmoCheckClip( 0 );
+		} else {
+			UseAmmo_Stroyent( 0 );
+			AmmoCheck( 0 );
+		}
+	}
+
+	if ( hasHeat ) {
+		AddHeat();
 	}
 }

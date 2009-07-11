@@ -160,6 +160,9 @@ void weapon_clip::preinit() {
 	if ( g_useBaseETQW12Shotguns.getBoolValue() ) {
 			fireRateAuto	= getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRateAuto );
 	}
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		fireRateAuto = getFloatKeyWithDefault( "q4hyper_fire_rate", fireRateAuto );
+	}
 	
 	fireRateSingle	= 0.15f;
 
