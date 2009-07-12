@@ -110,6 +110,14 @@ entityDef projectile_hyperblaster_desecrator {
 	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_desecrator_splash"
 }
 
+entityDef projectile_hyperblaster_desecrator_qwta {
+	"inherit"							"projectile_hyperblaster_qwta"
+	"dmg_damage"						"damage_hyperblaster_desecrator"
+	"dmg_realistic_damage"					"realistic_damage_hyperblaster_desecrator"
+	"dmg_splash_damage"					"damage_hyperblaster_desecrator_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_desecrator_splash"
+}
+
 entityDef projectile_hyperblaster_hog {
 	"inherit"							"projectile_hyperblaster"
 	"dmg_damage"						"damage_hyperblaster_hog"
@@ -118,6 +126,15 @@ entityDef projectile_hyperblaster_hog {
 	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_hog_splash"
 }
 
+entityDef projectile_hyperblaster_hog_qwta {
+	"inherit"							"projectile_hyperblaster_qwta"
+	"dmg_damage"						"damage_hyperblaster_hog"
+	"dmg_realistic_damage"					"realistic_damage_hyperblaster_hog"
+	"dmg_splash_damage"					"damage_hyperblaster_hog_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_hog_splash"
+}
+
+
 entityDef projectile_hyperblaster_hornet {
 	"inherit"							"projectile_hyperblaster"
 	"dmg_damage"							"damage_hyperblaster_hornet"
@@ -125,6 +142,15 @@ entityDef projectile_hyperblaster_hornet {
 	"dmg_splash_damage"						"damage_hyperblaster_hornet_splash"
 	"dmg_realistic_splash_damage"					"realistic_damage_hyperblaster_hornet_splash"
 }
+
+entityDef projectile_hyperblaster_hornet_qwta {
+	"inherit"							"projectile_hyperblaster_qwta"
+	"dmg_damage"							"damage_hyperblaster_hornet"
+	"dmg_realistic_damage"						"realistic_damage_hyperblaster_hornet"
+	"dmg_splash_damage"						"damage_hyperblaster_hornet_splash"
+	"dmg_realistic_splash_damage"					"realistic_damage_hyperblaster_hornet_splash"
+}
+
 
 damageDef damage_hyperblaster_splash {
 	_templates/vehicles/weapons/hyperblaster/damage_splash( "hyperblaster", "pro_aggressor_damage" )

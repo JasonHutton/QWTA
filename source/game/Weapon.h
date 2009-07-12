@@ -50,6 +50,7 @@ public:
 								lockDistance = 0.f; 
 								q4hyperLockDistance = 0.f; 
 								supported = false; 
+								q4hyperSupported = false;
 								lockFriendly = false; 
 								q4hyperLockFriendly = false;
 								sticky = false;
@@ -58,9 +59,9 @@ public:
 
 	void					Load( const idDict& dict );
 
-	void					SetSupported( bool value ) { supported = value; }
+	void					SetSupported( bool value );
 
-	bool					IsSupported( void ) const { return supported; }
+	bool					IsSupported( void ) const;
 	bool					IsSticky( void ) const;
 	float					GetLockDistance( void ) const;
 	const idSoundShader*	GetLockingSound( void ) const;
@@ -80,6 +81,7 @@ private:
 	float					q4hyperLockDistance;
 	int						q4hyperLockDuration;
 	bool					supported;
+	bool					q4hyperSupported;
 	bool					lockFriendly;
 	bool					q4hyperLockFriendly;
 	bool					sticky;
