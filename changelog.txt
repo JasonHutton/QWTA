@@ -49,7 +49,7 @@ CHANGES:
   + Default 1.
   + Controls whether the Hyperblaster fires ETQW-style hitscan bullets, or
     Quake 4-Nailgun-style mini-plasma shells that explode on impact.
-  + Works in conjunction with g_realisticSpreads.
+  + Works in conjunction with g_realisticSpread and g_realisticDamage.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
