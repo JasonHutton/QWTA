@@ -88,10 +88,10 @@ entityDef projectile_hyperblaster_qwta {
 	//"snd_fly"				"sounds/weapons/plasmacannon/fly"
 	"snd_fly"				"sounds/deployables/ssg/fly"
 	
-	"dmg_damage"				"damage_hyperblaster"
-	"dmg_realistic_damage"			"realistic_damage_hyperblaster"
-	"dmg_splash_damage"			"damage_hyperblaster_splash"
-	"dmg_realistic_splash_damage"		"realistic_damage_hyperblaster_splash"
+	"dmg_damage"				"damage_hyperblaster_qwta"
+	"dmg_realistic_damage"			"realistic_damage_hyperblaster_qwta"
+	"dmg_splash_damage"			"damage_hyperblaster_qwta_splash"
+	"dmg_realistic_splash_damage"		"realistic_damage_hyperblaster_qwta_splash"
 	
 	//"use_air_burst"				"1"
 	//"fx_airburst"				"effects/weapons/plasmacannon/explode_small_air"
@@ -102,93 +102,141 @@ entityDef projectile_hyperblaster_qwta {
 	"has_thrust"						"1"
 }
 
-entityDef projectile_hyperblaster_desecrator {
-	"inherit"							"projectile_hyperblaster"
-	"dmg_damage"						"damage_hyperblaster_desecrator"
-	"dmg_realistic_damage"					"realistic_damage_hyperblaster_desecrator"
-	"dmg_splash_damage"					"damage_hyperblaster_desecrator_splash"
-	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_desecrator_splash"
-}
-
 entityDef projectile_hyperblaster_desecrator_qwta {
 	"inherit"							"projectile_hyperblaster_qwta"
-	"dmg_damage"						"damage_hyperblaster_desecrator"
-	"dmg_realistic_damage"					"realistic_damage_hyperblaster_desecrator"
-	"dmg_splash_damage"					"damage_hyperblaster_desecrator_splash"
-	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_desecrator_splash"
-}
-
-entityDef projectile_hyperblaster_hog {
-	"inherit"							"projectile_hyperblaster"
-	"dmg_damage"						"damage_hyperblaster_hog"
-	"dmg_realistic_damage"					"realistic_damage_hyperblaster_hog"
-	"dmg_splash_damage"					"damage_hyperblaster_hog_splash"
-	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_hog_splash"
+	"dmg_damage"						"damage_hyperblaster_qwta_desecrator"
+	"dmg_realistic_damage"					"realistic_damage_hyperblaster_qwta_desecrator"
+	"dmg_splash_damage"					"damage_hyperblaster_qwta_desecrator_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_qwta_desecrator_splash"
 }
 
 entityDef projectile_hyperblaster_hog_qwta {
 	"inherit"							"projectile_hyperblaster_qwta"
-	"dmg_damage"						"damage_hyperblaster_hog"
-	"dmg_realistic_damage"					"realistic_damage_hyperblaster_hog"
-	"dmg_splash_damage"					"damage_hyperblaster_hog_splash"
-	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_hog_splash"
-}
-
-
-entityDef projectile_hyperblaster_hornet {
-	"inherit"							"projectile_hyperblaster"
-	"dmg_damage"							"damage_hyperblaster_hornet"
-	"dmg_realistic_damage"						"realistic_damage_hyperblaster_hornet"
-	"dmg_splash_damage"						"damage_hyperblaster_hornet_splash"
-	"dmg_realistic_splash_damage"					"realistic_damage_hyperblaster_hornet_splash"
+	"dmg_damage"						"damage_hyperblaster_qwta_hog"
+	"dmg_realistic_damage"					"realistic_damage_hyperblaster_qwta_hog"
+	"dmg_splash_damage"					"damage_hyperblaster_qwta_hog_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_hyperblaster_qwta_hog_splash"
 }
 
 entityDef projectile_hyperblaster_hornet_qwta {
 	"inherit"							"projectile_hyperblaster_qwta"
-	"dmg_damage"							"damage_hyperblaster_hornet"
-	"dmg_realistic_damage"						"realistic_damage_hyperblaster_hornet"
-	"dmg_splash_damage"						"damage_hyperblaster_hornet_splash"
-	"dmg_realistic_splash_damage"					"realistic_damage_hyperblaster_hornet_splash"
+	"dmg_damage"							"damage_hyperblaster_qwta_hornet"
+	"dmg_realistic_damage"						"realistic_damage_hyperblaster_qwta_hornet"
+	"dmg_splash_damage"						"damage_hyperblaster_qwta_hornet_splash"
+	"dmg_realistic_splash_damage"					"realistic_damage_hyperblaster_qwta_hornet_splash"
 }
 
-
-damageDef damage_hyperblaster_splash {
-	_templates/vehicles/weapons/hyperblaster/damage_splash( "hyperblaster", "pro_aggressor_damage" )
+damageDef damage_hyperblaster_qwta_hornet {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage( "hornet_weapons", "pro_vehicle_damage" )
 }
 
-damageDef realistic_damage_hyperblaster_splash {
-	inherit								"damage_hyperblaster_splash"
-	damage								"realistic_damage_hyperblaster_splash"
+damageDef realistic_damage_hyperblaster_qwta_hornet {
+	inherit								"damage_hyperblaster_qwta_hornet"
+	damage								"realistic_damage_hyperblaster_qwta"
 }
 
-damageDef damage_hyperblaster_hornet_splash {
-	_templates/vehicles/weapons/hyperblaster/damage_splash( "hornet_weapons", "pro_vehicle_damage" )
+damageDef damage_hyperblaster_qwta_hog {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage( "hog_weapons", "pro_vehicle_damage" )
 }
 
-damageDef realistic_damage_hyperblaster_hornet_splash {
-	inherit								"damage_hyperblaster_hornet_splash"
-	damage								"realistic_damage_hyperblaster_splash"
+damageDef realistic_damage_hyperblaster_qwta_hog {
+	inherit								"damage_hyperblaster_qwta_hog"
+	damage								"realistic_damage_hyperblaster_qwta"
 }
 
-damageDef damage_hyperblaster_hog_splash {
-	_templates/vehicles/weapons/hyperblaster/damage_splash( "hog_weapons", "pro_vehicle_damage" )
+damageDef damage_hyperblaster_qwta_desecrator {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage( "desecrator_weapons", "pro_vehicle_damage" )
 }
 
-damageDef realistic_damage_hyperblaster_hog_splash {
-	inherit								"damage_hyperblaster_hog_splash"
-	damage								"realistic_damage_hyperblaster_splash"
+damageDef realistic_damage_hyperblaster_qwta_desecrator {
+	inherit								"damage_hyperblaster_qwta_desecrator"
+	damage								"realistic_damage_hyperblaster_qwta"
 }
 
-damageDef damage_hyperblaster_desecrator_splash {
-	_templates/vehicles/weapons/hyperblaster/damage_splash( "desecrator_weapons", "pro_vehicle_damage" )
+damageDef damage_hyperblaster_qwta {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage( "hyperblaster", "pro_aggressor_damage" )
+
+	record_hit_stats
 }
 
-damageDef realistic_damage_hyperblaster_desecrator_splash {
-	inherit								"damage_hyperblaster_desecrator_splash"
-	damage								"realistic_damage_hyperblaster_splash"
+damageDef realistic_damage_hyperblaster_qwta {
+	inherit								"damage_hyperblaster_qwta"
+	damage								"realistic_damage_hyperblaster_qwta"
 }
 
-damageFilter damage_hyperblaster_splash {
+damageDef damage_hyperblaster_qwta_splash {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage_splash( "hyperblaster", "pro_aggressor_damage" )
+}
+
+damageDef realistic_damage_hyperblaster_qwta_splash {
+	inherit								"damage_hyperblaster_qwta_splash"
+	damage								"realistic_damage_hyperblaster_qwta_splash"
+}
+
+damageDef damage_hyperblaster_qwta_hornet_splash {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage_splash( "hornet_weapons", "pro_vehicle_damage" )
+}
+
+damageDef realistic_damage_hyperblaster_qwta_hornet_splash {
+	inherit								"damage_hyperblaster_qwta_hornet_splash"
+	damage								"realistic_damage_hyperblaster_qwta_splash"
+}
+
+damageDef damage_hyperblaster_qwta_hog_splash {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage_splash( "hog_weapons", "pro_vehicle_damage" )
+}
+
+damageDef realistic_damage_hyperblaster_qwta_hog_splash {
+	inherit								"damage_hyperblaster_qwta_hog_splash"
+	damage								"realistic_damage_hyperblaster_qwta_splash"
+}
+
+damageDef damage_hyperblaster_qwta_desecrator_splash {
+	_templates/vehicles/weapons/hyperblaster_qwta/damage_splash( "desecrator_weapons", "pro_vehicle_damage" )
+}
+
+damageDef realistic_damage_hyperblaster_qwta_desecrator_splash {
+	inherit								"damage_hyperblaster_qwta_desecrator_splash"
+	damage								"realistic_damage_hyperblaster_qwta_splash"
+}
+
+damageFilter damage_hyperblaster_qwta {
+
+	type {
+		target							"target_player_all"
+		damage							30
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							30
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							30
+	}
+}
+
+damageFilter realistic_damage_hyperblaster_qwta {
+
+	type {
+		target							"target_player_all"
+		damage							90
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							90
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							90
+	}
+}
+
+damageFilter damage_hyperblaster_qwta_splash {
 	
 	type {
 		target	"target_player_all"
@@ -211,7 +259,7 @@ damageFilter damage_hyperblaster_splash {
 	}
 }
 
-damageFilter realistic_damage_hyperblaster_splash {
+damageFilter realistic_damage_hyperblaster_qwta_splash {
 	
 	type {
 		target	"target_player_all"

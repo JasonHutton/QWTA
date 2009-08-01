@@ -28,6 +28,25 @@ $endtemplate
 $template _templates/vehicles/weapons/hyperblaster/damage( STATNAME, PROFICIENCY )
 	damage								"damage_hyperblaster"
 
+	knockback							3
+	push								10000
+
+	prof_damage							PROFICIENCY
+
+	stat_name							STATNAME
+
+	knockback							10
+	kick_time							100
+	kick_amplitude						0
+	kickDir								( 1 0 0 )
+
+	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+$endtemplate
+
+$template _templates/vehicles/weapons/hyperblaster_qwta/damage( STATNAME, PROFICIENCY )
+	damage								"damage_hyperblaster_qwta"
+
 	push								10000
 
 	prof_damage							PROFICIENCY
@@ -45,8 +64,8 @@ $template _templates/vehicles/weapons/hyperblaster/damage( STATNAME, PROFICIENCY
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
 $endtemplate
 
-$template _templates/vehicles/weapons/hyperblaster/damage_splash( STATNAME, PROFICIENCY )
-	damage								"damage_hyperblaster_splash"
+$template _templates/vehicles/weapons/hyperblaster_qwta/damage_splash( STATNAME, PROFICIENCY )
+	damage								"damage_hyperblaster_qwta_splash"
 
 	push								10000
 
