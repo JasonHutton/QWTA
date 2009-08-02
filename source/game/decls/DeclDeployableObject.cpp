@@ -75,6 +75,11 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 
 	creditRequired	= temp.GetFloat( "credit_required", "0.1" );
 
+	if ( !temp.GetFloat( "qwta_credit_required", "0.1", qwtaCreditRequired ) ) {
+		qwtaCreditRequired = creditRequired;
+	}
+
+
 	idStr		rankRequiredString;
 	if ( temp.GetString( "rank_required", "", rankRequiredString ) ) {
 		rankRequired	= static_cast<const sdDeclRank*>( declManager->FindType( declManager->GetDeclTypeHandle( declRankIdentifier ), rankRequiredString, false ) );
@@ -146,6 +151,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	objectSize			= 0.f;
 	allowRotation		= true;
 	creditRequired		= 0.1f;
+	qwtaCreditRequired	= creditRequired;
 	rankRequired		= NULL;
 	forceEscalationRequired = 0;
 	avdbit				= -1;

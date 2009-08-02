@@ -47,7 +47,8 @@ deployObject deployobject_icarus {
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"
-	"credit_required"				"0.5"
+	"credit_required"				"0.1"
+	"qwta_credit_required"			"0.5"
 	"rank_required"					"private"
 	"force_escalation_required"		"15"
 	"avdbit"						AVDBIT_ICARUS

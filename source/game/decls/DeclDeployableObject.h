@@ -26,7 +26,7 @@ public:
 	const sdDeclStringMap*			GetPlacementInfo( void ) const { return placementInfo; }
 	qhandle_t						GetDeploymentMask( void ) const { return mask; }
 	float							GetObjectSize( void ) const { return objectSize; }
-	float							GetCreditRequired( void ) const { return creditRequired; }
+	float							GetCreditRequired( void ) const { return g_useBaseETQWVehicleCredits.GetBool() ? creditRequired : qwtaCreditRequired; }
 	int								GetRankLevelRequired( void ) const { return rankRequired != NULL ? rankRequired->GetLevel() : -1; }
 	int								GetForceEscalationRequired( void ) const { return forceEscalationRequired; }
 	int								GetAVDBit( void ) const { return avdbit; }
@@ -45,6 +45,7 @@ private:
 	float							objectSize;
 	bool							allowRotation;
 	float							creditRequired;
+	float							qwtaCreditRequired;
 	const sdDeclRank*				rankRequired;
 	int								forceEscalationRequired;
 	int								avdbit;

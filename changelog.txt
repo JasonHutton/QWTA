@@ -81,6 +81,10 @@ CHANGES:
   + Controls whether Force Escalation is used as a requirement of 
     vehicle drops. It's recommended to leave this on when heavier vehicles
     are allowed to be dropped.
+* Cvar g_useBaseETQWVehicleCredits added.
+  + Default 0.
+  + Controls whether the Husky and Icarus's BaseETQW vehicle credit costs
+    are used, or the more expensive QWTA defaults.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

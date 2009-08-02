@@ -467,6 +467,7 @@ extern idCVar	g_useGibKills;
 extern idCVar	g_advancedVehicleDrops;
 extern idCVar	g_useSpecificRadar;
 extern idCVar	g_vehicleDropsUseFE;
+extern idCVar	g_useBaseETQWVehicleCredits;
 
 extern idCVar	g_trainingMode;
 

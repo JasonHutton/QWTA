@@ -162,6 +162,7 @@ cvar	g_useNuclearHammer;
 cvar	g_useQuake4Hyperblaster;
 cvar	g_advancedVehicleDrops;
 cvar	g_vehicleDropsUseFE;
+cvar	g_useBaseETQWVehicleCredits;
 
 object gameplay_base;
 gameplay_base gameplayManager;

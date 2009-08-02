@@ -45,7 +45,8 @@ deployObject deployobject_husky {
 	"mask"							"dm_default"
 	"object_radius"					"2048"
 	"category"						"vehicles"
-	"credit_required"				"0.5"
+	"credit_required"				"0.1"
+	"qwta_credit_required"			"0.5"
 	"rank_required"					"private"
 	"force_escalation_required"		"10"
 	"avdbit"						AVDBIT_HUSKY
