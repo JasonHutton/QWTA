@@ -604,6 +604,7 @@ idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | 
 idCVar	g_useGibKills(				"g_useGibKills",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Enables or disables certain attacks that don't normally gib, to do so." );
 
 idCVar	g_useAdvancedVehicleDrops(	"g_useAdvancedVehicleDrops",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables advanced vehicle drops." );
+idCVar	g_useSpecificRadar(			"g_useSpecificRadar",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should players(but not vehicles) be invisible to radar? (3rd eye and MCP exempt.)" );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

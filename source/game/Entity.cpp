@@ -3198,13 +3198,19 @@ bool idEntity::IsInRadar( idPlayer* player ) {
 			}
 		}
 
-		if ( selfPlayer == NULL ) {
-			if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_RADAR ) ) {
-				return true;
+		if ( g_useSpecificRadar.GetBool() ) {
+			if ( selfPlayer == NULL ) {
+				if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_RADAR ) ) {
+					return true;
+				}
 			}
-		}
-		else {
-			if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_INFRARED ) ) {
+			else {
+				if ( team->PointInRadar( GetPhysics()->GetOrigin(), RM_INFRARED ) ) {
+					return true;
+				}
+			}
+		} else {
+			if ( team->PointInRadar( GetPhysics()->GetOrigin(), static_cast<radarMasks_t>(RM_RADAR | RM_INFRARED) ) ) {
 				return true;
 			}
 		}

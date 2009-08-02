@@ -56,6 +56,11 @@ CHANGES:
   + Default 1.
   + Controls whether vehicles heavier than the Icarus and Husky may be 
     vehicle dropped.
+* Cvar g_useSpecificRadar added.
+  + Default 1.
+  + Controls whether radar is prevented from detecting players.
+  + 3rd Eye Camera, the MCP radar, and command-post radar are considered
+    to include Infrared detection equipment, so are exempt from this setting.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
