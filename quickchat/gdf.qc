@@ -272,7 +272,7 @@ quickChatDef gdf/quickchat/need/team/snipersupport {
 
 quickChatDef gdf/quickchat/vehicles/needvehicle {
 	_chat( "gdf/quickchat/vehicles/needvehicle", "RequestHusky", "team", BOT_TYPE_NONE, "same_entity" )
-	cvarAVD
+	avdbit	1
 }
 
 quickChatDef gdf/quickchat/vehicles/needgunner {

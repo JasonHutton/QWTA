@@ -83,29 +83,4 @@ $template _chat( dataParm, callbackParm, teamParm, botTypeParm, requirementParm 
 	$endif
 $endtemplate
 
-$template _chat_vdrop( dataParm, callbackParm, teamParm, botTypeParm, requirementParm )
-	text			dataParm
-	audio			"sounds/players/" ## dataParm
-	requirements	requirementParm
-
-	$if ( callbackParm != "" )
-		callback	callbackParm
-	$endif
-	
-	$if ( teamParm == "team" )
-		team
-	$endif
-
-	$if ( teamParm == "fireteam" )
-		fireteam
-	$endif
-
-	$if ( botTypeParm != -1 ) 
-		type botTypeParm
-	$endif
-	
-	cvarAVD
-	cvarAVDEnabled
-$endtemplate
-
 #endif // !_QC_COMMON_INCLUDE

@@ -52,10 +52,25 @@ CHANGES:
   + Works in conjunction with g_realisticSpread and g_realisticDamage.
 * Hyperblaster's homing abilities changed to be more corrective to aim,
   less predictive.
-* Cvar g_useAdvancedVehicleDrops added.
-  + Default 1.
-  + Controls whether vehicles heavier than the Icarus and Husky may be 
-    vehicle dropped.
+* Cvar g_advancedVehicleDrops added.
+  + Default: -1
+  + A bitfield value that controls which vehicles may be dropped.
+    Setting to a negative number enables all vehicle drops. Setting to
+    zero disables all vehicle drops. Individual vehicles can be enabled
+    as follows:
+    Husky:		1		Platypus:		2
+    Armadillo:		4		Trojan:			8
+    Bumblebee:		16		Titan:			32
+    Anansi:		64		Icarus:			128
+    Hog:		256		Desecrator:		512
+    Cyclops:		1024		Tormentor:		2048
+    Jupiter:		4096
+  + Bitfields, for the uninitiated, can be combined by adding the numbers
+    corresponding to the desired values. For example:
+    Husky(1) + Icarus(128) = 129
+    Husky(1) + Icarus(128) + Platypus(2) + Armadillo(4) + Hog(256) = 391
+    Anansi(64) + Tormentor(2048) = 2112
+    All vehicles except Jupiter = 4031
 * Cvar g_useSpecificRadar added.
   + Default 1.
   + Controls whether radar is prevented from detecting players.

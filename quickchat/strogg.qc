@@ -267,7 +267,7 @@ quickChatDef strogg/quickchat/need/team/snipersupport {
 
 quickChatDef strogg/quickchat/vehicles/needvehicle {
 	_chat( "strogg/quickchat/vehicles/needvehicle", "RequestIcarus", "team", BOT_TYPE_NONE, "same_entity" )
-	cvarAVD
+	avdbit	128
 }
 
 quickChatDef strogg/quickchat/vehicles/needgunner {

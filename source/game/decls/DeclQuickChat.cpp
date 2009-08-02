@@ -28,8 +28,7 @@ sdDeclQuickChat::sdDeclQuickChat( void ) {
 	fireteam = false;
 	audio = NULL;
 	type = -1;
-	cvarQuickchatFlags.cvarAVD = false;
-	cvarQuickchatFlags.cvarAVDEnabled = false;
+	avdBit = -1;
 }
 
 /*
@@ -108,10 +107,11 @@ bool sdDeclQuickChat::Parse( const char *_text, const int textLength ) {
 				return false;
 			}
 			requirements.Load( token );
-		} else if ( !token.Icmp( "cvarAVD" ) ) {
-			cvarQuickchatFlags.cvarAVD = true;
-		} else if ( !token.Icmp( "cvarAVDEnabled" ) ) {
-			cvarQuickchatFlags.cvarAVDEnabled = true;
+		} else if ( !token.Icmp( "avdbit" ) ) {
+			if ( !src.ExpectTokenType( TT_NUMBER, 0, &token ) ) {
+				return false;
+			}
+			avdBit = token.GetIntValue();
 		} else if ( !token.Cmp( "}" ) ) {
 			break;
 		} else {
@@ -134,6 +134,5 @@ void sdDeclQuickChat::FreeData( void ) {
 	team		= false;
 	fireteam	= false;
 	callback	= "";
-	cvarQuickchatFlags.cvarAVD = false;
-	cvarQuickchatFlags.cvarAVDEnabled = false;
+	avdBit		= -1;
 }
