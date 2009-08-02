@@ -52,6 +52,10 @@ CHANGES:
   + Works in conjunction with g_realisticSpread and g_realisticDamage.
 * Hyperblaster's homing abilities changed to be more corrective to aim,
   less predictive.
+* Cvar g_useAdvancedVehicleDrops added.
+  + Default 1.
+  + Controls whether vehicles heavier than the Icarus and Husky may be 
+    vehicle dropped.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
