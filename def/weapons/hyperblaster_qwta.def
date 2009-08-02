@@ -98,7 +98,7 @@ entityDef projectile_hyperblaster_qwta {
 	
 	"collection_mdfExport"				"mdfExport"
 	
-	"thrust_power"						"3000"
+	"thrust_power"						"6000"
 	"has_thrust"						"1"
 }
 

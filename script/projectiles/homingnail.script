@@ -70,6 +70,7 @@ void projectile_homingnail::destroy() {
 void projectile_homingnail::UpdateFocusedTargeting() {
 }
 
+/*
 void projectile_homingnail::OnUpdateTargeting() {
 	entity enemy = getEnemy();
 
@@ -105,6 +106,34 @@ void projectile_homingnail::OnUpdateTargeting() {
 	dir = sys.vecNormalize( delta );
 
 	turnTowards( dir, 180.f );
+}*/
+
+void projectile_homingnail::OnUpdateTargeting() {
+	entity enemy = getEnemy();
+	
+	vector enemyOrg;
+	vector dir;
+
+	if ( enemy == $null_entity ) {
+		UpdateFocusedTargeting();
+		return;
+	}
+	
+	vector absMins = enemy.getVectorKeyWithDefault( "selection_mins", enemy.getMins() );
+	vector absMaxs = enemy.getVectorKeyWithDefault( "selection_maxs", enemy.getMaxs() );
+	absMins = sys.toWorldSpace( absMins, enemy );
+	absMaxs = sys.toWorldSpace( absMaxs, enemy );
+	enemyOrg = ( absMins + absMaxs ) * 0.5f ;
+	
+	vector delta = enemyOrg - getWorldOrigin();
+	dir = sys.vecNormalize( delta );
+	
+	float maxTurnRate = 135.0f * ( sys.getTime() - spawnTime );
+	if ( maxTurnRate > 180.0f ) {
+		maxTurnRate = 180.0f;
+	}
+	
+	turnTowards( dir, 180 ); //maxTurnRate );
 }
 
 void projectile_homingnail::vSetNewTarget( entity newTarget ) {
