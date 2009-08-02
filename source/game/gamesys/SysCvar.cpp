@@ -607,6 +607,7 @@ idCVar	g_advancedVehicleDrops(		"g_advancedVehicleDrops",		"-1",		CVAR_GAME | CV
 idCVar	g_useSpecificRadar(			"g_useSpecificRadar",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should players(but not vehicles) be invisible to radar? (3rd eye and MCP exempt.)" );
 idCVar	g_vehicleDropsUseFE(		"g_vehicleDropsUseFE",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle drops have Force Escalation requirements for their use?" );
 idCVar	g_useBaseETQWVehicleCredits("g_useBaseETQWVehicleCredits",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the Icarus and Husky use BaseETQW vehicle credit costs?" );
+idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_INIT,		"Should BaseETQW proficiencies be used? (QWTA gives free Vehicle Drops otherwise.)" );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

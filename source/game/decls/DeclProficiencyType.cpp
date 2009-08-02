@@ -102,6 +102,13 @@ bool sdDeclProficiencyType::Parse( const char *text, const int textLength ) {
 
 			levels.Alloc() = token.GetIntValue();
 
+		} else if( !token.Icmp( "qwtalevel" ) ) {
+			if ( !src.ReadToken( &token ) ) {
+				src.Error( "sdDeclProficiencyType::Parse Error Parsing qwtaLevel %i", qwtaLevels.Num() );
+				return false;
+			}
+
+			qwtaLevels.Alloc() = token.GetIntValue();
 		} else if( !token.Icmp( "text" ) ) {
 
 			if ( !src.ReadToken( &token ) ) {
@@ -130,6 +137,7 @@ void sdDeclProficiencyType::FreeData( void ) {
 	text = NULL;
 	title.Clear();
 	levels.Clear();
+	qwtaLevels.Clear();
 
 	stats.name.Clear();
 	stats.xp		= NULL;

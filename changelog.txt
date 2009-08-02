@@ -85,6 +85,9 @@ CHANGES:
   + Default 0.
   + Controls whether the Husky and Icarus's BaseETQW vehicle credit costs
     are used, or the more expensive QWTA defaults.
+* Cvar g_useBaseETQWProficiencies added.
+  + Default 0.
+  + Prevents players from being given free Vehicle Drop rewards.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

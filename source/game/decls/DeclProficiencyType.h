@@ -23,8 +23,8 @@ public:
 	virtual bool				Parse( const char *text, const int textLength );
 	virtual void				FreeData( void );
 
-	int							GetNumLevels( void ) const { return levels.Num(); }
-	int							GetLevel( int index ) const { return levels[ index ]; }
+	int							GetNumLevels( void ) const { return !(g_useBaseETQWProficiencies.GetBool() && qwtaLevels.Num() == levels.Num() ) ? qwtaLevels.Num() : levels.Num(); }
+	int							GetLevel( int index ) const { return !(g_useBaseETQWProficiencies.GetBool() && qwtaLevels.Num() == levels.Num() ) ? qwtaLevels[ index ] : levels[ index ]; }
 	const char*					GetLookupTitle( void ) const { return title; }
 	const stats_t&				GetStats( void ) const { return stats; }
 	const sdDeclLocStr*			GetProficiencyText( void ) const { return text; }
@@ -35,6 +35,7 @@ protected:
 	const sdDeclLocStr*			text;
 	idStr						title;
 	idList< int >				levels;
+	idList< int >				qwtaLevels;
 };
 
 #endif // __DECLPROFICIENCYTYPE_H__
