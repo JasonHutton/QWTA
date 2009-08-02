@@ -2,6 +2,8 @@
 // bumblebee
 //
 
+#include <quickchat/avdbits.include>
+
 export karateka {
 		options -prefix BUMBLEBEE_  -rotate -90 -nomerge  -sourcedir models/vehicles/gdf_bumblebee/dev_sd -destdir models/vehicles/gdf_bumblebee/ -keep carrier_driver carrier_gunner1 carrier_gunner2 carrier_passenger1 carrier_passenger2 bumblebee_joint centre_thruster_effect front_gun_mount_joint front_gun_joint muzzle gun_left_joint03 gun_left_joint muzzle_left gun_right_joint03 gun_right_joint muzzle_right gunner_left_camera gunner_right_camera left_thrust_joint left_thruster_effect left_wheel_arm_joint left_wheel_shock_joint front_left_wheel_joint pilot_camera player_pos01 player_pos02 player_pos03 player_pos04 rear_thruster_effect rear_wheel_arm1 rear_wheel_arm2 joint2 right_thrust_joint right_thruster_effect right_wheel_arm_joint right_wheel_shock_joint front_right_wheel_joint windows_joint front_rotor_controller_joint front_rotor_joint front_rotor_shaft_joint left_passenger_camera player_exit_left player_exit_right player_exit_front player_exit_rear player_pos00 rear_left_fin_joint rear_right_fin_joint rear_rotor_controller_joint rear_rotor_joint rearrotor_shaft_joint right_passenger_camera right_gunner_lefthand_ik right_gunner_righthand_ik left_gunner_lefthand_ik left_gunner_righthand_ik seat01_joint seat02_joint seat03_joint seat04_joint -parent rear_thruster_effect dummyjoint
 
@@ -55,6 +57,7 @@ deployObject deployobject_bumblebee {
 	"credit_required"				"1"
 	"rank_required"					"gunnery_sergeant"
 	"force_escalation_required"		"50"
+	"avdbit"						AVDBIT_BUMBLEBEE
 }
 
 entityDef vehicle_bumblebee {

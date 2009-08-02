@@ -5,6 +5,8 @@ reexportmodels vehicles/hog.def
 testmodel vehicle_hog
 */
 
+#include <quickchat/avdbits.include>
+
 export shamus {
 	options -nomerge -prefix hog_ -rotate 90 -scale 0.66 -sourcedir models/vehicles/strogg_hog/dev_sd -destdir models/vehicles/strogg_hog/
 
@@ -70,6 +72,7 @@ deployObject deployobject_hog {
 	"credit_required"				"1"
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"30"
+	"avdbit"						AVDBIT_HOG
 }
 
 entityDef vehicle_hog {

@@ -2,6 +2,8 @@
 // husky
 //
 
+#include <quickchat/avdbits.include>
+
 export frankie {
 		options -prefix HUS_ -rotate 90 -nomerge -sourcedir models/vehicles/edf_husky/dev_sd -destdir models/vehicles/edf_husky/ -keep base carrier_driver front_left_lower_wishbone rear_left_lower_wishbone front_left_upper_wishbone front_left_wheel rear_left_upper_wishbone rear_left_wheel front_right_lower_wishbone rear_right_lower_wishbone front_right_upper_wishbone front_right_wheel rear_right_upper_wishbone rear_right_wheel handle_bars cam_1 cam_2 driver_position left_exit right_exit rear_exit left_exhaust right_exhaust rear_light right_hand left_hand -noAnimate rear_bull_bars rear_armour front_armour front_container left_container right_container body front_bull_bars s_front_container s_left_container s_front_bull_bars s_body s_rear_bull_bars s_right_container
 
@@ -46,6 +48,7 @@ deployObject deployobject_husky {
 	"credit_required"				"0.5"
 	"rank_required"					"private"
 	"force_escalation_required"		"10"
+	"avdbit"						AVDBIT_HUSKY
 }
 
 entityDef vehicle_husky {

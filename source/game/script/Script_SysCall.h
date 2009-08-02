@@ -205,6 +205,7 @@ public:
 
 	void						Event_GetForceEscalation( void );
 	void						Event_GetDeploymentForceEscalationRequirement( int deploymentObjectIndex );
+	void						Event_GetDeploymentAVDBit( int deploymentObjectIndex );
 
 	void						Event_GetWorldMins( void );
 	void						Event_GetWorldMaxs( void );

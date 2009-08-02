@@ -305,6 +305,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	float creditRequired = sys.getDeploymentCredit( GetDeployObject( objectName ) );
 	//float rankRequired = sys.getDeploymentRankRequirement( GetDeployObject( objectName ) );
 	float forceEscalationRequired = sys.getDeploymentForceEscalationRequirement( GetDeployObject( objectName ) );
+	float avdbit = sys.getDeploymentAVDBit( GetDeployObject( objectName ) );
 
 	entity proxy = getProxyEntity();
 
@@ -314,6 +315,8 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 		return false;
 	//} else if ( currentRank < rankRequired ) {
 	//	return false;
+	} else if ( g_advancedVehicleDrops.getIntValue() >= 0 && !( g_advancedVehicleDrops.getIntValue() & avdbit ) ) {
+		return false;
 	} else if ( g_vehicleDropsUseFE.getBoolValue() && currentForceEscalation < forceEscalationRequired ) {
 		return false;
 	} else if ( credit < creditRequired ) {

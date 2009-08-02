@@ -29,6 +29,7 @@ public:
 	float							GetCreditRequired( void ) const { return creditRequired; }
 	int								GetRankLevelRequired( void ) const { return rankRequired != NULL ? rankRequired->GetLevel() : -1; }
 	int								GetForceEscalationRequired( void ) const { return forceEscalationRequired; }
+	int								GetAVDBit( void ) const { return avdbit; }
 	static void						CacheFromDict( const idDict& dict );
 	bool							AllowRotation( void ) const { return allowRotation; }
 
@@ -46,6 +47,7 @@ private:
 	float							creditRequired;
 	const sdDeclRank*				rankRequired;
 	int								forceEscalationRequired;
+	int								avdbit;
 };
 
 #endif // __DECLDEPLOYABLEOBJECT_H__

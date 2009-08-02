@@ -1,5 +1,6 @@
 
 #include <quickchat/common.include>
+#include <quickchat/avdbits.include>
 
 // Global ///////////////////////////////////////////////////
 
@@ -267,7 +268,7 @@ quickChatDef strogg/quickchat/need/team/snipersupport {
 
 quickChatDef strogg/quickchat/vehicles/needvehicle {
 	_chat( "strogg/quickchat/vehicles/needvehicle", "RequestIcarus", "team", BOT_TYPE_NONE, "same_entity" )
-	avdbit	128
+	avdbit	AVDBIT_ICARUS
 }
 
 quickChatDef strogg/quickchat/vehicles/needgunner {

@@ -5,6 +5,8 @@ reexportmodels vehicles/desecrator.def
 testmodel vehicle_desecrator
 */
 
+#include <quickchat/avdbits.include>
+
 export hauser {
 	options -prefix DES_        -scale 0.7   -rotate -90 -sourcedir models/vehicles/strogg_desecrator/dev_sd -nomerge -destdir models/vehicles/strogg_desecrator
 
@@ -59,6 +61,7 @@ deployObject deployobject_desecrator {
 	"credit_required"				"1"
 	"rank_required"					"gunnery_sergeant"
 	"force_escalation_required"		"40"
+	"avdbit"						AVDBIT_DESECRATOR
 }
 
 entityDef vehicle_desecrator {

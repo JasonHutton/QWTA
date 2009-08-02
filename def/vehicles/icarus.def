@@ -2,6 +2,8 @@
 // icarus
 //
 
+#include <quickchat/avdbits.include>
+
 export frankie {
 		options -prefix ICA_ -rotate 90 -nomerge -sourcedir models/vehicles/strogg_icarus/dev_sd -destdir models/vehicles/strogg_icarus/ -keep driver_cam exit_1 exit_2 exit_3 exit_4 carrier_driver body
 
@@ -48,6 +50,7 @@ deployObject deployobject_icarus {
 	"credit_required"				"0.5"
 	"rank_required"					"private"
 	"force_escalation_required"		"15"
+	"avdbit"						AVDBIT_ICARUS
 }
 
 entityDef vehicle_icarus_visuals {

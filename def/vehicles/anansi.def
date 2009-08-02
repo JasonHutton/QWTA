@@ -5,6 +5,8 @@ reexportmodels vehicles/anansi.def
 testmodel vehicle_anansi
 */
 
+#include <quickchat/avdbits.include>
+
 export hauser {
 	options -prefix ANA_ -scale .85 -rotate -90 -nomerge -sourcedir models/vehicles/edf_anansi/dev_sd -destdir models/vehicles/edf_anansi -keepmesh S_anansi S_rear_wheel_brace S_front_right_lower_wheel_brace S_front_right_detachable_1 S_front_left_detachable_2 S_middle_landing_bay_door S_right_landing_bay_door S_front_right_upper_wheel_brace S_right_wheel S_front_left_detachable_1 S_rear_wheel S_front_left_lower_wheel_brace S_left_landing_bay_door S_front_left_upper_wheel_brace S_front_left_wheel S_front_right_detachable_2 M_center_rotor M_tail_rotor lod0and1_M_windows M_anansi M_right_haw_1 M_right_haw_2 M_right_haw_3 M_right_haw_4 M_left_haw_1 M_left_haw_2 M_left_haw_3 M_left_haw_4 M_rear_wheel_brace M_rear_wheel M_front_left_detachable_1 M_front_right_detachable_1 M_front_right_detachable_2 M_front_left_detachable_2 M_left_landing_bay_door M_middle_landing_bay_door M_right_landing_bay_door M_front_right_upper_wheel_brace M_front_right_lower_wheel_brace M_right_wheel M_front_left_upper_wheel_brace M_front_left_lower_wheel_brace M_front_left_wheel minigun_shadow minigun_base_shadow minigun_arm_shadow base_rotator_shadow barrel_shadow minigun_base minigun minigun_arm base_rotator barrel
 
@@ -93,6 +95,7 @@ deployObject deployobject_anansi {
 	"credit_required"				"1"
 	"rank_required"					"third_lieutenant"
 	"force_escalation_required"		"90"
+	"avdbit"						AVDBIT_ANANSI
 }
 
 entityDef vehicle_anansi {

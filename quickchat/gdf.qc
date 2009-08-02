@@ -1,5 +1,6 @@
 
 #include <quickchat/common.include>
+#include <quickchat/avdbits.include>
 
 // Global ///////////////////////////////////////////////////
 
@@ -272,7 +273,7 @@ quickChatDef gdf/quickchat/need/team/snipersupport {
 
 quickChatDef gdf/quickchat/vehicles/needvehicle {
 	_chat( "gdf/quickchat/vehicles/needvehicle", "RequestHusky", "team", BOT_TYPE_NONE, "same_entity" )
-	avdbit	1
+	avdbit	AVDBIT_HUSKY
 }
 
 quickChatDef gdf/quickchat/vehicles/needgunner {

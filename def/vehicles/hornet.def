@@ -5,6 +5,8 @@ reexportmodels vehicles/hornet.def
 testmodel vehicle_hornet
 */
 
+#include <quickchat/avdbits.include>
+
 export hauser {
 	options -prefix HORN_ 	-rotate -270 -sourcedir models/vehicles/strogg_hornet/dev_sd -destdir models/vehicles/strogg_hornet -nomerge -keep main carrier_driver carrier_gunner1 cockpit_attacher rear front_left_leg_1 front_left_leg_2 front_left_leg_3 front_left_leg_placement rear_left_leg_1 rear_left_leg_2 rear_left_leg_3 rear_left_leg_placement front_right_leg_1 front_right_leg_2 front_right_leg_3 front_right_leg_placement rear_right_leg_1 rear_right_leg_2 rear_right_leg_3 rear_right_leg_placement front_left_thruster_1 front_left_thruster_2 front_left_thruster_effects front_right_thruster_1 front_right_thruster_2 front_right_thruster_effects rear_left_thruster_1 rear_left_thruster_2 rear_left_thruster_effects rear_right_thruster_1 rear_right_thruster_2 rear_right_thruster_effects missile_1 missile_2 gunbase gun_cam gunarm1 gunarm2 gun_muzzle cockpit camera_gunner camera gun gun_muzzle nose front_left_exit front_right_exit rear_left_exit rear_right_exit -parent cockpit main -parent gun_cam main -parent missile_1 cockpit -parent missile_2 cockpit
 
@@ -97,6 +99,7 @@ deployObject deployobject_hornet {
 	"credit_required"				"1"
 	"rank_required"					"third_lieutenant"
 	"force_escalation_required"		"80"
+	"avdbit"						AVDBIT_TORMENTOR
 }
 
 entityDef vehicle_hornet {

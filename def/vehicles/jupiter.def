@@ -5,6 +5,8 @@ reexportmodels vehicles/titan.def
 testmodel vehicle_titan
 */
 
+#include <quickchat/avdbits.include>
+
 export karateka {
 	options -prefix TITAN_ -nomerge -scale 0.75 -rotate 90 -sourcedir models/vehicles/edf_titan/dev_sd -destdir models/vehicles/edf_titan/
 
@@ -58,6 +60,7 @@ deployObject deployobject_jupiter {
 	"credit_required"				"1"
 	"rank_required"					"captain"
 	"force_escalation_required"		"120"
+	"avdbit"						AVDBIT_JUPITER
 }
 
 entityDef vehicle_jupiter {

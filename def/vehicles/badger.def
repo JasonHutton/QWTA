@@ -2,6 +2,8 @@
 // Badger
 //
 
+#include <quickchat/avdbits.include>
+
 export karateka {
 		options -prefix FBV_ -rotate 90 -nomerge 		   -scale .8 -sourcedir models/vehicles/edf_badger/dev_sd -destdir models/vehicles/edf_badger/ -keep carrier_driver carrier_passenger1 carrier_passenger2 carrier_passenger3 carrier_gunner1 rear_lights rear1_position rear2_position rear1_position_cam rear2_position_cam gun gun2 gun_muzzle gun_cam cam_1 cam_2 cam_3 cam_4 cam_5 cam_6 cam_7 cam_8 cam_9 exit_left exit_right exit_front exit_rear gunner_position gunner_position_2 driver_position fire_1 driver_gun driver_gun2 driver_gun_muzzle driver_gun_cam -noAnimate m_tailgate m_right_wheel_arch m_left_wheel_arch m_left_door m_right_door m_bonnet m_right_mirror m_left_mirror m_bulls m_base rear_lights m_windows s_base s_tailgate s_left_door s_right_door s_bonnet s_right_mirror s_left_mirror s_bulls
 
@@ -44,6 +46,7 @@ deployObject deployobject_badger {
 	"credit_required"				"1"
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"20"
+	"avdbit"						AVDBIT_ARMADILLO
 }
 
 entityDef vehicle_badger {

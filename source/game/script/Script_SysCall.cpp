@@ -234,6 +234,7 @@ const idEventDef EV_Thread_GetDeploymentTitle( "getDeploymentTitle", 's', DOC_TE
 
 const idEventDef EV_Thread_GetForceEscalation( "getForceEscalation", 'd', DOC_TEXT( "Returns an average amount of XP for all players on the server." ), 0, NULL );
 const idEventDef EV_Thread_GetDeploymentForceEscalationRequirement( "getDeploymentForceEscalationRequirement", 'd', DOC_TEXT( "Returns the force escalation requirement of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
+const idEventDef EV_Thread_GetDeploymentAVDBit( "getDeploymentAVDBit", 'd', DOC_TEXT( "Returns the Advanced Vehicle Drop bit of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 
 const idEventDef EV_Thread_GetWorldMins( "getWorldMins", 'v', DOC_TEXT( "Returns the mins of the world collision model." ), 0, NULL );
 const idEventDef EV_Thread_GetWorldMaxs( "getWorldMaxs", 'v', DOC_TEXT( "Returns the maxs of the world collision model." ), 0, NULL );
@@ -489,6 +490,7 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 
 	EVENT( EV_Thread_GetForceEscalation,			sdSysCallThread::Event_GetForceEscalation )
 	EVENT( EV_Thread_GetDeploymentForceEscalationRequirement,	sdSysCallThread::Event_GetDeploymentForceEscalationRequirement )
+	EVENT( EV_Thread_GetDeploymentAVDBit,			sdSysCallThread::Event_GetDeploymentAVDBit )
 
 	EVENT( EV_Thread_GetWorldMins,					sdSysCallThread::Event_GetWorldMins )
 	EVENT( EV_Thread_GetWorldMaxs,					sdSysCallThread::Event_GetWorldMaxs )
@@ -2811,6 +2813,22 @@ void sdSysCallThread::Event_GetDeploymentForceEscalationRequirement( int deploym
 	}
 
 	sdProgram::ReturnInteger( object->GetForceEscalationRequired() );
+}
+
+/*
+===============
+sdSysCallThread::Event_GetDeploymentAVDBit
+===============
+*/
+void sdSysCallThread::Event_GetDeploymentAVDBit( int deploymentObjectIndex ) {
+	const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( deploymentObjectIndex );
+	if ( !object ) {
+		gameLocal.Warning( "sdSysCallThread::Event_GetDeploymentAVDBit Deployment Object Index OOB" );
+		sdProgram::ReturnInteger( -1 );
+		return;
+	}
+
+	sdProgram::ReturnInteger( object->GetAVDBit() );
 }
 
 /*

@@ -14,6 +14,8 @@ export frankie {
 }
 */
 
+#include <quickchat/avdbits.include>
+
 export hauser {
 		options -prefix PLATYPUS_  -rotate 90 -nomerge 		-sourcedir models/vehicles/gdf_platypus/dev_sd -destdir models/vehicles/gdf_platypus/ -keep left_hand_ik right_hand_ik gunner_left_hand_ik gunner_right_hand_ik carrier_driver carrier_gunner1 player_exit_front player_exit_rear player_pos_front player_pos_rear player_rear_camera player_front_gunner_camera muzzle buoyancy_joint -noanimate right_rail left_rail right_hand_rail left_hand_rail right_side_rail left_side_rail right_shortwave left_shortwave	 right_antenae left_antenae platypus shad_left_shortwave shad_right_shortwave shad_left_antenae shad_right_antenae shad_platypus block_water2
 
@@ -67,6 +69,7 @@ deployObject deployobject_platypus {
 	"credit_required"				"0.5"
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"15"
+	"avdbit"						AVDBIT_PLATYPUS
 }
 
 entityDef vehicle_platypus {

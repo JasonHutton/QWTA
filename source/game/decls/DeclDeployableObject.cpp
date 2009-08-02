@@ -83,6 +83,7 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 		}
 	}
 	forceEscalationRequired = temp.GetInt( "force_escalation_required" );
+	avdbit	= temp.GetInt( "avdbit", "-1" );
 
 	const char* entityType;
 
@@ -147,6 +148,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	creditRequired		= 0.1f;
 	rankRequired		= NULL;
 	forceEscalationRequired = 0;
+	avdbit				= -1;
 }
 
 

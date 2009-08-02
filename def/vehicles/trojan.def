@@ -5,6 +5,7 @@ reexportmodels vehicles/trojan.def
 testmodel ehicle_trojan
 */
 
+#include <quickchat/avdbits.include>
 
 export hauser {
 	options 	-prefix APC_ -nomerge -scale 0.85 -rotate 90 -sourcedir models/vehicles/edf_trojan/dev_sd -destdir models/vehicles/edf_trojan/
@@ -69,6 +70,7 @@ deployObject deployobject_trojan {
 	"credit_required"				"1"
 	"rank_required"					"sergeant"
 	"force_escalation_required"		"40"
+	"avdbit"						AVDBIT_TROJAN
 }
 
 entityDef vehicle_trojan {
