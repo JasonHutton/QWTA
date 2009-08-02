@@ -314,7 +314,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 		return false;
 	//} else if ( currentRank < rankRequired ) {
 	//	return false;
-	} else if ( currentForceEscalation < forceEscalationRequired ) {
+	} else if ( g_vehicleDropsUseFE.getBoolValue() && currentForceEscalation < forceEscalationRequired ) {
 		return false;
 	} else if ( credit < creditRequired ) {
 		return false;

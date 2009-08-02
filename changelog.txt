@@ -76,6 +76,11 @@ CHANGES:
   + Controls whether radar is prevented from detecting players.
   + 3rd Eye Camera, the MCP radar, and command-post radar are considered
     to include Infrared detection equipment, so are exempt from this setting.
+* Cvar g_vehicleDropsUseFE added.
+  + Default 1.
+  + Controls whether Force Escalation is used as a requirement of 
+    vehicle drops. It's recommended to leave this on when heavier vehicles
+    are allowed to be dropped.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

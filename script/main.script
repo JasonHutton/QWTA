@@ -338,6 +338,7 @@ void game_main() {
 	g_useReverseAirstrikes		= sys.getCVar( "g_useReverseAirstrikes", "" );
 	g_useNuclearHammer			= sys.getCVar( "g_useNuclearHammer", "" );
 	g_useQuake4Hyperblaster		= sys.getCVar( "g_useQuake4Hyperblaster", "" );
+	g_vehicleDropsUseFE			= sys.getCVar( "g_vehicleDropsUseFE", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

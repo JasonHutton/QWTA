@@ -2527,6 +2527,8 @@ gui hud {
 			color	flashXPColor		= 1,1,1,0;
 
 			color	xpFillColor			= COLOR_HUD_PROGRESS;
+			
+			float	feVisible		= gui.getCVarBool( "g_vehicleDropsUseFE" );
 		}
 
 		// feedback
@@ -2536,9 +2538,11 @@ gui hud {
 				drawCachedMaterial( topGradMaterial, topRect, gui.barGradientColor );
 				drawCachedMaterial( topLineMaterial, topRect, gui.dialogLineColor );
 				
-				drawCachedMaterial( feFillMaterial, feRect, gui.dialogFillColor );
-				drawCachedMaterial( feGradMaterial, feRect, gui.barGradientColor );
-				drawCachedMaterial( feLineMaterial, feRect, gui.dialogLineColor );
+				if( feVisible ) {
+					drawCachedMaterial( feFillMaterial, feRect, gui.dialogFillColor );
+					drawCachedMaterial( feGradMaterial, feRect, gui.barGradientColor );
+					drawCachedMaterial( feLineMaterial, feRect, gui.dialogLineColor );
+				}
 
 				drawCachedMaterial( botFillMaterial, botRect, gui.dialogFillColor );
 				drawCachedMaterial( botLineMaterial, botRect, gui.dialogLineColor );
@@ -2568,8 +2572,10 @@ gui hud {
 
 				drawLocalizedText( player.roleTitle, classTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
 				drawText( toWStr( toString( max( 0, player.health ), 0 ) ), textRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
-				drawText( toWStr( toString( max( 0, player.fe ), 0 ) ), feTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
-				drawLocalizedText( localize( "guis/game/scoreboard/fe" ), feTextRectStr, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+				if( feVisible ) {
+					drawText( toWStr( toString( max( 0, player.fe ), 0 ) ), feTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawLocalizedText( localize( "guis/game/scoreboard/fe" ), feTextRectStr, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+				}
 				drawText( toWStr( toString( player.xp, 0 ) ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
 				drawLocalizedText( localize( "guis/game/scoreboard/xp" ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
 
@@ -2598,6 +2604,9 @@ gui hud {
 				}
 
 				lastHealthValue = immediate( player.health );
+			}
+			onCVarChanged "g_vehicleDropsUseFE" {
+				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" );
 			}
 		}
 		windowDef healthFill {

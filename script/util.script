@@ -160,6 +160,7 @@ cvar	g_artilleryWarning;
 cvar	g_useReverseAirstrikes;
 cvar	g_useNuclearHammer;
 cvar	g_useQuake4Hyperblaster;
+cvar	g_vehicleDropsUseFE;
 
 object gameplay_base;
 gameplay_base gameplayManager;
