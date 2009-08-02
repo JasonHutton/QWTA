@@ -1416,6 +1416,12 @@ void idBotThreadData::LoadMap( const char* mapName, int randSeed ) {
 	GetGameWorldState()->gameLocalInfo.supplyTimerTime = constants->dict.GetFloat( "energy_supply_time" );
 	GetGameWorldState()->gameLocalInfo.deployTimerTime = constants->dict.GetFloat( "energy_deployment_time" );
 	GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime = constants->dict.GetFloat( "vehiclecredit_timer_time" );
+	float tempTimer;
+	if ( !constants->dict.GetFloat( "qwta_vehiclecredit_timer_time", "0", tempTimer ) ) {
+		GetGameWorldState()->gameLocalInfo.qwtaVehicleCreditChargeTime = GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime;
+	} else {
+		GetGameWorldState()->gameLocalInfo.qwtaVehicleCreditChargeTime = tempTimer;
+	}
 
 	if ( idStr::Icmp( mapName, "maps/area22.entities" ) == 0 ) {
 		GetGameWorldState()->gameLocalInfo.gameMap = AREA22;

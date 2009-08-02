@@ -88,6 +88,9 @@ CHANGES:
 * Cvar g_useBaseETQWProficiencies added.
   + Default 0.
   + Prevents players from being given free Vehicle Drop rewards.
+* Cvar g_useBaseETQWVehicleCharge added.
+  + Default 0.
+  + Controls whether the vehicle credit charge timer uses BaseETQW timing.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

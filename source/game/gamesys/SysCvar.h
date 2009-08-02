@@ -469,6 +469,7 @@ extern idCVar	g_useSpecificRadar;
 extern idCVar	g_vehicleDropsUseFE;
 extern idCVar	g_useBaseETQWVehicleCredits;
 extern idCVar	g_useBaseETQWProficiencies;
+extern idCVar	g_useBaseETQWVehicleCharge;
 
 extern idCVar	g_trainingMode;
 

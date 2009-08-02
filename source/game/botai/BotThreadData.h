@@ -150,6 +150,7 @@ struct gameLocalInfo_t {
 //mal: constants
 	int						chargeExplodeTime;		// how long until a HE/Plasma charge explodes
 	int						vehicleCreditChargeTime;
+	int						qwtaVehicleCreditChargeTime;
 
 	int						gameTimeInMinutes;
 

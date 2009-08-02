@@ -12615,7 +12615,8 @@ float idPlayer::GetVehicleCredit( void ) {
 		return 1.0f;
 	}
 	else {
-		return 1.0f - (vcChargeUsed / (float)botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime);
+		int timer = g_useBaseETQWVehicleCharge.GetBool() ? botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime : botThreadData.GetGameWorldState()->gameLocalInfo.qwtaVehicleCreditChargeTime;
+		return 1.0f - (vcChargeUsed / (float)timer);
 	}
 }
 
@@ -12631,7 +12632,8 @@ void idPlayer::UseVehicleCredit( float amount ) {
 		newFrac = 0.f;
 	}
 
-	gameLocal.SetTargetTimer( clientInfo.scriptHandler.vehicleCreditTimer, this, SEC2MS(MS2SEC(gameLocal.time) + ( ( 1.0f - newFrac ) * botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime ) ) );
+	int timer = g_useBaseETQWVehicleCharge.GetBool() ? botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime : botThreadData.GetGameWorldState()->gameLocalInfo.qwtaVehicleCreditChargeTime;
+	gameLocal.SetTargetTimer( clientInfo.scriptHandler.vehicleCreditTimer, this, SEC2MS(MS2SEC(gameLocal.time) + ( ( 1.0f - newFrac ) * timer ) ) );
 }
 
 /*
