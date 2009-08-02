@@ -166,6 +166,7 @@ entityDef player_base {
 	"do_object_anansi"					"deployobject_anansi"
 	"do_object_bumblebee"					"deployobject_bumblebee"
 	"do_object_platypus"					"deployobject_platypus"
+	"do_object_jupiter"					"deployobject_jupiter"
 	"do_object_icarus"					"deployobject_icarus"
 	"do_object_hog"						"deployobject_hog"
 	"do_object_desecrator"					"deployobject_desecrator"
