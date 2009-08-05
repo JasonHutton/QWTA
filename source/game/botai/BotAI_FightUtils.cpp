@@ -1435,12 +1435,14 @@ bool idBotAI::Bot_PickPostCombatGoal() {
 	}
 
 	//mal: slows the game down too much in ETQW.
-	if ( botThreadData.random.RandomInt( 100 ) > 80 && !LocationVis2Sky( botInfo->origin ) ) { //mal: sometimes, when indoors, take a sec to look around for more enemies.
-		nbgOrigin = enemyInfo.enemy_FS_Pos;
-		ROOT_AI_NODE = &idBotAI::Run_NBG_Node;		
-		NBG_AI_SUB_NODE = &idBotAI::Enter_NBG_Pause;
-		Bot_ResetEnemy();
-		return true;
+	if ( g_realisticSpread.GetBool() || g_realisticDamage.GetBool() ) {
+		if ( botThreadData.random.RandomInt( 100 ) > 80 && !LocationVis2Sky( botInfo->origin ) ) { //mal: sometimes, when indoors, take a sec to look around for more enemies.
+			nbgOrigin = enemyInfo.enemy_FS_Pos;
+			ROOT_AI_NODE = &idBotAI::Run_NBG_Node;		
+			NBG_AI_SUB_NODE = &idBotAI::Enter_NBG_Pause;
+			Bot_ResetEnemy();
+			return true;
+		}
 	}
 
 	return false;
