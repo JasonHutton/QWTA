@@ -43,7 +43,10 @@ sdWeaponLockInfo::Load
 */
 void sdWeaponLockInfo::Load( const idDict& dict ) {
 	supported		= dict.GetBool( "lock_enabled" );
-	q4hyperSupported	= dict.GetBool( "q4hyper_lock_enabled" );
+
+	if ( !dict.GetBool( "q4hyper_lock_enabled", "0", q4hyperSupported ) ) {
+		q4hyperSupported	= supported;
+	}
 
 	lockedSound		= gameLocal.declSoundShaderType[ dict.GetString( "snd_target_locked" ) ];
 	lockingSound	= gameLocal.declSoundShaderType[ dict.GetString( "snd_target_locking" ) ];
@@ -56,11 +59,30 @@ void sdWeaponLockInfo::Load( const idDict& dict ) {
 	sticky			= dict.GetBool( "lock_sticky" );
 	lockFilter		= gameLocal.declTargetInfoType[ dict.GetString( "lock_filter" ) ];
 
-	q4hyperLockDuration = SEC2MS( dict.GetFloat( "q4hyper_lock_duration", "1" ) );
-	q4hyperLockDistance = dict.GetFloat( "q4hyper_lock_distance", "2048" );
-	q4hyperLockFriendly = dict.GetBool( "q4hyper_lock_friendly" );
-	q4hyperSticky = dict.GetBool( "q4hyper_lock_sticky" );
-	q4hyperLockFilter = gameLocal.declTargetInfoType[ dict.GetString( "q4hyper_lock_filter" ) ];
+	float durationTemp;
+	if ( !dict.GetFloat( "q4hyper_lock_duration", "1", durationTemp ) ) {
+		q4hyperLockDuration = lockDuration;
+	} else {
+		q4hyperLockDuration = SEC2MS( durationTemp );
+	}
+
+	if ( !dict.GetFloat( "q4hyper_lock_distance", "2048", q4hyperLockDistance ) ) {
+		q4hyperLockDistance = lockDistance;
+	}
+
+	if ( !dict.GetBool( "q4hyper_lock_friendly", "0", q4hyperLockFriendly ) ) {
+		q4hyperLockFriendly = lockFriendly;
+	}
+	if ( !dict.GetBool( "q4hyper_lock_sticky", "0", q4hyperSticky ) ) {
+		q4hyperSticky = sticky;
+	}
+
+	idStr lockFilterTemp;
+	if ( !dict.GetString( "q4hyper_lock_filter", "", lockFilterTemp ) ) {
+		q4hyperLockFilter = gameLocal.declTargetInfoType[ dict.GetString( "lock_filter" ) ];
+	} else {
+		q4hyperLockFilter = gameLocal.declTargetInfoType[ lockFilterTemp.c_str() ];
+	}
 }
 
 void sdWeaponLockInfo::SetSupported( bool value ) { 
