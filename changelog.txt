@@ -93,6 +93,7 @@ CHANGES:
   + Controls whether the vehicle credit charge timer uses BaseETQW timing.
 * Cvar bot_useVehicleDrops redefaulted to 1.
   + The Island crash bug appears to be fixed. Bots now use vehicle drops.
+* Hyperblaster effects changed to make their explosive nature more apparent.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
