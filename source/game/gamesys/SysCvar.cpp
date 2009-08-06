@@ -427,7 +427,7 @@ idCVar bot_enable(					"bot_enable",					"1",		CVAR_GAME | CVAR_BOOL | CVAR_SERV
 idCVar bot_doObjectives(			"bot_doObjectives",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_NOCHEAT,		"0 = bots let the player play the hero, with the bots filling a supporting role, 1 = bots do all the major objectives along with the player" );
 idCVar bot_ignoreGoals(				"bot_ignoreGoals",				"0",		CVAR_GAME | CVAR_INTEGER | CVAR_CHEAT,		"If set to 1, bots will ignore all map objectives. Useful for debugging bot behavior" );
 idCVar bot_useVehicles(				"bot_useVehicles",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots dont use vehicles, 1 = bots do use vehicles" );
-idCVar bot_useVehicleDrops(			"bot_useVehicleDrops",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots don't use vehicle drops, 1 = bots do use vehicle drops" );
+idCVar bot_useVehicleDrops(			"bot_useVehicleDrops",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots don't use vehicle drops, 1 = bots do use vehicle drops" );
 idCVar bot_stayInVehicles(			"bot_stayInVehicles",			"0",		CVAR_GAME | CVAR_BOOL,						"1 = bots will never leave their vehicle. Only useful for debugging. Default is 0" );
 idCVar bot_useStrafeJump(			"bot_useStrafeJump",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,		"0 = bots can't strafe jump, 1 = bots CAN strafe jump to goal locations that are far away" );
 idCVar bot_useSuicideWhenStuck(		"bot_useSuicideWhenStuck",		"1",		CVAR_GAME | CVAR_BOOL,						"0 = bots never suicide when stuck. 1 = bots suicide if they detect that they're stuck" );

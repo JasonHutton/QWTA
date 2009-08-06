@@ -91,9 +91,15 @@ CHANGES:
 * Cvar g_useBaseETQWVehicleCharge added.
   + Default 0.
   + Controls whether the vehicle credit charge timer uses BaseETQW timing.
+* Cvar bot_useVehicleDrops redefaulted to 1.
+  + The Island crash bug appears to be fixed. Bots now use vehicle drops.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
+* Optimized loading of vehicle drops.
+  This incidentally appears to fix the Island crash bug.
+* Removed an unneccessary attempt at minimizing vehicle bounce when dropped.
+  Was causing crashes some some cases.
 
 
 QWTA v0.3.1:

@@ -12,7 +12,7 @@ void strogg_drop_teleport::Idle() {
 	float endTime;
 	float soundTime;
 	vector currentPos;
-	float savedBouncyness;
+	//float savedBouncyness;
 
 	// FeaRog: wait for the server to synchronise the launch info through to avoid weirdness
 	while( launchTime < 0 ) {
@@ -21,10 +21,10 @@ void strogg_drop_teleport::Idle() {
 
 	playEffect( "fx_trail", "", 1 );
 
-	if ( item != $null_entity ) {
-		savedBouncyness = item.getBouncyness();
-		item.setBouncyness( 0.6 );
-	}
+	//if ( item != $null_entity ) {
+	//	savedBouncyness = item.getBouncyness();
+	//	item.setBouncyness( 0.6 );
+	//}
 
 	//
 	// Part 1 parabolic reentry
@@ -128,7 +128,7 @@ void strogg_drop_teleport::Idle() {
 		item.setOrigin( itemTargetPos );
 		item.setAngles( getAngles() );
 		item.vOnDeploy();
-		item.setBouncyness( savedBouncyness );
+		//item.setBouncyness( savedBouncyness );
 	}
 
 	sys.wait( 5.f );
