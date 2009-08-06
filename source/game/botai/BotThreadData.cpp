@@ -276,7 +276,6 @@ void idBotThreadData::InitClientInfo( int clientNum, bool resetAll, bool leaving
 		client.scriptHandler.deviceTimer = gameLocal.AllocTargetTimer( "energy_device" );
 		client.scriptHandler.deployTimer = gameLocal.AllocTargetTimer( "energy_deployment" );
 		client.scriptHandler.supplyTimer = gameLocal.AllocTargetTimer( "energy_supply" );
-		//client.scriptHandler.vehicleCreditTimer = gameLocal.AllocTargetTimer( "vehiclecredit_timer" );
 	} else {
 		client.inGame = false;
 		client.isBot = false;
