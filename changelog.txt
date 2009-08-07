@@ -99,6 +99,7 @@ CHANGES:
   + Default 1.
   + Controls if regular vehicle spawning restricts which vehicles spawn,
     when, based upon Force Escalation.
+* Cvar g_ignorePersistentRanks redefaulted to 0.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

@@ -1,5 +1,5 @@
 Quake Wars: Tactical Assault
-v0.3.1
+v0.3.2
 ================================
 http://qwta.moddb.com/
 
@@ -45,12 +45,14 @@ impression it had on a lot of people.
 
 2. Features
 ================================
-* Optional realistic movement.
-* Optional realistic damages.
-* Optional realistic weapon aiming..
+* Most QWTA-specific features are optional. You can play BaseETQW using QWTA!
+  (Or a strange combination of both.)
+* Realistic movement.
+* Realistic damage.
+* Realistic weapon accuracy.
 * Other realism-oriented features...
-* Radar no longer detects infantry.
-* Optional adaptive class-number limiting.
+* Radar no longer detects infantry. (But 3rd eye cameras do!)
+* Adaptive class-number limiting.
 * Blood effects!
 * Death/unconscious screen tinting and fading.
 * Mxyzptlk's megatexture autodownload.
@@ -60,9 +62,11 @@ impression it had on a lot of people.
 * Hyperblaster mimics Quake 4-singleplayer Nailgun.
 * Any vehicle may be airdropped.
 * Persistent ranks can be ignored in favour of campaign ranks.
-* Bot support for new features.
+* Bot support for new features. (Bots will drop vehicles.)
 * New vehicle: Jupiter Assault Tank.
 * BFG10k. (Jupiter tank's main cannon.)
+* Alternate firing modes for Vampire and Violator.
+* Bot AI improvements.
 * BaseETQW bugfixes.
 
 3. Installation
@@ -78,15 +82,13 @@ Finally, find yourself a server that's running QWTA, and give things a try. :)
 
 4. Known Issues
 ================================
-* Maps that REQUIRE vehicles may be unplayable.
 * Magog-carried GDF vehicle drops on Island sometimes don't work properly.
 * Bots don't wait for their vehicle drop to arrive before moving on.
 * 3rd Eye Camera updates its radar origin even when not moving.
 * Players killed by being smashed against walls don't attribute frags properly
 * Dark Matter Cannon's gravity won't pull players away from mounted guns.
 * Dark Matter Cannon will (very slightly) damage nearby objects when fired.
-* bot_useVehicleDrops 1 can cause crashes on some maps. (Island, notably.)
-  This is being investigated still...
+* Bots vehicle charge bars don't reset when going from warmup to ingame.
 
 5. Credits
 ================================
