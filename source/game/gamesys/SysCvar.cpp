@@ -353,7 +353,7 @@ idCVar pm_waterSpeed(				"pm_waterSpeed",			"400",			CVAR_GAME | CVAR_FLOAT | CV
 
 idCVar pm_realisticMovement(		"pm_realisticMovement",		"1",			CVAR_GAME | CVAR_NETWORKSYNC | CVAR_BOOL | CVAR_ARCHIVE, "Which player movement physics to use: 0=Quake-style, 1=Realistic-style" );
 
-idCVar g_ignorePersistentRanks(		"g_ignorePersistentRanks",	"1",			CVAR_GAME | CVAR_BOOL | CVAR_INIT, "Whether or not persistent ranks are ignored for use in game purposes. 0=Use persistent ranks, 1=Ignore persistent ranks" );
+idCVar g_ignorePersistentRanks(		"g_ignorePersistentRanks",	"0",			CVAR_GAME | CVAR_BOOL | CVAR_INIT, "Whether or not persistent ranks are ignored for use in game purposes. 0=Use persistent ranks, 1=Ignore persistent ranks" );
 
 idCVar g_debugNetworkWrite(			"g_debugNetworkWrite",		"0",			CVAR_GAME | CVAR_BOOL, "" );
 idCVar g_debugProficiency(			"g_debugProficiency",		"0",			CVAR_GAME | CVAR_BOOL, "" );
@@ -607,8 +607,8 @@ idCVar	g_advancedVehicleDrops(		"g_advancedVehicleDrops",		"-1",		CVAR_GAME | CV
 idCVar	g_useSpecificRadar(			"g_useSpecificRadar",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should players(but not vehicles) be invisible to radar? (3rd eye and MCP exempt.)" );
 idCVar	g_vehicleDropsUseFE(		"g_vehicleDropsUseFE",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle drops have Force Escalation requirements for their use?" );
 idCVar	g_useBaseETQWVehicleCredits("g_useBaseETQWVehicleCredits",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the Icarus and Husky use BaseETQW vehicle credit costs?" );
-idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_INIT,		"Should BaseETQW proficiencies be used? (QWTA gives free Vehicle Drops otherwise.)" );
-idCVar	g_useBaseETQWVehicleCharge(	"g_useBaseETQWVehicleCharge",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_INIT,		"Should the BaseETQW vehicle credit charge timer duration be used?" );
+idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should BaseETQW proficiencies be used? (QWTA gives free Vehicle Drops otherwise.)" );
+idCVar	g_useBaseETQWVehicleCharge(	"g_useBaseETQWVehicleCharge",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the BaseETQW vehicle credit charge timer duration be used?" );
 
 idCVar	g_vehicleSpawnsUseFE(		"g_vehicleSpawnsUseFE",			"1",		CVAR_GAME | CVAR_BOOL,										"Do vehicle spawns have Force Escalation requirements?" );
 
