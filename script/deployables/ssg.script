@@ -112,6 +112,9 @@ object deployable_ssg : deployable_base {
 
 	generic_target_marker	firingDecal;
 	entity					firingMarker;
+	
+	string	fireAnim;
+	string	q4FireAnim;
 }
 
 void deployable_ssg::syncFields() {
@@ -241,6 +244,9 @@ void deployable_ssg::preinit() {
 	hasTarget		= false;
 
 	nextFire		= 0;
+	
+	fireAnim		= getKey( "missile_anim" );
+	q4FireAnim		= getKey( "dmg_missile_anim" );
 
 	fsStatus = new fireSupportStatus;
 
@@ -391,18 +397,12 @@ void deployable_ssg::FireMissile() {
 void deployable_ssg::Launch() {
 	FireMissile();
 
-	string anim;
-	
-	if ( g_useQuake4DarkMatter.getBoolValue() ) {
-		anim = getKey( "dmg_missile_anim" );
-	} else {
-		anim = getKey( "missile_anim" );
+	if ( g_useQuake4DarkMatter.getBoolValue() && q4FireAnim != "" ) {
+		playAnim( getIntKey( "missile_channel" ), q4FireAnim );
+	} else if ( fireAnim != "" ) {
+		playAnim( getIntKey( "missile_channel" ), fireAnim );
 	}
 	
-	if ( anim != "" ) {
-		playAnim( getIntKey( "missile_channel" ), anim );
-	}
-
 	if ( g_artilleryWarning.getBoolValue() ) {
 		objManager.CPrintEvent( sys.localizeString( "game/ssg_fired" ), $null );
 	}
