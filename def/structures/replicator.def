@@ -1,0 +1,238 @@
+// ========================================================================
+// Export for game
+/*
+reexportmodels structures/replicator.def
+testmodel structure_replicator
+*/
+
+export karateka {
+	options -prefix REP_ -sourcedir models/structures/strogg/replicator/dev_sd/ -destdir models/structures/strogg/replicator/ -keep toeIK01 toeIK02 toeIK03 toeIK04 toeIK05
+
+	mesh	lod_0.mb		-dest replicator.md5mesh
+
+	anim	lod_0.mb		-dest replicator.md5anim 		-range 1	1
+	anim 	lod_0.mb		-dest undeployed.md5anim		-range 1 	1
+	anim	lod_0.mb		-dest deploy.md5anim			-range 1 	144
+	anim	lod_0.mb		-dest deployed.md5anim			-range 144 	144
+	anim	damage.mb		-dest damage1.md5anim			-range 66 	66
+	anim	damage.mb		-dest damage2.md5anim			-range 133  133
+	anim	damage.mb		-dest damage3.md5anim			-range 200  200
+
+	mesh	lod_1.mb		-dest replicator_lod1_boned.md5mesh
+	mesh	lod_2.mb		-dest replicator_lod2_boned.md5mesh
+	mesh	lod_3.mb		-dest replicator_lod3_boned.md5mesh
+
+	addoptions 	-noJoints
+
+	mesh	lod_1.mb		-dest replicator_lod1.md5mesh
+	mesh	lod_2.mb		-dest replicator_lod2.md5mesh
+	mesh	lod_3.mb		-dest replicator_lod3.md5mesh
+}
+
+// ========================================================================
+// Export for E3
+//
+
+export penta  {
+	options -prefix DOMREP_ -sourcedir models/structures/strogg/replicator/dev_sd/lods -destdir models/structures/strogg/replicator/ -keep tip_leg_1 tip_leg_2 tip_leg_3 tip_leg_4 tip_leg_5 bigleg_tip smoke
+	mesh	domi_rep.mb	-dest replicator_t.md5mesh -range 1 1
+	anim	domi_rep.mb	-dest replicator_t.md5anim -range 1 1
+	anim	domi_rep.mb	-dest replicator_t_fall.md5anim -range 1 360
+}
+
+// ========================================================================
+// Models
+//
+/*
+model structure_replicator {
+ 	mesh				models/structures/strogg/replicator/replicator.md5mesh
+	anim base			models/structures/strogg/replicator/deployed.md5anim {
+	}
+	anim deploy			models/structures/strogg/replicator/deploy.md5anim {
+	}
+	anim undeployed  	models/structures/strogg/replicator/undeployed.md5anim {
+	}
+	anim deployed   	models/structures/strogg/replicator/deployed.md5anim {
+	}
+ 	anim damage1 	  	models/structures/strogg/replicator/damage1.md5anim {
+ 	}
+ 	anim damage2   		models/structures/strogg/replicator/damage2.md5anim {
+ 	}
+ 	anim damage3   		models/structures/strogg/replicator/damage3.md5anim {
+ 	}
+}
+*/
+
+model structure_replicator {
+	mesh				models/structures/strogg/domination_hub/domination_hub.md5mesh
+	anim base			models/structures/strogg/domination_hub/deployed.md5anim {
+	}
+	anim deploy			models/structures/strogg/domination_hub/deploy.md5anim {
+	}
+	anim undeployed  	models/structures/strogg/domination_hub/undeployed.md5anim {
+	}
+	anim deployed		models/structures/strogg/domination_hub/deployed.md5anim {
+	}
+	anim damage1		models/structures/strogg/domination_hub/damage1.md5anim {
+	}
+	anim damage2		models/structures/strogg/domination_hub/damage2.md5anim {
+	}
+	anim damage3		models/structures/strogg/domination_hub/damage3.md5anim {
+	}
+}
+// ========================================================================
+// Test Models
+//
+
+model structure_replicator_test_lod1 {
+	mesh				models/structures/strogg/replicator/replicator_lod1_boned.md5mesh
+}
+
+model structure_replicator_test_lod2 {
+	mesh				models/structures/strogg/replicator/replicator_lod2_boned.md5mesh
+}
+
+model structure_replicator_test_lod3 {
+	mesh				models/structures/strogg/replicator/replicator_lod3_boned.md5mesh
+}
+
+model structure_replicator_test {
+	mesh				models/structures/strogg/replicator/replicator_t.md5mesh
+	anim base			models/structures/strogg/replicator/replicator_t.md5anim
+	anim fall			models/structures/strogg/replicator/replicator_t_fall.md5anim
+}
+
+// ========================================================================
+// Entity Def
+//
+
+entityDef structure_replicator {
+	"inherit"					"structure_strogg"
+
+	"editor_mins"				"-64 -64 -64"
+	"editor_maxs"				"64 64 64"
+	"editor_usage"				"This is the Strogg Replicator."
+	"editor_skipmenu"			"0"
+
+	"scriptObject"				"structure_replicator"
+	"type_name"					"Replicator"
+
+	"fx_smoke"					"effects/ambient/crater_normal_smoke"
+	"fx_explode"				"effects/base/explosion"
+
+	"model"						"structure_replicator"
+	"cm_model"					"models/structures/strogg/domination_hub/domination_hub_collision.lwo"
+
+	"anim"						"base"
+
+	"mtr_commandmap"			"guis/assets/qet/cm_replicator"
+
+	"option_crosshair_offset"	"0 0 256"
+	"icon_size_cm"				"16"
+
+	"vo_prefix"					"fact"
+
+	"snd_exterior"				"replicator_exterior"
+
+	"task_name"					"game/struct/replicator"
+	
+	"drone_orbit_underneath"	"1"
+	"drone_orbit_radius"		"800"
+}
+
+entityDef structure_replicator_test {
+	"inherit"					"structure_strogg"
+	"editor_skipmenu"			"0"
+
+	"editor_mins"				"-64 -64 -64"
+	"editor_maxs"				"64 64 64"
+	"editor_usage"				"This is the Strogg Replicator."
+
+	"scriptObject"				"structure_replicator"
+
+	"fx_smoke"					"effects/ambient/crater_normal_smoke"
+	"fx_explode"				"effects/base/explosion"
+
+	"model"						"structure_replicator_test"
+	"cm_model"					"models/structures/strogg/replicator/replicator_collision.lwo"
+
+	"anim"						"base"
+
+	"option_combat_model"		"1"
+	"type_name"					"Replicator"
+	"mtr_commandmap"			"guis/assets/qet/cm_replicator"
+	"mtr_commandmap_damaged"	"guis/assets/qet/cm_replicator_damaged"
+	"mtr_commandmap_disabled"	"guis/assets/qet/cm_replicator_disabled"
+	"icon_size_cm"				"16"
+	"crosshair_offset"			"0 0 256"
+
+	"vo_prefix"					"fact"
+
+	"maxVisDist"				"0"
+
+	"snd_exterior"				"replicator_exterior"
+}
+
+// ====================================================
+// ====================================================
+
+entityDef structure_module_construction_icarus {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_icarus"
+	"wait_time"					"10"
+	"wait_time_sw"				"10"
+	"team"						"strogg"
+	"editor_preview_model"		"models/mapobjects/helpers/strogg_icarus.lwo"
+	"editor_color"				".25 .25 1"
+	"mins"						"-48 -40 0"
+	"maxs"						"32 40 64"
+}
+
+entityDef structure_module_construction_hog {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_hog"
+	"wait_time"					"15"
+	"wait_time_sw"				"15"
+	"team"						"strogg"
+	"editor_preview_model"		"models/mapobjects/helpers/strogg_hog.lwo"
+	"editor_color"				".25 .25 1"
+	"mins"						"-184 -120 0"
+	"maxs"						"184 120 208"
+}
+
+entityDef structure_module_construction_hornet {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_hornet"
+	"wait_time"					"30"
+	"wait_time_sw"				"30"
+	"delay_time"				"30"
+	"team"						"strogg"
+	"editor_preview_model"		"models/mapobjects/helpers/strogg_hornet.lwo"
+	"editor_color"				".25 .25 1"
+	"mins"						"-200 -160 -16"
+	"maxs"						"200 160 288"
+}
+
+entityDef structure_module_construction_desecrator {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_desecrator"
+	"wait_time"					"40"
+	"wait_time_sw"				"40"
+	"team"						"strogg"
+	"editor_preview_model"		"models/mapobjects/helpers/strogg_desecrator.lwo"
+	"editor_color"				".25 .25 1"
+	"mins"						"-208 -152 0"
+	"maxs"						"208 152 176"
+}
+
+entityDef structure_module_construction_goliath {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_goliath"
+	"wait_time"					"60"
+	"wait_time_sw"				"60"
+	"team"						"strogg"
+	"editor_preview_model"		"models/mapobjects/helpers/strogg_goliath.lwo"
+	"editor_color"				".25 .25 1"
+	"mins"						"-128 -144 0"
+	"maxs"						"128 144 376"
+}

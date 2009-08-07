@@ -1,0 +1,155 @@
+// ========================================================================
+// Export
+/*
+reexportmodels structures/factory.def
+testmodel structure_factory
+*/
+
+export karateka {
+	options -prefix factory_ -sourcedir models/structures/edf/factory/dev_sd -destdir models/structures/edf/factory -keep dome bake_cog01 bake_cog02 bake_cog03 bake_cog04 bake_cog05 bake_cog06 deploy_legs_aft_base deploy_legs_fore_base starboard_stairs port_stairs port_crusher port_pipes starboard_crusher starboard_pipes aft_crusher
+		mesh	factory_anim.ma				-dest factory_main.md5mesh
+
+		anim	factory_anim.ma 			-dest factory_deploy.md5anim		-range 1 320
+		anim 	factory_anim.ma 			-dest factory_undeployed.md5anim	-range 0 1
+		anim	factory_anim.ma				-dest factory_deployed.md5anim		-range 320 321
+		anim	factory_anim.ma 			-dest factory_damaged1.md5anim		-range 380 381
+		anim 	factory_anim.ma 			-dest factory_damaged2.md5anim		-range 440 441
+		anim	factory_anim.ma				-dest factory_damaged3.md5anim		-range 500 501
+
+ 	 	mesh	factory_lod1.ma				-dest factory_main_lod1_boned.md5mesh
+	 	mesh	factory_lod2.ma				-dest factory_main_lod2_boned.md5mesh
+	  	mesh	factory_lod3.ma				-dest factory_main_lod3_boned.md5mesh
+
+	addoptions 		-noJoints
+
+	  	mesh	factory_lod1.ma				-dest factory_main_lod1.md5mesh
+	 	mesh	factory_lod2.ma				-dest factory_main_lod2.md5mesh
+	 	mesh	factory_lod3.ma				-dest factory_main_lod3.md5mesh
+}
+
+// ========================================================================
+// Models
+//
+
+model structure_factory {
+	mesh				models/structures/edf/factory/factory_main.md5mesh
+	anim base			models/structures/edf/factory/factory_undeployed.md5anim {
+	}
+	anim deploy			models/structures/edf/factory/factory_deploy.md5anim {
+		frame 1				sound_channel snd_structure_deploy snd_deploy
+		frame 1				sound_channel snd_structure_deploy2 snd_deploy_alarm
+		frame 2				sound_channel snd_structure_idle snd_exterior
+	}
+	anim deployed   	models/structures/edf/factory/factory_deployed.md5anim {
+	}
+	anim undeployed  	models/structures/edf/factory/factory_undeployed.md5anim {
+	}
+	anim damage1  	 	models/structures/edf/factory/factory_damaged1.md5anim {
+	}
+	anim damage2   		models/structures/edf/factory/factory_damaged2.md5anim {
+	}
+	anim damage3  		models/structures/edf/factory/factory_damaged3.md5anim {
+	}
+}
+
+// =======================================================================================
+
+entityDef structure_module_construction_anansi {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_anansi"
+	"wait_time"					"30"
+	"wait_time_sw"				"30"
+	"delay_time"				"30"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_anansi.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-312 -152 0"
+	"maxs"						"232 152 160"
+}
+
+entityDef structure_module_construction_badger {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_badger"
+	"wait_time"					"15"
+	"wait_time_sw"				"15"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_badger.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-104 -64 0"
+	"maxs"						"104 56 104"	
+}
+
+entityDef structure_module_construction_bumblebee {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_bumblebee"
+	"wait_time"					"25"
+	"wait_time_sw"				"25"
+	"delay_time"				"30"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_bumblebee.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-280 -112 0"
+	"maxs"						"240 112 224"
+}
+
+entityDef structure_module_construction_husky {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_husky"
+	"wait_time"					"10"
+	"wait_time_sw"				"10"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_husky.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-56 -40 0"
+	"maxs"						"64 40 72"
+}
+
+entityDef structure_module_construction_platypus {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_platypus"
+	"wait_time"					"15"
+	"wait_time_sw"				"15"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_platypus.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-296 -80 -16"
+	"maxs"						"96 80 192"
+}
+
+entityDef structure_module_construction_trojan {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_trojan"
+	"wait_time"					"35"
+	"wait_time_sw"				"35"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_trojan.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-136 -72 0"
+	"maxs"						"136 72 160"
+}
+
+entityDef structure_module_construction_titan {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_titan"
+	"wait_time"					"60"
+	"wait_time_sw"				"60"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_titan.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-208 -96 0"
+	"maxs"						"208 96 216"
+}
+
+entityDef structure_module_construction_mcp {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_mcp"
+	"wait_time"					"10"
+	"wait_time_sw"				"10"
+	"delay_time"				"15" // temporary addition to simulate the MCP being flown in
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_mcp.lwo"
+	"editor_var stay_deployed"	"Should the MCP remain deployed?"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-200 -176 0"
+	"maxs"						"208 176 168"
+}
