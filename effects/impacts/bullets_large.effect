@@ -190,8 +190,19 @@ effect effects/impacts/bullets_large/impact_default
 effect effects/impacts/bullets_large/impact_flesh
 {
 	size	114
+	
+	sound "Impact Sound2"
+	{
+		soundShader	"sounds/weapons/impacts/flesh"
+		freqshift	0.7,1
+	}
 
-	cutOffDistance	7000
+	effect "gore spray"
+	{
+		effect	"effects/impacts/gore_spray"
+	}
+
+/*	cutOffDistance	7000
 
 	sound "Impact Sound2"
 	{
@@ -323,7 +334,7 @@ effect effects/impacts/bullets_large/impact_flesh
 			}
 			lineHit
 		}
-	}
+	}*/
 }
 
 effect effects/impacts/bullets_large/impact_liquid

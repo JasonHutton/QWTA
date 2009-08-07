@@ -1,0 +1,46 @@
+material textures/effects/gore_spray/bloodspray2
+{
+	qer_editorimage textures/effects/gore_spray/bloodspray2.tga
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	noShadows
+	noimpact
+	translucent
+
+	{
+		blend	blend
+		Map textures/effects/gore_spray/bloodspray2.tga
+		vertexColor
+	}
+}
+
+material textures/effects/gore_spray/bloodspray4
+{
+	qer_editorimage textures/effects/gore_spray/bloodspray3.tga
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	noShadows
+	noimpact
+	translucent
+
+	{
+		blend	blend
+		Map textures/effects/gore_spray/bloodspray4.tga
+		vertexColor
+	}
+}
+
+material textures/effects/particles_shapes/impact_smoke3_qwta
+{
+	noshadows
+	translucent
+	{
+		blend  blend
+		map    textures/effects/particles_shapes/impact_smoke3_qwta.tga
+		vertexColor
+	}
+}
