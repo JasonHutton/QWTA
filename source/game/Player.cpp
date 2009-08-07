@@ -14485,17 +14485,16 @@ void idPlayer::UpdatePlayerInformation( void ) {
 	clientInfo.bombChargeUsed = chargeTime;
 
 // get the vehicle credit charge bar
-	UseVehicleCredit(0.0f); // This is ugly, but... -- Azuvector
-	/*
 	float vcChargeUsed = MS2SEC(gameLocal.GetTargetTimerValue( clientInfo.scriptHandler.vehicleCreditTimer, this ) - gameLocal.time);
-	int vcTime = botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditTime;
+	int vcTime = botThreadData.GetGameWorldState()->gameLocalInfo.vehicleCreditChargeTime;
+	int qwtaVCTime = botThreadData.GetGameWorldState()->gameLocalInfo.qwtaVehicleCreditChargeTime;
 
 	if ( vcChargeUsed < 0.0f ) {
 		clientInfo.vehicleCreditUsed = 1.0f;
 	}
 	else {
-		clientInfo.vehicleCreditUsed = 1.0f - (vcChargeUsed / (float)vcTime);
-	}*/
+		clientInfo.vehicleCreditUsed = 1.0f - (vcChargeUsed / (g_useBaseETQWVehicleCharge.GetBool() ? (float)vcTime : (float)qwtaVCTime));
+	}
 
 //mal: get the firesupport charge bar
 	chargeTime = gameLocal.GetTargetTimerValue( clientInfo.scriptHandler.fireSupportTimer, this );

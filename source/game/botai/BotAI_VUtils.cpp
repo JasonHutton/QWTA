@@ -191,10 +191,12 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 
 	if ( !g_vehicleDropsUseFE.GetBool() || gameLocal.GetForceEscalation() >= object->GetForceEscalationRequired() ) {
 		float vCredit = player->GetVehicleCredit();
+		//gameLocal.Printf("%s trying to get a %s with %f credit. %f required.\n", player->GetName(), object->GetTitle(), player->GetVehicleCredit(), object->GetCreditRequired() );
 		if( vCredit >= object->GetCreditRequired() ) {
 			if( gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 ) ) {
-				
+				//gameLocal.Printf("%s succeeded.\n", player->GetName() );
 				player->UseVehicleCredit( object->GetCreditRequired() );
+				//gameLocal.Printf("%s has %i credit remaining.\n", player->GetName(), player->GetVehicleCredit() );
 				
 				return 1;
 			}

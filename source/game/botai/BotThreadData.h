@@ -396,7 +396,7 @@ struct clientInfo_t {
 	int						fireSupportChargedUsed;				//mal: set in idPlayer::Think - arty and airstrikes
 	int						deviceChargeUsed;					//mal: set in idPlayer::Think - landmines, etc.
 	int						deployChargeUsed;					//mal: set in idPlayer::Think - deployables.
-	float					vehicleCreditUsed;					
+	int						vehicleCreditUsed;
 
 	int						mountedGPMGEntNum;
 

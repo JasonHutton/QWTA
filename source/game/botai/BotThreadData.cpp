@@ -198,7 +198,7 @@ void idBotThreadData::InitClientInfo( int clientNum, bool resetAll, bool leaving
 	client.deployChargeUsed = 0;
 	client.bombChargeUsed = 0;
 	client.fireSupportChargedUsed = 0;
-	client.vehicleCreditUsed = 0.0f;
+	client.vehicleCreditUsed = 0;
 
 	client.inPlayZone = true;
 
@@ -276,6 +276,7 @@ void idBotThreadData::InitClientInfo( int clientNum, bool resetAll, bool leaving
 		client.scriptHandler.deviceTimer = gameLocal.AllocTargetTimer( "energy_device" );
 		client.scriptHandler.deployTimer = gameLocal.AllocTargetTimer( "energy_deployment" );
 		client.scriptHandler.supplyTimer = gameLocal.AllocTargetTimer( "energy_supply" );
+		client.scriptHandler.vehicleCreditTimer = gameLocal.AllocTargetTimer( "vehiclecredit_timer" );
 	} else {
 		client.inGame = false;
 		client.isBot = false;
