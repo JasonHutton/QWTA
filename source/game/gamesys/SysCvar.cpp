@@ -610,6 +610,9 @@ idCVar	g_useBaseETQWVehicleCredits("g_useBaseETQWVehicleCredits",	"0",		CVAR_GAM
 idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_INIT,		"Should BaseETQW proficiencies be used? (QWTA gives free Vehicle Drops otherwise.)" );
 idCVar	g_useBaseETQWVehicleCharge(	"g_useBaseETQWVehicleCharge",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_INIT,		"Should the BaseETQW vehicle credit charge timer duration be used?" );
 
+idCVar	g_vehicleSpawnsUseFE(		"g_vehicleSpawnsUseFE",			"1",		CVAR_GAME | CVAR_BOOL,										"Do vehicle spawns have Force Escalation requirements?" );
+
+
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 
 idCVar g_objectiveDecayTime(		"g_objectiveDecayTime",			"5",		CVAR_GAME | CVAR_FLOAT | CVAR_RANKLOCKED,					"Length of time in seconds that it takes a construct/hack objective to decay once after the initial timeout is complete" );
