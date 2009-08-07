@@ -2,7 +2,7 @@ effect effects/impacts/gore_spray
 {
 	size	79
 
-	emitter "bloodspray_enter"
+	spawner "bloodspray_enter"
 	{
 		count		3,4
 
@@ -10,6 +10,7 @@ effect effects/impacts/gore_spray
 		{
 			duration	1,1
 			blend	add
+			persist
 			material	"textures/effects/gore_spray/bloodspray2"
 			gravity		0.01,0.01
 			trailRepeat	1
@@ -37,7 +38,7 @@ effect effects/impacts/gore_spray
 			lineHit
 		}
 	}
-	emitter "bloodspray_exit"
+	spawner "bloodspray_exit"
 	{
 		count		3,5
 
@@ -45,6 +46,7 @@ effect effects/impacts/gore_spray
 		{
 			duration	1,1
 			blend	add
+			persist
 			material	"textures/effects/gore_spray/bloodspray2"
 			flipNormal
 			trailRepeat	1
@@ -72,7 +74,7 @@ effect effects/impacts/gore_spray
 			lineHit
 		}
 	}
-	emitter "side_streaks"
+	spawner "side_streaks"
 	{
 		count		7,9
 		locked
@@ -81,6 +83,7 @@ effect effects/impacts/gore_spray
 		{
 			duration	0.24,0.24
 			blend	add
+			persist
 			material	"textures/effects/gore_spray/bloodspray4"
 			generatedOriginNormal
 			flipNormal
@@ -114,7 +117,7 @@ effect effects/impacts/gore_spray
 			lineHit
 		}
 	}
-	emitter "chunks"
+	spawner "chunks"
 	{
 		count		4,6
 
@@ -122,6 +125,7 @@ effect effects/impacts/gore_spray
 		{
 			duration	0.5,1
 			blend	add
+			persist
 			material	"textures/particles/trail_test"
 			gravity		0.1,0.1
 			trailRepeat	1
@@ -158,6 +162,7 @@ effect effects/impacts/gore_spray
 		{
 			duration	1,1
 			blend	add
+			persist
 			material	"textures/effects/particles_shapes/impact_smoke3_qwta"
 			trailRepeat	1
 
@@ -182,6 +187,8 @@ effect effects/impacts/gore_spray
 		}
 	}
 }
+
+
 
 
 
