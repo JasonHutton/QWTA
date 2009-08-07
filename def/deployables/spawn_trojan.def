@@ -1,0 +1,3 @@
+entityDef deployable_spawn_trojan {
+	"inherit"					"structure_module_construction_trojan"
+}

@@ -1,0 +1,3 @@
+entityDef deployable_spawn_badger {
+	"inherit"					"structure_module_construction_badger"
+}

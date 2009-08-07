@@ -1,0 +1,3 @@
+entityDef deployable_spawn_titan {
+	"inherit"					"structure_module_construction_titan"
+}

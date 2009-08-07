@@ -1,0 +1,3 @@
+entityDef deployable_spawn_husky {
+	"inherit"					"structure_module_construction_husky"
+}

@@ -1,0 +1,3 @@
+entityDef deployable_spawn_goliath {
+	"inherit"					"structure_module_construction_goliath"
+}

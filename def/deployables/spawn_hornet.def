@@ -1,0 +1,3 @@
+entityDef deployable_spawn_hornet {
+	"inherit"					"structure_module_construction_hornet"
+}

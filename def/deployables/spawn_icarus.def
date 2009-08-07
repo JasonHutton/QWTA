@@ -1,0 +1,3 @@
+entityDef deployable_spawn_icarus {
+	"inherit"					"structure_module_construction_icarus"
+}
