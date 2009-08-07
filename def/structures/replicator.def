@@ -186,6 +186,7 @@ entityDef structure_module_construction_icarus {
 	"editor_color"				".25 .25 1"
 	"mins"						"-48 -40 0"
 	"maxs"						"32 40 64"
+	"force_escalation_required"	"15"
 }
 
 entityDef structure_module_construction_hog {
@@ -198,6 +199,7 @@ entityDef structure_module_construction_hog {
 	"editor_color"				".25 .25 1"
 	"mins"						"-184 -120 0"
 	"maxs"						"184 120 208"
+	"force_escalation_required"	"30"
 }
 
 entityDef structure_module_construction_hornet {
@@ -211,6 +213,7 @@ entityDef structure_module_construction_hornet {
 	"editor_color"				".25 .25 1"
 	"mins"						"-200 -160 -16"
 	"maxs"						"200 160 288"
+	"force_escalation_required"	"80"
 }
 
 entityDef structure_module_construction_desecrator {
@@ -223,6 +226,7 @@ entityDef structure_module_construction_desecrator {
 	"editor_color"				".25 .25 1"
 	"mins"						"-208 -152 0"
 	"maxs"						"208 152 176"
+	"force_escalation_required"	"40"
 }
 
 entityDef structure_module_construction_goliath {
@@ -235,4 +239,5 @@ entityDef structure_module_construction_goliath {
 	"editor_color"				".25 .25 1"
 	"mins"						"-128 -144 0"
 	"maxs"						"128 144 376"
+	"force_escalation_required"	"60"
 }

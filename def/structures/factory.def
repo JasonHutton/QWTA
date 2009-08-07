@@ -65,6 +65,7 @@ entityDef structure_module_construction_anansi {
 	"editor_color"				"1 .25 .25"
 	"mins"						"-312 -152 0"
 	"maxs"						"232 152 160"
+	"force_escalation_required"	"90"
 }
 
 entityDef structure_module_construction_badger {
@@ -76,7 +77,8 @@ entityDef structure_module_construction_badger {
 	"editor_preview_model"		"models/mapobjects/helpers/gdf_badger.lwo"
 	"editor_color"				"1 .25 .25"
 	"mins"						"-104 -64 0"
-	"maxs"						"104 56 104"	
+	"maxs"						"104 56 104"
+	"force_escalation_required"	"20"
 }
 
 entityDef structure_module_construction_bumblebee {
@@ -90,6 +92,7 @@ entityDef structure_module_construction_bumblebee {
 	"editor_color"				"1 .25 .25"
 	"mins"						"-280 -112 0"
 	"maxs"						"240 112 224"
+	"force_escalation_required"	"50"
 }
 
 entityDef structure_module_construction_husky {
@@ -102,6 +105,7 @@ entityDef structure_module_construction_husky {
 	"editor_color"				"1 .25 .25"
 	"mins"						"-56 -40 0"
 	"maxs"						"64 40 72"
+	"force_escalation_required"	"10"
 }
 
 entityDef structure_module_construction_platypus {
@@ -114,6 +118,7 @@ entityDef structure_module_construction_platypus {
 	"editor_color"				"1 .25 .25"
 	"mins"						"-296 -80 -16"
 	"maxs"						"96 80 192"
+	"force_escalation_required"	"15"
 }
 
 entityDef structure_module_construction_trojan {
@@ -126,6 +131,7 @@ entityDef structure_module_construction_trojan {
 	"editor_color"				"1 .25 .25"
 	"mins"						"-136 -72 0"
 	"maxs"						"136 72 160"
+	"force_escalation_required"	"40"
 }
 
 entityDef structure_module_construction_titan {
@@ -138,6 +144,20 @@ entityDef structure_module_construction_titan {
 	"editor_color"				"1 .25 .25"
 	"mins"						"-208 -96 0"
 	"maxs"						"208 96 216"
+	"force_escalation_required"	"60"
+}
+
+entityDef structure_module_construction_jupiter {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_jupiter"
+	"wait_time"					"60"
+	"wait_time_sw"				"60"
+	"team"						"gdf"
+	"editor_preview_model"		"models/mapobjects/helpers/gdf_titan.lwo"
+	"editor_color"				"1 .25 .25"
+	"mins"						"-208 -96 0"
+	"maxs"						"208 96 216"
+	"force_escalation_required"	"120"
 }
 
 entityDef structure_module_construction_mcp {

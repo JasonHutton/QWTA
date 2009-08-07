@@ -94,6 +94,11 @@ CHANGES:
 * Cvar bot_useVehicleDrops redefaulted to 1.
   + The Island crash bug appears to be fixed. Bots now use vehicle drops.
 * Hyperblaster effects changed to make their explosive nature more apparent.
+* Improved blood and gore effects slightly.
+* Cvar g_vehicleSpawnsUseFE added.
+  + Default 1.
+  + Controls if regular vehicle spawning restricts which vehicles spawn,
+    when, based upon Force Escalation.
 
 BUG FIXES:
 * Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.

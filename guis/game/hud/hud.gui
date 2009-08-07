@@ -2528,7 +2528,7 @@ gui hud {
 
 			color	xpFillColor			= COLOR_HUD_PROGRESS;
 			
-			float	feVisible		= gui.getCVarBool( "g_vehicleDropsUseFE" );
+			float	feVisible		= gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
 		}
 
 		// feedback
@@ -2606,7 +2606,10 @@ gui hud {
 				lastHealthValue = immediate( player.health );
 			}
 			onCVarChanged "g_vehicleDropsUseFE" {
-				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" );
+				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
+			}
+			onCVarChanged "g_vehicleSpawnsUseFE" {
+				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
 			}
 		}
 		windowDef healthFill {

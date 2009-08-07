@@ -129,6 +129,12 @@ boolean auto_respawn::CheckSpawn() {
 			}
 		}
 	}
+	
+	float currentForceEscalation = sys.getForceEscalation();
+	float requiredForceEscalation = getFloatKeyWithDefault( "force_escalation_required", 0.0 );
+	if ( g_vehicleSpawnsUseFE.getBoolValue() && currentForceEscalation < requiredForceEscalation ) {
+		return false;
+	}
 
 	return true;
 }

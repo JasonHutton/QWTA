@@ -163,6 +163,7 @@ cvar	g_useQuake4Hyperblaster;
 cvar	g_advancedVehicleDrops;
 cvar	g_vehicleDropsUseFE;
 cvar	g_useBaseETQWVehicleCredits;
+cvar	g_vehicleSpawnsUseFE;
 
 object gameplay_base;
 gameplay_base gameplayManager;
