@@ -1,3 +1,0 @@
-entityDef deployable_spawn_anansi {
-	"inherit"					"structure_module_construction_anansi"
-}

@@ -1,3 +1,0 @@
-entityDef deployable_spawn_hog {
-	"inherit"					"structure_module_construction_hog"
-}

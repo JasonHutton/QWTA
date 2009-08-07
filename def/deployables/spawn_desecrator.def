@@ -1,3 +1,0 @@
-entityDef deployable_spawn_desecrator {
-	"inherit"					"structure_module_construction_desecrator"
-}

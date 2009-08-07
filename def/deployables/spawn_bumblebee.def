@@ -1,3 +1,0 @@
-entityDef deployable_spawn_bumblebee {
-	"inherit"					"structure_module_construction_bumblebee"
-}
