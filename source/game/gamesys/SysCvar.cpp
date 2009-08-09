@@ -590,14 +590,14 @@ idCVar g_allowAPTWarning(			"g_allowAPTWarning",			"0",		CVAR_GAME | CVAR_BOOL |
 idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when APT is locking on. 0: Off 1: Visual warning only 2: Beep only 3: Visual and beep" );
 
 idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
-idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should weapon spreads ingame be realistic, or game-oriented?" );
+idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Should weapon spreads ingame be realistic, or game-oriented?" );
 idCVar	g_useBaseETQW12Shotguns(	"g_useBaseETQW12Shotguns",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use BaseETQW v1.2 behaviour for shotgun and nailgun." );
-idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Use Quake 4-style Dark Matter weaponry." );
+idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use Quake 4-style Dark Matter weaponry." );
 idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Notify players of the launch of Hammer or DMC artillery." );
 idCVar	g_useDeathFading(			"g_useDeathFading",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use screen fading effects when dead or unconscious?" );
 idCVar	g_useReverseAirstrikes(		"g_useReverseAirstrikes",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use reversed airstrikes on the altfire of the Vampire and Violator?" );
-idCVar	g_useNuclearHammer(			"g_useNuclearHammer",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Make the Hammer and SSM missiles behave more like tactical nukes?" );
-idCVar	g_useQuake4Hyperblaster(	"g_useQuake4Hyperblaster",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Use Quake 4-style Hyperblaster weaponry?" );
+idCVar	g_useNuclearHammer(			"g_useNuclearHammer",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Make the Hammer and SSM missiles behave more like tactical nukes?" );
+idCVar	g_useQuake4Hyperblaster(	"g_useQuake4Hyperblaster",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Use Quake 4-style Hyperblaster weaponry?" );
 
 idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables class number limitations." );
 
