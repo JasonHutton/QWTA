@@ -1,0 +1,334 @@
+
+
+#include <guis/loadscreen/colors.include>
+#include <guis/loadscreen/loadscreen.include>
+#include <guis/common/utility.include>
+#include <guis/common/materials.include>
+#include <guis/common/colors.include>
+#include <guis/mainmenu/materials.include>
+#include <guis/mainmenu/colors.include>
+#include <guis/mainmenu/components/button.include>
+#include <guis/mainmenu/components/group.include>
+#include <guis/mainmenu/components/icon.include>
+#include <guis/mainmenu/components/label.include>
+#include <guis/mainmenu/components/window.include>
+
+#ifdef PADDING
+#undef PADDING
+#endif
+
+#define PADDING 8
+// defines how long each loading tip is visible
+#define TIP_MS 16000
+
+gui loadscreen {
+	_menu_icons
+	__loadscreen_materials
+	
+	materials {
+		//"serverbanner"		"guis/assets/mainmenu/serverbanner"
+		"loading_circle"		"loadscreen/icons/loading"
+		"sdGameRulesObjective"	"guis/assets/icons/gametypes, rect( 0, 0, 32, 32 )"
+		"sdGameRulesCampaign"	"guis/assets/icons/gametypes, rect( 32, 0, 32, 32 )"
+		"sdGameRulesStopWatch"	"guis/assets/icons/gametypes, rect( 64, 0, 32, 32 )"
+		"_unknownGameType"		"guis/assets/icons/gametypes, rect( 96, 0, 32, 32 )"
+	}
+	
+	_btn_init
+	_wnd_init
+	
+	properties {
+		wstring motd1;
+		wstring motd2;
+		wstring motd3;
+		wstring motd4;
+		
+		float flags 			= immediate( flags ) | GUI_FULLSCREEN | GUI_FRONTEND;
+		handle currentMaterial 	= cacheMaterial( "curicon", "_st current" );
+		handle unplayedMaterial = cacheMaterial( "unicon", "_st unplayed" );
+		handle glowMaterial 	= cacheMaterial( "glow", "_st team_glow" );
+		handle stroggMaterial 	= cacheMaterial( "stricon", "_st strogg" );		
+		handle gdfMaterial 		= cacheMaterial( "gdficon", "_st gdf" );
+		handle infoIcon 		= cacheMaterial( "infoIcon", "_st icon_information" );  
+	}
+	
+	events {
+		onPropertyChanged "player.serverInfoChanged" {
+			postNamedEvent( "update" );
+		}
+		onActivate {	
+			postNamedEvent( "update" );		
+		}		
+		onNamedEvent "update" {
+			motd1 = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "si_motd_1", "" ) );
+			motd2 = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "si_motd_2", "" ) );
+			motd3 = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "si_motd_3", "" ) );
+			motd4 = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "si_motd_4", "" ) );
+			
+			serverFeatures.clear();
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_teamDamage", "0" ) ) ) {
+				serverFeatures.addIcon( "friendly_fire" );
+			} 
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "net_serverPunkbusterEnabled", "0" ) ) ) {
+				serverFeatures.addIcon( "punkbuster" );
+			}
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_disableVoting", "0" ) ) ) {
+				serverFeatures.addIcon( "novoting" );
+			}		
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_needPass", "0" ) ) ) {
+				serverFeatures.addIcon( "password" );
+			}
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_teamForceBalance", "0" ) ) ) {
+				serverFeatures.addIcon( "balance" );
+			}
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_allowLateJoin", "0" ) ) ) {
+				serverFeatures.addIcon( "latejoin" );
+			}
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_pure", "0" ) ) ) {
+				serverFeatures.addIcon( "pure" );
+			}
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "bot_enable", "0" ) ) ) {
+				serverFeatures.addIcon( "bot" );
+			}
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "_ranked", "0" ) ) ) {
+				serverFeatures.addIcon( "ranked" );
+			}
+			if( compare( "", sdnet.queryServerInfo( FS_CURRENT, -1, "fs_game", "" ) ) ) {
+				serverFeatures.addIcon( sdnet.queryServerInfo( FS_CURRENT, -1, "si_rules", "sdGameRulesObjective" ) );
+			} else {
+				serverFeatures.addIcon( "_unknownGameType" );
+			}		
+#if !defined( SD_DEMO_BUILD )
+			if( toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_tv", "0" ) ) ) {
+				serverFeatures.addIcon( "tv" );
+			}
+#endif			
+		}
+		onDeactivate {
+			fadeSoundClass( 1, -60, 1000 );
+		}
+	}
+	
+	sounds {
+		"sounds/music/load1"	"sounds/music/load1"
+		"sounds/music/load2"	"sounds/music/load2"
+		"sounds/music/load3"	"sounds/music/load3"
+	}
+	
+	windowDef desktop {
+		properties {
+			rect rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			color backColor = COLOR_BLACK;
+		}
+		events {
+		
+			onPropertyChanged "player.serverInfoChanged" {
+				postNamedEvent( "update" );
+			}
+			onActivate {	
+				postNamedEvent( "update" );		
+			}			
+			onNamedEvent "update" {
+				if( compare( globals.campaignInfo.mapMusic, "" ) == false ) {
+					gui.playMusic( globals.campaignInfo.mapMusic );				
+				} else {
+					gui.playMusic( "sounds/music/load1" );
+				}
+				gui.fadeSoundClass( 1, gui.getCVarFloat( "s_volumeMusic_dB" ), 0 );
+			}
+		}
+		
+		windowDef backdrop {
+			properties {
+				color backColor = 1,1,1,1;
+				string material = "::" + globals.campaignInfo.backdrop;
+				rect rect = SCREEN_WIDTH - VIRTUAL_WIDTH, 0, VIRTUAL_WIDTH, SCREEN_HEIGHT;
+			}			
+		}		
+		
+		_group_box( mapInfo, PADDING, PADDING, 212, _fill_to_bottom_of( desktop ) )
+			_label_literal( campaignName, globals.campaignInfo.name, PADDING, PADDING, _client_dimension( grpMapInfo, width ) * 0.5f, 16, COLOR_WHITE )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					float fontSize = 14;
+				}
+			_end_label
+			
+			_label_literal( campaignWins, globals.campaignInfo.ruleStatus, _to_right_of( lblCampaignName ), PADDING, _client_dimension( grpMapInfo, width ) * 0.5f, 16, COLOR_WHITE )
+				properties {
+					vec2 textAlignment = TA_RIGHT, TA_VCENTER;
+					float fontSize = 12;
+				}
+			_end_label			
+			
+			_label_literal( mapName, localizeArgs( "guis/mainmenu/nowloading", globals.campaignInfo.mapName ), PADDING, _to_bottom_of( lblCampaignWins ), _fill_to_right_of( grpMapInfo ), 16, COLOR_GREY_TEXT )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					float fontSize = 12;
+				}
+			_end_label
+			
+			_label_localized( mapLocation, globals.campaignInfo.mapLocation, PADDING, _to_bottom_of( lblMapName ), _fill_to_right_of( grpMapInfo ), 16, COLOR_LOADING_TEXT )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					float fontSize = 12;
+					float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+				}
+			_end_label
+									
+			
+			windowDef icoMapShot {
+				properties {
+					rect rect = PADDING, _to_bottom_of( lblMapLocation ), _fill_to_right_of( grpMapInfo ), rect.w * ( 9 / 16 );
+					string material = "::" + globals.campaignInfo.mapShot;
+					color backColor = COLOR_WHITE;
+				}
+			}
+			
+			_label_localized( mapBriefing, globals.campaignInfo.mapBriefing, PADDING, _to_bottom_of( icoMapShot ), _fill_to_right_of( grpMapInfo ), 300, COLOR_LOADING_TEXT )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					float fontSize = 12;
+					float flags = immediate( flags ) | WF_WRAP_TEXT;
+				}
+			_end_label
+
+			windowDef lblServerName {			
+				properties {
+					float fontSize = 12;
+					rect rect = PADDING, _bottom( grpMapInfo ) - 108, _fill_to_right_of( grpMapInfo ), 16;
+				}
+				events {
+					onPreDraw {
+						drawText( text, absoluteRect, COLOR_GREY_TEXT, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+						gui.scriptPushFloat( false );
+					}
+					onPropertyChanged "player.serverInfoChanged" {
+						postNamedEvent( "update" );
+					}
+					onActivate {	
+						postNamedEvent( "update" );		
+					}						
+					onNamedEvent "update" {
+						text = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "si_name", "" ) );				
+					}
+				}
+			_end_label
+			
+			_label_literal( serverIP, gui.blankWStr, PADDING, _bottom( grpMapInfo ) - 92, _fill_to_right_of( grpMapInfo ), 16, COLOR_GREY_TEXT )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					float fontSize = 12;
+				}
+				events {
+					onPropertyChanged "player.serverInfoChanged" {
+						postNamedEvent( "update" );
+					}
+					onActivate {	
+						postNamedEvent( "update" );		
+					}					
+					onNamedEvent "update" {
+						text = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "_address", "" ) );				
+					}
+				}
+			_end_label			
+					
+			windowDef serverFeatures {
+				type iconNotification;
+				properties {
+					rect rect 			= PADDING, _to_bottom_of( lblServerIP ) - 4, _fill_to_right_of( grpMapInfo ), 18;
+					vec2 iconSize 		= 12, 12;
+					float iconFadeTime 	= 0;
+					float iconSlideTime = 0;
+				}
+			}
+			
+			windowDef serverMOTD {
+				properties {
+					rect	rect = PADDING, _to_bottom_of( serverFeatures ) + PADDING, _fill_to_right_of( grpMapInfo ), $evalfloat( 4 * 13 );				
+				}
+				events {
+					onPreDraw {						
+						drawText( gui.motd1, "absoluteRect.x, absoluteRect.y + 2, absoluteRect.w, 12", COLOR_GREY_TEXT, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.motd2, "absoluteRect.x, absoluteRect.y + 14, absoluteRect.w, 12", COLOR_GREY_TEXT, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.motd3, "absoluteRect.x, absoluteRect.y + 26, absoluteRect.w, 12", COLOR_GREY_TEXT, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						drawText( gui.motd4, "absoluteRect.x, absoluteRect.y + 38, absoluteRect.w, 12", COLOR_GREY_TEXT, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_TRUNCATE );
+						
+						gui.scriptPushFloat( true );
+					}
+				}
+			}
+/*
+			_icon( serverBanner, "serverbanner", PADDING, _to_bottom_of( serverMOTD ) + 3, _fill_to_right_of( grpMapInfo ), rect.w * 0.25, COLOR_WHITE )
+			_end_icon				
+*/
+
+			_label_literal( loading, globals.mapinfo.mapStatus, PADDING, _bottom( grpMapInfo ) + 4, 50, 8, COLOR_WHITE )
+				properties {
+					vec2 textAlignment  = TA_LEFT, TA_VCENTER;
+					vec2 textOffset = 0, -2;
+				}				
+			_end_label
+			windowDef progress {		
+				properties {
+					//rect rect = PADDING, _bottom( grpMapInfo ), _fill_to_right_of( grpMapInfo ), 12;
+					rect rect = _right(  grpMapInfo ) + 6, _bottom( grpMapInfo ) + 6, 20, 20;		
+					string material = "loading_circle";
+					color backColor = COLOR_WHITE;
+				}
+				/*
+				properties {
+					rect rect = _to_right_of( lblLoading ), _bottom( grpMapInfo ), 100, 12;
+					rect fillRect = absoluteRect.x + 2, absoluteRect.y + 2, ( absoluteRect.w * min( player.mapLoadPercent, 1.0f ) ) - 4, absoluteRect.h - 4;
+					rect textRect = absoluteRect.x + absoluteRect.w + 4, absoluteRect.y + 2, absoluteRect.w, absoluteRect.h;
+					handle gradMaterial = gui.cacheMaterial( "grad", "_st button_grad_c" );
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_PROGRESS_FILL );
+						drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_PROGRESS_LINES );
+						drawCachedMaterial( gradMaterial, fillRect, COLOR_PROGRESS_GRADIENT );
+						drawText( toWStr( toString( min( player.mapLoadPercent, 1.0f ) * 100, 0 ) + "%" ), textRect, COLOR_WHITE, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE );
+						gui.scriptPushFloat( false );	
+					}
+				}
+				*/
+			}
+		_end_group_box
+		
+		_map_icon( 1, position1, title1, status1, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 2, position2, title2, status2, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 3, position3, title3, status3, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		
+		_group_box( Tip, _to_right_of( grpMapInfo ) + PADDING, _bottom( desktop ), 300, gui.lblTip.absoluteRect.h + 4 )
+			_label_literal( Tip, gui.getLoadTip(), 20, 2, gui.grpTip.rect.w - 24, 16, COLOR_WHITE )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+					float fontSize = 14;
+					float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_WRAP_TEXT;
+					float lastTime = 0;
+					float updateText = ( lastTime + TIP_MS ) < gui.time;
+				}
+				events {
+					onActivate {
+						lastTime = 0;
+						text = gui.getLoadTip();
+						lastTime = immediate( gui.time );
+					}
+					onPropertyChanged "updateText" {
+						if( updateText ) {
+							text = gui.getLoadTip();
+							lastTime = immediate( gui.time );
+						}
+					}
+				}
+			_end_label
+			events {
+				onPostDraw {
+					callSuper();
+					drawCachedMaterial( gui.infoIcon, "absoluteRect.x + 2, absoluteRect.y + 2, 16, 16", COLOR_WHITE );
+				}
+			}
+		_end_group_box			
+	}
+}

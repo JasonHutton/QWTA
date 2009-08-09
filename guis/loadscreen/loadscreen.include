@@ -1,0 +1,100 @@
+
+#ifndef __loadscreen_include__
+#define __loadscreen_include__
+
+
+$template __loadscreen_materials
+	materials {
+		"team_glow"	"guis/assets/mainmenu/sheet_add, rect( 324, 192, 21, 21 )"
+		"current"	"guis/assets/icons/icons_sheet1, rect( 0, 96, 32, 32 )"
+		"unplayed"	"guis/assets/icons/icons_sheet1, rect( 32, 96, 32, 32 )"	
+	}
+$endtemplate
+
+
+$template _map_icon( NumberParm, PositionProperty, TitleProperty, StatusProperty, PosXOffset, PosXScale, PosYScale, MaxXcoord )
+	windowDef icon##NumberParm {
+		properties {
+			float visible = globals.campaignInfo.numMaps >= NumberParm;
+			rect rect = ( PosXOffset + globals.campaignInfo.PositionProperty.x ) * PosXScale, globals.campaignInfo.PositionProperty.y * PosYScale, 16, 16;
+			rect drawRect = absoluteRect.x, absoluteRect.y, 16, 16;
+			rect glowRect = absoluteRect.x, absoluteRect.y, 21, 21;
+			rect textRect = absoluteRect.x + drawRect.width, absoluteRect.y, 50, 16;
+			color pinColor = COLOR_PIN_NEUTRAL;
+			color glowColor = COLOR_INVISIBLE;
+						
+			handle iconMaterial;
+			handle glowMaterial;
+			
+			vec2 measure;
+			float needMeasure = true;
+		}
+		events {
+			onCreate {
+				postNamedEvent( "updateIcons" );
+			}
+			onPropertyChanged "globals.campaignInfo." ## #StatusProperty {
+				postNamedEvent( "updateIcons" );
+			}
+			onPropertyChanged "textRect" {
+				needMeasure = true;
+			}
+			onNamedEvent "updateIcons" {
+				if( icompare( globals.campaignInfo.StatusProperty, "" ) ) {
+					iconMaterial = floatToHandle( -1 );
+					glowMaterial = floatToHandle( -1 );
+					return;
+				}								
+				
+				if( icompare( globals.campaignInfo.StatusProperty, "current" ) ) {
+					pinColor = COLOR_WHITE;
+					drawRect = absoluteRect.x, absoluteRect.y, 20, 20;
+					iconMaterial = gui.currentMaterial;
+					glowMaterial = floatToHandle( -1 );
+					return;
+				}
+				if( icompare( globals.campaignInfo.StatusProperty, "unplayed" ) ) {
+					pinColor = COLOR_WHITE;
+					drawRect = absoluteRect.x, absoluteRect.y, 20, 20;
+					iconMaterial = gui.unplayedMaterial;
+					glowMaterial = floatToHandle( -1 );
+					return;
+				}
+				
+				if( icompare( globals.campaignInfo.StatusProperty, "gdf" ) ) {
+					drawRect = absoluteRect.x, absoluteRect.y, 16, 16;
+					glowRect = absoluteRect.x - 4, absoluteRect.y - 4, 24, 24;
+					iconMaterial = gui.gdfMaterial;
+					glowColor = COLOR_GLOW_GDF;
+				}
+				
+				if( icompare( globals.campaignInfo.StatusProperty, "strogg" ) ) {
+					drawRect = absoluteRect.x, absoluteRect.y, 32, 16;
+					glowRect = absoluteRect.x - 2, absoluteRect.y - 2, 36, 20;
+					iconMaterial = gui.stroggMaterial;
+					glowColor = COLOR_GLOW_STROGG;
+				}
+
+				glowMaterial = gui.glowMaterial;
+			}
+			onPreDraw {
+				if( needMeasure ) {
+					if( textRect.x + textRect.w >= MaxXcoord ) {
+						measure = measureText( globals.campaignInfo.TitleProperty, textRect, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+						textRect.x = absoluteRect.x - ( measure.x + 2 );			
+					}
+					needMeasure = false;			
+				}
+				if( isValidHandle( iconMaterial ) ) {
+					drawText( globals.campaignInfo.TitleProperty, textRect, COLOR_WHITE, 12, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE | DTF_DROPSHADOW );
+					drawCachedMaterial( iconMaterial, drawRect, pinColor );
+					drawCachedMaterial( glowMaterial, glowRect, glowColor );
+				}
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+
+$endtemplate
+
+#endif // !__loadscreen_include__
