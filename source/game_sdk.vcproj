@@ -553,6 +553,10 @@
 					>
 				</File>
 				<File
+					RelativePath=".\game\rules\GameRules_Tactical.h"
+					>
+				</File>
+				<File
 					RelativePath=".\game\rules\GUIDState.h"
 					>
 				</File>
@@ -588,6 +592,10 @@
 				</File>
 				<File
 					RelativePath=".\game\rules\GameRules_StopWatch.cpp"
+					>
+				</File>
+				<File
+					RelativePath=".\game\rules\GameRules_Tactical.cpp"
 					>
 				</File>
 				<File

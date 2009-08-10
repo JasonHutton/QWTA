@@ -604,6 +604,52 @@ void sdAdminSystemCommand_SetObjectiveMap::CommandCompletion( const idCmdArgs& a
 /*
 ===============================================================================
 
+	sdAdminSystemCommand_SetTacticalMap
+
+===============================================================================
+*/
+
+/*
+============
+sdAdminSystemCommand_SetTacticalMap::PerformCommand
+============
+*/
+bool sdAdminSystemCommand_SetTacticalMap::PerformCommand( const idCmdArgs& cmd, const sdUserGroup& userGroup, idPlayer* player ) const {
+	if ( !userGroup.HasPermission( PF_ADMIN_CHANGE_MAP ) ) {
+		Print( player, "guis/admin/system/nopermchangemap" );
+		return false;
+	}
+
+	sdAdminSystemCommand_KickAllBots::DoKick();
+
+	idStr mapName = cmd.Argv( 2 );
+	sdGameRules_SingleMapHelper::SanitizeMapName( mapName, false );
+
+#if defined( SD_PUBLIC_BUILD )
+	const metaDataContext_t* metaData = gameLocal.mapMetaDataList->FindMetaDataContext( mapName.c_str() );
+	if ( metaData == NULL || !gameLocal.IsMetaDataValidForPlay( *metaData, false ) ) {
+		Print( player, "guis/admin/system/cannotchangethatmap" );
+		return false;
+	}
+#endif // SD_PUBLIC_BUILD
+
+	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "set si_rules sdGameRulesTactical\n" );
+	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, va( "spawnServer %s\n", mapName.c_str() ) );
+
+	return true;
+}
+
+/*
+============
+sdAdminSystemCommand_SetTacticalMap::CommandCompletion
+============
+*/
+void sdAdminSystemCommand_SetTacticalMap::CommandCompletion( const idCmdArgs& args, argCompletionCallback_t callback ) const {
+}
+
+/*
+===============================================================================
+
 	sdAdminSystemCommand_SetStopWatchMap
 
 ===============================================================================
@@ -1600,7 +1646,7 @@ sdAdminSystemLocal::Init
 ============
 */
 void sdAdminSystemLocal::Init( void ) {
-	commands.PreAllocate( 25 );		// NOTE: if you add more commands increase this number to reflect that
+	commands.PreAllocate( 26 );		// NOTE: if you add more commands increase this number to reflect that
 	commands.Alloc() = new sdAdminSystemCommand_Kick();
 	commands.Alloc() = new sdAdminSystemCommand_Login();
 	commands.Alloc() = new sdAdminSystemCommand_Ban();
@@ -1610,6 +1656,7 @@ void sdAdminSystemLocal::Init( void ) {
 	commands.Alloc() = new sdAdminSystemCommand_SetCampaign();
 	commands.Alloc() = new sdAdminSystemCommand_SetStopWatchMap();	
 	commands.Alloc() = new sdAdminSystemCommand_SetObjectiveMap();
+	commands.Alloc() = new sdAdminSystemCommand_SetTacticalMap();
 
 	commands.Alloc() = new sdAdminSystemCommand_GlobalMute();
 	commands.Alloc() = new sdAdminSystemCommand_GlobalVOIPMute();

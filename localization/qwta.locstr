@@ -1,4 +1,4 @@
-// str_qwta_00000029
+// str_qwta_00000031
 
 /*
 =================
@@ -166,4 +166,24 @@ locString game/obit/jupiter_team {
 
 locString game/tt/jupiter {
 	text "#str_qwta_00000029"
+}
+
+/*
+==================
+ Miscellaneous
+==================
+*/
+
+locString game/gametype/tactical {
+	text "#str_qwta_00000030"
+}
+
+/*
+==================
+ Votes
+==================
+*/
+
+locString votes/settacticalmap/text {
+	text "#str_qwta_00000031"
 }

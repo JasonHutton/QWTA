@@ -31,6 +31,7 @@ gui loadscreen {
 		"sdGameRulesObjective"	"guis/assets/icons/gametypes, rect( 0, 0, 32, 32 )"
 		"sdGameRulesCampaign"	"guis/assets/icons/gametypes, rect( 32, 0, 32, 32 )"
 		"sdGameRulesStopWatch"	"guis/assets/icons/gametypes, rect( 64, 0, 32, 32 )"
+		"sdGameRulesTactical"	"guis/assets/icons/gametypes, rect( 0, 0, 32, 32 )"
 		"_unknownGameType"		"guis/assets/icons/gametypes, rect( 96, 0, 32, 32 )"
 	}
 	
