@@ -635,15 +635,6 @@ public:
 	virtual bool AllowedOnRankedServer( void ) const { return false; }
 };
 
-class sdCallVoteTacticalMap : public sdCallVoteMapChange {
-public:
-	virtual const char* GetCommandName( void ) const { return "settacticalmap"; }
-	virtual void GetText( idWStr& out ) const { out = common->LocalizeText( "votes/settacticalmap" ); }	
-	virtual const char* GetVoteTextKey( void ) const { return "votes/settacticalmap/text"; }
-	virtual const char* GetModeName( void ) const { return "setTacticalMap"; }
-	virtual bool AllowedOnRankedServer( void ) const { return false; }
-};
-
 class sdCallVoteStopWatchMap : public sdCallVoteMapChange {
 public:
 	virtual const char* GetCommandName( void ) const { return "setstopwatchmap"; }

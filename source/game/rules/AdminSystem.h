@@ -89,14 +89,6 @@ public:
 	virtual bool					AllowedOnRankedServer( void ) const { return false; }
 };
 
-class sdAdminSystemCommand_SetTacticalMap : public sdAdminSystemCommand {
-public:
-	virtual const char*				GetName( void ) const { return "setTacticalMap"; }
-	virtual bool					PerformCommand( const idCmdArgs& cmd, const sdUserGroup& userGroup, idPlayer* player ) const;
-	virtual void					CommandCompletion( const idCmdArgs& args, argCompletionCallback_t callback ) const;
-	virtual bool					AllowedOnRankedServer( void ) const { return false; }
-};
-
 class sdAdminSystemCommand_GlobalMute : public sdAdminSystemCommand {
 public:
 	virtual const char*				GetName( void ) const { return "globalMute"; }

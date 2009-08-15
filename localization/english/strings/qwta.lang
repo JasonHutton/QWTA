@@ -46,10 +46,4 @@
 	
 	// Tooltips
 	"#str_qwta_00000029" "The ^5Jupiter Tank^0 seats a Driver/Gunner and mounts a prototype BFG10k energy cannon. Press ^3%k(_vehiclecamera)^0 to change view."
-	
-	// Miscellaneous
-	"#str_qwta_00000030" "Tactical"
-	
-	// Votes
-	"#str_qwta_00000031" "Set Tactical Mode: %a[map name]?"
 }

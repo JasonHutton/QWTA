@@ -329,7 +329,6 @@ _dialog( ServerFilters, localize( "guis/mainmenu/filters" ), gui.btnEditFilters.
 		__string_filter( "si_rules", "game/gametype/objective", "sdGameRulesObjective", objIndex, "sdGameRulesObjective", SFO_EQUAL, SFR_OR )
 		__string_filter( "si_rules", "game/gametype/campaign", "sdGameRulesCampaign", campIndex, "sdGameRulesCampaign", SFO_EQUAL, SFR_OR )
 		__string_filter( "si_rules", "game/gametype/stopwatch", "sdGameRulesStopWatch", stopwIndex, "sdGameRulesStopWatch", SFO_EQUAL, SFR_OR )
-		__string_filter( "si_rules", "game/gametype/tactical",	"sdGameRulesTactical", tacIndex, "qwtaGameRulesTactical", SFO_EQUAL, SFR_OR )
 
 
 		// ensure this happens after the templates above apply their state to the filters

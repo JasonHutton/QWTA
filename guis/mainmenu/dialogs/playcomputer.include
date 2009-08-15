@@ -114,15 +114,10 @@ _dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_di
 					index = insertItem( toWStr( "<loc = 'game/gametype/objective'>" ), 1, 0 );
 					setItemText( toWStr( "sdGameRulesObjective" ), index, 1 );
 					setItemText( toWStr( "mapList" ), index, 2 );
-					
+
 					// Stopwatch
 					index = insertItem( toWStr( "<loc = 'game/gametype/stopwatch'>" ), 2, 0 );
 					setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
-					setItemText( toWStr( "mapList" ), index, 2 );
-					
-					// Tactical
-					index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
-					setItemText( toWStr( "sdGameRulesTactical" ), index, 1 );
 					setItemText( toWStr( "mapList" ), index, 2 );
 				}
 				onCVarChanged "si_rules" {

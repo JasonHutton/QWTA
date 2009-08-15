@@ -761,12 +761,6 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 						setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
 						setItemText( toWStr( "mapList" ), index, 2 );
 						setItemText( toWStr( "setStopWatchMap" ), index, 3 );
-						
-						// Tactical
-						index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
-						setItemText( toWStr( "sdGameRulesTactical" ), index, 1 );
-						setItemText( toWStr( "mapList" ), index, 2 );
-						setItemText( toWStr( "setTacticalMap" ), index, 3 );
 					}
 					onNamedEvent "onShow" {
 						index = findItem( toWStr( gui.getCVar( "si_rules" ) ), 1 );
