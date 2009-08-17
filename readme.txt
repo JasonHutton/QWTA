@@ -104,6 +104,7 @@ Mxyzptlk
 reyalP
 jaybird
 TimeStar
+WhiteAden
 - A few other ETQW modders who've provided helpful advice and assistance.
 Id Software
 Splash Damage
