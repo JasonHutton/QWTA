@@ -94,15 +94,18 @@ Finally, find yourself a server that's running QWTA, and give things a try. :)
 ================================
 Azuvector
 -  Hi, this is me. Programmer, scripter, mod-founder, readme-writer, whatever.
+
+Special thanks to:
 jRAD 
 digibob
 RR2
 -  Some of the Splash Damage folks who hang around on IRC and the community 
 -  forums where they've been gracious enough to put up with newbie questions 
 -  from me.
+hannes
+jaybird
 Mxyzptlk
 reyalP
-jaybird
 TimeStar
 WhiteAden
 - A few other ETQW modders who've provided helpful advice and assistance.
