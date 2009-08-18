@@ -1,6 +1,10 @@
 QWTA v0.4.0:
 ==========
 CHANGES:
+* Main menu now displays QWTA logo.
+* Tactical gametype added. (WIP)
+* Abaddon hovertank added. (WIP)
+
 BUG FIXES:
 
 
