@@ -28,3 +28,8 @@ quickChatDef strogg/quickchat/vehicles/vehicledrops/nv_tormentor {
 	_chat( "strogg/quickchat/vehicles/vehicledrops/nv_tormentor", "RequestTormentor", "team", BOT_TYPE_NONE, "same_entity" )
 	avdbit	AVDBIT_TORMENTOR
 }
+
+quickChatDef strogg/quickchat/vehicles/vehicledrops/nv_abaddon {
+	_chat( "strogg/quickchat/vehicles/vehicledrops/nv_abaddon", "RequestAbaddon", "team", BOT_TYPE_NONE, "same_entity" )
+	avdbit	AVDBIT_ABADDON
+}

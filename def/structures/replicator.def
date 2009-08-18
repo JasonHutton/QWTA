@@ -241,3 +241,16 @@ entityDef structure_module_construction_goliath {
 	"maxs"						"128 144 376"
 	"force_escalation_required"	"60"
 }
+
+entityDef structure_module_construction_abaddon {
+	"inherit"					"structure_module_construction"
+	"def_construction"			"vehicle_abaddon"
+	"wait_time"					"60"
+	"wait_time_sw"				"60"
+	"team"						"strogg"
+	"editor_preview_model"		"models/mapobjects/helpers/strogg_desecrator.lwo"
+	"editor_color"				".25 .25 1"
+	"mins"						"-208 -152 0"
+	"maxs"						"208 152 176"
+	"force_escalation_required"	"100"
+}

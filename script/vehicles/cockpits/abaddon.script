@@ -1,0 +1,187 @@
+
+// LEGS = left arm
+// HEAD = right arm
+
+object vehicle_abaddon_cockpit : vehicle_strogg_cockpit {
+	void				preinit();
+	void				destroy();
+
+	void				AnimThread();
+
+	void				OnEntered();
+
+	float				HideSurface( string surfaceName );
+	void				ShowSurface( float id );
+
+	string				leftAnim;
+	string				centerAnim;
+	string				rightAnim;
+
+	string				leverLeftAnim;
+	string				leverCenterAnim;
+	string				leverRightAnim;
+	
+	float				leftAnimFrames;
+	float				rightAnimFrames;
+
+	float				leverLeftAnimFrames;
+	float				leverRightAnimFrames;
+
+	float				surfaceId0;
+	float				surfaceId1;
+	float				surfaceId2;
+	float				surfaceId3;
+};
+
+void vehicle_abaddon_cockpit::preinit() {
+	surfaceId0 = -1;
+	surfaceId1 = -1;
+	surfaceId2 = -1;
+	surfaceId3 = -1;
+}
+
+void vehicle_abaddon_cockpit::destroy() {
+	ShowSurface( surfaceId0 );
+	ShowSurface( surfaceId1 );
+	ShowSurface( surfaceId2 );
+	ShowSurface( surfaceId3 );
+
+	sys.killThread( "vehicle_abaddon_cockpit::AnimThread" );
+}
+
+void vehicle_abaddon_cockpit::OnEntered() {	
+	leftAnim				= "left";
+	centerAnim				= "center";
+	rightAnim				= "right";
+
+	leverLeftAnim			= "backward";
+	leverCenterAnim			= "center";
+	leverRightAnim			= "forward";
+
+	leftAnimFrames			= getNumFrames( leftAnim ) - 2;
+	rightAnimFrames			= getNumFrames( rightAnim ) - 2;
+	
+	leverLeftAnimFrames		= getNumFrames( leverLeftAnim ) - 2;
+	leverRightAnimFrames	= getNumFrames( leverRightAnim ) - 2;
+
+	surfaceId0 = HideSurface( getKey( "surface_name0" ) );
+	surfaceId1 = HideSurface( getKey( "surface_name1" ) );
+	surfaceId2 = HideSurface( getKey( "surface_name2" ) );
+	surfaceId3 = HideSurface( getKey( "surface_name3" ) );
+
+	thread AnimThread();
+	
+	OnEnteredStrogg_Base();
+}
+
+void vehicle_abaddon_cockpit::AnimThread() {
+	sys.threadName( "vehicle_abaddon_cockpit::AnimThread" );
+
+	float wheelAngle = 0.f;
+	float leverAngle = 0.f;
+	
+	while ( true ) {
+		entity driver = myVehicle.getDriver();
+		
+		vector move;
+		if ( driver != $null_entity ) {
+			move = driver.getMove();
+		} else {
+			move = '0 0 0';
+		}
+		
+
+
+		float oldWheelAngle = wheelAngle;
+
+		if ( move_y < 0 ) {
+			wheelAngle = wheelAngle - 1.f * sys.getFrameTime();
+			if ( wheelAngle < -1.f ) {
+				wheelAngle = -1.f;
+			}
+		} else if ( move_y > 0 ) {
+			wheelAngle = wheelAngle + 1.f * sys.getFrameTime();
+			if ( wheelAngle > 1.f ) {
+				wheelAngle = 1.f;
+			}
+		} else {
+			if ( wheelAngle > 0.f ) {
+				wheelAngle = wheelAngle - 0.8 * sys.getFrameTime();
+				if ( wheelAngle < 0.f ) {
+					wheelAngle = 0.f;
+				}
+			} else if ( wheelAngle < 0.f ) {
+				wheelAngle = wheelAngle + 0.8 * sys.getFrameTime();
+				if ( wheelAngle > 0.f ) {
+					wheelAngle = 0.f;
+				}
+			}
+		}
+		
+		if ( oldWheelAngle != wheelAngle ) {
+			if ( wheelAngle > 0.f ) {
+				setAnimFrame( rightAnim, ANIMCHANNEL_LEGS, ( wheelAngle * rightAnimFrames ) );
+			} else if ( wheelAngle < 0.f ) {
+				setAnimFrame( leftAnim, ANIMCHANNEL_LEGS, ( wheelAngle * leftAnimFrames * -1 ) );
+			} else {
+				setAnimFrame( centerAnim, ANIMCHANNEL_LEGS, 0 );
+			}
+		}
+		
+		
+		
+		
+		float oldLeverAngle = leverAngle;
+
+		if ( move_x < 0 ) {
+			leverAngle = leverAngle - 2.f * sys.getFrameTime();
+			if ( leverAngle < -1.f ) {
+				leverAngle = -1.f;
+			}
+		} else if ( move_x > 0 ) {
+			leverAngle = leverAngle + 2.f * sys.getFrameTime();
+			if ( leverAngle > 1.f ) {
+				leverAngle = 1.f;
+			}
+		} else {
+			if ( leverAngle > 0.f ) {
+				leverAngle = leverAngle - 1.8 * sys.getFrameTime();
+				if ( leverAngle < 0.f ) {
+					leverAngle = 0.f;
+				}
+			} else if ( leverAngle < 0.f ) {
+				leverAngle = leverAngle + 1.8 * sys.getFrameTime();
+				if ( leverAngle > 0.f ) {
+					leverAngle = 0.f;
+				}
+			}
+		}
+		
+		if ( oldLeverAngle != leverAngle ) {
+			if ( leverAngle > 0.f ) {
+				setAnimFrame( leverRightAnim, ANIMCHANNEL_HEAD, ( leverAngle * leverRightAnimFrames ) );
+			} else if ( leverAngle < 0.f ) {
+				setAnimFrame( leverLeftAnim, ANIMCHANNEL_HEAD, ( leverAngle * leverLeftAnimFrames * -1 ) );
+			} else {
+				setAnimFrame( leverCenterAnim, ANIMCHANNEL_HEAD, 0 );
+			}
+		}
+		
+		sys.waitFrame();
+	}
+}
+
+float vehicle_abaddon_cockpit::HideSurface( string surfaceName ) {
+	float id = -1;
+	if ( surfaceName != "" ) {
+		id = myVehicle.getSurfaceId( surfaceName );
+		myVehicle.hideSurface( id );
+	}
+	return id;
+}
+
+void vehicle_abaddon_cockpit::ShowSurface( float id ) {
+	if ( id != -1 ) {
+		myVehicle.showSurface( id );
+	}
+}

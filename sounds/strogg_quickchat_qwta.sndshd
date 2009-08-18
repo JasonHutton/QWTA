@@ -28,3 +28,8 @@ sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_tormentor {
 
 	localization/english/sounds/players/strogg/vehicles/26097.wav
 }
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_abaddon {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}

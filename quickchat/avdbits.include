@@ -17,6 +17,7 @@
 #define AVDBIT_TORMENTOR	2048
 
 #define AVDBIT_JUPITER		4096
+#define AVDBIT_ABADDON		8192
 
 
 #endif

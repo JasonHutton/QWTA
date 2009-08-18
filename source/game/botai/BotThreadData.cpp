@@ -4290,6 +4290,9 @@ int idBotThreadData::FindDeclIndexForDeployable( const playerTeamTypes_t team, i
 				case VD_TORMENTOR:
 					name = "deployobject_hornet";
 					break;
+				case VD_ABADDON:
+					name = "deployobject_abaddon";
+					break;
 				default:
 					return -1;
 			}
@@ -4366,10 +4369,12 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 			vPref[VD_HOG] += 1;
 			vPref[VD_DESECRATOR] += 1;
 			vPref[VD_CYCLOPS] += 1;
+			vPref[VD_ABADDON] += 1;
 		}
 		if(vehicleFlags & ARMOR) {
 			vPref[VD_DESECRATOR] += 1;
 			vPref[VD_CYCLOPS] += gameLocal.random.RandomInt(2);
+			vPref[VD_ABADDON] += gameLocal.random.RandomInt(3);
 		}
 		if(vehicleFlags & AIR) {
 			vPref[VD_TORMENTOR] += gameLocal.random.RandomInt(3);
@@ -4399,8 +4404,10 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 		if(botInfo.classType == ENGINEER) {
 			vPref[VD_DESECRATOR] += gameLocal.random.RandomInt(1);
 			vPref[VD_CYCLOPS] += gameLocal.random.RandomInt(2);
+			vPref[VD_ABADDON] += gameLocal.random.RandomInt(1);
 		}
 		if(botInfo.classType == FIELDOPS) {
+			vPref[VD_ABADDON] += gameLocal.random.RandomInt(1);
 		}
 		if(botInfo.classType == COVERTOPS) {
 			vPref[VD_ICARUS] += gameLocal.random.RandomInt(2);

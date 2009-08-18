@@ -14,6 +14,9 @@
 	"#str_qwta_00000026" "%b^0 &lbrJupiter&rbr %a"
 	"#str_qwta_00000027" "&lbrJupiter&rbr %a"
 	"#str_qwta_00000028" "%b^1 &lbrJupiter&rbr ^0%a"
+	"#str_qwta_00000033" "%b^0 &lbrAbaddon&rbr %a"
+	"#str_qwta_00000034" "&lbrAbaddon&rbr %a"
+	"#str_qwta_00000035" "%b^1 &lbrAbaddon&rbr ^0%a"
 	
 	// Chat
 	"#str_qwta_00000002" "Request Armadillo"
@@ -27,6 +30,7 @@
 	"#str_qwta_00000009" "Request Desecrator"
 	"#str_qwta_00000010" "Request Cyclops"
 	"#str_qwta_00000011" "Request Tormentor"
+	"#str_qwta_00000036" "Request Abaddon"
 	
 	// Quickchat menus
 	"#str_qwta_00000012" "Vehicle Drops"
@@ -35,17 +39,21 @@
 	// Gamecode
 	"#str_qwta_00000017"	"That class has too many players already"
 	"#str_qwta_00000015" "Jupiter"
+	"#str_qwta_00000037" "Abaddon"
 	"#str_qwta_00000016" "BFG10k"
 	"#str_qwta_00000025" "This Voice Chat is disabled."
 	
 	// GUIs
 	"#str_qwta_00000021" "Jupiter Driver"
+	"#str_qwta_00000038" "Abaddon Driver"
 	"#str_qwta_00000022" "Jupiter Gunner"
+	"#str_qwta_00000039" "Abaddon Gunner"
 	"#str_qwta_00000023" "Jupiter Passenger"
 	"#str_qwta_00000024" "FE" // Force Escalation
 	
 	// Tooltips
 	"#str_qwta_00000029" "The ^5Jupiter Tank^0 seats a Driver/Gunner and mounts a prototype BFG10k energy cannon. Press ^3%k(_vehiclecamera)^0 to change view."
+	"#str_qwta_00000040" "The ^5Abaddon Hovertank^0 seats a Driver and a Gunner. Press ^3%k(_vehiclecamera)^0 to change view and ^3%k(_activate)^0 to switch seats. Crouch to toggle hunkered siege mode, which gives increased firepower but sacrifices mobility."
 	
 	// Gametypes
 	"#str_qwta_00000030"	"Tactical"

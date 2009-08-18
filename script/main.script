@@ -252,6 +252,8 @@ This is the main script that is loaded before any level scripts load.
 #include "script/projectiles/homingnail.script"
 #include "script/vehicles/strogg_drop_teleport.script"
 #include "script/vehicles/jupiter.script"
+#include "script/vehicles/abaddon.script"
+#include "script/vehicles/cockpits/abaddon.script"
 #include "script/projectiles/bfg.script"
 #include "script/vehicles/weapons/chargeshot.script"
 

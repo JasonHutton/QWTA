@@ -14,6 +14,7 @@ object player {
 	void		RequestDesecrator();
 	void		RequestCyclops();
 	void		RequestTormentor();
+	void		RequestAbaddon();
 
 	void		RequestRepair();
 
@@ -240,6 +241,19 @@ void player::RequestTormentor() {
 	}
 
 	RequestDeployment( "deployobject_hornet" );
+}
+
+/*
+================
+player::RequestAbaddon
+================
+*/
+void player::RequestAbaddon() {
+	if ( !IsStrogg() ) {
+		return;
+	}
+
+	RequestDeployment( "deployobject_abaddon" );
 }
 
 /*

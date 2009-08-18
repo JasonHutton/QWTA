@@ -95,3 +95,27 @@ GDF Vehicles Teamkills
 tooltip tooltips/killmsgs/vehicles/jupiter/teamkill {
 	text "game/obit/jupiter_team"
 }
+
+/*
+==================
+Strogg Vehicles
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/abaddon {
+	text "game/obit/abaddon"
+}
+
+tooltip tooltips/killmsgs/vehicles/abaddon/empty {
+	text "game/obit/abaddon_empty"
+}
+
+/*
+==================
+Strogg Vehicles Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/abaddon/teamkill {
+	text "game/obit/abaddon_team"
+}

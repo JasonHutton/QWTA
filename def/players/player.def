@@ -172,6 +172,7 @@ entityDef player_base {
 	"do_object_desecrator"					"deployobject_desecrator"
 	"do_object_goliath"					"deployobject_goliath"
 	"do_object_hornet"					"deployobject_hornet"
+	"do_object_abaddon"					"deployobject_abaddon"
 }
 
 toolTip proficiency_upgrade_respawn {

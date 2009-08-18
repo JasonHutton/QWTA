@@ -1,4 +1,4 @@
-// str_qwta_00000032
+// str_qwta_00000040
 
 /*
 =================
@@ -11,7 +11,11 @@ locString teams/messages/toomanyofclass {
 }
 
 locString game/vec/jupiter {
-	text "#str_qwta_00000015"
+	text "#str_qwta_00000015" // "Jupiter"
+}
+
+locString game/vec/abaddon {
+	text "#str_qwta_00000037" // "Abaddon"
 }
 
 locString game/weapons/bfg10k {
@@ -32,8 +36,16 @@ locString guis/vehicles/jupiter_driver {
 	text "#str_qwta_00000021" // "Jupiter Driver"
 }
 
+locString guis/vehicles/abaddon_driver { 
+	text "#str_qwta_00000038" // "Abaddon Driver"
+}
+
 locString guis/vehicles/jupiter_gunner { 
 	text "#str_qwta_00000022" // "Jupiter Gunner"
+}
+
+locString guis/vehicles/abaddon_gunner { 
+	text "#str_qwta_00000039" // "Abaddon Gunner"
 }
 
 locString guis/vehicles/jupiter_passenger { 
@@ -112,6 +124,10 @@ locString strogg/quickchat/vehicles/vehicledrops/nv_tormentor  {
 	text "#str_qwta_00000011" // "Request Tormentor"
 }
 
+locString strogg/quickchat/vehicles/vehicledrops/nv_abaddon  {
+	text "#str_qwta_00000036" // "Request Abaddon"
+}
+
 locString strogg/quickchat/vehicles/vehicledrops  {
 	text "#str_qwta_00000013" // "Vehicle Drops"
 }
@@ -158,6 +174,18 @@ locString game/obit/jupiter_team {
 	text "#str_qwta_00000028" // "%b^1 [Jupiter] ^7%a"
 }
 
+locString game/obit/abaddon {
+	text "#str_qwta_00000033" // "%b^7 [Abaddon] %a"
+}
+
+locString game/obit/abaddon_empty {
+	text "#str_qwta_00000034" // "[Abaddon] %a"
+}
+
+locString game/obit/abaddon_team {
+	text "#str_qwta_00000035" // "%b^1 [Abaddon] ^7%a"
+}
+
 /*
 ==================
  Tooltips
@@ -166,6 +194,10 @@ locString game/obit/jupiter_team {
 
 locString game/tt/jupiter {
 	text "#str_qwta_00000029"
+}
+
+locString game/tt/abaddon {
+	text "#str_qwta_00000040"
 }
 
 /*
