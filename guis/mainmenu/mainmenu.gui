@@ -113,6 +113,7 @@ gui mainMenu {
 		"logo_atvi" 			"guis/assets/qet/logo_atvi"
 		"logo_nerve" 			"guis/assets/qet/logo_nerve"
 		"etqw_logo"				"guis/assets/mainmenu/etqw_logo"
+		"qwta_logo"				"guis/assets/mainmenu/qwta_logo"
 		"logo_bink"				"guis/assets/qet/logo_bink"
 				
 		"mainbar_fill_tl"		"guis/assets/mainmenu/sheet_fill, rect( 0, 64, 241, 48 )"
@@ -618,6 +619,7 @@ gui mainMenu {
 		}
 	}
 
+/*
 	windowDef etqw_logo {
 		properties {
 			color backColor = 1,1,1,1;
@@ -636,6 +638,15 @@ gui mainMenu {
 			}
 		}
 #endif		
+	}
+*/
+	windowDef qwta_logo {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "qwta_logo";
+			rect	rect	= CENTER_X - ( rect.w * 0.5 ), 250, 344, 178;
+			float visible = compare( gui.activeDialog, "" ) == true || compare( gui.activeDialog, "login" );			
+		}
 	}
 
 	windowDef mainHeader {
