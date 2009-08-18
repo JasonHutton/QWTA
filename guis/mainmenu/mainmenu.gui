@@ -644,7 +644,7 @@ gui mainMenu {
 		properties {
 			color backColor = 1,1,1,1;
 			string material = "qwta_logo";
-			rect	rect	= CENTER_X - ( rect.w * 0.5 ), 250, 344, 178;
+			rect	rect	= CENTER_X - ( rect.w * 0.5 ), 200, 512, 256;
 			float visible = compare( gui.activeDialog, "" ) == true || compare( gui.activeDialog, "login" );			
 		}
 	}
