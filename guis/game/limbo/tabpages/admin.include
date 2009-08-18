@@ -743,7 +743,7 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 						insertColumn( gui.blankWStr, 0, 1 );				// Value
 						insertColumn( gui.blankWStr, 0, 2 );				// Maplist
 						insertColumn( gui.blankWStr, 0, 3 );				// Action
-
+						
 						// Campaign
 						index = insertItem( toWStr( "<loc = 'game/gametype/campaign'>" ), 0, 0 );
 						setItemText( toWStr( "sdGameRulesCampaign" ), index, 1 );
@@ -761,6 +761,12 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 						setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
 						setItemText( toWStr( "mapList" ), index, 2 );
 						setItemText( toWStr( "setStopWatchMap" ), index, 3 );
+						
+						// Tactical
+						index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
+						setItemText( toWStr( "sdGameRulesTactical" ), index, 1 );
+						setItemText( toWStr( "tacticalList" ), index, 2 );
+						setItemText( toWStr( "setTactical" ), index, 3 );
 					}
 					onNamedEvent "onShow" {
 						index = findItem( toWStr( gui.getCVar( "si_rules" ) ), 1 );
@@ -807,9 +813,21 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 							previewMaterial = gui.campaignPreview;
 							gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), CAMPAIGNSHOT );
 						} else {
-							rect.height = rect.width * 1.0f / ( 1.7777 );
-							previewMaterial = gui.levelPreview;
-							gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), LEVELSHOT );
+							/* 
+							 * BUGBUG: I think there's a bug in the parser somewhere, 
+							 * this should really just be an 'else if', 
+							 * but it pukes on the 'if' because it's expecting a '{' 
+							 * -- Azuvector
+							 */
+							if ( wcompare( _get_current_list_text( MapSource, 1 ), toWStr( "sdGameRulesTactical" ) ) ) {
+								rect.height = rect.width * 1.0f / ( 1.3333 );
+								previewMaterial = gui.tacticalPreview;
+								gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), CAMPAIGNSHOT );
+							} else {
+								rect.height = rect.width * 1.0f / ( 1.7777 );
+								previewMaterial = gui.levelPreview;
+								gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), LEVELSHOT );
+							}
 						}
 					}
 				}
@@ -834,8 +852,19 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 							allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeCampaign;
 							localizedText = localize( "guis/admin/changecampaign" );
 						} else {
-							allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeMap;
-							localizedText = localize( "guis/admin/changemap" );
+							/* 
+							 * BUGBUG: I think there's a bug in the parser somewhere, 
+							 * this should really just be an 'else if', 
+							 * but it pukes on the 'if' because it's expecting a '{' 
+							 * -- Azuvector
+							 */
+							if( wcompare( _get_current_list_text( MapSource, 2 ), toWStr( "tacticalList" ) ) ) {
+								allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeCampaign;
+								localizedText = localize( "guis/admin/changecampaign" );
+							} else {
+								allowAction = gui.lstMaps.currentSelection != -1 && admin.canChangeMap;
+								localizedText = localize( "guis/admin/changemap" );
+							}
 						}
 						action = toStr( _get_current_list_text( MapSource, 3 ) );
 					}

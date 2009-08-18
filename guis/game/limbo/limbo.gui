@@ -101,6 +101,7 @@ gui limbo {
 
 		handle 	levelPreview		= cacheMaterial( "levelPreview",	"levelshot" );
 		handle 	campaignPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
+		handle 	tacticalPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
 
 		handle 	criticalClass 		= cacheMaterial( "critClass", 		"critical_class" );
 	}

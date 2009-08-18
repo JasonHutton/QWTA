@@ -73,6 +73,13 @@ public:
 	virtual void					CommandCompletion( const idCmdArgs& args, argCompletionCallback_t callback ) const;
 };
 
+class sdAdminSystemCommand_SetTactical : public sdAdminSystemCommand {
+public:
+	virtual const char*				GetName( void ) const { return "setTactical"; }
+	virtual bool					PerformCommand( const idCmdArgs& cmd, const sdUserGroup& userGroup, idPlayer* player ) const;
+	virtual void					CommandCompletion( const idCmdArgs& args, argCompletionCallback_t callback ) const;
+};
+
 class sdAdminSystemCommand_SetStopWatchMap : public sdAdminSystemCommand {
 public:
 	virtual const char*				GetName( void ) const { return "setStopWatchMap"; }

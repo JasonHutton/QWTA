@@ -558,6 +558,70 @@ void sdAdminSystemCommand_SetCampaign::CommandCompletion( const idCmdArgs& args,
 /*
 ===============================================================================
 
+	sdAdminSystemCommand_SetTactical
+
+===============================================================================
+*/
+
+/*
+============
+sdAdminSystemCommand_SetTactical::PerformCommand
+============
+*/
+bool sdAdminSystemCommand_SetTactical::PerformCommand( const idCmdArgs& cmd, const sdUserGroup& userGroup, idPlayer* player ) const {
+	if ( !userGroup.HasPermission( PF_ADMIN_CHANGE_CAMPAIGN ) ) {
+		Print( player, "guis/admin/system/nopermchangecampaign" );
+		return false;
+	}
+
+	const char* campaignName = cmd.Argv( 2 );
+
+	const metaDataContext_t* metaData = gameLocal.campaignMetaDataList->FindMetaDataContext( campaignName );
+	if ( metaData == NULL || !gameLocal.IsMetaDataValidForPlay( *metaData, false ) ) {
+		idWStrList list( 1 );
+		list.Append( va( L"%hs", campaignName ) );
+		Print( player, "guis/admin/system/notfoundcampaign", list );
+		return false;
+	}
+
+	sdAdminSystemCommand_KickAllBots::DoKick();
+
+	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "set si_rules sdGameRulesTactical\n" );
+	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, va( "spawnServer %s\n", campaignName ) );
+
+	return true;
+}
+
+/*
+============
+sdAdminSystemCommand_SetTactical::CommandCompletion
+============
+*/
+void sdAdminSystemCommand_SetTactical::CommandCompletion( const idCmdArgs& args, argCompletionCallback_t callback ) const {
+	const char* cmd = args.Argv( 2 );
+	int len = idStr::Length( cmd );
+
+	int num = gameLocal.campaignMetaDataList->GetNumMetaData();
+	for ( int i = 0; i < num; i++ ) {
+		const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+		if ( !gameLocal.IsMetaDataValidForPlay( metaData, false ) ) {
+			continue;
+		}
+		const idDict& meta = *metaData.meta;
+		
+		const char* metaName = meta.GetString( "metadata_name" );
+		if ( idStr::Icmpn( metaName, cmd, len ) ) {
+			continue;
+		}
+
+		callback( va( "%s %s %s", args.Argv( 0 ), args.Argv( 1 ), metaName ) );
+	}	
+}
+
+
+/*
+===============================================================================
+
 	sdAdminSystemCommand_SetObjectiveMap
 
 ===============================================================================

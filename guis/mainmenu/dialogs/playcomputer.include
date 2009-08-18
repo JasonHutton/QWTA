@@ -119,6 +119,11 @@ _dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_di
 					index = insertItem( toWStr( "<loc = 'game/gametype/stopwatch'>" ), 2, 0 );
 					setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
 					setItemText( toWStr( "mapList" ), index, 2 );
+					
+					// Tactical
+					index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
+					setItemText( toWStr( "sdGameRulesTactical" ), index, 1 );
+					setItemText( toWStr( "tacticalList" ), index, 2 );
 				}
 				onCVarChanged "si_rules" {
 					postNamedEvent( "updateRules" );
@@ -248,9 +253,21 @@ _dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_di
 						previewMaterial = gui.campaignPreview;
 						gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), CAMPAIGNSHOT );					
 					} else {
-						rect.h = rect.width * ( 1 / 1.7777 );
-						previewMaterial = gui.levelPreview;
-						gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), LEVELSHOT );					
+						/* 
+						 * BUGBUG: I think there's a bug in the parser somewhere, 
+						 * this should really just be an 'else if', 
+						 * but it pukes on the 'if' because it's expecting a '{' 
+						 * -- Azuvector
+						 */
+						if( wcompare( toWStr( gui.lstPlayCompGameType.type ), toWStr( "tacticalList" ) ) ) {
+							rect.h = rect.width * ( 1 / 1.3333 );
+							previewMaterial = gui.tacticalPreview;
+							gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), CAMPAIGNSHOT );
+						} else {
+							rect.h = rect.width * ( 1 / 1.7777 );
+							previewMaterial = gui.levelPreview;
+							gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), LEVELSHOT );					
+						}
 					}
 				}
 			}

@@ -752,6 +752,108 @@ public:
 	}
 };
 
+class sdCallVoteTacticalChange : public sdCallVote {
+public:
+	virtual const char* GetCommandName( void ) const { return "settactical"; }
+	virtual void GetText( idWStr& out ) const { out = common->LocalizeText( "votes/settactical" ); }
+
+	class sdCallVoteTacticalChangeFinalizer : public sdVoteFinalizer {
+	public:
+		sdCallVoteTacticalChangeFinalizer( const char* _campaignName ) {
+			campaignName = _campaignName;
+		}
+
+		virtual void OnVoteCompleted( bool passed ) const {
+			if ( !passed ) {
+				return;
+			}
+
+			idCmdArgs args;
+			args.AppendArg( "admin" );
+			args.AppendArg( "setTactical" );
+			args.AppendArg( campaignName.c_str() );
+			sdAdminSystem::GetInstance().PerformCommand( args, NULL );
+		}
+
+	private:
+		idStr campaignName;
+	};
+
+	virtual void EnumerateOptions( sdUIList* list ) const {
+		for( int i = 0; i < gameLocal.campaignMetaDataList->GetNumMetaData(); i++ ) {
+			const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+			if ( !gameLocal.IsMetaDataValidForPlay( metaData, true ) ) {
+				continue;
+			}
+			const idDict& dict = *metaData.meta;
+			
+			const char* materialName = dict.GetString( "server_shot_thumb" );
+			const char* prettyName = dict.GetString( "pretty_name" );
+
+			AddVoteOption( list, va( L"%hs\t%hs\t1.333", prettyName, materialName ), i );
+		}
+	}
+
+	virtual void Execute( int dataKey ) const {
+		if( dataKey < 0 || dataKey >= gameLocal.campaignMetaDataList->GetNumMetaData() ) {
+			gameLocal.Warning( "sdCallVoteTacticalChange: index '%i' out of range", dataKey );
+			return;
+		}
+		const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( dataKey );
+		if ( !gameLocal.IsMetaDataValidForPlay( metaData, true ) ) {
+			return;
+		}
+
+		const idDict& dict = *metaData.meta;
+		const sdDeclCampaign* campaign = gameLocal.declCampaignType.LocalFind( dict.GetString( "metadata_name" ), false );
+		if ( campaign == NULL ) {
+			return;
+		}
+
+		idCmdArgs args;
+		CreateCmdArgs( args );
+		args.AppendArg( campaign->GetName() );
+
+		sdVoteManagerLocal::Callvote_f( args );
+	}
+
+	virtual sdPlayerVote* Execute( const idCmdArgs& args, idPlayer* player ) const {
+		if ( args.Argc() < 3 ) {
+			return NULL;
+		}
+
+		const char* campaignName = args.Argv( 2 );
+
+		const metaDataContext_t* metaData = gameLocal.campaignMetaDataList->FindMetaDataContext( campaignName );
+		if ( metaData == NULL ) {
+			return NULL;
+		}
+		if ( !gameLocal.IsMetaDataValidForPlay( *metaData, true ) ) {
+			return NULL;
+		}
+
+		const sdDeclCampaign* campaign = gameLocal.declCampaignType[ campaignName ];
+		if ( campaign == NULL ) {
+			return NULL;
+		}
+
+		sdPlayerVote* vote = sdVoteManager::GetInstance().AllocVote();
+		if ( vote != NULL ) {
+			vote->MakeGlobalVote();
+			vote->SetText( gameLocal.declToolTipType[ "votes/settactical/text" ] );
+			const idDict* dict = gameLocal.campaignMetaDataList->FindMetaData( campaignName, &gameLocal.defaultMetaData );
+			vote->AddTextParm( va( L"%hs", dict->GetString( "pretty_name" ) ) );
+			vote->SetFinalizer( new sdCallVoteTacticalChangeFinalizer( campaignName ) );
+		}
+
+		return vote;
+	}
+
+	virtual void		PreCache( void ) const { 
+		gameLocal.declToolTipType[ "votes/settactical/text" ];
+	}
+};
+
 /*
 ================
 sdVoteModePrivate::sdVoteModePrivate
@@ -1331,6 +1433,7 @@ void sdVoteManagerLocal::Init( void ) {
 	globalCallVotes.Alloc() = new sdCallVoteObjectiveMap();
 	globalCallVotes.Alloc() = new sdCallVoteStopWatchMap();
 	globalCallVotes.Alloc() = new sdCallVoteCampaignChange();
+	globalCallVotes.Alloc() = new sdCallVoteTacticalChange();
 	globalCallVotes.Alloc() = new sdCallVoteShuffleXP();
 	globalCallVotes.Alloc() = new sdCallVoteShuffleRandom();
 	globalCallVotes.Alloc() = new sdCallVoteSwapTeams();

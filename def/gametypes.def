@@ -3,5 +3,6 @@ stringMap game/rules/names {
 	"sdGameRulesStopWatch"	"game/gametype/stopwatch"
 	"sdGameRulesObjective"	"game/gametype/objective"
 	"sdGameRulesCampaign"	"game/gametype/campaign"
+	"sdGameRulesTactical"	"game/gametype/tactical"
 	"__unknown"				"game/gametype/unknown"
 }

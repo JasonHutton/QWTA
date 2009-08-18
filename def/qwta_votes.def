@@ -1,0 +1,4 @@
+toolTip votes/settactical/text {
+	length	30
+	text	"votes/settactical/text"
+}

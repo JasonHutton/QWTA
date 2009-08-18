@@ -1465,6 +1465,7 @@ void idGameLocal::Init( void ) {
 		uiManager->RegisterListEnumerationCallback( "serverConfigList",		CreateServerConfigList );
 		uiManager->RegisterListEnumerationCallback( "videoModeList",		CreateVideoModeList );
 		uiManager->RegisterListEnumerationCallback( "campaignList",			CreateCampaignList );
+		uiManager->RegisterListEnumerationCallback( "tacticalList",			CreateTacticalList );
 		uiManager->RegisterListEnumerationCallback( "mapList",				CreateMapList );
 		uiManager->RegisterListEnumerationCallback( "weaponSwitchList",		CreateWeaponSwitchList );
 		uiManager->RegisterListEnumerationCallback( "callVoteList",			sdVoteManagerLocal::CreateCallVoteList );

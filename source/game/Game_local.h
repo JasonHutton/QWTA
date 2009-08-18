@@ -1608,6 +1608,7 @@ public:
 	static void				CreateServerConfigList( sdUIList* list );
 	static void				CreateVideoModeList( sdUIList* list );
 	static void				CreateCampaignList( sdUIList* list );
+	static void				CreateTacticalList( sdUIList* list );
 	static void				CreateMapList( sdUIList* list );
 	static void				CreateWeaponSwitchList( sdUIList* list );
 	static void				CreateColorList( sdUIList* list );

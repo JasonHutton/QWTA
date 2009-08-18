@@ -1,4 +1,4 @@
-// str_qwta_00000029
+// str_qwta_00000032
 
 /*
 =================
@@ -166,4 +166,22 @@ locString game/obit/jupiter_team {
 
 locString game/tt/jupiter {
 	text "#str_qwta_00000029"
+}
+
+/*
+==================
+ Gametypes
+==================
+*/
+
+locString game/gametype/tactical {
+	text "#str_qwta_00000030" // "Tactical"
+}
+
+locString votes/settactical {
+	text "#str_qwta_00000031" // "Set Tactical Mode"
+}
+
+locString votes/settactical/text {
+	text "#str_qwta_00000032" // "Set Tactical Mode: %a[tactical name]?"
 }

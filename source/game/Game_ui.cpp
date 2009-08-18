@@ -1404,6 +1404,27 @@ void idGameLocal::CreateCampaignList( sdUIList* list ) {
 
 /*
 ============
+idGameLocal::CreateTacticalList
+============
+*/
+void idGameLocal::CreateTacticalList( sdUIList* list ) {
+	sdUIList::ClearItems( list );
+	for( int i = 0; i < gameLocal.campaignMetaDataList->GetNumMetaData(); i++ ) {
+		const metaDataContext_t& metaDataContext = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+		if ( !gameLocal.IsMetaDataValidForPlay( metaDataContext, true ) ) {
+			continue;
+		}
+		const idDict& dict = *metaDataContext.meta;
+
+		const char* materialName = dict.GetString( "server_shot_thumb" );
+		const char* prettyName = dict.GetString( "pretty_name" );
+		const char* defName = dict.GetString( "metadata_name" );
+		int index = sdUIList::InsertItem( list, va( L"%hs\t%hs\t%hs", prettyName, defName, materialName ), -1, 0 );
+	}
+}
+
+/*
+============
 idGameLocal::CreateMapList
 ============
 */
