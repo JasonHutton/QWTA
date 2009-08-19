@@ -1,0 +1,386 @@
+
+object vehicle_weapon_streamshot : vehicle_weapon_base {
+	void				preinit();
+	void				init();
+	void				destroy();
+
+	void				Idle();
+	void				Fire();
+
+	void				OnSetPlayer( entity p );
+	
+	void				DoLightning( boolean doDamage );
+	void				UpdateLightningEffect( vector hitPos, vector hitDir, float traceFraction, vector traceNormal );
+
+	string				muzzleFlashFX;
+	string				muzzleSound;
+	string				muzzleSoundLocal;
+
+	float				fireRate;
+	float				spread;
+
+	float				projectileIndex;
+
+	float				jointHandle;
+	
+	float				tracerCounter;
+	float				tracerInterval;
+	
+	float				localSurface;
+
+	entity				vehicle;
+
+	boolean				playingOverheat;
+
+	entity				muzzleFX;
+	
+	handle				streamEffectHandle;
+	
+	float				nextFiringSound;
+	float				streamDamageIndex;
+	
+	float				streamRadius;
+	float				streamArc;
+}
+
+void vehicle_weapon_streamshot::preinit() {
+	muzzleFlashFX			= getKey( "muzzle_flash" );
+	muzzleSound				= getKey( "muzzle_sound" );
+	muzzleSoundLocal		= getKey( "muzzle_sound" );
+
+	fireRate				= getFloatKey( "fire_rate" );
+	spread					= getFloatKey( "spread" );
+
+	projectileIndex			= GetEntityDef( getKey( "def_projectile" ) );
+	
+	localSurface			= -1;
+	
+	vehicle					= getVehicle();
+
+	string localSurfaceName	= getKey( "surface_name" );
+	if ( localSurfaceName != "" ) {
+		localSurface = vehicle.getSurfaceId( localSurfaceName );
+	}
+	
+	jointHandle				= vehicle.getJointHandle( getKey( "muzzle" ) );
+	tracerCounter			= 0;
+	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
+	
+	streamEffectHandle		= 0;
+	
+	nextFiringSound			= 0;
+	
+	streamDamageIndex		= GetDamage( getKey( "dmg_stream" ) );
+	
+	streamRadius			= getFloatKey( "stream_radius" );
+	streamArc				= getFloatKey( "stream_arc" );
+}
+
+void vehicle_weapon_streamshot::init() {
+}
+
+void vehicle_weapon_streamshot::destroy() {
+	if ( muzzleFX != $null_entity ) {
+		muzzleFX.unbind();
+		muzzleFX.endEffect( true );
+		muzzleFX = $null_entity;
+	}
+	
+	if ( vehicle != $null_entity ) {
+		vehicle.stopEffectHandle( streamEffectHandle );
+	}
+	streamEffectHandle = 0;
+	
+	if ( vehicle != $null_entity ) {
+		vehicle.stopSound( SND_WEAPON_FIRE );
+	}
+	nextFiringSound = 0;
+}
+
+void vehicle_weapon_streamshot::Idle() {
+	SetCrosshair();
+
+	while ( true ) {
+		sys.waitFrame();
+
+		UpdateCharge();
+
+		if ( user != $null_entity ) {
+			user.proxyFiringWeaponStart = false;
+			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isWeaponDisabled() ) {
+				if ( CanRemoveCharge() ) {
+					if ( sys.getTime() >= fireDelayTime ) {
+						user.proxyFiringWeaponStart = true;
+						if ( sys.getTime() >= reFireTime ) {
+							playingOverheat = false;
+							setState( "Fire" );
+						}
+					} else {
+						if ( !playingOverheat ) {
+							vehicle.startSound( "snd_gpmg_overheat", SND_WEAPON_FIRE_LOCAL );
+							playingOverheat = true;
+						}
+					}
+				}
+			} else {
+				if ( muzzleFX != $null_entity ) {
+					muzzleFX.unbind();
+					muzzleFX.endEffect( true );
+					muzzleFX = $null_entity;
+				}
+	
+				vehicle.stopEffectHandle( streamEffectHandle );
+				streamEffectHandle = 0;
+				
+				vehicle.stopSound( SND_WEAPON_FIRE );
+				nextFiringSound = 0;
+			}
+		}
+	}
+}
+
+void vehicle_weapon_streamshot::Fire() {
+	boolean showMuzzle = true;
+	
+	RemoveCharge();
+
+	
+	/*
+	if ( localSurface != -1 ) {
+		if ( vehicle.isSurfaceHidden( localSurface ) ) {
+			showMuzzle = false;
+		}
+	}*/
+
+/*
+	float forceTracer = TRACER_CHANCE;
+	if ( tracerInterval > 0 ) {
+		if ( tracerCounter % tracerInterval == 0 ) {
+			forceTracer = TRACER_FORCE;
+		}
+	}
+
+	vehicle.launchBullet( user, vehicle, projectileIndex, spread, vehicle.getJointPos( jointHandle ), vehicle.getJointAxis( jointHandle, 0 ), forceTracer, true );
+	
+*/
+	DoLightning( true );
+	
+/*
+	if ( showMuzzle ) {
+		if ( sys.getTime() - lastMuzzleFX > muzzleFlashInterval ) {
+			if ( muzzleFX != $null_entity ) {
+				muzzleFX.unbind();
+				muzzleFX.endEffect( false );
+				muzzleFX = $null_entity;
+			}
+
+			// spawn explicitly so we can get an entity to call endEffect on.
+			muzzleFX = vehicle.spawnClientEffect( muzzleFlashFX );
+			if ( muzzleFX != $null_entity ) {
+				muzzleFX.bindToJoint( vehicle, getKey( "muzzle" ), 1 );
+			}
+
+			lastMuzzleFX = sys.getTime();
+		}
+	}
+
+	if( user == sys.getLocalPlayer() ) {
+		vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
+	} else {
+		vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+	}*/
+	
+	AddReFireDelay( fireRate );
+
+	//tracerCounter++;
+	
+
+	GoToIdle();
+}
+
+void vehicle_weapon_streamshot::OnSetPlayer( entity p ) {
+	OnSetPlayer_Base( p );
+	if ( muzzleFX != $null_entity ) {
+		muzzleFX.unbind();
+		muzzleFX.endEffect( true );
+		muzzleFX = $null_entity;
+	}
+
+	if( vehicle != $null_entity ) {
+		vehicle.stopEffectHandle( streamEffectHandle );
+	}
+	streamEffectHandle = 0;
+	
+	if( vehicle != $null_entity ) {
+		vehicle.stopSound( SND_WEAPON_FIRE );
+	}
+	nextFiringSound = 0;
+}
+
+void vehicle_weapon_streamshot::DoLightning( boolean doDamage ) {
+//	fired();
+
+//	float mask = MASK_PROJECTILE | MASK_SHOT_BOUNDINGBOX;
+//	if ( sys.isClient() ) {
+//		mask = mask | CONTENTS_WATER;
+//	}
+//	sys.enablePlayerHeadModels();
+//	melee( mask, 8192/*range*/, true, true );
+
+	vector startPos = vehicle.getJointPos( jointHandle );
+	vector traceDir = vehicle.getJointAxis( jointHandle, 0 );
+	vector endPos = startPos + ( traceDir * streamRadius );
+
+	vector mins, maxs;
+	mins_x = startPos_x - streamRadius;
+	mins_y = startPos_y - streamRadius;
+	mins_z = startPos_z - streamRadius;
+	
+	maxs_x = startPos_x + streamRadius;
+	maxs_y = startPos_y + streamRadius;
+	maxs_z = startPos_z + streamRadius;
+	
+	float count = vehicle.entitiesInBounds( mins, maxs, MASK_PROJECTILE, 1 );
+	
+	entity ent;
+	vector targetDir;
+	float i;
+	float angleRange = sys.cos( streamArc * 0.5f );
+	
+	for ( i = 0; i < count; i++ ) {
+		ent = vehicle.getBoundsCacheEntity( i );
+		
+		if ( ent == $null_entity ) {
+			continue;
+		}
+
+		targetDir = sys.vecNormalize( ent.getWorldOrigin() - startPos );
+
+		if ( ent == vehicle ) {
+			continue;
+		}
+
+		if ( targetDir * traceDir < angleRange ) {
+			continue;
+		}
+		
+		ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, 1.f, $null_entity );
+	}
+	
+	if ( !streamEffectHandle ) {
+		streamEffectHandle = vehicle.playJointEffectViewSuppress( "fx_flamethrower_stream", jointHandle, 1, 0 );
+	}
+
+	if( sys.getTime() > nextFiringSound ) {
+		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_flamethrower_stream", SND_WEAPON_FIRE );
+	}
+	//vehicle.fadeSound( SND_WEAPON_FIRE, -60.0f, 0.25f );
+	
+/*	if ( !streamEffect ) {
+		//streamEffect = playOriginEffect( "fx_flamethrower_stream", "", startPos, traceDir, 1 );
+		streamEffect = vehicle.playJointEffect( "fx_flamethrower_stream", jointHandle, 1 );
+	}*/
+	//playOriginEffect( "fx_flamethrower_stream", "", startPos, traceDir, 1 );
+
+/*
+	vector traceEnd = getMeleeEndPos();
+	vector startPos = myPlayer.getViewOrigin();
+	vector dir = traceEnd - startPos;
+	dir = sys.vecNormalize( dir );
+	
+	float traceFraction = getMeleeFraction();
+	vector traceNormal = getMeleeNormal();
+
+	entity collisionEnt = getMeleeEntity();
+	string collisionSurface = getMeleeSurfaceType();
+
+	if ( doDamage ) {
+		if ( collisionEnt != $null_entity ) {
+			// TODO: This could possibly be done with meleeAttack instead
+			object traceObject = saveMeleeTrace();
+			collisionEnt.applyDamage( self, myPlayer, dir, lightningDamage, 1.f - getMeleeFraction(), traceObject );
+			sys.freeTrace( traceObject );
+
+			spawnClientCrawlEffect( "fx_crawl", collisionEnt, 0.5 );
+		}
+		
+		UseAmmo_Stroyent( 0 );
+
+		AddHeat();
+	}
+	sys.disablePlayerHeadModels();*/
+
+	//UpdateLightningEffect( traceEnd, dir, traceFraction, traceNormal );
+}
+
+void vehicle_weapon_streamshot::UpdateLightningEffect( vector hitPos, vector hitDir, float traceFraction, vector traceNormal ) {
+	/*vector muzzlePos;
+
+	if ( !sys.doClientSideStuff() ) {
+		return;
+	}
+
+	if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+		muzzlePos = worldModel.getJointPos( worldMuzzle );
+		if ( effect != $null_entity ) {
+			effect.unbind();
+			effect.setOrigin( muzzlePos );
+		}
+	} else {
+		if ( effect != $null_entity ) {
+			effect.unbind();
+			effect.setOrigin( '0 0 0' );
+			effect.bindToJoint( self, "muzzle", 0 );
+		}
+		muzzlePos = getJointPos( localMuzzle );
+	}
+
+	vector dir = hitPos - muzzlePos;
+	vector angles;
+	
+	float len = sys.vecLengthSquared( dir );
+	dir = sys.vecNormalize( dir );
+	float dp = dir * hitDir;
+	if ( len < 1500 || dp < 0.f ) {
+		dir = hitDir;
+	} else
+	if ( len < 2000 ) {
+		float blend = (len - 1500) / 500;
+		dir = dir * blend + hitDir * (1-blend);
+	}
+	
+	// the beam
+	if ( effect != $null_entity ) {
+		effect.setEffectEndOrigin( hitPos );
+		
+		angles = sys.vecToAngles( dir );
+		effect.setAngles( angles );
+	}
+	
+	// impact effect
+	if ( traceFraction < 1.0f ) {
+		if ( effectImpact == $null_entity ) {
+			effectImpact = spawnClientEffect( "fx_lightning_hit" );
+			if ( effectImpact != $null_entity ) {
+				effectImpact.setEffectLooping( 1 );
+			}
+		}
+	} else {
+		if ( effectImpact != $null_entity ) {
+			effectImpact.remove();
+		}
+	}
+	
+	if ( effectImpact != $null_entity ) {
+		effectImpact.setOrigin( hitPos );
+		
+		if ( traceFraction < 1.0f ) {
+			dir = traceNormal;
+		} else {
+			dir = -dir;
+		}
+		
+		angles = sys.vecToAngles( dir );
+		effectImpact.setAngles( angles );
+	}*/
+}

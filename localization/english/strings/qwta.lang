@@ -17,6 +17,9 @@
 	"#str_qwta_00000033" "%b^0 &lbrAbaddon&rbr %a"
 	"#str_qwta_00000034" "&lbrAbaddon&rbr %a"
 	"#str_qwta_00000035" "%b^1 &lbrAbaddon&rbr ^0%a"
+	"#str_qwta_00000042" "%b^0 &lbrFlamethrower&rbr %a"
+	"#str_qwta_00000043" "^1&lbrFlamethrower&rbr ^0%a"
+	"#str_qwta_00000044" "%b^1 &lbrFlamethrower&rbr ^0%a"
 	
 	// Chat
 	"#str_qwta_00000002" "Request Armadillo"
@@ -59,4 +62,7 @@
 	"#str_qwta_00000030"	"Tactical"
 	"#str_qwta_00000031"	"Set Tactical Mode"
 	"#str_qwta_00000032"	"Set Tactical Mode: %a[tactical name]?"
+	
+	// Weapons
+	"#str_qwta_00000041"	"Flamethrower"
 }

@@ -47,7 +47,7 @@ void vehicle_abaddon::OnWeaponSelected( entity p, float index ) {
 	if ( index == 0 ) {
 		FireDecoy( p );
 	} else if ( index == 1 ) {
-		selectVehicleWeapon( p, "hyperblaster" );
+		selectVehicleWeapon( p, "flamethrower" );
 	} else if ( index == 2 ) {
 		selectVehicleWeapon( p, "plasmacannon" );
 	}

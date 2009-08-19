@@ -1,4 +1,4 @@
-// str_qwta_00000040
+// str_qwta_00000044
 
 /*
 =================
@@ -186,6 +186,22 @@ locString game/obit/abaddon_team {
 	text "#str_qwta_00000035" // "%b^1 [Abaddon] ^7%a"
 }
 
+locString game/obit/flamethrower {
+	text "#str_qwta_00000042" // "%b^0 [Flamethrower] %a"
+}
+
+locString game/obit/flamethrower_self {
+	text "#str_qwta_00000043" // "^1[Flamethrower] ^0%a"
+}
+
+locString game/obit/flamethrower_unknown {
+	text "#str_qwta_00000043" // "^1[Flamethrower] ^0%a"
+}
+
+locString game/obit/flamethrower_team {
+	text "#str_qwta_00000044" // "%b^1 [Flamethrower] ^0%a"
+}
+
 /*
 ==================
  Tooltips
@@ -216,4 +232,14 @@ locString votes/settactical {
 
 locString votes/settactical/text {
 	text "#str_qwta_00000032" // "Set Tactical Mode: %a[tactical name]?"
+}
+
+/*
+=========
+ Weapons
+=========
+*/
+
+locString game/weapons/flamethrower {
+	text "#str_qwta_00000041" // "Flamethrower"
 }

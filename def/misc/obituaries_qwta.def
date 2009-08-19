@@ -38,12 +38,9 @@ Strogg Weapons
 ==================
 */
 
-/*
- * From original obituaries.def:
-tooltip tooltips/killmsgs/weapons/hyperblaster {
-	text "game/obit/hyper"
+tooltip tooltips/killmsgs/weapons/flamethrower {
+	text "game/obit/flamethrower"
 }
-*/
 
 /*
 ==================
@@ -59,18 +56,23 @@ tooltip tooltips/killmsgs/weapons/hyperblaster/unknown {
 	text "game/obit/hyper_unknown"
 }
 
+tooltip tooltips/killmsgs/weapons/flamethrower/self {
+	text "game/obit/flamethrower_self"
+}
+
+tooltip tooltips/killmsgs/weapons/flamethrower/unknown {
+	text "game/obit/flamethrower_unknown"
+}
+
 /*
 ==================
 Strogg Weapons Teamkills
 ==================
 */
 
-/*
- * From original obituaries.def:
-tooltip tooltips/killmsgs/weapons/hyperblaster/teamkill {
-	text "game/obit/hyper_team"
+tooltip tooltips/killmsgs/weapons/flamethrower/teamkill {
+	text "game/obit/flamethrower_team"
 }
-*/
 
 /*
 ==================

@@ -213,6 +213,9 @@ entityDef vehicle_abaddon {
 	"qc_spotted"					"quickchat/context/attack/armorspotted"
 	
 	"validate_drop"					"1"
+	
+	"fx_flamethrower_stream"		"effects/weapons/flamethrower/stream"
+	"snd_flamethrower_stream"		"sounds/weapons/flamethrower/stream"
 }
 
 damageDef damage_abaddon_collide {
