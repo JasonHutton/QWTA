@@ -1,0 +1,231 @@
+effect effects/weapons/flamethrower/stream
+{
+	size	1039
+
+	emitter "Flame1"
+	{
+		duration	1,1
+		count		60,60
+
+		sprite
+		{
+			duration	3,5
+			blend	add
+			persist
+			material	"particles/fire4a"
+			trailRepeat	1
+
+			start
+			{
+				position { line -1,-1,-1,1,1,1 }
+				velocity { point 360,0,0 }
+				acceleration { box 30,30,30,-30,-30,-30 }
+				size { point 10,10 }
+				tint { line 0.941176,0.27451,0.184314,0.847059,0.301961,0.0666667 }
+				fade { point 0 }
+				rotate { box -0.125,0.125 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope shamus_exp_1minusx/x2 count 2,2,2 }
+				fade { envelope shamus_fastinholdslowout offset 0.025 }
+				offset { envelope shamus_exp_1minusx/x2 count 4,4,4 offset -0.025,-0.025,-0.025 }
+				rotate { envelope shamus_exp_1minusx/x2 count 2 }
+			}
+
+			end
+			{
+				size { point 60,60 }
+				tint { point 0.14902,0.0627451,0.0627451 }
+				fade { line 0.7,1 }
+				offset { point 0,0,0 }
+				rotate { box -1,1 relative }
+			}
+
+			impact
+			{
+				remove	1
+			}
+			lineHit
+		}
+	}
+	emitter "Flame2"
+	{
+		duration	1,1
+		count		10,10
+		attenuateEmitter
+		attenuation	3000,3000
+
+		sprite
+		{
+			duration	3,5
+			blend	add
+			persist
+			material	"particles/fire4a"
+			trailRepeat	1
+
+			start
+			{
+				position { line -1,-1,-1,1,1,1 }
+				velocity { point 360,0,0 }
+				acceleration { box 30,30,30,-30,-30,-30 }
+				size { point 10,10 }
+				tint { line 1,1,0.501961,1,1,0 }
+				fade { point 0 }
+				rotate { box -0.125,0.125 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope shamus_exp_1minusx/x2 count 2,2,2 }
+				fade { envelope shamus_fastinholdslowout offset 0.025 }
+				offset { envelope shamus_exp_1minusx/x2 count 4,4,4 offset -0.025,-0.025,-0.025 }
+				rotate { envelope shamus_exp_1minusx/x2 count 2 }
+			}
+
+			end
+			{
+				size { point 60,60 }
+				tint { point 1,0.501961,0.25098 }
+				fade { line 0.7,1 }
+				offset { point 0,0,0 }
+				rotate { box -1,1 relative }
+			}
+
+			impact
+			{
+				remove	1
+			}
+			lineHit
+		}
+	}
+	spawner "afterburn"
+	{
+		start		0.2,0.2
+		count		1,1
+		attenuateEmitter
+		attenuation	1200,1400
+
+		sprite
+		{
+			duration	0.5,0.6
+			blend	add
+			persist
+			material	"particles/explosion/explode07"
+			trailRepeat	1
+
+			start
+			{
+				position { line 0,0,0,50,0,0 cone }
+				velocity { box 340,0,0,380,0,0 }
+				size { box 10,10,40,40 }
+				tint { point 0.894118,0.619608,0.313726 }
+				offset { line 0,0,0,50,0,0 }
+				rotate { box -1,1 }
+			}
+
+			motion
+			{
+				tint { envelope rr2_concavefade_start_at_1 }
+				rotate { envelope convexfade count 99 }
+			}
+
+			end
+			{
+				rotate { box 1,-1 }
+			}
+
+			impact
+			{
+				remove	1
+			}
+			lineHit
+		}
+	}
+	emitter "flash"
+	{
+		duration	1,1
+		count		7,7
+		attenuateEmitter
+		attenuation	1200,1400
+
+		sprite
+		{
+			duration	0.7,0.7
+			persist
+			material	"textures/particles/flash"
+			trailRepeat	1
+
+			start
+			{
+				velocity { point 250,0,0 }
+				size { point 5,5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+			}
+
+			end
+			{
+				size { point 30,30 }
+			}
+
+			impact
+			{
+				remove	1
+			}
+			lineHit
+		}
+	}
+	emitter "smoke4"
+	{
+		duration	1,1
+		count		9,18
+		attenuateEmitter
+		attenuation	1500,1500
+
+		sprite
+		{
+			duration	5,10
+			persist
+			material	"textures/particles/smoke_test1"
+			windDeviationAngle 50.000000
+			gravity		-0.5,-0.5
+			trailRepeat	1
+
+			start
+			{
+				velocity { point 70,0,0 }
+				friction { point 1,0,0 }
+				size { line 30,30,40,40 }
+				tint { line 0,0,0,0.239216,0.239216,0.239216 }
+				fade { point 0 }
+				windStrength { point 0.2 }
+				rotate { box -0.125,0.125 }
+			}
+
+			motion
+			{
+				size { envelope jrad_concavefade }
+				tint { envelope convexfade count 2,2,2 offset -0.2,-0.2,-0.2 }
+				fade { envelope shamus_fastinslowout offset 0.04 }
+				rotate { envelope convexfade }
+			}
+
+			end
+			{
+				size { line 70,70,120,120 }
+				tint { point 0.313726,0.313726,0.313726 }
+				fade { line 0.8,1 }
+				rotate { box -0.527778,0.527778 relative }
+			}
+			lineHit
+		}
+	}
+}
+
