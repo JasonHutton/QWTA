@@ -640,17 +640,13 @@ stringMap vehicle_abaddon_weapon1 {
 	"gunJointShoulder"			"turret_1"
 
 	"muzzle"					"blaster_muzzle"
-	"muzzle_tracer"				"fx_hyperblaster_tracer"
-	"muzzle_flash"				"fx_hyperblaster_muzzle"
-	"muzzle_sound"				"fx_hyperblaster_fire"
-	"muzzle_sound_local"		"fx_hyperblaster_fire"
 
 	"velocity"					"1 0 0"
 	"fire_rate"					"0.08"
 	"fire_rate2"				"0.12"
-	"fire2_delay"				"1.0"
+	"fire2_delay"				"0.5"
 	"spread"					"5"
-	"scriptobject"				"vehicle_weapon_streamshot"
+	"scriptobject"				"vehicle_weapon_flamethrower"
 	
 	"dmg_stream"				"damage_flamethrower_stream"
 	

@@ -1,0 +1,102 @@
+
+object vehicle_weapon_flamethrower : vehicle_weapon_streamshot {
+	void				preinit();
+	void				init();
+
+	void				DoStream( boolean doDamage );
+	void				DoParticleSpew( vector startPos, vector traceDir );
+	
+	void				Cleanup( boolean bCleanMuzzleToo );
+
+	float				fireRate;
+	float				fireRate2;
+	float				fire2Delay;
+
+	float				nextFire2Time;
+	float				firingBegan;
+}
+
+void vehicle_weapon_flamethrower::preinit() {
+	fireRate				= getFloatKey( "fire_rate" );
+	fireRate2				= getFloatKey( "fire_rate2" );
+	fire2Delay				= getFloatKey( "fire2_delay" );
+
+	nextFire2Time			= 0;
+	firingBegan				= 0;
+}
+
+void vehicle_weapon_flamethrower::init() {
+}
+
+void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
+//	fired();
+
+//	float mask = MASK_PROJECTILE | MASK_SHOT_BOUNDINGBOX;
+//	if ( sys.isClient() ) {
+//		mask = mask | CONTENTS_WATER;
+//	}
+//	sys.enablePlayerHeadModels();
+
+	vector startPos = vehicle.getJointPos( jointHandle );
+	vector traceDir = vehicle.getJointAxis( jointHandle, 0 );
+	vector endPos = startPos + ( traceDir * streamRadius );
+
+	vector mins, maxs;
+	mins_x = startPos_x - streamRadius;
+	mins_y = startPos_y - streamRadius;
+	mins_z = startPos_z - streamRadius;
+	
+	maxs_x = startPos_x + streamRadius;
+	maxs_y = startPos_y + streamRadius;
+	maxs_z = startPos_z + streamRadius;
+	
+	float count = vehicle.entitiesInBounds( mins, maxs, MASK_PROJECTILE, 1 );
+	
+	float i;
+	float angleRange = sys.cos( streamArc * 0.5f );
+	
+	for ( i = 0; i < count; i++ ) {
+		entity ent = vehicle.getBoundsCacheEntity( i );
+		
+		if ( ent == $null_entity ) {
+			continue;
+		}
+
+		vector targetDir = sys.vecNormalize( ent.getWorldOrigin() - startPos );
+
+		if ( ent == vehicle ) {
+			continue;
+		}
+
+		if ( targetDir * traceDir < angleRange ) {
+			continue;
+		}
+		
+		if ( doDamage ) {
+			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, 1.f, $null_entity );
+		}
+	}
+
+	// AddHeat();
+	// sys.disablePlayerHeadModels()
+
+	UpdateStreamEffect();
+	DoParticleSpew( startPos, traceDir );
+}
+
+void vehicle_weapon_flamethrower::DoParticleSpew( vector startPos, vector traceDir ) {
+	if ( !firingBegan ) {
+		firingBegan = sys.getTime();
+	}
+
+	if( (sys.getTime() - firingBegan) > fire2Delay && sys.getTime() > nextFire2Time ) {
+		vehicle.launchMissileSimple( user, vehicle, $null_entity, projectileIndex, -1, spread, startPos, traceDir * ((sys.random( 4.0f ) + 0.1f) * 200) );
+		nextFire2Time = sys.getTime() + fireRate2;
+	}
+}
+	
+void vehicle_weapon_flamethrower::Cleanup( boolean bCleanMuzzleToo ) {
+	Cleanup_Base( bCleanMuzzleToo );
+
+	firingBegan		= 0;
+}
