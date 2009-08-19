@@ -242,22 +242,20 @@ effect effects/weapons/flamethrower/stream
 			lineHit
 		}
 	}
-}
-
-effect effects/weapons/flamethrower/splash
+}effect effects/weapons/flamethrower/splash
 {
 	size	589
 
 	emitter "flames 2"
 	{
-		start		0,1
-		duration	1,1
+		start		0,0.1
+		duration	0.2,0.2
 		count		4,8
 		locked
 
 		sprite
 		{
-			duration	0.5,1.5
+			duration	1,1.5
 			persist
 			material	"particles/penta/flames"
 			windDeviationAngle 180.000000
@@ -293,13 +291,13 @@ effect effects/weapons/flamethrower/splash
 	}
 	emitter "flames 3"
 	{
-		duration	1,1
+		duration	0.2,0.2
 		count		4,8
 		locked
 
 		sprite
 		{
-			duration	0.5,1.5
+			duration	1,1.5
 			persist
 			material	"particles/penta/flames2"
 			windDeviationAngle 180.000000
@@ -335,14 +333,13 @@ effect effects/weapons/flamethrower/splash
 	}
 	emitter "edges 1"
 	{
-		start		0.25,0.25
-		duration	1,1
+		duration	0.2,0.2
 		count		2,4
 		locked
 
 		sprite
 		{
-			duration	2,3
+			duration	2,6
 			blend	add
 			persist
 			material	"particles/cells_a"
@@ -354,7 +351,7 @@ effect effects/weapons/flamethrower/splash
 				position { line -5,-50,-50,5,50,50 }
 				velocity { box -15,0,-15,15,0,15 }
 				angle { box 0,0,0,0,0,1 }
-				size { line 40,30,60,50 }
+				size { point 30,30 }
 				tint { line 0.87451,0.439216,0,0.25098,0,0 }
 				fade { line 1,0.75 }
 				offset { line 0,-2,-2,0,2,2 }
@@ -379,14 +376,13 @@ effect effects/weapons/flamethrower/splash
 	}
 	emitter "edges 2"
 	{
-		start		0.25,0.25
-		duration	1,1
+		duration	0.2,0.2
 		count		2,4
 		locked
 
 		sprite
 		{
-			duration	2,3
+			duration	2,6
 			persist
 			material	"particles/cells_a"
 			generatedNormal
@@ -397,7 +393,7 @@ effect effects/weapons/flamethrower/splash
 				position { line -5,-75,-75,10,75,75 }
 				velocity { box -30,0,-30,30,0,30 }
 				angle { box 0,0,0,0,0,1 }
-				size { line 40,30,60,50 }
+				size { point 5,5 }
 				tint { point 0,0,0 }
 				offset { line 0,-2,-2,0,2,2 }
 			}
@@ -418,59 +414,15 @@ effect effects/weapons/flamethrower/splash
 			lineHit
 		}
 	}
-	emitter "spark3"
-	{
-		detail		0.5
-		duration	1,1
-		count		10,20
-		locked
-		attenuateEmitter
-		attenuation	1000,1000
-
-		sprite
-		{
-			duration	3,4
-			persist
-			material	"textures/particles/spark3"
-			gravity		-0.6,-0.04
-			trailRepeat	1
-
-			start
-			{
-				position { sphere -25,-50,-50,25,50,50 }
-				velocity { box 10,0,0,20,0,0 }
-				angle { box 0,0,0,1,1,1 }
-				acceleration { point 1,0,0 }
-				size { line 1,0.5,2,1 }
-				tint { line 0.501961,0,0,1,1,0.501961 }
-				fade { point 0.1 }
-				offset { box 0,-50,-50,0,50,50 }
-			}
-
-			motion
-			{
-				size { envelope linear }
-				tint { envelope linear }
-				angle { envelope linear }
-			}
-
-			end
-			{
-				size { box 2,1,4,2 }
-				angle { box -0.333333,-0.333333,-0.333333,0.333333,0.333333,0.333333 }
-			}
-			lineHit
-		}
-	}
 	emitter "glow"
 	{
-		duration	1,1
+		duration	0.2,0.2
 		count		2,4
 		locked
 
 		sprite
 		{
-			duration	3,6
+			duration	2,6
 			persist
 			material	"particles/karateka/simple_smoke_alpha"
 			generatedNormal
@@ -480,14 +432,14 @@ effect effects/weapons/flamethrower/splash
 			{
 				position { point 0,0,0 cone }
 				velocity { box -90,0,-90,90,0,90 }
-				size { line 50,50,60,60 attenuate }
+				size { point 5,5 attenuate }
 				tint { point 0,0,0 }
 				fade { point 0 }
 			}
 
 			motion
 			{
-				size { envelope linear }
+				size { envelope fastinslowout }
 				tint { envelope fastinslowout }
 				fade { envelope fastinslowout }
 				rotate { envelope linear }
@@ -504,3 +456,5 @@ effect effects/weapons/flamethrower/splash
 		}
 	}
 }
+
+
