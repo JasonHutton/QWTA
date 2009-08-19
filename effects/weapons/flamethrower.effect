@@ -244,8 +244,53 @@ effect effects/weapons/flamethrower/stream
 	}
 }effect effects/weapons/flamethrower/splash
 {
-	size	589
+	size	1238
 
+	emitter "smoke5"
+	{
+		duration	0.1,0.1
+		count		9,9
+		attenuateEmitter
+		attenuation	2000,3000
+
+		sprite
+		{
+			duration	5,15
+			persist
+			material	"textures/particles/smoke_test1"
+			windDeviationAngle 50.000000
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -30,-30,-25,-30,25,25 }
+				velocity { point 35,0,0 }
+				friction { point 1,0,0 }
+				size { line 50,50,70,70 }
+				tint { line 0.960784,0.337255,0.0392157,0.980392,0.501961,0.0196078 }
+				fade { point 0 }
+				windStrength { line 0.25,0.35 }
+				rotate { box -1,1 }
+			}
+
+			motion
+			{
+				size { envelope jrad_concavefade }
+				tint { envelope convexfade count 4,4,4 }
+				fade { envelope breathtable count 0.85 offset 0.18 }
+				rotate { envelope convexfade }
+			}
+
+			end
+			{
+				size { line 120,120,160,160 }
+				tint { line 0,0,0,0.27451,0.27451,0.27451 }
+				fade { line 0.5,1 }
+				rotate { box 1,-1 relative }
+			}
+			lineHit
+		}
+	}
 	emitter "flames 2"
 	{
 		start		0,0.1
@@ -455,14 +500,16 @@ effect effects/weapons/flamethrower/stream
 			lineHit
 		}
 	}
-}effect effects/weapons/flamethrower/burn
+}
+
+effect effects/weapons/flamethrower/burn
 {
 	size	1089
 
 	emitter "smoke5"
 	{
-		duration	1,1
-		count		3,3
+		duration	0.1,0.1
+		count		9,9
 		attenuateEmitter
 		attenuation	2000,3000
 
@@ -728,8 +775,8 @@ effect effects/weapons/flamethrower/napalm
 	emitter "smoke5"
 	{
 		start		0.25,0.25
-		duration	3,3
-		count		7,7
+		duration	0.2,0.2
+		count		30,30
 		attenuateEmitter
 		attenuation	1000,1500
 
@@ -773,7 +820,7 @@ effect effects/weapons/flamethrower/napalm
 	}
 	emitter "firetrail3"
 	{
-		duration	3,3
+		duration	0.2,0.2
 		count		40,40
 		attenuateEmitter
 		attenuation	1000,1500
@@ -828,6 +875,8 @@ effect effects/weapons/flamethrower/napalm
 		}
 	}
 }
+
+
 
 
 
