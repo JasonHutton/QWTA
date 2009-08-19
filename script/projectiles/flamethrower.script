@@ -1,0 +1,48 @@
+
+object projectile_flamethrower_napalm : projectile_grenade {
+	
+	void		preinit();
+	void		OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint );
+	void			OnPostThink();
+	void		DoWaterExplosion( vector position, string surfaceType, vector normal );
+	void		DoExplodeEffect( entity collisionEnt );
+	
+	handle		fxBurnHandle;
+}
+
+void projectile_flamethrower_napalm::preinit() {
+	fxBurnHandle = 0;
+}
+
+void projectile_flamethrower_napalm::OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint ) {
+	ProjectileMissile_OnStick( collisionEnt, collisionNormal, surfaceType, joint );
+	
+	if(!fxBurnHandle) {
+		fxBurnHandle = playEffect( "fx_burn", "", 1 );
+	}
+}
+
+void projectile_flamethrower_napalm::OnPostThink() {
+	if ( isBound() ) {
+		forceRunPhysics();
+	}
+	
+	if ( isInWater() && !fxBurnHandle ) {
+		fxBurnHandle = playEffect( "fx_burn", "", 1 );
+	}
+	
+	if ( stuck || isInWater() ) {
+		DoRadiusDamage();
+	}
+}
+
+void projectile_flamethrower_napalm::DoWaterExplosion( vector position, string surfaceType, vector normal ) {
+}
+
+void projectile_flamethrower_napalm::DoExplodeEffect( entity collisionEnt ) {
+	float removeDelay;
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+
+	ScheduleRemoval( removeDelay );
+}

@@ -647,15 +647,21 @@ stringMap vehicle_abaddon_weapon1 {
 
 	"velocity"					"1 0 0"
 	"fire_rate"					"0.08"
-	"spread"					"1"
+	"fire_rate2"				"0.12"
+	"fire2_delay"				"1.0"
+	"spread"					"5"
 	"scriptobject"				"vehicle_weapon_streamshot"
 	
 	"dmg_stream"				"damage_flamethrower_stream"
 	
 	"stream_radius"				"1024"
 	"stream_arc"				"30"
+	
+	"def_projectile"			"projectile_flamethrower_napalm"
 
 	"crosshair"					"nospread"
+	
+	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }
 
 stringMap vehicle_abaddon_weapon2 {

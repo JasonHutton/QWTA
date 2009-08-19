@@ -1,4 +1,54 @@
 
+entityDef projectile_flamethrower_napalm {
+	"inherit"							"projectile_grenade"
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_flamethrower_napalm"
+
+	"aor_layout"						"missile"
+	"model"								""
+
+	"mins"								"-1 -1 -1"
+	"maxs"								"1 1 1"
+	
+	"dmg_splash_damage"					"damage_flamethrower_napalm"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"linear_friction"					"0"
+	"angular_friction"					"0"
+	"contact_friction"					"0"
+	"bounce"							"0"
+	"mass"								"10"
+	"gravity"							"600"
+	"fuse"								"4"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_death"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+	
+	"collection_mdfExport"				"mdfExport"
+	
+	"stick_on_contact"			"1"
+	"buoyancy"					"1"
+	"trailUnderWater"			"1"
+	
+	"has_postthink"					"1"
+	
+	"fx_burn"					"effects/weapons/flamethrower/burn"
+
+	"fx_trail"					"effects/weapons/flamethrower/napalm"
+	"fx_splash"					"effects/base/impact_water_large"
+
+	"snd_bounce"				""
+	"snd_stick"					""
+	
+	"removedelay"				"0"
+
+	//"fx_bounce_forcefield"		"effects/base/bullets/impact_forcefield"
+}
+
+
 damageDef damage_flamethrower_stream {
 		damage								"damage_flamethrower_stream"
 	
@@ -36,5 +86,37 @@ damageFilter damage_flamethrower_stream {
 	type {
 		target							"target_deployables_all"
 		damage							25
+	}
+}
+
+damageDef damage_flamethrower_napalm {
+	damage						"damage_flamethrower_napalm"
+	radius						50
+	knockback							3
+
+	push						10000
+
+	noheadshot
+
+	prof_damage							"desecrator_weapons"
+
+	stat_name							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/flamethrower"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/flamethrower/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/flamethrower/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
+}
+
+damageFilter damage_flamethrower_napalm {
+
+	type {
+		target							"target_player_all"
+		damage							1
+	}
+
+	type {
+		target							"target_all"
+		damage							0
 	}
 }
