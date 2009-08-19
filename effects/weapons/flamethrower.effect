@@ -455,12 +455,9 @@ effect effects/weapons/flamethrower/stream
 			lineHit
 		}
 	}
-}
-
-
-effect effects/weapons/flamethrower/burn
+}effect effects/weapons/flamethrower/burn
 {
-	size	267
+	size	322
 
 	emitter "smoke5"
 	{
@@ -609,7 +606,7 @@ effect effects/weapons/flamethrower/burn
 
 			start
 			{
-				position { line -5,-25,-25,5,25,25 }
+				position { line -5,-30,-30,5,30,30 }
 				velocity { box -8,0,-8,8,0,8 }
 				angle { box 0,0,0,0,0,1 }
 				size { point 15,15 }
@@ -628,7 +625,7 @@ effect effects/weapons/flamethrower/burn
 
 			end
 			{
-				size { line 30,20,50,30 }
+				size { line 45,40,70,55 }
 				tint { line 0,0,0,0.501961,0,0 }
 				angle { box 0,0,0,0,0,1 }
 			}
@@ -654,7 +651,7 @@ effect effects/weapons/flamethrower/burn
 				position { line -2,-40,-40,5,40,40 }
 				velocity { box -15,0,-15,15,0,15 }
 				angle { box 0,0,0,0,0,1 }
-				size { point 2,2 }
+				size { point 8,8 }
 				tint { point 0,0,0 }
 				offset { line 0,-2,-2,0,2,2 }
 			}
@@ -668,7 +665,7 @@ effect effects/weapons/flamethrower/burn
 
 			end
 			{
-				size { line 60,30,90,50 }
+				size { line 60,40,90,60 }
 				tint { line 0.501961,0.25098,0,0.25098,0,0 }
 				angle { box 0,0,0,0,0,1 }
 			}
@@ -692,8 +689,8 @@ effect effects/weapons/flamethrower/burn
 			start
 			{
 				position { point 0,0,0 cone }
-				velocity { box -45,0,-45,45,0,45 }
-				size { point 2,2 attenuate }
+				velocity { box -60,0,-60,60,0,60 }
+				size { point 8,8 attenuate }
 				tint { point 0,0,0 }
 				fade { point 0 }
 			}
@@ -726,19 +723,19 @@ effect effects/weapons/flamethrower/burn
 
 effect effects/weapons/flamethrower/napalm
 {
-	size	131
+	size	122
 
 	emitter "smoke5"
 	{
 		start		0.5,0.5
 		duration	3,3
-		count		6,6
+		count		15,15
 		attenuateEmitter
-		attenuation	2000,3000
+		attenuation	1000,1500
 
 		sprite
 		{
-			duration	2.5,5
+			duration	3,4
 			persist
 			material	"textures/particles/smoke_test1"
 			windDeviationAngle 50.000000
@@ -749,7 +746,7 @@ effect effects/weapons/flamethrower/napalm
 				position { sphere -2,-5,-3,-2,4,3 }
 				velocity { point 35,0,0 }
 				friction { point 1,0,0 }
-				size { line 20,20,35,35 }
+				size { line 6,6,10,10 }
 				tint { line 0.960784,0.337255,0.0392157,0.980392,0.501961,0.0196078 }
 				fade { point 0 }
 				windStrength { line 0.25,0.35 }
@@ -777,7 +774,7 @@ effect effects/weapons/flamethrower/napalm
 	emitter "firetrail3"
 	{
 		duration	3,3
-		count		80,80
+		count		40,40
 		attenuateEmitter
 		attenuation	1000,1500
 
@@ -791,8 +788,8 @@ effect effects/weapons/flamethrower/napalm
 			start
 			{
 				position { line 0,-2,-2,0,2,2 }
-				size { line 20,20,25,25 }
-				tint { line 0.686275,0.556863,0.494118,0.796078,0.509804,0.384314 }
+				size { line 7,7,10,10 }
+				tint { line 0.686275,0.556863,0.494118,0.792157,0.509804,0.384314 }
 				offset { point -5,0,0 }
 				rotate { box 0,1 }
 			}
@@ -831,4 +828,6 @@ effect effects/weapons/flamethrower/napalm
 		}
 	}
 }
+
+
 
