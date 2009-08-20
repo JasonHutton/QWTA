@@ -49,7 +49,7 @@ void vehicle_abaddon::OnWeaponSelected( entity p, float index ) {
 	} else if ( index == 1 ) {
 		selectVehicleWeapon( p, "flamethrower" );
 	} else if ( index == 2 ) {
-		selectVehicleWeapon( p, "plasmacannon" );
+		selectVehicleWeapon( p, "plasmabeam" );
 	}
 }
 

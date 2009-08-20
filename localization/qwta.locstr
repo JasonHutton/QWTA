@@ -1,4 +1,4 @@
-// str_qwta_00000044
+// str_qwta_00000048
 
 /*
 =================
@@ -202,6 +202,22 @@ locString game/obit/flamethrower_team {
 	text "#str_qwta_00000044" // "%b^1 [Flamethrower] ^0%a"
 }
 
+locString game/obit/plasmabeam {
+	text "#str_qwta_00000046" // "%b^0 [Plasma Beam] %a"
+}
+
+locString game/obit/plasmabeam_self {
+	text "#str_qwta_00000047" // "^1[Plasma Beam] ^0%a"
+}
+
+locString game/obit/plasmabeam_unknown {
+	text "#str_qwta_00000047" // "^1[Plasma Beam] ^0%a"
+}
+
+locString game/obit/plasmabeam_team {
+	text "#str_qwta_00000048" // "%b^1 [Plasma Beam] ^0%a"
+}
+
 /*
 ==================
  Tooltips
@@ -242,4 +258,8 @@ locString votes/settactical/text {
 
 locString game/weapons/flamethrower {
 	text "#str_qwta_00000041" // "Flamethrower"
+}
+
+locString game/weapons/plasmabeam {
+	text "#str_qwta_00000045" // "Plasma Beam"
 }

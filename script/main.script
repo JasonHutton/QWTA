@@ -259,6 +259,7 @@ This is the main script that is loaded before any level scripts load.
 #include "script/vehicles/weapons/chargeshot.script"
 #include "script/vehicles/weapons/streamshot.script"
 #include "script/vehicles/weapons/flamethrower.script"
+#include "script/vehicles/weapons/plasmabeam.script"
 
 // Items
 #include "script/items/smoke_grenade_qwta.script"

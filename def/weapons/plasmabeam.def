@@ -1,0 +1,40 @@
+
+damageDef damage_plasmabeam {
+		damage								"damage_plasmabeam"
+	
+		knockback							3
+		push								10000
+	
+		prof_damage							"desecrator_weapons"
+	
+		stat_name							"pro_vehicle_damage"
+	
+		knockback							10
+		kick_time							100
+		kick_amplitude						0
+		kickDir								( 1 0 0 )
+	
+		tt_obituary							"tooltips/killmsgs/weapons/plasmabeam"
+		tt_obituary_team_kill				"tooltips/killmsgs/weapons/plasmabeam/teamkill"
+		tt_obituary_self					"tooltips/killmsgs/weapons/plasmabeam/self"
+		tt_obituary_unknown					"tooltips/killmsgs/weapons/plasmabeam/unknown"
+}
+
+
+damageFilter damage_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							19
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							25
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							25
+	}
+}

@@ -579,51 +579,6 @@ entityDef part_vehicle_abaddon_rear_right_hover {
 
 //---------------------------------------------------------------------
 
-/*
-stringMap vehicle_abaddon_weapon1 {
-	"gunName"					"game/weapons/hyperblaster"
-	"weapon_name"				"hyperblaster"
-
-	"charge_max"				"10"
-	"charge_per_use"			"2"
-	"overheat_penalty"			"1"
-	"use_heat_bar"				"1"
-
-	"weapon1_muzzle"			"blaster_muzzle"
-
-	"gunJointYaw"				"blaster_base"
-	"gunJointPitch"				"blaster_turret"
-	"gunJointShoulder"			"turret_1"
-
-	"muzzle"					"blaster_muzzle"
-	"muzzle_tracer"				"fx_hyperblaster_tracer"
-	"muzzle_flash"				"fx_hyperblaster_muzzle"
-	"muzzle_sound"				"fx_hyperblaster_fire"
-	"muzzle_sound_local"		"fx_hyperblaster_fire"
-
-	"velocity"					"1 0 0"
-	"q4hyper_velocity"			"2500 0 0"
-	"fire_rate"					"0.08"
-	"q4hyper_fire_rate"			"0.16"
-	"spread"					"1"
-	"q4hyper_spread"			"1"
-	"scriptobject"				"vehicle_weapon_hyperblaster"
-	"def_projectile"			"projectile_hyperblaster_desecrator"
-	"client_projectile"			"projectile_hyperblaster_desecrator"
-	"q4hyper_projectile"		"projectile_hyperblaster_desecrator_qwta"
-	
-	"q4hyper_lock_enabled"		"1"
-	"q4hyper_lock_distance"		"8192"
-	"q4hyper_lock_filter"		"target_lock_filter_hyperblaster"
-	"q4hyper_lock_duration"		"0.25"
-
-	"q4hyper_snd_target_locking"	"sounds/weapons/misc/target_track_short"
-	"q4hyper_snd_target_locked"		"sounds/weapons/misc/target_lock"
-
-	"crosshair"					"nospread"
-}
-*/
-
 stringMap vehicle_abaddon_weapon1 {
 	"gunName"					"game/weapons/flamethrower"
 	"weapon_name"				"flamethrower"
@@ -660,6 +615,7 @@ stringMap vehicle_abaddon_weapon1 {
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }
 
+/*
 stringMap vehicle_abaddon_weapon2 {
 	"gunName"					"game/weapons/plasma_cannon"
 	"weapon_name"				"plasmacannon"
@@ -691,4 +647,35 @@ stringMap vehicle_abaddon_weapon2 {
 	"def_projectile"			"projectile_plasmacannon_desecrator"
 
 	"crosshair"					"nospread"
+}
+*/
+
+stringMap vehicle_abaddon_weapon2 {
+	"gunName"					"game/weapons/plasmabeam"
+	"weapon_name"				"plasmabeam"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"turret_muzzle"
+	"gunJointYaw"				"turret_1"
+	"gunJointPitch"				"turret_2"
+
+	"muzzle"					"turret_muzzle"
+	"muzzle_parent"				"turret_2"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08"
+	"scriptobject"				"vehicle_weapon_plasmabeam"
+
+	"dmg_stream"				"damage_plasmabeam"
+
+	"stream_radius"				"1024"
+	"stream_arc"				"30"
+
+	"crosshair"					"nospread"
+		
+	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }

@@ -20,6 +20,9 @@
 	"#str_qwta_00000042" "%b^0 &lbrFlamethrower&rbr %a"
 	"#str_qwta_00000043" "^1&lbrFlamethrower&rbr ^0%a"
 	"#str_qwta_00000044" "%b^1 &lbrFlamethrower&rbr ^0%a"
+	"#str_qwta_00000046" "%b^0 &lbrPlasma Beam&rbr %a"
+	"#str_qwta_00000047" "^1&lbrPlasma Beam&rbr ^0%a"
+	"#str_qwta_00000048" "%b^1 &lbrPlasma Beam&rbr ^0%a"
 	
 	// Chat
 	"#str_qwta_00000002" "Request Armadillo"
@@ -65,4 +68,5 @@
 	
 	// Weapons
 	"#str_qwta_00000041"	"Flamethrower"
+	"#str_qwta_00000045"	"Plasma Beam"
 }
