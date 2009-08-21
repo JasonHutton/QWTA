@@ -1,12 +1,12 @@
 
 object vehicle_weapon_plasmabeam : vehicle_weapon_streamshot {
-	void				UpdateStreamEffect();
+	void				UpdateStreamEffect( vector endOrigin );
 }
 
-void vehicle_weapon_plasmabeam::UpdateStreamEffect() {
+void vehicle_weapon_plasmabeam::UpdateStreamEffect( vector endOrigin ) {
 	
 	if ( !streamEffectHandle ) {
-		streamEffectHandle = vehicle.playJointEffect( "fx_plasmabeam_fire", jointHandle, 1 );
+		streamEffectHandle = vehicle.playClippedJointEffect( "fx_plasmabeam_fire", jointHandle, 1, endOrigin );
 	}
 
 	if( sys.getTime() > nextFiringSound ) {

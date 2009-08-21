@@ -935,6 +935,7 @@ protected:
 	void					Event_PlayEffectMaxVisDist( const char* effectName, const char* boneName, bool loop, float maxVisDist, bool isStatic );
 	void					Event_PlayJointEffect( const char* effectName, jointHandle_t joint, bool loop );
 	void					Event_PlayJointEffectViewSuppress( const char* effectName, jointHandle_t joint, bool loop, bool suppress );
+	void					Event_PlayClippedJointEffect( const char* effectName, jointHandle_t joint, bool loop, const idVec3& endOrigin );
 	void					Event_PlayOriginEffect( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop );
 	void					Event_PlayOriginEffectMaxVisDist( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop, float maxVisDist, bool isStatic );
 	void					Event_PlayBeamEffect( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& endOrigin, bool loop );

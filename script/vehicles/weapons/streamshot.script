@@ -9,8 +9,10 @@ object vehicle_weapon_streamshot : vehicle_weapon_base {
 
 	void				OnSetPlayer( entity p );
 	
+	float				GetAxisDistance( float start, float endmin, float endmax );
+	
 	void				DoStream( boolean doDamage );
-	void				UpdateStreamEffect();
+	void				UpdateStreamEffect( vector endOrigin );
 	
 	void				Cleanup( boolean bCleanMuzzleToo );
 	void				Cleanup_Base( boolean bCleanMuzzleToo );
@@ -176,6 +178,19 @@ void vehicle_weapon_streamshot::OnSetPlayer( entity p ) {
 	Cleanup( true );
 }
 
+float vehicle_weapon_streamshot::GetAxisDistance( float start, float endmin, float endmax ) {
+	float result;
+	if ( start < endmin ) {
+		result = endmin - start;
+	} else  if( start > endmax ) {
+		result = start - endmax;
+	} else {
+		result = 0.f;
+	}
+
+	return result;
+}
+
 void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 //	fired();
 
@@ -199,6 +214,12 @@ void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 	maxs_z = startPos_z + streamRadius;
 	
 	float count = vehicle.entitiesInBounds( mins, maxs, MASK_PROJECTILE, 1 );
+	/*
+	float traceFraction = sys.tracePoint( startPos, endPos, MASK_SHOT_RENDERMODEL, $null_entity );
+	vector endOrigin = endPos;
+	if( traceFraction < 1.0f ) {
+		endOrigin = sys.getTraceEndPos();
+	}*/
 	
 	float i;
 	float angleRange = sys.cos( streamArc * 0.5f );
@@ -220,6 +241,26 @@ void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 			continue;
 		}
 		
+		vector dist;
+		vector absMins = ent.getAbsMins();
+		vector absMaxs = ent.getAbsMaxs();
+		dist_x = GetAxisDistance( startPos_x, absMins_x, absMaxs_x );
+		dist_y = GetAxisDistance( startPos_y, absMins_y, absMaxs_y );
+		dist_z = GetAxisDistance( startPos_z, absMins_z, absMaxs_z );
+		
+		if ( sys.vecLength( dist ) >= streamRadius ) 
+		{
+			continue;
+		}
+		
+		if ( sys.tracePoint( ent.getWorldOrigin(), startPos, MASK_SHOT_RENDERMODEL, ent ) < 1.0f ) {
+			if ( sys.getTraceEntity() != vehicle ) {
+
+				continue;
+			}
+		}
+
+		
 		if ( doDamage ) {
 			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, 1.f, $null_entity );
 		}
@@ -228,10 +269,10 @@ void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 	// AddHeat();
 	// sys.disablePlayerHeadModels()
 
-	UpdateStreamEffect();
+	UpdateStreamEffect( endPos );
 }
 
-void vehicle_weapon_streamshot::UpdateStreamEffect() {
+void vehicle_weapon_streamshot::UpdateStreamEffect( vector endOrigin ) {
 	
 	if ( !streamEffectHandle ) {
 		streamEffectHandle = vehicle.playJointEffectViewSuppress( "fx_flamethrower_stream", jointHandle, 1, 0 );

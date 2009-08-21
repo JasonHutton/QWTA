@@ -288,6 +288,7 @@ scriptEvent void	syncCallback( string fieldName, string syncFuncName );
 scriptEvent handle	playMaterialEffect( string effectname, vector color, string jointname, string materialType, boolean loop );
 scriptEvent handle	playJointEffect( string effectname, float jointHandle, boolean loop );
 scriptEvent handle	playJointEffectViewSuppress( string effectname, float jointHandle, boolean loop, boolean suppress );
+scriptEvent handle	playClippedJointEffect( string effectname, float jointHandle, boolean loop, vector endOrigin );
 scriptEvent handle	playEffect( string effectname, string jointname, boolean loop );
 scriptEvent handle	playOriginEffect( string effectname, string materialType, vector origin, vector forward, boolean loop );
 

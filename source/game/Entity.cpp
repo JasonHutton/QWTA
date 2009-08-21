@@ -164,6 +164,7 @@ const idEventDef EV_PlayEffect( "playEffect", 'h', DOC_TEXT( "Looks up an effect
 const idEventDef EV_PlayEffectMaxVisDist( "playEffectMaxVisDist", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 5, "If no joint is specified, the joint cannot be found, or the entity does not support animated models, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "s", "joint", "Name of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop.", "f", "maxVisDist", "Maximum distance the effect will be visible from.", "b", "isStatic", "Whether the particle effect is static or not" );
 const idEventDef EV_PlayJointEffect( "playJointEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 3, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop." );
 const idEventDef EV_PlayJointEffectViewSuppress( "playJointEffectViewSuppress", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 4, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop.", "b", "viewSuppress", "If set, the effect will inherit the view suppress setting from this entity, otherwise it will have no view supress settings." );
+const idEventDef EV_PlayClippedJointEffect( "playClippedJointEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 4, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop.", "v", "endorigin", "The end origin of the effect." );
 const idEventDef EV_PlayOriginEffect( "playOriginEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 5, "The key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.","s", "surfacetype", "$decl:surfaceType$ to look up any special effect from.", "v", "origin", "Origin to play the effect at in world space.", "v", "forward", "Forward vector to orientate the effect with in world space.", "b", "loop", "Whether the effect should be once only, or loop." );
 const idEventDef EV_PlayOriginEffectMaxVisDist( "playOriginEffectMaxVisDist", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 7, DOC_TEXT( "The key must start with 'fx_'." ), "s", DOC_TEXT( "key" ), DOC_TEXT( "Key to look up the $decl:effect$ from." ),"s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ), "v", DOC_TEXT( "origin" ), DOC_TEXT( "Origin to play the effect at in world space." ), "v", DOC_TEXT( "forward" ), DOC_TEXT( "Forward vector to orientate the effect with in world space." ), "b", DOC_TEXT( "loop" ), DOC_TEXT( "Whether the effect should be once only, or loop." ), "f", DOC_TEXT( "maxVisDist" ), DOC_TEXT( "Maximum distance the effect will be visible from." ), "b", DOC_TEXT( "isStatic" ), DOC_TEXT( "Whether the particle effect is static or not" ) );
 const idEventDef EV_PlayBeamEffect( "playBeamEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 5, DOC_TEXT( "The key must start with 'fx_'." ), "s", DOC_TEXT( "key" ), DOC_TEXT( "Key to look up the $decl:effect$ from." ),"s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ), "v", DOC_TEXT( "origin" ), DOC_TEXT( "Origin to play the effect at in world space." ), "v", DOC_TEXT( "endOrigin" ), DOC_TEXT( "End position for the beam." ), "b", DOC_TEXT( "loop" ), DOC_TEXT( "Whether the effect should be once only, or loop." ) );
@@ -371,6 +372,7 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_PlayEffectMaxVisDist,			idEntity::Event_PlayEffectMaxVisDist )
 	EVENT( EV_PlayJointEffect,				idEntity::Event_PlayJointEffect )
 	EVENT( EV_PlayJointEffectViewSuppress,	idEntity::Event_PlayJointEffectViewSuppress )
+	EVENT( EV_PlayClippedJointEffect,		idEntity::Event_PlayClippedJointEffect )
 	EVENT( EV_PlayOriginEffect,				idEntity::Event_PlayOriginEffect )
 	EVENT( EV_PlayOriginEffectMaxVisDist,	idEntity::Event_PlayOriginEffectMaxVisDist )
 	EVENT( EV_PlayBeamEffect,				idEntity::Event_PlayBeamEffect )
@@ -4382,6 +4384,19 @@ void idEntity::Event_PlayJointEffectViewSuppress( const char* effectName, jointH
 		eff->SetViewSuppress( suppress );
 	}
 
+	sdProgram::ReturnHandle( eff.GetSpawnId() );
+}
+
+/*
+================
+idEntity::Event_PlayClippedJointEffect
+
+TODO: Play on origin of an invalid handle is passed in like the normal play effect
+================
+*/
+void idEntity::Event_PlayClippedJointEffect( const char *effectName, jointHandle_t joint, bool loop, const idVec3& endOrigin ) {
+	rvClientEntityPtr< rvClientEffect > eff;
+	eff = PlayEffect( effectName, colorWhite.ToVec3(), NULL, joint, loop, endOrigin );
 	sdProgram::ReturnHandle( eff.GetSpawnId() );
 }
 

@@ -676,6 +676,6 @@ stringMap vehicle_abaddon_weapon2 {
 	"stream_arc"				"30"
 
 	"crosshair"					"nospread"
-		
+			
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }

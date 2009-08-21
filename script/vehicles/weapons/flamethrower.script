@@ -51,6 +51,12 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 	maxs_z = startPos_z + streamRadius;
 	
 	float count = vehicle.entitiesInBounds( mins, maxs, MASK_PROJECTILE, 1 );
+	/*
+		float traceFraction = sys.tracePoint( startPos, endPos, MASK_SHOT_RENDERMODEL, $null_entity );
+		vector endOrigin = endPos;
+		if( traceFraction < 1.0f ) {
+			endOrigin = sys.getTraceEndPos();
+	}*/
 	
 	float i;
 	float angleRange = sys.cos( streamArc * 0.5f );
@@ -71,6 +77,24 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 		if ( targetDir * traceDir < angleRange ) {
 			continue;
 		}
+		vector dist;
+		vector absMins = ent.getAbsMins();
+		vector absMaxs = ent.getAbsMaxs();
+		dist_x = GetAxisDistance( startPos_x, absMins_x, absMaxs_x );
+		dist_y = GetAxisDistance( startPos_y, absMins_y, absMaxs_y );
+		dist_z = GetAxisDistance( startPos_z, absMins_z, absMaxs_z );
+
+		if ( sys.vecLength( dist ) >= streamRadius ) 
+		{
+			continue;
+		}
+		
+		if ( sys.tracePoint( ent.getWorldOrigin(), startPos, MASK_SHOT_RENDERMODEL, ent ) < 1.0f ) {
+			if ( sys.getTraceEntity() != vehicle ) {
+				
+				continue;
+			}
+		}
 		
 		if ( doDamage ) {
 			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, 1.f, $null_entity );
@@ -80,7 +104,7 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 	// AddHeat();
 	// sys.disablePlayerHeadModels()
 
-	UpdateStreamEffect();
+	UpdateStreamEffect( endPos );
 	DoParticleSpew( startPos, traceDir );
 }
 
