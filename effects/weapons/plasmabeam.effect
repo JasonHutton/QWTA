@@ -34,6 +34,11 @@ effect effects/weapons/plasmabeam/fire
 			{
 				size { point 20 }
 			}
+
+			impact
+			{
+				remove	1
+			}
 			lineHit
 		}
 	}
@@ -68,6 +73,11 @@ effect effects/weapons/plasmabeam/fire
 			end
 			{
 				size { point 20 }
+			}
+
+			impact
+			{
+				remove	1
 			}
 			lineHit
 		}
@@ -109,10 +119,17 @@ effect effects/weapons/plasmabeam/fire
 				size { line 40,40,80,80 }
 				rotate { box -2.11111,2.11111 relative }
 			}
+
+			impact
+			{
+				remove	1
+			}
 			lineHit
 		}
 	}
 }
+
+
 
 
 
