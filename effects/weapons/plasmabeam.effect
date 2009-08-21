@@ -1,6 +1,6 @@
 effect effects/weapons/plasmabeam/fire
 {
-	size	7550
+	size	7545
 
 	emitter "core"
 	{
@@ -10,13 +10,15 @@ effect effects/weapons/plasmabeam/fire
 
 		line
 		{
-			duration	1,1
+			duration	0.5,0.5
 			material	"textures/effects/violator_beam"
+			fadeIn
 			trailRepeat	1
 
 			start
 			{
-				size { point 50 }
+				position { point -50,0,0 }
+				size { point 20 }
 				tint { line 0.34902,0.101961,0.0156863,0.27451,0.0784314,0.0156863 }
 				fade { point 0 }
 				length { point 7500,0,0 }
@@ -26,13 +28,11 @@ effect effects/weapons/plasmabeam/fire
 			{
 				size { envelope convexfade }
 				tint { envelope jrad_concavefade count 3,3,3 offset -2,-2,-2 }
-				fade { envelope shamus_fastinslowout }
 			}
 
 			end
 			{
-				size { point 50 }
-				fade { point 1 }
+				size { point 20 }
 			}
 			lineHit
 		}
@@ -45,13 +45,15 @@ effect effects/weapons/plasmabeam/fire
 
 		line
 		{
-			duration	1,1
+			duration	0.5,0.5
 			material	"textures/effects/violator_beam"
+			fadeIn
 			trailRepeat	1
 
 			start
 			{
-				size { point 50 }
+				position { point -50,0,0 }
+				size { point 20 }
 				tint { line 0.34902,0.101961,0.0156863,0.27451,0.0784314,0.0156863 }
 				fade { point 0 }
 				length { point 7500,0,0 }
@@ -61,20 +63,18 @@ effect effects/weapons/plasmabeam/fire
 			{
 				size { envelope convexfade }
 				tint { envelope jrad_concavefade count 3,3,3 offset -2,-2,-2 }
-				fade { envelope shamus_fastinslowout }
 			}
 
 			end
 			{
-				size { point 50 }
-				fade { point 1 }
+				size { point 20 }
 			}
 			lineHit
 		}
 	}
 	emitter "burn"
 	{
-		duration	1.3,1.3
+		duration	1,1
 		count		150,150
 		locked
 		attenuateEmitter
@@ -89,8 +89,9 @@ effect effects/weapons/plasmabeam/fire
 
 			start
 			{
+				position { point -50,0,0 }
 				velocity { box 5000,-50,-50,5000,50,50 }
-				size { line 30,30,100,100 }
+				size { line 10,10,40,40 }
 				tint { line 0.937255,0.556863,0.556863,0.427451,0.0627451,0.0627451 }
 				fade { line 0.3,0.7 }
 				rotate { box 2.11111,-2.11111 }
@@ -98,20 +99,22 @@ effect effects/weapons/plasmabeam/fire
 
 			motion
 			{
-				size { envelope linear }
+				size { envelope rain count 20,20 }
 				fade { envelope concavefade count 1.5 offset -0.5 }
 				rotate { envelope linear }
 			}
 
 			end
 			{
-				size { line 40,40,100,100 }
+				size { line 40,40,80,80 }
 				rotate { box -2.11111,2.11111 relative }
 			}
 			lineHit
 		}
 	}
 }
+
+
 
 
 
