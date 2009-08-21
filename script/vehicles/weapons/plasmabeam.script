@@ -6,7 +6,7 @@ object vehicle_weapon_plasmabeam : vehicle_weapon_streamshot {
 void vehicle_weapon_plasmabeam::UpdateStreamEffect() {
 	
 	if ( !streamEffectHandle ) {
-		streamEffectHandle = vehicle.playJointEffectViewSuppress( "fx_plasmabeam_fire", jointHandle, 1, 0 );
+		streamEffectHandle = vehicle.playJointEffect( "fx_plasmabeam_fire", jointHandle, 1 );
 	}
 
 	if( sys.getTime() > nextFiringSound ) {
