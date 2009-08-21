@@ -30,8 +30,9 @@ entityDef projectile_flamethrower_napalm {
 	"collection_mdfExport"				"mdfExport"
 	
 	"stick_on_contact"			"1"
-	"buoyancy"					"1"
+	"buoyancy"					"0"
 	"trailUnderWater"			"1"
+	"forcefield_weakbounce"			"1"
 	
 	"has_postthink"					"1"
 	
