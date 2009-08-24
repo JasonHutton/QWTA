@@ -133,7 +133,7 @@ effect effects/weapons/plasmabeam/fire
 
 	emitter "dirt smoke2"
 	{
-		duration	0.5,0.5
+		duration	1,1
 		count		4,7
 		attenuateEmitter
 		attenuation	800,1200
@@ -148,7 +148,7 @@ effect effects/weapons/plasmabeam/fire
 			start
 			{
 				position { sphere 0,-40,-40,20,40,40 }
-				velocity { box 10,-40,-40,20,40,40 }
+				velocity { box 10,-40,-40,40,40,40 }
 				size { line 60,60,70,70 }
 				tint { line 0.137255,0.129412,0.121569,0.337255,0.321569,0.282353 }
 				rotate { box 0,1 }
@@ -171,9 +171,8 @@ effect effects/weapons/plasmabeam/fire
 			lineHit
 		}
 	}
-	emitter "dirt streaks4"
+	spawner "dirt streaks4"
 	{
-		duration	0.5,0.5
 		count		7,7
 		attenuateEmitter
 		attenuation	400,700
@@ -188,8 +187,8 @@ effect effects/weapons/plasmabeam/fire
 
 			start
 			{
-				position { sphere -10,-50,-50,-10,50,50 }
-				velocity { box 20,0,0,30,0,0 }
+				position { sphere -10,-10,-10,-10,10,10 }
+				velocity { box 20,-25,-25,30,25,25 }
 				size { point 10 }
 				tint { point 0.2,0.2,0.2 }
 				fade { line 0.4,0.8 }
@@ -213,9 +212,8 @@ effect effects/weapons/plasmabeam/fire
 			lineHit
 		}
 	}
-	emitter "Chips"
+	spawner "Chips"
 	{
-		duration	0.5,0.5
 		count		5,5
 		attenuateEmitter
 		attenuation	300,500
@@ -258,9 +256,8 @@ effect effects/weapons/plasmabeam/fire
 			lineHit
 		}
 	}
-	emitter "dirt stones"
+	spawner "dirt stones"
 	{
-		duration	0.5,0.5
 		count		8,8
 		attenuateEmitter
 		attenuation	100,200
@@ -300,17 +297,26 @@ effect effects/weapons/plasmabeam/fire
 			lineHit
 		}
 	}
+	sound "Debris Sound"
+	{
+		start		0.15,0.15
+		soundShader	"sounds/weapons/impacts/debris_small"
+	}
 }
-
-
 
 effect effects/weapons/plasmabeam/impact_burn
 {
 	size	114
 
+	sound "Sizzle"
+	{
+		soundShader	"sounds/weapons/plasmabeam/sizzle_loop"
+		volume	0.1,0.1
+		freqshift	0.9,0.9
+	}
 	emitter "burn"
 	{
-		duration	0.6,0.6
+		duration	0.5,0.5
 		count		15,15
 		locked
 		attenuateEmitter
@@ -358,7 +364,6 @@ effect effects/weapons/plasmabeam/impact_burn
 		{
 			duration	1.8,1.8
 			blend	add
-			persist
 			material	"textures/particles/sparks/sparkflash03c"
 			trailRepeat	1
 
@@ -388,7 +393,6 @@ effect effects/weapons/plasmabeam/impact_burn
 		{
 			duration	1.8,1.8
 			blend	add
-			persist
 			material	"textures/particles/sparks/sparkflash03c"
 			trailRepeat	1
 
@@ -417,7 +421,6 @@ effect effects/weapons/plasmabeam/impact_burn
 		{
 			duration	1.8,1.8
 			blend	add
-			persist
 			material	"textures/particles/sparks/sparkflash03c"
 			trailRepeat	1
 
@@ -438,6 +441,8 @@ effect effects/weapons/plasmabeam/impact_burn
 		}
 	}
 }
+
+
 
 effect effects/weapons/plasmabeam/impact_liquid
 {
