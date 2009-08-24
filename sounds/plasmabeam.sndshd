@@ -1,0 +1,18 @@
+sound sounds/weapons/plasmabeam/fire_loop {
+	volume	-5
+	minDistance	25
+	maxDistance 175
+	looping
+	
+	sounds/weapons/plasmabeam/idle_05.wav
+}
+
+sound sounds/weapons/plasmabeam/sizzle_loop {
+	minDistance	1
+	maxDistance	30
+	volume		0
+	looping
+	
+	sounds/weapons/plasmabeam/loop_sizzleburn_01.ogg
+	sounds/weapons/plasmabeam/loop_sizzleburn_02.ogg
+}
