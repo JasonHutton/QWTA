@@ -1,15 +1,113 @@
 
 object vehicle_weapon_plasmabeam : vehicle_weapon_streamshot {
+	void				preinit();
+	
+	void				DoStream( boolean doDamage );
 	void				UpdateStreamEffect( vector endOrigin );
+	void				UpdateImpactEffect( vector startPos, vector endOrigin, vector normal, float surfFlags, string surfType, vector surfColor );
+	//void				UpdateStreamFizzleEffect( vector endOrigin, vector traceDir );
+	
+	void				Cleanup( boolean bCleanMuzzleToo );
+	
+	float				range;
+	vector				lastEndPos;
+	
+	object				effectImpact;
+}
+
+void vehicle_weapon_plasmabeam::preinit() {
+	range				= getFloatKey( "range" );
+	lastEndPos			= '0 0 0';
+}
+
+void vehicle_weapon_plasmabeam::DoStream( boolean doDamage ) {
+	boolean hit = false;
+//	fired();
+
+//	float mask = MASK_PROJECTILE | MASK_SHOT_BOUNDINGBOX;
+//	if ( sys.isClient() ) {
+//		mask = mask | CONTENTS_WATER;
+//	}
+//	sys.enablePlayerHeadModels();
+
+	vector startPos = vehicle.getJointPos( jointHandle );
+	vector traceDir = vehicle.getJointAxis( jointHandle, 0 );
+	vector endPos = startPos + ( traceDir * range );
+	
+	//float traceFraction = sys.trace( startPos, endPos, '1 1 1', '1 1 1', MASK_PROJECTILE|CONTENTS_WATER, $null_entity );
+	float traceFraction = sys.tracePoint( startPos, endPos, MASK_PROJECTILE|CONTENTS_WATER, vehicle );
+	if ( traceFraction < 1.0f ) {
+		endPos = sys.getTraceEndPos();
+		entity ent = sys.getTraceEntity();
+		hit = true;
+		if ( ent != $null_entity ) {
+			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, 1.f, $null_entity );
+		}
+	}
+
+	// AddHeat();
+	// sys.disablePlayerHeadModels()
+
+	UpdateStreamEffect( endPos );
+	if ( hit ) {
+		UpdateImpactEffect( startPos, endPos, sys.getTraceNormal(), sys.getTraceSurfaceFlags(), sys.getTraceSurfaceType(), sys.getTraceSurfaceColor() );
+	} else {
+		if ( effectImpact != $null_entity ) {
+			effectImpact.remove();
+		}
+	}
 }
 
 void vehicle_weapon_plasmabeam::UpdateStreamEffect( vector endOrigin ) {
 	
+	if ( !sys.doClientSideStuff() ) {
+		return;
+	}
+	
 	if ( !streamEffectHandle ) {
+		vector result;
+		result_x = lastEndPos_x - endOrigin_x;
+		result_y = lastEndPos_y - endOrigin_y;
+		result_z = lastEndPos_z - endOrigin_z;
+		if ( sys.vecLength( result ) > 64 ) {
+			vehicle.stopEffectHandle( streamEffectHandle );
+		}
 		streamEffectHandle = vehicle.playClippedJointEffect( "fx_plasmabeam_fire", jointHandle, 1, endOrigin );
 	}
 
 	if( sys.getTime() > nextFiringSound ) {
-		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_flamethrower_stream", SND_WEAPON_FIRE );
+		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_plasmabeam_fire_loop", SND_WEAPON_FIRE );
+	}
+}
+
+void vehicle_weapon_plasmabeam::UpdateImpactEffect( vector startPos, vector endOrigin, vector normal, float surfFlags, string surfType, vector surfColor ) {
+	if ( !sys.doClientSideStuff() ) {
+			return;
+	}
+	
+	if ( effectImpact == $null_entity ) {
+		effectImpact = vehicle.spawnClientEffect( "fx_plasmabeam_burn" );
+	}
+	
+	if ( effectImpact != $null_entity ) {
+		effectImpact.setEffectLooping( 1 );
+		effectImpact.setOrigin( endOrigin );
+
+		vector forward = sys.vecNormalize( startPos - endOrigin );//-normal;//sys.vecNormalize( endOrigin - startPos );
+		vector up = '0 0 1';
+		vector right = sys.crossProduct( up, forward );
+		up = sys.crossProduct( forward, right );
+
+		effectImpact.setWorldAxis( forward, right, up );
+	}
+	
+	vehicle.playOriginEffect( "fx_plasmabeam_impact", surfType, endOrigin, normal, 0 );
+}
+
+void vehicle_weapon_plasmabeam::Cleanup( boolean bCleanMuzzleToo ) {
+	Cleanup_Base( bCleanMuzzleToo );
+	
+	if ( effectImpact != $null_entity ) {
+		effectImpact.remove();
 	}
 }

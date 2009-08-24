@@ -216,6 +216,34 @@ entityDef vehicle_abaddon {
 	
 	"fx_flamethrower_stream"		"effects/weapons/flamethrower/stream"
 	"snd_flamethrower_stream"		"sounds/weapons/flamethrower/stream"
+	"snd_plasmabeam_fire_loop"		"sounds/weapons/plasmabeam/fire_loop"
+	"fx_plasmabeam_fire"			"effects/weapons/plasmabeam/fire"
+	"fx_plasmabeam_burn"			"effects/weapons/plasmabeam/impact_burn"
+
+	"fx_plasmabeam_impact"			"effects/weapons/plasmabeam/impact_default"
+	"fx_plasmabeam_impact_forcefield" "effects/weapons/plasmabeam/impact_forcefield"
+	"fx_plasmabeam_impact_liquid"	"effects/weapons/plasmabeam/impact_liquid"
+	"fx_plasmabeam_impact_water"	"effects/weapons/plasmabeam/impact_liquid"
+  	"fx_plasmabeam_impact_water_interior"	"effects/weapons/plasmabeam/impact_liquid"
+  	
+  	"fx_plasmabeam_impact_pavement"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_stone"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_concrete"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_dirt"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_mud"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_flesh"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_glass"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_ice"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_gravel"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_metal"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_metal_thick"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_dusty_road"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_sand"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_snow"		"effects/weapons/plasmabeam/impact_snow"
+  	"fx_plasmabeam_impact_wood"		"effects/weapons/plasmabeam/impact_wood"
+  	"fx_plasmabeam_impact_wood_thick"	"effects/weapons/plasmabeam/impact_wood"
+  	"fx_plasmabeam_impact_grass"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_plastic"		"effects/weapons/plasmabeam/impact_default"
 }
 
 damageDef damage_abaddon_collide {

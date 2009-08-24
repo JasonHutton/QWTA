@@ -672,8 +672,7 @@ stringMap vehicle_abaddon_weapon2 {
 
 	"dmg_stream"				"damage_plasmabeam"
 
-	"stream_radius"				"1024"
-	"stream_arc"				"30"
+	"range"						"8192"
 
 	"crosshair"					"nospread"
 			
