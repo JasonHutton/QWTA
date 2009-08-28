@@ -1,6 +1,6 @@
 sound sounds/weapons/plasmabeam/fire_loop {
 	volume	-5
-	minDistance	25
+	minDistance	1
 	maxDistance 175
 	looping
 	
@@ -9,8 +9,8 @@ sound sounds/weapons/plasmabeam/fire_loop {
 
 sound sounds/weapons/plasmabeam/sizzle_loop {
 	minDistance	1
-	maxDistance	30
-	volume		0
+	maxDistance	100
+	volume		5
 	looping
 	
 	sounds/weapons/plasmabeam/loop_sizzleburn_01.ogg
