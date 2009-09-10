@@ -113,6 +113,7 @@ public:
 	void						Event_GetDeclIndex( int declTypeHandle, const char* declName );
 	void						Event_GetDeclName( int declTypeHandle, int index );
 	void						Event_ApplyRadiusDamage( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale );
+	void						Event_ApplyRadiusBurn( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, int damageIndex, float damagePower, float radiusScale, float burnTime );
 	void						Event_ApplyRadiusPush( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, idEntity *ignorePush, int damageIndex, float damagePower, float radiusScale );
 	void						Event_FilterEntity( int filterIndex, idEntity* entity );
 	void						Event_GetTableCount( int tableIndex );

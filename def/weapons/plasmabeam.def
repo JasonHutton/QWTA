@@ -4,6 +4,8 @@ damageDef damage_plasmabeam {
 	
 		knockback							3
 		push								10000
+		
+		noheadshot
 	
 		prof_damage							"desecrator_weapons"
 	
@@ -20,21 +22,43 @@ damageDef damage_plasmabeam {
 		tt_obituary_unknown					"tooltips/killmsgs/weapons/plasmabeam/unknown"
 }
 
+damageDef realistic_damage_plasmabeam {
+		inherit								"damage_plasmabeam"
+		damage								"realistic_damage_plasmabeam"
+}
 
 damageFilter damage_plasmabeam {
 
 	type {
 		target							"target_player_all"
-		damage							19
+		damage							5
 	}
 
 	type {
 		target							"target_veh_all"
-		damage							25
+		damage							80
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							25
+		damage							80
+	}
+}
+
+damageFilter realistic_damage_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							10
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							80
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							80
 	}
 }

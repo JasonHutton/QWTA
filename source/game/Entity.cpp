@@ -73,6 +73,10 @@ extern const idEventDef EV_EnableKnockback;
 // overridable events
 const idEventDefInternal EV_PostSpawn( "internal_postspawn" );
 const idEventDefInternal EV_FindTargets( "internal_findTargets" );
+const idEventDefInternal EV_BurningChanged( "internal_burningchanged" );
+const idEventDef EV_IsBurning( "isBurning", 'b', DOC_TEXT( "Returns whether this entity is currently burning or not." ), 0, NULL );
+const idEventDef EV_ApplyBurnDamage( "applyBurnDamage", 'b', DOC_TEXT( "Attmempts to apply burn damage to the entity, and returns whether or not it was successful." ), 2, NULL, "e", DOC_TEXT( "attacker" ), DOC_TEXT( "The entity inflicting the burn damage." ), "f", DOC_TEXT( "burnTime" ), DOC_TEXT( "Length of time to burn the entity for in seconds." ) );
+const idEventDef EV_GetRemainingBurning( "getRemainingBurning", 'f', DOC_TEXT( "Returns how long in seconds the entity will remain burning for, or 0 if not burning." ), 0, NULL );
 const idEventDef EV_GetName( "getName", 's', DOC_TEXT( "Returns the internal name of the object." ), 0, NULL );
 const idEventDef EV_Activate( "activate", '\0', DOC_TEXT( "Toggles the state of the object" ), 1, NULL, "e", DOC_TEXT( "activator" ), DOC_TEXT( "The entity which caused the activation." ) );
 const idEventDef EV_Bind( "bind", '\0', DOC_TEXT( "Binds the physics for this entity to the entity specified. They will be bound in their current relative position and orientation." ), 1, NULL, "e", DOC_TEXT( "master" ), DOC_TEXT( "The entity to bind to." ) );
@@ -165,7 +169,9 @@ const idEventDef EV_PlayEffectMaxVisDist( "playEffectMaxVisDist", 'h', DOC_TEXT(
 const idEventDef EV_PlayJointEffect( "playJointEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 3, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop." );
 const idEventDef EV_PlayJointEffectViewSuppress( "playJointEffectViewSuppress", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 4, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop.", "b", "viewSuppress", "If set, the effect will inherit the view suppress setting from this entity, otherwise it will have no view supress settings." );
 const idEventDef EV_PlayClippedJointEffect( "playClippedJointEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 4, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop.", "v", "endorigin", "The end origin of the effect." );
+const idEventDef EV_PlayClippedJointEffectViewSuppress( "playClippedJointEffectViewSuppress", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 5, "If the joint is invalid, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "d", "joint", "Index of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop.", "v", "endorigin", "The end origin of the effect.", "b", "viewSuppress", "If set, the effect will inherit the view suppress setting from this entity, otherwise it will have no view supress settings." );
 const idEventDef EV_PlayOriginEffect( "playOriginEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 5, "The key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.","s", "surfacetype", "$decl:surfaceType$ to look up any special effect from.", "v", "origin", "Origin to play the effect at in world space.", "v", "forward", "Forward vector to orientate the effect with in world space.", "b", "loop", "Whether the effect should be once only, or loop." );
+const idEventDef EV_PlayOriginEffectViewSuppress( "playOriginEffectViewSuppress", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 6, "The key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.","s", "surfacetype", "$decl:surfaceType$ to look up any special effect from.", "v", "origin", "Origin to play the effect at in world space.", "v", "forward", "Forward vector to orientate the effect with in world space.", "b", "loop", "Whether the effect should be once only, or loop.", "b", "viewSuppress", "If set, the effect will inherit the view suppress setting from this entity, otherwise it will have no view supress settings." );
 const idEventDef EV_PlayOriginEffectMaxVisDist( "playOriginEffectMaxVisDist", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 7, DOC_TEXT( "The key must start with 'fx_'." ), "s", DOC_TEXT( "key" ), DOC_TEXT( "Key to look up the $decl:effect$ from." ),"s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ), "v", DOC_TEXT( "origin" ), DOC_TEXT( "Origin to play the effect at in world space." ), "v", DOC_TEXT( "forward" ), DOC_TEXT( "Forward vector to orientate the effect with in world space." ), "b", DOC_TEXT( "loop" ), DOC_TEXT( "Whether the effect should be once only, or loop." ), "f", DOC_TEXT( "maxVisDist" ), DOC_TEXT( "Maximum distance the effect will be visible from." ), "b", DOC_TEXT( "isStatic" ), DOC_TEXT( "Whether the particle effect is static or not" ) );
 const idEventDef EV_PlayBeamEffect( "playBeamEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified position in the world, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 5, DOC_TEXT( "The key must start with 'fx_'." ), "s", DOC_TEXT( "key" ), DOC_TEXT( "Key to look up the $decl:effect$ from." ),"s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ), "v", DOC_TEXT( "origin" ), DOC_TEXT( "Origin to play the effect at in world space." ), "v", DOC_TEXT( "endOrigin" ), DOC_TEXT( "End position for the beam." ), "b", DOC_TEXT( "loop" ), DOC_TEXT( "Whether the effect should be once only, or loop." ) );
 const idEventDef EV_LookupEffect( "lookupEffect", 's', DOC_TEXT( "Performs an effect lookup on the entity, using the key and $decl:surfaceType$ provided." ), 2, "The key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ) );
@@ -295,6 +301,10 @@ sdCrosshairInfo*						idEntity::crosshairInfo = NULL;
 
 ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_Remove,						idEntity::Event_Remove )
+	EVENT( EV_BurningChanged,				idEntity::Event_BurningChanged )
+	EVENT( EV_IsBurning,					idEntity::Event_IsBurning )
+	EVENT( EV_ApplyBurnDamage,				idEntity::Event_ApplyBurnDamage )
+	EVENT( EV_GetRemainingBurning,			idEntity::Event_GetRemainingBurning )
 	EVENT( EV_GetName,						idEntity::Event_GetName )
 	EVENT( EV_FindTargets,					idEntity::Event_FindTargets )
 	EVENT( EV_BindToJoint,					idEntity::Event_BindToJoint )
@@ -373,7 +383,9 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_PlayJointEffect,				idEntity::Event_PlayJointEffect )
 	EVENT( EV_PlayJointEffectViewSuppress,	idEntity::Event_PlayJointEffectViewSuppress )
 	EVENT( EV_PlayClippedJointEffect,		idEntity::Event_PlayClippedJointEffect )
+	EVENT( EV_PlayClippedJointEffectViewSuppress,	idEntity::Event_PlayClippedJointEffectViewSuppress )
 	EVENT( EV_PlayOriginEffect,				idEntity::Event_PlayOriginEffect )
+	EVENT( EV_PlayOriginEffectViewSuppress,	idEntity::Event_PlayOriginEffectViewSuppress )
 	EVENT( EV_PlayOriginEffectMaxVisDist,	idEntity::Event_PlayOriginEffectMaxVisDist )
 	EVENT( EV_PlayBeamEffect,				idEntity::Event_PlayBeamEffect )
 	EVENT( EV_PlayMaterialEffect,			idEntity::Event_PlayMaterialEffect )
@@ -847,6 +859,7 @@ idEntity::idEntity( void ) {
 	fl.allowPredictionErrorDecay = false;
 	fl.forceDoorCollision	= false;
 	fl.forceDecalUsageLocal  = false;
+	fl.burnable				= false;
 
 	occlusionQueryHandle	= -1;
 
@@ -863,6 +876,8 @@ idEntity::idEntity( void ) {
 
 	bulletTracerStart.Zero();
 	bulletTracerEnd.Zero();
+
+	burnTime				= 0;
 }
 
 /*
@@ -934,6 +949,10 @@ void idEntity::Spawn( void ) {
 
 	if ( spawnArgs.GetBool( "no_damage_feedback" ) ) {
 		fl.noDamageFeedback = true;
+	}
+
+	if ( spawnArgs.GetBool( "burnable" ) ) {
+		fl.burnable = true;
 	}
 
 	// spawn gui entities
@@ -4401,6 +4420,24 @@ void idEntity::Event_PlayClippedJointEffect( const char *effectName, jointHandle
 }
 
 /*
+================
+idEntity::Event_PlayClippedJointEffectViewSuppress
+
+TODO: Play on origin of an invalid handle is passed in like the normal play effect
+================
+*/
+void idEntity::Event_PlayClippedJointEffectViewSuppress( const char *effectName, jointHandle_t joint, bool loop, const idVec3& endOrigin, bool suppress ) {
+	rvClientEntityPtr< rvClientEffect > eff;
+	eff = PlayEffect( effectName, colorWhite.ToVec3(), NULL, joint, loop, endOrigin );
+
+	if ( eff.IsValid() ) {
+		eff->SetViewSuppress( suppress );
+	}
+
+	sdProgram::ReturnHandle( eff.GetSpawnId() );
+}
+
+/*
 ============
 idEntity::Event_PlayOriginEffect
 ============
@@ -4408,6 +4445,17 @@ idEntity::Event_PlayOriginEffect
 void idEntity::Event_PlayOriginEffect( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop ) {
 	rvClientEntityPtr< rvClientEffect > eff;
 	eff = PlayEffect( effectName, colorWhite.ToVec3(), materialType, origin, forward.ToMat3(), loop );
+	sdProgram::ReturnHandle( eff.GetSpawnId() );
+}
+
+void idEntity::Event_PlayOriginEffectViewSuppress( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop, bool suppress ) {
+	rvClientEntityPtr< rvClientEffect > eff;
+	eff = PlayEffect( effectName, colorWhite.ToVec3(), materialType, origin, forward.ToMat3(), loop );
+
+	if ( eff.IsValid() ) {
+		eff->SetViewSuppress( suppress );
+	}
+
 	sdProgram::ReturnHandle( eff.GetSpawnId() );
 }
 
@@ -4683,6 +4731,28 @@ void idEntity::ShowEditingDialog( void ) {
    Events
 	
 ***********************************************************************/
+
+void idEntity::Event_BurningChanged( void ) {
+	OnBurnStateChanged();
+}
+
+void idEntity::Event_IsBurning( void ) {
+	sdProgram::ReturnBoolean( IsBurning() );
+}
+
+void idEntity::Event_ApplyBurnDamage( idEntity *attacker, float time ) {
+	int newTime = gameLocal.time + SEC2MS( time );
+	if ( newTime > burnTime ) {
+		sdProgram::ReturnBoolean( SetBurnTime( attacker, newTime ) );
+	} else {
+		sdProgram::ReturnBoolean( false );
+	}
+}
+
+void idEntity::Event_GetRemainingBurning( void ) {
+	sdProgram::ReturnFloat( GetRemainingBurning() );
+}
+
 
 /*
 ================
@@ -7962,4 +8032,88 @@ int idEntity::GetAORPhysicsLOD( void ) const {
 	}
 
 	return 0;
+}
+
+bool idEntity::IsBurning( void ) {
+	if ( burnTime > gameLocal.time ) {
+		return true;
+	}
+
+	return false;
+}
+
+
+bool idEntity::SetBurnTime( idEntity *attacker, int newTime ) {
+	if ( !fl.burnable ) {
+		return false;
+	}
+
+	if ( burnTime != newTime ) {
+		bool wasBurning = IsBurning();
+		burnTime = newTime;
+		burnAttacker = attacker;
+
+		CancelEvents( &EV_BurningChanged );
+		if ( burnTime > gameLocal.time ) {
+			PostEventMS( &EV_BurningChanged, burnTime - gameLocal.time );
+		}
+
+		if ( !wasBurning ) {
+			OnBurnStateChanged();
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+bool idEntity::AddBurnTime( idEntity *attacker, int addTime ) {
+	if ( !fl.burnable ) {
+		return false;
+	}
+
+	int newBurnTime = burnTime - gameLocal.time;
+	if ( newBurnTime > 0 ) {
+		return SetBurnTime( attacker, newBurnTime + addTime );
+	} else {
+		return SetBurnTime( attacker, addTime );
+	}
+
+	return false;
+}
+
+void idEntity::OnBurnStateChanged( void ) {
+/*
+	if ( vehicleControl != NULL ) {
+		vehicleControl->OnWeaponEMPStateChanged();
+	}
+	if ( vehicleSoundControl != NULL ) {
+		vehicleSoundControl->OnWeaponEMPStateChanged();
+	}
+*/	
+	/*
+	if ( IsBurning() ) {
+		gameLocal.Printf( "Burning Started\n" );
+	} else {
+		gameLocal.Printf( "Burning Stopped\n" );
+	}*/
+
+	sdScriptHelper h1;
+	idScriptObject* scriptObject = GetScriptObject();
+	if ( scriptObject ) {
+		const sdProgram::sdFunction* function = scriptObject->GetFunction( "OnBurningChanged" );
+		if ( function ) {
+			h1.Push( burnAttacker ? burnAttacker->GetScriptObject() : NULL );
+			h1.Push( IsBurning() );
+			scriptObject->CallNonBlockingScriptEvent( function, h1 );
+		}
+	}
+}
+
+float idEntity::GetRemainingBurning( void ) {
+	if ( gameLocal.time > burnTime ) {
+		return 0.0f;
+	}
+	return MS2SEC( burnTime - gameLocal.time );
 }

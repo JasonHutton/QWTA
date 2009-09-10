@@ -72,7 +72,7 @@ void vehicle_weapon_plasmabeam::UpdateStreamEffect( vector endOrigin ) {
 		if ( sys.vecLength( result ) > 64 ) {
 			vehicle.stopEffectHandle( streamEffectHandle );
 		}
-		streamEffectHandle = vehicle.playClippedJointEffect( "fx_plasmabeam_fire", jointHandle, 1, endOrigin );
+		streamEffectHandle = vehicle.playClippedJointEffectViewSuppress( "fx_plasmabeam_fire", jointHandle, 1, endOrigin, 0 );
 	}
 
 	if( sys.getTime() > nextFiringSound ) {
@@ -101,7 +101,7 @@ void vehicle_weapon_plasmabeam::UpdateImpactEffect( vector startPos, vector endO
 		effectImpact.setWorldAxis( forward, right, up );
 	}
 	
-	vehicle.playOriginEffect( "fx_plasmabeam_impact", surfType, endOrigin, normal, 0 );
+	vehicle.playOriginEffectViewSuppress( "fx_plasmabeam_impact", surfType, endOrigin, normal, 0, 0 );
 }
 
 void vehicle_weapon_plasmabeam::Cleanup( boolean bCleanMuzzleToo ) {

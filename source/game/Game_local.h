@@ -1191,6 +1191,7 @@ public:
 
 	void							KillBox( idEntity *ent );
 	void							RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEntity *attacker, idEntity *ignoreDamage, idEntity *ignorePush, const sdDeclDamage* damage, float dmgPower = 1.f, float radiusScale = 1.f );
+	void							RadiusBurn( const idVec3 &origin, idEntity *inflictor, idEntity *attacker, idEntity *ignoreDamage, const sdDeclDamage* damage, float dmgPower = 1.f, float radiusScale = 1.f, int burnTime = 0.f );
 	void							RadiusPush( const idVec3 &origin, float radius, const sdDeclDamage* damageDecl, float pushScale, const idEntity *inflictor, const idEntity *ignore, int flags, bool saveEvent );
 	void							RadiusPushClipModel( const idVec3 &origin, const float push, const idClipModel *clipModel );
 	void							RadiusPushEntities( const idVec3& origin, float force, float radius );

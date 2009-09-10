@@ -27,6 +27,7 @@ typedef enum radarMasks_e {
 
 extern const idEventDefInternal EV_PostSpawn;
 extern const idEventDefInternal EV_FindTargets;
+extern const idEventDefInternal EV_BurningChanged;
 extern const idEventDef EV_Use;
 extern const idEventDef EV_Activate;
 extern const idEventDef EV_Bind;
@@ -50,6 +51,7 @@ extern const idEventDef EV_StopEffect;
 extern const idEventDef EV_StopEffectHandle;
 extern const idEventDef EV_KillEffect;
 extern const idEventDef EV_PlayOriginEffect;
+extern const idEventDef EV_PlayOriginEffectViewSuppress;
 extern const idEventDef EV_GetMins;
 extern const idEventDef EV_GetMaxs;
 extern const idEventDef EV_SetOrigin;
@@ -267,6 +269,8 @@ public:
 		bool				forceDoorCollision	:1;
 
 		bool				forceDecalUsageLocal :1;
+
+		bool				burnable			:1;
 	} fl;
 
 	idLinkList<idEntity>			interpolateNode;			// entities marked for interpolation in fps unlock mode
@@ -695,6 +699,13 @@ public:
 			
 	virtual bool			DisableClipOnRemove( void ) const { return false; }
 
+	bool					IsBurnable( void ) const { return fl.burnable; }
+	bool					IsBurning( void );
+	bool					SetBurnTime( idEntity *attacker, int newTime );
+	bool					AddBurnTime( idEntity *attacker, int addTime );
+	void					OnBurnStateChanged( void );
+	float					GetRemainingBurning( void );
+
 protected:
 	renderEntity_t			renderEntity;						// used to present a model to the renderer
 	int						modelDefHandle;						// handle to static renderer model
@@ -719,6 +730,9 @@ private:
 	int						bindBody;							// body bound to if unequal -1
 	idEntity*				teamMaster;							// master of the physics team
 	idEntity*				teamChain;							// next entity in physics team
+
+	int						burnTime;
+	idEntity*				burnAttacker;
 
 	typedef struct beamInfo_s {
 		renderEntity_t			beamEnt;
@@ -773,6 +787,10 @@ protected:
 	guiHandle_t				GetEntityGuiHandle( const int guiNum );
 
 	// events
+	void					Event_BurningChanged( void );
+	void					Event_IsBurning( void );
+	void					Event_GetRemainingBurning( void );
+	void					Event_ApplyBurnDamage( idEntity *attacker, float time );
 	void					Event_GetName( void );
 	void					Event_FindTargets( void );
 	void					Event_Bind( idEntity *master );
@@ -936,7 +954,9 @@ protected:
 	void					Event_PlayJointEffect( const char* effectName, jointHandle_t joint, bool loop );
 	void					Event_PlayJointEffectViewSuppress( const char* effectName, jointHandle_t joint, bool loop, bool suppress );
 	void					Event_PlayClippedJointEffect( const char* effectName, jointHandle_t joint, bool loop, const idVec3& endOrigin );
+	void					Event_PlayClippedJointEffectViewSuppress( const char* effectName, jointHandle_t joint, bool loop, const idVec3& endOrigin, bool suppress );
 	void					Event_PlayOriginEffect( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop );
+	void					Event_PlayOriginEffectViewSuppress( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop, bool suppress );
 	void					Event_PlayOriginEffectMaxVisDist( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& forward, bool loop, float maxVisDist, bool isStatic );
 	void					Event_PlayBeamEffect( const char* effectName, const char* materialType, const idVec3& origin, const idVec3& endOrigin, bool loop );
 	void					Event_LookupEffect( const char* effectName, const char* materialType );

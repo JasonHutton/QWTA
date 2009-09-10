@@ -612,43 +612,10 @@ stringMap vehicle_abaddon_weapon1 {
 
 	"crosshair"					"nospread"
 	
+	"burn_time"					"5.0"
+	
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }
-
-/*
-stringMap vehicle_abaddon_weapon2 {
-	"gunName"					"game/weapons/plasma_cannon"
-	"weapon_name"				"plasmacannon"
-
-	"use_heat_bar"				"0"
-	"charge_max"				"4"
-	"charge_per_use"			"100"
-	"overheat_penalty"			"0"
-
-	"weapon1_muzzle"			"turret_muzzle"
-	"gunJointYaw"				"turret_1"
-	"gunJointPitch"				"turret_2"
-
-	"muzzle"					"turret_muzzle"
-	"muzzle_parent"				"turret_2"
-	"muzzle_flash"				"fx_cannon_muzzle"
-	"muzzle_sound_local"		"fx_cannon_muzzle_local"
-
-	"feedback"					"500000"
-	"velocity"					"5000 0 0"
-
-	"spread"					"0"
-
-	// siege mode settings
-	"spread_siege"					"0"
-	"charge_per_use_siege_scale"	"0.5"
-
-	"scriptobject"				"vehicle_weapon_plasmacannon"
-	"def_projectile"			"projectile_plasmacannon_desecrator"
-
-	"crosshair"					"nospread"
-}
-*/
 
 stringMap vehicle_abaddon_weapon2 {
 	"gunName"					"game/weapons/plasmabeam"

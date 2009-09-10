@@ -55,6 +55,7 @@ object player {
 	void		OnWeaponFired();
 	void		OnSendingVoice( boolean sending );
 	void		OnNewTask( entity newTask, boolean isMission );
+	void		OnBurningChanged( entity attacker, boolean burning );
 
 	boolean		NeedsParachute();
 
@@ -165,6 +166,9 @@ object player {
 	void		vStopTargetLockAlarm( entity other );
 	void		vTargetLockAttack( entity other );
 	void		vMineWarning( entity other );
+	
+	void		BurningThread( entity attacker );
+	void		FreeBurning();
 
 	float		reviveQuickChat; 				// FIXME: Move to team
 	float		reviveQuickChatAck;
@@ -284,6 +288,9 @@ object player {
 
 	float		unconsciousTime;
 	float		deadTime;
+	
+	handle		burningEffectHandle;
+	boolean		burningThreadActive;
 }
 
 /*
@@ -584,6 +591,9 @@ void player::preinit() {
 
 	unconsciousTime			= -1;
 	deadTime				= -1;
+	
+	burningEffectHandle		= 0;
+	burningThreadActive		= false;
 }
 
 /*
@@ -599,6 +609,7 @@ void player::destroy() {
 	FreeRequestTask();
 	FreeEnemyRequestTask();
 	FreeSpawnHostTask();
+	FreeBurning();
 	OnClassChanged(); // Gordon: destroys stuff the player owned
 	sys.startSoundDirect( "", SND_PLAYER_FALL );
 
@@ -984,6 +995,7 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 
 	FreeReviveTask();
 	FreeMedicIcon();
+	FreeBurning();
 	SetupCommandMapIcons( true );
 
 	team_base team = getGameTeam();
@@ -1616,6 +1628,7 @@ void player::OnFullyKilled() {
 	FreeReviveTask();
 	FreeSpawnHostTask();
 	FreeMedicIcon();
+	FreeBurning(); // Stop the damage thread. The effects can continue.
 
 	team_base team = getGameTeam();
 	if ( team != $null_entity ) {
@@ -1703,6 +1716,7 @@ void player::OnSetTeam( object oldTeam, object newTeam ) {
 
 	FreeWaypointObject();
 	FreeEnemyRequestTask();
+	FreeBurning();
 	DestroyBinObjects();
 	DestroyMines();
 
@@ -3070,6 +3084,44 @@ void player::OnNewTask( entity newTask, boolean isMission ) {
 		if ( missionToolTipThreadId == -1 ) {
 			//missionToolTipThreadId = thread MissionToolTipThread();
 		}
+	}
+}
+
+void player::OnBurningChanged( entity attacker, boolean burning ) {
+	if ( burning ) {
+		if ( !burningThreadActive) {
+			thread BurningThread( attacker );
+			burningThreadActive = true;
+		}
+	} else {
+		FreeBurning();
+	}
+}
+
+void player::BurningThread( entity attacker ) {
+	if ( !burningEffectHandle ) {
+		burningEffectHandle = playEffect( "fx_burning", "origin", 1 );
+	}
+	
+	while ( true ) {
+		applyDamage( $null_entity, attacker, g_vectorZero, GetDamage( "damage_flamethrower_burning" ), 1.f, $null_entity );
+		sys.waitFrame();
+	}
+	
+	if ( burningEffectHandle ) {
+		stopEffectHandle( burningEffectHandle );
+		burningEffectHandle = 0;
+	}
+}
+
+void player::FreeBurning() {	
+	if ( burningEffectHandle ) {
+		stopEffectHandle( burningEffectHandle );
+		burningEffectHandle = 0;
+	}
+	if ( burningThreadActive ) {
+		sys.killThread( "BurningThread_" + getName() );
+		burningThreadActive = false;
 	}
 }
 

@@ -173,6 +173,9 @@ entityDef player_base {
 	"do_object_goliath"					"deployobject_goliath"
 	"do_object_hornet"					"deployobject_hornet"
 	"do_object_abaddon"					"deployobject_abaddon"
+	
+	"burnable"							"1"
+	"fx_burning"						"effects/burning"
 }
 
 toolTip proficiency_upgrade_respawn {

@@ -610,7 +610,7 @@ idCVar	g_useBaseETQWVehicleCredits("g_useBaseETQWVehicleCredits",	"0",		CVAR_GAM
 idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should BaseETQW proficiencies be used? (QWTA gives free Vehicle Drops otherwise.)" );
 idCVar	g_useBaseETQWVehicleCharge(	"g_useBaseETQWVehicleCharge",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the BaseETQW vehicle credit charge timer duration be used?" );
 
-idCVar	g_vehicleSpawnsUseFE(		"g_vehicleSpawnsUseFE",			"1",		CVAR_GAME | CVAR_BOOL,										"Do vehicle spawns have Force Escalation requirements?" );
+idCVar	g_vehicleSpawnsUseFE(		"g_vehicleSpawnsUseFE",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Do vehicle spawns have Force Escalation requirements?" );
 
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );

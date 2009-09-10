@@ -113,6 +113,8 @@ object projectile_missile {
 	float			nextBounceTime;
 
 	boolean			inactive;
+	
+	float			burnTime;
 }
 
 void projectile_missile::syncFields() {
@@ -153,6 +155,8 @@ void projectile_missile::preinit() {
 	destroyProficiency	= GetProficiency( getKey( "prof_destroy" ) );
 
 	state				= MS_NORMAL;
+	
+	burnTime			= getFloatKey( "burn_time" );
 }
 
 void projectile_missile::SetupContents() {
@@ -535,6 +539,9 @@ void projectile_missile::DoRadiusDamage() {
 
 	if ( damageIndex != -1 ) {
 		sys.applyRadiusDamage( getWorldOrigin(), self, getOwner(), radiusDamageIgnoreEntity, self, damageIndex, GetDamagePower(), 1.f );
+		if ( burnTime > 0.f ) {
+			sys.applyRadiusBurn( getWorldOrigin(), self, getOwner(), radiusDamageIgnoreEntity, damageIndex, GetDamagePower(), 1.f, burnTime );
+		}
 	}
 }
 

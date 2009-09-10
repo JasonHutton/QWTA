@@ -45,6 +45,8 @@ entityDef projectile_flamethrower_napalm {
 	"snd_stick"					""
 	
 	"removedelay"				"0"
+	
+	"burn_time"					"5.0"
 
 	//"fx_bounce_forcefield"		"effects/base/bullets/impact_forcefield"
 }
@@ -55,6 +57,8 @@ damageDef damage_flamethrower_stream {
 	
 		knockback							3
 		push								10000
+		
+		noheadshot
 	
 		prof_damage							"desecrator_weapons"
 	
@@ -71,22 +75,34 @@ damageDef damage_flamethrower_stream {
 		tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
 }
 
+damageDef realistic_damage_flamethrower_stream {
+		inherit								"damage_flamethrower_stream"
+		damage								"realistic_damage_flamethrower_stream"
+}
 
 damageFilter damage_flamethrower_stream {
 
 	type {
 		target							"target_player_all"
-		damage							19
+		damage							10
 	}
 
 	type {
-		target							"target_veh_all"
-		damage							25
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageFilter realistic_damage_flamethrower_stream {
+
+	type {
+		target							"target_player_all"
+		damage							20
 	}
 
 	type {
-		target							"target_deployables_all"
-		damage							25
+		target							"target_all"
+		damage							0
 	}
 }
 
@@ -109,11 +125,79 @@ damageDef damage_flamethrower_napalm {
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
 }
 
+damageDef realistic_damage_flamethrower_napalm {
+	inherit						"damage_flamethrower_napalm"
+	damage						"realistic_damage_flamethrower_napalm"
+}
+
 damageFilter damage_flamethrower_napalm {
 
 	type {
 		target							"target_player_all"
 		damage							1
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageFilter realistic_damage_flamethrower_napalm {
+
+	type {
+		target							"target_player_all"
+		damage							2
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageDef damage_flamethrower_burning {
+	damage						"damage_flamethrower_burning"
+	radius						50
+	knockback							3
+
+	push						10000
+
+	noheadshot
+
+	prof_damage							"desecrator_weapons"
+
+	stat_name							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/flamethrower"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/flamethrower/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/flamethrower/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
+}
+
+damageDef realistic_damage_flamethrower_burning {
+	inherit						"damage_flamethrower_burning"
+	damage						"realistic_damage_flamethrower_burning"
+}
+
+damageFilter damage_flamethrower_burning {
+
+	type {
+		target							"target_player_all"
+		damage							1
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageFilter realistic_damage_flamethrower_burning {
+
+	type {
+		target							"target_player_all"
+		damage							2
 	}
 
 	type {

@@ -6367,6 +6367,91 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 	RadiusPush( origin, radius, damageDecl, dmgPower, attacker, ignorePush, 0, true );
 }
 
+void idGameLocal::RadiusBurn( const idVec3 &origin, idEntity *inflictor, idEntity *attacker, idEntity *ignoreDamage, const sdDeclDamage* damageDecl, float dmgPower, float radiusScale, int burnTime ) {
+	if ( damageDecl == NULL ) {
+		gameLocal.Error( "idGameLocal::RadiusBurn NULL Damage" );
+	}
+
+	float radius	= Max( 1.f, damageDecl->GetRadius() * radiusScale );
+
+	if ( !gameLocal.isClient ) {
+		float		dist, damageScale;
+		idEntity*	ent;
+		idEntity*	entityList[ MAX_GENTITIES ];
+		idBounds	entityBounds[ MAX_GENTITIES ];
+		int			numListedEntities;
+		idBounds	bounds;
+		idVec3 		v, damagePoint, dir;
+		int			i;
+
+		assert( damageDecl );
+
+		if ( !damageDecl ) {
+			Warning( "idGameLocal::RadiusBurn NULL damage parm" );
+			return;
+		}
+
+		bounds = idBounds( origin ).Expand( radius );
+
+		// get all entities touching the bounds
+		numListedEntities = clip.EntitiesTouchingBounds( bounds, -1, entityList, MAX_GENTITIES );
+
+		// Gordon: Store the bounds as they were when we started, as the damage could cause shifts, due to players being knocked out of vehicles
+		for ( int e = 0; e < numListedEntities; e++ ) {			
+			entityBounds[ e ] = entityList[ e ]->GetPhysics()->GetAbsBounds();
+		}
+
+		for ( int pass = 0; pass < 2; pass++ ) {
+			// apply damage to the entities
+			for ( int e = 0; e < numListedEntities; e++ ) {
+				ent = entityList[ e ];
+				assert( ent );
+
+				if ( pass == 0 ) {
+					if ( ent->IsType( idPlayer::Type ) ) {
+						continue;
+					}
+				} else {
+					if ( !ent->IsType( idPlayer::Type ) ) {
+						continue;
+					}
+				}
+
+				if ( !ent->fl.takedamage || ent == ignoreDamage ) {
+					continue;
+				}
+
+				const idBounds& absBounds = entityBounds[ e ];
+
+				// find the distance from the edge of the bounding box
+				for ( i = 0; i < 3; i++ ) {
+					if ( origin[ i ] < absBounds[ 0 ][ i ] ) {
+						v[ i ] = absBounds[ 0 ][ i ] - origin[ i ];
+					} else if ( origin[ i ] > absBounds[ 1 ][ i ] ) {
+						v[ i ] = origin[ i ] - absBounds[ 1 ][ i ];
+					} else {
+						v[ i ] = 0;
+					}
+				}
+
+				dist = v.Length();
+				if ( dist >= radius ) {
+					continue;
+				}
+
+				trace_t tr;
+				if ( damageDecl->GetNoTrace() || ent->CanDamage( origin, damagePoint, MASK_EXPLOSIONSOLID, ignoreDamage, &tr ) ) {
+					// get the damage scale
+					damageScale = dmgPower * ( 1.0f - dist / radius );
+					dir = ent->GetPhysics()->GetOrigin() - inflictor->GetPhysics()->GetOrigin();
+					dir.Normalize();
+					ent->SetBurnTime( attacker, gameLocal.time + burnTime );
+					//ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
+				}
+			}
+		}
+	}
+}
 
 /*
 ==============

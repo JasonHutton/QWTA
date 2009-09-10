@@ -144,6 +144,7 @@ const idEventDef EV_Thread_GetDeclIndex( "getDeclIndex", 'd', DOC_TEXT( "Returns
 const idEventDef EV_Thread_GetDeclName( "getDeclName", 's', DOC_TEXT( "Returns the name of the $decl$ of the specified type and index." ), 2, "If either the type or index are invalid, the result will be an empty string.", "d", "type", "Index of the $decl$ type.", "d", "index", "Index of the $decl$." );
 const idEventDef EV_Thread_GetDeclCount( "getDeclCount", 'd', DOC_TEXT( "Returns the $decl$ count for a specified $decl$ type." ), 1, "If the $decl$ type is invalid, the result will be 0.", "d", "type", "Index of the $decl$ type." );
 const idEventDef EV_Thread_ApplyRadiusDamage( "applyRadiusDamage", '\0', DOC_TEXT( "Applies radius damage to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the damage.", "E", "attacker", "Entity responsible for the damage.", "E", "ignore", "Entity to not apply damage to.", "E", "pushIgnore", "Entity to not apply push to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by." );
+const idEventDef EV_Thread_ApplyRadiusBurn( "applyRadiusBurn", '\0', DOC_TEXT( "Applies radius burning to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the burning.", "E", "attacker", "Entity responsible for the burning.", "E", "ignore", "Entity to not apply damage to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by.", "f", "burnTime", "Duration of burning." );
 const idEventDef EV_Thread_ApplyRadiusPush( "applyRadiusPush", '\0', DOC_TEXT( "Applies radius push to entities around a given position." ), 8, NULL, "v", "origin", "Origin to check for entities from.", "E", "inflictor", "Entity applying the push.", "E", "attacker", "Entity responsible for the push.", "E", "ignore", "Entity to not apply push to.", "E", "pushIgnore", "Entity to not apply push to.", "d", "damage", "Index of the $decl:damageDef$ to apply.", "f", "damageScale", "Factor to scale applied damage by.", "f", "pushScale", "Factor to scale applied push by." );
 const idEventDef EV_Thread_FilterEntity( "filterEntity", 'b', DOC_TEXT( "Returns whether the entity is caught by a $decl:targetInfo$." ), 2, "If the $decl:targetInfo$ is invalid or the entity is $null$, the result will be true.", "d", "index", "Index of the $decl:targetInfo$.", "E", "entity", "The entity to check." );
 const idEventDef EV_Thread_GetTableCount( "getTableCount", 'd', DOC_TEXT( "Returns the number of entries in $decl:table$." ), 1, "If the $decl:table$ is invalid, then the result will be 0.", "d", "index", "Index of the $decl:table$." );
@@ -397,6 +398,7 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 	EVENT( EV_Thread_GetDeclName,					sdSysCallThread::Event_GetDeclName )
 	EVENT( EV_Thread_GetDeclCount,					sdSysCallThread::Event_GetDeclCount )
 	EVENT( EV_Thread_ApplyRadiusDamage,				sdSysCallThread::Event_ApplyRadiusDamage )
+	EVENT( EV_Thread_ApplyRadiusBurn,				sdSysCallThread::Event_ApplyRadiusBurn )
 	EVENT( EV_Thread_ApplyRadiusPush,				sdSysCallThread::Event_ApplyRadiusPush )
 	EVENT( EV_Thread_FilterEntity,					sdSysCallThread::Event_FilterEntity )
 	EVENT( EV_Thread_GetTableCount,					sdSysCallThread::Event_GetTableCount )
@@ -1781,6 +1783,15 @@ void sdSysCallThread::Event_ApplyRadiusDamage( const idVec3& origin, idEntity *i
 		return;
 	}
 	gameLocal.RadiusDamage( origin, inflictor, attacker, ignore, ignorePush, damageDecl, damagePower, radiusScale );
+}
+
+void sdSysCallThread::Event_ApplyRadiusBurn( const idVec3& origin, idEntity *inflictor, idEntity *attacker, idEntity *ignore, int damageIndex, float damagePower, float radiusScale, float burnTime ) {
+	const sdDeclDamage *damageDecl = gameLocal.declDamageType[ damageIndex ];
+	if ( damageDecl == NULL ) {
+		gameLocal.Warning( "Event_ApplyRadiusBurn: damageDecl is NULL" );
+		return;
+	}
+	gameLocal.RadiusBurn( origin, inflictor, attacker, ignore, damageDecl, damagePower, radiusScale, SEC2MS( burnTime ) );
 }
 
 /*

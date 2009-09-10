@@ -289,8 +289,10 @@ scriptEvent handle	playMaterialEffect( string effectname, vector color, string j
 scriptEvent handle	playJointEffect( string effectname, float jointHandle, boolean loop );
 scriptEvent handle	playJointEffectViewSuppress( string effectname, float jointHandle, boolean loop, boolean suppress );
 scriptEvent handle	playClippedJointEffect( string effectname, float jointHandle, boolean loop, vector endOrigin );
+scriptEvent handle	playClippedJointEffectViewSuppress( string effectname, float jointHandle, boolean loop, vector endOrigin, boolean suppress );
 scriptEvent handle	playEffect( string effectname, string jointname, boolean loop );
 scriptEvent handle	playOriginEffect( string effectname, string materialType, vector origin, vector forward, boolean loop );
+scriptEvent handle	playOriginEffectViewSuppress( string effectname, string materialType, vector origin, vector forward, boolean loop, boolean suppress );
 
 scriptEvent handle	playEffectMaxVisDist( string effectname, string jointname, boolean loop, float maxVisDist, boolean isStatic );
 scriptEvent handle	playOriginEffectMaxVisDist( string effectname, string materialType, vector origin, vector forward, boolean loop, float maxVisDist, boolean isStatic );
@@ -429,6 +431,10 @@ scriptEvent float	isInWater();
 
 scriptEvent float	getDamageScale();
 scriptEvent string	getDefaultSurfaceType();
+
+scriptEvent boolean	isBurning();
+scriptEvent boolean	applyBurnDamage( entity attacker, float time );
+scriptEvent float	getRemainingBurning();
 
 /***********************************************************************
 
@@ -726,6 +732,7 @@ scriptEvent float	getDeclIndex( float declType, string name );
 scriptEvent string	getDeclName( float declType, float declIndex );
 scriptEvent void	applyRadiusDamage( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
 // QWTA
+scriptEvent void	applyRadiusBurn( vector org, entity inflictor, entity attacker, entity ignore, float damageIndex, float damageScale, float radiusScale, float burnTime );
 scriptEvent void	applyRadiusPush( vector org, entity inflictor, entity attacker, entity ignore, entity ignorePush, float damageIndex, float damageScale, float radiusScale );
 // QWTA
 scriptEvent boolean	filterEntity( float filterIndex, entity other );
