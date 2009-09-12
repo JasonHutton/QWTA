@@ -288,6 +288,8 @@ entityDef projectile_railgun {
 	"tracer_chance"						"1"
 	"tracer_server_only"				"1"
 	"fx_tracer"							"effects/weapons/railgun_trail"
+	
+	"punch_through_targets"				"1"
 }
 
 entityDef projectile_railgun_scoped {
@@ -329,6 +331,8 @@ entityDef projectile_railgun_scoped {
 	"tracer_chance"						"1"
 	"tracer_server_only"				"1"
 	"fx_tracer"							"effects/weapons/railgun_trail"
+	
+	"punch_through_targets"				"1"
 }
 
 damageDef damage_railgun {

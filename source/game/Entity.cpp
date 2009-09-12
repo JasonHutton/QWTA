@@ -7574,117 +7574,143 @@ bool idEntity::LaunchBullet( idEntity* owner, idEntity* ignoreEntity, const idDi
 }
 
 static const float COS_75 = 0.258819f;
-bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* ignoreEntity, const idDict& projectileDict, const idVec3& startPos, const idVec3& endPos, const idVec3& tracerMuzzleOrigin, const idMat3& tracerMuzzleAxis, float damagePower, int forceTracer, rvClientEffect** tracerOut, int mask, const sdDeclDamage* bulletDamage, bool doEffects, bool doImpact, bool useAntiLag ) {
+bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* originalIgnoreEntity, const idDict& projectileDict, const idVec3& originalStartPos, const idVec3& originalEndPos, const idVec3& tracerMuzzleOrigin, const idMat3& tracerMuzzleAxis, float damagePower, int forceTracer, rvClientEffect** tracerOut, int mask, const sdDeclDamage* bulletDamage, bool doEffects, bool doImpact, bool useAntiLag ) {
 	idPlayer* playerOwner = owner->Cast< idPlayer >();
-	// trace
-	trace_t trace;
-	if ( useAntiLag ) {
-		sdAntiLagManager::GetInstance().Trace( trace, startPos, endPos, mask, playerOwner, ignoreEntity );
-	} else {
-		gameLocal.clip.TracePoint( trace, startPos, endPos, mask, ignoreEntity );
-	}
 
+	idVec3 startPos = originalStartPos;
+	idVec3 endPos = originalEndPos;
+	idEntity* ignoreEntity = originalIgnoreEntity;
+	trace_t lastTrace;
+
+	bool doContinue = true;
+	
 	bool damageDone = false;
 
-	if ( trace.fraction != 1.f ) {
-		idEntity* collisionEnt = gameLocal.GetTraceEntity( trace );
-
-		// Play effects
-		if ( doEffects ) {
-			idVec3 normalisedVelocity = ( endPos - startPos ); // direction of traveling object
-			normalisedVelocity.Normalize();
-
-			idVec3 traceNormal = -trace.c.normal;
-			float dot = normalisedVelocity * traceNormal;
-			idVec3 materialColor = trace.c.surfaceColor;
-
-			idVec3 reflection = normalisedVelocity + ((dot * 2.f) * trace.c.normal);
-			idMat3 axis = trace.c.normal.ToMat3();
-
-			idStr collisionSurface;
-			if ( trace.c.surfaceType != NULL ) {
-				collisionSurface = trace.c.surfaceType->GetName();	
-			} else if ( collisionEnt != NULL ) {
-				collisionSurface = collisionEnt->GetDefaultSurfaceType();
-			}
-
-			if ( dot < COS_75 ) {
-				int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_ricochet", collisionSurface.c_str() );
-				gameLocal.PlayEffect( effectHandle, materialColor, trace.endpos, axis );
-			}
-			int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_explode", collisionSurface.c_str() );
-			rvClientEffect *eff = gameLocal.PlayEffect( effectHandle, materialColor, trace.endpos, axis );
-			if ( eff != NULL && trace.c.entityNum != ENTITYNUM_WORLD && trace.c.entityNum >= 0 && trace.c.entityNum <= sizeof( gameLocal.entities ) / sizeof( gameLocal.entities[0] ) ) {
-				idEntity* ent = gameLocal.entities[ trace.c.entityNum ];
-				eff->Monitor( ent );
-			}
-
-			// draw the hit decal
-			if ( (trace.c.material==NULL || trace.c.material->AllowOverlays()) ) {
-				bool createDecal = true;
-
-				idPlayer *lp = gameLocal.GetLocalPlayer();
-				if ( lp ) {
-					float dist = (lp->GetViewPos() - trace.endpos).LengthSqr();
-					float md2 = g_cheapDecalsMaxDistance.GetFloat() * g_cheapDecalsMaxDistance.GetFloat();
-					createDecal = dist < md2;
-				}
-				if ( createDecal ) {
-					idVec3 negTrace = -traceNormal;
-					gameLocal.AddCheapDecal( projectileDict, collisionEnt, trace.endpos, negTrace, CLIPMODEL_ID_TO_JOINT_HANDLE( trace.c.id ), trace.c.id, "dec_impact", collisionSurface.c_str() );
-				}
-			}
+	while( doContinue )
+	{
+		doContinue = false;
+		// trace
+		trace_t trace;
+		if ( useAntiLag ) {
+			sdAntiLagManager::GetInstance().Trace( trace, startPos, endPos, mask, playerOwner, ignoreEntity );
+		} else {
+			gameLocal.clip.TracePoint( trace, startPos, endPos, mask, ignoreEntity );
 		}
+		lastTrace = trace;
 
-		if ( doImpact ) {
-			if ( collisionEnt != NULL ) {
-				if ( !gameLocal.isClient && collisionEnt->fl.takedamage ) {
-					idVec3 dir = endPos - startPos;
-					dir.Normalize();
+		if ( trace.fraction != 1.f ) {
+			idEntity* collisionEnt = gameLocal.GetTraceEntity( trace );
+			if ( collisionEnt && projectileDict.GetBool( "punch_through_targets", "0" ) ) {
+				idPlayer* collisionPlayer = botThreadData.ClientIsValid(collisionEnt->entityNumber) ? gameLocal.GetClient( collisionEnt->entityNumber ) : NULL;
+				sdPlayerBody* collisionBody = collisionEnt->Cast< sdPlayerBody >();
+				if( collisionPlayer || collisionBody ) {
+					doContinue = true;
+				}
+			}
 
-					float power = damagePower;
+			// Play effects
+			if ( doEffects ) {
+				idVec3 normalisedVelocity = ( endPos - startPos ); // direction of traveling object
+				normalisedVelocity.Normalize();
 
-					float cutoff;
-					if ( g_useBaseETQW12Shotguns.GetBool() ) {
-						if ( !projectileDict.GetFloat( "baseETQW12_min_damage_percent", "", cutoff ) ) {
-							cutoff = projectileDict.GetFloat( "min_damage_percent", "100" );
-						}
-						cutoff *= 0.01f;
-					} else {
-						cutoff = projectileDict.GetFloat( "min_damage_percent", "100" ) * 0.01;
-					}
-					if ( cutoff < 1.f && cutoff > 0.f ) {
-						if ( trace.fraction > cutoff ) {
-							float range = 1.f - cutoff;
-							power *= cos( ( idMath::PI * ( trace.fraction - cutoff ) ) / ( 2 * range ) );
-						}
-					}
+				idVec3 traceNormal = -trace.c.normal;
+				float dot = normalisedVelocity * traceNormal;
+				idVec3 materialColor = trace.c.surfaceColor;
 
-					int oldHealth = collisionEnt->GetHealth();
-					collisionEnt->Damage( this, owner, dir, bulletDamage, power, &trace );
+				idVec3 reflection = normalisedVelocity + ((dot * 2.f) * trace.c.normal);
+				idMat3 axis = trace.c.normal.ToMat3();
 
-					if ( collisionEnt->GetEntityAllegiance( owner ) != TA_FRIEND ) {
-						damageDone = collisionEnt->GetHealth() < oldHealth;
-					}
+				idStr collisionSurface;
+				if ( trace.c.surfaceType != NULL ) {
+					collisionSurface = trace.c.surfaceType->GetName();	
+				} else if ( collisionEnt != NULL ) {
+					collisionSurface = collisionEnt->GetDefaultSurfaceType();
 				}
 
-				collisionEnt->OnBulletImpact( owner, trace );
+				if ( dot < COS_75 ) {
+					int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_ricochet", collisionSurface.c_str() );
+					gameLocal.PlayEffect( effectHandle, materialColor, trace.endpos, axis );
+				}
+				int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_explode", collisionSurface.c_str() );
+				rvClientEffect *eff = gameLocal.PlayEffect( effectHandle, materialColor, trace.endpos, axis );
+				if ( eff != NULL && trace.c.entityNum != ENTITYNUM_WORLD && trace.c.entityNum >= 0 && trace.c.entityNum <= sizeof( gameLocal.entities ) / sizeof( gameLocal.entities[0] ) ) {
+					idEntity* ent = gameLocal.entities[ trace.c.entityNum ];
+					eff->Monitor( ent );
+				}
+
+				// draw the hit decal
+				if ( (trace.c.material==NULL || trace.c.material->AllowOverlays()) ) {
+					bool createDecal = true;
+
+					idPlayer *lp = gameLocal.GetLocalPlayer();
+					if ( lp ) {
+						float dist = (lp->GetViewPos() - trace.endpos).LengthSqr();
+						float md2 = g_cheapDecalsMaxDistance.GetFloat() * g_cheapDecalsMaxDistance.GetFloat();
+						createDecal = dist < md2;
+					}
+					if ( createDecal ) {
+						idVec3 negTrace = -traceNormal;
+						gameLocal.AddCheapDecal( projectileDict, collisionEnt, trace.endpos, negTrace, CLIPMODEL_ID_TO_JOINT_HANDLE( trace.c.id ), trace.c.id, "dec_impact", collisionSurface.c_str() );
+					}
+				}
+			}
+
+			if ( doImpact ) {
+				if ( collisionEnt != NULL ) {
+					if ( !gameLocal.isClient && collisionEnt->fl.takedamage ) {
+						idVec3 dir = endPos - startPos;
+						dir.Normalize();
+
+						float power = damagePower;
+
+						float cutoff;
+						if ( g_useBaseETQW12Shotguns.GetBool() ) {
+							if ( !projectileDict.GetFloat( "baseETQW12_min_damage_percent", "", cutoff ) ) {
+								cutoff = projectileDict.GetFloat( "min_damage_percent", "100" );
+							}
+							cutoff *= 0.01f;
+						} else {
+							cutoff = projectileDict.GetFloat( "min_damage_percent", "100" ) * 0.01;
+						}
+						if ( cutoff < 1.f && cutoff > 0.f ) {
+							if ( trace.fraction > cutoff ) {
+								float range = 1.f - cutoff;
+								power *= cos( ( idMath::PI * ( trace.fraction - cutoff ) ) / ( 2 * range ) );
+							}
+						}
+
+						int oldHealth = collisionEnt->GetHealth();
+						collisionEnt->Damage( this, owner, dir, bulletDamage, power, &trace );
+
+						if ( collisionEnt->GetEntityAllegiance( owner ) != TA_FRIEND ) {
+							damageDone = collisionEnt->GetHealth() < oldHealth;
+						}
+					}
+
+					collisionEnt->OnBulletImpact( owner, trace );
+				}
+			}
+
+			if ( doContinue ) {
+				startPos = trace.endpos;
+				endPos = originalEndPos;
+				ignoreEntity = collisionEnt;
 			}
 		}
 	}
 
 	bulletTracerStart = tracerMuzzleOrigin;
-	bulletTracerEnd = trace.endpos;
+	bulletTracerEnd = lastTrace.endpos;
 
 	if ( doEffects ) {
 		if ( forceTracer != 2 && ( forceTracer == 1 || missileRandom.RandomFloat() < projectileDict.GetFloat( "tracer_chance" ) ) ) {
 			if ( !gameLocal.isClient || !projectileDict.GetBool( "tracer_server_only" ) || owner == gameLocal.GetLocalPlayer() ) {
 				// draw a tracer
 				int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_tracer", "" );
-				idVec3 dir = trace.endpos - tracerMuzzleOrigin;
+				idVec3 dir = lastTrace.endpos - tracerMuzzleOrigin;
 				dir.Normalize();
 
-				rvClientEffect* tracerEffect = gameLocal.PlayEffect( effectHandle, idVec3( 1.0f, 1.0f, 1.0f ), tracerMuzzleOrigin, dir.ToMat3(), false, trace.endpos ); 
+				rvClientEffect* tracerEffect = gameLocal.PlayEffect( effectHandle, idVec3( 1.0f, 1.0f, 1.0f ), tracerMuzzleOrigin, dir.ToMat3(), false, lastTrace.endpos ); 
 				if ( tracerOut != NULL ) {
 					*tracerOut = tracerEffect;
 				}
