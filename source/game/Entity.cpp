@@ -7600,7 +7600,7 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* originalIgnoreEntity, 
 
 		if ( trace.fraction != 1.f ) {
 			idEntity* collisionEnt = gameLocal.GetTraceEntity( trace );
-			if ( collisionEnt && projectileDict.GetBool( "punch_through_targets", "0" ) ) {
+			if ( collisionEnt && g_useQuake4Railgun.GetBool() && projectileDict.GetBool( "punch_through_targets", "0" ) ) {
 				idPlayer* collisionPlayer = botThreadData.ClientIsValid(collisionEnt->entityNumber) ? gameLocal.GetClient( collisionEnt->entityNumber ) : NULL;
 				sdPlayerBody* collisionBody = collisionEnt->Cast< sdPlayerBody >();
 				if( collisionPlayer || collisionBody ) {
