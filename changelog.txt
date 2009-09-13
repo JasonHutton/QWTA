@@ -3,7 +3,21 @@ QWTA v0.4.0:
 CHANGES:
 * Main menu now displays QWTA logo.
 * Tactical gametype added. (WIP)
-* Abaddon hovertank added. (WIP) 100 FE, 8192 AVDBit.
+* Abaddon hovertank added. (WIP) 100 FE, 8192 AVDBit. Plasma Beam. Flamethrower. (lit on fire)
+* Plasma Beam added. (Vehicle weapon only for now.)
+  + A continuous-fire energy beam used by the Strogg for mining.
+  + While highly damaging to vehicles and deployables, its effectiveness
+    against living targets is low.
+* Flamethrower added. (Vehicle weapon only for now.)
+  + Spews a cone of flaming plasma across multiple targets, showering the
+    ground beneath with sticky flamelets. Vehicles and deployables are
+    immune to flame.
+* Players can now be lit on fire, burning and suffering damage.
+* Cvar g_useQuake4Railgun added.
+  + Default 1.
+  + Controls whether the Railgun has penetration properties, allowing it to
+    be fired through multiple targets(players and corpses only), or not.
+
 
 BUG FIXES:
 
