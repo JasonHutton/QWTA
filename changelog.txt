@@ -17,7 +17,12 @@ CHANGES:
   + Default 1.
   + Controls whether the Railgun has penetration properties, allowing it to
     be fired through multiple targets(players and corpses only), or not.
-
+* Cvar g_disableVehicleRespawns added.
+* Cvar g_disablePlayerRespawns added.
+* Cvar g_useShieldAbsorber added.
+  + Default 1.
+  + Allows the use of the Tactical Shield's altfire, which re-absorbs
+    shields that have been deployed.
 
 BUG FIXES:
 
