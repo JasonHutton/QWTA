@@ -75,6 +75,7 @@ object player {
 	void		ScanForMines();
 
 	boolean		EnergyBar_Remove( float amount );
+	boolean		EnergyBar_Add( float amount );
 	boolean		EnergyBar_CanRemove( float amount );
 	float		EnergyBar_CalcChargeUsed();
 
@@ -1515,6 +1516,28 @@ boolean player::EnergyBar_Remove( float amount ) {
 	return true;
 }
 
+/*
+================
+player::EnergyBar_Add
+================
+*/
+boolean player::EnergyBar_Add( float amount ) {
+	if ( chargeTimer == -1 ) {
+		return false;
+	}
+
+	float chargeUsed = EnergyBar_CalcChargeUsed();
+
+	chargeUsed = chargeUsed - amount;
+	if ( chargeUsed < 0.f ) {
+		chargeUsed = 0.f;
+	}
+	sys.setTargetTimerValue( chargeTimer, self, sys.getTime() + ( chargeUsed * energyChargeTime ) );
+
+	chargeUsed = EnergyBar_CalcChargeUsed();
+
+	return true;
+}
 
 /*
 ================

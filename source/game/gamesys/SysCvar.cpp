@@ -596,6 +596,7 @@ idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_
 idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Notify players of the launch of Hammer or DMC artillery." );
 idCVar	g_useDeathFading(			"g_useDeathFading",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use screen fading effects when dead or unconscious?" );
 idCVar	g_useReverseAirstrikes(		"g_useReverseAirstrikes",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use reversed airstrikes on the altfire of the Vampire and Violator?" );
+idCVar	g_useShieldAbsorber(		"g_useShieldAbsorber",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use the shield absorber as the altfire of the Tactical Shield?" );
 idCVar	g_useNuclearHammer(			"g_useNuclearHammer",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Make the Hammer and SSM missiles behave more like tactical nukes?" );
 idCVar	g_useQuake4Hyperblaster(	"g_useQuake4Hyperblaster",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Use Quake 4-style Hyperblaster weaponry?" );
 idCVar	g_useQuake4Railgun(			"g_useQuake4Railgun",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Use Quake 4-style Railgun weaponry?" );

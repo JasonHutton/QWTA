@@ -153,6 +153,22 @@ invItemDef inventory/tools/force_shield {
 		"fx_recharge"				"effects/items/forceshield_recharge"
 		"fx_recharge2"				"effects/items/forceshield_recharge2"
 		"fx_recharge3"				"effects/items/forceshield_recharge3"
+		
+		"dmg_shieldabsorb"			"damage_shieldabsorb"
+		"absorb_range"				"256"
+	}
+}
+
+damageDef damage_shieldabsorb {
+	damage							"damage_shieldabsorb"
+
+	prof_damage						"pro_oppressor_damage"
+}
+
+damageFilter damage_shieldabsorb {
+	type {
+		target	"target_all"
+		damage	1000
 	}
 }
 

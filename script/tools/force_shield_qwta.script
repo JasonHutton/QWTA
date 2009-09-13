@@ -14,8 +14,10 @@ object tool_force_shield_qwta : tool_force_shield {
 	void		Idle();
 
 	void		Fire();
+	void		AltFire();
 
 	boolean		CanFire();
+	boolean		CanAltFire();
 	
 	void		ToolTipThread_Raise();
 	
@@ -36,12 +38,18 @@ object tool_force_shield_qwta : tool_force_shield {
 	boolean		rechargeEffectOn;
 	boolean		idleEffectOn;
 	boolean		worldIdleEffectOn;
+	
+	float		shieldAbsorb;
+	float		absorbRange;
 }
 
 void tool_force_shield_qwta::preinit() {
 	rechargeEffectOn = false;
 	idleEffectOn = false;
 	worldIdleEffectOn = false;
+	
+	shieldAbsorb = GetDamage( getKey( "dmg_shieldabsorb" ) );
+	absorbRange = getFloatKey( "absorb_range" );
 }
 
 void tool_force_shield_qwta::init() {
@@ -57,7 +65,7 @@ void tool_force_shield_qwta::destroy() {
 	StopRechargeEffect();
 }
 
-void tool_force_shield::Raise() {
+void tool_force_shield_qwta::Raise() {
 	UpdateCharge();
 
 	Base_Raise();
@@ -95,6 +103,7 @@ void tool_force_shield_qwta::Idle() {
 		if ( WEAPON_ATTACK ) {
 			if ( !mainFireDown ) {
 				mainFireDown = true;
+
 				if ( CanFire() ) {
 					weaponState( "Fire", 0 );
 				} else {
@@ -105,8 +114,23 @@ void tool_force_shield_qwta::Idle() {
 					}
 				}
 			}
+		} else if ( g_useShieldAbsorber.getBoolValue() && WEAPON_ALTFIRE ) {
+			if ( !altFireDown ) {
+				altFireDown = true;
+				
+				if ( CanAltFire() ) {
+					weaponState( "AltFire", 0 );
+				} else {
+					if ( myPlayer.isLocalPlayer() ) {
+						myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+						sys.startSoundDirect( getKey( "snd_need_charge" ), SND_ANY );
+						G_NotifyNoCharge( myPlayer );
+					}
+				}
+			}
 		} else {
 			mainFireDown = false;
+			altFireDown = false;
 		}
 
 		UpdateCharge();
@@ -133,6 +157,20 @@ void tool_force_shield_qwta::Idle() {
 
 boolean tool_force_shield_qwta::CanFire() {
 	return myPlayer.EnergyBar_CanRemove( chargePerUse );
+}
+
+boolean tool_force_shield_qwta::CanAltFire() {
+	vector origin = myPlayer.getViewOrigin();
+	vector forward = sys.angToForward( myPlayer.getViewAngles() );
+	vector endPos = origin + forward * absorbRange;
+	float traceFraction = sys.tracePoint( origin, endPos, MASK_PROJECTILE, $null_entity );
+	if ( traceFraction < 1.f ) {
+		force_shield ent = sys.getTraceEntity();
+		if ( ent != $null_entity ) {
+			return true;
+		}
+	}
+	return false;
 }
 
 void tool_force_shield_qwta::Fire() {
@@ -174,6 +212,35 @@ void tool_force_shield_qwta::Fire() {
 		velocity = forward * velocity_x;
 		shieldProj.setLinearVelocity( velocity );
 		shieldProj.vSetOwner( myPlayer );
+	}
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+	recharge = true;
+	
+	nextChargeMessageTime = sys.getTime() + 2.f;
+	
+	weaponState( "Idle", 1 );
+}
+
+void tool_force_shield_qwta::AltFire() {
+	playAnim( ANIMCHANNEL_ALL, "fire" );
+	fired();
+	//sys.wait( 0.1 );
+
+	if ( !sys.isClient() ) {
+		vector origin = myPlayer.getViewOrigin();
+		vector forward = sys.angToForward( myPlayer.getViewAngles() );
+		vector endPos = origin + forward * absorbRange;
+		float traceFraction = sys.tracePoint( origin, endPos, MASK_PROJECTILE, $null_entity );
+		if ( traceFraction < 1.f ) {
+			force_shield ent = sys.getTraceEntity();
+			if ( ent != $null_entity ) {
+				float health = ent.getHealth();
+				float maxHealth = ent.getMaxHealth();
+				ent.OnKilled( self, myPlayer, shieldAbsorb, forward, 0.f );
+				myPlayer.EnergyBar_Add( chargePerUse * ( health / maxHealth ) / 2.f );
+			}
+		}
 	}
 
 	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );

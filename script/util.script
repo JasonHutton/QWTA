@@ -158,6 +158,7 @@ cvar	g_useBaseETQW12Shotguns;
 cvar	g_useQuake4DarkMatter;
 cvar	g_artilleryWarning;
 cvar	g_useReverseAirstrikes;
+cvar	g_useShieldAbsorber;
 cvar	g_useNuclearHammer;
 cvar	g_useQuake4Hyperblaster;
 cvar	g_advancedVehicleDrops;
