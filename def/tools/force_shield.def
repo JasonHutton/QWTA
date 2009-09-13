@@ -98,7 +98,7 @@ invItemDef inventory/tools/force_shield {
 		"anim_prefix"				"hands_teleporter"
 		"anim_prefix_class"			"hands"
 
-		"weapon_scriptobject"		"tool_force_shield"
+		"weapon_scriptobject"		"tool_force_shield_qwta"
 
 		"num_projectiles"			"1"
 		"spread"					"0"
