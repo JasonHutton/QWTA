@@ -1,0 +1,245 @@
+/***********************************************************************
+
+	force_shield.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+//Firstperson
+/*
+export Frankie {
+	options -prefix THEFORCE_ -sourcedir models/tools/force_shield/dev_sd -destdir models/tools/force_shield
+
+	mesh	force_shield_base_file.mb			-dest view.md5mesh
+	anim	force_shield_idle.mb				-dest idle.md5anim -range 6 200
+ 	anim	force_shield_lower.mb				-dest raise.md5anim -range 0 5
+
+ 	anim	force_shield_lower.mb				-dest lower.md5anim -range 6 38
+
+ 	anim	force_shield_fire.mb				-dest fire.md5anim	-range 0 23
+ 	anim	force_shield_fire.mb				-dest recharge.md5anim	-range 24 278
+
+}
+
+*/
+
+//Thirdperson
+
+export hauser {
+	options -prefix FORCE_ -sourcedir models/tools/force_shield/dev_sd -destdir models/tools/force_shield
+
+	mesh	force_shield_thirdperson.mb			-dest force_shield_thirdperson.md5mesh
+	anim	force_shield_thirdperson.mb			-dest force_shield_thirdperson.md5anim
+
+}
+
+
+
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_force_shield {
+	mesh						models/tools/force_shield/view.md5mesh
+	anim raise					models/tools/force_shield/raise.md5anim {
+		frame	1					sound_channel snd_weapon_foley snd_init
+	}
+	anim idle 					models/tools/force_shield/idle.md5anim {
+	}
+	anim fire 					models/tools/force_shield/fire.md5anim {
+		frame 1						effect fx_fire joint10
+		frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+	anim putaway 				models/tools/force_shield/lower.md5anim {
+		frame	1					sound_channel snd_weapon_foley snd_lower
+	}
+	anim recharge 				models/tools/force_shield/recharge.md5anim {
+	}
+}
+
+
+// ========================================================================
+// world Models
+//
+
+model force_shield {
+	mesh						models/tools/force_shield/force_shield_thirdperson.md5mesh
+
+	anim idle 					models/tools/force_shield/force_shield_thirdperson.md5anim {
+		//frame 1						effect fx_loop_world ball
+	}
+	anim fire 					models/tools/force_shield/force_shield_thirdperson.md5anim {
+		frame 1						effect fx_fire_world ball
+	}
+
+}
+
+
+
+// ========================================================================
+// Entity DEFS
+//
+
+
+invItemDef inventory/tools/force_shield {
+	type						"tool"
+	slot						"item"
+	name						"game/weapons/shield"
+
+	data {
+		"model_view" 				"viewmodel_force_shield"
+		"model_world"				"force_shield"
+		"joint_attach"				"RightForeArmRoll"
+
+		"view_offset"				"-7.5 0 0"
+		"anim_prefix"				"hands_teleporter"
+		"anim_prefix_class"			"hands"
+
+		"weapon_scriptobject"		"tool_force_shield"
+
+		"num_projectiles"			"1"
+		"spread"					"0"
+		"hide_clip"					"1"
+		"show_charge"				"1"
+
+		"timer_charge"				"energy_device"
+		"charge_per_use"			"50"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/shieldgun"
+
+		"tt_intro_1"				"force_shield_intro_1"
+		"tt_intro_2"				"force_shield_intro_2"
+		"tt_need_charge"			"force_shield_need_charge"
+
+		"crosshair"					"small"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"melee_distance"			"4"
+
+		"def_forcefield"			"projectiles/force_shield"
+		"def_forcefield_mega"		"projectiles/force_shield_mega"
+
+		"range_damage"				"1024"
+
+		"player_weapon_num"			"22"
+
+		"snd_init"					"sounds/tools/forceshield/raise"
+		"snd_lower"					"sounds/tools/forceshield/lower"
+		"snd_fire"					"sounds/tools/forceshield/toss"
+		"snd_need_charge"			"sounds/ui/main/cannot"
+
+		"fx_loop"					"effects/items/forceshield_idle"
+		"fx_loop_world"				"effects/items/forceshield_idle_world"
+		"fx_fire"					"effects/items/forceshield_fire"
+		"fx_fire_world"				"effects/items/forceshield_fire_world"
+		"fx_recharge"				"effects/items/forceshield_recharge"
+		"fx_recharge2"				"effects/items/forceshield_recharge2"
+		"fx_recharge3"				"effects/items/forceshield_recharge3"
+	}
+}
+
+entityDef projectiles/force_shield {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"projectile_forceshield"
+
+	"mins"							"-4 -4 -1.5"
+	"maxs"							"4 4 1.5"
+
+	"model" 						"models/tools/force_shield/force_shield_small.lwo"
+
+	"option_write_bind"					"1"
+	"option_simple_rigid_body_physics"	"1"
+	"option_unlock_interpolate"			"1"
+
+	"linear_friction"				"0.8"
+	"angular_friction"				"0.8"
+	"contact_friction"				"0.8"
+	"bouncyness"					"0"
+	"mass"							"10"
+	"gravity"						"1066"
+	"stick_on_contact"				"0"
+	"velocity"						"400 0 0"
+	"angular_velocity"				"0 0 0"
+
+	"def_shield"					"projectiles/force_shield_shield"
+}
+
+entityDef projectiles/force_shield_mega {
+	"inherit"						"projectiles/force_shield"
+	"def_shield"					"projectiles/force_shield_shield_mega"
+}
+
+
+entityDef projectiles/force_shield_shield {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"force_shield"
+
+	"model"							"models/tools/force_shield/force_shield.lwo"
+	"cm_model"						"models/tools/force_shield/force_shield.lwo"
+
+	"option_write_bind"				"1"
+
+	"health"						"450"
+	"collection_vehicles"			"vehicles"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_emp_kill"			"emp_kill"
+
+	"life_time"						"40"
+	"blink_start"					"5"
+	"blink_multiplier"				"0.2"
+	"blink_max_off"					"0.2"
+
+	"fx_hit"						"effects/base/bullets/impact_forcefield"
+	"sticks_to_entities"			"0"
+
+	"prof_damage"					"pro_oppressor_force_shield"
+
+	"snd_start"						"sounds/tools/forceshield/start"
+	"snd_stop"						"sounds/tools/forceshield/stop"
+}
+
+entityDef projectiles/force_shield_shield_mega {
+	"inherit"						"projectiles/force_shield_shield"
+	"health"						"600"
+	"skin"							"sfx/forceshield_mega"
+}
+
+
+#include "templates/tooltips.include"
+
+toolTip force_shield_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/force_shield_1"
+}
+
+toolTip force_shield_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_deploy_item"
+}
+
+toolTip force_shield_need_charge {
+	alwaysPlay
+	length 2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
