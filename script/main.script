@@ -348,6 +348,9 @@ void game_main() {
 	g_vehicleDropsUseFE			= sys.getCVar( "g_vehicleDropsUseFE", "" );
 	g_useBaseETQWVehicleCredits	= sys.getCVar( "g_useBaseETQWVehicleCredits", "" );
 	g_vehicleSpawnsUseFE		= sys.getCVar( "g_vehicleSpawnsUseFE", "" );
+	
+	g_disableVehicleRespawns	= sys.getCVar( "g_disableVehicleRespawns", "" );
+	g_disablePlayerRespawns	= sys.getCVar( "g_disablePlayerRespawns", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

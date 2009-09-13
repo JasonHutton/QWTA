@@ -165,6 +165,9 @@ cvar	g_vehicleDropsUseFE;
 cvar	g_useBaseETQWVehicleCredits;
 cvar	g_vehicleSpawnsUseFE;
 
+cvar	g_disableVehicleRespawns;
+cvar	g_disablePlayerRespawns;
+
 object gameplay_base;
 gameplay_base gameplayManager;
 

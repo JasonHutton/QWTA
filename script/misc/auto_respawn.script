@@ -36,6 +36,8 @@ object auto_respawn {
 
 	float			vehicleType;
 	float			playerType;
+	
+	boolean			bHasSpawnedOnce;
 }
 
 void auto_respawn::preinit() {
@@ -51,6 +53,8 @@ void auto_respawn::preinit() {
 	active = getIntKeyWithDefault( "start_active", false );
 
 	setContents( CONTENTS_TRIGGER );
+	
+	bHasSpawnedOnce = false;
 }
 
 void auto_respawn::init() {
@@ -99,6 +103,7 @@ boolean auto_respawn::SpawnVehicle() {
 		vehicle.setOrigin( getOrigin() );
 		vehicle.setAngles( getAngles() );
 		vehicle.vSetDeployer( self );
+		bHasSpawnedOnce = true;
 		return true;
 	}
 	return false;
@@ -112,6 +117,10 @@ boolean auto_respawn::CheckSpawn() {
 	}
 
 	if ( g_disableVehicleSpawns.getBoolValue() ) {
+		return false;
+	}
+	
+	if ( g_disableVehicleRespawns.getBoolValue() && bHasSpawnedOnce ) {
 		return false;
 	}
 

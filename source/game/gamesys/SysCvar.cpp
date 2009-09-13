@@ -612,6 +612,8 @@ idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME
 idCVar	g_useBaseETQWVehicleCharge(	"g_useBaseETQWVehicleCharge",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the BaseETQW vehicle credit charge timer duration be used?" );
 
 idCVar	g_vehicleSpawnsUseFE(		"g_vehicleSpawnsUseFE",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Do vehicle spawns have Force Escalation requirements?" );
+idCVar	g_disableVehicleRespawns(	"g_disableVehicleRespawns",		"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Are vehicles permitted to respawn after being destroyed?" );
+idCVar	g_disablePlayerRespawns(	"g_disablePlayerRespawns",		"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Are players permitted to respawn after being killed?" );
 
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
