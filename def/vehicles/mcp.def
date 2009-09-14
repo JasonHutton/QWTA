@@ -1,0 +1,695 @@
+// ========================================================================
+// Export
+/*
+reexportmodels vehicles/mcp.def
+testmodel vehicle_mcp
+*/
+
+export hauser {
+		options -prefix MCP_ -rotate 270 -scale 0.9 -sourcedir models/vehicles/edf_mcp/dev_sd -destdir models/vehicles/edf_mcp/
+		addoptions -keep left_hand_ik right_hand_ik hull carrier_driver carrier_gunner1 right_track right_wheel_dynamix_01 right_wheel_rotation_01 right_wheel_dynamix_02 right_wheel_rotation_02 right_wheel_dynamix_03 right_wheel_rotation_03 right_wheel_dynamix_04 right_wheel_rotation_04 right_wheel_dynamix_05 right_wheel_rotation_05 right_wheel_dynamix_06 right_wheel_rotation_06 right_wheel_dynamix_07 right_wheel_rotation_07 right_wheel_dynamix_08 right_wheel_rotation_08 left_track left_wheel_dynamix_01 left_wheel_rotation_01 left_wheel_dynamix_02 left_wheel_rotation_02 left_wheel_dynamix_03 left_wheel_rotation_03 left_wheel_dynamix_04 left_wheel_rotation_04 left_wheel_dynamix_05 left_wheel_rotation_05 left_wheel_dynamix_06 left_wheel_rotation_06 left_wheel_dynamix_07 left_wheel_rotation_07 left_wheel_dynamix_08 left_wheel_rotation_08 minigun_arm minigun minigun_barrel minigun_muzzle minigunner_cam exit_1 exit_2 exit_3 exit_4 rear_left_light rear_right_light front_gun_arm front_gun front_gun_muzzle lower_piston lower_piston_tem lower_piston_aimConstraint1 slider barrel_base upper_piston upper_piston_tem upper_piston_aimConstraint1 missile_spawn joint26 joint27 joint13 joint13_aimConstraint1 joint9 joint8 joint4 joint5 joint6 joint7 joint21 joint21_aimConstraint1 joint12 joint11 joint18 joint14 joint15 joint15_aimConstraint1 joint22 joint19 joint25 joint1 joint23 joint23_aimConstraint1 minigunner_attachment pilot_cam thirdperson_cam fire_joint
+		addoptions -keepmesh gpmg_basemesh gpmgmesh gpmg_baseshadowmesh gpmg_shadowmesh s_scud s_right_support_leg s_front_support_leg s_left_supprt_foot s_rear_support_leg s_radar_dish s_right_support_foot s_front_support_foot s_left_suppor_foot s_rear_support_foot s_scud_lower_piston s_hull s_scud_cover1 s_scud_cover2 s_radar_panel2 s_radar_panel1 s_minigun_shadow s_radar_pole lod0_minigun_barrel lod0_minigun_base lod0_minigun_base2 lod0_minigun_surround lod0_radar_pole1 lod0_radar_pole2 lod0_radar_pole3 lod0_radar_dish lod0_left_track lod0_left_wheel1 lod0_left_wheel2 lod0_left_wheel3 lod0_left_wheel4 lod0_left_wheel5 lod0_left_wheel6 lod0_left_wheel7 lod0_left_wheel8 lod0_right_track lod0_right_wheel1 lod0_right_wheel2 lod0_right_wheel3 lod0_right_wheel4 lod0_right_wheel5 lod0_right_wheel6 lod0_right_wheel7 lod0_right_wheel8 lod0_front_gun lod0_main_shell lod0_scud_base lod0_radar_panel1 lod0_radar_panel2 lod0_minigun_hatch lod0_right_piston lod0_front_piston lod0_left_piston lod0_rear_piston lod0_left_support_foot lod0_front_support_foot lod0_right_support_foot lod0_rear_support_foot lod0_rear_support_leg lod0_left_support_leg lod0_front_support_leg lod0_right_support_leg lod0_scud_slider lod0_scud_upper_piston lod0_scud_surround lod0_scud_cover1 lod0_scud_cover2 lod0_scud lod0_scud_lower_piston lod0_front_gun_pitch
+		addoptions -noanimate lod0_main_shell lod0_scud_base s_hull
+
+/*
+		mesh MCP_rework_anims.mb 	-dest mcp_rework.md5mesh -range 0 0
+
+		anim MCP_rework_anims.mb 	-dest mcp_rework.md5anim -range 0 0
+*/
+		anim MCP_rework_anims.mb 	-dest mcp_rework_undeployed_disabled.md5anim -range 440 465
+/*
+		anim MCP_rework_anims.mb 	-dest mcp_rework_deploy.md5anim -range 1 400
+
+		anim MCP_rework_anims.mb 	-dest mcp_rework_deployed.md5anim -range 400 400
+		*/
+		anim MCP_rework_anims.mb	-dest mcp_rework_disabled.md5anim -range 400 420
+
+}
+
+/*
+export hauser {
+		options -prefix MCP_ -rotate 270 -scale 0.9 -sourcedir models/vehicles/edf_mcp/dev_sd -destdir models/vehicles/edf_mcp/
+		addoptions -nojoints -nomerge -keep left_hand_ik right_hand_ik hull carrier_driver carrier_gunner1 right_track right_wheel_dynamix_01 right_wheel_rotation_01 right_wheel_dynamix_02 right_wheel_rotation_02 right_wheel_dynamix_03 right_wheel_rotation_03 right_wheel_dynamix_04 right_wheel_rotation_04 right_wheel_dynamix_05 right_wheel_rotation_05 right_wheel_dynamix_06 right_wheel_rotation_06 right_wheel_dynamix_07 right_wheel_rotation_07 right_wheel_dynamix_08 right_wheel_rotation_08 left_track left_wheel_dynamix_01 left_wheel_rotation_01 left_wheel_dynamix_02 left_wheel_rotation_02 left_wheel_dynamix_03 left_wheel_rotation_03 left_wheel_dynamix_04 left_wheel_rotation_04 left_wheel_dynamix_05 left_wheel_rotation_05 left_wheel_dynamix_06 left_wheel_rotation_06 left_wheel_dynamix_07 left_wheel_rotation_07 left_wheel_dynamix_08 left_wheel_rotation_08 minigun_arm minigun minigun_barrel minigun_muzzle minigunner_cam exit_1 exit_2 exit_3 exit_4 rear_left_light rear_right_light front_gun_arm front_gun front_gun_muzzle lower_piston lower_piston_tem lower_piston_aimConstraint1 slider barrel_base upper_piston upper_piston_tem upper_piston_aimConstraint1 missile_spawn joint26 joint27 joint13 joint13_aimConstraint1 joint9 joint8 joint4 joint5 joint6 joint7 joint21 joint21_aimConstraint1 joint12 joint11 joint18 joint14 joint15 joint15_aimConstraint1 joint22 joint19 joint25 joint1 joint23 joint23_aimConstraint1 minigunner_attachment pilot_cam thirdperson_cam fire_joint
+		addoptions -keepmesh gpmg_basemesh gpmgmesh gpmg_baseshadowmesh gpmg_shadowmesh s_scud s_right_support_leg s_front_support_leg s_left_supprt_foot s_rear_support_leg s_radar_dish s_right_support_foot s_front_support_foot s_left_suppor_foot s_rear_support_foot s_scud_lower_piston s_hull s_scud_cover1 s_scud_cover2 s_radar_panel2 s_radar_panel1 s_minigun_shadow s_radar_pole lod3_right_track lod3_left_track lod3_scud lod3_scud_cover1 lod3_scud_cover2 lod3_radar_panel1 lod3_radar_panel2 lod3_minigun_barrel lod3_minigun lod3_rear_piston lod3_right_piston lod3_left_piston lod3_front_piston lod3_radar_pole3 lod3_radar_pole1 lod3_radar_pole2 lod3_left_wheel1 lod3_left_wheel2 lod3_left_wheel3 lod3_left_wheel4 lod3_left_wheel5 lod3_left_wheel6 lod3_left_wheel7 lod3_left_wheel8 lod3_right_wheel1 lod3_right_wheel2 lod3_right_wheel3 lod3_right_wheel4 lod3_right_wheel5 lod3_right_wheel6 lod3_right_wheel7 lod3_right_wheel8 lod3_radar_dish lod3_main_shell lod3_minigun_surround lod3_scud_base lod3_scud_lower_piston lod3_front_support_leg lod3_front_support_foot lod3_right_support_foot lod3_right_support_leg lod3_rear_support_foot lod3_rear_support_leg lod3_left_support_leg lod3_left_support_foot lod0_front_gun_pitch lod0_front_gun
+		addoptions -noanimate lod3_main_shell lod3_scud_base s_hull
+		mesh MCP_rework_anims.mb 	-dest mcp_rework_lod1.md5mesh -range 0 0
+}
+
+
+
+export hauser {
+		options -prefix MCP_ -rotate 270 -scale 0.9 -sourcedir models/vehicles/edf_mcp/dev_sd -destdir models/vehicles/edf_mcp/
+		addoptions -nojoints -nomerge -keep left_hand_ik right_hand_ik hull carrier_driver carrier_gunner1 right_track right_wheel_dynamix_01 right_wheel_rotation_01 right_wheel_dynamix_02 right_wheel_rotation_02 right_wheel_dynamix_03 right_wheel_rotation_03 right_wheel_dynamix_04 right_wheel_rotation_04 right_wheel_dynamix_05 right_wheel_rotation_05 right_wheel_dynamix_06 right_wheel_rotation_06 right_wheel_dynamix_07 right_wheel_rotation_07 right_wheel_dynamix_08 right_wheel_rotation_08 left_track left_wheel_dynamix_01 left_wheel_rotation_01 left_wheel_dynamix_02 left_wheel_rotation_02 left_wheel_dynamix_03 left_wheel_rotation_03 left_wheel_dynamix_04 left_wheel_rotation_04 left_wheel_dynamix_05 left_wheel_rotation_05 left_wheel_dynamix_06 left_wheel_rotation_06 left_wheel_dynamix_07 left_wheel_rotation_07 left_wheel_dynamix_08 left_wheel_rotation_08 minigun_arm minigun minigun_barrel minigun_muzzle minigunner_cam exit_1 exit_2 exit_3 exit_4 rear_left_light rear_right_light front_gun_arm front_gun front_gun_muzzle lower_piston lower_piston_tem lower_piston_aimConstraint1 slider barrel_base upper_piston upper_piston_tem upper_piston_aimConstraint1 missile_spawn joint26 joint27 joint13 joint13_aimConstraint1 joint9 joint8 joint4 joint5 joint6 joint7 joint21 joint21_aimConstraint1 joint12 joint11 joint18 joint14 joint15 joint15_aimConstraint1 joint22 joint19 joint25 joint1 joint23 joint23_aimConstraint1 minigunner_attachment pilot_cam thirdperson_cam fire_joint
+		addoptions -keepmesh gpmg_basemesh gpmgmesh gpmg_baseshadowmesh gpmg_shadowmesh s_scud s_right_support_leg s_front_support_leg s_left_supprt_foot s_rear_support_leg s_radar_dish s_right_support_foot s_front_support_foot s_left_suppor_foot s_rear_support_foot s_scud_lower_piston s_hull s_scud_cover1 s_scud_cover2 s_radar_panel2 s_radar_panel1 s_minigun_shadow s_radar_pole lod3_right_track lod3_left_track lod3_scud lod3_scud_cover1 lod3_scud_cover2 lod3_radar_panel1 lod3_radar_panel2 lod3_minigun_barrel lod3_minigun lod3_rear_piston lod3_right_piston lod3_left_piston lod3_front_piston lod3_radar_pole3 lod3_radar_pole1 lod3_radar_pole2 lod3_left_wheel1 lod3_left_wheel2 lod3_left_wheel3 lod3_left_wheel4 lod3_left_wheel5 lod3_left_wheel6 lod3_left_wheel7 lod3_left_wheel8 lod3_right_wheel1 lod3_right_wheel2 lod3_right_wheel3 lod3_right_wheel4 lod3_right_wheel5 lod3_right_wheel6 lod3_right_wheel7 lod3_right_wheel8 lod3_radar_dish lod3_main_shell lod3_minigun_surround lod3_scud_base lod3_scud_lower_piston lod3_front_support_leg lod3_front_support_foot lod3_right_support_foot lod3_right_support_leg lod3_rear_support_foot lod3_rear_support_leg lod3_left_support_leg lod3_left_support_foot lod0_front_gun_pitch lod0_front_gun
+		addoptions -noanimate lod3_main_shell lod3_scud_base s_hull
+		mesh MCP_rework_anims.mb 	-dest mcp_rework_lod2.md5mesh -range 0 0
+}
+
+
+
+
+export hauser {
+		options -prefix MCP_ -rotate 270 -scale 0.9 -sourcedir models/vehicles/edf_mcp/dev_sd -destdir models/vehicles/edf_mcp/
+		addoptions -nojoints -nomerge -keep left_hand_ik right_hand_ik hull carrier_driver carrier_gunner1 right_track right_wheel_dynamix_01 right_wheel_rotation_01 right_wheel_dynamix_02 right_wheel_rotation_02 right_wheel_dynamix_03 right_wheel_rotation_03 right_wheel_dynamix_04 right_wheel_rotation_04 right_wheel_dynamix_05 right_wheel_rotation_05 right_wheel_dynamix_06 right_wheel_rotation_06 right_wheel_dynamix_07 right_wheel_rotation_07 right_wheel_dynamix_08 right_wheel_rotation_08 left_track left_wheel_dynamix_01 left_wheel_rotation_01 left_wheel_dynamix_02 left_wheel_rotation_02 left_wheel_dynamix_03 left_wheel_rotation_03 left_wheel_dynamix_04 left_wheel_rotation_04 left_wheel_dynamix_05 left_wheel_rotation_05 left_wheel_dynamix_06 left_wheel_rotation_06 left_wheel_dynamix_07 left_wheel_rotation_07 left_wheel_dynamix_08 left_wheel_rotation_08 minigun_arm minigun minigun_barrel minigun_muzzle minigunner_cam exit_1 exit_2 exit_3 exit_4 rear_left_light rear_right_light front_gun_arm front_gun front_gun_muzzle lower_piston lower_piston_tem lower_piston_aimConstraint1 slider barrel_base upper_piston upper_piston_tem upper_piston_aimConstraint1 missile_spawn joint26 joint27 joint13 joint13_aimConstraint1 joint9 joint8 joint4 joint5 joint6 joint7 joint21 joint21_aimConstraint1 joint12 joint11 joint18 joint14 joint15 joint15_aimConstraint1 joint22 joint19 joint25 joint1 joint23 joint23_aimConstraint1 minigunner_attachment pilot_cam thirdperson_cam fire_joint
+		addoptions -keepmesh gpmg_basemesh gpmgmesh gpmg_baseshadowmesh gpmg_shadowmesh s_scud s_right_support_leg s_front_support_leg s_left_supprt_foot s_rear_support_leg s_radar_dish s_right_support_foot s_front_support_foot s_left_suppor_foot s_rear_support_foot s_scud_lower_piston s_hull s_scud_cover1 s_scud_cover2 s_radar_panel2 s_radar_panel1 s_minigun_shadow s_radar_pole lod3_right_track lod3_left_track lod3_scud lod3_scud_cover1 lod3_scud_cover2 lod3_radar_panel1 lod3_radar_panel2 lod3_minigun_barrel lod3_minigun lod3_rear_piston lod3_right_piston lod3_left_piston lod3_front_piston lod3_radar_pole3 lod3_radar_pole1 lod3_radar_pole2 lod3_left_wheel1 lod3_left_wheel2 lod3_left_wheel3 lod3_left_wheel4 lod3_left_wheel5 lod3_left_wheel6 lod3_left_wheel7 lod3_left_wheel8 lod3_right_wheel1 lod3_right_wheel2 lod3_right_wheel3 lod3_right_wheel4 lod3_right_wheel5 lod3_right_wheel6 lod3_right_wheel7 lod3_right_wheel8 lod3_radar_dish lod3_main_shell lod3_minigun_surround lod3_scud_base lod3_scud_lower_piston lod3_front_support_leg lod3_front_support_foot lod3_right_support_foot lod3_right_support_leg lod3_rear_support_foot lod3_rear_support_leg lod3_left_support_leg lod3_left_support_foot lod0_front_gun_pitch lod0_front_gun
+		addoptions -noanimate lod3_main_shell lod3_scud_base s_hull
+		mesh MCP_rework_anims.mb 	-dest mcp_rework_lod3.md5mesh -range 0 0
+}
+*/
+
+
+// ========================================================================
+// Model
+//
+
+model vehicle_mcp {
+
+	mesh						models/vehicles/edf_mcp/mcp_rework.md5mesh
+	anim ik_pose				models/vehicles/edf_mcp/mcp_rework.md5anim {
+	}
+	anim idle					models/vehicles/edf_mcp/mcp_rework.md5anim {
+	}
+	anim base					models/vehicles/edf_mcp/mcp_rework.md5anim {
+	}
+	anim undeployed_disabled 	models/vehicles/edf_mcp/mcp_rework_undeployed_disabled.md5anim {
+	}
+
+	anim deploy					models/vehicles/edf_mcp/mcp_rework_deploy.md5anim {
+		frame	2					sound_channel snd_deployable_deploy snd_movement_01	// Foot coming down
+		frame	40					sound_channel snd_deployable_deploy2 snd_movement_05		// Opening radio dish doors
+		frame	100					sound_channel snd_deployable_deploy3 snd_radio_dish	// Raising Radio Dish
+		frame	130					sound_channel snd_deployable_deploy4 snd_movement_04		// Raising MCP Up off the ground
+		frame	188					sound_channel snd_deployable_deploy5 snd_movement_03		// Raising main missile silo
+		frame	340					sound_channel snd_deployable_deploy snd_movement_06		// Opening Silo Flaps
+	}
+	anim deployed				models/vehicles/edf_mcp/mcp_rework_deployed.md5anim {
+	}
+	anim disabled				models/vehicles/edf_mcp/mcp_rework_disabled.md5anim {
+	}
+}
+
+
+// ========================================================================
+// Entity Def
+//
+
+entityDef vehicle_mcp {
+	"inherit"						"vehicle_base_gdf"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Vehicle."
+	"editor_skipmenu"				"0"
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_mcp"
+	"vs_vehicleScript"				"mcp"
+
+	"aor_layout"					"keep_anims"
+
+	"control_context"				"g_bind_context_mcp"
+
+	"angular_friction"				"0.5"
+	"linear_friction"				"0.1"
+	"angular_friction_water"		"0.99"
+	"linear_friction_water"			"0.99"
+	"bouncyness"					"0.2"
+
+	"health"						"7000"
+
+	"info_name"						"game/vec/mcp"
+	"info_offset"					"128"
+
+	"model"							"vehicle_mcp"
+
+	"snd_gatling_fire_start"		"sounds/weapons/gatling/fire/start"
+	"snd_gatling_fire_stop"			"sounds/weapons/gatling/fire/stop"
+	"snd_gatling_barrel_loop"		"sounds/weapons/gatling/barrel/loop"
+	"snd_gatling_barrel_loop_low"	"sounds/weapons/gatling/barrel/loop_low"
+	"snd_gatling_brass_start"		"sounds/weapons/gatling/brass/start"
+	"snd_gatling_brass_stop"		"sounds/weapons/gatling/brass/stop"
+
+	"fx_gatling_muzzle"				"effects/weapons/gatling_muzzleflash"
+
+	"fx_gpmg_fire"					"effects/weapons/gpmg_fire"
+	"fx_gpmg_fire_local"			"effects/weapons/gpmg_fire_local"
+
+	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash_vehicle"
+
+	"fx_gpmg_tracer"				"effects/base/tracers_small"
+	"effectchance fx_gpmg_tracer"	"0.1"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_mcp"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_mcp"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_mcp"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_mcp"
+
+	"fx_scud_launch"				"effects/deployables/mcp_ssm_launch"
+
+	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid"						"effects/vehicles/dust/tire_dust_pavement"
+
+	"fx_wheeldust_none"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_none"				"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_none"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_grass"			"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheelspin_grass"			"effects/vehicles/dust/tire_spin_grass"
+ 	"fx_skid_grass"					"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheeldust_stone"			"effects/vehicles/dust/tire_dust_stone"
+ 	"fx_wheelspin_stone"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_stone"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_sand"				"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_sand"				"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_sand"					"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_pavement"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_wheeldust_pavement"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_skid_pavement"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_dirt"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_dirt"				"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_dirt"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_dusty_road"		"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_dusty_road"		"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_dusty_road"			"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheeldust_gravel"			"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_gravel"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_gravel"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_default"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_default"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_default"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_snow"				"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheelspin_snow"				"effects/vehicles/dust/tire_spin_snow"
+	"fx_skid_snow"					"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheeldust_concrete"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_concrete"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_concrete"				"effects/vehicles/dust/tire_dust_pavement"
+
+	"fx_wheeldust_water"			"effects/vehicles/dust/tire_dust_water"
+	"fx_wheelspin_water"			"effects/vehicles/dust/tire_spin_water"
+	"fx_skid_water"					"effects/vehicles/dust/tire_dust_water"
+
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"hull"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"snd_engine_start"				"sounds/vehicles/mcp/engine/start"
+	"snd_engine_start_interior"		"sounds/vehicles/mcp/interior/engine/start"
+	"snd_engine_stop"				"sounds/vehicles/mcp/engine/stop"
+	"snd_engine_stop_interior"		"sounds/vehicles/mcp/interior/engine/stop"
+	"snd_engine_drive"				"sounds/vehicles/mcp/engine/drive"
+	"snd_engine_drive_interior"		"sounds/vehicles/mcp/interior/engine/drive"
+	"snd_engine_hardaccel"			"sounds/vehicles/mcp/engine/hardaccel"
+	"snd_engine_hardaccel_interior"	"sounds/vehicles/mcp/interior/engine/hardaccel"
+	"snd_engine_idle"				"sounds/vehicles/mcp/engine/idle"
+	"snd_engine_idle_interior"		"sounds/vehicles/mcp/interior/engine/idle"
+
+	"snd_treads"					"sounds/vehicles/mcp/treads"
+	"snd_cockpit"					"sounds/vehicles/mcp/interior/cockpit"
+
+	"snd_tracks"					"sounds/vehicles/mcp/tracks"
+	"snd_tracks_interior"			"sounds/vehicles/mcp/interior/tracks"
+	"snd_horn_loop"					"sounds/vehicles/mcp/horn"
+	"snd_horn_stop"					"sounds/vehicles/mcp/horn/stop"
+	"snd_deploy"					"sounds/vehicles/mcp/deploy"
+
+	"snd_movement_01"				"sounds/vehicles/mcp/movements/movement_01"
+	"snd_movement_02"				"sounds/vehicles/mcp/movements/movement_02"
+	"snd_movement_03"				"sounds/vehicles/mcp/movements/movement_03"
+	"snd_movement_04"				"sounds/vehicles/mcp/movements/movement_04"
+	"snd_movement_05"				"sounds/vehicles/mcp/movements/movement_05"
+	"snd_movement_06"				"sounds/vehicles/mcp/movements/movement_06"
+	"snd_movement_5s_01"			"sounds/vehicles/mcp/movements/movement_5s_01.wav"
+	"snd_radio_dish"				"sounds/vehicles/mcp/movements/radio_dish"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/gdf"
+
+	"snd_vo_off_course_20"			"sounds/vo/gdf/highcommand/objectives/mcp/awol/warning1"
+	"snd_vo_off_course_10"			"sounds/vo/gdf/highcommand/objectives/mcp/awol/warning2"
+	"snd_vo_off_course_0_gdf"		"sounds/vo/gdf/highcommand/objectives/mcp/awol/replace"
+	"snd_vo_off_course_0_strogg"	"sounds/vo/strogg/nexus/objectives/mcp/awol/replace"
+
+	"sound_control"					"tracked"
+
+	"climate_skin_key"				"mcp"
+
+	"engine_pitch_low"				"0.95"
+	"engine_pitch_high"				"1.2"
+	"engine_speed_low"				"5"
+	"engine_speed_high"				"60"
+	
+	//----------------------------------------------------------
+	// Engine sound crossfade settings
+
+	"engine_accel_spool_time"		"0.17"
+	"engine_decel_spool_time"		"0.25"
+
+	"engine_idle_min_speed"			"22.0"
+	"engine_idle_max_speed"			"30.0"
+	"engine_idle_min_vol"			"0.0"
+	"engine_idle_max_vol"			"-15.0"
+	"engine_idle_power"				"1.0"
+	"engine_idle_fade_time"			"0.066"
+
+	"engine_drive_min_speed"		"0.0"
+	"engine_drive_max_speed"		"30.0"
+	"engine_drive_min_vol"			"-10.0"
+	"engine_drive_max_vol"			"0.0"
+	"engine_drive_power"			"0.5"
+	"engine_drive_fade_time"		"0.066"
+
+	"engine_accel_pitch_mult"		"2.4"
+	"engine_accel_pitch_offset"		"0.85"
+
+	"engine_accel_min_speed"		"0.0"
+	"engine_accel_mid_speed"		"5.0"
+	"engine_accel_max_speed"		"30.0"
+	"engine_accel_min_vol"			"-10.0"
+	"engine_accel_mid_vol"			"5.0"
+	"engine_accel_max_vol"			"-10.0"
+	"engine_accel_power_low"		"0.1"
+	"engine_accel_power_high"		"3.0"
+	"engine_accel_fade_time"		"0.0"
+
+	"engine_accel_yaw_vol"			"30.0"
+	"engine_accel_yaw_vol_mult"		"5.0"
+	"engine_accel_yaw_pitch"		"60.0"
+	"engine_accel_yaw_pitch_mult"	"0.08"
+	
+	//----------------------------------------------------------
+	
+	"crash_threshold_0"				"10"
+	"crash_threshold_1"				"250"
+	"crash_threshold_2"				"500"
+	"jump_threshold_0"				"5"
+	"jump_threshold_1"				"20"
+	"jump_threshold_2"				"40"
+
+	"steering_angle"				"45"
+	"steering_speed_scale"			"150"
+	"steering_speed_max"			"40"	// upper limit of steering scale
+	"steering_speed_min"			"10"	// lower limit of steering scale
+	"steering_return_factor"		"1"		// percentage of the max speed used to return the wheels to a straight position
+
+	"joint_damage_smoke"			"fire_joint"
+	"joint_damage_fire"				"fire_joint"
+
+	"gravity"						"1066"
+
+	"brake_threshold"				"50"
+
+	"decay_time"					"120"
+
+	"dmg_collide"					"damage_mcp_collide"
+	"dmg_collide_fatal"				"damage_mcp_collide_fatal"
+	"dmg_crush"						"damage_mcp_crush"
+
+	"icon_size_cm"					"14"
+	"icon_unknown_size_cm"			"14"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_radar"						"hud/commandmap/radar"
+	"mtr_commandmap_objective"		"hud/icons/missionsystem/obj_mcp"
+	"mtr_commandmap_objective_unknown" "guis/nodraw"
+	"icon_sort_objective_cm"		"-104"
+
+	"mtr_icon_flash"				"hud/icons/missionsystem/obj_mcp"
+	"mtr_icon_flash_escort"			"hud/icons/missionsystem/obj_mcp"
+	"icon_sort_cm_flash_icon"		"-105"
+	"icon_flash_size_cm"			"16"	
+
+	"table_gearforces"				"mcp_gear_forcetable"
+	"table_gearspeeds"				"mcp_gear_speedtable"
+	"table_gearspeeds_sw"			"mcp_gear_speedtable_sw"
+
+	"manualgear_next"				"0.5"
+	"manualgear_length"				"10"
+
+	"option_combat_model"				"1"
+	"option_selection_combat_model"		"1"
+	"option_gui_interface"				"1"
+	"option_deploycontrol_interface"	"1"
+	"option_radar_interface"			"1"
+	"option_task_interface"				"1"
+	"option_spawn_interface"			"1"
+	"option_no_collision_push"			"1"
+
+	"spawn_range"					"256"
+
+	"pc_option1"					"soldier"
+	"pc_option2"					"medic"
+	"pc_option3"					"engineer"
+	"pc_option4"					"fieldops"
+	"pc_option5"					"covertops"
+
+	"fx_explode"					"effects/base/explosion"
+
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"1.5"
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"gui_vehicle"					"guis/vehicles/edf_mcp"
+
+	"mask_deployment"				"dm_mcp"
+
+	"repair_multiplier"				"4"
+	"repair_range"					"10"
+	"repair_count"					"100"
+	"radar_range"					"4000"
+	"mask"							"3"
+
+	"tt_repaired"					"vehicle_repaired"
+	"tt_enter"						"vehicle_mcp_enter"
+	"tt_damaged"					"vehicle_mcp_damaged_enter"
+
+	"task_name"						"game/vec/mcp"
+	"task_destroy"					""
+	"task_repair"					""
+
+	"task_goal"						"gdf_goal_mcp"
+	"task_goal_defend"				"defend_goal_strogg"
+	"task_escort"					"gdf_escort_mcp"
+
+	"task_defend_short"				"strogg_stop_mcp_short"
+	"task_defend_medium"			"strogg_stop_mcp_medium"
+	"task_defend_long"				"strogg_stop_mcp_long"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_heavy"		"vehicles_heavy"
+	"collection_beacon"				"beacon"
+	"collection_mcp"				"mcp"
+
+	"resupply_range"				"512"
+
+	"health_stop_moving"			"33"
+	"health_start_moving"			"50"
+
+	"tt_can_deploy"					"vehicle_mcp_can_deploy"
+	"tt_damaged_driver"				"vehicle_mcp_damaged"
+	"tt_repaired_driver"			"vehicle_mcp_repaired"
+	"tt_noentry"					"vehicle_mcp_noentry"
+
+	"input_mode"					"car"
+	"vehicle_control"				"mcp"
+
+	"min_gear_speed"				"5"
+	"max_gear_speed"				"25"
+
+	"def_scud"						"projectile_scud"
+	"joint_launch"					"missile_spawn"
+
+	"def_dropper"					"vehicle_magog_npc"
+	"joint_attach"					"hull"
+
+	"def_projectile_decoy"			"projectile_decoy_mcp"
+	"projectile_decoy_joint"		"joint9"
+	"projectile_decoy_rate"			"1.5"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"1.5"
+	"projectile_decoy_velocity"		"0 0 250"
+
+// 	"fx_decoy_extra"				"effects/weapons/flare_titan"
+//	"extra_decoy_count"				"1"
+//	"extra_decoy_delay"				"0.3"		// in seconds1
+//	"fx_decoy"						"effects/weapons/flare_titan"
+
+	"prof_deploy"					"pro_vehicle_mcp_deploy"
+
+	"waypoint_offset"				"0 0 128"
+
+	"selection_mins"				"-240 -148 36"
+	"selection_maxs"				"200 148 160"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"6"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"2"
+}
+
+damageDef damage_mcp_collide {
+	damage		"damage_mcp_collide"
+
+	stat_name							"mcp_weapons"
+
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/mcp"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/mcp/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/mcp/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_mcp_collide {
+
+	type {
+		target	"target_player_all"
+		damage	1
+	}
+
+//	type {
+//		target	"target_veh_all"
+//		damage	500
+//	}
+
+	type {
+		target	"target_deployables_all"
+		damage	500
+	}
+	
+	type {
+		target	"target_flyer_hive"
+		damage	100
+	}
+}
+
+damageDef damage_mcp_collide_fatal {
+	damage		"damage_mcp_collide_fatal"
+
+	stat_name							"mcp_weapons"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/mcp"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/mcp/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/mcp/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_mcp_collide_fatal {
+
+	type {
+		target	"target_player_all"
+		damage	1
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	1
+	}
+}
+
+// Projectile Entity Def
+// ========================================================================
+
+entityDef projectile_scud {
+	"spawnclass"					"idProjectile_RigidBody"
+	"mins"							"0 -24 -24"
+	"maxs"							"317 24 24"
+	"model"							"models/weapons/missiles/strike_missile/strike.lwo"
+
+	"scriptObject"					"projectile_scud"
+
+	"dmg_damage"					"damage_scud"
+	"dmg_splash_damage"				"damage_scudSplash"
+	"dmg_splash_damage_objective"	"damage_scudSplash_objective"
+
+	"velocity"						"0 0 0"
+	"mass"							"5"
+	"gravity"						"400"
+	"fuse"							"-1"
+	"targetRadius"					"768"
+
+	"collection_scud"				"nuke"
+
+	"health"						"0"
+
+	"aor_layout"					"missile"
+
+	"detonate_on_fuse"				"0"
+	"detonate_on_death"				"1"
+	"detonate_on_world"				"1"
+	"detonate_on_actor"				"1"
+
+	"face_velocity"					"1"
+
+	"snd_launch"					"sounds/deployables/ssm/launch"
+	"fx_trail"						"effects/deployables/ssm_trail"
+	"fx_explode"					"effects/impacts/tactical/ssm"
+
+	"detonate_upwards"				"1"
+
+	"use_air_burst"					"1"
+	"fx_airburst"					"effects/impacts/tactical/ssm_air"
+
+	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
+}
+
+damageDef damage_scud {
+	damage							"damage_scud"
+	//push							100000
+	noTeam
+
+	stat_name						"mcp_weapons"
+
+	tt_obituary						"tooltips/killmsgs/weapons/scud"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/scud/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/scud/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/scud/unknown"
+}
+
+damageDef damage_scudSplash {
+	damage							"damage_scud"
+	radius							2048
+	//push							100000
+	noTeam
+	noTrace // Avoid having strogg energy shields absorb all damage,
+			// thus stopping objective progress.
+
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/scud/unknown"
+}
+
+damageDef damage_scudSplash_objective {
+	damage							"damage_scud_objective"
+	radius							2048
+	//push							100000
+	noTeam
+	noTrace // Avoid having strogg energy shields absorb all damage,
+			// thus stopping objective progress.
+}
+
+damageFilter damage_scud {
+	type {
+		target	"target_all"
+		damage	5000
+	}
+}
+
+
+damageFilter damage_scud_objective {
+	type {
+		target	"target_objectives_scud"
+		damage	1000
+	}
+}
+
+damageFilter damage_scud_collide {
+	type {
+		target					"target_veh_all"
+		damage					50000
+	}
+
+	type {
+		target					"target_player_all"
+		damage					50000
+	}
+}
+
+damageDef damage_scud_collide {
+	damage						"damage_scud_collide"
+	noTeam
+
+	stat_name					"mcp_weapons"
+
+	tt_obituary					"tooltips/killmsgs/weapons/scud"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/scud/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/scud/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/scud/unknown"
+}
+
+damageFilter damage_mcp_crush {
+	type {
+		target					"target_veh_all"
+		damage					50000
+	}
+
+	type {
+		target					"target_player_all"
+		damage					50000
+	}
+}
+
+damageDef damage_mcp_crush {
+	damage						"damage_mcp_crush"
+	gib
+	noGod
+	noTeam
+	forcePassengerKill
+
+	stat_name					"mcp_weapons"
+
+	tt_obituary_unknown			"tooltips/killmsgs/vehicles/mcp/empty_crush"
+}
+
+
+toolTip vehicle_mcp_enter {
+	maxPlayCount 2
+	useSoundLength
+	text	"game/tt/mcp"
+	sound	"sounds/tooltips/vehicle_mcp_enter/info"
+}
+
+toolTip vehicle_mcp_damaged_enter {
+	sound "sounds/ui/main/bad"
+	length 5
+	text	"game/tt/mcp_damaged"
+}
+
+toolTip vehicle_mcp_damaged {
+	length 5
+	maxPlayCount 2
+	useSoundLength
+	text	"game/tt/mcp_damaged"
+	sound	"sounds/tooltips/vehicle_mcp_damaged/info"
+	
+	timeline {
+		onTime 0	guiEvent "hl_mcp_health"
+		onTime end	guiEvent ""
+	}
+}
+
+toolTip vehicle_mcp_repaired {
+	sound "sounds/ui/main/good"
+	singlePlayerToolTip
+	maxPlayCount	2
+	useSoundLength
+	text	"game/tt/mcp_repaired"
+	sound	"sounds/tooltips/vehicle_mcp_repaired/info"
+	
+	timeline {
+		onTime 0	guiEvent "hl_mcp_health"
+		onTime end	guiEvent ""
+	}
+}
+
+toolTip vehicle_mcp_can_deploy {
+	maxPlayCount	2
+	useSoundLength
+	text	"game/tt/mcp_deploy"
+	sound	"sounds/tooltips/vehicle_mcp_can_deploy/info"
+}
+
+toolTip vehicle_mcp_noentry {
+	singlePlayerToolTip
+	maxPlayCount	2
+	useSoundLength
+	text	"game/tt/mcp_noentry"
+	sound	"sounds/tooltips/vehicle_mcp_noentry/info"
+}
