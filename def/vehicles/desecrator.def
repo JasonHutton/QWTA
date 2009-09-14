@@ -206,7 +206,7 @@ entityDef vehicle_desecrator {
 
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"5"
+	"vehicle_num"					"desecrator"
 	"vehicle_team"					"1"
 	"vehicle_flags"					"22" //mal: can travel over water and ground, and is a tank.
 

@@ -471,7 +471,7 @@ entityDef vehicle_goliath {
 	"fx_ground_walk_water"				"effects/vehicles/goliath/goliath_walk_water"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"4"
+	"vehicle_num"					"goliath"
 	"vehicle_team"					"1"
 	"vehicle_flags"					"6"
 

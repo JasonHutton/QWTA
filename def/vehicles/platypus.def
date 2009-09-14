@@ -281,7 +281,7 @@ entityDef vehicle_platypus {
 //	"fx_decoy"						"effects/weapons/flare_titan"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"7"
+	"vehicle_num"					"platypus"
 	"vehicle_team"					"0"
 	"vehicle_flags"					"16"
 

@@ -68,7 +68,7 @@ bool idBotAI::VehicleIsValid( int entNum, bool skipSpeedCheck, bool addDriverChe
 		return false;
 	}
 
-	if ( !vehicleInfo.hasGroundContact && vehicleInfo.type != DESECRATOR && !vehicleInfo.inWater ) { //mal: desecrator NEVER has groundcontact
+	if ( !vehicleInfo.hasGroundContact && vehicleInfo.type != DESECRATOR && vehicleInfo.type != ABADDON && !vehicleInfo.inWater ) { //mal: desecrator NEVER has groundcontact
 		return false;
 	}
 
@@ -278,7 +278,7 @@ int idBotAI::FindClosestVehicle( float range, const idVec3& org, const playerVeh
 			continue;
 		}
 
-		if ( !vehicle.hasGroundContact && vehicle.type != DESECRATOR && vehicle.type != MCP && !vehicle.inWater ) {
+		if ( !vehicle.hasGroundContact && vehicle.type != DESECRATOR && vehicle.type != ABADDON && vehicle.type != MCP && !vehicle.inWater ) {
 			continue;
 		}
 
@@ -566,7 +566,7 @@ void idBotAI::Bot_PickBestVehiclePosition() {
 		botUcmd->botCmds.becomeDriver = true;
 	}
 
-	if ( botInfo->proxyInfo.weapon != MINIGUN && botInfo->proxyInfo.weapon != LAW ) { //mal: if we're not already a gunner, check to see if a seat is open.
+	if ( botInfo->proxyInfo.weapon != MINIGUN && botInfo->proxyInfo.weapon != FLAMETHROWER && botInfo->proxyInfo.weapon != LAW ) { //mal: if we're not already a gunner, check to see if a seat is open.
         if ( VehicleHasGunnerSeatOpen( botVehicleInfo->entNum ) ) {
 			botUcmd->botCmds.becomeGunner = true;
 		} else {
@@ -1149,7 +1149,7 @@ bool idBotAI::Bot_CheckMoveIsClear( idVec3& goalOrigin ) {
 	if ( botIsBlocked < 30 ) { //mal: have a small grace period before we consider ourselves blocked. WAS 20
 		return true;
 	} else {
-		if ( botVehicleInfo->type == GOLIATH || botVehicleInfo->type == TITAN || botVehicleInfo->type == DESECRATOR || botVehicleInfo->type == MCP ) {
+		if ( botVehicleInfo->type == GOLIATH || botVehicleInfo->type == TITAN || botVehicleInfo->type == JUPITER || botVehicleInfo->type == DESECRATOR || botVehicleInfo->type == ABADDON || botVehicleInfo->type == MCP ) {
 			botUcmd->botCmds.isBlocked = true;
 			return true;
 		}
@@ -2369,6 +2369,9 @@ int idBotAI::Bot_GetVehicleGunnerClientNum( int vehicleEntNum ) {
 	if ( vehicleInfo.type == TROJAN ) {
 		weaponType = LAW;
 	}
+	if ( vehicleInfo.type == ABADDON ) {
+		weaponType = FLAMETHROWER;
+	}
 
 	for( int i = 0; i < MAX_CLIENTS; i++ ) {
 
@@ -2455,7 +2458,7 @@ idBotAI::Bot_CheckForDeployableTargetsWhileVehicleGunner
 ================
 */
 int idBotAI::Bot_CheckForDeployableTargetsWhileVehicleGunner() {
-	if ( botInfo->proxyInfo.weapon != MINIGUN && botInfo->proxyInfo.weapon != LAW ) {
+	if ( botInfo->proxyInfo.weapon != MINIGUN && botInfo->proxyInfo.weapon != FLAMETHROWER && botInfo->proxyInfo.weapon != LAW ) {
 		return -1;
 	}
 

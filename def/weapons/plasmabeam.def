@@ -36,12 +36,12 @@ damageFilter damage_plasmabeam {
 
 	type {
 		target							"target_veh_all"
-		damage							80
+		damage							70
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							80
+		damage							70
 	}
 }
 
@@ -54,11 +54,11 @@ damageFilter realistic_damage_plasmabeam {
 
 	type {
 		target							"target_veh_all"
-		damage							80
+		damage							70
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							80
+		damage							70
 	}
 }

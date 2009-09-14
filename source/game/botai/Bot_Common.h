@@ -41,9 +41,11 @@ enum playerVehicleTypes_t {	//mal: keep adding more as we support them!
 	HUSKY,
 	BADGER,
 	TITAN,
+	JUPITER,
 	HOG,
 	GOLIATH,
 	DESECRATOR,
+	ABADDON,
 	MCP,
 //mal: the 2 below are the only water vehicles
 	PLATYPUS,

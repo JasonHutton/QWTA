@@ -2516,7 +2516,7 @@ void idBotThreadData::DynamicEntity_Think() {
 					}
 				}
 
-				if ( vehicleInfo.type == GOLIATH || vehicleInfo.type == MCP || vehicleInfo.type == TITAN || vehicleInfo.type == DESECRATOR ) {
+				if ( vehicleInfo.type == GOLIATH || vehicleInfo.type == MCP || vehicleInfo.type == TITAN || vehicleInfo.type == JUPITER || vehicleInfo.type == DESECRATOR || vehicleInfo.type == ABADDON ) {
 					vehicleInfo.canRotateInPlace = true;
 				}
 
@@ -3888,6 +3888,12 @@ void idBotThreadData::FindCurrentWeaponInVehicle( idPlayer *player, sdTransport*
 			}
 
 			break;
+		case JUPITER:
+			if ( weapIndex == 0 ) {
+                botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = TANK_GUN;
+			}
+
+			break;
 
 		case HOG:
 			if ( weapIndex == 0 ) {
@@ -3905,6 +3911,15 @@ void idBotThreadData::FindCurrentWeaponInVehicle( idPlayer *player, sdTransport*
                 botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = TANK_GUN;
 			} else if ( weapIndex == 1 ) {
 				botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = MINIGUN;
+			}
+
+			break;
+
+		case ABADDON:
+			if ( weapIndex == 0 ) {
+                botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = BEAM_LASER;
+			} else if ( weapIndex == 1 ) {
+				botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = FLAMETHROWER;
 			}
 
 			break;
@@ -5446,7 +5461,7 @@ int idBotThreadData::FindHeavyVehicleNearLocation( idPlayer* player, const idVec
 			continue;
 		}
 
-		if ( !vehicle.hasGroundContact && vehicle.type != DESECRATOR ) {
+		if ( !vehicle.hasGroundContact && vehicle.type != DESECRATOR && vehicle.type != ABADDON ) {
 			continue;
 		}
 

@@ -1725,6 +1725,10 @@ void idBot::GroundVehicleControls( usercmd_t &ucmd ) {
 			lookAheadDist = 250.0f;
 			turnInPlace = true;
 			break;
+		case JUPITER:
+			lookAheadDist = 250.0f;
+			turnInPlace = true;
+			break;
 
 		case HOG:
 			lookAheadDist = 175.0f;
@@ -1739,6 +1743,10 @@ void idBot::GroundVehicleControls( usercmd_t &ucmd ) {
 			break;
 
 		case DESECRATOR:
+			lookAheadDist = 225.0f;
+			turnInPlace = true;
+			break;
+		case ABADDON:
 			lookAheadDist = 225.0f;
 			turnInPlace = true;
 			break;
@@ -1942,7 +1950,8 @@ void idBot::GroundVehicleControls( usercmd_t &ucmd ) {
 	}
 
 	if ( shouldMoveSlowly ) {
-		if ( vehicleInfo.type == TITAN || vehicleInfo.type == DESECRATOR ) {
+		if ( vehicleInfo.type == TITAN || vehicleInfo.type == JUPITER || 
+			vehicleInfo.type == DESECRATOR || vehicleInfo.type == ABADDON ) {
 			ucmd.forwardmove = 84;
 		} else if ( vehicleInfo.forwardSpeed > 250.0f ) {
 			ucmd.forwardmove = 64;

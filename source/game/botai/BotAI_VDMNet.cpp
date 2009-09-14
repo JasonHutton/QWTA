@@ -157,7 +157,7 @@ bool idBotAI::Run_VLTG_Node() {
 			}
 
 			if ( vLTGType != V_STOP_VEHICLE ) { 
-				if ( botInfo->classType == ENGINEER && ( ( botVehicleInfo->health < ( botVehicleInfo->maxHealth / 2 ) && botVehicleInfo->type != MCP && !( botVehicleInfo->flags & AIR ) ) || ( botVehicleInfo->type == MCP && botVehicleInfo->isImmobilized ) || botVehicleInfo->damagedPartsCount > 0 ) && enemy == -1 && !botVehicleInfo->inWater && ( botVehicleInfo->hasGroundContact || botVehicleInfo->type == DESECRATOR ) ) {
+				if ( botInfo->classType == ENGINEER && ( ( botVehicleInfo->health < ( botVehicleInfo->maxHealth / 2 ) && botVehicleInfo->type != MCP && !( botVehicleInfo->flags & AIR ) ) || ( botVehicleInfo->type == MCP && botVehicleInfo->isImmobilized ) || botVehicleInfo->damagedPartsCount > 0 ) && enemy == -1 && !botVehicleInfo->inWater && ( botVehicleInfo->hasGroundContact || botVehicleInfo->type == DESECRATOR || botVehicleInfo->type == ABADDON ) ) {
 					if ( !Client_IsCriticalForCurrentObj( botNum, -1.0f ) && !VehicleIsIgnored( botInfo->proxyInfo.entNum ) /* && !Bot_IsInHeavyAttackVehicle() */ ) {
 						V_LTG_AI_SUB_NODE = &idBotAI::Enter_VLTG_StopVehicle;	//mal: engs will jump out of own vehicle and fix it.
 						botWantsVehicleBackTime = botWorld->gameLocalInfo.time + 15000;
@@ -1404,6 +1404,19 @@ bool idBotAI::VLTG_GroundVehicleDestroyDeployable() {
 
 		case DESECRATOR:
 			if ( botInfo->proxyInfo.weapon == MINIGUN ) {
+				if ( botVehicleInfo->driverEntNum == -1 ) {
+					botUcmd->botCmds.becomeDriver = true;
+				} else {
+					Bot_ExitVehicleAINode( true );
+					Bot_ExitVehicle();
+					return false;
+				}
+			}
+
+			break;
+
+		case ABADDON:
+			if ( botInfo->proxyInfo.weapon == FLAMETHROWER ) {
 				if ( botVehicleInfo->driverEntNum == -1 ) {
 					botUcmd->botCmds.becomeDriver = true;
 				} else {

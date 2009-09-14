@@ -38,7 +38,7 @@ bool idBotAI::Bot_FindBestVehicleCombatMovement() {
 		return false;
 	} //mal: this shouldn't really ever happen, but may if the bot is moving between positions in a vehicle. Or if a human entered/exited a vehicle at just the right/wrong time.
 
-	if ( ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == LAW || botInfo->proxyInfo.weapon == PERSONAL_WEAPON ) && botVehicleInfo->driverEntNum != botNum ) {
+	if ( ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == FLAMETHROWER || botInfo->proxyInfo.weapon == LAW || botInfo->proxyInfo.weapon == PERSONAL_WEAPON ) && botVehicleInfo->driverEntNum != botNum ) {
 		VEHICLE_COMBAT_MOVEMENT_STATE = &idBotAI::Enter_Vehicle_NULL_Movement; //mal: just sit there, and shoot the enemy.
 		return true;
 	}
@@ -122,7 +122,7 @@ bool idBotAI::Bot_FindBestVehicleCombatMovement() {
 		}
 	}
 
-	if ( ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == LAW || botInfo->proxyInfo.weapon == PERSONAL_WEAPON ) && botVehicleInfo->driverEntNum != botNum ) {
+	if ( ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == FLAMETHROWER || botInfo->proxyInfo.weapon == LAW || botInfo->proxyInfo.weapon == PERSONAL_WEAPON ) && botVehicleInfo->driverEntNum != botNum ) {
 		VEHICLE_COMBAT_MOVEMENT_STATE = &idBotAI::Enter_Vehicle_NULL_Movement; //mal: just sit there, and shoot the enemy.
 		return true;
 	}
@@ -142,7 +142,7 @@ bool idBotAI::Bot_FindBestVehicleCombatMovement() {
 		return true;
 	}
 
-	if ( botInfo->proxyInfo.weapon == TANK_GUN && botVehicleInfo->driverEntNum == botNum ) {
+	if ( botInfo->proxyInfo.weapon == TANK_GUN || botInfo->proxyInfo.weapon == BEAM_LASER && botVehicleInfo->driverEntNum == botNum ) {
 		if ( !enemyReachable && enemyInfo.enemyDist < 3000.0f ) { //mal: dont do chase movement of our enemy, if we cant reach him.
            VEHICLE_COMBAT_MOVEMENT_STATE = &idBotAI::Enter_Vehicle_Stand_Ground_Movement; 
 		} else {
@@ -327,7 +327,7 @@ bool idBotAI::Vehicle_Stand_Ground_Movement() {
             botUcmd->botCmds.enterSiegeMode = true;
 		}
 	} else if ( botVehicleInfo->type == DESECRATOR ) {
-        if ( enemyHasVehicle && enemyVehicleInfo.type != TITAN ) {
+        if ( enemyHasVehicle && enemyVehicleInfo.type != TITAN && enemyVehicleInfo.type != JUPITER ) {
 			if ( enemyInfo.enemyDist > 1500.0f ) {
                 botUcmd->botCmds.enterSiegeMode = true;
 			}
@@ -357,6 +357,12 @@ bool idBotAI::Vehicle_Stand_Ground_Movement() {
 			}
 			return true;
 		} */
+	} else if ( botVehicleInfo->type == ABADDON ) {
+        if ( enemyHasVehicle && enemyVehicleInfo.type != TITAN && enemyVehicleInfo.type != JUPITER ) {
+			if ( enemyInfo.enemyDist > 1500.0f ) {
+                botUcmd->botCmds.enterSiegeMode = true;
+			}
+		}
 	}
 
 	Bot_MoveToGoal( vec3_zero, vec3_zero, NULLMOVEFLAG, FULL_STOP ); //mal: hit the brakes!

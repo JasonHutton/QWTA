@@ -188,7 +188,7 @@ bool idBotAI::COMBAT_Vehicle_AttackEnemy() {
 	}
 
 	if ( ClientIsValid( enemy, enemySpawnID ) && enemyInfo.enemyVisible ) {
-		if ( botVehicleInfo->type <= ICARUS || botInfo->proxyInfo.weapon == MINIGUN ) {
+		if ( botVehicleInfo->type <= ICARUS || ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == BEAM_LASER || botInfo->proxyInfo.weapon == FLAMETHROWER ) ) {
 			Bot_LookAtEntity( enemy, AIM_TURN ); //mal: aim at the enemy - but let the game side code handle it.
 			Bot_CheckVehicleAttack();
 		}

@@ -193,7 +193,7 @@ bool idBotAI::Run_Combat_Node() {
 
 		if ( vehicleInfo.type == MCP && vehicleInfo.isImmobilized && vehicleInfo.driverEntNum == enemy ) {
 			needNewEnemy = true;
-		} else if ( ( vehicleInfo.type == GOLIATH || vehicleInfo.type == TITAN || vehicleInfo.type == DESECRATOR ) && vehicleInfo.health > ( vehicleInfo.maxHealth / 3 ) ) {
+		} else if ( ( vehicleInfo.type == GOLIATH || vehicleInfo.type == TITAN || vehicleInfo.type == JUPITER || vehicleInfo.type == DESECRATOR || vehicleInfo.type == ABADDON ) && vehicleInfo.health > ( vehicleInfo.maxHealth / 3 ) ) {
 			
 			bool canNadeAttack = ( !botInfo->weapInfo.hasNadeAmmo || enemyInfo.enemyDist > GRENADE_ATTACK_DIST ) ? false : true;
 

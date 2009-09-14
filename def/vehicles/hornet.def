@@ -276,7 +276,7 @@ entityDef vehicle_hornet {
 	"careen_height"					"1024"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"11"
+	"vehicle_num"					"hornet"
 	"vehicle_team"					"1"
 	"vehicle_flags"					"8"
 

@@ -431,7 +431,7 @@ entityDef vehicle_mcp {
 	"selection_maxs"				"200 148 160"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"6"
+	"vehicle_num"					"mcp"
 	"vehicle_team"					"0"
 	"vehicle_flags"					"2"
 }

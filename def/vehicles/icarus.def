@@ -225,7 +225,7 @@ entityDef vehicle_icarus {
 	"dmg_water"						"damage_icarus_water"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"9"
+	"vehicle_num"					"icarus"
 	"vehicle_team"					"1"
 	"vehicle_flags"					"9"
 	

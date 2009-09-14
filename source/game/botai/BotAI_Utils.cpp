@@ -4137,7 +4137,7 @@ int idBotAI::Bot_CheckForNeedyVehicles( float range, bool& chatRequest ) {
 			continue;
 		}
 
-		if ( !vehicleInfo.hasGroundContact && vehicleInfo.type != DESECRATOR ) {
+		if ( !vehicleInfo.hasGroundContact && vehicleInfo.type != DESECRATOR && vehicleInfo.type != ABADDON ) {
 			botIsBusy = true;
 		}
 

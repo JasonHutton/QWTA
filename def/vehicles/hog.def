@@ -336,7 +336,7 @@ entityDef vehicle_hog {
 
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"3"
+	"vehicle_num"					"hog"
 	"vehicle_team"					"1"
 	"vehicle_flags"					"2"
 	

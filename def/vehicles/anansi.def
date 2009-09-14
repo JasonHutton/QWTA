@@ -287,7 +287,7 @@ entityDef vehicle_anansi {
 	"careen_height"					"1024"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"10"
+	"vehicle_num"					"anansi"
 	"vehicle_team"					"0"
 	"vehicle_flags"					"8" //mal: this is an air based vehicle
 

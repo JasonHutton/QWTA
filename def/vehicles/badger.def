@@ -316,7 +316,7 @@ entityDef vehicle_badger {
 	"projectile_decoy_max"			"3"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"1"
+	"vehicle_num"					"badger"
 	"vehicle_team"					"0"
 	"vehicle_flags"					"2" //mal: this is a small(er) ground based vehicle.
 	

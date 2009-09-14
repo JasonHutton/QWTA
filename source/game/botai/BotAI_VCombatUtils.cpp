@@ -240,6 +240,10 @@ bool idBotAI::Bot_VehicleFindEnemy() {
 				continue;
 			}
 
+			if ( botVehicleInfo->type == JUPITER && ( enemyVehicleInfo.type == ANANSI || enemyVehicleInfo.type == HORNET ) && ( dist > Square( 800.0f ) && enemyVehicleInfo.xyspeed > 50.0f) ) {
+				continue;
+			}
+
 			if ( isAttackingDeployable ) {
 				if ( botVehicleInfo->isAirborneVehicle && ( enemyVehicleInfo.type <= ICARUS || enemyVehicleInfo.type == BUFFALO ) ) { //mal: if attacking from the air, only worry about air vehicles.
 					continue;
@@ -474,7 +478,7 @@ void idBotAI::Bot_CheckVehicleAttack() {
 	}
 
 	if ( botInfo->proxyInfo.hasTurretWeapon ) {
-		if ( botVehicleInfo->type > ICARUS && botInfo->proxyInfo.weapon == MINIGUN ) {
+		if ( botVehicleInfo->type > ICARUS && ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == FLAMETHROWER ) ) {
 			botUcmd->botCmds.attack = true;
 		} else {
 			dir = botWorld->clientInfo[ enemy ].origin - botInfo->proxyInfo.weaponOrigin;
@@ -489,7 +493,7 @@ void idBotAI::Bot_CheckVehicleAttack() {
 		}
 	}
 
-	if ( botWorld->gameLocalInfo.botSkill == BOT_SKILL_EASY && botVehicleInfo->driverEntNum == botNum && botInfo->proxyInfo.weapon != MINIGUN ) { //mal: have a delay between shots for low skill bots.
+	if ( botWorld->gameLocalInfo.botSkill == BOT_SKILL_EASY && botVehicleInfo->driverEntNum == botNum && ( botInfo->proxyInfo.weapon != MINIGUN && botInfo->proxyInfo.weapon != FLAMETHROWER && botInfo->proxyInfo.weapon != BEAM_LASER ) ) { //mal: have a delay between shots for low skill bots.
 		if ( botUcmd->botCmds.attack == true ) {
 			timeOnTarget = botWorld->gameLocalInfo.time + ( ( botVehicleInfo->isAirborneVehicle ) ? 9500 : 5500 );
 		}
@@ -816,7 +820,7 @@ bool idBotAI::Bot_VehicleCanRamClient( int clientNum ) {
 		return false;
 	} //mal: most vehicles can't handle ramming other vehicles while damaged - clients on foot are ALWAYS ok tho! >:-D
 
-	if ( botVehicleInfo->flags & WATER || botVehicleInfo->inWater || botVehicleInfo->type == GOLIATH || botVehicleInfo->type == DESECRATOR || botVehicleInfo->flags & PERSONAL || botVehicleInfo->flags & AIR ) {
+	if ( botVehicleInfo->flags & WATER || botVehicleInfo->inWater || botVehicleInfo->type == GOLIATH || botVehicleInfo->type == DESECRATOR || botVehicleInfo->type == ABADDON || botVehicleInfo->flags & PERSONAL || botVehicleInfo->flags & AIR ) {
 		return false;
 	}
 
@@ -1078,6 +1082,22 @@ void idBotAI::Bot_PickBestVehicleWeapon() {
 
 			break;
 
+		case ABADDON:
+			if ( ( botVehicleInfo->driverEntNum == -1 && botWorld->clientInfo[ enemy ].proxyInfo.entNum != CLIENT_HAS_NO_VEHICLE ) || enemyInfo.enemyDist > 1000.0f) {
+				botUcmd->botCmds.becomeDriver = true;
+				needMovementUpdate = true;
+				break;
+			}
+			if ( botVehicleInfo->driverEntNum == botNum ) { //mal: we're the driver, if the turret is available, we may jump into it to fight enemies.
+				if ( hasGunnerSeatOpen ) {
+					if ( enemyInfo.enemyDist < 1000.0f && botWorld->clientInfo[ enemy ].proxyInfo.entNum == CLIENT_HAS_NO_VEHICLE && vehicleGunnerTime + 30000 < botWorld->gameLocalInfo.time && enemyInfo.enemyVisible ) { //mal: dont do this if enemy too far away, or its been too soon since we last did this.
+						botUcmd->botCmds.becomeGunner = true;
+						vehicleGunnerTime = botWorld->gameLocalInfo.time + 10000;
+						needMovementUpdate = true;
+					}
+				} //mal: if we have a gunner, we'll try to get a better shot for him, so that he can cut down our enemies.
+			}
+
 		case HOG:
 			if ( botInfo->proxyInfo.weapon == MINIGUN ) {
 				if ( botVehicleInfo->driverEntNum == -1 ) {
@@ -1168,6 +1188,10 @@ bool idBotAI::VehicleHasGunnerSeatOpen( int entNum ) {
 		weaponType = LAW;
 	}
 
+	if ( vehicleInfo.type == ABADDON ) {
+		weaponType = FLAMETHROWER;
+	}
+
 	for( i = 0; i < MAX_CLIENTS; i++ ) {
 
 		if ( i == botNum && botVehicleInfo == NULL ) {
@@ -1229,6 +1253,10 @@ bool idBotAI::Bot_VehicleCanAttackEnemy( int clientNum ) {
 		if ( !InFrontOfVehicle( botInfo->proxyInfo.entNum, botWorld->clientInfo[ clientNum ].origin ) ) {
 			return false;
 		} //mal: dont fight ppl if we're driving the mcp, and they're not in front of us - just get the MCP to the outpost!
+	} else if ( botInfo->proxyInfo.weapon == FLAMETHROWER ) {
+		if ( enemyInfo.enemyDist > 1000.0f || botWorld->clientInfo[ enemy ].proxyInfo.entNum != CLIENT_HAS_NO_VEHICLE ) {
+			return false;
+		}
 	}
 
 	return true;	

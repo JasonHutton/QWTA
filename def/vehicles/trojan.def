@@ -354,7 +354,7 @@ entityDef vehicle_trojan {
 	"projectile_decoy_velocity"		"0 0 500"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"8"
+	"vehicle_num"					"trojan"
 	"vehicle_team"					"0"
 	"vehicle_flags"					"86"
 

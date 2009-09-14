@@ -150,7 +150,7 @@ bool idBotAI::Bot_FindEnemy( int ignoreClientNum ) {
 					continue;
 				}
 
-				if ( ( vehicleInfo.type == GOLIATH || vehicleInfo.type == TITAN || vehicleInfo.type == DESECRATOR ) && vehicleInfo.health > ( vehicleInfo.maxHealth / 3 ) ) {
+				if ( ( vehicleInfo.type == GOLIATH || vehicleInfo.type == TITAN || vehicleInfo.type == JUPITER || vehicleInfo.type == DESECRATOR || vehicleInfo.type == ABADDON ) && vehicleInfo.health > ( vehicleInfo.maxHealth / 3 ) ) {
 			
 					bool canNadeAttack = ( !botInfo->weapInfo.hasNadeAmmo || vehicleDist > Square( GRENADE_ATTACK_DIST ) ) ? false : true;
 
@@ -3579,7 +3579,7 @@ bool idBotAI::Bot_CheckIfEnemyHasUsInTheirSightsWhenInAirVehicle() {
 				continue;
 			}
 
-			if ( enemyVehicle.type != TITAN && enemyVehicle.type != DESECRATOR && enemyVehicle.type != GOLIATH && enemyVehicle.type != TROJAN ) {
+			if ( enemyVehicle.type != TITAN && enemyVehicle.type != JUPITER && enemyVehicle.type != DESECRATOR && enemyVehicle.type != ABADDON && enemyVehicle.type != GOLIATH && enemyVehicle.type != TROJAN ) {
 				continue;
 			}
 
@@ -3587,7 +3587,7 @@ bool idBotAI::Bot_CheckIfEnemyHasUsInTheirSightsWhenInAirVehicle() {
 				continue;
 			}
 
-			if ( ( enemyVehicle.type == TITAN || enemyVehicle.type == DESECRATOR ) && enemyVehicle.driverEntNum != i ) { //mal: dont worry about tank gunners
+			if ( ( enemyVehicle.type == TITAN || enemyVehicle.type == JUPITER || enemyVehicle.type == DESECRATOR || enemyVehicle.type == ABADDON ) && enemyVehicle.driverEntNum != i ) { //mal: dont worry about tank gunners
 				continue;
 			}
 

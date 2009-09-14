@@ -327,7 +327,7 @@ entityDef vehicle_titan {
 //	"fx_decoy"						"effects/weapons/flare_titan"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
-	"vehicle_num"					"2"
+	"vehicle_num"					"titan"
 	"vehicle_team"					"0"
 	"vehicle_flags"					"6"
 	

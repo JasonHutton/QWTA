@@ -3710,12 +3710,50 @@ void sdTransport::Spawn( void ) {
 	vehicleFlags.decals	= spawnArgs.GetBool( "decals", "1" );
 
 	int temp;
+	idStr strTemp;
 
-	if ( spawnArgs.GetInt( "vehicle_num", "", temp ) ) {
-		playerVehicleType = ( playerVehicleTypes_t ) temp; //mal: get the vehicle type, for quick and easy reference for the bots.
+	if ( spawnArgs.GetString( "vehicle_num", "", strTemp ) ) {
+		if ( strTemp.Icmp( "husky" ) == 0 ) {
+			playerVehicleType = HUSKY;
+		} else if ( strTemp.Icmp( "badger" ) == 0 ) {
+			playerVehicleType = BADGER;
+		} else if ( strTemp.Icmp( "titan" ) == 0 ) {
+			playerVehicleType = TITAN;
+		} else if ( strTemp.Icmp( "hog" ) == 0 ) {
+			playerVehicleType = HOG;
+		} else if ( strTemp.Icmp( "goliath" ) == 0 ) {
+			playerVehicleType = GOLIATH;
+		} else if ( strTemp.Icmp( "desecrator" ) == 0 ) {
+			playerVehicleType = DESECRATOR;
+		} else if ( strTemp.Icmp( "mcp" ) == 0 ) {
+			playerVehicleType = MCP;
+		} else if ( strTemp.Icmp( "platypus" ) == 0 ) {
+			playerVehicleType = PLATYPUS;
+		} else if ( strTemp.Icmp( "trojan" ) == 0 ) {
+			playerVehicleType = TROJAN;
+		} else if ( strTemp.Icmp( "icarus" ) == 0 ) {
+			playerVehicleType = ICARUS;
+		} else if ( strTemp.Icmp( "anansi" ) == 0 ) {
+			playerVehicleType = ANANSI;
+		} else if ( strTemp.Icmp( "hornet" ) == 0 ) {
+			playerVehicleType = HORNET;
+		} else if ( strTemp.Icmp( "buffalo" ) == 0 ) {
+			playerVehicleType = BUFFALO;
+		} else if ( strTemp.Icmp( "jupiter" ) == 0 ) {
+			playerVehicleType = JUPITER;
+		} else if ( strTemp.Icmp( "abaddon" ) == 0 ) {
+			playerVehicleType = ABADDON;
+		} else {
+			if ( spawnArgs.GetInt( "vehicle_num", "", temp ) ) {
+				playerVehicleType = ( playerVehicleTypes_t ) temp; //mal: get the vehicle type, for quick and easy reference for the bots.
+			} else {
+				playerVehicleType = NULL_VEHICLE;
+			}
+		}
 	} else {
 		playerVehicleType = NULL_VEHICLE;
 	}
+	
 
 	if ( spawnArgs.GetInt( "vehicle_team", "", temp ) ) {
 		playerVehicleTeam = ( playerTeamTypes_t ) temp; //mal: get the vehicle team, for quick and easy reference for the bots.
