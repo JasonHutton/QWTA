@@ -87,8 +87,9 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 		dist_x = GetAxisDistance( startPos_x, absMins_x, absMaxs_x );
 		dist_y = GetAxisDistance( startPos_y, absMins_y, absMaxs_y );
 		dist_z = GetAxisDistance( startPos_z, absMins_z, absMaxs_z );
-
-		if ( sys.vecLength( dist ) >= streamRadius ) 
+		float distance = sys.vecLength( dist );
+		
+		if ( distance >= streamRadius ) 
 		{
 			continue;
 		}
@@ -100,8 +101,15 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 			}
 		}
 		
+		float scale = ( distance / streamRadius );
+		if ( scale < minDamagePercent ) {
+			scale = minDamagePercent;
+		}
+		
+		scale = 1.f - scale;
+		
 		if ( doDamage ) {
-			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, 1.f, $null_entity );
+			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
 			ent.applyBurnDamage( getPlayer(), burnTime );
 		}
 	}

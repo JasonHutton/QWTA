@@ -614,6 +614,8 @@ stringMap vehicle_abaddon_weapon1 {
 	
 	"burn_time"					"5.0"
 	
+	"min_damage_percent"		"100"
+	
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }
 
@@ -642,6 +644,8 @@ stringMap vehicle_abaddon_weapon2 {
 	"range"						"8192"
 
 	"crosshair"					"nospread"
+	
+	"min_damage_percent"		"10"
 			
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }
