@@ -478,7 +478,7 @@ void idBotAI::Bot_CheckVehicleAttack() {
 	}
 
 	if ( botInfo->proxyInfo.hasTurretWeapon ) {
-		if ( botVehicleInfo->type > ICARUS && ( botInfo->proxyInfo.weapon == MINIGUN || botInfo->proxyInfo.weapon == FLAMETHROWER ) ) {
+		if ( botVehicleInfo->type > ICARUS && botInfo->proxyInfo.weapon == MINIGUN ) {
 			botUcmd->botCmds.attack = true;
 		} else {
 			dir = botWorld->clientInfo[ enemy ].origin - botInfo->proxyInfo.weaponOrigin;
@@ -1254,7 +1254,7 @@ bool idBotAI::Bot_VehicleCanAttackEnemy( int clientNum ) {
 			return false;
 		} //mal: dont fight ppl if we're driving the mcp, and they're not in front of us - just get the MCP to the outpost!
 	} else if ( botInfo->proxyInfo.weapon == FLAMETHROWER ) {
-		if ( enemyInfo.enemyDist > 1000.0f || botWorld->clientInfo[ enemy ].proxyInfo.entNum != CLIENT_HAS_NO_VEHICLE ) {
+		if ( enemyInfo.enemyDist > FLAMETHROWER_RANGE ) {
 			return false;
 		}
 	}
