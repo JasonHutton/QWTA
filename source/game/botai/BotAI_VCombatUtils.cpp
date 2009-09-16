@@ -85,6 +85,10 @@ bool idBotAI::Bot_VehicleFindEnemy() {
 		botSightDist = Square( PLASMA_CANNON_RANGE - 1000.0f );
 	}
 
+	if ( botVehicleInfo->type == ABADDON ) {
+		botSightDist = Square( PLASMABEAM_RANGE - 1000.0f );
+	}
+
 	if ( botVehicleInfo->type == HUSKY ) { //mal: we're no match for anybody!
 		return false;
 	}

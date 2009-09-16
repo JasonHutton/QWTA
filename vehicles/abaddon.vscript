@@ -645,7 +645,7 @@ stringMap vehicle_abaddon_weapon2 {
 
 	"crosshair"					"nospread"
 	
-	"min_damage_percent"		"10"
+	"min_damage_percent"		"80"
 			
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
 }

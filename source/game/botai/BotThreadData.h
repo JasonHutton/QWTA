@@ -267,8 +267,6 @@ enum botVehicleWeaponInfo_t { //mal: these are the different types of weapons th
 	STROY_BOMB
 };
 
-#define FLAMETHROWER_RANGE 1000.0f
-
 struct weaponInfo_t { //mal_TODO: keep adding more info for weapons, as its needed, ALSO - setup where this are placed
 	bool					primaryWeaponNeedsUpdate;
 	bool					isReady;							//mal: is in the up and ready to fire position
