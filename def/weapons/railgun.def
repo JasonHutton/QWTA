@@ -411,7 +411,7 @@ damageFilter damage_railgun {
 damageFilter realistic_damage_railgun {
 	type {
 		target							"target_player_all"
-		damage							160
+		damage							100
 	}
 	type {
 		target							"target_veh_all"
@@ -441,7 +441,7 @@ damageFilter damage_railgun_scoped {
 damageFilter realistic_damage_railgun_scoped {
 	type {
 		target							"target_player_all"
-		damage							160
+		damage							100
 	}
 	type {
 		target							"target_veh_all"

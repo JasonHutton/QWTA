@@ -404,7 +404,7 @@ damageFilter realistic_damage_sniperrifle {
 
 	type {
 		target							"target_player_all"
-		damage							140
+		damage							90
 	}
 
 	type {
@@ -440,7 +440,7 @@ damageFilter realistic_damage_sniperrifle_scoped {
 
 	type {
 		target							"target_player_all"
-		damage							140
+		damage							90
 	}
 
 	type {
