@@ -1,0 +1,1527 @@
+
+#define OBJECTIVE_VOLCANO_HACK					0
+#define OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER	1
+#define OBJECTIVE_VOLCANO_DESTROY_CORE			2
+#define OBJECTIVE_VOLCANO_DAMAGE_CORE_TO80		3
+#define OBJECTIVE_VOLCANO_DAMAGE_CORE_TO60		4
+#define OBJECTIVE_VOLCANO_DAMAGE_CORE_TO40		5
+#define OBJECTIVE_VOLCANO_DAMAGE_CORE_TO20		6
+#define OBJECTIVE_VOLCANO_CORE_DESTROYED		7
+
+
+// Bot Action Groups
+
+#define VOL_STROGG_HACK_CONTROLS				0  // only the specific bot action to carry out the objective
+#define VOL_STROGG_DESTROY_BUNKERDOOR			1  //
+#define VOL_STROGG_DESTROY_EAST_BUNKER			2  //
+#define VOL_STROGG_DESTROY_SEAWALL				3  //
+
+#define VOL_STROGG_BEACH_SUPPORT				4  // Strogg offensive actions on the beach to aid first objective, whether forward spawn is captured or not.
+#define VOL_STROGG_HACK_SUPPORT					5  // Strogg offensive actions that are enabled after after any of the 3 breachs (to counter GROUPID 12)
+
+#define VOL_STROGG_CAPTURE_BEACH_SPAWN			6  // only the specific bot action to capture the spawn
+#define VOL_STROGG_ATTACK_BEACH_SPAWN			24 //
+#define VOL_STROGG_DEFEND_BEACH_SPAWN			25 //
+#define VOL_GDF_ATTACK_BEACH_SPAWN				26 //
+#define VOL_GDF_DEFEND_BEACH_SPAWN				27 //
+
+#define VOL_GDF_CAPTURE_BUNKER_SPAWN			13 // only the specific bot action to capture the spawn
+#define VOL_GDF_ATTACK_BUNKER_SPAWN				28 //
+#define VOL_GDF_DEFEND_BUNKER_SPAWN				29 //
+#define VOL_STROGG_ATTACK_BUNKER_SPAWN			30 //
+#define VOL_STROGG_DEFEND_BUNKER_SPAWN			31 //
+
+#define VOL_STROGG_OBJ1_DEPLOY					7
+#define VOL_GDF_OBJ1_DEPLOY						14
+#define VOL_GDF_OBJ1AND2_DEPLOY					49
+
+#define VOL_GDF_DEFEND_BEACH					8  // generic defence of the beach for duration of first objective despite any state of secondarys.
+#define VOL_GDF_DEFEND_BUNKERDOOR				9  // active until destroyed, then corresponding POSTBREACH becomes active (so bots fall back a bit and defend the opening instead)
+#define VOL_GDF_DEFEND_EAST_BUNKER				10 //      ""
+#define VOL_GDF_DEFEND_SEAWALL					11 //      ""
+#define VOL_GDF_DEFEND_CONTROLS					12 // becomes active after any of the 3 breachs (reevaluate when bots begin to teleport over the wall)
+
+#define VOL_GDF_DEFEND_BUNKERDOOR_POSTBREACH	32 // defensive actions to cover the route created by the Strogg
+#define VOL_GDF_DEFEND_EAST_BUNKER_POSTBREACH	33 //      ""
+#define VOL_GDF_DEFEND_SEAWALL_POSTBREACH		34 //      ""
+
+#define VOL_GDF_DEFEND_SEAWALL_POSTBREACH_OBJ2	36 // Cover seawall entrance for second objective (only if it has been blown up)
+
+#define VOL_GDF_BUILD_GUN1						15
+#define VOL_GDF_BUILD_GUN2						16
+#define VOL_GDF_BUILD_GUN3						17
+#define VOL_GDF_BUILD_GUN4						18 // only used once complex breached
+#define VOL_GDF_BUILD_GUN5						19
+
+#define VOL_STROGG_DESTROY_TRANSFORMER			20
+#define STROGG_SUPPORT_VOLCANO_TRANSFORMER		21
+#define VOL_GDF_DEFEND_TRANSFORMER				22
+#define VOL_STROGG_OBJ2_DEPLOY					35
+#define VOL_GDF_OBJ2_DEPLOY						23
+
+#define VOL_STROGG_DESTROY_CORE					37
+#define VOL_STROGG_ATTACK_CORE					38
+#define VOL_GDF_DEFEND_CORE						39
+#define VOL_STROGG_OBJ3_DEPLOY					40
+#define VOL_GDF_OBJ3_DEPLOY						41
+
+#define VOL_OBJ2_INTERMEDIATE					42 // stuff for bots to do while doors opening. will do main actions after and these turn off
+#define VOL_OBJ3_INTERMEDIATE					43 // stuff for bots until facility entrance open. will do main actions after and these turn off
+
+#define VOL_GDF_USE_GUN1						44
+#define VOL_GDF_USE_GUN2						45
+#define VOL_GDF_USE_GUN3						46
+#define VOL_GDF_USE_GUN4						47
+#define VOL_GDF_USE_GUN5						48
+
+object mapObject_Volcano : mapObject_Default {
+	void			destroy();
+
+	void			InitObjectives();
+	void			CompleteObjective( float index, entity p );
+	handle			GetObjectiveMessage( float index );
+
+	void			StartFirstObjective();
+	void			DelayedBotSpawnThread();
+	void			StartTransformerObjective();
+	void			StartCoreObjective();
+
+	void			OnHack();
+	void			OnTransformerDestroyed();
+
+	void			OnConstructionComplete( entity obj );
+	void			OnDestructionComplete( entity obj );
+
+	void			OnGun1Built();
+	void			OnGun1Destroyed();
+	void			OnGun2Built();
+	void			OnGun2Destroyed();
+	void			OnGun3Built();
+	void			OnGun3Destroyed();
+	void			OnGun4Built();
+	void			OnGun4Destroyed();
+	void			OnGun5Built();
+	void			OnGun5Destroyed();
+
+	void			OnAnyBreach();
+
+	void			OnEastBunkerBreachDestroyed();
+	void			OnSeawallBreachDestroyed();
+	void			OnForwardBunkerDoorDestroyed();
+		void		DoorObstacleDelay();
+		
+	void			OnTimeLimitHit();
+
+	void			OnCoreDamaged1();
+	void			OnCoreDamaged2();
+	void			OnCoreDamaged3();
+	void			OnCoreDamaged4();
+	void			OnCoreDestroyed();
+	void			OnCoreDestroyedEffectsThread();
+
+	void			FacilityBreached();
+	void			ExplosionCascade();
+
+	vector			GetGDFBasePosition() { return '390 9000 6130'; }
+
+	entity			GetSpectateEntity();
+
+	// Territories
+
+	entity			gdfBaseTerritory;
+	entity			facilityTerritory;
+	entity			beachTerritory;
+	entity			stroggBaseTerritory;
+
+
+	// Spawns
+	entity			gdfBaseSpawn;
+	entity			gdfBunkerSpawn;
+	entity			gdfFacilitySpawn;
+	entity			stroggBaseSpawn;
+	entity			stroggBunkerSpawn;
+	entity			stroggBeachSpawn;
+
+	entity			gdfOutsideSpawn;
+
+	// Objectives
+	entity			objective1;
+	entity			objective2;
+	entity			objective3a;
+	entity			objective3b;
+	entity			objective3c;
+	entity			objective3d;
+	entity			objective3e;
+
+	entity			objective1Arrow1;
+	entity			objective1Arrow2;
+	entity			objective2Arrow1;
+	entity			objective2Arrow2;
+	entity			objective3Arrow1;
+
+	float			mainObjectiveIndex;
+
+	entity			core1;
+	entity			core2;
+	entity			core3;
+	entity			core4;
+	entity			core5;
+
+	entity			transformer;
+	entity			securityControls;
+
+	entity			seawallBreachBroken;
+	entity			seawallBreach;
+	entity			seawallBreachDetail;
+
+	entity			eastBunkerBreach;
+	entity			eastBunkerBreachBroken;
+
+	entity			forwardBunkerDoor;
+	entity			forwardBunkerDoorBroken;
+
+	entity			fakeDoor;
+
+	float			breachesDestroyed;
+
+	boolean			eastBunkerBreachDestroyed;
+	boolean			seawallBreachDestroyed;
+	boolean			forwardBunkerDoorDestroyed;
+
+
+	entity			gun1Construction;
+	entity			gun2Construction;
+	entity			gun3Construction;
+	entity			gun4Construction;
+	entity			gun5Construction;
+
+	entity			noplant_seawall_breach;
+	entity			noplant_east_bunker_breach;
+	entity			noplant_bunker_door;
+	entity			noplant_transformer;
+
+	// entity securityDoors;
+	entity			transformer_door_a;
+	entity			transformer_door_b;
+	entity			transformer_door_c;
+	entity			transformer_door_d;
+
+	entity			entranceWhole;
+	entity			entranceWholeDetail;
+	entity			entranceDestroyed;
+
+	entity			pipes;
+	entity			pipesAll;
+	entity			pipesDamagedAll;
+	entity			damagedPipes1;
+	entity			damagedPipes2;
+	entity			damagedPipes3;
+	entity			damagedPipes4;
+	entity			undamagedPipes1;
+	entity			undamagedPipes2;
+	entity			undamagedPipes3;
+	entity			undamagedPipes4;
+
+	entity			cascadeFX1;
+	entity			cascadeFX2;
+	entity			cascadeFX3;
+	entity			cascadeFX4;
+	entity			cascadeFX5;
+	entity			cascadeFX6;
+
+	entity			transformerInteriorSteam1;
+	entity			transformerInteriorSteam2;
+	entity			transformerInteriorSteam3;
+	entity			transformerInteriorSteam4;
+	entity			transformerInteriorSteam5;
+	entity			transformerInteriorSteam6;
+	entity			transformerInteriorSteam7;
+	entity			transformerInteriorSteam8;
+
+	entity			transformerGlassSmash1;
+	entity			transformerGlassSmash2;
+	entity			transformerGlassSmash3;
+	entity			transformerGlassSmash4;
+	entity			transformerGlassSmash5;
+	entity			transformerGlassSmash6;
+	entity			transformerGlassSmash7;
+
+	entity			transformerGlass1;
+	entity			transformerGlass2;
+	entity			transformerGlass3;
+	entity			transformerGlass4;
+	entity			transformerGlass5;
+	entity			transformerGlass6;
+
+	entity			transformerBroken;
+
+	entity			transformerInteriorEffects;
+	entity			transformerExteriorEffects;
+	entity			transformerWallEffects;
+	entity			transformerWallEffects2;
+
+	entity			transformerfacilitySmoke;
+	entity			transformerfacilityRubble;
+
+	entity			transformerfacilityBigPipes01a;
+	entity			transformerfacilityBigPipes01b;
+	entity			transformerfacilityBigPipes01c;
+	entity			transformerfacilityBigPipes02a;
+	entity			transformerfacilityBigPipes02b;
+	entity			transformerfacilityBigPipes02c;
+
+	entity			coreExplosion;
+	entity			coreIdleEffect1;
+	entity			coreIdleEffect2;
+	entity			coreIdleEffect3;
+	entity			coreIdleEffect4;
+	entity			coreIdleEffect5;
+
+	float			flyerDroneTaskDef;
+	float			flyerDroneDefendTaskDef;
+
+	task		    leftVentTask;
+	task		    rightVentTask;
+	task		    leftVentTaskDefend;
+	task		    rightVentTaskDefend;
+
+	entity			leftVentWaypoint;
+	entity			rightVentWaypoint;
+
+	entity			endCameraA;
+	entity			endCameraB;
+	
+	entity			facilityTriggerHurt;
+	
+	// Bot Functions
+	void			OnSpawnCaptured( string actionName );
+	void			OnSpawnLiberated( string actionName );
+	float			bots_doors_destroyed;
+
+	// Bot Obstacles
+	entity			westbreach_obstacle;
+	entity			bunkerdoor_obstacle;
+	entity			eastbreach_obstacle;
+	entity			door_obstacle_1;
+	entity			door_obstacle_2;
+	entity			door_obstacle_3;
+	entity			facility_obstacle;
+	
+	// for debug prints
+	cvar			debug_script;
+}
+
+mapObject_Base Volcano_MapScript() {
+	return new mapObject_Volcano;
+}
+
+void mapObject_Volcano::destroy() {
+	if ( leftVentTask != $null ) {
+		leftVentTask.free();
+		leftVentTask = $null;
+	}
+	if ( rightVentTask != $null ) {
+		rightVentTask.free();
+		rightVentTask = $null;
+	}
+	if ( leftVentTaskDefend != $null ) {
+		leftVentTaskDefend.free();
+		leftVentTaskDefend = $null;
+	}
+	if ( rightVentTaskDefend != $null ) {
+		rightVentTaskDefend.free();
+		rightVentTaskDefend = $null;
+	}
+}
+
+void mapObject_Volcano::InitObjectives() {
+	gameRules.setWinningTeam( gdfTeam );
+	gdfTeam.SetRespawnWait( 20 );
+	stroggTeam.SetRespawnWait( 20 );
+	gdfTeam.InitRespawnTimeChange();
+	stroggTeam.InitRespawnTimeChange();
+	CreateRespawnTimeThread( stroggTeam );
+
+	flyerDroneTaskDef	       = GetPlayerTask( worldspawn.getKey( "task_flyer_drone" ) );
+	flyerDroneDefendTaskDef	 = GetPlayerTask( worldspawn.getKey( "task_flyer_drone_defend" ) );
+
+	//
+	// Territories
+	//
+	gdfBaseTerritory		= worldspawn.getEntityKey( "script_gdf_base_territory" );
+	beachTerritory		  = worldspawn.getEntityKey( "script_beach_territory" );
+	facilityTerritory	       = worldspawn.getEntityKey( "script_facility_territory" );
+	stroggBaseTerritory	     = worldspawn.getEntityKey( "script_strogg_base_territory" );
+
+	gdfBaseTerritory.setActive( false );
+	facilityTerritory.setActive( false );
+	beachTerritory.setActive( true );
+	stroggBaseTerritory.setActive( true );
+
+	gdfBaseTerritory.setGameTeam( gdfTeam );
+	facilityTerritory.setGameTeam( gdfTeam );
+	beachTerritory.setGameTeam( gdfTeam );
+	stroggBaseTerritory.setGameTeam( stroggTeam );
+
+	//
+	// Spawns
+	//
+	gdfBunkerSpawn		  = worldspawn.getEntityKey( "script_gdf_bunker_spawn" );
+	gdfBaseSpawn		    = worldspawn.getEntityKey( "script_gdf_base_spawn" );
+	gdfFacilitySpawn		= worldspawn.getEntityKey( "script_gdf_facility_spawn" );
+	stroggBaseSpawn		 = worldspawn.getEntityKey( "script_strogg_base_spawn" );
+	stroggBunkerSpawn	       = worldspawn.getEntityKey( "script_strogg_bunker_spawn" );
+	stroggBeachSpawn		= worldspawn.getEntityKey( "script_strogg_beach_spawn" );
+	gdfOutsideSpawn		 = worldspawn.getEntityKey( "script_gdf_outside_spawn" );
+
+	gdfOutsideSpawn.vSetActive( true );
+	gdfOutsideSpawn.setGameTeam( gdfTeam );
+
+	gdfBunkerSpawn.setGameTeam( gdfTeam );
+	gdfBaseSpawn.setGameTeam( gdfTeam );
+	gdfFacilitySpawn.setGameTeam( $null_entity );
+
+	stroggBaseSpawn.setGameTeam( stroggTeam );
+	stroggBunkerSpawn.setGameTeam( $null_entity );
+
+	stroggBeachSpawn.setGameTeam( $null_entity );
+	stroggBeachSpawn.vSetActive( true );
+
+	//
+	// Objectives
+	//
+	objective1			      = worldspawn.getEntityKey( "script_obj1_marker" );
+	objective2			      = worldspawn.getEntityKey( "script_obj2_marker" );
+	objective3a			     = worldspawn.getEntityKey( "script_obj3a_marker" );
+	objective3b			     = worldspawn.getEntityKey( "script_obj3b_marker" );
+	objective3c			     = worldspawn.getEntityKey( "script_obj3c_marker" );
+	objective3d			     = worldspawn.getEntityKey( "script_obj3d_marker" );
+	objective3e			     = worldspawn.getEntityKey( "script_obj3e_marker" );
+
+
+	objective1Arrow1		= worldspawn.getEntityKey( "script_obj1_arrow1" );
+	objective1Arrow2		= worldspawn.getEntityKey( "script_obj1_arrow2" );
+	objective2Arrow1		= worldspawn.getEntityKey( "script_obj2_arrow1" );
+	objective2Arrow2		= worldspawn.getEntityKey( "script_obj2_arrow2" );
+	objective3Arrow1		= worldspawn.getEntityKey( "script_obj3_arrow1" );
+
+	objective1.vStartObjective();
+	objective1Arrow1.vStartObjective();
+	objective1Arrow2.vStartObjective();
+
+	objective2.vStartObjective();
+	objective3a.vStartObjective();
+
+	core1					= worldspawn.getEntityKey( "script_core1" );
+	core2					= worldspawn.getEntityKey( "script_core2" );
+	core3					= worldspawn.getEntityKey( "script_core3" );
+	core4					= worldspawn.getEntityKey( "script_core4" );
+	core5					= worldspawn.getEntityKey( "script_core5" );
+
+	transformer				= worldspawn.getEntityKey( "script_transformer" );
+	securityControls		= worldspawn.getEntityKey( "script_security_controls" );
+
+	transformer_door_a		=       worldspawn.getEntityKey( "script_transformer_door_a" );
+	transformer_door_b		=       worldspawn.getEntityKey( "script_transformer_door_b" );
+	transformer_door_c		=       worldspawn.getEntityKey( "script_transformer_door_c" );
+	transformer_door_d		=       worldspawn.getEntityKey( "script_transformer_door_d" );
+
+	seawallBreach			= worldspawn.getEntityKey( "script_seawall_breach" );
+	seawallBreachDetail		= worldspawn.getEntityKey( "script_seawall_breach_detail" );
+	seawallBreachBroken		= worldspawn.getEntityKey( "script_seawall_breach_broken" );
+
+	eastBunkerBreach		= worldspawn.getEntityKey( "script_east_bunker" );
+	eastBunkerBreachBroken	= worldspawn.getEntityKey( "script_east_bunker_broken" );
+
+	forwardBunkerDoor		= worldspawn.getEntityKey( "script_forward_bunker_door" );
+	forwardBunkerDoorBroken	= worldspawn.getEntityKey( "script_forward_bunker_door_broken" );
+
+	gun1Construction		= worldspawn.getEntityKey( "script_gun_1" );
+	gun2Construction		= worldspawn.getEntityKey( "script_gun_2" );
+	gun3Construction		= worldspawn.getEntityKey( "script_gun_3" );
+	gun4Construction		= worldspawn.getEntityKey( "script_gun_4" );
+	gun5Construction		= worldspawn.getEntityKey( "script_gun_5" );
+
+	noplant_seawall_breach		= worldspawn.getEntityKey( "script_noplant_seawall_breach" );
+	noplant_east_bunker_breach	= worldspawn.getEntityKey( "script_noplant_east_bunker_breach" );
+	noplant_bunker_door			= worldspawn.getEntityKey( "script_noplant_bunker_door" );
+	noplant_transformer			= worldspawn.getEntityKey( "script_noplant_transformer" );
+
+	core1.setTakesDamage( 0 );
+	core2.setTakesDamage( 0 );
+	core3.setTakesDamage( 0 );
+	core4.setTakesDamage( 0 );
+	core5.setTakesDamage( 0 );
+
+	seawallBreachBroken.hide();
+	eastBunkerBreachBroken.hide();
+	forwardBunkerDoorBroken.hide();
+
+	core1.hide();
+	core1.forceDisableClip();
+
+	core2.hide();
+	core2.forceDisableClip();
+
+	core3.hide();
+	core3.forceDisableClip();
+
+	core4.hide();
+	core4.forceDisableClip();
+
+
+
+	//
+	// Misc
+	//
+	//securityDoors				= worldspawn.getEntityKey( "script_security_doors" );
+	entranceWhole				= worldspawn.getEntityKey( "script_entrance_building_whole" );
+	entranceWholeDetail			= worldspawn.getEntityKey( "script_entrance_building_whole_detail" );
+	entranceDestroyed			= worldspawn.getEntityKey( "script_entrance_building_destroyed" );
+	fakeDoor					= worldspawn.getEntityKey( "script_fake_door" );
+
+	pipes						= worldspawn.getEntityKey( "script_cascade_pipes" );
+	pipesAll					= worldspawn.getEntityKey( "script_cascade_pipes_all" );
+	pipesDamagedAll				= worldspawn.getEntityKey( "script_cascade_damaged_pipes_all" );
+	damagedPipes1				= worldspawn.getEntityKey( "script_cascade_damaged_pipes_1" );
+	damagedPipes2				= worldspawn.getEntityKey( "script_cascade_damaged_pipes_2" );
+	damagedPipes3				= worldspawn.getEntityKey( "script_cascade_damaged_pipes_3" );
+	damagedPipes4				= worldspawn.getEntityKey( "script_cascade_damaged_pipes_4" );
+	undamagedPipes1				= worldspawn.getEntityKey( "script_cascade_undamaged_pipes_1" );
+	undamagedPipes2				= worldspawn.getEntityKey( "script_cascade_undamaged_pipes_2" );
+	undamagedPipes3				= worldspawn.getEntityKey( "script_cascade_undamaged_pipes_3" );
+	undamagedPipes4				= worldspawn.getEntityKey( "script_cascade_undamaged_pipes_4" );
+
+	cascadeFX1					= worldspawn.getEntityKey( "script_fx_cascade1" );
+	cascadeFX2					= worldspawn.getEntityKey( "script_fx_cascade2" );
+	cascadeFX3					= worldspawn.getEntityKey( "script_fx_cascade3" );
+	cascadeFX4					= worldspawn.getEntityKey( "script_fx_cascade4" );
+	cascadeFX5					= worldspawn.getEntityKey( "script_fx_cascade5" );
+	cascadeFX6					= worldspawn.getEntityKey( "script_fx_cascade6" );
+
+	transformerInteriorSteam1	= worldspawn.getEntityKey( "script_transformer_interior_steam1" );
+	transformerInteriorSteam2	= worldspawn.getEntityKey( "script_transformer_interior_steam2" );
+	transformerInteriorSteam3	= worldspawn.getEntityKey( "script_transformer_interior_steam3" );
+	transformerInteriorSteam4	= worldspawn.getEntityKey( "script_transformer_interior_steam4" );
+	transformerInteriorSteam5	= worldspawn.getEntityKey( "script_transformer_interior_steam5" );
+	transformerInteriorSteam6	= worldspawn.getEntityKey( "script_transformer_interior_steam6" );
+	transformerInteriorSteam7	= worldspawn.getEntityKey( "script_transformer_interior_steam7" );
+	transformerInteriorSteam8	= worldspawn.getEntityKey( "script_transformer_interior_steam8" );
+
+	transformerGlassSmash1		= worldspawn.getEntityKey( "script_transformer_glass_smash_1" );
+	transformerGlassSmash2		= worldspawn.getEntityKey( "script_transformer_glass_smash_2" );
+	transformerGlassSmash3		= worldspawn.getEntityKey( "script_transformer_glass_smash_3" );
+	transformerGlassSmash4		= worldspawn.getEntityKey( "script_transformer_glass_smash_4" );
+	transformerGlassSmash5		= worldspawn.getEntityKey( "script_transformer_glass_smash_5" );
+	transformerGlassSmash6		= worldspawn.getEntityKey( "script_transformer_glass_smash_6" );
+	transformerGlassSmash7		= worldspawn.getEntityKey( "script_transformer_glass_smash_7" );
+
+	transformerInteriorEffects	= worldspawn.getEntityKey( "script_transformer_interior_effects" );
+
+	transformerExteriorEffects	= worldspawn.getEntityKey( "script_transformer_exterior_effects" );
+	transformerWallEffects		= worldspawn.getEntityKey( "script_transformer_wall_effects" );
+	transformerWallEffects2		= worldspawn.getEntityKey( "script_transformer_wall_effects2" );
+
+	transformerfacilitySmoke	= worldspawn.getEntityKey( "script_transformer_facility_smoke" );
+	transformerfacilityRubble	= worldspawn.getEntityKey( "script_transformer_facility_rubble" );
+
+	transformerfacilityBigPipes01a	= worldspawn.getEntityKey( "script_transformer_facility_bigpipes01a" );
+	transformerfacilityBigPipes01b	= worldspawn.getEntityKey( "script_transformer_facility_bigpipes01b" );
+	transformerfacilityBigPipes01c	= worldspawn.getEntityKey( "script_transformer_facility_bigpipes01c" );
+	transformerfacilityBigPipes02a	= worldspawn.getEntityKey( "script_transformer_facility_bigpipes02a" );
+	transformerfacilityBigPipes02b	= worldspawn.getEntityKey( "script_transformer_facility_bigpipes02b" );
+	transformerfacilityBigPipes02c	= worldspawn.getEntityKey( "script_transformer_facility_bigpipes02c" );
+
+	coreExplosion					= worldspawn.getEntityKey( "script_core_explosion" );
+
+	coreIdleEffect1					= worldspawn.getEntityKey( "script_core_effects_idle_1" );
+	coreIdleEffect2					= worldspawn.getEntityKey( "script_core_effects_idle_2" );
+	coreIdleEffect3					= worldspawn.getEntityKey( "script_core_effects_idle_3" );
+	coreIdleEffect4					= worldspawn.getEntityKey( "script_core_effects_idle_4" );
+	coreIdleEffect5					= worldspawn.getEntityKey( "script_core_effects_idle_5" );
+
+	transformerGlass1				= worldspawn.getEntityKey( "script_transformer_glass_1" );
+	transformerGlass2				= worldspawn.getEntityKey( "script_transformer_glass_2" );
+	transformerGlass3				= worldspawn.getEntityKey( "script_transformer_glass_3" );
+	transformerGlass4				= worldspawn.getEntityKey( "script_transformer_glass_4" );
+	transformerGlass5				= worldspawn.getEntityKey( "script_transformer_glass_5" );
+	transformerGlass6				= worldspawn.getEntityKey( "script_transformer_glass_6" );
+      
+
+	transformerBroken				= worldspawn.getEntityKey( "script_transformer_broken" );
+
+	leftVentWaypoint				= worldspawn.getEntityKey( "script_hint_flyerdrone_1" );
+	rightVentWaypoint				= worldspawn.getEntityKey( "script_hint_flyerdrone_2" );
+
+	endCameraA						= worldspawn.getEntityKey( "script_placement_camera_a" );
+	endCameraB						= worldspawn.getEntityKey( "script_placement_camera_b" );
+	
+	facilityTriggerHurt				= worldspawn.getEntityKey( "script_facility_trigger_hurt" );
+
+	// Bot Obstacles
+
+	westbreach_obstacle				= worldspawn.getEntityKey( "script_westbreach_obstacle_1" );
+	bunkerdoor_obstacle				= worldspawn.getEntityKey( "script_bunkerdoor_obstacle_1" );
+	eastbreach_obstacle				= worldspawn.getEntityKey( "script_eastbreach_obstacle_1" );
+	door_obstacle_1					= worldspawn.getEntityKey( "script_door_obstacle_1" );
+	door_obstacle_2					= worldspawn.getEntityKey( "script_door_obstacle_2" );
+	door_obstacle_3					= worldspawn.getEntityKey( "script_door_obstacle_3" );
+	facility_obstacle				= worldspawn.getEntityKey( "script_facility_obstacle" );
+		
+	transformerBroken.hide();
+	transformerBroken.forceDisableClip();
+
+	entranceDestroyed.hide();
+	entranceDestroyed.forceDisableClip();
+
+	pipes.hide();
+	//pipesAll.hide();      // these are the whole, undamaged pipe structure
+	pipesDamagedAll.hide();
+	damagedPipes1.hide();
+	damagedPipes2.hide();
+	damagedPipes3.hide();
+	damagedPipes4.hide();
+	undamagedPipes1.hide();
+	undamagedPipes2.hide();
+	undamagedPipes3.hide();
+	undamagedPipes4.hide();
+
+	mainObjectiveIndex = OBJECTIVE_VOLCANO_HACK;
+	bots_doors_destroyed = 0;
+
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	gun1Construction.vCreateMission();
+	gun2Construction.vCreateMission();
+	gun3Construction.vCreateMission();
+	gun5Construction.vCreateMission(); // gun4 is the one inside the facility
+
+	eastBunkerBreach.vCreateMission();
+	seawallBreach.vCreateMission();
+	forwardBunkerDoor.vCreateMission();
+
+	forwardBunkerDoorDestroyed       = false;
+	seawallBreachDestroyed	   = false;
+	eastBunkerBreachDestroyed	= false;
+
+	breachesDestroyed = 0;
+
+	gameRules.setEndGameCamera( endCameraB );
+
+	thread StartFirstObjective();
+	
+	debug_script						=	sys.getCVar( "bot_debugMapScript", "1" );
+   
+	CreateDeployTasks();
+}
+
+void mapObject_Volcano::CompleteObjective( float index, entity p ) {
+	if ( index == OBJECTIVE_VOLCANO_HACK ) {
+		OnHack();
+	} else if ( index == OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER ) {
+		OnTransformerDestroyed();
+	} else if ( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO80 ) {
+		OnCoreDamaged1();
+	} else if ( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO60 ) {
+		OnCoreDamaged2();
+	} else if ( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO40 ) {
+		OnCoreDamaged3();
+	} else if ( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO20 ) {
+		OnCoreDamaged4();
+	} else if ( index == OBJECTIVE_VOLCANO_CORE_DESTROYED ) {
+		OnCoreDestroyed();
+	}
+}
+
+handle mapObject_Volcano::GetObjectiveMessage( float index ) {
+
+	if( index == OBJECTIVE_VOLCANO_HACK ) {
+		return sys.localizeString( "maps/volcano/controls_hacked" );
+	}
+
+	if( index == OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER ) {
+		return sys.localizeString( "maps/volcano/destroyed_transformer" );
+	}
+
+	if( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO80  ) {
+		return sys.localizeString( "maps/volcano/damaged_core_to80" );
+	}
+
+	if( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO60  ) {
+		return sys.localizeString( "maps/volcano/damaged_core_to60" );
+	}
+
+	if( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO40  ) {
+		return sys.localizeString( "maps/volcano/damaged_core_to40" );
+	}
+
+	if( index == OBJECTIVE_VOLCANO_DAMAGE_CORE_TO20  ) {
+		return sys.localizeString( "maps/volcano/damaged_core_to20" );
+	}
+
+	if( index == OBJECTIVE_VOLCANO_CORE_DESTROYED  ) {
+		return sys.localizeString( "maps/volcano/destroyed_core" );
+	}
+
+	return g_locStr_BadObjective;
+}
+
+void mapObject_Volcano::OnConstructionComplete( entity obj ) {
+	if ( obj == gun1Construction ) {
+		OnGun1Built();
+	} else if ( obj == gun2Construction ) {
+		OnGun2Built();
+	} else if ( obj == gun3Construction ) {
+		OnGun3Built();
+	} else if ( obj == gun4Construction ) {
+		OnGun4Built();
+	} else if ( obj == gun5Construction ) {
+		OnGun5Built();
+	}
+}
+
+void mapObject_Volcano::OnDestructionComplete( entity obj ) {
+	if ( obj == seawallBreach ) {
+		OnSeawallBreachDestroyed();
+	} else if ( obj == eastBunkerBreach ) {
+		OnEastBunkerBreachDestroyed();
+	} else if ( obj == forwardBunkerDoor ) {
+		OnForwardBunkerDoorDestroyed();
+	} else if ( obj == gun1Construction ) {
+		OnGun1Destroyed();
+	} else if ( obj == gun2Construction ) {
+		OnGun1Destroyed();
+	} else if ( obj == gun3Construction ) {
+		OnGun1Destroyed();
+	} else if ( obj == gun4Construction ) {
+		OnGun1Destroyed();
+	} else if ( obj == gun5Construction ) {
+		OnGun1Destroyed();
+	}
+}
+
+void mapObject_Volcano::OnEastBunkerBreachDestroyed() {
+	bots_doors_destroyed++;
+	eastBunkerBreachDestroyed = true;
+	noplant_east_bunker_breach.remove();
+	eastBunkerBreachBroken.show();
+	eastBunkerBreach.vCompleteMission();
+	eastbreach_obstacle.activate( eastbreach_obstacle );
+	objManager.deactivateBotActionGroup( VOL_STROGG_DESTROY_EAST_BUNKER );
+	OnAnyBreach();
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER ) {
+		objManager.enableRoute( "bot_route_east_bunker_obj2" );
+	} 
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_HACK ) {
+	    objManager.enableRoute( "bot_route_east_bunker_obj1" );
+		objManager.activateBotActionGroup( VOL_GDF_DEFEND_EAST_BUNKER_POSTBREACH );
+		objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_EAST_BUNKER );
+	}
+}
+
+void mapObject_Volcano::OnSeawallBreachDestroyed() {
+	bots_doors_destroyed++;
+	seawallBreachDestroyed = true; 
+	westbreach_obstacle.activate( westbreach_obstacle );
+	noplant_seawall_breach.remove();
+	seawallBreach.vCompleteMission();
+	seawallBreachDetail.remove();
+	seawallBreachBroken.show();   
+	objManager.deactivateBotActionGroup( VOL_STROGG_DESTROY_SEAWALL );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_SEAWALL );
+	OnAnyBreach();
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER ) {
+		objManager.enableRoute( "bot_route_wall_obj2" );
+	} 
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_HACK ) {
+	    objManager.enableRoute( "bot_route_wall_obj1" );
+		objManager.activateBotActionGroup( VOL_GDF_DEFEND_SEAWALL_POSTBREACH );
+	} 
+}
+
+void mapObject_Volcano::OnForwardBunkerDoorDestroyed() {
+	bots_doors_destroyed++;
+	forwardBunkerDoorDestroyed = true;
+	bunkerdoor_obstacle.activate( bunkerdoor_obstacle );
+	noplant_bunker_door.remove();
+	forwardBunkerDoorBroken.show();
+	forwardBunkerDoor.vCompleteMission();
+	objManager.deactivateBotActionGroup( VOL_STROGG_DESTROY_BUNKERDOOR );
+	OnAnyBreach();
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER ) {
+		objManager.enableRoute( "bot_route_underground_obj2" );
+	} 
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_HACK ) {
+		objManager.activateBotActionGroup( VOL_GDF_DEFEND_BUNKERDOOR_POSTBREACH);
+		objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BUNKERDOOR );
+	}   
+       
+}
+
+void mapObject_Volcano::OnAnyBreach() {
+	breachesDestroyed = breachesDestroyed + 1;
+	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_HACK ) {
+		objManager.setTeamAttacksDeployables( GDF, false );
+		objManager.setPrimaryTeamAction( STROGG, "strogg_hack_console_1" );
+		// turn of prevent hack only action
+		objManager.deactivateBotAction( "strogg_hack_console_2" );
+		objManager.setPrimaryTeamAction( GDF, "strogg_hack_console_1" );
+		objManager.setBotCriticalClass( STROGG, COVERTOPS );
+		objManager.setTeamNeededClass( STROGG, COVERTOPS, NOCLASS, 2, false, true );
+		objManager.activateBotActionGroup( VOL_STROGG_HACK_CONTROLS );
+		objManager.activateBotActionGroup( VOL_STROGG_HACK_SUPPORT );
+		//objManager.switchTeamWeapons( STROGG, COVERTOPS, 1, 0, 100 );
+		// Force all CovertOps to switch from RG to Acurized Lacerator
+		objManager.switchTeamWeapons( STROGG, COVERTOPS, 15, 2, false );
+		if ( breachesDestroyed == 1 ) {
+			//objManager.setTeamNeededClass( STROGG, COVERTOPS, NOCLASS, 1, true, false );
+		} if ( breachesDestroyed == 2 ) {
+			objManager.setTeamNeededClass( STROGG, COVERTOPS, SOLDIER, 1, false, true );
+		} if ( breachesDestroyed == 3 ) {
+			objManager.setTeamNeededClass( STROGG, MEDIC, SOLDIER, 1, true, false );
+		}
+	}
+}
+
+void mapObject_Volcano::OnGun1Built() {
+	gun1Construction.vCompleteMission();
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN1 );
+	
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		objManager.activateBotActionGroup( VOL_GDF_USE_GUN1 );
+	}
+}
+
+void mapObject_Volcano::OnGun1Destroyed() {
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN1 );
+	
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		gun1Construction.vCreateMission();
+		objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN1 );
+	}
+}
+
+void mapObject_Volcano::OnGun2Built() {
+	gun2Construction.vCompleteMission();
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN2 );
+
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		objManager.activateBotActionGroup( VOL_GDF_USE_GUN2 );
+	}
+}
+
+void mapObject_Volcano::OnGun2Destroyed() {
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN2 );	
+	
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		gun2Construction.vCreateMission();
+		objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN2 );
+	}
+}
+
+void mapObject_Volcano::OnGun3Built() {
+	gun3Construction.vCompleteMission();
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN3 );	
+	
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		objManager.activateBotActionGroup( VOL_GDF_USE_GUN3 );
+	}
+}
+
+void mapObject_Volcano::OnGun3Destroyed() {
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN3 );
+
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		gun3Construction.vCreateMission();
+		objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN3 );
+	}
+}
+
+void mapObject_Volcano::OnGun4Built() {
+	gun4Construction.vCompleteMission();
+	objManager.activateBotActionGroup( VOL_GDF_USE_GUN4 );
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN4 );
+}
+
+// gun inside facility
+void mapObject_Volcano::OnGun4Destroyed() {
+	gun4Construction.vCreateMission();
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN4 );
+	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN4 );
+}
+
+void mapObject_Volcano::OnGun5Built() {
+	gun5Construction.vCompleteMission();
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN5 );
+	
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		objManager.activateBotActionGroup( VOL_GDF_USE_GUN5 );
+	}
+}
+
+void mapObject_Volcano::OnGun5Destroyed() {
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN5 );
+	
+	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
+		gun5Construction.vCreateMission();
+		objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN5 );
+	}
+}
+
+void mapObject_Volcano::OnHack() {
+	mainObjectiveIndex = OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER;
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	objective1.vFinishObjective();
+
+	objective1Arrow1.vFinishObjective();
+	objective1Arrow2.vFinishObjective();
+	objective1.vFinishObjective();
+
+	objective2Arrow1.vStartObjective();
+	objective2Arrow2.vStartObjective();
+	objective2.vStartObjective();
+
+	// Bots for Second Objective
+
+	objManager.deactivateBotActionGroup( VOL_STROGG_HACK_CONTROLS );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_CONTROLS );
+	objManager.deactivateBotActionGroup( VOL_STROGG_HACK_SUPPORT );
+
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BEACH );
+	objManager.deactivateBotActionGroup( VOL_STROGG_BEACH_SUPPORT );
+
+	objManager.deactivateBotActionGroup( VOL_STROGG_CAPTURE_BEACH_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_STROGG_ATTACK_BEACH_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_STROGG_DEFEND_BEACH_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_GDF_ATTACK_BEACH_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BEACH_SPAWN );
+
+	objManager.deactivateBotActionGroup( VOL_STROGG_OBJ1_DEPLOY );
+	objManager.deactivateBotActionGroup( VOL_GDF_OBJ1_DEPLOY );
+
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BUNKERDOOR );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_EAST_BUNKER );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_SEAWALL );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BUNKERDOOR_POSTBREACH );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_EAST_BUNKER_POSTBREACH );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_SEAWALL_POSTBREACH );
+
+	objManager.deactivateBotActionGroup( VOL_GDF_CAPTURE_BUNKER_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_GDF_ATTACK_BUNKER_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BUNKER_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_STROGG_ATTACK_BUNKER_SPAWN );
+	objManager.deactivateBotActionGroup( VOL_STROGG_DEFEND_BUNKER_SPAWN );
+	
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN1 );
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN2 );
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN3 );
+	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN5 );
+	
+	objManager.activateBotActionGroup( VOL_OBJ2_INTERMEDIATE );
+
+	objManager.setBotCriticalClass( GDF, ENGINEER );
+	objManager.setBotCriticalClass( STROGG, SOLDIER );
+	objManager.setTeamNeededClass( GDF, ENGINEER, COVERTOPS, 2, false, true );
+	objManager.setTeamNeededClass( STROGG, SOLDIER, NOCLASS, 3, true, true );
+	objManager.setTeamNeededClass( STROGG, MEDIC, COVERTOPS, 1, false, false );
+	//objManager.switchTeamWeapons( STROGG, SOLDIER, 0, 2, 50 );
+	objManager.switchTeamWeapons( STROGG, SOLDIER, 5, 2, false );		// Force switch from RL to SMG
+	objManager.switchTeamWeapons( STROGG, SOLDIER, 6, 2, true );		// Randomly switch from HMG to SMG
+	
+	objManager.setTeamAttacksDeployables( GDF, false );
+	objManager.setTeamAttacksDeployables( STROGG, false );
+	
+	objManager.disableRoute( "bot_route_east_bunker_obj1" );
+	objManager.disableRoute( "bot_route_wall_obj1" );
+		
+	if ( eastBunkerBreachDestroyed ) {
+		objManager.enableRoute( "bot_route_east_bunker_obj2" );
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "enabled east bunker door route for objective 2\n" );
+		}
+	}
+
+	if ( seawallBreachDestroyed ) {
+		objManager.enableRoute( "bot_route_wall_obj2" );
+		objManager.activateBotActionGroup( VOL_GDF_DEFEND_SEAWALL_POSTBREACH_OBJ2 );
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "enabled broken wall route for objective 2, and gdf are covering it\n" );
+			}
+	}
+
+	if ( forwardBunkerDoorDestroyed ) {
+		objManager.enableRoute( "bot_route_underground_obj2" );
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "enabled bunker door route for objective 2\n" );
+		}
+	}
+
+	beachTerritory.setGameTeam( stroggTeam );
+	stroggBeachSpawn.vSetActive( false );
+	stroggBeachSpawn.setGameTeam( stroggTeam );
+
+	gdfOutsideSpawn.setGameTeam( $null_entity );
+	gdfOutsideSpawn.vSetActive( false );
+
+	facilityTerritory.setActive( true );
+	beachTerritory.setActive( true );
+	stroggBaseTerritory.setActive( false );
+
+	//securityDoors.remove();
+
+	securityControls.vCompleteMission();
+	StopTimedMission();
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	thread StartTransformerObjective();
+
+	transformer_door_a.open();
+	transformer_door_b.open();
+	transformer_door_c.open();
+	transformer_door_d.open();
+	
+	// delayed door obstacle remove thread
+	thread DoorObstacleDelay();
+		
+	stroggTeam.SetRespawnWait( 20 );
+	ResetRespawnTimeThread();
+
+}
+
+void mapObject_Volcano::DoorObstacleDelay() {
+	sys.wait( 34 );
+	door_obstacle_1.activate( door_obstacle_1 );
+	door_obstacle_2.activate( door_obstacle_2 );
+	door_obstacle_3.activate( door_obstacle_3 );
+		
+	objManager.deactivateBotActionGroup( VOL_OBJ2_INTERMEDIATE );
+
+	objManager.activateBotActionGroup( VOL_STROGG_DESTROY_TRANSFORMER );
+	objManager.activateBotActionGroup( STROGG_SUPPORT_VOLCANO_TRANSFORMER );
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_TRANSFORMER );
+	objManager.activateBotActionGroup( VOL_GDF_OBJ2_DEPLOY );
+	objManager.activateBotActionGroup( VOL_STROGG_OBJ2_DEPLOY );
+
+	objManager.setPrimaryTeamAction( GDF, "strogg_transformer_1" );
+	objManager.setPrimaryTeamAction( STROGG, "strogg_transformer_1" );
+}
+
+
+void mapObject_Volcano::OnTransformerDestroyed() {
+	mainObjectiveIndex = OBJECTIVE_VOLCANO_DESTROY_CORE;
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	facilityTerritory.setGameTeam( stroggTeam );
+
+	gdfBaseTerritory.setActive( true );
+	facilityTerritory.setActive( true );
+	beachTerritory.setActive( false );
+
+	stroggBunkerSpawn.setGameTeam( stroggTeam );
+
+	gdfBunkerSpawn.setGameTeam( $null_entity );
+	gdfFacilitySpawn.setGameTeam( gdfTeam );
+
+	objective2.vFinishObjective();
+	objective2Arrow1.vFinishObjective();
+	objective2Arrow2.vFinishObjective();
+
+	objective3Arrow1.vStartObjective();
+
+	objective3a.vStartObjective();
+
+	noplant_transformer.remove();
+
+	thread ExplosionCascade();
+
+	transformer.vCompleteMission();
+	StopTimedMission();
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	thread StartCoreObjective();
+
+	core1.show();
+	core1.forceEnableClip();
+	core1.setTakesDamage( 1 );
+	fakeDoor.remove();
+
+	transformerBroken.show();
+	transformerBroken.forceEnableClip();
+
+	pipes.show();
+	pipesAll.hide();
+	undamagedPipes1.show();
+	undamagedPipes2.show();
+	undamagedPipes3.show();
+	undamagedPipes4.show();
+
+	stroggTeam.SetRespawnWait( 20 );
+	ResetRespawnTimeThread();
+
+
+	//Remove Beach turret for strogg before they place a new turret for final obj -->Added by Vex
+	objManager.clearTeamBotBoundEntities ( STROGG );
+
+	objManager.deactivateBotActionGroup( VOL_STROGG_DESTROY_TRANSFORMER );
+	objManager.deactivateBotActionGroup( STROGG_SUPPORT_VOLCANO_TRANSFORMER );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_TRANSFORMER );
+	objManager.deactivateBotActionGroup( VOL_GDF_OBJ1AND2_DEPLOY );
+	objManager.deactivateBotActionGroup( VOL_GDF_OBJ2_DEPLOY );
+	objManager.deactivateBotActionGroup( VOL_STROGG_OBJ2_DEPLOY );
+	objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_SEAWALL_POSTBREACH_OBJ2 );
+
+	// Xian: Per mark, deactivate these guns.      
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN1 );
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN2 );
+	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN3 );
+
+	objManager.activateBotActionGroup( VOL_OBJ3_INTERMEDIATE );
+	
+	//objManager.switchTeamWeapons( STROGG, COVERTOPS, 1, 0, 100 );
+	//objManager.switchTeamWeapons( GDF, COVERTOPS, 1, 0, 100 );
+	//objManager.switchTeamWeapons( GDF, SOLDIER, 0, 0, 100 );
+	objManager.switchTeamWeapons( STROGG, COVERTOPS, 15, 2, false );	// Force switch of Strogg Snipers to Gunners
+	objManager.switchTeamWeapons( GDF, COVERTOPS, 15, 2, false );		// Ditto for GDF snipers
+	objManager.switchTeamWeapons( GDF, SOLDIER, 5, 2, true );			// Randomly switch RL to SMG
+	objManager.switchTeamWeapons( GDF, SOLDIER, 2, 6, true );			// Randomly switch SMG to HMG
+
+	objManager.setBotCriticalClass( GDF, ENGINEER );
+	objManager.setBotCriticalClass( STROGG, COVERTOPS );
+	
+	objManager.setTeamNeededClass( GDF, MEDIC, NOCLASS, 2, false, false );
+	objManager.setTeamNeededClass( STROGG, COVERTOPS, SOLDIER, 2, true, true );
+	objManager.setTeamNeededClass( STROGG, MEDIC, FIELDOPS, 1, false, false );
+}
+
+void mapObject_Volcano::FacilityBreached() {
+	pipes.hide();
+	damagedPipes1.hide();
+	damagedPipes2.hide();
+	damagedPipes3.hide();
+	damagedPipes4.hide();
+	pipesDamagedAll.show();
+
+	entranceWhole.hide();
+	entranceWhole.forceDisableClip();
+
+	entranceWholeDetail.hide();
+	entranceWholeDetail.forceDisableClip();
+
+	entranceDestroyed.show();
+	entranceDestroyed.forceEnableClip();
+	
+	facility_obstacle.activate( facility_obstacle );
+		
+	gun4Construction.vCreateMission();
+	gun1Construction.vFreeMission();
+	gun2Construction.vFreeMission();
+	gun3Construction.vFreeMission();
+	gun5Construction.vFreeMission();
+	
+	FreeWorldTask( engineerDeployTask );
+	FreeWorldTask( fieldopsDeployTask );
+	FreeWorldTask( medicDeployTask );
+
+	eastBunkerBreach.vFreeMission();
+	seawallBreach.vFreeMission();
+	forwardBunkerDoor.vFreeMission();
+
+	leftVentTask		= taskManager.allocEntityTask( flyerDroneTaskDef, leftVentWaypoint );
+	rightVentTask		= taskManager.allocEntityTask( flyerDroneTaskDef, rightVentWaypoint );
+	leftVentTaskDefend	= taskManager.allocEntityTask( flyerDroneDefendTaskDef, leftVentWaypoint );
+	rightVentTaskDefend = taskManager.allocEntityTask( flyerDroneDefendTaskDef, rightVentWaypoint );
+
+	objManager.deactivateBotActionGroup( VOL_OBJ3_INTERMEDIATE ); 
+	objManager.activateBotActionGroup( VOL_STROGG_DESTROY_CORE );
+	objManager.activateBotActionGroup( VOL_STROGG_ATTACK_CORE );
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_CORE );
+	objManager.activateBotActionGroup( VOL_STROGG_OBJ3_DEPLOY );
+	objManager.activateBotActionGroup( VOL_GDF_OBJ3_DEPLOY );
+	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN4 );
+	
+	objManager.setPrimaryTeamAction( STROGG, "infiltrator_camp_vents_1" );
+	objManager.setPrimaryTeamAction( GDF, "gdf_camp_core_1" );
+	
+	facilityTriggerHurt.activate( facilityTriggerHurt );
+	sys.wait( 0.1f);
+	facilityTriggerHurt.activate( facilityTriggerHurt );	
+}
+
+void mapObject_Volcano::ExplosionCascade() {
+	sys.wait( 0.1f);
+	transformerInteriorEffects.vTriggerParticleEffect( 1 );
+	transformerInteriorSteam1.vTriggerParticleEffect( 1 );
+	transformerInteriorSteam2.vTriggerParticleEffect( 1 );
+
+	transformerGlass1.remove();
+	transformerGlass2.remove();
+	transformerGlass3.remove();
+	transformerGlass4.remove();
+	transformerGlass5.remove();
+	transformerGlass6.remove();
+		
+	transformerGlassSmash1.vTriggerParticleEffect( 1 );
+	transformerGlassSmash2.vTriggerParticleEffect( 1 );
+	transformerGlassSmash3.vTriggerParticleEffect( 1 );
+	transformerGlassSmash4.vTriggerParticleEffect( 1 );
+	transformerGlassSmash5.vTriggerParticleEffect( 1 );
+	transformerGlassSmash6.vTriggerParticleEffect( 1 );
+	transformerGlassSmash7.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.3f );
+	transformerInteriorSteam3.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.3f );
+	transformerInteriorSteam4.vTriggerParticleEffect( 1 );
+	transformerInteriorSteam5.vTriggerParticleEffect( 1 );
+	transformerInteriorSteam6.vTriggerParticleEffect( 1 );
+	transformerInteriorSteam7.vTriggerParticleEffect( 1 );
+	transformerInteriorSteam8.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.5f );
+	transformerInteriorEffects.vTriggerParticleEffect( 1 );
+
+	sys.wait( 10.f );
+
+	cascadeFX1.vTriggerParticleEffect( 1 );
+	transformerInteriorEffects.vTriggerParticleEffect( 1 );
+	transformerExteriorEffects.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.4f );
+
+	undamagedPipes1.hide();
+	damagedPipes1.show();
+	cascadeFX2.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.4f );
+	undamagedPipes2.hide();
+	damagedPipes2.show();
+	cascadeFX3.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.3f );
+	undamagedPipes3.hide();
+	damagedPipes3.show();
+	cascadeFX4.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.3f );
+	undamagedPipes4.hide();
+	damagedPipes4.show();
+	cascadeFX5.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.2f );
+	cascadeFX6.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.5f );
+	transformerWallEffects.vTriggerParticleEffect( 1 );
+	transformerfacilitySmoke.vTriggerParticleEffect( 1 );
+	transformerfacilityBigPipes01a.vTriggerParticleEffect( 1 );
+	transformerfacilityBigPipes01b.vTriggerParticleEffect( 1 );
+	transformerfacilityBigPipes01c.vTriggerParticleEffect( 1 );
+	transformerfacilityBigPipes02a.vTriggerParticleEffect( 1 );
+	transformerfacilityBigPipes02b.vTriggerParticleEffect( 1 );
+	transformerfacilityBigPipes02c.vTriggerParticleEffect( 1 );
+
+	sys.wait( 0.2f );
+	transformerWallEffects2.vTriggerParticleEffect( 1 );
+	transformerfacilityRubble.vTriggerParticleEffect( 1 );
+	
+	FacilityBreached();
+
+}
+
+////// dave: hereon is a hack to simulate the core is gradually damaged
+
+void mapObject_Volcano::OnCoreDamaged1() {
+	objective3a.vFinishObjective();
+	objective3b.vStartObjective();
+
+	core5.vSetState( 0.2f );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_core80_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_core80_gdf" ), gdfTeam );
+
+	coreExplosion.vTriggerParticleEffect( 1 );
+	coreIdleEffect1.remove();
+
+	core2.show();
+	core2.forceEnableClip();
+	core2.setTakesDamage( 1 );
+}
+
+void mapObject_Volcano::OnCoreDamaged2() {
+	objective3b.vFinishObjective();
+	objective3c.vStartObjective();
+
+	core5.vSetState( 0.4f );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_core60_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_core60_gdf" ), gdfTeam );
+
+	coreExplosion.vTriggerParticleEffect( 2 );
+	coreIdleEffect2.remove();
+
+	core3.show();
+	core3.forceEnableClip();
+	core3.setTakesDamage( 1 );
+}
+
+void mapObject_Volcano::OnCoreDamaged3() {
+	objective3c.vFinishObjective();
+	objective3d.vStartObjective();
+
+	core5.vSetState( 0.6f );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_core40_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_core40_gdf" ), gdfTeam );
+
+	coreExplosion.vTriggerParticleEffect( 3 );
+	coreIdleEffect3.remove();
+
+	core4.show();
+	core4.forceEnableClip();
+	core4.setTakesDamage( 1 );
+}
+
+void mapObject_Volcano::OnCoreDamaged4() {
+	objective3d.vFinishObjective();
+	objective3e.vStartObjective();
+
+	core5.vSetState( 0.8f );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_core20_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_core20_gdf" ), gdfTeam );
+
+	coreExplosion.vTriggerParticleEffect( 4 );
+	coreIdleEffect4.remove();
+
+	core5.setTakesDamage( 1 );
+}
+
+void mapObject_Volcano::OnCoreDestroyed() {
+	objective3e.vFinishObjective();
+
+	objective3Arrow1.vFinishObjective();
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	core5.vSetState( 1.f );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_stroggwin_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_stroggwin_gdf" ), gdfTeam );
+
+	core5.vCompleteMission();
+	StopTimedMission();
+
+	coreExplosion.vTriggerParticleEffect( 5 );
+	coreIdleEffect5.remove();
+
+	gameRules.setEndGameCamera( endCameraA );
+
+	gameRules.setWinningTeam( stroggTeam );
+	gameRules.endGame();
+
+	thread OnCoreDestroyedEffectsThread();
+}
+
+void mapObject_Volcano::OnCoreDestroyedEffectsThread() {
+
+	sys.wait( 0.8f );
+	coreExplosion.vTriggerParticleEffect( 6 );
+
+	sys.wait( 1.3f );
+	coreExplosion.vTriggerParticleEffect( 7 );
+
+	sys.wait( 0.3f );
+	coreExplosion.vTriggerParticleEffect( 8 );
+
+	sys.wait( 0.8f );
+	coreExplosion.vTriggerParticleEffect( 9 );
+
+	sys.wait( 0.4f );
+	coreExplosion.vTriggerParticleEffect( 10 );
+
+	sys.wait( 0.2f );
+	coreExplosion.vTriggerParticleEffect( 11 );
+
+	sys.wait( 0.4f );
+	coreExplosion.vTriggerParticleEffect( 12 );
+
+}
+
+void mapObject_Volcano::OnTimeLimitHit() {
+	FinishTimedMission();
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_strogglose_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_strogglose_gdf" ), gdfTeam );
+}
+
+void mapObject_Volcano::StartFirstObjective() {
+
+	// Set up Bots for first objective
+	objManager.setAttackingTeam( STROGG );
+	objManager.setPrimaryTeamAction( GDF, "bjames_strogg_bunkerdoor_1" );
+	objManager.setPrimaryTeamAction( STROGG, "bjames_strogg_bunkerdoor_1" );
+	
+	objManager.setTeamAttacksDeployables( STROGG, false );
+
+	objManager.setBotCriticalClass( GDF, ENGINEER );
+	objManager.setBotCriticalClass( STROGG, SOLDIER );
+
+	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN1 );
+	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN2 );
+	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN3 );
+	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN5 );
+
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_BEACH_SPAWN );
+	objManager.activateBotActionGroup( VOL_STROGG_ATTACK_BEACH_SPAWN );      
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_BUNKER_SPAWN );
+	objManager.activateBotActionGroup( VOL_STROGG_ATTACK_BUNKER_SPAWN );
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_BEACH );
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_BUNKERDOOR );	
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_EAST_BUNKER );	
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_SEAWALL );
+	objManager.activateBotActionGroup( VOL_GDF_OBJ1_DEPLOY );
+	objManager.activateBotActionGroup( VOL_GDF_OBJ1AND2_DEPLOY );
+	objManager.activateBotActionGroup( VOL_STROGG_OBJ1_DEPLOY );
+	objManager.activateBotActionGroup( VOL_STROGG_BEACH_SUPPORT );
+	objManager.activateBotActionGroup( VOL_STROGG_CAPTURE_BEACH_SPAWN );
+	objManager.activateBotActionGroup( VOL_STROGG_DESTROY_BUNKERDOOR ); 
+	objManager.activateBotActionGroup( VOL_STROGG_DESTROY_EAST_BUNKER );	
+	objManager.activateBotActionGroup( VOL_STROGG_DESTROY_SEAWALL );   
+	objManager.activateBotActionGroup( VOL_GDF_DEFEND_CONTROLS );
+
+	objManager.setPrimaryTeamAction( STROGG, "strogg_hack_console_2" ); // only human prevent hack
+
+	objManager.setBotSightDist( 3000.0f );
+	objManager.SetObjectiveEntity( securityControls, mainObjectiveIndex );
+	securityControls.vCreateMission();
+	CreateInitialTimedMission( securityControls );
+
+	seawallBreach.vCreateMission();
+	eastBunkerBreach.vCreateMission();
+	forwardBunkerDoor.vCreateMission();
+	thread DelayedBotSpawnThread();
+}
+
+void mapObject_Volcano::DelayedBotSpawnThread() {
+	sys.wait( 10.0f ); // 10 second wait, 5 + 5 sec in StartFirstObjective thread above
+
+	objManager.setTeamNeededClass( GDF, FIELDOPS, NOCLASS, 2, true, true );
+	objManager.setTeamNeededClass( STROGG, SOLDIER, NOCLASS, 3, true, true );
+	objManager.setTeamNeededClass( STROGG, COVERTOPS, NOCLASS, 2, true, false );
+}
+
+void mapObject_Volcano::StartTransformerObjective() {
+	sys.wait( 15.f );
+
+	objManager.SetObjectiveEntity( transformer, mainObjectiveIndex );
+	transformer.vCreateMission();
+	CreateInitialTimedMission( transformer );
+}
+
+void mapObject_Volcano::StartCoreObjective() {
+	sys.wait( 5.f );
+
+	objManager.SetObjectiveEntity( core5, mainObjectiveIndex );
+	core5.vCreateMission();
+	CreateInitialTimedMission( core5 );
+}
+
+// MBJ - Bot Forward Spawn Actions
+
+void mapObject_Volcano::OnSpawnCaptured( string actionName ) {
+
+	if ( actionName == "gdf_bunker_spawn" ) {
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "GDF HAVE CAPTURED BUNKER SPAWN!\n" );
+		}
+		objManager.activateBotActionGroup( VOL_GDF_DEFEND_BUNKER_SPAWN );
+		objManager.activateBotActionGroup( VOL_STROGG_ATTACK_BUNKER_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_STROGG_DEFEND_BUNKER_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_GDF_ATTACK_BUNKER_SPAWN );
+	}
+
+	if ( actionName == "strogg_beach_spawn" ) {
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "STROGG HAVE CAPTURED BEACH SPAWN!\n" );
+		}
+		objManager.activateBotActionGroup( VOL_STROGG_DEFEND_BEACH_SPAWN );
+		objManager.activateBotActionGroup( VOL_GDF_ATTACK_BEACH_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_STROGG_ATTACK_BEACH_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BEACH_SPAWN );
+	}
+}
+
+void mapObject_Volcano::OnSpawnLiberated( string actionName ) {
+
+	if ( actionName == "gdf_bunker_spawn" ) {
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "GDF HAVE LOST BUNKER SPAWN!\n" );
+		}
+		objManager.activateBotActionGroup( VOL_GDF_ATTACK_BUNKER_SPAWN );
+		objManager.activateBotActionGroup( VOL_STROGG_DEFEND_BUNKER_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_STROGG_ATTACK_BUNKER_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_GDF_DEFEND_BUNKER_SPAWN );
+	}
+
+	if ( actionName == "strogg_beach_spawn" ) {
+		if ( debug_script.getBoolValue() ) {
+			sys.print( "STROGG HAVE LOST BEACH SPAWN!\n" );
+		}
+		objManager.activateBotActionGroup( VOL_GDF_DEFEND_BEACH_SPAWN );
+		objManager.activateBotActionGroup( VOL_STROGG_ATTACK_BEACH_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_STROGG_DEFEND_BEACH_SPAWN );
+		objManager.deactivateBotActionGroup( VOL_GDF_ATTACK_BEACH_SPAWN );
+	}
+}
+
+entity mapObject_Volcano::GetSpectateEntity() {
+	if ( securityControls != $null_entity ) {
+		if ( !securityControls.vIsObjectiveComplete() ) {
+			return securityControls.vGetSpectateEntity();
+		}
+	}
+
+	if ( transformer != $null_entity ) {
+		return transformer.vGetSpectateEntity();
+	}
+	
+	if ( coreIdleEffect5 != $null_entity ) {
+		// find the flyer drone nearest the core
+		entity worldspawn = sys.getEntity( "worldspawn" );
+
+		// this is a bit of a hack
+		float count = worldspawn.entitiesOfCollection( "flyer_hive" );
+		float i;
+		
+		flyer_hive closest;
+		float closestDist;
+		vector targetOrigin = coreIdleEffect5.getWorldOrigin();
+		
+		for ( i = 0; i < count; i++ ) {
+			flyer_hive ent = worldspawn.getBoundsCacheEntity( i );
+			if ( ent != $null_entity ) {
+				float distance = sys.vecLength( ent.getWorldOrigin() - targetOrigin );
+				// magic distance - basically they're getting close to the core
+				if ( distance < 3000.0f ) {
+					if ( distance < closestDist || closest == $null_entity ) {
+						closest = ent;
+						closestDist = distance;
+					}
+				}
+			}
+		}
+		if ( closest != $null_entity ) {
+			return closest.owner;
+		}
+	}
+	
+	return $null_entity;
+}
