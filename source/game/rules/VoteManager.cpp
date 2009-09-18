@@ -780,8 +780,8 @@ public:
 	};
 
 	virtual void EnumerateOptions( sdUIList* list ) const {
-		for( int i = 0; i < gameLocal.campaignMetaDataList->GetNumMetaData(); i++ ) {
-			const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+		for( int i = 0; i < gameLocal.tacticalMetaDataList->GetNumMetaData(); i++ ) {
+			const metaDataContext_t& metaData = gameLocal.tacticalMetaDataList->GetMetaDataContext( i );
 			if ( !gameLocal.IsMetaDataValidForPlay( metaData, true ) ) {
 				continue;
 			}
@@ -795,11 +795,11 @@ public:
 	}
 
 	virtual void Execute( int dataKey ) const {
-		if( dataKey < 0 || dataKey >= gameLocal.campaignMetaDataList->GetNumMetaData() ) {
+		if( dataKey < 0 || dataKey >= gameLocal.tacticalMetaDataList->GetNumMetaData() ) {
 			gameLocal.Warning( "sdCallVoteTacticalChange: index '%i' out of range", dataKey );
 			return;
 		}
-		const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( dataKey );
+		const metaDataContext_t& metaData = gameLocal.tacticalMetaDataList->GetMetaDataContext( dataKey );
 		if ( !gameLocal.IsMetaDataValidForPlay( metaData, true ) ) {
 			return;
 		}
@@ -824,7 +824,7 @@ public:
 
 		const char* campaignName = args.Argv( 2 );
 
-		const metaDataContext_t* metaData = gameLocal.campaignMetaDataList->FindMetaDataContext( campaignName );
+		const metaDataContext_t* metaData = gameLocal.tacticalMetaDataList->FindMetaDataContext( campaignName );
 		if ( metaData == NULL ) {
 			return NULL;
 		}
@@ -841,7 +841,7 @@ public:
 		if ( vote != NULL ) {
 			vote->MakeGlobalVote();
 			vote->SetText( gameLocal.declToolTipType[ "votes/settactical/text" ] );
-			const idDict* dict = gameLocal.campaignMetaDataList->FindMetaData( campaignName, &gameLocal.defaultMetaData );
+			const idDict* dict = gameLocal.tacticalMetaDataList->FindMetaData( campaignName, &gameLocal.defaultMetaData );
 			vote->AddTextParm( va( L"%hs", dict->GetString( "pretty_name" ) ) );
 			vote->SetFinalizer( new sdCallVoteTacticalChangeFinalizer( campaignName ) );
 		}

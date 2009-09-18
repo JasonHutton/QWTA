@@ -689,6 +689,7 @@ idGameLocal::idGameLocal( void ) :
 #endif /* !SD_DEMO_BUILD */
 	mapMetaDataList = NULL;
 	campaignMetaDataList = NULL;
+	tacticalMetaDataList = NULL;
 
 	memset( deployRequests, 0, sizeof( deployRequests ) );
 
@@ -1285,6 +1286,7 @@ void idGameLocal::Init( void ) {
 	declManager->RegisterDeclType( &declDamageType );
 	declManager->RegisterDeclType( &declDamageFilterType );
 	declManager->RegisterDeclType( &declCampaignType );
+	declManager->RegisterDeclType( &declTacticalType );
 	declManager->RegisterDeclType( &declQuickChatType );
 	declManager->RegisterDeclType( &declMapInfoType );
 	declManager->RegisterDeclType( &declToolTipType );
@@ -1344,6 +1346,7 @@ void idGameLocal::Init( void ) {
 
 	mapMetaDataList = fileSystem->ListAddonMetaData( "mapMetaData" );
 	campaignMetaDataList = fileSystem->ListAddonMetaData( "campaignMetaData" );
+	tacticalMetaDataList = fileSystem->ListAddonMetaData( "tacticalMetaData" );
 
 	declManager->FinishedRegistering();
 
@@ -1568,6 +1571,19 @@ void idGameLocal::TouchMedia() {
 			continue;
 		}
 		const idDict& dict = gameLocal.campaignMetaDataList->GetMetaData( i );
+		const char* imageName = data.GetString( "server_shot_thumb", "levelshots/campaigns/thumbs/custom.tga" );
+		sdFilePtr f( fileSystem->OpenFileRead( imageName, true ) );
+		if( !f.IsValid() ) {
+			Warning( "Could not touch '%s'", imageName );
+		}
+	}
+
+	for( int i = 0; i < gameLocal.tacticalMetaDataList->GetNumMetaData(); i++ ) {
+		const idDict& data = gameLocal.tacticalMetaDataList->GetMetaData( i );
+		if( !data.GetBool( "show_in_browser" ) ) {
+			continue;
+		}
+		const idDict& dict = gameLocal.tacticalMetaDataList->GetMetaData( i );
 		const char* imageName = data.GetString( "server_shot_thumb", "levelshots/campaigns/thumbs/custom.tga" );
 		sdFilePtr f( fileSystem->OpenFileRead( imageName, true ) );
 		if( !f.IsValid() ) {
@@ -1974,6 +1990,9 @@ void idGameLocal::Shutdown( void ) {
 	fileSystem->FreeAddonMetaDataList( campaignMetaDataList );
 	campaignMetaDataList = NULL;
 
+	fileSystem->FreeAddonMetaDataList( tacticalMetaDataList );
+	tacticalMetaDataList = NULL;
+
 	// unregister game specific decl types
 	declManager->UnregisterDeclType( &declModelDefType );
 	declManager->UnregisterDeclType( &declExportDefType );
@@ -1987,6 +2006,7 @@ void idGameLocal::Shutdown( void ) {
 	declManager->UnregisterDeclType( &declDamageType );
 	declManager->UnregisterDeclType( &declDamageFilterType );
 	declManager->UnregisterDeclType( &declCampaignType );
+	declManager->UnregisterDeclType( &declTacticalType );
 	declManager->UnregisterDeclType( &declQuickChatType );
 	declManager->UnregisterDeclType( &declMapInfoType );
 	declManager->UnregisterDeclType( &declToolTipType );
@@ -2502,9 +2522,11 @@ void idGameLocal::LoadMap( const char* mapName, int randSeed, int startTime ) {
 	// regrab map/campaign meta data
 	fileSystem->FreeAddonMetaDataList( mapMetaDataList );
 	fileSystem->FreeAddonMetaDataList( campaignMetaDataList );
+	fileSystem->FreeAddonMetaDataList( tacticalMetaDataList );
 
 	mapMetaDataList = fileSystem->ListAddonMetaData( "mapMetaData" );
 	campaignMetaDataList = fileSystem->ListAddonMetaData( "campaignMetaData" );
+	tacticalMetaDataList = fileSystem->ListAddonMetaData( "tacticalMetaData" );
 
 	SetupMapMetaData( mapName );
 

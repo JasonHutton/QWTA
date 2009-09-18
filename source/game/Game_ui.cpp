@@ -1409,8 +1409,8 @@ idGameLocal::CreateTacticalList
 */
 void idGameLocal::CreateTacticalList( sdUIList* list ) {
 	sdUIList::ClearItems( list );
-	for( int i = 0; i < gameLocal.campaignMetaDataList->GetNumMetaData(); i++ ) {
-		const metaDataContext_t& metaDataContext = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+	for( int i = 0; i < gameLocal.tacticalMetaDataList->GetNumMetaData(); i++ ) {
+		const metaDataContext_t& metaDataContext = gameLocal.tacticalMetaDataList->GetMetaDataContext( i );
 		if ( !gameLocal.IsMetaDataValidForPlay( metaDataContext, true ) ) {
 			continue;
 		}

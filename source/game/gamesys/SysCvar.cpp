@@ -69,6 +69,8 @@ idCVar si_timeLimit(				"si_timelimit",				"20",					CVAR_GAME | CVAR_SERVERINFO
 idCVar si_map(						"si_map",					"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ROM, "current active map" );
 idCVar si_campaign(					"si_campaign",				"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ROM, "current active campaign" );
 idCVar si_campaignInfo(				"si_campaignInfo",			"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ROM, "current campaign map info" );
+idCVar si_tactical(					"si_tactical",				"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ROM, "current active tactical" );
+idCVar si_tacticalInfo(				"si_tacticalInfo",			"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ROM, "current tactical map info" );
 idCVar si_teamForceBalance(			"si_teamForceBalance",		"1",					CVAR_GAME | CVAR_SERVERINFO | CVAR_ARCHIVE | CVAR_BOOL | CVAR_RANKLOCKED,		"Stop players from unbalancing teams" );
 idCVar si_website(					"si_website",				"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ARCHIVE, "website info" );
 idCVar si_adminname(				"si_adminname",				"",						CVAR_GAME | CVAR_SERVERINFO | CVAR_ARCHIVE, "admin name(s)" );

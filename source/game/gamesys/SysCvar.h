@@ -13,6 +13,7 @@ extern idCVar	si_timeLimit;
 extern idCVar	si_maxPlayers;
 extern idCVar	si_privateClients;
 extern idCVar	si_campaignInfo;
+extern idCVar	si_tacticalInfo;
 extern idCVar	si_adminStart;
 extern idCVar	si_disableVoting;
 extern idCVar	si_teamForceBalance;

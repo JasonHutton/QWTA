@@ -38,6 +38,7 @@ void gameError( const char *fmt, ... );
 
 #include "decls/DeclAmmoType.h"
 #include "decls/DeclCampaign.h"
+#include "decls/DeclTactical.h"
 #include "decls/DeclDamage.h"
 #include "decls/DeclDamageFilter.h"
 #include "decls/DeclDeployableObject.h"
@@ -1653,6 +1654,7 @@ public:
 	idDeclTypeTemplate< sdDeclDamage,			&declDamageInfo >			declDamageType;
 	idDeclTypeTemplate< sdDeclDamageFilter,		&declDamageFilterInfo >		declDamageFilterType;
 	idDeclTypeTemplate< sdDeclCampaign,			&declCampaignInfo >			declCampaignType;
+	idDeclTypeTemplate< sdDeclTactical,			&declTacticalInfo >			declTacticalType;
 	idDeclTypeTemplate< sdDeclQuickChat,		&declQuickChatInfo >		declQuickChatType;
 	idDeclTypeTemplate< sdDeclMapInfo,			&declMapInfoInfo >			declMapInfoType;
 	idDeclTypeTemplate< sdDeclToolTip,			&declToolTipInfo >			declToolTipType;
@@ -1694,6 +1696,7 @@ public:
 
 	sdAddonMetaDataList*						mapMetaDataList;
 	sdAddonMetaDataList*						campaignMetaDataList;
+	sdAddonMetaDataList*						tacticalMetaDataList;
 
 	static idCVar								g_cacheDictionaryMedia;
 };

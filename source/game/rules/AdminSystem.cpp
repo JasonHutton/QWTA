@@ -574,12 +574,12 @@ bool sdAdminSystemCommand_SetTactical::PerformCommand( const idCmdArgs& cmd, con
 		return false;
 	}
 
-	const char* campaignName = cmd.Argv( 2 );
+	const char* tacticalName = cmd.Argv( 2 );
 
-	const metaDataContext_t* metaData = gameLocal.campaignMetaDataList->FindMetaDataContext( campaignName );
+	const metaDataContext_t* metaData = gameLocal.tacticalMetaDataList->FindMetaDataContext( tacticalName );
 	if ( metaData == NULL || !gameLocal.IsMetaDataValidForPlay( *metaData, false ) ) {
 		idWStrList list( 1 );
-		list.Append( va( L"%hs", campaignName ) );
+		list.Append( va( L"%hs", tacticalName ) );
 		Print( player, "guis/admin/system/notfoundcampaign", list );
 		return false;
 	}
@@ -587,7 +587,7 @@ bool sdAdminSystemCommand_SetTactical::PerformCommand( const idCmdArgs& cmd, con
 	sdAdminSystemCommand_KickAllBots::DoKick();
 
 	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, "set si_rules sdGameRulesTactical\n" );
-	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, va( "spawnServer %s\n", campaignName ) );
+	cmdSystem->BufferCommandText( CMD_EXEC_APPEND, va( "spawnServer %s\n", tacticalName ) );
 
 	return true;
 }
@@ -601,9 +601,9 @@ void sdAdminSystemCommand_SetTactical::CommandCompletion( const idCmdArgs& args,
 	const char* cmd = args.Argv( 2 );
 	int len = idStr::Length( cmd );
 
-	int num = gameLocal.campaignMetaDataList->GetNumMetaData();
+	int num = gameLocal.tacticalMetaDataList->GetNumMetaData();
 	for ( int i = 0; i < num; i++ ) {
-		const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+		const metaDataContext_t& metaData = gameLocal.tacticalMetaDataList->GetMetaDataContext( i );
 		if ( !gameLocal.IsMetaDataValidForPlay( metaData, false ) ) {
 			continue;
 		}

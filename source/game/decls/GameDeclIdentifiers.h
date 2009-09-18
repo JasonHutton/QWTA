@@ -17,6 +17,7 @@ extern const char* declStringMapIdentifier;
 extern const char* declDamageIdentifier;
 extern const char* declDamageFilterIdentifier;
 extern const char* declCampaignIdentifier;
+extern const char* declTacticalIdentifier;
 extern const char* declQuickChatIdentifier;
 extern const char* declMapInfoIdentifier;
 extern const char* declToolTipIdentifier;

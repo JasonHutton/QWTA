@@ -33,6 +33,7 @@ sdDeclInfo declStringMapInfo(			declStringMapIdentifier,			DIF_ALLOW_TEMPLATES |
 sdDeclInfo declDamageInfo(				declDamageIdentifier,				DIF_ALLOW_TEMPLATES | DIF_WRITE_BINARY | DIF_NOT_PRECACHED, sdDeclDamage::CacheFromDict );
 sdDeclInfo declDamageFilterInfo(		declDamageFilterIdentifier,		 	DIF_ALLOW_TEMPLATES | DIF_WRITE_BINARY | DIF_NOT_PRECACHED );
 sdDeclInfo declCampaignInfo(			declCampaignIdentifier			 	);
+sdDeclInfo declTacticalInfo(			declTacticalIdentifier			 	);
 sdDeclInfo declQuickChatInfo(			declQuickChatIdentifier			 	);
 sdDeclInfo declMapInfoInfo(				declMapInfoIdentifier				);
 sdDeclInfo declToolTipInfo(				declToolTipIdentifier,			 	DIF_ALLOW_TEMPLATES | DIF_NOT_PRECACHED, sdDeclToolTip::CacheFromDict );
@@ -69,6 +70,7 @@ const char* gameDeclIdentifierList[ DECLTYPE_GAME_NUM_TYPES ] = {
 	declDamageIdentifier,
 	declDamageFilterIdentifier,
 	declCampaignIdentifier,
+	declTacticalIdentifier,
 	declQuickChatIdentifier,
 	declMapInfoIdentifier,
 	declToolTipIdentifier,

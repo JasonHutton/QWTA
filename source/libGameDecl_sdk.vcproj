@@ -287,6 +287,10 @@
 				>
 			</File>
 			<File
+				RelativePath=".\game\decls\DeclTactical.cpp"
+				>
+			</File>
+			<File
 				RelativePath=".\game\decls\DeclTargetInfo.cpp"
 				>
 			</File>
@@ -478,6 +482,10 @@
 			</File>
 			<File
 				RelativePath=".\game\decls\DeclStringMap.h"
+				>
+			</File>
+			<File
+				RelativePath=".\game\decls\DeclTactical.h"
 				>
 			</File>
 			<File

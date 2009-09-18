@@ -63,10 +63,10 @@ sdGameRulesTactical::sdGameRulesTactical
 ================
 */
 sdGameRulesTactical::sdGameRulesTactical( void ) {
-	currentMapIndex		= 0;
+	currentSubMapIndex		= 0;
 	winningTeam			= NULL;
 	campaignWinningTeam	= NULL;
-	campaignDecl		= NULL;
+	tacticalDecl		= NULL;
 }
 
 /*
@@ -82,21 +82,21 @@ sdGameRulesTactical::~sdGameRulesTactical( void ) {
 sdGameRulesTactical::SetCampaign
 ================
 */
-void sdGameRulesTactical::SetCampaign( const sdDeclCampaign* newCampaign ) {
+void sdGameRulesTactical::SetCampaign( const sdDeclTactical* newCampaign ) {
 	assert( newCampaign != NULL );
 
-	currentMapIndex = 0;
+	currentSubMapIndex = 0;
 	campaignWinningTeam = NULL;
 	Reset();
 
-	campaignDecl = newCampaign;
+	tacticalDecl = newCampaign;
 
 	if ( !gameLocal.isClient ) {
-		sys->SetServerInfo( "si_campaign", campaignDecl->GetName() );
-		sys->SetServerInfo( "si_campaignInfo", "" );
+		sys->SetServerInfo( "si_tactical", tacticalDecl->GetName() );
+		sys->SetServerInfo( "si_tacticalInfo", "" );
 	}
 
-	campaignMapData.SetNum( campaignDecl->GetNumMaps() );
+	campaignMapData.SetNum( tacticalDecl->GetNumMaps() );
 	for ( int i = 0; i < campaignMapData.Num(); i++ ) {
 		campaignMapData[ i ].winner		= NULL;
 		campaignMapData[ i ].written	= false;
@@ -113,7 +113,7 @@ void sdGameRulesTactical::SetCampaign( const sdDeclCampaign* newCampaign ) {
 
 		campaignMapData[ i ].mapInfo = NULL;
 
-		idStr mapName = campaignDecl->GetMap( i );
+		idStr mapName = tacticalDecl->GetMap( i );
 		sdGameRules_SingleMapHelper::SanitizeMapName( mapName, false );
 		const idDict* mapMetaData = gameLocal.mapMetaDataList->FindMetaData( mapName, &gameLocal.defaultMetaData );
 		campaignMapData[ i ].metaDataName = mapName;
@@ -142,8 +142,8 @@ sdGameRulesTactical::SendCampaignInfo
 */
 void sdGameRulesTactical::SendCampaignInfo( const sdReliableMessageClientInfoBase& target ) {
 	sdReliableServerMessage msg( GAME_RELIABLE_SMESSAGE_RULES_DATA );
-	msg.WriteLong( EVENT_SETCAMPAIGN );
-	msg.WriteLong( campaignDecl->Index() );
+	msg.WriteLong( EVENT_SETTACTICAL );
+	msg.WriteLong( tacticalDecl->Index() );
 	msg.Send( target );
 }
 
@@ -155,9 +155,9 @@ sdGameRulesTactical::ReadCampaignInfo
 void sdGameRulesTactical::ReadCampaignInfo( const idBitMsg& msg ) {
 	int campaignIndex = msg.ReadLong();
 
-	const sdDeclCampaign* newCampaign = NULL;
+	const sdDeclTactical* newCampaign = NULL;
 	if ( campaignIndex != -1 ) {
-		newCampaign = gameLocal.declCampaignType[ campaignIndex ];
+		newCampaign = gameLocal.declTacticalType[ campaignIndex ];
 	}
 
 	SetCampaign( newCampaign );
@@ -244,11 +244,11 @@ sdGameRulesTactical::StartMap
 ================
 */
 void sdGameRulesTactical::StartMap( void ) {
-	assert( campaignDecl != NULL );
+	assert( tacticalDecl != NULL );
 
 	BackupPlayerTeams();
 
-	idStr sessionCommand = va( "map %s", campaignDecl->GetMap( currentMapIndex ) );
+	idStr sessionCommand = va( "map %s", tacticalDecl->GetMap( currentSubMapIndex ) );
 	cmdSystem->PushFrameCommand( sessionCommand );
 
 	NewState( GS_NEXTGAME );
@@ -260,15 +260,15 @@ sdGameRulesTactical::GameState_NextMap
 ================
 */
 void sdGameRulesTactical::GameState_NextMap( void ) {
-	currentMapIndex++;
+	currentSubMapIndex++;
 
 	winningTeam = NULL;
 
-	if ( currentMapIndex >= campaignDecl->GetNumMaps() ) {
+	if ( currentSubMapIndex >= tacticalDecl->GetNumMaps() ) {
 		if ( gameLocal.NextMap() ) {
 			return;
 		}
-		SetCampaign( campaignDecl );
+		SetCampaign( tacticalDecl );
 	} else {
 		ClearChatData();
 	}
@@ -384,17 +384,17 @@ void sdGameRulesTactical::EndGame( void ) {
 		}
 
 		int index = winningTeam == NULL ? 0 : winningTeam->GetIndex() + 1;
-		idStr currentText = si_campaignInfo.GetString();
+		idStr currentText = si_tacticalInfo.GetString();
 		idStr newText;
 		if ( currentText.Length() == 0 ) {
 			newText = va( "%d", index );
 		} else {
 			newText = va( "%s %d", currentText.c_str(), index );
 		}
-		sys->SetServerInfo( "si_campaignInfo", newText );
+		sys->SetServerInfo( "si_tacticalInfo", newText );
 
-		if ( currentMapIndex < campaignMapData.Num() ) {
-			mapData_t& mapData = campaignMapData[ currentMapIndex ];
+		if ( currentSubMapIndex < campaignMapData.Num() ) {
+			mapData_t& mapData = campaignMapData[ currentSubMapIndex ];
 
 			mapData.winner	= winningTeam;
 			mapData.written	= true;
@@ -419,9 +419,9 @@ void sdGameRulesTactical::EndGame( void ) {
 				}
 			}
 
-			SendMapStats( currentMapIndex, sdReliableMessageClientInfoAll() );
+			SendMapStats( currentSubMapIndex, sdReliableMessageClientInfoAll() );
 			if( gameLocal.DoClientSideStuff() ) {
-				OnMapStatsReceived( currentMapIndex );
+				OnMapStatsReceived( currentSubMapIndex );
 			}			
 		}
 
@@ -500,26 +500,26 @@ sdGameRulesTactical::OnUserStartMap
 ================
 */
 userMapChangeResult_e sdGameRulesTactical::OnUserStartMap( const char* text, idStr& reason, idStr& mapName ) {
-	const metaDataContext_t* metaData = gameLocal.campaignMetaDataList->FindMetaDataContext( text );
+	const metaDataContext_t* metaData = gameLocal.tacticalMetaDataList->FindMetaDataContext( text );
 	if ( metaData == NULL ) {
-		reason = va( "Unknown Campaign '%s'", text );
+		reason = va( "Unknown Tactical '%s'", text );
 		return UMCR_ERROR;
 	}
 
 	if ( !gameLocal.IsMetaDataValidForPlay( *metaData, false ) ) {
-		reason = va( "Campaign '%s' not supported in this mode.", text );
+		reason = va( "Tactical '%s' not supported in this mode.", text );
 		return UMCR_ERROR;
 	}
 
-	const sdDeclCampaign* campaign = gameLocal.declCampaignType[ text ];
+	const sdDeclTactical* campaign = gameLocal.declTacticalType[ text ];
 	if ( campaign == NULL ) {
 		if( !metaData->addon ) {
-			reason = va( "Unknown Campaign '%s'", text );
+			reason = va( "Unknown Tactical '%s'", text );
 			return UMCR_ERROR;
 		}
 		
 		if( fileSystem->IsAddonPackReferenced( metaData->pak ) ) {
-			reason = va( "Unknown Campaign '%s'", text );
+			reason = va( "Unknown Tactical '%s'", text );
 			return UMCR_ERROR;
 		}
 		fileSystem->ReferenceAddonPack( metaData->pak );
@@ -532,7 +532,7 @@ userMapChangeResult_e sdGameRulesTactical::OnUserStartMap( const char* text, idS
 	}
 
 	if ( campaign->GetNumMaps() == 0 ) {
-		reason = va( "Campaign '%s' Contains No Maps", text );
+		reason = va( "Tactical '%s' Contains No Maps", text );
 		return UMCR_ERROR;
 	}
 
@@ -626,7 +626,7 @@ sdGameRulesTactical::ParseNetworkMessage
 */
 bool sdGameRulesTactical::ParseNetworkMessage( int msgType, const idBitMsg& msg ) {
 	switch ( msgType ) {
-		case EVENT_SETCAMPAIGN: {
+		case EVENT_SETTACTICAL: {
 			ReadCampaignInfo( msg );
 			return true;
 		}
@@ -688,16 +688,16 @@ sdGameRulesTactical::ArgCompletion_StartGame
 ================
 */
 void sdGameRulesTactical::ArgCompletion_StartGame( const idCmdArgs& args, argCompletionCallback_t callback ) {
-	if( gameLocal.campaignMetaDataList == NULL ) {
+	if( gameLocal.tacticalMetaDataList == NULL ) {
 		return;
 	}
 
 	const char* cmd = args.Argv( 1 );
 	int len = idStr::Length( cmd );
 
-	int num = gameLocal.campaignMetaDataList->GetNumMetaData();
+	int num = gameLocal.tacticalMetaDataList->GetNumMetaData();
 	for ( int i = 0; i < num; i++ ) {
-		const metaDataContext_t& metaData = gameLocal.campaignMetaDataList->GetMetaDataContext( i );
+		const metaDataContext_t& metaData = gameLocal.tacticalMetaDataList->GetMetaDataContext( i );
 		if ( !gameLocal.IsMetaDataValidForPlay( metaData, false ) ) {
 			continue;
 		}
@@ -788,14 +788,14 @@ void sdGameRulesTactical::UpdateClientFromServerInfo( const idDict& serverInfo, 
 
 		const idDict* metaData = gameLocal.mapMetaDataList->FindMetaData( mapName, &gameLocal.defaultMetaData );		
 
-		const char* campaignName = serverInfo.GetString( "si_campaign" );
-		const idDict* campaignMetaData = gameLocal.campaignMetaDataList->FindMetaData( campaignName, &gameLocal.defaultMetaData );
+		const char* campaignName = serverInfo.GetString( "si_tactical" );
+		const idDict* campaignMetaData = gameLocal.tacticalMetaDataList->FindMetaData( campaignName, &gameLocal.defaultMetaData );
 
 		idList< const sdDeclMapInfo* > cachedMapInfo;
 		idList< const char* > cachedMapMetaData;
 
 		if( allowMedia ) {
-			const sdDeclCampaign* campaign = gameLocal.declCampaignType.LocalFind( campaignName );			
+			const sdDeclTactical* campaign = gameLocal.declTacticalType.LocalFind( campaignName );			
 
 			// setup the backdrop
 			if ( sdProperty* property = scope->GetProperty( "backdrop", PT_STRING ) ) {
@@ -826,7 +826,7 @@ void sdGameRulesTactical::UpdateClientFromServerInfo( const idDict& serverInfo, 
 			*property->value.wstringValue = va( L"%hs", campaignMetaData->GetString( "pretty_name" ) );
 		}
 
-		idStr campaignState = serverInfo.GetString( "si_campaignInfo" );
+		idStr campaignState = serverInfo.GetString( "si_tacticalInfo" );
 		idLexer src( campaignState.c_str(), campaignState.Length(), "UpdateCampaignStats", LEXFL_NOERRORS );
 		idToken token;
 
@@ -933,16 +933,16 @@ void sdGameRulesTactical::GetBrowserStatusString( idWStr& str, const sdNetSessio
 	str.Clear();
 
 	const idDict& serverInfo = netSession.GetServerInfo();
-	const char* campaignName = serverInfo.GetString( "si_campaign" );
-	if( campaignName[ 0 ] != '\0' ) {
-		const sdDeclCampaign* campaign = gameLocal.declCampaignType.LocalFind( campaignName, false );		
+	const char* tacticalName = serverInfo.GetString( "si_tactical" );
+	if( tacticalName[ 0 ] != '\0' ) {
+		const sdDeclTactical* campaign = gameLocal.declTacticalType.LocalFind( tacticalName, false );		
 
 		if( campaign != NULL ) {			
-			const char* campaignInfo = serverInfo.GetString( "si_campaignInfo" );
+			const char* tacticalInfo = serverInfo.GetString( "si_tacticalInfo" );
 			int num = 1;
 			int i = 0;
-			while( campaignInfo[ i ] != '\0' ) {
-				if( idStr::CharIsNumeric( campaignInfo[ i ] ) ) {
+			while( tacticalInfo[ i ] != '\0' ) {
+				if( idStr::CharIsNumeric( tacticalInfo[ i ] ) ) {
 					num++;
 				}
 				i++;
@@ -973,7 +973,7 @@ sdGameRulesTactical::GetServerBrowserScore
 int sdGameRulesTactical::GetServerBrowserScore( const sdNetSession& session ) const {
 	int score = 0;
 
-	const char* statusString = session.GetServerInfo().GetString( "si_campaignInfo" );
+	const char* statusString = session.GetServerInfo().GetString( "si_tacticalInfo" );
 	int numMapsPlayed = idStr::Length( statusString );
 	if ( numMapsPlayed == 0 ) {
 		score += sdHotServerList::BROWSER_GOOD_BONUS;

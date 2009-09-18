@@ -17,6 +17,7 @@ extern sdDeclInfo declStringMapInfo;
 extern sdDeclInfo declDamageInfo;
 extern sdDeclInfo declDamageFilterInfo;
 extern sdDeclInfo declCampaignInfo;
+extern sdDeclInfo declTacticalInfo;
 extern sdDeclInfo declQuickChatInfo;
 extern sdDeclInfo declMapInfoInfo;
 extern sdDeclInfo declToolTipInfo;
@@ -53,6 +54,7 @@ typedef enum gameDeclIdentifierType_e {
 	DECLTYPE_DAMAGE,
 	DECLTYPE_DAMAGEFILTER,
 	DECLTYPE_CAMPAIGN,
+	DECLTYPE_TACTICAL,
 	DECLTYPE_QUICKCHAT,
 	DECLTYPE_MAPINFO,
 	DECLTYPE_TOOLTIP,

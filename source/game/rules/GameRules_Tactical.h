@@ -2,7 +2,7 @@
 #ifndef __GAME_RULES_GAMERULES_TACTICAL_H__
 #define	__GAME_RULES_GAMERULES_TACTICAL_H__
 
-class sdDeclCampaign;
+class sdDeclTactical;
 
 #include "GameRules.h"
 
@@ -25,7 +25,7 @@ public:
 
 	enum networkEvent_t {
 		EVENT_MAPSTATS = sdGameRules::MAX_NET_EVENTS,
-		EVENT_SETCAMPAIGN,
+		EVENT_SETTACTICAL,
 		MAX_NET_EVENTS,
 	};
 
@@ -71,8 +71,8 @@ public:
 	void					SendCampaignInfo( const sdReliableMessageClientInfoBase& target );
 	virtual void			ReadCampaignInfo( const idBitMsg& msg );
 
-	void					SetCampaign( const sdDeclCampaign* newCampaign );
-	const sdDeclCampaign*	GetCampaign( void ) const { return campaignDecl; }
+	void					SetCampaign( const sdDeclTactical* newCampaign );
+	const sdDeclTactical*	GetCampaign( void ) const { return tacticalDecl; }
 	void					StartMap( void );
 
 	void					OnMapStatsReceived( int index );
@@ -102,8 +102,8 @@ protected:
 	virtual void			OnGameState_NextMap( void );
 
 protected:
-	int						currentMapIndex;
-	const sdDeclCampaign*	campaignDecl;
+	int						currentSubMapIndex;
+	const sdDeclTactical*	tacticalDecl;
 	sdTeamInfo*				winningTeam;
 	sdTeamInfo*				campaignWinningTeam;
 

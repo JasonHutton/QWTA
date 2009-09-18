@@ -17,6 +17,7 @@ const char* declStringMapIdentifier			= "stringMap";
 const char* declDamageIdentifier			= "damageDef";
 const char* declDamageFilterIdentifier		= "damageFilter";
 const char* declCampaignIdentifier			= "campaignDef";
+const char* declTacticalIdentifier			= "tacticalDef";
 const char* declQuickChatIdentifier			= "quickChatDef";
 const char* declMapInfoIdentifier			= "mapInfoDef";
 const char* declMapMetaDataIdentifier		= "mapMetaData";
