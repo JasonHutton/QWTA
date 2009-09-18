@@ -1,0 +1,297 @@
+
+object rules {
+	void			preinit();
+	
+	void			OnConnect( entity p );
+	void			OnGameEnd();
+	void			OnTimeLimitHit();
+	
+	entity			GetMaxXPInCategory( float category, boolean fromBase );
+	entity			GetMinXPInCategory( float category, boolean fromBase );
+	entity			GetBestStatEntry( handle statHandle );
+	void			CalcAccuracy();
+	void			CalcMostObjectives();
+	void			CalcHighestLevel();
+
+	void			WriteStats();
+
+	void			PushStat( handle medalStat, entity p );
+
+	boolean			IsStopwatch();
+	float			GetFloatKeyWithSuffix( entity ent, string key, float defaultValue );
+
+	handle			medalHighXPStat;
+	handle			medalLowXPStat;
+	handle			medalSoldierStat;
+	handle			medalMedicStat;
+	handle			medalEngineerStat;
+	handle			medalFieldOpsStat;
+	handle			medalCovertOpsStat;
+	handle			medalWeaponsStat;
+	handle			medalBattleSenseStat;
+	handle			medalVehicleStat;
+	handle			medalHighAccuracyStat;
+	handle			medalObjectivesStat;
+	handle			medalRewardsStat;
+	handle			medalKillsStat;
+	handle			medalDamageStat;
+	handle			medalTeamKillsStat;
+	
+	float			cachedIndex;
+}
+
+void rules::preinit() {
+	gameRules = self;
+
+	medalHighXPStat			= sys.allocStatInt( "medal_high_xp" );
+	medalLowXPStat			= sys.allocStatInt( "medal_low_xp" );
+	medalSoldierStat		= sys.allocStatInt( "medal_soldier" );
+	medalMedicStat			= sys.allocStatInt( "medal_medic" );
+	medalEngineerStat		= sys.allocStatInt( "medal_engineer" );
+	medalFieldOpsStat		= sys.allocStatInt( "medal_fieldops" );
+	medalCovertOpsStat		= sys.allocStatInt( "medal_covertops" );
+	medalWeaponsStat		= sys.allocStatInt( "medal_weapons" );
+	medalBattleSenseStat	= sys.allocStatInt( "medal_battlesense" );
+	medalVehicleStat		= sys.allocStatInt( "medal_vehicle" );
+	medalHighAccuracyStat	= sys.allocStatInt( "medal_high_accuracy" );
+	medalObjectivesStat		= sys.allocStatInt( "medal_objectives" );
+	medalRewardsStat		= sys.allocStatInt( "medal_rewards" );
+	medalKillsStat			= sys.allocStatInt( "medal_kills" );
+	medalDamageStat			= sys.allocStatInt( "medal_damage" );
+	medalTeamKillsStat		= sys.allocStatInt( "medal_teamkills" );
+}
+
+void rules::OnConnect( entity p ) {
+}
+
+void rules::OnGameEnd() {
+	WriteStats();
+}
+
+entity rules::GetBestStatEntry( handle statHandle ) {
+	entity best;
+	float bestValue = -1;
+	
+	cachedIndex = sys.allocEndGameStat();
+	
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		float currentValue = sys.getStatValue( statHandle, index );
+		sys.setEndGameStatValue( cachedIndex, p, currentValue );
+		if ( currentValue == 0.f ) {
+			continue;
+		}
+
+		if ( currentValue > bestValue ) {
+			bestValue = currentValue;
+			best = p;
+		}
+	}
+	
+	return best;
+}
+
+entity rules::GetMaxXPInCategory( float category, boolean fromBase ) {
+	entity best;
+	float bestValue = -1;
+
+	cachedIndex = sys.allocEndGameStat();
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		float currentValue = p.getXP( category, fromBase );
+		sys.setEndGameStatValue( cachedIndex, p, currentValue );
+		if ( currentValue == 0.f ) {
+			continue;
+		}
+
+		if ( currentValue > bestValue ) {
+			bestValue = currentValue;
+			best = p;
+		}
+	}
+
+	return best;
+}
+
+entity rules::GetMinXPInCategory( float category, boolean fromBase ) {
+	entity best;
+	float bestValue = 999999999999.f;
+
+	cachedIndex = sys.allocEndGameStat();
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		float currentValue = p.getXP( category, fromBase );
+		sys.setEndGameStatValue( cachedIndex, p, currentValue );
+		if ( currentValue != 0.f && currentValue < bestValue ) {
+			bestValue = currentValue;
+			best = p;
+		}
+	}
+
+	return best;
+}
+
+void rules::CalcHighestLevel() {
+	entity best;
+	float bestValue = 0.f;
+
+	cachedIndex = sys.allocEndGameStat();
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+
+		float currentValue = 0.f;
+		currentValue = currentValue + p.getProficiency( g_proficiencySoldier );
+		currentValue = currentValue + p.getProficiency( g_proficiencyMedic );
+		currentValue = currentValue + p.getProficiency( g_proficiencyEngineer );
+		currentValue = currentValue + p.getProficiency( g_proficiencyFieldOps );
+		currentValue = currentValue + p.getProficiency( g_proficiencyCovertOps );
+		currentValue = currentValue + p.getProficiency( g_proficiencyLightWeapons );
+		currentValue = currentValue + p.getProficiency( g_proficiencyBattleSense );
+		currentValue = currentValue + p.getProficiency( g_proficiencyVehicle );
+
+		sys.setEndGameStatValue( cachedIndex, p, currentValue );
+
+		if ( currentValue > bestValue ) {
+			bestValue = currentValue;
+			best = p;
+		}
+	}
+
+	PushStat( medalRewardsStat, best );
+}
+
+void rules::CalcMostObjectives() {
+	entity best;
+	float bestValue = 0.f;
+
+	cachedIndex = sys.allocEndGameStat();
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+
+		float count = sys.getStatValue( sys.allocStatInt( "total_objectives_completed" ), index );
+		
+		sys.setEndGameStatValue( cachedIndex, p, count );
+
+		if ( count > bestValue ) {
+			bestValue = count;
+			best = p;
+		}
+	}
+
+	PushStat( medalObjectivesStat, best );
+}
+
+void rules::CalcAccuracy() {
+	entity best;
+	float bestValue = 0.f;
+
+	cachedIndex = sys.allocEndGameStat();
+
+	handle totalShotsFired = sys.allocStatInt( "total_shots_fired" );
+	handle totalShotsHit = sys.allocStatInt( "total_shots_hit" );
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+
+		float shotsFired = sys.getStatValue( totalShotsFired, index );
+		if ( shotsFired == 0.f ) {
+			continue;
+		}
+		
+		float accuracy = ( sys.getStatValue( totalShotsHit, index ) / shotsFired ) * 100.f;
+		sys.setEndGameStatValue( cachedIndex, p, accuracy );
+		if ( accuracy > bestValue ) {
+			bestValue = accuracy;
+			best = p;
+		}
+	}	
+
+	PushStat( medalHighAccuracyStat, best );
+}
+
+// these must be kept in the same order as the playerReward_e enum in sdNetManager.h
+void rules::WriteStats() {
+	PushStat( medalHighXPStat, GetMaxXPInCategory( -1, false ) );
+	PushStat( medalLowXPStat, GetMinXPInCategory( -1, false ) );
+
+	PushStat( medalSoldierStat, GetMaxXPInCategory( g_proficiencySoldier, true ) );
+	PushStat( medalMedicStat, GetMaxXPInCategory( g_proficiencyMedic, true ) );
+	PushStat( medalEngineerStat, GetMaxXPInCategory( g_proficiencyEngineer, true ) );
+	PushStat( medalFieldOpsStat, GetMaxXPInCategory( g_proficiencyFieldOps, true ) );
+	PushStat( medalCovertOpsStat, GetMaxXPInCategory( g_proficiencyCovertOps, true ) );
+	PushStat( medalWeaponsStat, GetMaxXPInCategory( g_proficiencyLightWeapons, true ) );
+	PushStat( medalBattleSenseStat, GetMaxXPInCategory( g_proficiencyBattleSense, true ) );
+	PushStat( medalVehicleStat, GetMaxXPInCategory( g_proficiencyVehicle, true ) );
+
+	CalcAccuracy();
+	CalcMostObjectives();
+	CalcHighestLevel();
+
+	PushStat( medalKillsStat, GetBestStatEntry( sys.allocStatInt( "total_kills" ) ) );
+	PushStat( medalDamageStat, GetBestStatEntry( sys.allocStatInt( "total_damage" ) ) );
+	PushStat( medalTeamKillsStat, GetBestStatEntry( sys.allocStatInt( "total_team_kills" ) ) );
+
+	sys.sendEndGameStats();
+}
+
+void rules::OnTimeLimitHit() {
+	objManager.OnTimeLimitHit();
+}
+
+void rules::PushStat( handle medalStat, entity p ) {
+	if ( p != $null_entity ) {
+		sys.increaseStatInt( medalStat, p.getEntityNumber(), 1 );
+	}
+	sys.setEndGameStatWinner( cachedIndex, p );
+}
+
+boolean rules::IsStopwatch() {
+	if ( si_rules.getStringValue() == "sdGameRulesStopWatch" ) {
+		return true;
+	}
+	
+	return false;
+}
+
+float rules::GetFloatKeyWithSuffix( entity ent, string key, float defaultValue ) {
+	// game mode dependant suffix
+	string newKey = key + getKeySuffix();
+	return ent.getFloatKeyWithDefault( newKey, ent.getFloatKeyWithDefault( key, defaultValue ) );
+}
