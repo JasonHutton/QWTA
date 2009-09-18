@@ -74,7 +74,7 @@
 #define VOL_GDF_USE_GUN4						47
 #define VOL_GDF_USE_GUN5						48
 
-object mapObject_Volcano : mapObject_Default {
+object tacticalMapObject_Volcano : mapObject_Volcano {
 	void			destroy();
 
 	void			InitObjectives();
@@ -311,11 +311,11 @@ object mapObject_Volcano : mapObject_Default {
 	cvar			debug_script;
 }
 
-mapObject_Base Volcano_MapScript() {
-	return new mapObject_Volcano;
+tacticalMapObject_Volcano Volcano_TacticalMapScript() {
+	return new tacticalMapObject_Volcano;
 }
 
-void mapObject_Volcano::destroy() {
+void tacticalMapObject_Volcano::destroy() {
 	if ( leftVentTask != $null ) {
 		leftVentTask.free();
 		leftVentTask = $null;
@@ -334,7 +334,7 @@ void mapObject_Volcano::destroy() {
 	}
 }
 
-void mapObject_Volcano::InitObjectives() {
+void tacticalMapObject_Volcano::InitObjectives() {
 	gameRules.setWinningTeam( gdfTeam );
 	gdfTeam.SetRespawnWait( 20 );
 	stroggTeam.SetRespawnWait( 20 );
@@ -616,7 +616,7 @@ void mapObject_Volcano::InitObjectives() {
 	CreateDeployTasks();
 }
 
-void mapObject_Volcano::CompleteObjective( float index, entity p ) {
+void tacticalMapObject_Volcano::CompleteObjective( float index, entity p ) {
 	if ( index == OBJECTIVE_VOLCANO_HACK ) {
 		OnHack();
 	} else if ( index == OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER ) {
@@ -634,7 +634,7 @@ void mapObject_Volcano::CompleteObjective( float index, entity p ) {
 	}
 }
 
-handle mapObject_Volcano::GetObjectiveMessage( float index ) {
+handle tacticalMapObject_Volcano::GetObjectiveMessage( float index ) {
 
 	if( index == OBJECTIVE_VOLCANO_HACK ) {
 		return sys.localizeString( "maps/volcano/controls_hacked" );
@@ -667,7 +667,7 @@ handle mapObject_Volcano::GetObjectiveMessage( float index ) {
 	return g_locStr_BadObjective;
 }
 
-void mapObject_Volcano::OnConstructionComplete( entity obj ) {
+void tacticalMapObject_Volcano::OnConstructionComplete( entity obj ) {
 	if ( obj == gun1Construction ) {
 		OnGun1Built();
 	} else if ( obj == gun2Construction ) {
@@ -681,7 +681,7 @@ void mapObject_Volcano::OnConstructionComplete( entity obj ) {
 	}
 }
 
-void mapObject_Volcano::OnDestructionComplete( entity obj ) {
+void tacticalMapObject_Volcano::OnDestructionComplete( entity obj ) {
 	if ( obj == seawallBreach ) {
 		OnSeawallBreachDestroyed();
 	} else if ( obj == eastBunkerBreach ) {
@@ -701,7 +701,7 @@ void mapObject_Volcano::OnDestructionComplete( entity obj ) {
 	}
 }
 
-void mapObject_Volcano::OnEastBunkerBreachDestroyed() {
+void tacticalMapObject_Volcano::OnEastBunkerBreachDestroyed() {
 	bots_doors_destroyed++;
 	eastBunkerBreachDestroyed = true;
 	noplant_east_bunker_breach.remove();
@@ -720,7 +720,7 @@ void mapObject_Volcano::OnEastBunkerBreachDestroyed() {
 	}
 }
 
-void mapObject_Volcano::OnSeawallBreachDestroyed() {
+void tacticalMapObject_Volcano::OnSeawallBreachDestroyed() {
 	bots_doors_destroyed++;
 	seawallBreachDestroyed = true; 
 	westbreach_obstacle.activate( westbreach_obstacle );
@@ -740,7 +740,7 @@ void mapObject_Volcano::OnSeawallBreachDestroyed() {
 	} 
 }
 
-void mapObject_Volcano::OnForwardBunkerDoorDestroyed() {
+void tacticalMapObject_Volcano::OnForwardBunkerDoorDestroyed() {
 	bots_doors_destroyed++;
 	forwardBunkerDoorDestroyed = true;
 	bunkerdoor_obstacle.activate( bunkerdoor_obstacle );
@@ -759,7 +759,7 @@ void mapObject_Volcano::OnForwardBunkerDoorDestroyed() {
        
 }
 
-void mapObject_Volcano::OnAnyBreach() {
+void tacticalMapObject_Volcano::OnAnyBreach() {
 	breachesDestroyed = breachesDestroyed + 1;
 	if ( mainObjectiveIndex == OBJECTIVE_VOLCANO_HACK ) {
 		objManager.setTeamAttacksDeployables( GDF, false );
@@ -784,7 +784,7 @@ void mapObject_Volcano::OnAnyBreach() {
 	}
 }
 
-void mapObject_Volcano::OnGun1Built() {
+void tacticalMapObject_Volcano::OnGun1Built() {
 	gun1Construction.vCompleteMission();
 	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN1 );
 	
@@ -793,7 +793,7 @@ void mapObject_Volcano::OnGun1Built() {
 	}
 }
 
-void mapObject_Volcano::OnGun1Destroyed() {
+void tacticalMapObject_Volcano::OnGun1Destroyed() {
 	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN1 );
 	
 	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
@@ -802,7 +802,7 @@ void mapObject_Volcano::OnGun1Destroyed() {
 	}
 }
 
-void mapObject_Volcano::OnGun2Built() {
+void tacticalMapObject_Volcano::OnGun2Built() {
 	gun2Construction.vCompleteMission();
 	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN2 );
 
@@ -811,7 +811,7 @@ void mapObject_Volcano::OnGun2Built() {
 	}
 }
 
-void mapObject_Volcano::OnGun2Destroyed() {
+void tacticalMapObject_Volcano::OnGun2Destroyed() {
 	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN2 );	
 	
 	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
@@ -820,7 +820,7 @@ void mapObject_Volcano::OnGun2Destroyed() {
 	}
 }
 
-void mapObject_Volcano::OnGun3Built() {
+void tacticalMapObject_Volcano::OnGun3Built() {
 	gun3Construction.vCompleteMission();
 	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN3 );	
 	
@@ -829,7 +829,7 @@ void mapObject_Volcano::OnGun3Built() {
 	}
 }
 
-void mapObject_Volcano::OnGun3Destroyed() {
+void tacticalMapObject_Volcano::OnGun3Destroyed() {
 	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN3 );
 
 	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
@@ -838,20 +838,20 @@ void mapObject_Volcano::OnGun3Destroyed() {
 	}
 }
 
-void mapObject_Volcano::OnGun4Built() {
+void tacticalMapObject_Volcano::OnGun4Built() {
 	gun4Construction.vCompleteMission();
 	objManager.activateBotActionGroup( VOL_GDF_USE_GUN4 );
 	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN4 );
 }
 
 // gun inside facility
-void mapObject_Volcano::OnGun4Destroyed() {
+void tacticalMapObject_Volcano::OnGun4Destroyed() {
 	gun4Construction.vCreateMission();
 	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN4 );
 	objManager.activateBotActionGroup( VOL_GDF_BUILD_GUN4 );
 }
 
-void mapObject_Volcano::OnGun5Built() {
+void tacticalMapObject_Volcano::OnGun5Built() {
 	gun5Construction.vCompleteMission();
 	objManager.deactivateBotActionGroup( VOL_GDF_BUILD_GUN5 );
 	
@@ -860,7 +860,7 @@ void mapObject_Volcano::OnGun5Built() {
 	}
 }
 
-void mapObject_Volcano::OnGun5Destroyed() {
+void tacticalMapObject_Volcano::OnGun5Destroyed() {
 	objManager.deactivateBotActionGroup( VOL_GDF_USE_GUN5 );
 	
 	if ( mainObjectiveIndex < OBJECTIVE_VOLCANO_DESTROY_CORE ) {
@@ -869,7 +869,7 @@ void mapObject_Volcano::OnGun5Destroyed() {
 	}
 }
 
-void mapObject_Volcano::OnHack() {
+void tacticalMapObject_Volcano::OnHack() {
 	mainObjectiveIndex = OBJECTIVE_VOLCANO_DESTROY_TRANSFORMER;
 	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
 	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
@@ -992,7 +992,7 @@ void mapObject_Volcano::OnHack() {
 
 }
 
-void mapObject_Volcano::DoorObstacleDelay() {
+void tacticalMapObject_Volcano::DoorObstacleDelay() {
 	sys.wait( 34 );
 	door_obstacle_1.activate( door_obstacle_1 );
 	door_obstacle_2.activate( door_obstacle_2 );
@@ -1011,7 +1011,7 @@ void mapObject_Volcano::DoorObstacleDelay() {
 }
 
 
-void mapObject_Volcano::OnTransformerDestroyed() {
+void tacticalMapObject_Volcano::OnTransformerDestroyed() {
 	mainObjectiveIndex = OBJECTIVE_VOLCANO_DESTROY_CORE;
 	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
 	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
@@ -1099,7 +1099,7 @@ void mapObject_Volcano::OnTransformerDestroyed() {
 	objManager.setTeamNeededClass( STROGG, MEDIC, FIELDOPS, 1, false, false );
 }
 
-void mapObject_Volcano::FacilityBreached() {
+void tacticalMapObject_Volcano::FacilityBreached() {
 	pipes.hide();
 	damagedPipes1.hide();
 	damagedPipes2.hide();
@@ -1153,7 +1153,7 @@ void mapObject_Volcano::FacilityBreached() {
 	facilityTriggerHurt.activate( facilityTriggerHurt );	
 }
 
-void mapObject_Volcano::ExplosionCascade() {
+void tacticalMapObject_Volcano::ExplosionCascade() {
 	sys.wait( 0.1f);
 	transformerInteriorEffects.vTriggerParticleEffect( 1 );
 	transformerInteriorSteam1.vTriggerParticleEffect( 1 );
@@ -1237,7 +1237,7 @@ void mapObject_Volcano::ExplosionCascade() {
 
 ////// dave: hereon is a hack to simulate the core is gradually damaged
 
-void mapObject_Volcano::OnCoreDamaged1() {
+void tacticalMapObject_Volcano::OnCoreDamaged1() {
 	objective3a.vFinishObjective();
 	objective3b.vStartObjective();
 
@@ -1254,7 +1254,7 @@ void mapObject_Volcano::OnCoreDamaged1() {
 	core2.setTakesDamage( 1 );
 }
 
-void mapObject_Volcano::OnCoreDamaged2() {
+void tacticalMapObject_Volcano::OnCoreDamaged2() {
 	objective3b.vFinishObjective();
 	objective3c.vStartObjective();
 
@@ -1271,7 +1271,7 @@ void mapObject_Volcano::OnCoreDamaged2() {
 	core3.setTakesDamage( 1 );
 }
 
-void mapObject_Volcano::OnCoreDamaged3() {
+void tacticalMapObject_Volcano::OnCoreDamaged3() {
 	objective3c.vFinishObjective();
 	objective3d.vStartObjective();
 
@@ -1288,7 +1288,7 @@ void mapObject_Volcano::OnCoreDamaged3() {
 	core4.setTakesDamage( 1 );
 }
 
-void mapObject_Volcano::OnCoreDamaged4() {
+void tacticalMapObject_Volcano::OnCoreDamaged4() {
 	objective3d.vFinishObjective();
 	objective3e.vStartObjective();
 
@@ -1303,7 +1303,7 @@ void mapObject_Volcano::OnCoreDamaged4() {
 	core5.setTakesDamage( 1 );
 }
 
-void mapObject_Volcano::OnCoreDestroyed() {
+void tacticalMapObject_Volcano::OnCoreDestroyed() {
 	objective3e.vFinishObjective();
 
 	objective3Arrow1.vFinishObjective();
@@ -1329,7 +1329,7 @@ void mapObject_Volcano::OnCoreDestroyed() {
 	thread OnCoreDestroyedEffectsThread();
 }
 
-void mapObject_Volcano::OnCoreDestroyedEffectsThread() {
+void tacticalMapObject_Volcano::OnCoreDestroyedEffectsThread() {
 
 	sys.wait( 0.8f );
 	coreExplosion.vTriggerParticleEffect( 6 );
@@ -1354,7 +1354,7 @@ void mapObject_Volcano::OnCoreDestroyedEffectsThread() {
 
 }
 
-void mapObject_Volcano::OnTimeLimitHit() {
+void tacticalMapObject_Volcano::OnTimeLimitHit() {
 	FinishTimedMission();
 	objManager.SetObjectiveEntity( $null_entity, -1 );
 
@@ -1362,7 +1362,7 @@ void mapObject_Volcano::OnTimeLimitHit() {
 	objManager.PlaySound( worldspawn.getKey( "snd_strogglose_gdf" ), gdfTeam );
 }
 
-void mapObject_Volcano::StartFirstObjective() {
+void tacticalMapObject_Volcano::StartFirstObjective() {
 
 	// Set up Bots for first objective
 	objManager.setAttackingTeam( STROGG );
@@ -1410,7 +1410,7 @@ void mapObject_Volcano::StartFirstObjective() {
 	thread DelayedBotSpawnThread();
 }
 
-void mapObject_Volcano::DelayedBotSpawnThread() {
+void tacticalMapObject_Volcano::DelayedBotSpawnThread() {
 	sys.wait( 10.0f ); // 10 second wait, 5 + 5 sec in StartFirstObjective thread above
 
 	objManager.setTeamNeededClass( GDF, FIELDOPS, NOCLASS, 2, true, true );
@@ -1418,7 +1418,7 @@ void mapObject_Volcano::DelayedBotSpawnThread() {
 	objManager.setTeamNeededClass( STROGG, COVERTOPS, NOCLASS, 2, true, false );
 }
 
-void mapObject_Volcano::StartTransformerObjective() {
+void tacticalMapObject_Volcano::StartTransformerObjective() {
 	sys.wait( 15.f );
 
 	objManager.SetObjectiveEntity( transformer, mainObjectiveIndex );
@@ -1426,7 +1426,7 @@ void mapObject_Volcano::StartTransformerObjective() {
 	CreateInitialTimedMission( transformer );
 }
 
-void mapObject_Volcano::StartCoreObjective() {
+void tacticalMapObject_Volcano::StartCoreObjective() {
 	sys.wait( 5.f );
 
 	objManager.SetObjectiveEntity( core5, mainObjectiveIndex );
@@ -1436,7 +1436,7 @@ void mapObject_Volcano::StartCoreObjective() {
 
 // MBJ - Bot Forward Spawn Actions
 
-void mapObject_Volcano::OnSpawnCaptured( string actionName ) {
+void tacticalMapObject_Volcano::OnSpawnCaptured( string actionName ) {
 
 	if ( actionName == "gdf_bunker_spawn" ) {
 		if ( debug_script.getBoolValue() ) {
@@ -1459,7 +1459,7 @@ void mapObject_Volcano::OnSpawnCaptured( string actionName ) {
 	}
 }
 
-void mapObject_Volcano::OnSpawnLiberated( string actionName ) {
+void tacticalMapObject_Volcano::OnSpawnLiberated( string actionName ) {
 
 	if ( actionName == "gdf_bunker_spawn" ) {
 		if ( debug_script.getBoolValue() ) {
@@ -1482,7 +1482,7 @@ void mapObject_Volcano::OnSpawnLiberated( string actionName ) {
 	}
 }
 
-entity mapObject_Volcano::GetSpectateEntity() {
+entity tacticalMapObject_Volcano::GetSpectateEntity() {
 	if ( securityControls != $null_entity ) {
 		if ( !securityControls.vIsObjectiveComplete() ) {
 			return securityControls.vGetSpectateEntity();
