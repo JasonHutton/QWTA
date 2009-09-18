@@ -17,9 +17,19 @@ public:
 	const char*				GetMap( int index ) const { return maps[ index ]; }
 	const idMaterial*		GetBackdrop( void ) const;
 
+	int						GetBeginObjective( void ) const { return tacticalData.beginObjective; }
+	int						GetEndObjective( void ) const { return tacticalData.endObjective; }
+
 private:
 	idStrList				maps;
 	idStr					backdrop;
+
+	typedef struct tacticalData_s {
+		int					beginObjective;
+		int					endObjective;
+	} tacticalData_t;
+
+	tacticalData_t			tacticalData;
 };
 
 #endif // __DECLTACTICAL_H__

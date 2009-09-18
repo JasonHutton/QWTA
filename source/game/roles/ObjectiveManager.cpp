@@ -17,6 +17,7 @@ static char THIS_FILE[] = __FILE__;
 #include "../Player.h"
 #include "../rules/GameRules.h"
 #include "../rules/GameRules_Campaign.h"
+#include "../rules/GameRules_Tactical.h"
 
 #include "../botai/BotThreadData.h"
 #include "../botai/BotAI_Actions.h"
@@ -824,18 +825,42 @@ void sdObjectiveManagerLocal::Event_CreateMapScript( void ) {
 		return;
 	}
 
-	const char* mapScriptEntryPoint = gameLocal.mapInfo->GetData().GetString( "script_entrypoint", "Default_MapScript" );
-	if ( *mapScriptEntryPoint == '\0' ) {
-		return;
-	}
+	if ( sdGameRules::IsRuleType( sdGameRulesTactical::Type ) ) {
 
-	const sdProgram::sdFunction* function = gameLocal.program->FindFunction( mapScriptEntryPoint );
-	if ( function == NULL ) {
-		gameLocal.Warning( "sdObjectiveManagerLocal::Event_CreateMapScript Could Not Find Script Entry Point '%s'", mapScriptEntryPoint );
-		return;
-	}
+		//const char* mapScriptEntryPoint = 
+		const char* mapScriptEntryPoint;
+		if ( !gameLocal.mapInfo->GetData().GetString( "script_tactical_entrypoint", "", &mapScriptEntryPoint ) ) {
+			gameLocal.Warning( "sdObjectiveManagerLocal::Event_CreateMapScript Could Not Find Script Entry Point Key 'script_tactical_entrypoint'. Using basic Script Entry Points." );
+			mapScriptEntryPoint = gameLocal.mapInfo->GetData().GetString( "script_entrypoint", "Default_MapScript" );
+			if ( *mapScriptEntryPoint == '\0' ) {
+				return;
+			}
+		}
 
-	gameLocal.CallFrameCommand( function );
+		const sdProgram::sdFunction* function = gameLocal.program->FindFunction( mapScriptEntryPoint );
+		if ( function == NULL ) {
+			gameLocal.Warning( "sdObjectiveManagerLocal::Event_CreateMapScript Could Not Find Script Entry Point '%s'", mapScriptEntryPoint );
+			return;
+		}
+
+		gameLocal.CallFrameCommand( function );
+
+	} else {
+
+		const char* mapScriptEntryPoint = gameLocal.mapInfo->GetData().GetString( "script_entrypoint", "Default_MapScript" );
+		if ( *mapScriptEntryPoint == '\0' ) {
+			return;
+		}
+
+		const sdProgram::sdFunction* function = gameLocal.program->FindFunction( mapScriptEntryPoint );
+		if ( function == NULL ) {
+			gameLocal.Warning( "sdObjectiveManagerLocal::Event_CreateMapScript Could Not Find Script Entry Point '%s'", mapScriptEntryPoint );
+			return;
+		}
+
+		gameLocal.CallFrameCommand( function );
+
+	}
 
 	sdProgram::ReturnObject( gameLocal.program->GetReturnedObject() );
 }

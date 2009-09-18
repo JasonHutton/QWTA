@@ -18,6 +18,7 @@ object rules {
 	void			PushStat( handle medalStat, entity p );
 
 	boolean			IsStopwatch();
+	boolean			IsTactical();
 	float			GetFloatKeyWithSuffix( entity ent, string key, float defaultValue );
 
 	handle			medalHighXPStat;
@@ -284,6 +285,14 @@ void rules::PushStat( handle medalStat, entity p ) {
 
 boolean rules::IsStopwatch() {
 	if ( si_rules.getStringValue() == "sdGameRulesStopWatch" ) {
+		return true;
+	}
+	
+	return false;
+}
+
+boolean rules::IsTactical() {
+	if ( si_rules.getStringValue() == "sdGameRulesTactical" ) {
 		return true;
 	}
 	

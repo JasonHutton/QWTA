@@ -8,6 +8,7 @@ This defines utility functions for scripts
 
 object rules {
 	boolean			IsStopwatch();
+	boolean			IsTactical();
 	float			GetFloatKeyWithSuffix( entity ent, string key, float defaultValue );
 }
 

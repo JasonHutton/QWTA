@@ -22,6 +22,8 @@ sdDeclTactical::sdDeclTactical
 ================
 */
 sdDeclTactical::sdDeclTactical( void ) {
+	tacticalData.beginObjective = -1;
+	tacticalData.endObjective = -1;
 }
 
 /*
@@ -74,6 +76,20 @@ bool sdDeclTactical::Parse( const char *text, const int textLength ) {
 			}
 
 			maps.Alloc() = token;
+		
+		} else if ( !token.Icmp( "beginObjective" ) ) {
+			if ( !src.ExpectTokenType( TT_NUMBER, 0, &token ) ) {
+				return false;
+			}
+
+			tacticalData.beginObjective = token.GetIntValue();
+
+		} else if ( !token.Icmp( "endObjective" ) ) {
+			if ( !src.ExpectTokenType( TT_NUMBER, 0, &token ) ) {
+				return false;
+			}
+
+			tacticalData.endObjective = token.GetIntValue();
 
 		} else if ( !token.Icmp( "data" ) ) {
 
