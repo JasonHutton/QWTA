@@ -23,6 +23,8 @@ CHANGES:
   + Default 1.
   + Allows the use of the Tactical Shield's altfire, which re-absorbs
     shields that have been deployed.
+* Railgun and Sniper Rifle infantry realistic-mode damage decreased.
+  + Rather than double BaseETQW damages, they're simply +20 each.
 
 BUG FIXES:
 
