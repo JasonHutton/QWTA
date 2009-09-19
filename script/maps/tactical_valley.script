@@ -41,12 +41,9 @@ tacticalMapObject_Valley Valley_TacticalMapScript() {
 void tacticalMapObject_Valley::InitSplitObjectives( float index ) {
 	if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
 		OnBridgeBuiltSpecial();
-		//bridgeConstruction.vSetConstructed( true );
-		//bridgeConstruction.vSetState( CSTATE_COMPLETE );
-		//bridgeConstruction.OnConstructionFinished( $null_entity );
-		//bridgeConstruction.vSetConstructed( true );
-		//objective1Marker.vFinishObjective();
-		//CompleteObjective( OBJECTIVE_VALLEY_BUILD_BRIDGE, $null_entity );
+	} else if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_HACK_OBJECTIVE ) {
+		OnBridgeBuiltSpecial();
+		OnOutpostCaptured();
 	}
 }
 
