@@ -7,6 +7,7 @@ mapInfoDef "valley" {
 	data {
 		"mapLocation"			"maps/valley/location"
 		"script_entrypoint"		"Valley_MapScript"
+		"script_tactical_entrypoint"	"Valley_TacticalMapScript"
 		"mapBriefing"			"maps/valley/briefing"
 		"campaignDescription"	"maps/valley/campaign"
 		"numObjectives"			"4"
@@ -18,14 +19,3 @@ mapInfoDef "valley" {
 		"gdf_endgame_pause"		"5.0"
 	}
 }
-
-// =================================
-// TEST MAPS
-// =================================
-/*
-mapMetaData maps/valley_bot {
-	"mapinfo"	"valley"
-	"dz_deployInfo"	"valley"
-	"massive_zone_name"		"ghost town"	
-}
-*/

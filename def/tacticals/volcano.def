@@ -28,14 +28,3 @@ tacticalDef tactical_volcano3 {
 		"mtr_backdrop"		"levelshots/campaigns/pacific"
 	}
 }
-
-/*
-campaignDef campaign_pacific {
-	map	"maps/canyon"
-	map	"maps/sewer"
-	map	"maps/volcano"
-	
-	data {
-		"mtr_backdrop"		"levelshots/campaigns/pacific"
-	}
-}*/

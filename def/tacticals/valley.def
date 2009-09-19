@@ -1,0 +1,40 @@
+
+tacticalDef tactical_valley1 {
+	map	"maps/valley"
+	beginObjective		0
+	endObjective		0
+	
+	data {
+		"mtr_backdrop"		"levelshots/campaigns/northamerica"
+	}
+}
+
+tacticalDef tactical_valley2 {
+	map	"maps/valley"
+	beginObjective		1
+	endObjective		1
+	
+	data {
+		"mtr_backdrop"		"levelshots/campaigns/northamerica"
+	}
+}
+
+tacticalDef tactical_valley3 {
+	map	"maps/valley"
+	beginObjective		2
+	endObjective		2
+	
+	data {
+		"mtr_backdrop"		"levelshots/campaigns/northamerica"
+	}
+}
+
+tacticalDef tactical_valley4 {
+	map	"maps/valley"
+	beginObjective		3
+	endObjective		3
+	
+	data {
+		"mtr_backdrop"		"levelshots/campaigns/northamerica"
+	}
+}

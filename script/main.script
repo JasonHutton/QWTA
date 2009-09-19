@@ -267,6 +267,7 @@ This is the main script that is loaded before any level scripts load.
 
 // Maps
 #include "script/maps/tactical_volcano.script"
+#include "script/maps/tactical_valley.script"
 
 // QWTA stuff ends
 

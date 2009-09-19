@@ -611,6 +611,8 @@ object constructible_materials : constructible_objective {
 	void			SetConstructionState( float newState );
 	void			AfterConstructed();
 	void			vSetConstructionState( float newState ) { SetConstructionState( newState ); }
+	void			SetConstructed( boolean a );
+	void			vSetConstructed( boolean a ) { SetConstructed( a ); }
 
 	void			vFinishObjective();
 	void			vStartObjective();
@@ -633,6 +635,8 @@ object constructible_materials : constructible_objective {
 
 	float			state;
 	float			oldState;
+	boolean			ignoreCallBackStateOnce;
+	boolean			ignoreNotificationsDuringChange;
 
 	// todo nick; make a seperate multi-staged constructible
 	entity			firstStage;
@@ -686,6 +690,8 @@ void constructible_materials::preinit() {
 
 	constructDelay = 0;
 	state = -1;
+	ignoreCallBackStateOnce = false;
+	ignoreNotificationsDuringChange = false;
 }
 
 void constructible_materials::SetupConstruction() {
@@ -889,7 +895,24 @@ void constructible_materials::OnStateChanged() {
 	SetConstructionState( state );
 }
 
+void constructible_materials::SetConstructed( boolean a ) {
+	/*
+	firstStage.vSetState( CSTATE_NONE );
+	secondStage.vSetState( CSTATE_COMPLETE );
+	
+	AfterConstructed();*/
+	ignoreNotificationsDuringChange = true;
+	SetConstructionState( CSTATE_FIRST_SECOND );
+	ignoreCallBackStateOnce = true;
+	//state = CSTATE_FIRST_SECOND;
+	//oldState = CSTATE_FIRST_SECOND;
+}
+
 void constructible_materials::SetConstructionState( float newState ) {
+	if ( ignoreCallBackStateOnce ) {
+		ignoreCallBackStateOnce = false;
+		return;
+	}
 	if ( newState == CSTATE_DESTROY ) { // special notification state that is CSTATE_NONE, to distinguish between this and a fizzle
 		// Gordon: doing the extra check here, because constructions may be put directly into the none state when they spawn
 		if ( oldState != CSTATE_NONE ) {
@@ -1015,16 +1038,23 @@ void constructible_materials::SetConstructionState( float newState ) {
 void constructible_materials::AfterConstructed() {
 	if ( objectiveIndex >= 0 ) {
 		if ( getGameTeam() == stroggTeam ) {
-			G_PlayObjectiveCompletedRoll( GDF );
+			if ( !ignoreNotificationsDuringChange ) {
+				G_PlayObjectiveCompletedRoll( GDF );
+			}
 		} else if ( getGameTeam() == gdfTeam ) {
-			G_PlayObjectiveCompletedRoll( STROGG );
+			if ( !ignoreNotificationsDuringChange ) {
+				G_PlayObjectiveCompletedRoll( STROGG );
+			}
 		}
 
-		objManager.CompleteObjective( objectiveIndex, constructor );
+		objManager.CompleteObjectiveAdvanced( objectiveIndex, constructor, true );
+		
 	} else {
 		if ( constructedMessage != invalid_handle ) {
-			objManager.PushCPrintString( constructor.getUserName() );
-			objManager.CPrintEvent( constructedMessage, $null );
+			if ( ignoreNotificationsDuringChange ) {
+				objManager.PushCPrintString( constructor.getUserName() );
+				objManager.CPrintEvent( constructedMessage, $null );
+			}
 		}
 	}
 
@@ -1045,8 +1075,14 @@ void constructible_materials::AfterConstructed() {
 
 	HideAndDisableClip();
 
-	objManager.PlaySound( getKey( "snd_finished_strogg" ), stroggTeam );
-	objManager.PlaySound( getKey( "snd_finished_gdf" ), gdfTeam );
+	if ( !ignoreNotificationsDuringChange ) {
+		objManager.PlaySound( getKey( "snd_finished_strogg" ), stroggTeam );
+		objManager.PlaySound( getKey( "snd_finished_gdf" ), gdfTeam );
+	}
+	
+	if ( ignoreNotificationsDuringChange ) {
+		ignoreNotificationsDuringChange = false;
+	}
 }
 
 entity constructible_materials::GetConstructionStage() {

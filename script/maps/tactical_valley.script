@@ -1,0 +1,789 @@
+
+object tacticalMapObject_Valley : mapObject_Valley {
+	void			InitObjectives();
+	void			InitSplitObjectives( float index );
+
+	void			SetupBot_BridgeObjective();
+	void			CompleteObjective( float index, entity p );
+
+	void			OnBridgeBuilt();
+	void			OnBridgeBuiltSpecial();
+	void			OnBridgeBuiltFinal();
+	void			SetupBot_HackShield();
+	void			OnOutpostCaptured();
+	void			OnOutpostCapturedFinal();
+	void			SetupBot_DestroyDevice();
+	void			OnHackObjective();
+	void			OnDeviceDestroyed();
+
+	void			PostBridgeBuiltAudio();
+	void			StartShieldObjective();
+	void			StartFirstObjective();
+	void			OnShieldDestroyedScud( entity trigger );
+
+	vector			GetGDFBasePosition() { return '9800 -10870 2080'; }
+
+	void			OnShieldHacked();
+	void			OnSewerGrateDestroyed();
+	void			SetupBot_DeployMCP();
+
+	void			OnShieldDeployed( entity obj, entity trigger );
+	void			OnHackComplete( entity obj );
+	void			OnMCPSpawned( entity obj );
+	void			OnMCPDestroyed( entity obj, vector newLocation, vector newAngles );
+	void			OnMCPDelivered( entity obj );
+}
+
+tacticalMapObject_Valley Valley_TacticalMapScript() {
+	return new tacticalMapObject_Valley;
+}
+
+void tacticalMapObject_Valley::InitSplitObjectives( float index ) {
+	if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
+		OnBridgeBuiltSpecial();
+		//bridgeConstruction.vSetConstructed( true );
+		//bridgeConstruction.vSetState( CSTATE_COMPLETE );
+		//bridgeConstruction.OnConstructionFinished( $null_entity );
+		//bridgeConstruction.vSetConstructed( true );
+		//objective1Marker.vFinishObjective();
+		//CompleteObjective( OBJECTIVE_VALLEY_BUILD_BRIDGE, $null_entity );
+	}
+}
+
+
+void tacticalMapObject_Valley::InitObjectives() {
+	gameRules.setWinningTeam( stroggTeam );
+	gdfTeam.SetRespawnWait( 20 );
+	stroggTeam.SetRespawnWait( 20 );
+	gdfTeam.InitRespawnTimeChange();
+	stroggTeam.InitRespawnTimeChange();
+	CreateRespawnTimeThread( gdfTeam );
+
+	gdfBaseTerritory		= worldspawn.getEntityKey( "script_gdf_base_territory" );
+	bridgeTerritory			= worldspawn.getEntityKey( "script_bridge_territory" );
+	outpost1Territory		= worldspawn.getEntityKey( "script_outpost1_territory" );
+	stroggBaseTerritory		= worldspawn.getEntityKey( "script_strogg_base_territory" );
+	outpost2Territory		= worldspawn.getEntityKey( "script_outpost2_territory" );
+
+	gdfBaseArrow1			= worldspawn.getEntityKey( "script_obj1_arrow1" );
+	gdfBaseArrow2			= worldspawn.getEntityKey( "script_obj1_arrow2" );
+	tunnelArrow1			= worldspawn.getEntityKey( "script_obj2_arrow1" );
+	tunnelArrow2			= worldspawn.getEntityKey( "script_obj2_arrow2" );
+	outpostArrow1			= worldspawn.getEntityKey( "script_obj3_arrow1" );
+	outpostArrow2			= worldspawn.getEntityKey( "script_obj3_arrow2" );
+	reservoirArrow1			= worldspawn.getEntityKey( "script_obj4_arrow1" );
+	reservoirArrow2			= worldspawn.getEntityKey( "script_obj4_arrow2" );
+
+	objective1Marker		= worldspawn.getEntityKey( "script_obj1_marker" );
+	objective2Marker		= worldspawn.getEntityKey( "script_obj2_marker" );
+	objective3Marker		= worldspawn.getEntityKey( "script_obj3_marker" );
+	objective4Marker		= worldspawn.getEntityKey( "script_obj4_marker" );
+
+	entrance_smoke			= worldspawn.getEntityKey( "script_entrance_smoke" );
+	entrance_rubble			= worldspawn.getEntityKey( "script_entrance_rubble" );
+
+	entrance_blowout_1		= worldspawn.getEntityKey( "script_entrance_blowout_1" );
+	entrance_blowout_2		= worldspawn.getEntityKey( "script_entrance_blowout_2" );
+	entrance_blowout_3		= worldspawn.getEntityKey( "script_entrance_blowout_3" );
+
+	final_sparks_1			= worldspawn.getEntityKey( "script_final_sparks_1" );
+	final_sparks_2			= worldspawn.getEntityKey( "script_final_sparks_2" );
+	final_sparks_3			= worldspawn.getEntityKey( "script_final_sparks_3" );
+	final_sparks_4			= worldspawn.getEntityKey( "script_final_sparks_4" );
+
+	final_steam_1			= worldspawn.getEntityKey( "script_final_steam_1" );
+	final_steam_2			= worldspawn.getEntityKey( "script_final_steam_2" );
+	final_steam_3			= worldspawn.getEntityKey( "script_final_steam_3" );
+	final_steam_4			= worldspawn.getEntityKey( "script_final_steam_4" );
+	final_steam_5			= worldspawn.getEntityKey( "script_final_steam_5" );
+	final_steam_6			= worldspawn.getEntityKey( "script_final_steam_6" );
+	final_steam_7			= worldspawn.getEntityKey( "script_final_steam_7" );
+	final_steam_8			= worldspawn.getEntityKey( "script_final_steam_8" );
+
+	endCameraA				= worldspawn.getEntityKey( "script_placement_camera_a" );
+	endCameraB				= worldspawn.getEntityKey( "script_placement_camera_b" );
+
+	bridgeConstruction		= worldspawn.getEntityKey( "script_bridge_materials" );
+	contaminator			= worldspawn.getEntityKey( "script_contaminator" );
+
+	effectEnt1				= worldspawn.getEntityKey( "script_final_effect" );
+
+
+	gdfBaseSpawn			= worldspawn.getEntityKey( "script_gdf_base_spawn" );
+	gdfTunnelSpawn			= worldspawn.getEntityKey( "script_gdf_tunnel_spawn" );
+	stroggTunnelSpawn		= worldspawn.getEntityKey( "script_strogg_tunnel_spawn" );
+	stroggBaseSpawn2		= worldspawn.getEntityKey( "script_strogg_base2_spawn" );
+	stroggBaseSpawn1		= worldspawn.getEntityKey( "script_strogg_base1_spawn" );
+	gdfOutpost1Spawn		= worldspawn.getEntityKey( "script_gdf_outpost1_spawn" );
+	stroggOutpost1Spawn		= worldspawn.getEntityKey( "script_strogg_outpost1_spawn" );
+	gdfForwardTunnelSpawn	= worldspawn.getEntityKey( "script_gdf_forward_tunnel_spawn" );
+	gdfForwardReservoirSpawn	= worldspawn.getEntityKey( "script_gdf_forward_reservoir_spawn" );
+
+	guardTower1				= worldspawn.getEntityKey( "script_gdf_tower_1_object" );
+	guardTower1Construction	= worldspawn.getEntityKey( "script_gdf_tower_1" );
+	guardTower2				= worldspawn.getEntityKey( "script_gdf_tower_2_object" );
+	guardTower2Construction	= worldspawn.getEntityKey( "script_gdf_tower_2" );
+
+	noplant_sewer_grate		= worldspawn.getEntityKey( "script_noplant_sewer_grate" );
+	noplant_contamination_device 	= worldspawn.getEntityKey( "script_noplant_contamination_device" );
+
+	sewerGrate				= worldspawn.getEntityKey( "script_sewer_grate" );
+
+	mcpRoute				= worldspawn.getEntityKey( "script_mcp_route" );
+	mcpCaller				= worldspawn.getEntityKey( "script_mcp_caller" );
+	shieldCaller			= worldspawn.getEntityKey( "script_shieldgen_caller" );
+	
+	treatmentPlantDoor1		= worldspawn.getEntityKey( "script_plant_door_1" );
+	treatmentPlantDoor2		= worldspawn.getEntityKey( "script_plant_door_2" );
+	treatmentPlantDoor3		= worldspawn.getEntityKey( "script_plant_door_3" );
+
+	botBridgeobstacle1		= worldspawn.getEntityKey( "script_bot_bridge_obstacle_1" );
+	//botBridgeobstacle2	= worldspawn.getEntityKey( "script_bot_bridge_obstacle_2" );
+	botPlantobstacle		= worldspawn.getEntityKey( "script_plant_obstacle" );
+	botPlantDoors			= worldspawn.getEntityKey( "merge_script_door_obstacles" );
+
+	debug_script		 	=	sys.getCVar( "bot_debugMapScript", "1" );
+	
+	CreateDeployTasks();
+	
+	gdfBaseSpawn.setGameTeam( gdfTeam );
+	gdfTunnelSpawn.setGameTeam( $null_entity );
+	stroggTunnelSpawn.setGameTeam( stroggTeam );
+	stroggBaseSpawn2.setGameTeam( stroggTeam );
+	stroggBaseSpawn1.setGameTeam( stroggTeam );
+	gdfOutpost1Spawn.setGameTeam( $null_entity );
+	stroggOutpost1Spawn.setGameTeam( stroggTeam );
+	gdfForwardTunnelSpawn.vSetActive( false );
+	gdfForwardReservoirSpawn.vSetActive( false );
+
+	gdfBaseArrow1.setGameTeam( gdfTeam );
+	gdfBaseArrow1.vStartObjective();
+	gdfBaseArrow2.setGameTeam( gdfTeam );
+	gdfBaseArrow2.vStartObjective();
+	tunnelArrow1.setGameTeam( gdfTeam );
+	tunnelArrow2.setGameTeam( gdfTeam );
+	outpostArrow1.setGameTeam( gdfTeam );
+	outpostArrow2.setGameTeam( gdfTeam );
+	reservoirArrow1.setGameTeam( gdfTeam );
+	reservoirArrow2.setGameTeam( gdfTeam );
+
+	objective1Marker.vStartObjective();
+	objective2Marker.vFinishObjective();
+	objective3Marker.vFinishObjective();
+	objective4Marker.vFinishObjective();
+
+	gdfBaseTerritory.setActive( true );
+	stroggBaseTerritory.setActive( false );
+	bridgeTerritory.setActive( true );
+	outpost1Territory.setActive( false );
+	outpost2Territory.setActive( false );
+
+	thread StartFirstObjective();
+
+	gameRules.setEndGameCamera( endCameraB );
+
+	guardTower1Construction.vCreateMission();
+
+	sewerGrateDestroyed = false;
+	guardTower2Built = false;
+	
+	mainObjectiveIndex = OBJECTIVE_VALLEY_BUILD_BRIDGE;
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	SetupBot_BridgeObjective();
+	
+	InitSplitObjectives( gameRules.getBeginObjective() );
+}
+
+void tacticalMapObject_Valley::SetupBot_BridgeObjective() {
+	if ( debug_script.getBoolValue() ) {    	
+    	sys.print( "*****BOTS SETUP FOR BRIDGE OBJECTIVE*****\n" );
+	}    	
+	objManager.activateBotActionGroup( VAL_OBJ_CONSTRUCT_BRIDGE );
+	objManager.activateBotActionGroup( VAL_GDF_ATTACK_BRIDGE );
+	objManager.activateBotActionGroup( VAL_STROGG_DEFEND_BRIDGE );
+	objManager.activateBotActionGroup( VAL_STROGG_DEPLOY_BRIDGE );
+	objManager.activateBotActionGroup( VAL_GDF_BASE_DEPLOY );
+	objManager.activateBotActionGroup( VAL_GDF_BASE_DEPLOY_FIELDOPS_ONLY );
+	objManager.activateBotActionGroup( VAL_STROGG_TUNNEL_MINES );
+	objManager.activateBotActionGroup( VAL_GDF_DEPLOY_BRIDGE );
+	objManager.activateBotActionGroup( VAL_GDF_BRIDGE_GUARDTOWER );
+
+	objManager.setAttackingTeam( GDF );
+	objManager.setBotSightDist( 3000.0f );
+	objManager.setBotCriticalClass( GDF, ENGINEER );
+	objManager.setBotCriticalClass( STROGG, ENGINEER );
+	//objManager.setTeamNeededClass( GDF, SOLDIER, FIELDOPS, 1, false, false );
+	//objManager.setTeamNeededClass( STROGG, SOLDIER, FIELDOPS, 1, false, false );
+	objManager.setPrimaryTeamAction( STROGG, "gdf_bridge_1" );
+	objManager.setPrimaryTeamAction( GDF, "gdf_bridge_1" );
+	objManager.setSecondaryTeamAction( GDF, "gdf_guardtower_1" );
+	objManager.setSecondaryTeamAction( STROGG, "strogg_mine_tunnel_1" );
+	
+	objManager.disableNode( "Bridge_Node_1" );
+	objManager.disableNode( "Bridge_Node_2" );	
+
+	thread DelayedBotSpawnThread();
+	thread DelayedEngineerCheck(); //add another engineer after 4 mins if gdf have not been able to build bridge
+	thread DelayedRearSpawnThread();
+}
+
+void tacticalMapObject_Valley::CompleteObjective( float index, entity p ) {
+	float endObjective = gameRules.getEndObjective();
+	
+	if ( index == OBJECTIVE_VALLEY_BUILD_BRIDGE ) {
+		if ( gameRules.IsTactical() && endObjective > -1 && endObjective == OBJECTIVE_VALLEY_BUILD_BRIDGE ) {
+			OnBridgeBuiltFinal();
+		} else {
+			OnBridgeBuilt();
+		}
+	} else if ( index == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
+		if ( gameRules.IsTactical() && endObjective > -1 && endObjective == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
+			OnOutpostCapturedFinal();
+		} else {
+			OnOutpostCaptured();
+		}
+	} else if ( index == OBJECTIVE_VALLEY_HACK_OBJECTIVE ) {
+		if ( gameRules.IsTactical() && endObjective > -1 && endObjective == OBJECTIVE_VALLEY_HACK_OBJECTIVE ) {
+			OnHackObjective/*Final*/();
+		} else {
+			OnHackObjective();
+		}
+	} else if ( index == OBJECTIVE_VALLEY_DESTROY_CONTAMINATOR ) {
+		OnDeviceDestroyed();
+	}
+}
+
+void tacticalMapObject_Valley::OnShieldDeployed( entity obj, entity trigger ) {
+	scudTrigger = trigger;
+	scudTrigger.vStartObjective();
+}
+
+void tacticalMapObject_Valley::OnHackComplete( entity obj ) {
+	if ( obj == scudTrigger ) {
+		OnShieldHacked();
+	}
+}
+
+void tacticalMapObject_Valley::OnMCPSpawned( entity obj ) {
+	ClearMCPData();
+}
+
+void tacticalMapObject_Valley::OnMCPDestroyed( entity obj, vector newLocation, vector newAngles ) {
+	if ( currentMCP != obj ) {
+		return;
+	}
+
+	ClearMCPData();
+
+	mcpCaller.vCallDrop( newLocation, newAngles );
+}
+
+void tacticalMapObject_Valley::OnMCPDelivered( entity obj ) {
+	ClearMCPData();
+
+	if ( mainObjectiveIndex == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
+		currentMCP = obj;
+		objManager.SetObjectiveEntity( currentMCP, mainObjectiveIndex );
+		currentMCP.vSetGoalMarker( objective2Marker );
+		currentMCP.vSetPathTargets( mcpCaller.getWorldOrigin(), objective2Marker.getWorldOrigin() );
+		currentMCP.setTrackerEntity( mcpRoute );
+		CreateInitialTimedMission( currentMCP );
+		currentMCP.vCreateMission();
+	}
+}
+
+void tacticalMapObject_Valley::OnShieldHacked() {
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+	StopTimedMission();
+	scudTrigger.vCompleteMission();
+
+	// turn bot hack actions off so cvops don't stand around like eejits
+	objManager.killBotActionGroup( VAL_OBJ_HACK_SHIELD );
+}
+
+void tacticalMapObject_Valley::OnSewerGrateDestroyed() {
+	sewerGrateDestroyed = true;
+	noplant_sewer_grate.remove();
+	sewerGrate.vCompleteMission();
+	objManager.killBotAction( "gdf_sewer_grate_1" );
+	objManager.killBotAction( "gdf_sewer_grate_2" );
+	objManager.enableRoute ("hack_sewer_path_1" );
+	objManager.enableRoute ("hack_sewer_path_2" );
+	objManager.enableNode( "grate1" );
+}
+
+void tacticalMapObject_Valley::SetupBot_DeployMCP () {
+	if ( debug_script.getBoolValue() ) {
+		sys.print( "*****BOTS SETUP FOR MCP OBJECTIVE*****\n" );
+	}		
+	objManager.botUpdateForEvent( NOTEAM, NOCLASS, ACTION_STATE_NULL );
+	objManager.setBotCriticalClass( GDF, ENGINEER );
+	objManager.setBotCriticalClass( STROGG, ENGINEER );
+	objManager.setMapHasMCPGoal( true );
+	
+	objManager.killBotActionGroup( VAL_OBJ_CONSTRUCT_BRIDGE );
+	objManager.killBotActionGroup( VAL_GDF_ATTACK_BRIDGE );
+	objManager.killBotActionGroup( VAL_STROGG_DEFEND_BRIDGE );
+	objManager.killBotActionGroup( VAL_STROGG_DEPLOY_BRIDGE );
+	objManager.killBotActionGroup( VAL_GDF_BASE_DEPLOY );
+	objManager.killBotActionGroup( VAL_STROGG_TUNNEL_MINES );
+	objManager.killBotActionGroup( VAL_GDF_BRIDGE_GUARDTOWER_ATTACKS );
+	
+	objManager.activateBotActionGroup( VAL_OBJ_ESCORT_MCP );
+	objManager.activateBotActionGroup( VAL_GDF_ATTACK_OUTPOST );
+	objManager.activateBotActionGroup( VAL_GDF_DEPLOY_TUNNEL );
+	objManager.activateBotActionGroup( VAL_STROGG_DEFEND_OUTPOST );
+	objManager.activateBotActionGroup( VAL_STROGG_DEPLOY_OUTPOST );
+	objManager.activateBotActionGroup( VAL_OBJ_TUNNEL_SPAWN );
+	objManager.activateBotActionGroup( VAL_GDF_ATTACK_TUNNEL_SPAWN );
+	objManager.activateBotActionGroup( VAL_STROGG_DEFEND_TUNNEL_SPAWN );
+	
+	objManager.switchTeamWeapons( STROGG, SOLDIER, 2, 6, true );	
+	objManager.switchTeamWeapons( STROGG, SOLDIER, 2, 5, true );
+	
+	objManager.setPrimaryTeamAction( STROGG, "gdf_outpost_1" );
+	objManager.setPrimaryTeamAction( GDF, "gdf_outpost_1" );
+
+	objManager.setTeamUseRearSpawn( GDF, true );
+	gdfTeam.setTeamRearSpawn( gdfBaseSpawn );
+	objManager.setTeamUseRearSpawnPercentage( GDF, 50 );
+	objManager.setTeamUseRearSpawnPercentage( STROGG, 50 );
+	
+	objManager.setTeamNeededClass( GDF, ENGINEER, NOCLASS, 2, false, false );
+	objManager.setTeamNeededClass( STROGG, ENGINEER, COVERTOPS, 2, true, false );
+	objManager.setTeamNeededClass( STROGG, SOLDIER, NOCLASS, 2, false, false );
+		
+}
+
+void tacticalMapObject_Valley::OnBridgeBuilt() {
+	
+	mainObjectiveIndex = OBJECTIVE_VALLEY_CAPTURE_OUTPOST;
+	objManager.enableNode( "Bridge_Node_1" );
+	objManager.enableNode( "Bridge_Node_2" );
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+	
+	gdfBaseArrow1.vFinishObjective();
+	gdfBaseArrow2.vFinishObjective();
+	tunnelArrow1.vStartObjective();
+	tunnelArrow2.vStartObjective();
+
+	objective1Marker.vFinishObjective();
+	objective2Marker.vStartObjective();
+		
+	bridgeTerritory.setGameTeam( gdfTeam );
+	gdfTunnelSpawn.setGameTeam( gdfTeam );
+	stroggTunnelSpawn.setGameTeam( $null_entity );
+
+	gdfBaseTerritory.setActive( false );
+	bridgeTerritory.setActive( true );
+	outpost1Territory.setActive( true );
+
+	gdfForwardTunnelSpawn.vSetActive( true );
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	StopTimedMission();
+	bridgeConstruction.vCompleteMission();
+	guardTower1.vFreeMission();
+	guardTower1Construction.vFreeMission();
+
+	mcpCaller.vOnDeploy();
+
+	thread PostBridgeBuiltAudio();
+	
+	gdfTeam.SetRespawnWait( 15 );
+	ResetRespawnTimeThread();
+	
+	botBridgeobstacle1.activate( botBridgeobstacle1 );
+	//botBridgeobstacle2.activate( botBridgeobstacle1 );
+		
+	SetupBot_DeployMCP();
+	thread DisableMcpBotAction();
+}
+
+void tacticalMapObject_Valley::OnBridgeBuiltSpecial() {
+	
+	mainObjectiveIndex = OBJECTIVE_VALLEY_CAPTURE_OUTPOST;
+	objManager.enableNode( "Bridge_Node_1" );
+	objManager.enableNode( "Bridge_Node_2" );
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+	
+	gdfBaseArrow1.vFinishObjective();
+	gdfBaseArrow2.vFinishObjective();
+	tunnelArrow1.vStartObjective();
+	tunnelArrow2.vStartObjective();
+
+	objective1Marker.vFinishObjective();
+	objective2Marker.vStartObjective();
+		
+	bridgeTerritory.setGameTeam( gdfTeam );
+	gdfTunnelSpawn.setGameTeam( gdfTeam );
+	stroggTunnelSpawn.setGameTeam( $null_entity );
+
+	gdfBaseTerritory.setActive( false );
+	bridgeTerritory.setActive( true );
+	outpost1Territory.setActive( true );
+
+	gdfForwardTunnelSpawn.vSetActive( true );
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	StopTimedMission();
+	bridgeConstruction.vCompleteMission();
+	bridgeConstruction.vSetConstructed( true );
+	bridgeConstruction.remove();
+	guardTower1.vFreeMission();
+	guardTower1Construction.vFreeMission();
+
+	mcpCaller.vOnDeploy();
+
+	thread PostBridgeBuiltAudio();
+	
+	gdfTeam.SetRespawnWait( 15 );
+	ResetRespawnTimeThread();
+	
+	botBridgeobstacle1.activate( botBridgeobstacle1 );
+	//botBridgeobstacle2.activate( botBridgeobstacle1 );
+		
+	SetupBot_DeployMCP();
+	thread DisableMcpBotAction();
+}
+
+void tacticalMapObject_Valley::OnBridgeBuiltFinal() {
+	gdfBaseArrow1.vFinishObjective();
+	gdfBaseArrow2.vFinishObjective();
+	
+	objective1Marker.vFinishObjective();
+	
+	thread FinalEffectsThread();
+	
+	StopTimedMission();
+
+	gameRules.setEndGameCamera( endCameraA );
+	
+	gameRules.setWinningTeam( gdfTeam );
+	gameRules.endGame();
+	
+	contaminator.vCompleteMission();
+}
+
+void tacticalMapObject_Valley::SetupBot_HackShield() {
+	if ( debug_script.getBoolValue() ) {
+		sys.print( "*****BOTS SETUP FOR HACK OBJECTIVE*****\n" );
+	}
+	objManager.botUpdateForEvent( NOTEAM, NOCLASS, ACTION_STATE_NULL );
+	objManager.setBotCriticalClass( GDF, COVERTOPS );
+	objManager.setBotCriticalClass( STROGG, ENGINEER );
+		
+	objManager.killBotActionGroup( VAL_OBJ_ESCORT_MCP );
+	objManager.killBotActionGroup( VAL_GDF_ATTACK_OUTPOST );
+	objManager.killBotActionGroup( VAL_STROGG_DEFEND_OUTPOST );
+	objManager.killBotActionGroup( VAL_STROGG_DEPLOY_OUTPOST );
+	objManager.killBotActionGroup( VAL_GDF_DEPLOY_BRIDGE );
+	objManager.killBotActionGroup( VAL_GDF_DEPLOY_TUNNEL );
+	objManager.killBotActionGroup( VAL_OBJ_TUNNEL_SPAWN );
+	objManager.killBotActionGroup( VAL_GDF_ATTACK_TUNNEL_SPAWN );
+	objManager.killBotActionGroup( VAL_GDF_DEFEND_TUNNEL_SPAWN );
+	objManager.killBotActionGroup( VAL_STROGG_ATTACK_TUNNEL_SPAWN );
+	objManager.killBotActionGroup( VAL_STROGG_DEFEND_TUNNEL_SPAWN );
+	objManager.killBotActionGroup( VAL_GDF_BASE_DEPLOY_FIELDOPS_ONLY ); // this will destroy any field op deployables still at GDF main base
+	
+	objManager.activateBotActionGroup( VAL_OBJ_HACK_SHIELD );
+	objManager.activateBotActionGroup( VAL_GDF_ATTACK_SHIELD );
+	objManager.activateBotActionGroup( VAL_GDF_DEPLOY_OUTPOST );
+	objManager.activateBotActionGroup( VAL_STROGG_DEFEND_SHEILD );
+	objManager.activateBotActionGroup( VAL_STROGG_DEPLOY_SHIELD );
+	if ( !sewerGrateDestroyed ) {
+		objManager.activateBotActionGroup( VAL_GDF_SEWER_GRATE );
+	}
+	
+	if ( !guardTower2Built ) {
+		objManager.activateBotActionGroup( VAL_GDF_OUTPOST_GUARDTOWER );
+	} else {
+		objManager.activateBotActionGroup( VAL_GDF_OUTPOST_GUARDTOWER_ATTACKS );
+	}
+
+	objManager.activateBotActionGroup( VAL_STROGG_CONTAMINATION_PREMINE );
+	objManager.activateBotActionGroup( VAL_STROGG_MINE_SHIELD );
+	
+	// ==========================================
+	// Test
+	objManager.activateBotActionGroup( VAL_OBJ_RESRVOIR_SPAWN );
+	objManager.activateBotActionGroup( VAL_GDF_ATTACK_RESRVOIR_SPAWN );
+	objManager.activateBotActionGroup( VAL_STROGG_DEFEND_RESRVOIR_SPAWN );
+	// End test
+	// ==========================================
+	
+	objManager.setTeamAttacksDeployables( STROGG, false );
+
+	objManager.setPrimaryTeamAction( STROGG, "gdf_hack_1" );
+	objManager.setPrimaryTeamAction( GDF, "gdf_hack_1" );
+	objManager.setSecondaryTeamAction( GDF, "gdf_sewer_grate_1" );
+	objManager.setSecondaryTeamAction( GDF, "gdf_guardtower_2" );
+	
+	objManager.setSecondaryTeamAction( STROGG, "strogg_mine_shield_1" );
+	objManager.setSecondaryTeamAction( STROGG, "strogg_contamination_premine_1" );
+
+	objManager.setMapHasMCPGoal( false );
+	objManager.setTeamNeededClass( GDF, COVERTOPS, ENGINEER, 2, true, true );
+	
+	objManager.setTeamUseRearSpawn( GDF, true );
+	gdfTeam.setTeamRearSpawn( gdfOutpost1Spawn );
+	objManager.setTeamUseRearSpawnPercentage( STROGG, 80 );
+}
+
+void tacticalMapObject_Valley::OnOutpostCaptured() {
+	mainObjectiveIndex = OBJECTIVE_VALLEY_HACK_OBJECTIVE;
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	gdfForwardTunnelSpawn.vSetActive( false );
+	gdfForwardTunnelSpawn.setGameTeam( gdfTeam );
+
+	gdfOutpost1Spawn.setGameTeam( gdfTeam );
+	stroggOutpost1Spawn.setGameTeam( $null_entity );
+
+	tunnelArrow1.vFinishObjective();
+	tunnelArrow2.vFinishObjective();
+	outpostArrow1.vStartObjective();
+	outpostArrow2.vStartObjective();
+
+	outpost1Territory.setGameTeam( gdfTeam );
+	
+	// ==========================================
+	// Test
+	gdfForwardReservoirSpawn.vSetActive( true );
+
+	// give gdf territory outside final objective compound
+	outpost2Territory.setGameTeam( gdfTeam );
+	// End test
+	// ==========================================
+
+	objective2Marker.vFinishObjective();
+	objective3Marker.vStartObjective();
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	if ( currentMCP != $null_entity ) {
+		currentMCP.vCompleteMission();
+	}
+	StopTimedMission();
+
+	if ( !guardTower2Built ) {
+		guardTower2Construction.vCreateMission();
+	}
+
+	if ( !sewerGrateDestroyed ) {
+		sewerGrate.vCreateMission();
+	}
+
+	shieldCaller.vOnDeploy();
+
+	G_PlayObjectiveCompletedRoll( GDF );
+	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_gdf" ), gdfTeam );
+	
+	gdfTeam.SetRespawnWait( 20 );
+	// Test: old Strogg value was 30
+	stroggTeam.SetRespawnWait( 20 );
+	ResetRespawnTimeThread();
+	SetupBot_HackShield();
+
+}
+
+void tacticalMapObject_Valley::OnOutpostCapturedFinal() {
+	tunnelArrow1.vFinishObjective();
+	tunnelArrow2.vFinishObjective();
+
+	objective2Marker.vFinishObjective();
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	if ( currentMCP != $null_entity ) {
+		currentMCP.vCompleteMission();
+	}
+	StopTimedMission();
+
+	shieldCaller.vOnDeploy();
+
+	G_PlayObjectiveCompletedRoll( GDF );
+	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_gdf" ), gdfTeam );
+	
+	gameRules.setEndGameCamera( endCameraA );
+		
+	gameRules.setWinningTeam( gdfTeam );
+	gameRules.endGame();
+		
+
+	//SetupBot_HackShield();
+}
+
+void tacticalMapObject_Valley::SetupBot_DestroyDevice() {
+	if ( debug_script.getBoolValue() ) {
+		sys.print( "*****BOTS SETUP FOR FINAL OBJECTIVE*****\n" );
+	}
+	objManager.botUpdateForEvent( NOTEAM, NOCLASS, ACTION_STATE_NULL );
+	objManager.setBotCriticalClass( GDF, SOLDIER );
+	objManager.setBotCriticalClass( STROGG, ENGINEER );
+	
+	// objManager.killBotActionGroup( VAL_OBJ_HACK_SHIELD );
+	// turned off earlier to prevent cvops just standing around
+	objManager.killBotActionGroup( VAL_GDF_ATTACK_SHIELD );
+	objManager.killBotActionGroup( VAL_STROGG_DEFEND_SHEILD );
+	objManager.killBotActionGroup( VAL_STROGG_DEPLOY_SHIELD );
+	objManager.killBotActionGroup( VAL_STROGG_CONTAMINATION_PREMINE );
+	objManager.killBotActionGroup( VAL_STROGG_MINE_SHIELD );
+	
+	// <xian>
+	// Added per nakedape	
+	objManager.killBotActionGroup( VAL_OBJ_RESRVOIR_SPAWN );
+	objManager.killBotActionGroup( VAL_GDF_ATTACK_RESRVOIR_SPAWN );
+	objManager.killBotActionGroup( VAL_GDF_DEFEND_RESRVOIR_SPAWN );
+	objManager.killBotActionGroup( VAL_STROGG_ATTACK_RESRVOIR_SPAWN );
+	objManager.killBotActionGroup( VAL_STROGG_DEFEND_RESRVOIR_SPAWN );
+	objManager.activateBotActionGroup( VAL_GDF_RESRVOIR_DEPLOY );
+	// </xian>
+		
+	objManager.activateBotActionGroup( VAL_OBJ_DESTROY_PLANT );
+	objManager.activateBotActionGroup( VAL_GDF_ATTACK_PLANT );
+	objManager.activateBotActionGroup( VAL_STROGG_DEFEND_PLANT );
+	objManager.activateBotActionGroup( VAL_STROGG_DEPLOY_PLANT );
+	
+	// ==========================================
+	// Test: moved to the Hack objectve
+	//objManager.activateBotActionGroup( VAL_OBJ_RESRVOIR_SPAWN );
+	//objManager.activateBotActionGroup( VAL_GDF_ATTACK_RESRVOIR_SPAWN );
+	//objManager.activateBotActionGroup( VAL_STROGG_DEFEND_RESRVOIR_SPAWN );
+	// End test
+	// ==========================================
+	
+	objManager.switchTeamWeapons( GDF, SOLDIER, 2, 5, false );
+	objManager.switchTeamWeapons( GDF, SOLDIER, 5, 6, false );
+	
+	objManager.disableRoute( "strogg_defend_shield_route_1" );
+	objManager.disableRoute( "strogg_defend_shield_route_2" );
+	
+	objManager.enableRoute( "strogg_defend_plant_route_1" );
+	objManager.enableRoute( "strogg_defend_plant_route_2" );
+	
+	objManager.setPrimaryTeamAction( STROGG, "gdf_bomb_1" );
+	objManager.setPrimaryTeamAction( GDF, "gdf_bomb_1" );
+	
+	objManager.setSecondaryTeamAction( GDF, "gdf_plant_priority_firesupport_1" );
+	
+	objManager.setTeamAttacksDeployables( STROGG, false );
+	
+	objManager.setTeamNeededClass( GDF, SOLDIER, COVERTOPS, 2, true, true );
+	objManager.setTeamNeededClass( GDF, MEDIC, ENGINEER, 2, true, true );
+	objManager.setTeamNeededClass( STROGG, ENGINEER, NOCLASS, 2, true, true );
+	
+	objManager.setTeamUseRearSpawn( STROGG, false );
+
+}
+
+void tacticalMapObject_Valley::OnHackObjective() {
+
+	mainObjectiveIndex = OBJECTIVE_VALLEY_DESTROY_CONTAMINATOR;
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	objective3Marker.vFinishObjective();
+	objective4Marker.vStartObjective();
+
+	contaminator.vStartObjective();
+
+	thread WallEffectsThread();
+
+	// ==========================================
+	// moved to Hack objective
+	//gdfForwardReservoirSpawn.vSetActive( true );
+
+	// give gdf territory outside final objective compound
+	//outpost2Territory.setGameTeam( gdfTeam );
+	
+	gdfForwardReservoirSpawn.vSetActive( false );
+	gdfForwardReservoirSpawn.setGameTeam( gdfTeam );	
+	// ==========================================
+
+	stroggBaseTerritory.setActive( true );
+	outpost1Territory.setActive( false );
+	outpost2Territory.setActive( true );
+
+	scudTrigger.vFreeMission();
+
+	outpostArrow1.vFinishObjective();
+	outpostArrow2.vFinishObjective();
+	reservoirArrow1.vStartObjective();
+	reservoirArrow2.vStartObjective();
+
+	// start the fx after the SCUD hits the corner of the building
+	//effectEnt1.activate( effectEnt1 );
+
+	treatmentPlantDoor1.remove();
+	treatmentPlantDoor2.remove();
+	treatmentPlantDoor3.remove();
+
+	objManager.SetObjectiveEntity( contaminator, mainObjectiveIndex );
+	CreateInitialTimedMission( contaminator );
+	contaminator.vCreateMission();
+	
+	gdfTeam.SetRespawnWait( 20 );
+	stroggTeam.SetRespawnWait( 20 );
+	ResetRespawnTimeThread();
+	SetupBot_DestroyDevice();
+	
+	botPlantobstacle.activate( botPlantobstacle );
+	botPlantDoors.activate ( botPlantDoors );
+	objManager.gameIsOnFinalObjective();
+}
+
+void tacticalMapObject_Valley::OnDeviceDestroyed() {
+	objective4Marker.vFinishObjective();
+
+	thread FinalEffectsThread();
+
+	StopTimedMission();
+	contaminator.vFinishObjective();
+
+	gameRules.setEndGameCamera( endCameraA );
+
+	gameRules.setWinningTeam( gdfTeam );
+	gameRules.endGame();
+
+	contaminator.vCompleteMission();
+}
+
+void tacticalMapObject_Valley::PostBridgeBuiltAudio() {
+	sys.wait( 10.f );
+
+	objManager.PlaySound( worldspawn.getKey( "snd_mcp_intro_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_mcp_intro_gdf" ), gdfTeam );
+}
+
+void tacticalMapObject_Valley::StartShieldObjective() {
+	sys.wait( 5.f );
+
+	scudTrigger.vSetActive( true );
+	CreateInitialTimedMission( scudTrigger );
+	scudTrigger.vCreateMission();
+	objManager.SetObjectiveEntity( scudTrigger, mainObjectiveIndex );
+}
+
+void tacticalMapObject_Valley::OnShieldDestroyedScud( entity trigger ) {
+	thread StartShieldObjective();
+}
+
+void tacticalMapObject_Valley::StartFirstObjective() {
+	sys.wait( 5.f );
+
+	objManager.SetObjectiveEntity( bridgeConstruction, mainObjectiveIndex );
+
+	CreateInitialTimedMission( bridgeConstruction );
+	bridgeConstruction.vCreateMission();
+	bridgeConstruction.vStartObjective();
+}

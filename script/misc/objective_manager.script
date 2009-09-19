@@ -49,6 +49,7 @@ object objectiveManager {
 	void			HandleObjectiveEntity();
 
 	void			CompleteObjective( float index, entity p );
+	void			CompleteObjectiveAdvanced( float index, entity p, boolean silent );
 	
 	void			SendObjectiveChangedEvent( entity ent, float clientIndex, float index, boolean isRepeater );
 	void			SetObjectiveEntity( entity ent, float index );
@@ -264,6 +265,10 @@ void objectiveManager::destroy() {
 }
 
 void objectiveManager::CompleteObjective( float index, entity p ) {
+	CompleteObjectiveAdvanced( index, p, false );
+}
+
+void objectiveManager::CompleteObjectiveAdvanced( float index, entity p, boolean silent ) {
 	if ( index >= 0 ) {
 		lastObjectiveCompleted = sys.getTime();
 	}
@@ -280,7 +285,9 @@ void objectiveManager::CompleteObjective( float index, entity p ) {
 	} else {
 		PushCPrintString( p.getUserName() );
 	}
-	CPrintEvent( mapObject.GetObjectiveMessage( index ), $null );
+	if ( !silent ) {
+		CPrintEvent( mapObject.GetObjectiveMessage( index ), $null );
+	}
 	
 	gdfTeam.IncreaseRespawnTimeChange();
 	stroggTeam.IncreaseRespawnTimeChange();
