@@ -611,8 +611,9 @@ object constructible_materials : constructible_objective {
 	void			SetConstructionState( float newState );
 	void			AfterConstructed();
 	void			vSetConstructionState( float newState ) { SetConstructionState( newState ); }
-	void			SetConstructed( boolean a );
-	void			vSetConstructed( boolean a ) { SetConstructed( a ); }
+	void			SetConstructed( boolean a, boolean nomcp );
+	void			vSetConstructed( boolean a ) { SetConstructed( a, false ); }
+	void			vSetConstructedAdvanced( boolean a, boolean nomcp ) { SetConstructed( a, nomcp ); }
 
 	void			vFinishObjective();
 	void			vStartObjective();
@@ -637,6 +638,7 @@ object constructible_materials : constructible_objective {
 	float			oldState;
 	boolean			ignoreCallBackStateOnce;
 	boolean			ignoreNotificationsDuringChange;
+	boolean			ignoreMCP;
 
 	// todo nick; make a seperate multi-staged constructible
 	entity			firstStage;
@@ -692,6 +694,7 @@ void constructible_materials::preinit() {
 	state = -1;
 	ignoreCallBackStateOnce = false;
 	ignoreNotificationsDuringChange = false;
+	ignoreMCP = false;
 }
 
 void constructible_materials::SetupConstruction() {
@@ -895,17 +898,11 @@ void constructible_materials::OnStateChanged() {
 	SetConstructionState( state );
 }
 
-void constructible_materials::SetConstructed( boolean a ) {
-	/*
-	firstStage.vSetState( CSTATE_NONE );
-	secondStage.vSetState( CSTATE_COMPLETE );
-	
-	AfterConstructed();*/
+void constructible_materials::SetConstructed( boolean a, boolean nomcp ) {
 	ignoreNotificationsDuringChange = true;
+	ignoreMCP = nomcp;
 	SetConstructionState( CSTATE_FIRST_SECOND );
 	ignoreCallBackStateOnce = true;
-	//state = CSTATE_FIRST_SECOND;
-	//oldState = CSTATE_FIRST_SECOND;
 }
 
 void constructible_materials::SetConstructionState( float newState ) {
@@ -1027,7 +1024,7 @@ void constructible_materials::SetConstructionState( float newState ) {
 
 		firstStage.vSetState( CSTATE_NONE );
 		secondStage.vSetState( CSTATE_COMPLETE );
-
+		
 		AfterConstructed();
 	}
 
@@ -1047,7 +1044,11 @@ void constructible_materials::AfterConstructed() {
 			}
 		}
 
-		objManager.CompleteObjectiveAdvanced( objectiveIndex, constructor, true );
+		/*
+		// This seems to result in the dead MCP upon deployment. I think it's making a duplicate.
+		if ( !ignoreMCP ) {
+			objManager.CompleteObjectiveAdvanced( objectiveIndex, constructor, true );
+		}*/
 		
 	} else {
 		if ( constructedMessage != invalid_handle ) {
@@ -1082,6 +1083,10 @@ void constructible_materials::AfterConstructed() {
 	
 	if ( ignoreNotificationsDuringChange ) {
 		ignoreNotificationsDuringChange = false;
+	}
+	
+	if ( ignoreMCP ) {
+		ignoreMCP = false;
 	}
 }
 

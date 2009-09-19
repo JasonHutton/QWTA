@@ -11,6 +11,7 @@ object tacticalMapObject_Valley : mapObject_Valley {
 	void			OnBridgeBuiltFinal();
 	void			SetupBot_HackShield();
 	void			OnOutpostCaptured();
+	void			OnOutpostCapturedSpecial();
 	void			OnOutpostCapturedFinal();
 	void			SetupBot_DestroyDevice();
 	void			OnHackObjective();
@@ -47,7 +48,13 @@ void tacticalMapObject_Valley::InitSplitObjectives( float index ) {
 	} else if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_HACK_OBJECTIVE ) {
 		OnBridgeBuiltSpecial( true );
 		OnOutpostCaptured();
+	} else if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_DESTROY_CONTAMINATOR ) {
+		OnBridgeBuiltSpecial( true );
+		OnOutpostCapturedSpecial();
+		OnHackObjective();
+		StartShieldObjective();
 	}
+	
 }
 
 
@@ -434,7 +441,7 @@ void tacticalMapObject_Valley::OnBridgeBuiltSpecial( boolean instantDeploy ) {
 
 	StopTimedMission();
 	bridgeConstruction.vCompleteMission();
-	bridgeConstruction.vSetConstructed( true );
+	bridgeConstruction.vSetConstructedAdvanced( true, instantDeploy );
 	bridgeConstruction.remove();
 	guardTower1.vFreeMission();
 	guardTower1Construction.vFreeMission();
@@ -473,7 +480,9 @@ void tacticalMapObject_Valley::OnBridgeBuiltSpecial( boolean instantDeploy ) {
 		}
 	}
 
-	thread PostBridgeBuiltAudio();
+	if ( !instantDeploy ) {
+		thread PostBridgeBuiltAudio();
+	}
 	
 	gdfTeam.SetRespawnWait( 15 );
 	ResetRespawnTimeThread();
@@ -620,6 +629,67 @@ void tacticalMapObject_Valley::OnOutpostCaptured() {
 	G_PlayObjectiveCompletedRoll( GDF );
 	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_strogg" ), stroggTeam );
 	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_gdf" ), gdfTeam );
+	
+	gdfTeam.SetRespawnWait( 20 );
+	// Test: old Strogg value was 30
+	stroggTeam.SetRespawnWait( 20 );
+	ResetRespawnTimeThread();
+	SetupBot_HackShield();
+
+}
+
+void tacticalMapObject_Valley::OnOutpostCapturedSpecial() {
+	mainObjectiveIndex = OBJECTIVE_VALLEY_HACK_OBJECTIVE;
+	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
+	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
+
+	gdfForwardTunnelSpawn.vSetActive( false );
+	gdfForwardTunnelSpawn.setGameTeam( gdfTeam );
+
+	gdfOutpost1Spawn.setGameTeam( gdfTeam );
+	stroggOutpost1Spawn.setGameTeam( $null_entity );
+
+	tunnelArrow1.vFinishObjective();
+	tunnelArrow2.vFinishObjective();
+	outpostArrow1.vStartObjective();
+	outpostArrow2.vStartObjective();
+
+	outpost1Territory.setGameTeam( gdfTeam );
+	
+	// ==========================================
+	// Test
+	gdfForwardReservoirSpawn.vSetActive( true );
+
+	// give gdf territory outside final objective compound
+	outpost2Territory.setGameTeam( gdfTeam );
+	// End test
+	// ==========================================
+
+	objective2Marker.vFinishObjective();
+	objective3Marker.vStartObjective();
+
+	objManager.SetObjectiveEntity( $null_entity, -1 );
+
+	if ( currentMCP != $null_entity ) {
+		currentMCP.vCompleteMission();
+	}
+	StopTimedMission();
+
+	if ( !guardTower2Built ) {
+		guardTower2Construction.vCreateMission();
+	}
+
+	if ( !sewerGrateDestroyed ) {
+		sewerGrate.vCreateMission();
+	}
+
+	shieldCaller.vOnDeploy();
+
+/*
+	G_PlayObjectiveCompletedRoll( GDF );
+	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_strogg" ), stroggTeam );
+	objManager.PlaySound( worldspawn.getKey( "snd_outpost_captured_gdf" ), gdfTeam );
+	*/
 	
 	gdfTeam.SetRespawnWait( 20 );
 	// Test: old Strogg value was 30

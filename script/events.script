@@ -1986,6 +1986,7 @@ virtual float		vGetSteerScale();
 virtual void		vSetActive( boolean a );
 
 virtual void		vSetConstructed( boolean a );
+virtual void		vSetConstructedAdvanced( boolean a, boolean nomcp );
 virtual void		vSetState( float newState );
 
 virtual void		vOnPassengerPain( entity inflictor, entity attacker, float damage, vector direction, float location );
