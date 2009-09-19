@@ -12,6 +12,7 @@ static char THIS_FILE[] = __FILE__;
 
 #include "GameRules.h"
 #include "GameRules_Campaign.h"
+#include "GameRules_Tactical.h"
 #include "../structures/TeamManager.h"
 #include "../Player.h"
 #include "../roles/FireTeams.h"
@@ -109,6 +110,8 @@ void sdGameRulesNetworkState::Read( idFile* file ) {
 extern const idEventDef EV_SendNetworkEvent;
 
 const idEventDef EV_Rules_SetEndGameCamera( "setEndGameCamera", '\0', DOC_TEXT( "Sets the camera view to be used at the end of the game, before the stats screen is shown." ), 1, NULL, "E", "camera", "Entity to be used as a camera." );
+const idEventDef EV_Rules_GetBeginObjective( "getBeginObjective", 'f', DOC_TEXT( "The objective index to begin the map on." ), 0, NULL );
+const idEventDef EV_Rules_GetEndObjective( "getEndObjective", 'f', DOC_TEXT( "The objective index to end the map on." ), 0, NULL );
 const idEventDef EV_Rules_EndGame( "endGame", '\0', DOC_TEXT( "Finishes the current game in progress, and marks the current winning team as the winners." ), 0, "Use $event:setWinningTeam$ to set the current winning team." );
 const idEventDef EV_Rules_SetWinningTeam( "setWinningTeam", '\0', DOC_TEXT( "Sets the current winning team." ), 1, "If the object passed in is not a valid team, it will be treated as $null$.", "o", "team", "Team to set." );
 const idEventDef EV_Rules_GetKeySuffix( "getKeySuffix", 's', DOC_TEXT( "Gets the suffix for rules-dependant keys." ), 0, "Append to key names to get versions of keys for different game rulesets." );
@@ -116,6 +119,8 @@ const idEventDef EV_Rules_GetKeySuffix( "getKeySuffix", 's', DOC_TEXT( "Gets the
 ABSTRACT_DECLARATION( idClass, sdGameRules )
 	EVENT( EV_SendNetworkEvent,						sdGameRules::Event_SendNetworkEvent )
 	EVENT( EV_Rules_SetEndGameCamera,				sdGameRules::Event_SetEndGameCamera )
+	EVENT( EV_Rules_GetBeginObjective,				sdGameRules::Event_GetBeginObjective )
+	EVENT( EV_Rules_GetEndObjective,				sdGameRules::Event_GetEndObjective )
 	EVENT( EV_Rules_EndGame,						sdGameRules::Event_EndGame )
 	EVENT( EV_Rules_SetWinningTeam,					sdGameRules::Event_SetWinningTeam )
 	EVENT( EV_Rules_GetKeySuffix,					sdGameRules::Event_GetKeySuffix )
@@ -2078,6 +2083,45 @@ void sdGameRules::Event_SetEndGameCamera( idEntity* other ) {
 		SendCameraEvent( other, sdReliableMessageClientInfoAll() );
 	}
 }
+
+/*
+================
+sdGameRules::Event_GetBeginObjective
+================
+*/
+void sdGameRules::Event_GetBeginObjective( void ) {
+	sdGameRulesTactical* tacticalRules = gameLocal.rules->Cast< sdGameRulesTactical >();
+	if ( !tacticalRules ) {
+		sdProgram::ReturnInteger( -1 );
+	}
+
+	const sdDeclTactical* tactical = tacticalRules->GetTactical();
+	if ( !tactical ) {
+		sdProgram::ReturnInteger( -1 );
+	}
+
+	sdProgram::ReturnInteger( tactical->GetBeginObjective() );
+}
+
+/*
+================
+sdGameRules::Event_GetEndObjective
+================
+*/
+void sdGameRules::Event_GetEndObjective( void ) {
+	sdGameRulesTactical* tacticalRules = gameLocal.rules->Cast< sdGameRulesTactical >();
+	if ( !tacticalRules ) {
+		sdProgram::ReturnInteger( -1 );
+	}
+
+	const sdDeclTactical* tactical = tacticalRules->GetTactical();
+	if ( !tactical ) {
+		sdProgram::ReturnInteger( -1 );
+	}
+
+	sdProgram::ReturnInteger( tactical->GetEndObjective() );
+}
+
 
 /*
 ================

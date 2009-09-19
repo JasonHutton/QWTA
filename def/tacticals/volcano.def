@@ -1,6 +1,28 @@
 
-tacticalDef tactical_volcano {
+tacticalDef tactical_volcano1 {
 	map	"maps/volcano"
+	beginObjective		0
+	endObjective		0
+	
+	data {
+		"mtr_backdrop"		"levelshots/campaigns/pacific"
+	}
+}
+
+tacticalDef tactical_volcano2 {
+	map	"maps/volcano"
+	beginObjective		1
+	endObjective		1
+	
+	data {
+		"mtr_backdrop"		"levelshots/campaigns/pacific"
+	}
+}
+
+tacticalDef tactical_volcano3 {
+	map	"maps/volcano"
+	beginObjective		2
+	endObjective		7
 	
 	data {
 		"mtr_backdrop"		"levelshots/campaigns/pacific"

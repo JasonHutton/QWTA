@@ -71,8 +71,8 @@ public:
 	void					SendCampaignInfo( const sdReliableMessageClientInfoBase& target );
 	virtual void			ReadCampaignInfo( const idBitMsg& msg );
 
-	void					SetCampaign( const sdDeclTactical* newCampaign );
-	const sdDeclTactical*	GetCampaign( void ) const { return tacticalDecl; }
+	void					SetTactical( const sdDeclTactical* newTactical );
+	const sdDeclTactical*	GetTactical( void ) const { return tacticalDecl; }
 	void					StartMap( void );
 
 	void					OnMapStatsReceived( int index );
@@ -86,7 +86,7 @@ public:
 protected:
 	void					SendMapStats( int index, const sdReliableMessageClientInfoBase& target );
 	void					ReadMapStats( const idBitMsg& msg );
-	bool					SetCampaign( const char* text, idStr& mapName );
+	bool					SetTactical( const char* text, idStr& mapName );
 
 protected:
 	virtual void			GameState_Review( void );

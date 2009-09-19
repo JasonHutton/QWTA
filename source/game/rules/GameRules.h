@@ -244,6 +244,8 @@ public:
 	void						Event_SendNetworkEvent( int clientIndex, bool isRepeaterClient, const char* message );
 	void						Event_SetEndGameCamera( idEntity* other );
 	void						Event_SetWinningTeam( idScriptObject* object );
+	void						Event_GetBeginObjective( void );
+	void						Event_GetEndObjective( void );
 	void						Event_EndGame( void );
 	void						Event_GetKeySuffix( void );
 

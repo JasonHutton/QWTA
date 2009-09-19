@@ -7,6 +7,7 @@ mapInfoDef "volcano" {
 	data {
 		"mapLocation"			"maps/volcano/location"
 		"script_entrypoint"		"Volcano_MapScript"
+		"script_tactical_entrypoint"	"Volcano_TacticalMapScript"
 		"mapBriefing"			"maps/volcano/briefing"
 		"campaignDescription"	"maps/volcano/campaign"
 		"numObjectives"			"3"

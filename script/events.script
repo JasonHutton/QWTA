@@ -839,6 +839,8 @@ scriptEvent object	getTeam( string name );
 scriptEvent void	setWinningTeam( object team );
 scriptEvent void	endGame();
 scriptEvent void	setEndGameCamera( entity other );
+scriptEvent float	getBeginObjective();
+scriptEvent float	getEndObjective();
 
 // get key suffix for game mode
 scriptEvent string	getKeySuffix();

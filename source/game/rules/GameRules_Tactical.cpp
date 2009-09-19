@@ -79,17 +79,17 @@ sdGameRulesTactical::~sdGameRulesTactical( void ) {
 
 /*
 ================
-sdGameRulesTactical::SetCampaign
+sdGameRulesTactical::SetTactical
 ================
 */
-void sdGameRulesTactical::SetCampaign( const sdDeclTactical* newCampaign ) {
-	assert( newCampaign != NULL );
+void sdGameRulesTactical::SetTactical( const sdDeclTactical* newTactical ) {
+	assert( newTactical != NULL );
 
 	currentSubMapIndex = 0;
 	campaignWinningTeam = NULL;
 	Reset();
 
-	tacticalDecl = newCampaign;
+	tacticalDecl = newTactical;
 
 	if ( !gameLocal.isClient ) {
 		sys->SetServerInfo( "si_tactical", tacticalDecl->GetName() );
@@ -153,14 +153,14 @@ sdGameRulesTactical::ReadCampaignInfo
 ================
 */
 void sdGameRulesTactical::ReadCampaignInfo( const idBitMsg& msg ) {
-	int campaignIndex = msg.ReadLong();
+	int tacticalIndex = msg.ReadLong();
 
-	const sdDeclTactical* newCampaign = NULL;
-	if ( campaignIndex != -1 ) {
-		newCampaign = gameLocal.declTacticalType[ campaignIndex ];
+	const sdDeclTactical* newTactical = NULL;
+	if ( tacticalIndex != -1 ) {
+		newTactical = gameLocal.declTacticalType[ tacticalIndex ];
 	}
 
-	SetCampaign( newCampaign );
+	SetTactical( newTactical );
 }
 
 /*
@@ -268,7 +268,7 @@ void sdGameRulesTactical::GameState_NextMap( void ) {
 		if ( gameLocal.NextMap() ) {
 			return;
 		}
-		SetCampaign( tacticalDecl );
+		SetTactical( tacticalDecl );
 	} else {
 		ClearChatData();
 	}
@@ -511,8 +511,8 @@ userMapChangeResult_e sdGameRulesTactical::OnUserStartMap( const char* text, idS
 		return UMCR_ERROR;
 	}
 
-	const sdDeclTactical* campaign = gameLocal.declTacticalType[ text ];
-	if ( campaign == NULL ) {
+	const sdDeclTactical* tactical = gameLocal.declTacticalType[ text ];
+	if ( tactical == NULL ) {
 		if( !metaData->addon ) {
 			reason = va( "Unknown Tactical '%s'", text );
 			return UMCR_ERROR;
@@ -531,13 +531,13 @@ userMapChangeResult_e sdGameRulesTactical::OnUserStartMap( const char* text, idS
 		return UMCR_STOP;
 	}
 
-	if ( campaign->GetNumMaps() == 0 ) {
+	if ( tactical->GetNumMaps() == 0 ) {
 		reason = va( "Tactical '%s' Contains No Maps", text );
 		return UMCR_ERROR;
 	}
 
-	SetCampaign( campaign );
-	mapName = campaign->GetMap( 0 );
+	SetTactical( tactical );
+	mapName = tactical->GetMap( 0 );
 	sdGameRules_SingleMapHelper::SanitizeMapName( mapName, true );
 
 	return UMCR_CONTINUE;
