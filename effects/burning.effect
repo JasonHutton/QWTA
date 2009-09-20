@@ -215,13 +215,13 @@ effect effects/burning
 	}
 }effect effects/burning_small
 {
-	size	60
+	size	58
 
 	emitter "flames 2"
 	{
-		start		0,1
-		duration	4,4
-		count		4,8
+		start		0,0.05
+		duration	0.1,0.1
+		count		1,2
 		attenuateEmitter
 
 		sprite
@@ -262,8 +262,8 @@ effect effects/burning
 	}
 	emitter "flames 3"
 	{
-		duration	4,4
-		count		4,8
+		duration	0.1,0.1
+		count		1,2
 		attenuateEmitter
 
 		sprite
@@ -302,47 +302,15 @@ effect effects/burning
 			lineHit
 		}
 	}
-	spawner "flash"
-	{
-		count		1,1
-		locked
-
-		sprite
-		{
-			duration	2,2
-			material	"textures/particles/sparks/sparkflash03c"
-			trailRepeat	1
-
-			start
-			{
-				size { point 40,40 attenuate }
-				tint { line 0.596078,0.458824,0.172549,0.615686,0.25098,0.156863 }
-				rotate { box -1,1 }
-			}
-
-			motion
-			{
-				size { envelope rr2_concavefade_start_at_1_fast }
-				tint { envelope senetable3 count 1.5,1.5,1.5 offset 0.05,0.05,0.05 }
-				fade { envelope aa_testblasttable2 }
-			}
-
-			end
-			{
-				size { point 20,20 attenuate }
-			}
-			lineHit
-		}
-	}
 	emitter "glow"
 	{
-		duration	4,4
+		duration	0.1,0.1
 		count		2,4
 		locked
 
 		sprite
 		{
-			duration	3,6
+			duration	3,4
 			persist
 			material	"particles/karateka/simple_smoke_alpha"
 			trailRepeat	1
@@ -377,7 +345,7 @@ effect effects/burning
 	emitter "spark3"
 	{
 		detail		0.75
-		duration	0.75,0.75
+		duration	0.1,0.1
 		count		5,10
 		attenuateEmitter
 
@@ -428,7 +396,7 @@ effect effects/burning_small_smoke
 	}
 	emitter "smoke5"
 	{
-		duration	1,1
+		duration	0.1,0.1
 		count		6,6
 		attenuateEmitter
 
@@ -471,6 +439,8 @@ effect effects/burning_small_smoke
 		}
 	}
 }
+
+
 
 
 
