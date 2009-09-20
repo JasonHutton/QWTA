@@ -7,7 +7,7 @@ object tacticalMapObject_Valley : mapObject_Valley {
 	void			CompleteObjective( float index, entity p );
 
 	void			OnBridgeBuilt();
-	void			OnBridgeBuiltSpecial( boolean instantDeploy );
+	void			OnBridgeBuiltSpecial( boolean deployMCP, boolean instantDeploy );
 	void			OnBridgeBuiltFinal();
 	void			SetupBot_HackShield();
 	void			OnOutpostCaptured();
@@ -45,12 +45,12 @@ tacticalMapObject_Valley Valley_TacticalMapScript() {
 
 void tacticalMapObject_Valley::InitSplitObjectives( float index ) {
 	if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
-		OnBridgeBuiltSpecial( false );
+		OnBridgeBuiltSpecial( false, false );
 	} else if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_HACK_OBJECTIVE ) {
-		OnBridgeBuiltSpecial( true );
+		OnBridgeBuiltSpecial( true, true );
 		OnOutpostCaptured();
 	} else if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_DESTROY_CONTAMINATOR ) {
-		OnBridgeBuiltSpecial( true );
+		OnBridgeBuiltSpecial( true, true );
 		OnOutpostCapturedSpecial( true );
 		OnShieldHacked();
 		G_TryFireScud( $null_entity, sys.getEntity( "<maps/references/valley/treatment_plant_hack>/building_corner" ) );
@@ -413,7 +413,7 @@ void tacticalMapObject_Valley::OnBridgeBuilt() {
 	thread DisableMcpBotAction();
 }
 
-void tacticalMapObject_Valley::OnBridgeBuiltSpecial( boolean instantDeploy ) {
+void tacticalMapObject_Valley::OnBridgeBuiltSpecial( boolean deployMCP, boolean instantDeploy ) {
 	
 	mainObjectiveIndex = OBJECTIVE_VALLEY_CAPTURE_OUTPOST;
 	objManager.enableNode( "Bridge_Node_1" );
@@ -448,42 +448,44 @@ void tacticalMapObject_Valley::OnBridgeBuiltSpecial( boolean instantDeploy ) {
 	guardTower1.vFreeMission();
 	guardTower1Construction.vFreeMission();
 
-	if ( !instantDeploy ) {
-		mcpCaller.vOnDeploy();
-	} else {
-		instantMCP = sys.spawn( "vehicle_mcp" );
-		if ( instantMCP != $null_entity ) {
-			instantMCP.setGameTeam( gdfTeam );
-			vector markerOrigin = objective2Marker.getOrigin();
-			markerOrigin_z = markerOrigin_z + 512;
-			
-			float frac = sys.tracePoint( markerOrigin, markerOrigin + ( vec3_down * MAX_WORLD_SIZE ), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity );
-			vector pos = sys.getTraceEndPos() + '0 0 1';
-			
-			instantMCP.setOrigin( pos );
-			instantMCP.setAngles( g_vectorZero );
-			if ( mainObjectiveIndex == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
-				objManager.SetObjectiveEntity( instantMCP, mainObjectiveIndex );
-			}
-			
-			/*while( !instantMCP.hasGroundContacts() ) {
-				sys.waitFrame();
-			}*/
-			//instantMCP.vSetManualDeploy();
-			instantMCP.disableImpact();
-			instantMCP.kickPlayer( 0, 0 );
-			instantMCP.lock( 1.f );
-			instantMCP.freeze( 1.f );
-			instantMCP.disableSuspension( 1.f );
-			instantMCP.setTakesDamage( false );
-			if ( objManager.gameState == GS_GAMEON ) {
-				instantMCP.Deploy( $null_entity );
+	if ( deployMCP ) {
+		if ( !instantDeploy ) {
+			mcpCaller.vOnDeploy();
+		} else {
+			instantMCP = sys.spawn( "vehicle_mcp" );
+			if ( instantMCP != $null_entity ) {
+				instantMCP.setGameTeam( gdfTeam );
+				vector markerOrigin = objective2Marker.getOrigin();
+				markerOrigin_z = markerOrigin_z + 512;
+
+				float frac = sys.tracePoint( markerOrigin, markerOrigin + ( vec3_down * MAX_WORLD_SIZE ), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity );
+				vector pos = sys.getTraceEndPos() + '0 0 1';
+
+				instantMCP.setOrigin( pos );
+				instantMCP.setAngles( g_vectorZero );
+				if ( mainObjectiveIndex == OBJECTIVE_VALLEY_CAPTURE_OUTPOST ) {
+					objManager.SetObjectiveEntity( instantMCP, mainObjectiveIndex );
+				}
+
+				/*while( !instantMCP.hasGroundContacts() ) {
+					sys.waitFrame();
+				}*/
+				//instantMCP.vSetManualDeploy();
+				instantMCP.disableImpact();
+				instantMCP.kickPlayer( 0, 0 );
+				instantMCP.lock( 1.f );
+				instantMCP.freeze( 1.f );
+				instantMCP.disableSuspension( 1.f );
+				instantMCP.setTakesDamage( false );
+				if ( objManager.gameState == GS_GAMEON ) {
+					instantMCP.Deploy( $null_entity );
+				}
 			}
 		}
-	}
 
-	if ( !instantDeploy ) {
-		thread PostBridgeBuiltAudio();
+		if ( !instantDeploy ) {
+			thread PostBridgeBuiltAudio();
+		}
 	}
 	
 	gdfTeam.SetRespawnWait( 15 );

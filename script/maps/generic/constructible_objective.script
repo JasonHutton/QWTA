@@ -1043,12 +1043,10 @@ void constructible_materials::AfterConstructed() {
 				G_PlayObjectiveCompletedRoll( STROGG );
 			}
 		}
-
-		/*
-		// This seems to result in the dead MCP upon deployment. I think it's making a duplicate.
+		
 		if ( !ignoreMCP ) {
 			objManager.CompleteObjectiveAdvanced( objectiveIndex, constructor, true );
-		}*/
+		}
 		
 	} else {
 		if ( constructedMessage != invalid_handle ) {
