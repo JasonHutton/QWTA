@@ -215,7 +215,7 @@ effect effects/burning
 	}
 }effect effects/burning_small
 {
-	size	44
+	size	54
 
 	emitter "flames 2"
 	{
@@ -234,8 +234,8 @@ effect effects/burning
 
 			start
 			{
-				position { sphere -2,-5,-5,4,5,5 cone }
-				velocity { box 0,-3,-3,6,3,3 }
+				position { line -2,0,0,4,0,0 cone }
+				velocity { box 0,-20,-20,30,20,20 }
 				size { line 8,10,12,14 }
 				tint { line 1,0.501961,0.247059,0.231373,0,0 }
 				fade { point 0 }
@@ -276,8 +276,8 @@ effect effects/burning
 
 			start
 			{
-				position { sphere -2,-5,-5,4,5,5 cone }
-				velocity { box 0,-5,-5,5,5,5 }
+				position { line -2,0,0,4,0,0 cone }
+				velocity { box 0,-25,-25,30,25,25 }
 				size { line 5,10,10,14 }
 				tint { line 1,0.501961,0.247059,0.203922,0,0 }
 				fade { point 0 }
@@ -389,7 +389,7 @@ effect effects/burning
 			start
 			{
 				position { sphere -2,-20,-20,6,20,20 }
-				velocity { box 2,0,0,5,0,0 }
+				velocity { box 2,-10,-10,5,10,10 }
 				angle { box 0,0,0,1,1,1 }
 				acceleration { point 1,0,0 }
 				size { point 0.5,0.5 }
@@ -414,6 +414,8 @@ effect effects/burning
 		}
 	}
 }
+
+
 
 
 
