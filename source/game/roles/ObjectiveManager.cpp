@@ -825,7 +825,8 @@ void sdObjectiveManagerLocal::Event_CreateMapScript( void ) {
 		return;
 	}
 
-	if ( sdGameRules::IsRuleType( sdGameRulesTactical::Type ) ) {
+	sdGameRulesTactical* tacticalRules = gameLocal.rules->Cast< sdGameRulesTactical >();
+	if ( tacticalRules ) {
 
 		//const char* mapScriptEntryPoint = 
 		const char* mapScriptEntryPoint;
