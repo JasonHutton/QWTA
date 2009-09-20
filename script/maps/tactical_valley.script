@@ -11,7 +11,7 @@ object tacticalMapObject_Valley : mapObject_Valley {
 	void			OnBridgeBuiltFinal();
 	void			SetupBot_HackShield();
 	void			OnOutpostCaptured();
-	void			OnOutpostCapturedSpecial();
+	void			OnOutpostCapturedSpecial( boolean instantDeploy );
 	void			OnOutpostCapturedFinal();
 	void			SetupBot_DestroyDevice();
 	void			OnHackObjective();
@@ -36,6 +36,7 @@ object tacticalMapObject_Valley : mapObject_Valley {
 	void			OnMCPDelivered( entity obj );
 	
 	vehicle_mcp		instantMCP;
+	scud_trigger_structure instantShield;
 }
 
 tacticalMapObject_Valley Valley_TacticalMapScript() {
@@ -50,9 +51,10 @@ void tacticalMapObject_Valley::InitSplitObjectives( float index ) {
 		OnOutpostCaptured();
 	} else if ( gameRules.IsTactical() && index > -1 && index == OBJECTIVE_VALLEY_DESTROY_CONTAMINATOR ) {
 		OnBridgeBuiltSpecial( true );
-		OnOutpostCapturedSpecial();
+		OnOutpostCapturedSpecial( true );
+		OnShieldHacked();
+		G_TryFireScud( $null_entity, sys.getEntity( "<maps/references/valley/treatment_plant_hack>/building_corner" ) );
 		OnHackObjective();
-		StartShieldObjective();
 	}
 	
 }
@@ -638,7 +640,7 @@ void tacticalMapObject_Valley::OnOutpostCaptured() {
 
 }
 
-void tacticalMapObject_Valley::OnOutpostCapturedSpecial() {
+void tacticalMapObject_Valley::OnOutpostCapturedSpecial( boolean instantDeploy ) {
 	mainObjectiveIndex = OBJECTIVE_VALLEY_HACK_OBJECTIVE;
 	objManager.setNextObjective( gdfTeam, mainObjectiveIndex );
 	objManager.setNextObjective( stroggTeam, mainObjectiveIndex );
@@ -683,7 +685,22 @@ void tacticalMapObject_Valley::OnOutpostCapturedSpecial() {
 		sewerGrate.vCreateMission();
 	}
 
-	shieldCaller.vOnDeploy();
+	if ( !instantDeploy ) {
+		shieldCaller.vOnDeploy();
+	} else {
+		instantShield = sys.spawn( "gameplay_strogg_shield_generator" );
+		if ( instantShield != $null_entity ) {
+			vector markerOrigin = objective3Marker.getOrigin();
+			markerOrigin_z = markerOrigin_z + 512;
+								
+			float frac = sys.tracePoint( markerOrigin, markerOrigin + ( vec3_down * MAX_WORLD_SIZE ), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity );
+			vector pos = sys.getTraceEndPos() + '0 0 1';
+								
+			instantShield.setOrigin( pos );
+			instantShield.setAngles( g_vectorZero );
+			instantShield.vSetActive( true );
+		}	
+	}
 
 /*
 	G_PlayObjectiveCompletedRoll( GDF );
