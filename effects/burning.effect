@@ -215,18 +215,17 @@ effect effects/burning
 	}
 }effect effects/burning_small
 {
-	size	41
+	size	44
 
 	emitter "flames 2"
 	{
-		start		0,0.05
 		duration	0.1,0.1
-		count		6,8
+		count		10,15
 		attenuateEmitter
 
 		sprite
 		{
-			duration	0.5,1.5
+			duration	0.4,0.5
 			persist
 			material	"particles/penta/flames"
 			windDeviationAngle 180.000000
@@ -263,12 +262,12 @@ effect effects/burning
 	emitter "flames 3"
 	{
 		duration	0.1,0.1
-		count		6,8
+		count		10,15
 		attenuateEmitter
 
 		sprite
 		{
-			duration	0.5,1.5
+			duration	0.5,0.8
 			persist
 			material	"particles/penta/flames2"
 			windDeviationAngle 180.000000
@@ -294,7 +293,7 @@ effect effects/burning
 
 			end
 			{
-				size { box 10,20,20,24 }
+				size { box 10,25,20,30 }
 				tint { point 0.0901961,0,0 }
 				fade { point 1 }
 				rotate { point 0 relative }
@@ -341,7 +340,7 @@ effect effects/burning
 
 		sprite
 		{
-			duration	3,4
+			duration	2,2
 			material	"particles/karateka/simple_smoke_alpha"
 			trailRepeat	1
 
@@ -415,6 +414,8 @@ effect effects/burning
 		}
 	}
 }
+
+
 
 
 
