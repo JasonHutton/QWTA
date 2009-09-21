@@ -175,6 +175,8 @@ entityDef player_base {
 	"do_object_abaddon"					"deployobject_abaddon"
 	
 	"burnable"							"1"
+	"burn_resist_threshold"				"2.0"
+	"burn_time_max"						"8.0"
 	"fx_burning"						"effects/burning"
 	"fx_burning_smoke"					"effects/burning_smoke"
 	"fx_burning_small"					"effects/burning_small"

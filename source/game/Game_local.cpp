@@ -6467,7 +6467,8 @@ void idGameLocal::RadiusBurn( const idVec3 &origin, idEntity *inflictor, idEntit
 					damageScale = dmgPower * ( 1.0f - dist / radius );
 					dir = ent->GetPhysics()->GetOrigin() - inflictor->GetPhysics()->GetOrigin();
 					dir.Normalize();
-					ent->SetBurnTime( attacker, gameLocal.time + burnTime );
+					//ent->SetBurnTime( attacker, gameLocal.time + burnTime );
+					ent->AddBurnTime( attacker, burnTime );
 					//ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
 				}
 			}

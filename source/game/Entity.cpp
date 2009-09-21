@@ -861,6 +861,9 @@ idEntity::idEntity( void ) {
 	fl.forceDecalUsageLocal  = false;
 	fl.burnable				= false;
 
+	burnResistThreshold	= 0;
+	burnTimeMax	= 0;
+
 	occlusionQueryHandle	= -1;
 
 	contentBoundsFilter		= NULL;
@@ -954,6 +957,9 @@ void idEntity::Spawn( void ) {
 	if ( spawnArgs.GetBool( "burnable" ) ) {
 		fl.burnable = true;
 	}
+
+	burnResistThreshold = SEC2MS( spawnArgs.GetFloat(  "burn_resist_threshold", "0" ) ); 
+	burnTimeMax = SEC2MS( spawnArgs.GetFloat(  "burn_time_max", "0" ) ); 
 
 	// spawn gui entities
 	if ( !networkSystem->IsDedicated() && renderEntity.hModel != NULL ) {
@@ -4741,12 +4747,7 @@ void idEntity::Event_IsBurning( void ) {
 }
 
 void idEntity::Event_ApplyBurnDamage( idEntity *attacker, float time ) {
-	int newTime = gameLocal.time + SEC2MS( time );
-	if ( newTime > burnTime ) {
-		sdProgram::ReturnBoolean( SetBurnTime( attacker, newTime ) );
-	} else {
-		sdProgram::ReturnBoolean( false );
-	}
+	sdProgram::ReturnBoolean( AddBurnTime( attacker, SEC2MS( time ) ) );
 }
 
 void idEntity::Event_GetRemainingBurning( void ) {
@@ -8061,7 +8062,7 @@ int idEntity::GetAORPhysicsLOD( void ) const {
 }
 
 bool idEntity::IsBurning( void ) {
-	if ( burnTime > gameLocal.time ) {
+	if ( burnTime > gameLocal.time + burnResistThreshold ) {
 		return true;
 	}
 
@@ -8079,13 +8080,15 @@ bool idEntity::SetBurnTime( idEntity *attacker, int newTime ) {
 		burnTime = newTime;
 		burnAttacker = attacker;
 
-		CancelEvents( &EV_BurningChanged );
-		if ( burnTime > gameLocal.time ) {
-			PostEventMS( &EV_BurningChanged, burnTime - gameLocal.time );
-		}
+		if ( burnTime > burnResistThreshold ) {
+			CancelEvents( &EV_BurningChanged );
+			if ( burnTime > gameLocal.time ) {
+				PostEventMS( &EV_BurningChanged, burnTime - burnResistThreshold - gameLocal.time );
+			}
 
-		if ( !wasBurning ) {
-			OnBurnStateChanged();
+			if ( !wasBurning ) {
+				OnBurnStateChanged();
+			}
 		}
 
 		return true;
@@ -8099,14 +8102,40 @@ bool idEntity::AddBurnTime( idEntity *attacker, int addTime ) {
 		return false;
 	}
 
-	int newBurnTime = burnTime - gameLocal.time;
+	/*int newBurnTime = burnTime - burnResistThreshold - gameLocal.time;
 	if ( newBurnTime > 0 ) {
 		return SetBurnTime( attacker, newBurnTime + addTime );
 	} else {
 		return SetBurnTime( attacker, addTime );
+	}*/
+
+	bool wasBurning = IsBurning();
+	//burnTime += addTime;
+	if ( burnTime > gameLocal.time ) {
+		burnTime += addTime;
+	} else {
+		burnTime = addTime + gameLocal.time;
 	}
 
-	return false;
+	if ( burnTime - gameLocal.time > burnTimeMax ) {
+		burnTime = gameLocal.time + burnTimeMax;
+	}
+	burnAttacker = attacker;
+
+	gameLocal.Printf("burnTime: %i threshold: %i time: %i adjusted burnTime: %f\n", burnTime, burnResistThreshold, gameLocal.time, MS2SEC(burnTime - gameLocal.time));
+
+	if ( burnTime > gameLocal.time + burnResistThreshold ) {
+		CancelEvents( &EV_BurningChanged );
+		if ( burnTime > gameLocal.time ) {
+			PostEventMS( &EV_BurningChanged, burnTime - gameLocal.time );
+		}
+
+		if ( !wasBurning ) {
+			OnBurnStateChanged();
+		}
+	}
+
+	return true;
 }
 
 void idEntity::OnBurnStateChanged( void ) {
@@ -8138,8 +8167,8 @@ void idEntity::OnBurnStateChanged( void ) {
 }
 
 float idEntity::GetRemainingBurning( void ) {
-	if ( gameLocal.time > burnTime ) {
+	if ( gameLocal.time + burnResistThreshold > burnTime ) {
 		return 0.0f;
 	}
-	return MS2SEC( burnTime - gameLocal.time );
+	return MS2SEC( burnTime - (gameLocal.time + burnResistThreshold) );
 }

@@ -273,6 +273,9 @@ public:
 		bool				burnable			:1;
 	} fl;
 
+	int								burnResistThreshold;
+	int								burnTimeMax;
+
 	idLinkList<idEntity>			interpolateNode;			// entities marked for interpolation in fps unlock mode
 	idVec3							interpolateHistory[2];		// holds origin for interpolation work
 	int								interpolateLastFramenum;	// holds last frame number this entity was picked up for interpolation
