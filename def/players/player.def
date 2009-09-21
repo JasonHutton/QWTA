@@ -176,6 +176,9 @@ entityDef player_base {
 	
 	"burnable"							"1"
 	"fx_burning"						"effects/burning"
+	"fx_burning_smoke"					"effects/burning_smoke"
+	"fx_burning_small"					"effects/burning_small"
+	"fx_burning_small_smoke"			"effects/burning_small_smoke"
 }
 
 toolTip proficiency_upgrade_respawn {
