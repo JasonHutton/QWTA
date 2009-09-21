@@ -1,6 +1,6 @@
 effect effects/burning
 {
-	size	97
+	size	93
 
 	emitter "flames 2"
 	{
@@ -134,7 +134,7 @@ effect effects/burning
 
 		sprite
 		{
-			duration	2,3
+			duration	1,2
 			persist
 			material	"particles/cells_a"
 			gravity		-0.005,0
@@ -205,7 +205,7 @@ effect effects/burning
 
 		sprite
 		{
-			duration	1,3
+			duration	1,2
 			material	"particles/karateka/simple_smoke_alpha"
 			gravity		-0.005,-0.005
 			trailRepeat	1
@@ -279,6 +279,8 @@ effect effects/burning
 		}
 	}
 }
+
+
 
 effect effects/burning_small
 {
@@ -480,15 +482,7 @@ effect effects/burning_small
 			lineHit
 		}
 	}
-}
-
-
-
-
-
-
-
-effect effects/burning_small_smoke
+}effect effects/burning_small_smoke
 {
 	size	266
 
@@ -508,12 +502,12 @@ effect effects/burning_small_smoke
 			persist
 			material	"textures/particles/smoke_test1"
 			windDeviationAngle 50.000000
+			gravity		-0.06,-0.04
 			trailRepeat	1
 
 			start
 			{
 				position { sphere 2,-10,-10,2,10,10 }
-				velocity { point 70,0,0 }
 				friction { point 1,0,0 }
 				size { line 20,20,30,30 }
 				tint { line 0.960784,0.337255,0.0392157,0.980392,0.501961,0.0196078 }
@@ -542,10 +536,6 @@ effect effects/burning_small_smoke
 	}
 }
 
-
-
-
-
 effect effects/burning_smoke
 {
 	size	280
@@ -566,12 +556,12 @@ effect effects/burning_smoke
 			persist
 			material	"textures/particles/smoke_test1"
 			windDeviationAngle 50.000000
+			gravity		-0.06,-0.04
 			trailRepeat	1
 
 			start
 			{
 				position { sphere 2,-10,-10,2,10,10 }
-				velocity { point 70,0,0 }
 				friction { point 1,0,0 }
 				size { line 40,40,60,60 }
 				tint { line 0.960784,0.337255,0.0392157,0.980392,0.501961,0.0196078 }
@@ -599,4 +589,6 @@ effect effects/burning_smoke
 		}
 	}
 }
+
+
 
