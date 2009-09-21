@@ -16,6 +16,8 @@ object vehicle_weapon_flamethrower : vehicle_weapon_streamshot {
 	float				firingBegan;
 	
 	float				burnTime;
+	float				damageRate;
+	float				nextDamageTime;
 }
 
 void vehicle_weapon_flamethrower::preinit() {
@@ -26,7 +28,10 @@ void vehicle_weapon_flamethrower::preinit() {
 	nextFire2Time			= 0;
 	firingBegan				= 0;
 	
+	nextDamageTime			= 0.0;
+	
 	burnTime				= getFloatKey( "burn_time" );
+	damageRate				= getFloatKey( "damageRate" );
 }
 
 void vehicle_weapon_flamethrower::init() {
@@ -108,7 +113,8 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 		
 		scale = 1.f - scale;
 		
-		if ( doDamage ) {
+		if ( doDamage && sys.getTime() > nextDamageTime ) {
+			nextDamageTime = sys.getTime() + damageRate;
 			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
 			ent.applyBurnDamage( getPlayer(), burnTime );
 		}

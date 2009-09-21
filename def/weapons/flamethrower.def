@@ -47,6 +47,7 @@ entityDef projectile_flamethrower_napalm {
 	"removedelay"				"0"
 	
 	"burn_time"					"0.5"
+	"damageRate"				"0.05"
 
 	//"fx_bounce_forcefield"		"effects/base/bullets/impact_forcefield"
 }

@@ -12,11 +12,16 @@ object projectile_flamethrower_napalm : projectile_grenade {
 	handle		fxBurnHandle;
 	
 	boolean		forcefieldWeakBounce;
+	
+	float		damageRate;
+	float		nextDamageTime;
 }
 
 void projectile_flamethrower_napalm::preinit() {
 	fxBurnHandle = 0;
+	nextDamageTime = 0.0;
 	forcefieldWeakBounce = getIntKey( "forcefield_weakbounce" );
+	damageRate = getFloatKey( "damageRate" );
 }
 
 void projectile_flamethrower_napalm::OnStick( entity collisionEnt, vector collisionNormal, string surfaceType, string joint ) {
@@ -37,7 +42,10 @@ void projectile_flamethrower_napalm::OnPostThink() {
 	}
 	
 	if ( stuck || isInWater() ) {
-		DoRadiusDamage();
+		if( sys.getTime() > nextDamageTime ) {
+			nextDamageTime = sys.getTime() + damageRate;
+			DoRadiusDamage();
+		}
 	}
 }
 

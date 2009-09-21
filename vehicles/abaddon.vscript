@@ -613,6 +613,7 @@ stringMap vehicle_abaddon_weapon1 {
 	"crosshair"					"nospread"
 	
 	"burn_time"					"0.5"
+	"damageRate"				"0.05"
 	
 	"min_damage_percent"		"100"
 	
