@@ -204,17 +204,17 @@ damageFilter damage_hyperblaster_qwta {
 
 	type {
 		target							"target_player_all"
-		damage							30
+		damage							19
 	}
 
 	type {
 		target							"target_veh_all"
-		damage							30
+		damage							25
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							30
+		damage							25
 	}
 }
 
@@ -222,17 +222,17 @@ damageFilter realistic_damage_hyperblaster_qwta {
 
 	type {
 		target							"target_player_all"
-		damage							90
+		damage							57
 	}
 
 	type {
 		target							"target_veh_all"
-		damage							90
+		damage							25
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							90
+		damage							25
 	}
 }
 
@@ -263,17 +263,17 @@ damageFilter realistic_damage_hyperblaster_qwta_splash {
 	
 	type {
 		target	"target_player_all"
-		damage	90
+		damage	60
 	}
 
 	type {
 		target	"target_veh_all"
-		damage	90
+		damage	30
 	}
 
 	type {
 		target	"target_deployables_all"
-		damage	90
+		damage	30
 	}
 
 	type {

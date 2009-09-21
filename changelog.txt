@@ -25,8 +25,14 @@ CHANGES:
     shields that have been deployed.
 * Railgun and Sniper Rifle infantry realistic-mode damage decreased.
   + Rather than double BaseETQW damages, they're simply +20 each.
+* Matched the Quake4-style Hyperblaster's damages to the BaseETQW
+  Hyperblaster's in response to player feedback. Changed the realistic
+  damages for the Quake4-style Hyperblaster to be double for the splash
+  damage, rather than triple.
 
 BUG FIXES:
+* Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
+  vehicles and deployables.
 
 
 QWTA v0.3.2:
