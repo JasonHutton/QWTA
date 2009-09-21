@@ -8102,15 +8102,8 @@ bool idEntity::AddBurnTime( idEntity *attacker, int addTime ) {
 		return false;
 	}
 
-	/*int newBurnTime = burnTime - burnResistThreshold - gameLocal.time;
-	if ( newBurnTime > 0 ) {
-		return SetBurnTime( attacker, newBurnTime + addTime );
-	} else {
-		return SetBurnTime( attacker, addTime );
-	}*/
-
 	bool wasBurning = IsBurning();
-	//burnTime += addTime;
+
 	if ( burnTime > gameLocal.time ) {
 		burnTime += addTime;
 	} else {
@@ -8121,8 +8114,6 @@ bool idEntity::AddBurnTime( idEntity *attacker, int addTime ) {
 		burnTime = gameLocal.time + burnTimeMax;
 	}
 	burnAttacker = attacker;
-
-	gameLocal.Printf("burnTime: %i threshold: %i time: %i adjusted burnTime: %f\n", burnTime, burnResistThreshold, gameLocal.time, MS2SEC(burnTime - gameLocal.time));
 
 	if ( burnTime > gameLocal.time + burnResistThreshold ) {
 		CancelEvents( &EV_BurningChanged );
