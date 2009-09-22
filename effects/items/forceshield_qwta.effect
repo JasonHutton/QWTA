@@ -1,0 +1,47 @@
+effect effects/items/forceshield_absorb
+{
+	size	177
+
+	spawner "sparkles"
+	{
+		count		30,40
+		locked
+
+		sprite
+		{
+			duration	1,2
+			blend	add
+			persist
+			material	"textures/particles/sparks/sparkflash03b"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere 0,-100,-100,100,100,100 surface }
+				velocity { box -20,-20,-20,-20,20,20 }
+				friction { point 0,200,200 }
+				size { point 30,30 }
+				tint { point 0.682353,0.184314,0.0705882 }
+				fade { point 0.5 }
+			}
+
+			motion
+			{
+				size { envelope senetable3 count 4,4 }
+				tint { envelope bathroomtable }
+				fade { envelope linear }
+				angle { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 10,10 }
+				tint { point 0.592157,0.301961,0.0823529 }
+				rotate { point 0.5 relative }
+			}
+			lineHit
+		}
+	}
+}
+
