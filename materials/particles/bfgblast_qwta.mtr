@@ -67,3 +67,18 @@ material textures/effects/weapons/bfgballblast
 		vertexcolor
 	}
 }
+
+material textures/effects/weapons/bfgballblast2
+{
+	noatmosphere
+	noshadows
+	translucent
+	discrete
+	nonsolid
+	twosided
+	{ 
+		blend add
+		map clamp textures/effects/weapons/bfgballblast
+		vertexcolor
+	}
+}
