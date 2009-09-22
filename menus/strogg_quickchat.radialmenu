@@ -182,8 +182,8 @@ radialMenuDef strogg/quickchat/vehicles/vehicledrops {
 	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_hog",		"H",	"ContextCheckVehicleDrop", "deployobject_hog quickchat/vehicles/vehicledrops/nv_hog" )
 	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_desecrator",	"D",	"ContextCheckVehicleDrop", "deployobject_desecrator quickchat/vehicles/vehicledrops/nv_desecrator" )
 	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_cyclops",	"C",	"ContextCheckVehicleDrop", "deployobject_goliath quickchat/vehicles/vehicledrops/nv_cyclops" )
-	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_tormentor",	"T",	"ContextCheckVehicleDrop", "deployobject_hornet quickchat/vehicles/vehicledrops/nv_tormentor" )
-	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_abaddon",	"T",	"ContextCheckVehicleDrop", "deployobject_abaddon quickchat/vehicles/vehicledrops/nv_abaddon" )
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_abaddon",	"A",	"ContextCheckVehicleDrop", "deployobject_abaddon quickchat/vehicles/vehicledrops/nv_abaddon" )
+	_chat_item_script( "strogg", "vehicles/vehicledrops/nv_tormentor",	"T",	"ContextCheckVehicleDrop", "deployobject_hornet quickchat/vehicles/vehicledrops/nv_tormentor" )	
 }
 
 radialMenuDef strogg/quickchat/enemy {
