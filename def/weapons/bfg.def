@@ -40,7 +40,8 @@ entityDef projectile_bfg {
 
 	"snd_launch"					"sounds/deployables/ssm/launch"
 	"fx_trail"						"effects/weapons/bfg/fly"
-	"fx_explode"					"effects/weapons/bfg/explode"
+	//"fx_explode"					"effects/weapons/bfg/explode"
+	"fx_explode"					"effects/weapons/bfg/explode_default"
 	"fx_explode_water"				"effects/water/explosion"
 	"fx_explode_water_interior"		"effects/water/explosion_interior"
 	
