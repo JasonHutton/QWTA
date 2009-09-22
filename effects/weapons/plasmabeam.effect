@@ -523,9 +523,8 @@ effect effects/weapons/plasmabeam/impact_burn
 			lineHit
 		}
 	}
-	emitter "rain smoke spray"
+	spawner "rain smoke spray"
 	{
-		duration	0.5,0.5
 		count		10,10
 		attenuateEmitter
 		attenuation	250,300
@@ -648,9 +647,8 @@ effect effects/weapons/plasmabeam/impact_burn
 			lineHit
 		}
 	}
-	emitter "spray_flat6"
+	spawner "spray_flat6"
 	{
-		duration	0.5,0.5
 		count		2,5
 		useMaterialColor
 		attenuateEmitter
@@ -689,9 +687,8 @@ effect effects/weapons/plasmabeam/impact_burn
 			lineHit
 		}
 	}
-	emitter "spray_flat3"
+	spawner "spray_flat3"
 	{
-		duration	0.5,0.5
 		count		2,2
 		useMaterialColor
 		attenuateEmitter
@@ -729,7 +726,7 @@ effect effects/weapons/plasmabeam/impact_burn
 	}
 	emitter "warp3"
 	{
-		duration	0.5,0.5
+		duration	0.2,0.2
 		density		2,2
 		locked
 		attenuateEmitter
@@ -764,9 +761,8 @@ effect effects/weapons/plasmabeam/impact_burn
 			lineHit
 		}
 	}
-	emitter "unnamed3"
+	spawner "unnamed3"
 	{
-		duration	0.5,0.5
 		count		5,5
 		attenuateEmitter
 		attenuation	250,300
@@ -802,9 +798,8 @@ effect effects/weapons/plasmabeam/impact_burn
 			lineHit
 		}
 	}
-	emitter "unnamed4"
+	spawner "unnamed4"
 	{
-		duration	0.5,0.5
 		count		2,5
 		attenuateEmitter
 		attenuation	250,300
@@ -841,6 +836,8 @@ effect effects/weapons/plasmabeam/impact_burn
 		}
 	}
 }
+
+
 
 
 
