@@ -1,6 +1,6 @@
 effect effects/weapons/bfg/fly
 {
-	size	169
+	size	347
 
 	spawner "ball"
 	{
@@ -132,7 +132,7 @@ effect effects/weapons/bfg/fly
 	}
 	emitter "trail"
 	{
-		duration	1,1
+		duration	0.5,0.5
 		count		20,20
 
 		sprite
@@ -172,9 +172,29 @@ effect effects/weapons/bfg/fly
 	{
 		soundShader	"sounds/weapons/bfg/fly"
 	}
+	light "light"
+	{
+		locked
+		constant
+
+		light
+		{
+			duration	1,1
+			blend	add
+			shadows
+			specular
+			material	"lights/round"
+			trailRepeat	1
+
+			start
+			{
+				size { point 200,200,200 }
+				tint { point 0,1,0 }
+			}
+			lineHit
+		}
+	}
 }
-
-
 
 effect effects/weapons/bfg/explode
 {
@@ -258,7 +278,7 @@ effect effects/weapons/bfg/explode
 
 			end
 			{
-				size { point 160,160 }
+				size { point 250,250 }
 			}
 			lineHit
 		}
@@ -295,7 +315,7 @@ effect effects/weapons/bfg/explode
 
 			end
 			{
-				size { point 160,160 }
+				size { point 250,250 }
 			}
 			lineHit
 		}
@@ -321,7 +341,7 @@ effect effects/weapons/bfg/explode
 			{
 				position { sphere -40,-40,-40,40,40,40 surface }
 				size { box 20,30 }
-				length { box 180,0,0,200,0,0 }
+				length { box 210,0,0,300,0,0 }
 			}
 
 			motion
@@ -354,7 +374,7 @@ effect effects/weapons/bfg/explode
 			{
 				position { line -20,-20,-20,20,20,20 }
 				velocity { box -20,-20,-20,20,20,20 }
-				size { point 60,60 }
+				size { point 80,80 }
 				tint { point 0,0.501961,0 }
 			}
 
@@ -366,7 +386,7 @@ effect effects/weapons/bfg/explode
 
 			end
 			{
-				size { point 80,80 }
+				size { point 100,100 }
 			}
 			lineHit
 		}
@@ -388,7 +408,7 @@ effect effects/weapons/bfg/explode
 			{
 				position { sphere -10,-10,-10,10,10,10 }
 				velocity { box -20,-20,-20,20,20,20 }
-				size { box 30,30,50,50 }
+				size { box 40,40,60,60 }
 				fade { point 0.6 }
 				rotate { box 0,0.5 }
 			}
@@ -401,7 +421,7 @@ effect effects/weapons/bfg/explode
 
 			end
 			{
-				size { box 80,80,100,100 }
+				size { box 120,120,180,180 }
 			}
 			lineHit
 		}
@@ -419,7 +439,7 @@ effect effects/weapons/bfg/explode
 
 			start
 			{
-				size { point 20,20 }
+				size { point 60,60 }
 				fade { point 0.6 }
 				rotate { box -0.277778,0.277778 }
 			}
@@ -432,7 +452,7 @@ effect effects/weapons/bfg/explode
 
 			end
 			{
-				size { point 60,60 }
+				size { point 100,100 }
 				rotate { point 0.555556 relative }
 			}
 			lineHit
@@ -466,12 +486,12 @@ effect effects/weapons/bfg/explode
 			lineHit
 		}
 	}
-	spawner "shockwaveX"
+	spawner "shockwaveXY"
 	{
 		count		1,1
 		locked
 
-		oriented
+		sprite
 		{
 			duration	1,1
 			blend	add
@@ -480,74 +500,7 @@ effect effects/weapons/bfg/explode
 
 			start
 			{
-				position { point 1,0,0 }
-				size { point 40,40 }
-				tint { point 0,1,0 }
-				rotate { point 0.25,0.25,0 }
-			}
-
-			motion
-			{
-				size { envelope linear }
-				fade { envelope linear }
-			}
-
-			end
-			{
-				size { point 400,400 }
-			}
-			lineHit
-		}
-	}
-	spawner "shockwaveY"
-	{
-		count		1,1
-		locked
-
-		oriented
-		{
-			duration	1,1
-			blend	add
-			material	"textures/effects/weapons/bfgballblast"
-			trailRepeat	1
-
-			start
-			{
-				position { point 1,0,0 }
-				size { point 40,40 }
-				tint { point 0,1,0 }
-				rotate { point 0,0.25,0 }
-			}
-
-			motion
-			{
-				size { envelope linear }
-				fade { envelope linear }
-			}
-
-			end
-			{
-				size { point 400,400 }
-			}
-			lineHit
-		}
-	}
-	spawner "shockwaveZ"
-	{
-		count		1,1
-		locked
-
-		oriented
-		{
-			duration	1,1
-			blend	add
-			material	"textures/effects/weapons/bfgballblast"
-			trailRepeat	1
-
-			start
-			{
-				position { point 1,0,0 }
-				size { point 40,40 }
+				size { point 80,80 }
 				tint { point 0,1,0 }
 			}
 
@@ -559,12 +512,45 @@ effect effects/weapons/bfg/explode
 
 			end
 			{
-				size { point 400,400 }
+				size { point 600,600 }
 			}
 			lineHit
 		}
 	}
-}effect effects/weapons/bfg/beam
+	light "light"
+	{
+		locked
+
+		light
+		{
+			duration	1,1
+			blend	add
+			shadows
+			specular
+			material	"lights/round"
+			trailRepeat	1
+
+			start
+			{
+				size { point 500,500,500 }
+				tint { point 0,1,0 }
+			}
+
+			motion
+			{
+				size { envelope concavefade }
+			}
+
+			end
+			{
+				size { point 150,150,150 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/bfg/beam
 {
 	size	2054
 
@@ -596,10 +582,7 @@ effect effects/weapons/bfg/explode
 			lineHit
 		}
 	}
-}
-
-
-effect effects/weapons/bfg/beam_impact
+}effect effects/weapons/bfg/beam_impact
 {
 	size	57
 
@@ -648,12 +631,12 @@ effect effects/weapons/bfg/beam_impact
 	emitter "corecloud"
 	{
 		duration	0.5,0.5
-		count		3,3
+		count		6,6
 		locked
 
 		sprite
 		{
-			duration	1,1
+			duration	2,2
 			blend	add
 			persist
 			material	"textures/effects/weapons/smokepuff"
@@ -684,6 +667,8 @@ effect effects/weapons/bfg/beam_impact
 		soundShader	"sounds/weapons/bfg/arc"
 	}
 }
+
+
 
 effect effects/weapons/bfg/bfg_effect
 {
@@ -983,17 +968,61 @@ effect effects/weapons/bfg/charge_local
 	}
 }effect effects/weapons/bfg/muzzle_charge
 {
-	size	126
+	size	260
 
 	emitter "trail"
 	{
-		start		1.5,1.5
+		start		2,2
 		duration	1,1
 		count		20,20
 
 		sprite
 		{
-			duration	1,1
+			duration	0.75,0.75
+			blend	add
+			persist
+			material	"textures/effects/weapons/plasma1"
+			trailRepeat	1
+
+			start
+			{
+				position { line -8,-8,-8,8,8,8 }
+				velocity { point 100,0,0 }
+				friction { point -50,0,0 }
+				size { point 5,5 }
+				tint { point 0.501961,1,0.501961 }
+				fade { point 0.6 }
+				offset { point -5,0,0 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope linear }
+				fade { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 80,80 }
+				tint { point 0,1,0 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "trailfixed"
+	{
+		start		1.75,1.75
+		duration	0.75,0.75
+		count		20,20
+		locked
+
+		sprite
+		{
+			duration	0.75,0.75
 			blend	add
 			persist
 			material	"textures/effects/weapons/plasma1"
@@ -1094,7 +1123,7 @@ effect effects/weapons/bfg/charge_local
 	spawner "sparks"
 	{
 		detail		0.5
-		count		30,30
+		count		30,60
 		locked
 		attenuateEmitter
 		attenuation	1024,4096
@@ -1141,7 +1170,7 @@ effect effects/weapons/bfg/charge_local
 	{
 		detail		0.5
 		start		1,1
-		count		30,30
+		count		30,60
 		locked
 		attenuateEmitter
 		attenuation	1024,4096
@@ -1157,7 +1186,7 @@ effect effects/weapons/bfg/charge_local
 			trailRepeat	1
 			trailType	burn
 			trailTime	3,3
-			trailCount	30,30
+			trailCount	60,60
 
 			start
 			{
@@ -1191,7 +1220,7 @@ effect effects/weapons/bfg/charge_local
 	{
 		detail		0.5
 		start		0.5,0.5
-		count		30,30
+		count		30,60
 		locked
 		attenuateEmitter
 		attenuation	1024,4096
@@ -1230,6 +1259,37 @@ effect effects/weapons/bfg/charge_local
 				tint { point 0,1,0 }
 				fade { point 1 }
 				rotate { point -0.277778 }
+			}
+			lineHit
+		}
+	}
+	light "light"
+	{
+		locked
+
+		light
+		{
+			duration	3.2,3.2
+			blend	add
+			shadows
+			specular
+			material	"lights/round"
+			trailRepeat	1
+
+			start
+			{
+				size { point 50,50,50 }
+				tint { point 0,1,0 }
+			}
+
+			motion
+			{
+				size { envelope exp_x2 }
+			}
+
+			end
+			{
+				size { point 150,150,150 }
 			}
 			lineHit
 		}
@@ -1451,12 +1511,12 @@ effect effects/weapons/bfg/muzzle_fire
 	}
 	emitter "trail"
 	{
-		duration	1,1
+		duration	0.5,0.5
 		count		20,20
 
 		sprite
 		{
-			duration	2,2
+			duration	1.5,1.5
 			blend	add
 			persist
 			material	"textures/effects/weapons/plasma1"
@@ -1467,6 +1527,49 @@ effect effects/weapons/bfg/muzzle_fire
 			{
 				position { sphere -16,-16,-16,16,16,16 }
 				velocity { point 80,0,0 }
+				size { point 80,80 }
+				tint { point 0.501961,1,0.501961 }
+				fade { point 0.6 }
+				offset { point -5,0,0 }
+				rotate { box 0,0.277778 }
+			}
+
+			motion
+			{
+				size { envelope explosion_cloud }
+				tint { envelope linear }
+				fade { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 40,40 }
+				tint { point 0,1,0 }
+				rotate { box -0.000694444,0.000694444 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "trailfixed"
+	{
+		duration	0.5,0.5
+		count		20,20
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			persist
+			material	"textures/effects/weapons/plasma1"
+			generatedNormal
+			trailRepeat	1
+
+			start
+			{
+				position { sphere -16,-16,-16,16,16,16 }
+				velocity { point 40,0,0 }
 				size { point 80,80 }
 				tint { point 0.501961,1,0.501961 }
 				fade { point 0.6 }
@@ -1521,7 +1624,40 @@ effect effects/weapons/bfg/muzzle_fire
 			lineHit
 		}
 	}
+	light "light"
+	{
+		locked
+
+		light
+		{
+			duration	1,1
+			blend	add
+			shadows
+			specular
+			material	"lights/round"
+			trailRepeat	1
+
+			start
+			{
+				size { point 300,300,300 }
+				tint { point 0,1,0 }
+			}
+
+			motion
+			{
+				size { envelope concavefade }
+			}
+
+			end
+			{
+				size { point 150,150,150 }
+			}
+			lineHit
+		}
+	}
 }
+
+
 
 
 
