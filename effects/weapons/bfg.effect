@@ -194,9 +194,7 @@ effect effects/weapons/bfg/fly
 			lineHit
 		}
 	}
-}
-
-effect effects/weapons/bfg/explode
+}effect effects/weapons/bfg/explode
 {
 	size	2075
 
@@ -486,20 +484,20 @@ effect effects/weapons/bfg/explode
 			lineHit
 		}
 	}
-	spawner "shockwaveXY"
+	spawner "shockwaveX"
 	{
 		count		1,1
 		locked
 
-		sprite
+		oriented
 		{
 			duration	1,1
-			blend	add
-			material	"textures/effects/weapons/bfgballblast"
+			material	"textures/effects/weapons/bfgballblast2"
 			trailRepeat	1
 
 			start
 			{
+				position { point 1,0,0 }
 				size { point 80,80 }
 				tint { point 0,1,0 }
 			}
@@ -507,7 +505,68 @@ effect effects/weapons/bfg/explode
 			motion
 			{
 				size { envelope linear }
-				fade { envelope linear }
+			}
+
+			end
+			{
+				size { point 600,600 }
+			}
+			lineHit
+		}
+	}
+	spawner "shockwaveY"
+	{
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	1,1
+			material	"textures/effects/weapons/bfgballblast2"
+			trailRepeat	1
+
+			start
+			{
+				position { point 1,0,0 }
+				size { point 80,80 }
+				tint { point 0,1,0 }
+				rotate { point 0,0.25,0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+			}
+
+			end
+			{
+				size { point 600,600 }
+			}
+			lineHit
+		}
+	}
+	spawner "shockwaveZ"
+	{
+		count		1,1
+		locked
+
+		oriented
+		{
+			duration	1,1
+			material	"textures/effects/weapons/bfgballblast2"
+			trailRepeat	1
+
+			start
+			{
+				position { point 1,0,0 }
+				size { point 80,80 }
+				tint { point 0,1,0 }
+				rotate { point 0.25,0,0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
 			}
 
 			end
@@ -549,6 +608,8 @@ effect effects/weapons/bfg/explode
 		}
 	}
 }
+
+
 
 effect effects/weapons/bfg/beam
 {
