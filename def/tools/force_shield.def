@@ -53,6 +53,10 @@ model viewmodel_force_shield {
 		frame 1						effect fx_fire joint10
 		frame 2						sound_channel snd_weapon_fire snd_fire
 	}
+	anim altfire 					models/tools/force_shield/fire.md5anim {
+		frame 1						effect fx_fire joint10
+		frame 2						sound_channel snd_weapon_fire snd_altfire
+	}
 	anim putaway 				models/tools/force_shield/lower.md5anim {
 		frame	1					sound_channel snd_weapon_foley snd_lower
 	}
@@ -136,6 +140,8 @@ invItemDef inventory/tools/force_shield {
 
 		"def_forcefield"			"projectiles/force_shield"
 		"def_forcefield_mega"		"projectiles/force_shield_mega"
+		"def_forcefield_qwta"		"projectiles/force_shield_qwta"
+		"def_forcefield_mega_qwta"	"projectiles/force_shield_mega_qwta"
 
 		"range_damage"				"1024"
 
@@ -145,6 +151,7 @@ invItemDef inventory/tools/force_shield {
 		"snd_lower"					"sounds/tools/forceshield/lower"
 		"snd_fire"					"sounds/tools/forceshield/toss"
 		"snd_need_charge"			"sounds/ui/main/cannot"
+		"snd_altfire"				"sounds/tools/forceshield/absorb"
 
 		"fx_loop"					"effects/items/forceshield_idle"
 		"fx_loop_world"				"effects/items/forceshield_idle_world"

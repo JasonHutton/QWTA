@@ -4,6 +4,12 @@ tool_force_shield.script
 
 ***********************************************************************/
 
+object force_shield_qwta : force_shield {
+	void		preinit();
+
+	void		DoAbsorbEffect( vector direction );
+}
+
 object tool_force_shield_qwta : tool_force_shield {
 	void		preinit();
 	void		init();
@@ -182,8 +188,14 @@ void tool_force_shield_qwta::Fire() {
 		myPlayer.EnergyBar_Remove( chargePerUse );
 		
 		string defName = "def_forcefield";
+		if ( g_useShieldAbsorber.getBoolValue() ) {
+			defName = "def_forcefield_qwta";
+		}
 		if ( myPlayer.getProficiency( g_proficiencyOppressor ) >= 2 ) {
 			defName = "def_forcefield_mega";
+			if ( g_useShieldAbsorber.getBoolValue() ) {
+				defName = "def_forcefield_mega_qwta";
+			}
 		}
 
 		entity shieldProj = sys.spawn( getKey( defName ) );
@@ -223,7 +235,7 @@ void tool_force_shield_qwta::Fire() {
 }
 
 void tool_force_shield_qwta::AltFire() {
-	playAnim( ANIMCHANNEL_ALL, "fire" );
+	playAnim( ANIMCHANNEL_ALL, "altfire" );
 	fired();
 	//sys.wait( 0.1 );
 
@@ -237,6 +249,11 @@ void tool_force_shield_qwta::AltFire() {
 			if ( ent != $null_entity ) {
 				float health = ent.getHealth();
 				float maxHealth = ent.getMaxHealth();
+				force_shield_qwta ent_qwta = ent;
+				if ( ent_qwta != $null_entity ) {
+					ent_qwta.DoAbsorbEffect( forward );
+				}
+				sys.waitFrame();
 				ent.OnKilled( self, myPlayer, shieldAbsorb, forward, 0.f );
 				myPlayer.EnergyBar_Add( chargePerUse * ( health / maxHealth ) / 2.f );
 			}
@@ -327,5 +344,182 @@ void tool_force_shield_qwta::StopRechargeEffect() {
 		stopEffect( "fx_recharge2" );
 		stopEffect( "fx_recharge3" );
 		rechargeEffectOn = false;
+	}
+}
+
+/***********************************************************************
+
+The force_shield itself
+
+***********************************************************************/
+
+void force_shield_qwta::preinit() {
+}
+
+void force_shield_qwta::DoAbsorbEffect( vector direction ) {
+	playEffect( "fx_absorb", "", 0 );
+	
+}
+
+
+/***********************************************************************
+
+The projectile that spawns the force_shield itself
+
+***********************************************************************/
+
+object projectile_forceshield_qwta {
+	void			preinit();
+	void			init();
+	void			destroy();
+	void			syncFields();
+	
+	void			Idle();
+
+	void			OnTouch( entity other, object traceObject );
+	float			OnCollide( object traceObject, vector velocity, float bodyId );
+	void			OnShieldProjSync();
+	void			OnUnbind();
+	void			OnPostThink();
+
+	entity			owner;
+	force_shield	shieldProj;
+	boolean			placedShield;
+	vector			launchAngles;
+	
+	void			vSetOwner( entity o );
+};
+
+void projectile_forceshield_qwta::preinit() {
+}
+
+void projectile_forceshield_qwta::init() {
+	placedShield = false;
+	
+	setContents( 0 );
+	setClipmask( MASK_SHOT_RENDERMODEL | MASK_PROJECTILE );
+
+	setState( "Idle" );
+}
+
+void projectile_forceshield_qwta::vSetOwner( entity o ) {
+	owner = o;
+	
+	launchAngles = owner.getViewAngles();
+}
+
+void projectile_forceshield_qwta::destroy() {
+}
+
+void projectile_forceshield_qwta::syncFields() {
+	syncBroadcast( "shieldProj" );
+	syncCallback( "shieldProj", "OnShieldProjSync" );
+}
+
+void projectile_forceshield_qwta::OnShieldProjSync() {
+	shieldProj.bind( self );
+	placedShield = true;
+}
+
+void projectile_forceshield_qwta::Idle() {
+	if ( !sys.isClient() ) {
+		float dieTime = sys.getTime() + 5.0f;
+
+		while ( true ) {
+			if ( shieldProj == $null_entity && placedShield ) {
+				remove();
+			}
+			if ( !placedShield && sys.getTime() > dieTime ) {
+				remove();
+			}
+			
+			sys.waitFrame();
+		}
+	}
+}
+
+void projectile_forceshield_qwta::OnUnbind() {
+	if ( !sys.isClient() ) {
+		if ( shieldProj != $null_entity ) {
+			shieldProj.remove();
+		}
+	}
+}
+
+void projectile_forceshield_qwta::OnTouch( entity other, object traceObject ) {
+}
+
+// NOTE: If this returns true, all momentum on the object will be cleared, otherwise, it will bounce
+float projectile_forceshield_qwta::OnCollide( object traceObject, vector velocity, float bodyId ) {
+	float shaderFlags;
+	entity collisionEnt;
+
+	shaderFlags = traceObject.getTraceSurfaceFlags();
+	if ( shaderFlags & SURF_NOIMPACT || shaderFlags & SURF_NOPLANT ) {
+		return false;
+	}
+
+	collisionEnt = traceObject.getTraceEntity();
+	
+	// don't let it stick to a player or a vehicle
+	player collisionPlayer = collisionEnt;
+	if ( collisionPlayer != $null_entity ) {
+		return false;
+	}
+	
+	if ( collisionEnt.vDisablePlantCharge() ) {
+		return false;
+	}
+
+	// push the view out of the surface a bit
+	vector normal = traceObject.getTraceNormal();
+	
+	// align to the surface normal
+	alignToAxis( normal, Z_AXIS );
+	
+	if ( !sys.isClient() ) {
+		freeze( 1.f );
+		clearContacts();
+		putToRest();
+		if ( collisionEnt != $null_entity ) {
+			string joint = traceObject.getTraceJoint();
+			float jointHandle = collisionEnt.getJointHandle( joint );
+			if ( jointHandle != INVALID_JOINT ) {
+				bindToJoint( collisionEnt, joint, 1 );
+			} else {
+				bind( collisionEnt );
+			}
+		}
+		
+		// create the fancy shield
+		shieldProj = sys.spawn( getKey( "def_shield" ) );
+		shieldProj.setWorldOrigin( getWorldOrigin() );
+		
+		launchAngles_x = 0;
+		launchAngles_z = 0;
+		vector forward = sys.angToForward( launchAngles );	
+		vector newAngles = launchAngles;
+		
+		vector origin = getWorldOrigin();
+		
+		float dot = forward * normal; 
+		if ( forward * normal < -0.707 ) {
+			// the forward that the player wanted is kind of embedded into the surface
+			// so align it with the normal of the surface
+			newAngles = sys.vecToAngles( normal );
+		}
+
+		shieldProj.setAngles( newAngles );
+		shieldProj.owner = owner;
+		shieldProj.setGameTeam( owner.getGameTeam() );
+		OnShieldProjSync();
+	}
+	
+	return true;
+}
+
+void projectile_forceshield_qwta::OnPostThink() {
+	if ( isBound() ) {
+		forceRunPhysics();
 	}
 }
