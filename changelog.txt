@@ -33,6 +33,8 @@ CHANGES:
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
   vehicles and deployables.
+* Adjusted the sound shaders of the BFG and the DMC to more appropriate
+  volumes and distances.
 
 
 QWTA v0.3.2:
