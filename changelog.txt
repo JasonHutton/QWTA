@@ -29,11 +29,12 @@ CHANGES:
   Hyperblaster's in response to player feedback. Changed the realistic
   damages for the Quake4-style Hyperblaster to be double for the splash
   damage, rather than triple.
+* Improvements to the BFG10k's visual effects.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
   vehicles and deployables.
-* Adjusted the sound shaders of the BFG and the DMC to more appropriate
+* Adjusted the sound shaders of the BFG10k and the DMC to more appropriate
   volumes and distances.
 
 
