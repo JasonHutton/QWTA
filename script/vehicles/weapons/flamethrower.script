@@ -106,12 +106,28 @@ void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
 			}
 		}
 		
-		float scale = ( distance / streamRadius );
-		if ( scale < minDamagePercent ) {
-			scale = minDamagePercent;
+		float scale = 1.f;
+		player testPlayer = ent;
+		vehicle_base testVehicle = ent;
+		if ( testPlayer != $null_entity ) {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercentPlayers ) {
+				scale = minDamagePercentPlayers;
+			}
+			scale = 1.f - scale;
+		} else if ( testVehicle != $null_entity ) {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercentVehicles ) {
+				scale = minDamagePercentVehicles;
+			}
+			scale = 1.f - scale;
+		} else {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercent ) {
+				scale = minDamagePercent;
+			}
+			scale = 1.f - scale;
 		}
-		
-		scale = 1.f - scale;
 		
 		if ( doDamage && sys.getTime() > nextDamageTime ) {
 			nextDamageTime = sys.getTime() + damageRate;

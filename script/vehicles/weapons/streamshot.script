@@ -51,6 +51,8 @@ object vehicle_weapon_streamshot : vehicle_weapon_base {
 	float				muzzleFlashInterval;
 	
 	float				minDamagePercent;
+	float				minDamagePercentPlayers;
+	float				minDamagePercentVehicles;
 	
 	float				weaponSoundChannel;
 }
@@ -91,6 +93,8 @@ void vehicle_weapon_streamshot::preinit() {
 	muzzleFlashInterval		= vehicle.getFloatKeyWithDefault( "muzzle_flash_interval", 0.5f );
 	
 	minDamagePercent		= ( vehicle.getFloatKeyWithDefault( "min_damage_percent", 0.f ) / 100.f );
+	minDamagePercentPlayers = ( vehicle.getFloatKeyWithDefault( "min_damage_percent_players", 0.f ) / 100.f );
+	minDamagePercentVehicles = ( vehicle.getFloatKeyWithDefault( "min_damage_percent_vehicles", 0.f ) / 100.f );
 	
 	weaponSoundChannel		= vehicle.getFloatKeyWithDefault( "weapon_sound_channel", SND_WEAPON_FIRE );
 }
@@ -269,12 +273,30 @@ void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 			}
 		}
 		
-		float scale = ( distance / streamRadius );
-		if ( scale < minDamagePercent ) {
-			scale = minDamagePercent;
+				
+		float scale = 1.f;
+		player testPlayer = ent;
+		vehicle_base testVehicle = ent;
+		if ( testPlayer != $null_entity ) {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercentPlayers ) {
+				scale = minDamagePercentPlayers;
+			}
+			scale = 1.f - scale;
+		} else if ( testVehicle != $null_entity ) {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercentVehicles ) {
+				scale = minDamagePercentVehicles;
+			}
+			scale = 1.f - scale;
+		} else {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercent ) {
+				scale = minDamagePercent;
+			}
+			scale = 1.f - scale;
 		}
-		scale = 1.f - scale;
-		
+
 		if ( doDamage ) {
 			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
 		}

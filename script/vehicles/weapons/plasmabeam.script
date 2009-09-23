@@ -44,12 +44,28 @@ void vehicle_weapon_plasmabeam::DoStream( boolean doDamage ) {
 		if ( ent != $null_entity ) {
 			
 			float distance = sys.vecLength( startPos - endPos );
-			float scale = ( distance / range );
-			if ( scale < minDamagePercent ) {
-				scale = minDamagePercent;
+			float scale = 1.f;
+			player testPlayer = ent;
+			vehicle_base testVehicle = ent;
+			if ( testPlayer != $null_entity ) {
+				scale = ( distance / range );
+				if ( scale < minDamagePercentPlayers ) {
+					scale = minDamagePercentPlayers;
+				}
+				scale = 1.f - scale;
+			} else if ( testVehicle != $null_entity ) {
+				scale = ( distance / range );
+				if ( scale < minDamagePercentVehicles ) {
+					scale = minDamagePercentVehicles;
+				}
+				scale = 1.f - scale;
+			} else {
+				scale = ( distance / range );
+				if ( scale < minDamagePercent ) {
+					scale = minDamagePercent;
+				}
+				scale = 1.f - scale;
 			}
-			
-			scale = 1.f - scale;
 			
 			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
 		}
