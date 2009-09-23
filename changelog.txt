@@ -36,6 +36,7 @@ BUG FIXES:
   vehicles and deployables.
 * Adjusted the sound shaders of the BFG10k and the DMC to more appropriate
   volumes and distances.
+* Fixed a bug with class limit autoadjuster using GDF values for Strogg team.
 
 
 QWTA v0.3.2:
