@@ -285,11 +285,11 @@ void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 void vehicle_weapon_streamshot::UpdateStreamEffect( vector endOrigin ) {
 	
 	if ( !streamEffectHandle ) {
-		streamEffectHandle = vehicle.playJointEffectViewSuppress( "fx_flamethrower_stream", jointHandle, 1, 0 );
+		streamEffectHandle = vehicle.playJointEffectViewSuppress( "fx_stream_fire", jointHandle, 1, 0 );
 	}
 
 	if( sys.getTime() > nextFiringSound ) {
-		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_flamethrower_stream", SND_WEAPON_FIRE );
+		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_stream_fire_loop", SND_WEAPON_FIRE );
 	}
 }
 

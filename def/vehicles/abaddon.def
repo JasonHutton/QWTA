@@ -214,8 +214,8 @@ entityDef vehicle_abaddon {
 	
 	"validate_drop"					"1"
 	
-	"fx_flamethrower_stream"		"effects/weapons/flamethrower/stream"
-	"snd_flamethrower_stream"		"sounds/weapons/flamethrower/stream"
+	"fx_stream_fire"				"effects/weapons/flamethrower/stream"
+	"snd_stream_fire_loop"			"sounds/weapons/flamethrower/stream"
 	"snd_plasmabeam_fire_loop"		"sounds/weapons/plasmabeam/fire_loop"
 	"fx_plasmabeam_fire"			"effects/weapons/plasmabeam/fire"
 	"fx_plasmabeam_burn"			"effects/weapons/plasmabeam/impact_burn"
