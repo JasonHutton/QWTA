@@ -4354,10 +4354,29 @@ int idBotThreadData::FindDeclIndexForDeployable( const playerTeamTypes_t team, i
 
 /*
 ================
+idBotThreadData::GetTeamForVehicleDrop
+================
+*/
+playerTeamTypes_t idBotThreadData::GetTeamForVehicleDrop(vDeployType_t vehicle) {
+	playerTeamTypes_t team = NOTEAM;
+	if ( vehicle > VD_NONE ) {
+		team = GDF;
+		if ( vehicle >= VD_ICARUS ) {
+			team = STROGG;
+			if ( vehicle >= VD_MAX ) {
+				team = NOTEAM;
+			}
+		}
+	}
+	return team;
+}
+
+/*
+================
 idBotThreadData::GuessMostUsefulVehicle
 ================
 */
-vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playerTeamTypes_t team, int vehicleFlags ) {
+vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playerTeamTypes_t team, int vehicleFlags, vehicleDropData_t vehicleDropDecls[VD_MAX] ) {
 	idPlayer* player = gameLocal.GetClient(clientNum);
 	clientInfo_t& botInfo = GetGameWorldState()->clientInfo[ clientNum ];
 
@@ -4368,7 +4387,7 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 
 	int vPref[VD_MAX];
 	int highCount = 0;
-	int highIndex = 0;
+	int highIndex = VD_NONE;
 
 	for(int i = 0;i < VD_MAX;i++) {
 		vPref[i] = 0;
@@ -4393,28 +4412,31 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 		}
 		if(vehicleFlags & AIR) {
 			vPref[VD_TORMENTOR] += gameLocal.random.RandomInt(3);
-			vPref[VD_DESECRATOR] += 1;
 			vPref[VD_ICARUS] += 1;
 		}
 		if(vehicleFlags & WATER) {
 			vPref[VD_DESECRATOR] += 1;
+			vPref[VD_ABADDON] += 1;
 		}
 		if(vehicleFlags & AIR_TRANSPORT) {
-			vPref[VD_DESECRATOR] += 1;
 			vPref[VD_TORMENTOR] += 1;
 		}
 		if(vehicleFlags & GROUND_TRANSPORT) {
 			vPref[VD_HOG] += 1;
 			vPref[VD_DESECRATOR] += 1;
+			vPref[VD_ABADDON] += 1;
 		}
 		if(vehicleFlags & ALL_VEHICLES_BUT_ICARUS) {
 			vPref[VD_ICARUS] -= 5;
 		}
 		if(botInfo.classType == SOLDIER) {
-			vPref[VD_ICARUS] -= gameLocal.random.RandomInt(2);
+			vPref[VD_ICARUS] += gameLocal.random.RandomInt(2);
+			vPref[VD_HOG] += 1;
 		}
 		if(botInfo.classType == MEDIC) {
 			vPref[VD_ICARUS] -= gameLocal.random.RandomInt(2);
+			vPref[VD_DESECRATOR] += gameLocal.random.RandomInt(1);
+			vPref[VD_ABADDON] += gameLocal.random.RandomInt(1);
 		}
 		if(botInfo.classType == ENGINEER) {
 			vPref[VD_DESECRATOR] += gameLocal.random.RandomInt(1);
@@ -4422,6 +4444,7 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 			vPref[VD_ABADDON] += gameLocal.random.RandomInt(1);
 		}
 		if(botInfo.classType == FIELDOPS) {
+			vPref[VD_CYCLOPS] += gameLocal.random.RandomInt(2);
 			vPref[VD_ABADDON] += gameLocal.random.RandomInt(1);
 		}
 		if(botInfo.classType == COVERTOPS) {
@@ -4483,7 +4506,30 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 	}
 
 	for(int i = 0;i < VD_MAX;i++) {
-		if(vPref[i] > highCount) {
+		if ( vehicleDropDecls[i].declIndex == -1 ) {
+			vPref[i] = -1;
+			continue;
+		}
+		if ( g_vehicleDropsUseFE.GetBool() ) {
+			if ( vehicleDropDecls[i].forceEscalationRequired > gameLocal.GetForceEscalation() ) {
+				vPref[i] = -1;
+				continue;
+			}
+		}
+		if ( player->GetVehicleCredit() < 1.0f ) {
+			vPref[i] -= 1;	
+		}
+		if ( (i == VD_HUSKY || i == VD_ICARUS) && (vehicleFlags & PERSONAL ) ) {
+			vPref[i] += 1;
+		}
+
+		if ( vehicleDropDecls[i].creditRequired > player->GetVehicleCredit() ) {
+			vPref[i] = -1;
+		}
+	}
+
+	for(int i = 0;i < VD_MAX;i++) {
+		if(vPref[i] > 0 && vPref[i] > highCount) {
 			highIndex = i;
 			highCount = vPref[i];
 		}

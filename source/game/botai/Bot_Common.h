@@ -84,8 +84,8 @@ typedef enum vDeployType_t
 	VD_HOG,
 	VD_DESECRATOR,
 	VD_CYCLOPS,
-	VD_TORMENTOR,
 	VD_ABADDON,
+	VD_TORMENTOR,
 	VD_MAX
 };
 

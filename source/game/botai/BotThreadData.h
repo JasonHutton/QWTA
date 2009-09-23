@@ -639,6 +639,12 @@ struct sharedOutputState_t {
 	sdSafeArray< botAIOutput_t, MAX_CLIENTS > botOutput;
 };
 
+struct vehicleDropData_t {
+	int				declIndex;
+	float			creditRequired;
+	int				forceEscalationRequired;
+};
+
 class idBotThreadData {
 public:							// the following routines are called from the game thread
 		
@@ -660,7 +666,8 @@ public:							// the following routines are called from the game thread
 	void						CheckCrossHairInfo( idEntity *bot, sdCrosshairInfo &botCrossHairInfo );
 	int							FindDeclIndexForDeployable( const playerTeamTypes_t team, int deployableNum, vDeployType_t vehicleType );
 	bool						RequestDeployableAtLocation( int clientNum, bool& needPause );
-	vDeployType_t				GuessMostUsefulVDeploy(int clientNum, const playerTeamTypes_t team, int vehicleFlags );
+	playerTeamTypes_t			GetTeamForVehicleDrop(vDeployType_t vehicle);
+	vDeployType_t				GuessMostUsefulVDeploy(int clientNum, const playerTeamTypes_t team, int vehicleFlags, vehicleDropData_t vehicleDropDecls[VD_MAX] );
 
 	void						InitClientInfo( int clientNum, bool resetAll, bool leaving );
 	void						UpdateState();

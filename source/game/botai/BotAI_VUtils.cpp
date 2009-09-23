@@ -155,7 +155,18 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 
 	botThreadData.GetGameWorldState()->clientInfo[ botNum ].vDeployDelayTime = botWorld->gameLocalInfo.time + 10000 + gameLocal.random.RandomInt(40000);
 
-	vDeployType_t desiredVehicle = botThreadData.GuessMostUsefulVDeploy( botNum, botThreadData.GetGameWorldState()->clientInfo[ botNum ].team, vehicleType );
+
+	vehicleDropData_t vehicleDropDecls[VD_MAX];
+	for( int i = 0; i < VD_MAX;i++ ) {
+		vehicleDropDecls[i].declIndex = botThreadData.FindDeclIndexForDeployable( botThreadData.GetGameWorldState()->clientInfo[ botNum ].team, VDEPLOY, static_cast<vDeployType_t>(i) );
+		const sdDeclDeployableObject* object = gameLocal.declDeployableObjectType.SafeIndex( vehicleDropDecls[i].declIndex );
+		if ( object != NULL ) {
+			vehicleDropDecls[i].creditRequired = object->GetCreditRequired();
+			vehicleDropDecls[i].forceEscalationRequired = object->GetForceEscalationRequired();
+		}
+	}
+
+	vDeployType_t desiredVehicle = botThreadData.GuessMostUsefulVDeploy( botNum, botThreadData.GetGameWorldState()->clientInfo[ botNum ].team, vehicleType, vehicleDropDecls );
 	if( desiredVehicle == VD_NONE ) {
 		return -1;
 	}
