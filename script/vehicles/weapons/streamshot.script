@@ -51,6 +51,8 @@ object vehicle_weapon_streamshot : vehicle_weapon_base {
 	float				muzzleFlashInterval;
 	
 	float				minDamagePercent;
+	
+	float				weaponSoundChannel;
 }
 
 void vehicle_weapon_streamshot::preinit() {
@@ -89,6 +91,8 @@ void vehicle_weapon_streamshot::preinit() {
 	muzzleFlashInterval		= vehicle.getFloatKeyWithDefault( "muzzle_flash_interval", 0.5f );
 	
 	minDamagePercent		= ( vehicle.getFloatKeyWithDefault( "min_damage_percent", 0.f ) / 100.f );
+	
+	weaponSoundChannel		= vehicle.getFloatKeyWithDefault( "weapon_sound_channel", SND_WEAPON_FIRE );
 }
 
 void vehicle_weapon_streamshot::init() {
@@ -289,7 +293,7 @@ void vehicle_weapon_streamshot::UpdateStreamEffect( vector endOrigin ) {
 	}
 
 	if( sys.getTime() > nextFiringSound ) {
-		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_stream_fire_loop", SND_WEAPON_FIRE );
+		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_stream_fire_loop", weaponSoundChannel );
 	}
 }
 
@@ -308,7 +312,7 @@ void vehicle_weapon_streamshot::Cleanup_Base( boolean bCleanMuzzleToo ) {
 		
 	if ( vehicle != $null_entity ) {
 		vehicle.stopEffectHandle( streamEffectHandle );
-		vehicle.stopSound( SND_WEAPON_FIRE );
+		vehicle.stopSound( weaponSoundChannel );
 	}
 	streamEffectHandle = 0;
 	nextFiringSound = 0;

@@ -18,6 +18,7 @@ object vehicle_weapon_plasmabeam : vehicle_weapon_streamshot {
 void vehicle_weapon_plasmabeam::preinit() {
 	range				= getFloatKey( "range" );
 	lastEndPos			= '0 0 0';
+	weaponSoundChannel		= vehicle.getFloatKeyWithDefault( "weapon_sound_channel2", SND_WEAPON_FIRE2 );
 }
 
 void vehicle_weapon_plasmabeam::DoStream( boolean doDamage ) {
@@ -85,7 +86,7 @@ void vehicle_weapon_plasmabeam::UpdateStreamEffect( vector endOrigin ) {
 	}
 
 	if( sys.getTime() > nextFiringSound ) {
-		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_plasmabeam_fire_loop", SND_WEAPON_FIRE );
+		nextFiringSound = sys.getTime() + vehicle.startSound( "snd_plasmabeam_fire_loop", weaponSoundChannel );
 	}
 }
 
