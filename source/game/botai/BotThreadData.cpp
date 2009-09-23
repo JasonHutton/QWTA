@@ -4516,15 +4516,15 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 				continue;
 			}
 		}
+		if ( vehicleDropDecls[i].creditRequired > player->GetVehicleCredit() ) {
+			vPref[i] = -1;
+			continue;
+		}
 		if ( player->GetVehicleCredit() < 1.0f ) {
 			vPref[i] -= 1;	
 		}
 		if ( (i == VD_HUSKY || i == VD_ICARUS) && (vehicleFlags & PERSONAL ) ) {
 			vPref[i] += 1;
-		}
-
-		if ( vehicleDropDecls[i].creditRequired > player->GetVehicleCredit() ) {
-			vPref[i] = -1;
 		}
 	}
 
