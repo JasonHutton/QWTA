@@ -3880,7 +3880,12 @@ bool idPlayer::CanGetClass( const sdDeclPlayerClass* pc, const bool unchecked, c
 	}
 
 	if(!unchecked) {
-		int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), GDF);
+		sdTeamInfo* team = pc->GetTeam();
+		if ( !team ) {
+			gameLocal.Warning("idPlayer::CanGetClass() pc->GetTeam() is null!\n");
+			return false;
+		}
+		int limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), team->GetBotTeam() );
 		if( ( limit >= 0 ) && ( allowEqual ? count > limit : count >= limit ) ) {
 			return false;
 		}

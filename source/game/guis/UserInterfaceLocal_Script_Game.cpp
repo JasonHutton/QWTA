@@ -338,7 +338,7 @@ void sdUserInterfaceLocal::Script_GetRoleLimitForTeam( sdUIFunctionStack& stack 
 
 	const sdDeclPlayerClass* pc = gameLocal.declPlayerClassType[ roleName ];
 	if( pc ) {
-		limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), GDF); // QWTA fixme
+		limit = gameLocal.rules->GetRoleLimitForTeam(pc->GetPlayerClassNum(), team->GetBotTeam() );
 	}
 	
 	stack.Push( limit );
