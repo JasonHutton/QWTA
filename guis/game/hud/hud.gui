@@ -2893,6 +2893,32 @@ gui hud {
 				}
 			}
 		}
+		windowDef ammoFill3 {
+			type progress;
+
+			properties {
+				float 	position 			= 1.0f - globals.weapons.powerup;
+				string 	fillMaterial 		= "small_progress_flip";
+				rect 	rect				= 0, 14.5, 126, 14;//0, 20.5, 126, 7
+				color	foreColor			= 0,1,0,0.75;
+				float	flags				= immediate( flags | PF_DRAW_FROM_LOWER_END );
+				float	visible				= ( globals.weapons.powerup != 1.0f && globals.weapons.showPowerup == true ) || globals.gameHud.weaponReloadTime > 0 ;
+
+				float	startTime			= -1.0f;
+				float	targetTime			= -1.0f;
+			}
+			events {
+				onPropertyChanged "globals.weapons.showPowerup" "globals.gameHud.weaponReloadTime" {
+					if ( globals.weapons.showPowerup == true ) {
+						position = 1.0f - globals.weapons.powerup;
+					} else {
+						startTime	= immediate( player.gameTime );
+						targetTime	= immediate( player.gameTime + ( globals.gameHud.weaponReloadTime * 1000 ) );
+						position 	= ( ( player.gameTime - startTime ) / ( targetTime - startTime ) );
+					}
+				}
+			}
+		}
 	}
 
 	// Rank-up animation

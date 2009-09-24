@@ -1,0 +1,215 @@
+
+object vehicle_weapon_chargeshot2 : vehicle_weapon_base {
+		void		preinit();
+		void		destroy();
+
+		void 		OnSetPlayer( entity p );
+		
+		void 		OnBecomeViewWeapon();
+		void 		OnFinishViewWeapon();
+		
+		void		Idle();
+		void		AddPowerup();
+		
+		void		KillUpdatePowerup();
+		void		CreateUpdatePowerup();
+		void		UpdatePowerup();
+		
+		float		powerupTimerHandle;
+		float		powerupPerShot;
+		float		powerupLength;
+		
+		float		powerupThreadId;
+		
+		float 		jointHandle;
+		
+		string	muzzleChargeFX;
+		string	muzzleChargeSound;
+		string	muzzleChargeSoundLocal;
+		
+		handle		muzzleChargeEffectHandle;
+		float		muzzleChargeSoundTime;
+		boolean		muzzleChargeSoundPlaying;
+		float		muzzleChargeSoundLocalTime;
+		boolean		muzzleChargeSoundLocalPlaying;
+}
+
+void vehicle_weapon_chargeshot2::preinit() {	
+	powerupTimerHandle = sys.allocTargetTimer( myVehicle.getKeyWithDefault( "timer_powerup", "powerup_default" ) );
+	powerupPerShot = myVehicle.getFloatKeyWithDefault( "powerup_per_shot", 0.5f );
+	powerupLength = myVehicle.getFloatKeyWithDefault( "powerup_length", 5.0f );
+	powerupThreadId = -1;
+	
+	jointHandle			= myVehicle.getJointHandle( getKey( "muzzle" ) );
+	
+	muzzleChargeFX		= getKey( "muzzle_charge" );
+	muzzleChargeSound			= getKey( "muzzle_chargesound" );
+	muzzleChargeSoundLocal	= getKey( "muzzle_chargesound_local" );
+	
+	muzzleChargeEffectHandle = 0;
+	muzzleChargeSoundTime = 0;
+	muzzleChargeSoundPlaying = false;
+	muzzleChargeSoundLocalTime = 0;
+	muzzleChargeSoundLocalPlaying = false;
+}
+
+void vehicle_weapon_chargeshot2::destroy() {
+	if ( user == sys.getLocalViewPlayer() && user != $null_entity ) {	
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+	}
+	if ( user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		KillUpdatePowerup();
+	}
+
+	delete weaponBar;
+}
+
+void vehicle_weapon_chargeshot2::OnSetPlayer( entity p ) {
+	OnSetPlayer_Base( p );
+	
+	if( user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0 );	
+	}
+	
+	if ( /*hasHeat &&*/ user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		CreateUpdatePowerup();
+	} else {
+		KillUpdatePowerup();
+	}
+}
+
+void vehicle_weapon_chargeshot2::OnBecomeViewWeapon() {
+	SetCrosshair();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0 );
+	if ( /*hasHeat &&*/ user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		CreateUpdatePowerup();
+	}
+}
+
+void vehicle_weapon_chargeshot2::OnFinishViewWeapon() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0.f );
+	KillUpdatePowerup();
+}
+
+void vehicle_weapon_chargeshot2::Idle() {
+	SetCrosshair();
+
+	while ( true ) {
+		sys.waitFrame();
+
+		UpdateCharge();
+		
+		boolean bFiringHeld = false;
+
+		if ( user != $null_entity ) {
+			user.proxyFiringWeaponStart = false;
+			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
+				float value = sys.getTargetTimerValue( powerupTimerHandle, user );
+				//sys.print("Powerup Value is: " + value + "\n");
+				AddPowerup();
+				if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime ) {
+					bFiringHeld = true;
+					if ( !muzzleChargeEffectHandle ) {
+						muzzleChargeEffectHandle = myVehicle.playJointEffect( muzzleChargeFX, jointHandle, 0 );
+					}
+					if( user == sys.getLocalPlayer() ) {
+						if ( sys.getTime() > muzzleChargeSoundLocalTime && !muzzleChargeSoundLocalPlaying ) {
+							muzzleChargeSoundLocalTime = sys.getTime() + myVehicle.startSound( muzzleChargeSoundLocal, SND_WEAPON_FIRE_LOCAL );
+							muzzleChargeSoundLocalPlaying = true;
+						}
+					}
+					else {
+						if ( sys.getTime() > muzzleChargeSoundTime && !muzzleChargeSoundPlaying ) {
+							muzzleChargeSoundTime = sys.getTime() + myVehicle.startSound( muzzleChargeSound, SND_WEAPON_FIRE );
+							muzzleChargeSoundPlaying = true;
+						}
+					}
+/*
+					if( !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
+						user.proxyFiringWeaponStart = true;
+						if ( sys.getTime() >= reFireTime ) {
+							//setState( "Fire" );
+						}
+					}
+					else {
+						// Got emp'd mid-charge.
+					}
+					*/
+				}
+			}
+		}
+		if ( !bFiringHeld ) {
+			if ( muzzleChargeEffectHandle ) {
+				myVehicle.stopEffectHandle( muzzleChargeEffectHandle );
+				muzzleChargeEffectHandle = 0;
+			}
+			if ( user == sys.getLocalPlayer() ) {
+				myVehicle.stopSound( SND_WEAPON_FIRE_LOCAL );
+				muzzleChargeSoundLocalPlaying = false;
+			} else {
+				myVehicle.stopSound( SND_WEAPON_FIRE );
+				muzzleChargeSoundPlaying = false;
+			}
+		}
+	}
+}
+
+
+
+void vehicle_weapon_chargeshot2::AddPowerup() {
+	float powerupValue = sys.getTargetTimerValue( powerupTimerHandle, user );
+
+	if ( powerupValue < sys.getTime() ) {
+		powerupValue = sys.getTime();
+	}
+	
+	if ( powerupValue > powerupLength + sys.getTime() ) {
+		powerupValue = powerupLength + sys.getTime();
+	} else {
+		powerupValue = powerupValue + powerupPerShot;
+	}
+
+	sys.setTargetTimerValue( powerupTimerHandle, user, powerupValue );
+}
+
+void vehicle_weapon_chargeshot2::KillUpdatePowerup() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showPowerup", 0.f );
+	//sys.killThread( "UpdatePowerup_" + myVehicle.getName() );
+	if ( powerupThreadId != -1 ) {
+		sys.terminate( powerupThreadId );
+		powerupThreadId = -1;
+	}
+}
+
+void vehicle_weapon_chargeshot2::CreateUpdatePowerup() {
+	KillUpdatePowerup();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showPowerup", 1.f );
+	if ( powerupThreadId == -1 ) {
+		powerupThreadId = thread UpdatePowerup();
+	}
+}
+
+void vehicle_weapon_chargeshot2::UpdatePowerup() {
+	float powerupValue;
+	float fraction;
+
+	while ( true ) {
+		sys.waitFrame();
+
+		powerupValue = sys.getTargetTimerValue( powerupTimerHandle, user ) - sys.getTime();
+		if ( powerupValue < 0 ) {
+			powerupValue = 0;
+		} else if ( powerupValue > powerupLength ) {
+			powerupValue = powerupLength;
+		}
+
+		fraction = 1 - ( powerupValue / powerupLength );
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", fraction );
+	}
+}

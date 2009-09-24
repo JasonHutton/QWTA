@@ -257,6 +257,7 @@ This is the main script that is loaded before any level scripts load.
 #include "script/vehicles/cockpits/abaddon.script"
 #include "script/projectiles/bfg.script"
 #include "script/vehicles/weapons/chargeshot.script"
+#include "script/vehicles/weapons/chargeshot2.script"
 #include "script/vehicles/weapons/streamshot.script"
 #include "script/vehicles/weapons/flamethrower.script"
 #include "script/vehicles/weapons/plasmabeam.script"

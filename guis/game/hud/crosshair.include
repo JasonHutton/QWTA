@@ -356,7 +356,11 @@ $template __crosshair( ShowSpread )
 					if( globals.weapons.showHeat == 1 && globals.weapons.heat != 1.0f ) {
 						clipPercent = globals.weapons.heat;
 					} else {
-						clipPercent = ( player.weaponClip / player.weaponShotsPerClip );
+						if ( globals.weapons.showPowerup == 1 && globals.weapons.powerup != 1.0f ) {
+							clipPercent = globals.weapons.powerup;
+						} else {
+							clipPercent = ( player.weaponClip / player.weaponShotsPerClip );
+						}
 					}
 				}
 				/*

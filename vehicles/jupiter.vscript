@@ -441,18 +441,18 @@ stringMap vehicle_jupiter_weapon1 {
 	"muzzle"					"muzzle"
 	"muzzle_parent"				"gun"
 	"muzzle_flash"				"fx_bfg_muzzlefire"
-	"muzzle_sound"				"fx_bfg_firesound"
-	"muzzle_sound_local"			"fx_bfg_firesound_local"
+	"muzzle_sound"				"snd_bfg_firesound"
+	"muzzle_sound_local"			"snd_bfg_firesound_local"
 	"muzzle_charge"				"fx_bfg_muzzlecharge"
-	"muzzle_chargesound"			"fx_bfg_chargesound"
-	"muzzle_chargesound_local"		"fx_bfg_chargesound_local"
+	"muzzle_chargesound"			"snd_bfg_chargesound"
+	"muzzle_chargesound_local"		"snd_bfg_chargesound_local"
 	
 	"trigger_delay"				"2.2"
 
 	"feedback"					"1000000"
 	"velocity"					"2000 0 0"
 	"spread"					"1"
-	"scriptobject"				"vehicle_weapon_chargeshot"
+	"scriptobject"				"vehicle_weapon_chargeshot2"
 	"def_projectile"			"projectile_bfg"
 	"weapon_priority"			"1"
 

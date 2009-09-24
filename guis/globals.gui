@@ -195,6 +195,8 @@ stringMap weapons {
 	"energyAvailable"			"float"
 	"energySegments"			"float"
 	"heat"						"float"
+	"powerup"				"float"
+	"showPowerup"				"float"
 	"cooling"					"float"
 	"showHeat"					"float"
 	"showUseCount"				"float"	                        	
