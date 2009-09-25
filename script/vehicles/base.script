@@ -33,10 +33,6 @@ object vehicle_base {
 	float			VehicleBase_OnActivate( entity p, float distance );
 
 	void			vSetDeployer( entity other );
-	void			vOnDeploy();
-	void			vSetManualDeploy();
-	boolean			vGetManualDeploy();
-	void			DoDeploy();
 
 	void			OnSpotted( entity spotter );
 	
@@ -230,9 +226,6 @@ object vehicle_base {
 	
 	entity			lastRepairer;
 	float			lastRepairTime;
-	
-	boolean			isDeploying;
-	boolean			manualDeploy;
 }
 
 void vehicle_base::syncFields() {
@@ -311,8 +304,6 @@ void vehicle_base::preinit() {
 	g_drawVehicleIcons	= sys.getCVar( "g_drawVehicleIcons", "1" );
 	
 	normallyHaveKnockback = true;
-	
-	isDeploying = false;
 }
 
 void vehicle_base::OnDecoyChargeTimeChanged() {
@@ -1029,7 +1020,6 @@ void vehicle_base::OnPlayerExited_Base( entity p, float position ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0 );
 		
 		sys.startSoundDirect( "", SND_VEHICLE_INTERIOR_LOWHEALTH );
 		playingKlaxon = false;
@@ -1310,44 +1300,6 @@ void vehicle_base::vSetDeployer( entity other ) {
 		OnSpawnInvulnerableChanged();
 	}
 }
-
-void vehicle_base::vOnDeploy() {		
-	thread DoDeploy();
-}
-
-void vehicle_base::vSetManualDeploy() {
-	manualDeploy = true;
-}
-
-boolean vehicle_base::vGetManualDeploy() {
-	return manualDeploy;
-}
-
-void vehicle_base::DoDeploy() {
-	// Gordon: only do this if we haven't been spawned from the console
-	if ( manualDeploy ) {
-		// if the territory has been captured since we were called in, shouldn't deploy
-		if ( sys.getTerritoryForPoint( getWorldOrigin(), getGameTeam(), 1.f, 0.f ) == $null_entity ) {
-			vDismantle( $null_entity );
-			return;
-		}
-	}
-
-	if ( !sys.isClient() ) {
-		isDeploying = true;
-	}
-
-	float hitGroundEffect = getFloatKey( "play_hitground_effect" );
-	if ( hitGroundEffect ) {
-		startSound( "snd_drop", SND_DEPLOYABLE_IDLE );
-		playEffect( "fx_hitground", "origin", false );
-	}
-
-	preventDeployment( 1.f );
-
-	//KillBoundsDamageThread();
-}
-
 
 void vehicle_base::CheckArmor() {
 	team_base team = getGameTeam();
