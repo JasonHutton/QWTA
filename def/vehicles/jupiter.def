@@ -236,6 +236,9 @@ entityDef vehicle_jupiter {
 	"snd_bfg_chargesound"				"sounds/weapons/bfg/charge"
 	"snd_bfg_chargesound_local"			"sounds/weapons/bfg/charge/local"
 	"fx_bfg_muzzlecharge"				"effects/weapons/bfg/muzzle_charge"
+	
+	"fx_bfg_muzzlefizzle"				"effects/weapons/bfg/muzzle_fizzle"
+	"snd_bfg_dryfire"					"sounds/weapons/bfg/dryfire"
 
 	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_pavement"
 	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_pavement"
@@ -345,8 +348,9 @@ entityDef vehicle_jupiter {
 	"validate_drop"					"1"
 	
 	"timer_powerup"					"powerup_bfg"
-	"powerup_per_shot"				"0.5"
-	"powerup_length"				"20.0"
+	"powerup_per_shot"				"0.1"
+	"powerup_length"				"5.0"
+	"fx_bfg_cleanexplode"			"effects/weapons/bfg/explode"
 }
 
 damageDef damage_jupiter_collide {

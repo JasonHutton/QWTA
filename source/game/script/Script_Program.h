@@ -21,7 +21,8 @@ class sdScriptHelper;
 class sdEntityStateNetworkData;
 
 const int MAX_STRING_LEN		= 128;
-const int MAX_GLOBALS			= 460800;		// in bytes
+//const int MAX_GLOBALS			= 460800;		// in bytes
+const int MAX_GLOBALS			= 921600;		// in bytes
 const int MAX_STRINGS			= 1024;
 const int MAX_FUNCS				= 5120;
 //const int MAX_STATEMENTS		= 131072;		// statement_t - 18 bytes last I checked

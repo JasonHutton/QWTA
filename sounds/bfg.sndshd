@@ -65,3 +65,31 @@ sound sounds/weapons/bfg/fire/local {
 	
 	sounds/weapons/bfg/bfg_fire_local.wav
 }
+
+sound sounds/weapons/bfg/dryfire {
+	minDistance	15
+	maxDistance	35
+	volume		-2
+
+	sounds/weapons/bfg/bfg_dryfire.wav
+}
+
+sound sounds/weapons/bfg/idle {
+	minDistance	15
+	maxDistance	35
+	volume		-2
+	
+	looping
+
+	sounds/weapons/bfg/bfg_idle.wav
+}
+
+sound sounds/weapons/bfg/fizzle {
+	minDistance	30
+	maxDistance	75
+	volume		0
+
+	sounds/weapons/bfg/arc_1.wav
+	sounds/weapons/bfg/arc_3.wav
+	sounds/weapons/bfg/arc_4.wav
+}

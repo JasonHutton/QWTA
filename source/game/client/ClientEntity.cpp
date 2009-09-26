@@ -532,6 +532,7 @@ CLASS_DECLARATION( rvClientEntity, sdClientScriptEntity )
 	EVENT( EV_PlayEffect,					sdClientScriptEntity::Event_PlayEffect )
 	EVENT( EV_StopEffect,					sdClientScriptEntity::Event_StopEffect )
 	EVENT( EV_StopEffectHandle,				sdClientScriptEntity::Event_StopEffectHandle )
+	EVENT( EV_KillEffectHandle,				sdClientScriptEntity::Event_KillEffectHandle )
 	EVENT( EV_PlayMaterialEffect,			sdClientScriptEntity::Event_PlayMaterialEffect )
 	EVENT( EV_KillEffect,					sdClientScriptEntity::Event_KillEffect )
 	EVENT( EV_SetOrigin,					sdClientScriptEntity::Event_SetOrigin )
@@ -922,6 +923,19 @@ void sdClientScriptEntity::Event_StopEffectHandle( int handle ) {
 	effect.ForceSpawnId( handle );
 	if ( effect.GetEntity() ) {
 		effect.GetEntity()->Stop( false );
+	}
+}
+
+/*
+================
+sdClientScriptEntity::Event_KillEffectHandle
+================
+*/
+void sdClientScriptEntity::Event_KillEffectHandle( int handle ) {
+	rvClientEntityPtr< rvClientEffect > effect;
+	effect.ForceSpawnId( handle );
+	if ( effect.GetEntity() ) {
+		effect.GetEntity()->Stop( true );
 	}
 }
 

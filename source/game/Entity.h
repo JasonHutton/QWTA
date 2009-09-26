@@ -49,6 +49,7 @@ extern const idEventDef EV_StopAllEffects;
 extern const idEventDef EV_PlayEffect;
 extern const idEventDef EV_StopEffect;
 extern const idEventDef EV_StopEffectHandle;
+extern const idEventDef EV_KillEffectHandle;
 extern const idEventDef EV_KillEffect;
 extern const idEventDef EV_PlayOriginEffect;
 extern const idEventDef EV_PlayOriginEffectViewSuppress;
@@ -966,6 +967,7 @@ protected:
 	void					Event_StopEffect( const char* effectName );
 	void					Event_KillEffect( const char *effectName );
 	void					Event_StopEffectHandle( int handle );
+	void					Event_KillEffectHandle( int handle );
 	void					Event_UnBindEffectHandle( int handle );
 	void					Event_SetEffectRenderBounds( int handle, bool renderBounds );
 	void					Event_SetEffectAttenuation( int handle, float attenuation );

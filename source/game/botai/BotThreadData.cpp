@@ -3890,7 +3890,7 @@ void idBotThreadData::FindCurrentWeaponInVehicle( idPlayer *player, sdTransport*
 			break;
 		case JUPITER:
 			if ( weapIndex == 0 ) {
-                botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = TANK_GUN;
+                botThreadData.GetGameWorldState()->clientInfo[ player->entityNumber ].proxyInfo.weapon = BFG10K;
 			}
 
 			break;

@@ -142,7 +142,7 @@ bool idBotAI::Bot_FindBestVehicleCombatMovement() {
 		return true;
 	}
 
-	if ( botInfo->proxyInfo.weapon == TANK_GUN || botInfo->proxyInfo.weapon == BEAM_LASER && botVehicleInfo->driverEntNum == botNum ) {
+	if ( ( botInfo->proxyInfo.weapon == TANK_GUN || botInfo->proxyInfo.weapon == BEAM_LASER || botInfo->proxyInfo.weapon == BFG10K ) && botVehicleInfo->driverEntNum == botNum ) {
 		if ( !enemyReachable && enemyInfo.enemyDist < 3000.0f ) { //mal: dont do chase movement of our enemy, if we cant reach him.
            VEHICLE_COMBAT_MOVEMENT_STATE = &idBotAI::Enter_Vehicle_Stand_Ground_Movement; 
 		} else {

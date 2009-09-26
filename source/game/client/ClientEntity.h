@@ -239,6 +239,7 @@ public:
 	void					Event_PlayEffect( const char* effectName, const char* boneName, bool loop );
 	void					Event_StopEffect( const char* effectName );
 	void					Event_StopEffectHandle( int handle );
+	void					Event_KillEffectHandle( int handle );
 	void					Event_KillEffect( const char *effectName );
 	void					Event_Bind( idEntity *bindMaster );
 	void					Event_BindToJoint( idEntity *bindMaster, const char *boneName, float rotateWithMaster ); 

@@ -178,6 +178,7 @@ const idEventDef EV_LookupEffect( "lookupEffect", 's', DOC_TEXT( "Performs an ef
 const idEventDef EV_StopEffect( "stopEffect", '\0', DOC_TEXT( "Stops all effects spawned using the specified key on this entity, and any existing particles will decay over time." ), 1, NULL, "s", "key", "Key to stop effects with." );
 const idEventDef EV_KillEffect( "killEffect", '\0', DOC_TEXT( "Stops all effects spawned using the specified key on this entity, and clears out any particles they had already created." ), 1, NULL, "s", "key", "Key to stop effects with." );
 const idEventDef EV_StopEffectHandle( "stopEffectHandle", '\0', DOC_TEXT( "Stops a specific effect created on this entity, and any existing particles will decay over time.." ), 1, NULL, "h", "handle", "Handle to the effect to stop." );
+const idEventDef EV_KillEffectHandle( "killEffectHandle", '\0', DOC_TEXT( "Kills a specific effect created on this entity, and any existing particles will be destroyed immediately." ), 1, NULL, "h", "handle", "Handle to the effect to kill." );
 const idEventDef EV_UnBindEffectHandle( "unBindEffectHandle", '\0', DOC_TEXT( "Unbinds an effect that was created on this entity from this entity." ), 1, NULL, "h", "handle", "Handle to the effect to unbind." );
 const idEventDef EV_SetEffectRenderBounds( "setEffectRenderBounds", '\0', DOC_TEXT( "Sets or clears the useRenderBounds flag on the specified effect." ), 2, NULL, "h", "handle", "Handle to the effect to set the flag on.", "b", "state", "Whether to enable or disable the flag." );
 const idEventDef EV_SetEffectAttenuation( "setEffectAttenuation", '\0', DOC_TEXT( "Sets the attenuation factor on the specified effect." ), 2, NULL, "h", "handle", "Handle to the effect to set the attenuation of.", "f", "attenuation", "Attenuation factor to set." );
@@ -394,6 +395,7 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_StopEffect,					idEntity::Event_StopEffect )
 	EVENT( EV_KillEffect,					idEntity::Event_KillEffect )
 	EVENT( EV_StopEffectHandle,				idEntity::Event_StopEffectHandle )
+	EVENT( EV_KillEffectHandle,				idEntity::Event_KillEffectHandle )
 	EVENT( EV_UnBindEffectHandle,			idEntity::Event_UnBindEffectHandle )
 	EVENT( EV_SetEffectRenderBounds,		idEntity::Event_SetEffectRenderBounds )
 	EVENT( EV_SetEffectAttenuation,			idEntity::Event_SetEffectAttenuation )
@@ -4507,6 +4509,15 @@ idEntity::Event_StopEffectHandle
 */
 void idEntity::Event_StopEffectHandle( int handle ) {
 	StopEffectHandle( handle );
+}
+
+/*
+================
+idEntity::Event_KillEffectHandle
+================
+*/
+void idEntity::Event_KillEffectHandle( int handle ) {
+	StopEffectHandle( handle, true );
 }
 
 /*

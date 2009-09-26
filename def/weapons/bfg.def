@@ -145,6 +145,11 @@ damageDef realistic_damage_bfg_effect {
 	damage							"realistic_damage_bfg_effect"
 }
 
+damageDef damage_bfg_overcharged {
+	inherit							"damage_bfg"
+	damage							"damage_bfg_overcharged"
+}
+
 damageFilter damage_bfg {
 	type {
 		target	"target_all"
@@ -198,5 +203,12 @@ damageFilter realistic_damage_bfg_effect {
 	type {
 		target	"target_all"
 		damage	500
+	}
+}
+
+damageFilter damage_bfg_overcharged {
+	type {
+		target	"target_all"
+		damage	100%
 	}
 }

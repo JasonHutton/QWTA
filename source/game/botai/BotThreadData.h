@@ -261,6 +261,7 @@ enum botVehicleWeaponInfo_t { //mal: these are the different types of weapons th
 	ROCKETS,
 	LAW,
 	TANK_GUN, // SBC and the like. Titans, Desecrators, and goliaths all have this.
+	BFG10K,
 	BEAM_LASER, 
 	FLAMETHROWER,
 	DECOY_FLARE,

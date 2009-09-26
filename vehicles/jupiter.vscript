@@ -446,15 +446,18 @@ stringMap vehicle_jupiter_weapon1 {
 	"muzzle_charge"				"fx_bfg_muzzlecharge"
 	"muzzle_chargesound"			"snd_bfg_chargesound"
 	"muzzle_chargesound_local"		"snd_bfg_chargesound_local"
+	"muzzle_fizzle"				"fx_bfg_muzzlefizzle"
+	"muzzle_dryfire"			"snd_bfg_dryfire"
 	
-	"trigger_delay"				"2.2"
-
 	"feedback"					"1000000"
 	"velocity"					"2000 0 0"
 	"spread"					"1"
 	"scriptobject"				"vehicle_weapon_chargeshot2"
 	"def_projectile"			"projectile_bfg"
 	"weapon_priority"			"1"
+	"dmg_bfg_overcharged"		"damage_bfg_overcharged"
+	
+	"clean_explode"				"fx_bfg_cleanexplode"
 
 	"crosshair"					"nospread"
 }

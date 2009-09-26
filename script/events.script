@@ -303,6 +303,7 @@ scriptEvent	string	lookupEffect( string effectname, string materialType );
 scriptEvent void	stopEffect( string effectname );
 scriptEvent void	killEffect( string effectname ); // Will destroy all of the current particles as well
 scriptEvent void	stopEffectHandle( handle effectHandle );
+scriptEvent void	killEffectHandle( handle effectHandle );
 scriptEvent void	unBindEffectHandle( handle effectHandle );
 scriptEvent void	setEffectAttenuation( handle effectHandle, float attenuation );
 scriptEvent void	setEffectRenderBounds( handle effectHandle, boolean loop );

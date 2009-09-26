@@ -403,7 +403,7 @@ idBotAI::Bot_CheckVehicleAttack
 ================
 */
 void idBotAI::Bot_CheckVehicleAttack() {
-	float minFOV = ( botInfo->proxyInfo.weapon == TANK_GUN ) ? 0.95f : 0.60f;
+	float minFOV = ( botInfo->proxyInfo.weapon == TANK_GUN || botInfo->proxyInfo.weapon == BFG10K ) ? 0.95f : 0.60f;
 	idVec3 dir;
 
 	if ( botVehicleInfo->type == ICARUS ) {
@@ -478,6 +478,18 @@ void idBotAI::Bot_CheckVehicleAttack() {
 		if ( dir * botVehicleInfo->axis[ 0 ] > minFOV ) { //mal: we have them in our sights - FIRE!
 			botUcmd->botCmds.attack = true;
 		}
+		return;
+	}
+
+	// This is a piss-poor improvisational means of having the bots charge the BFG...
+	if ( botInfo->proxyInfo.weapon == BFG10K ) {
+		continuousFireTime++;
+		if ( continuousFireTime > 35 ) {
+			continuousFireTime = 0;
+			return;
+		}
+	
+		botUcmd->botCmds.attack = true;
 		return;
 	}
 
