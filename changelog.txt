@@ -30,6 +30,15 @@ CHANGES:
   damages for the Quake4-style Hyperblaster to be double for the splash
   damage, rather than triple.
 * Improvements to the BFG10k's visual effects.
+* The BFG10k is now charged manually.
+  + Hold down fire to charge the BFG. If you release too early, the 
+    BFG energies fizzle out impotently and you must wait for the weapon to
+    cool down and reload before trying to fire it again.
+  + If you charge the BFG10k too much, its energies will overload in a 
+    massive internal detonation, destroying the Jupiter tank.
+  + Charging the BFG properly takes practice. The difference between a
+    properly charged projectile and an overload detonation is a 
+    narrow window of opportunity.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
