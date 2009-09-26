@@ -170,7 +170,6 @@ vehicleDef jupiter {
 			"cockpit"				"main"
 			"stat_name"				"titan_driver"
 			"joint_icon"			"carrier_driver"
-			"ability1"				"transport_player"
 		}
 
 		view {
