@@ -1549,7 +1549,6 @@ private:
 	int							gunTargetEntNum;			// the ent, if exists, thats in front of us ATM.
 
 	int							shotIsBlockedCounter;
-	int							continuousFireTime;
 
 	bool						hammerVehicle;
 	bool						hammerTime;

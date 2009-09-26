@@ -481,15 +481,9 @@ void idBotAI::Bot_CheckVehicleAttack() {
 		return;
 	}
 
-	// This is a piss-poor improvisational means of having the bots charge the BFG...
 	if ( botInfo->proxyInfo.weapon == BFG10K ) {
-		continuousFireTime++;
-		if ( continuousFireTime > 35 ) {
-			continuousFireTime = 0;
-			return;
-		}
-	
 		botUcmd->botCmds.attack = true;
+		botUcmd->botCmds.chargeDangerWeapon = true;
 		return;
 	}
 

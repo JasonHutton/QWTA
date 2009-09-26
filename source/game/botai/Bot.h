@@ -98,6 +98,7 @@ private:
 	int						proneDelay;
 	int						movingForward;
 	int						hornTime;
+	int						chargeDangerWeaponTime;
 	int						decoyTime;
 	int						botNextWeapTime;
 	int						botNextVehicleCmdTime;
