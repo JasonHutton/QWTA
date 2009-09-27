@@ -473,6 +473,8 @@ extern idCVar	g_useBaseETQWVehicleCredits;
 extern idCVar	g_useBaseETQWProficiencies;
 extern idCVar	g_useBaseETQWVehicleCharge;
 
+extern idCVar	g_disablePlayerRespawns;
+
 extern idCVar	g_trainingMode;
 
 extern idCVar	g_noQuickChats;
