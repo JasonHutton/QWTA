@@ -180,7 +180,13 @@ Handles user intended acceleration
 ==============
 */
 void idPhysics_Player::Accelerate( const idVec3 &wishdir, const float wishspeed, const float accel ) {
-	if(!pm_realisticMovement.GetBool()) {
+	bool isBot = false;
+	if ( playerSelf != NULL ) {
+		// If we can't tell if it's a bot or a human, assume human.
+		isBot = playerSelf->userInfo.isBot;
+	}
+	
+	if(pm_realisticMovement.GetInteger() <= 0 || (pm_realisticMovement.GetInteger() >= 2 && isBot)) {
 		// q2 style
 		float addspeed, accelspeed, currentspeed;
 
