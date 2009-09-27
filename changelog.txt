@@ -39,6 +39,15 @@ CHANGES:
   + Charging the BFG properly takes practice. The difference between a
     properly charged projectile and an overload detonation is a 
     narrow window of opportunity.
+* Cvar pm_realisticMovement has had a setting added.
+  + pm_realisticMovement may now be set to 2, as well.
+  + pm_realisticMovement 2 is now the QWTA default setting.
+  + This setting applies realistic movement physics to players, but not bots.
+    This setting is a workaround for a flaw in ETQW's bot AAS pathing design 
+    that requires maps to be recompiled to support certain changes in movement
+    physics. While bots can use realistic physics too, their AI doesn't
+    recognize it, leading to them doing very stupid things when trying to get
+    from point A to point B. This setting works around that flaw.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
