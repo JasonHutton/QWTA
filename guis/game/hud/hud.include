@@ -442,44 +442,84 @@ $template __center_print_info
 				postNamedEvent( "updateText" );
 			}
 			onNamedEvent "updateText" {
-				if( player.limbo && player.spectator == false ) {
-					if( gui.getCVarBool( "gui_showRespawnText" ) ) {
-						text 				= localizeArgs( "guis/hud/reenforce" );
-					} else {
-						text = gui.blankWStr;
-					}
-					drawIcon 			= respawnIcon;
-					timeline.flashMedic.active = false;
-					return;
-				}
-									
-				if( player.dead && player.spawning && player.spectator == false ) {
-					if( gui.getCVarBool( "gui_showRespawnText" ) ) {
-						if ( icompare( player.teamName, "gdf" ) ) {
-							text			= localizeArgs( "guis/hud/respawnLabel_spawn", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+				if ( !gui.getCVarBool( "g_disablePlayerRespawns" ) ) {
+					if( player.limbo && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							text 				= localizeArgs( "guis/hud/reenforce" );
 						} else {
-							text			= localizeArgs( "guis/hud/respawnLabel_spawn_strogg", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							text = gui.blankWStr;
 						}
-					} else {
-						text = gui.blankWStr;
+						drawIcon 			= respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
 					}
-					drawIcon = respawnIcon;
-					timeline.flashMedic.active = false;
-					return;
-				}
-				if( player.dead && player.spawning == false && player.spectator == false ) {
-					if( gui.getCVarBool( "gui_showRespawnText" ) ) {
-						if ( icompare( player.teamName, "gdf" ) ) {
-							text			= localizeArgs( "guis/hud/respawnLabel_nospawn", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+
+					if( player.dead && player.spawning && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "gdf" ) ) {
+								text			= localizeArgs( "guis/hud/respawnLabel_spawn", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								text			= localizeArgs( "guis/hud/respawnLabel_spawn_strogg", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							}
 						} else {
-							text			= localizeArgs( "guis/hud/respawnLabel_nospawn_strogg", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							text = gui.blankWStr;
 						}
-					} else {
-						text = gui.blankWStr;
+						drawIcon = respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
 					}
-					drawIcon = medicIcon;
-					timeline.flashMedic.active = true;
-					return;
+					if( player.dead && player.spawning == false && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "gdf" ) ) {
+								text			= localizeArgs( "guis/hud/respawnLabel_nospawn", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								text			= localizeArgs( "guis/hud/respawnLabel_nospawn_strogg", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon = medicIcon;
+						timeline.flashMedic.active = true;
+						return;
+					}
+				} else {
+					if( player.limbo && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "strogg" ) && globals.gameHud.spawnHostActive ) {
+								text 				= localizeArgs( "guis/hud/dead_spawnhost", gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								text 				= localizeArgs( "guis/hud/dead", gui.getKeyBind( "_limbomenu", "" ) );
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon 			= respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
+					}
+
+					if( player.dead && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "gdf" ) ) {
+								text			= localizeArgs( "guis/hud/unconscious", gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								if ( globals.gameHud.spawnHostActive ) {
+									if ( player.spawning ) {
+										text		=	localizeArgs( "guis/hud/unconscious_strogg_spawnhost", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+									} else {
+										text		=	localizeArgs( "guis/hud/unconscious_strogg_spawnhost_nospawn", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+									}
+								} else {
+									text			= localizeArgs( "guis/hud/unconscious_strogg", gui.getKeyBind( "_limbomenu", "" ) );
+								}
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon = respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
+					}
 				}
 				text = gui.blankWStr;		
 			}			

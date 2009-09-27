@@ -276,6 +276,11 @@ void team_base::OnMapStart_Base() {
 		}
 
 		ResetVehicleCredit( p );
+		
+		player testPlayer = p;
+		if ( testPlayer != $null_entity ) {
+			testPlayer.vResetAvailableLives();
+		}
 	}
 }
 

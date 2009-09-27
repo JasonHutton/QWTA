@@ -302,6 +302,18 @@ object player {
 	handle		burningEffectHandle5;
 	handle		burningEffectHandle6;
 	boolean		burningThreadActive;
+	
+	float		livesRemaining;
+	
+	float		vGetStartingLives() { return getFloatKey( "starting_lives" ); }
+	float		vGetLivesRemaining() { return livesRemaining; }
+	void		vSetLivesRemaining( float lives );
+	void		vDecreaseAvailableLives();
+	void		vIncreaseAvailableLives();
+}
+
+void player::vSetLivesRemaining( float lives ) {
+	livesRemaining = lives;
 }
 
 /*
@@ -611,6 +623,30 @@ void player::preinit() {
 	burningEffectHandle5	= 0;
 	burningEffectHandle6	= 0;
 	burningThreadActive		= false;
+	
+	livesRemaining			= vGetStartingLives();
+}
+
+void player::vDecreaseAvailableLives() {
+	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
+		//sys.print("vDecreaseAvailableLives() called: Lives before call: " + livesRemaining + "\n");
+		livesRemaining = livesRemaining - 1.f;
+		if ( livesRemaining < 0.f ) {
+			sys.warning( "player::vDecreaseAvailableLives(): livesRemaining < 0: " + livesRemaining + "\n" );
+			livesRemaining = 0.f;
+		}
+	}
+}
+
+void player::vIncreaseAvailableLives() {
+	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
+		//sys.print("vIncreaseAvailableLives() called: Lives before call: " + livesRemaining + "\n");
+ 		livesRemaining = livesRemaining + 1.f;
+ 		if ( livesRemaining > vGetStartingLives() ) {
+			sys.warning( "player::vIncreaseAvailableLives(): livesRemaining > " + vGetStartingLives() + ": " + livesRemaining + "\n" );
+			livesRemaining = vGetStartingLives();
+		}
+	}
 }
 
 /*
@@ -988,6 +1024,10 @@ void player::OnRankChanged( float rankLevel ) {
 	}
 }
 
+void player::vResetAvailableLives() {
+	vSetLivesRemaining( vGetStartingLives() );
+}
+
 /*
 ================
 player::OnSpawn
@@ -1000,7 +1040,13 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 
 	playingReviveMeAnimTorso = false;
 	playingReviveMeAnimLegs = false;
-
+	
+	if ( !spawnHostSpawned && !isRevived ) {
+		if ( objManager.gameState == GS_GAMEON ) {
+			vDecreaseAvailableLives();
+		}
+	}
+	
 	if ( spawnHostSpawned || isRevived ) {
 		makeInvulnerable( 2.f );
 	} else if ( parachute ) {

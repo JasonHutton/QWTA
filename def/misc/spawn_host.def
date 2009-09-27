@@ -1,7 +1,7 @@
 
 entityDef spawn_host {
 	"spawnclass"					"sdDynamicSpawnPoint"
-	"scriptobject"					"spawn_host"
+	"scriptobject"					"spawn_host_qwta"
 	
 	"mins"							"-18 -8 0"
 	"maxs"							"8 8 16"

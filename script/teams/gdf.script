@@ -134,7 +134,17 @@ void team_gdf::destroy() {
 }
 
 boolean team_gdf::OnAllowRespawn( entity p ) {
-	return sys.getTime() < allowRespawnTime;
+	boolean bRespawnTimerAllows = sys.getTime() < allowRespawnTime;
+	
+	player testPlayer = p;
+	if ( testPlayer != $null_entity ) {
+		boolean bCVarAllows = !g_disablePlayerRespawns.getBoolValue();
+		boolean bEnoughLives = testPlayer.vGetLivesRemaining() > 0.f;
+		
+		return bRespawnTimerAllows && ( bCVarAllows || ( bEnoughLives ) );
+	}
+	
+	return bRespawnTimerAllows;
 }
 
 void team_gdf::RespawnWaves() {

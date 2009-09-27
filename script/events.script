@@ -2127,3 +2127,10 @@ virtual boolean		vDecayBody();
 
 virtual entity		vGetSpectateEntity();
 virtual boolean		vIsObjectiveComplete();
+
+virtual float		vGetStartingLives();
+virtual float		vGetLivesRemaining();
+virtual void		vSetLivesRemaining( float lives );
+virtual	void		vDecreaseAvailableLives();
+virtual	void		vIncreaseAvailableLives();
+virtual void		vResetAvailableLives();

@@ -181,6 +181,8 @@ entityDef player_base {
 	"fx_burning_smoke"					"effects/burning_smoke"
 	"fx_burning_small"					"effects/burning_small"
 	"fx_burning_small_smoke"			"effects/burning_small_smoke"
+	
+	"starting_lives"					"1"
 }
 
 toolTip proficiency_upgrade_respawn {

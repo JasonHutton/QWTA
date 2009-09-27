@@ -1,4 +1,4 @@
-// str_qwta_00000048
+// str_qwta_00000054
 
 /*
 =================
@@ -54,6 +54,36 @@ locString guis/vehicles/jupiter_passenger {
 
 locString guis/game/scoreboard/fe { 
 	text "#str_qwta_00000024" // "FE"
+}
+
+locString guis/hud/dead {
+	text "#str_qwta_00000049" // "You are dead.\nPress ^1%1[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/hud/unconscious {
+	text "#str_qwta_00000050" // "You have been wounded too badly to continue. You must wait for a medic.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/hud/unconscious_strogg {
+	text "#str_qwta_00000051" // "You have been wounded too badly to continue. You must wait for a technician.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/hud/unconscious_strogg_spawnhost {
+	text "#str_qwta_00000053" // "You have been wounded too badly to continue, but have a spawnhost available.\nYou will deploy in the next reinforcement wave.\nPress ^1%1[key]^0 to wait for a technician.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 2
+}
+
+locString guis/hud/unconscious_strogg_spawnhost_nospawn {
+	text "#str_qwta_00000052" // "You have been wounded too badly to continue, but have a spawnhost available.\nYou are waiting for a technician.\nPress ^1%1[key]^0 to deploy with the next wave of reinforcements.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 2
+}
+
+locString guis/hud/dead_spawnhost {
+	text "#str_qwta_00000054" // "You are dead, but have a spawnhost available.\nYou will deploy in the next reinforcement wave.\nPress ^1%1[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
 }
 
 /*
