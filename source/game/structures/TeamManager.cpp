@@ -20,6 +20,7 @@ static char THIS_FILE[] = __FILE__;
 
 #include "../botai/Bot.h"	//mal: needed for the bots.
 #include "../botai/BotThreadData.h"
+#include "../Misc.h" // Needed for spawnpoint identification
 
 
 /*
@@ -1434,6 +1435,52 @@ int sdTeamInfo::GetNumPlayers( bool excludeBots ) const {
 		}
 
 		if ( player->GetGameTeam() != this ) {
+			continue;
+		}
+
+		if ( excludeBots ) {
+			if ( player->IsType( idBot::Type ) ) {
+				continue;
+			}
+		}
+
+		count++;
+	}
+
+	return count;
+}
+
+/*
+============
+sdTeamInfo::GetNumPlayersAlive
+============
+*/
+int sdTeamInfo::GetNumPlayersAlive( bool aliveWithSpawnHost, bool excludeBots ) const {
+	int count = 0;
+	int medicCount = 0;
+	for ( int i = 0; i < MAX_CLIENTS; i++ ) {
+		idPlayer* player = gameLocal.GetClient( i );
+		if ( player == NULL ) {
+			continue;
+		}
+
+		if ( player->GetGameTeam() != this ) {
+			continue;
+		}
+
+		if ( player->IsDead() )
+		{
+			if ( aliveWithSpawnHost ) {
+				idEntity* spawnHost = player->GetSpawnPoint();
+				if ( spawnHost == NULL || ( spawnHost != NULL && !spawnHost->IsType( sdDynamicSpawnPoint::Type ) ) ) {
+					continue;
+				}
+			} else {
+				continue;
+			}
+		}
+
+		if ( player->IsInLimbo() ) {
 			continue;
 		}
 

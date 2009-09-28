@@ -206,6 +206,7 @@ public:
 	idCVar*								GetPasswordCVar( void ) const { return passwordCVar; }
 
 	int									GetNumPlayers( bool excludeBots = false ) const;
+	int									GetNumPlayersAlive( bool aliveWithSpawnHost = false, bool excludeBots = false ) const;
 
 	float								GetTotalXP( void ) const;
 

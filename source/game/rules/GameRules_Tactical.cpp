@@ -229,6 +229,28 @@ void sdGameRulesTactical::GameState_GameOn( void ) {
 		return;
 	}
 
+	if ( g_disablePlayerRespawns.GetBool() && gameLocal.time - matchStartedTime > 0 && gameLocal.time > gameLocal.playerSpawnTime ) {
+		sdTeamManagerLocal& teamManager = sdTeamManager::GetInstance();
+		sdTeamInfo* lastTeamAlive = NULL;
+		int numTeamsAlive = 0;
+		for ( int i = 0; i < teamManager.GetNumTeams(); i++ ) {
+			if ( teamManager.GetTeamByIndex( i ).GetNumPlayersAlive( true ) > 0 ) {
+				if ( numTeamsAlive == 0 ) {
+					lastTeamAlive = &teamManager.GetTeamByIndex( i );
+				}
+				++numTeamsAlive;
+			}
+		}
+		if ( numTeamsAlive == 0 ) {
+			gameLocal.Warning("sdGameRulesTactical::GameState_GameOn() zero teams alive?!\n");
+		}
+		if ( numTeamsAlive == 1 && lastTeamAlive != NULL ) {
+//`			gameLocal.Printf("%s team wins!\n", lastTeamAlive->GetName());
+			//OnAllEnemyKilled();
+			EndGame();
+		}
+	}
+
 	int timeLimit = GetTimeLimit();
 	if ( timeLimit != 0 ) {
 		if ( gameLocal.time - matchStartedTime >= timeLimit ) {
