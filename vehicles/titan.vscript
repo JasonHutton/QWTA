@@ -1,0 +1,599 @@
+
+table titan_gear_speedtable {
+	clamp
+	{
+		10, 20, 30, 35, 40
+	}
+}
+
+table titan_gear_forcetable {
+	clamp
+	{
+		3000000, 2750000, 2500000, 2250000, 2000000
+	}
+}
+
+template templates/vehicles/titan/wheel_behavior {
+	parameters< >
+	text {
+		"slowonLeftRightParm"			"1"
+
+		"drive"							"1"
+		"noRotation"					"1"
+		"contactFriction" 				"0.3 0.7 0"
+
+		"health"						"-1"
+
+		"radius"						"20"
+		"footprint"						"30"
+
+		"suspensionUpTrace"				"12"
+		"suspensionDownTrace"			"28"
+		"suspensionKCompress"			"35000"
+		"suspensionDamping"				"0.1"
+		"suspensionVelocityScale"		"200"
+		"suspensionBase"				"250000"
+		"suspensionRange"				"32"
+		"suspensionMaxRestVelocity"		"2.5"
+
+		"traction_sand"					"0.85"
+		"traction_mud"					"0.85"
+		"traction_grass"				"1.00"
+		"traction_stone"				"0.85"
+	}
+}
+
+
+template templates/vehicles/titan/small_wheel_behavior {
+	parameters< LeftRightParm, NumParm>
+	text {
+		"name"					"LeftRightParm_wheel_rotation_NumParm"
+		"joint"					"LeftRightParm_wheel_rotation_NumParm"
+
+		"noRotation"			"1"
+		"noPhysics"				"1"
+		"footprint"				"1"
+
+		"radius"				"10"
+	}
+}
+
+vehicleDef titan {
+
+	engineSoundDef {
+		sound					"snd_treads"	// sound shader
+		low						5				// starting speed of mover units/sec
+		high					1000			// end speed of mover units/sec
+		volumeMin				-60				// volume @ FadeIn in dB (default -25)
+		volumeMax				-15
+		fadeIn					200				// fade in @ speed (low + fadeIn)
+		fadeOut					0				// fade out @ speed (high - fadeOut)
+		lowFrequency			0.8				// freq multiplier @ low + frequencyChangeStart
+		highFrequency			1.4				// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0				// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		1500			// pitch change ends @ low + frequencyChangeStop
+	}
+
+	// main chassis
+	part {
+		"mins"				"-112 -92 30"
+		"maxs"				"182 92 60"
+
+		"type"				"frustum"
+		"topOffset"			"-2"
+
+		"mass"				"10000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.125"
+
+		"buoyancy"			"0.025"
+	}
+
+	// rear bit
+	part {
+		"mins"				"-138 -48 30"
+		"maxs"				"-100 48 64"
+
+		"type"				"frustum"
+		"topOffset"			"-2"
+
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.25"
+
+		"buoyancy"			"1"
+	}
+
+	// upper turret
+	part {
+		"mins"				"-126 -73 60"
+		"maxs"				"82 73 108"
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+
+		"buoyancy"			"0.065"
+	}
+
+	// main chassis
+	hurtZone {
+		"mins"				"-112 -92 0"
+		"maxs"				"182 92 30"
+	}
+
+	mass {
+		"origin"			"0 0 16"
+		"mass"				"5000"
+	}
+	
+	antiroll {
+		"angle_start"					"0.1"
+		"angle_end"						"15"
+		"strength"						"2"
+	}
+	antipitch {
+		"angle_start"					"0.1"
+		"angle_end"						"15"
+		"strength"						"2"
+	}
+
+	wheel /* left_01 */ {
+		useTemplate templates/vehicles/titan/small_wheel_behavior< "left", "01" >
+	}
+
+	wheel /* left_08 */ {
+		useTemplate templates/vehicles/titan/small_wheel_behavior< "left", "08" >
+	}
+
+	wheel /* right_01 */ {
+		useTemplate templates/vehicles/titan/small_wheel_behavior< "right", "01" >
+	}
+
+	wheel /* right_08 */ {
+		useTemplate templates/vehicles/titan/small_wheel_behavior< "right", "08" >
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_titan_cockpit"
+		"scriptobject"		"vehicle_basic_cockpit"
+	}
+
+	positionDef {
+		name				"guis/vehicles/titan_driver"
+		hudname				"guis/vehicles/titan_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"cockpit"				"main"
+			"stat_name"				"titan_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+		}
+
+		view {
+			eyeJoint		"gunner_cam"
+			eyeJointPivot	"turret"
+			type			"pivot"
+			followYaw
+			followPitch
+			cameraHeight	-7
+			cameraDistance	-15
+			thirdperson
+		//	showCockpit
+			showTargetingInfo
+			showCrosshairInThirdPerson
+			noMatchPrevious
+			sensitivityPitchScale	"m_heavyVehiclePitchScale"
+			sensitivityYawScale		"m_heavyVehicleYawScale"
+
+			clamp pitch {
+				min			-40
+				max			7
+				rate 		110
+			}
+
+			clamp yaw {
+				rate		110
+			}
+			
+			clamp dampedPitch {
+				min			-360
+				max			46
+			}
+		}
+
+		view {
+			eyeJoint		"turret"
+			type			"smooth_free"
+			cameraHeight	150
+			cameraDistance	500
+			thirdperson
+			sensitivityPitchScale	"m_heavyVehiclePitchScale"
+			sensitivityYawScale		"m_heavyVehicleYawScale"
+
+			clamp pitch {
+				min			-40
+				max			10
+				rate		240
+			}
+
+			clamp yaw {
+				rate		240
+			}
+		}
+
+
+		weapon {
+			weapon			"vehicle_titan_weapon2"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min			-40
+				max			7
+				rate		110
+				sound		"sounds/vehicles/titan/turret/pitch"
+			}
+
+			clamp yaw {
+				rate		110
+				sound		"sounds/vehicles/titan/turret/yaw"
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/titan_passenger"
+		hudname				"guis/vehicles/titan_passenger"
+
+		data {
+			"joint_attach"	"aft_gun_mount"
+			"show_player"	"1"
+			"player_anim"	"VehicleTitanPassenger"
+			"take_damage"	"1"
+			"player_height"	"36"
+			"stat_name"		"titan_gunner"
+			"joint_icon"	"carrier_gunner1"
+			"cockpit"		"minigun"
+			"damage_scale"	"0.5"
+		}
+		
+		ik {
+			type		"sdVehicleIK_Steering"
+			parms {
+				"joint_left"		"left_hand_ik"
+				"joint_right"		"right_hand_ik"
+			}
+		}
+
+		view {
+			eyeJoint		"gpmg_cam"
+			eyeJointPivot	"aft_gun_mount"
+			type			"freepivot"
+			followYaw
+			followPitch
+			showcockpit
+			hideDecoyInfo
+
+			clamp pitch {
+				min			-60
+				max			10
+				rate		240
+			}
+
+			clamp yaw {
+				rate		240
+			}
+		}
+
+		view {
+			eyeJoint		"gpmg_cam"
+			eyeJointPivot	"aft_gun_mount"
+			type			"smooth_free"
+			cameraHeight	24
+			cameraDistance	125
+			thirdPerson
+
+			clamp pitch {
+				min			-40
+				max			10
+				rate		240
+			}
+
+			clamp yaw {
+				rate		240
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_titan_weapon3"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp yaw {
+				rate		240
+			}
+			clamp pitch {
+				rate		240
+			}
+		}
+	}
+
+	exitDef {
+		joint			"exit_point_03"
+	}
+
+	exitDef {
+		joint			"exit_point_04"
+	}
+
+	exitDef {
+		joint			"exit_point_01"
+	}
+
+	exitDef {
+		joint			"exit_point_02"
+	}
+
+	track {
+		"direction"			"1 0 0"
+		"joint"				"right_wheel_rotation_04"
+		"shaderParmIndex"	"10"
+
+		"num_true_wheels"	"5"
+
+		"start_wheel"		"right_wheel_rotation_01"
+		"end_wheel"			"right_wheel_rotation_08"
+
+		"wheel_joint_2"			"right_wheel_rotation_02"
+		"wheel_suspension_2"	"right_wheel_dynamix_02"
+
+		"wheel_joint_3"			"right_wheel_rotation_03"
+		"wheel_suspension_3"	"right_wheel_dynamix_03"
+
+		"wheel_joint_4"			"right_wheel_rotation_04"
+		"wheel_suspension_4"	"right_wheel_dynamix_04"
+
+		"wheel_joint_5"			"right_wheel_rotation_05"
+		"wheel_suspension_5"	"right_wheel_dynamix_05"
+
+		"wheel_joint_6"			"right_wheel_rotation_07"
+		"wheel_suspension_6"	"right_wheel_dynamix_07"
+
+		"wheel_trace_index_2"	"5"
+		"wheel_trace_index_3"	"2"
+		"wheel_trace_index_4"	"4"
+		"wheel_trace_index_5"	"8"
+		"wheel_trace_index_6"	"1"
+
+		useTemplate templates/vehicles/titan/wheel_behavior<>
+		"base_org_offset"				"0 7 0"
+	}
+
+	track {
+		"direction"			"1 0 0"
+		"joint"				"left_wheel_rotation_04"
+		"shaderParmIndex"	"9"
+
+		"num_true_wheels"	"5"
+
+		"start_wheel"		"left_wheel_rotation_01"
+		"end_wheel"			"left_wheel_rotation_08"
+
+		"wheel_joint_2"			"left_wheel_rotation_02"
+		"wheel_suspension_2"	"left_wheel_dynamix_02"
+
+		"wheel_joint_3"			"left_wheel_rotation_03"
+		"wheel_suspension_3"	"left_wheel_dynamix_03"
+
+		"wheel_joint_4"			"left_wheel_rotation_04"
+		"wheel_suspension_4"	"left_wheel_dynamix_04"
+
+		"wheel_joint_5"			"left_wheel_rotation_05"
+		"wheel_suspension_5"	"left_wheel_dynamix_05"
+
+		"wheel_joint_6"			"left_wheel_rotation_07"
+		"wheel_suspension_6"	"left_wheel_dynamix_07"
+
+		"wheel_trace_index_2"	"0"
+		"wheel_trace_index_3"	"7"
+		"wheel_trace_index_4"	"5"
+		"wheel_trace_index_5"	"3"
+		"wheel_trace_index_6"	"6"
+
+		useTemplate templates/vehicles/titan/wheel_behavior<>
+		"base_org_offset"				"0 -7 0"
+	}
+
+	simplePart {
+		"name"				"barrel"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_titan_barrel"
+		"health" 			"-1"
+	}
+
+	simplePart {
+		"name"				"gun"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_titan_gun"
+		"health" 			"-1"
+	}
+
+	simplePart {
+		"name"				"hull"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_titan_hull"
+		"health" 			"-1"
+		"flip_power"		"20"
+		"flip_master"		"1"
+	}
+
+	simplePart {
+		"name"				"turret"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_titan_turret"
+		"health" 			"-1"
+	}
+
+	cockpit minigun {
+		"def_cockpit"		"vehicle_titan_minigun_cockpit"
+		"scriptobject"		"vehicle_gatling_cockpit"
+	}
+
+
+}
+
+entityDef part_vehicle_titan_barrel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/barrel.lwo",
+			"1500 0 1000",
+			"0 0 90",
+			"vehicles/misc/debris/hollow_large"
+		>
+	"climate_skin_key"				"titan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_titan_gun {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/gun.lwo",
+			"0 0 900",
+			"6 0 12",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"titan"
+	
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_titan_hull {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/hull.lwo",
+			"0 0 500",
+			"0 10 0",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"titan"
+	
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_titan_turret {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/turret.lwo",
+			"700 150 1500",
+			"0 20 0",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"titan"
+	
+
+	"priority"						"2"
+}
+
+stringMap titanTestSuspension {
+	"joint"				"right_wheel_dynamix_02"
+	"type"				"vertical"
+	"lerp_scale"		".3"
+}
+
+stringMap vehicle_titan_weapon2 {
+	"gunName"					"game/weapons/sbc"
+	"weapon_name"				"sbc"
+
+	"charge_max"				"3"
+	"charge_per_use"			"100"
+	"overheat_penalty"			"0"
+	"use_heat_bar"				"0"
+
+	"weapon1_muzzle"			"muzzle"
+	"gunJointYaw"				"turret"
+	"gunJointPitch"				"gun"
+
+	"muzzle"					"muzzle"
+	"muzzle_parent"				"gun"
+	"muzzle_flash"				"fx_cannon_muzzle"
+	"muzzle_sound"				"fx_cannon_fire"
+	"muzzle_sound_local"		"fx_cannon_fire_local"
+
+	"feedback"					"1000000"
+	"velocity"					"4000 0 0"
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_sbc"
+	"def_projectile"			"projectile_sbc"
+	"weapon_priority"			"1"
+
+	"crosshair"					"nospread"
+}
+
+stringMap vehicle_titan_weapon3 {
+	"gunName"					"game/weapons/gatling"
+	"weapon_name"				"gpmg_2"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"gpmg_muzzle"
+	"gunJointYaw"				"aft_gun_mount"
+	"gunJointPitch"				"gpmg_mount"
+	"gunJointShoulder"			"turret"
+
+	"muzzle"					"gpmg_muzzle"
+	"spin_joint"				"minigun_barrel"
+
+	"muzzle_flash"				"fx_gatling_muzzle"
+
+	"fire_start_sound"			"snd_gatling_fire_start"
+	"fire_stop_sound"			"snd_gatling_fire_stop"
+	"barrel_loop_sound"			"snd_gatling_barrel_loop"
+	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
+	"brass_start_sound"			"snd_gatling_brass_start"
+	"brass_stop_sound"			"snd_gatling_brass_stop"
+
+	"spin_fire"					"1440"
+	"spin_stop"					"30"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08"
+	"trigger_delay"				"0.5"
+	"spread"					"0.5"
+
+	"surface_name"				"minigun"
+
+
+	"scriptobject"				"vehicle_weapon_gatling"
+	"def_projectile"			"projectile_gatling_titan"
+	"client_projectile"			"projectile_gatling_titan"
+
+	"crosshair"					"nospread"
+}
+
+entityDef vehicle_titan_cockpit {
+	"model"						"models/scopes/scope_titan.lwo"
+	"joint_attach"				"pilot_cam"
+	"offset"					"1 0 -0.5"
+	"passenger_id"				"1"
+}
+
+entityDef vehicle_titan_minigun_cockpit {
+	"model"						"viewmodel_minigun"
+
+	"passenger_id"				"2"
+
+	"climate_skin_key"			"weapon_gdf"
+
+	"fx_muzzle"					"effects/weapons/gatling_muzzleflash"
+	"joint_muzzle"				"muzzle"
+
+	"offset"					"0 1 0"
+
+	"joint_barrel"				"barrel"
+	"weapon_name"				"gpmg_2"
+	"surface_name"				"minigun"
+}

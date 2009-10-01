@@ -1,0 +1,603 @@
+
+table mcp_gear_speedtable {
+	clamp
+	{
+		30, 30
+	}
+}
+
+table mcp_gear_speedtable_sw {
+	clamp
+	{
+		33, 33
+	}
+}
+
+table mcp_gear_forcetable {
+	clamp
+	{
+		2000000, 2000000
+	}
+}
+
+template templates/vehicles/mcp/wheel_behavior {
+	parameters< >
+	text {
+		"slowonLeftRightParm"			"1"
+
+		"drive"							"1"
+		"noRotation"					"1"
+		"contactFriction" 				"0.1 0.7 0.1"
+
+		"health"						"-1"
+
+		"radius"						"20"
+		"footprint"						"30"
+
+		"suspensionUpTrace"				"12"
+		"suspensionDownTrace"			"29"
+		"suspensionKCompress"			"35000"
+		"suspensionDamping"				"0.1"
+		"suspensionVelocityScale"		"200"
+		"suspensionBase"				"250000"
+		"suspensionRange"				"32"
+		"suspensionMaxRestVelocity"		"2.5"
+
+		"traction_sand"					"0.85"
+		"traction_mud"					"0.85"
+		"traction_grass"				"1.00"
+		"traction_stone"				"0.85"
+	}
+}
+
+template templates/vehicles/mcp/small_wheel_behavior {
+	parameters< LeftRightParm, NumParm>
+	text {
+		"name"					"LeftRightParm_wheel_rotation_NumParm"
+		"joint"					"LeftRightParm_wheel_rotation_NumParm"
+
+		"noRotation"			"1"
+		"noPhysics"				"1"
+		"footprint"				"1"
+
+		"radius"				"10"
+	}
+}
+
+vehicleDef mcp {
+	engineSoundDef {
+		sound					"snd_treads"	// sound shader
+		low						5				// starting speed of mover units/sec
+		high					1000			// end speed of mover units/sec
+		volumeMin				-60				// volume @ FadeIn in dB (default -25)
+		volumeMax				-20
+		fadeIn					200				// fade in @ speed (low + fadeIn)
+		fadeOut					0				// fade out @ speed (high - fadeOut)
+		lowFrequency			0.8				// freq multiplier @ low + frequencyChangeStart
+		highFrequency			1.4				// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0				// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		1500			// pitch change ends @ low + frequencyChangeStop
+	}
+
+	// main chassis
+	part {
+		"mins"				"-240 -148 36"
+		"maxs"				"200 148 160"
+
+		"type"				"frustum"
+		"topOffset"			"-10"
+
+		"mass"				"5000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.125"
+
+		"buoyancy"			"0.025"
+	}
+	// scud launcher (non-deployed)
+	part {
+		"mins"				"-230 -110 160"
+		"maxs"				"50 -8 192"
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.125"
+
+		"buoyancy"			"0.025"
+		
+		"name"				"launcher_down"
+	}
+	// scud launcher (deployed)
+	part {
+		"mins"				"-175 -110 160"
+		"maxs"				"-65 -8 385"
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.125"
+
+		"buoyancy"			"0.025"
+
+		"name"				"launcher_up"
+	}
+
+	hurtZone {
+		"mins"				"-220 -132 0"
+		"maxs"				"160 132 36"
+	}
+
+	mass {
+		"origin"			"0 0 -24"
+		"mass"				"10000"
+	}
+
+	wheel /* left_01 */ {
+		useTemplate templates/vehicles/mcp/small_wheel_behavior< "left", "01" >
+	}
+
+	wheel /* left_08 */ {
+		useTemplate templates/vehicles/mcp/small_wheel_behavior< "left", "08" >
+	}
+
+	wheel /* right_01 */ {
+		useTemplate templates/vehicles/mcp/small_wheel_behavior< "right", "01" >
+	}
+
+	wheel /* right_08 */ {
+		useTemplate templates/vehicles/mcp/small_wheel_behavior< "right", "08" >
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_mcp_cockpit"
+		"scriptobject"		"vehicle_mcp_cockpit"
+	}
+
+	cockpit minigun_gunner {
+		"def_cockpit"		"vehicle_mcp_minigun_cockpit"
+		"scriptobject"		"vehicle_gatling_cockpit"
+	}
+
+	positionDef {
+		name			"guis/vehicles/mcp_driver"
+		hudname			"guis/vehicles/mcp_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"joint_attach"			"origin"
+			"player_anim"			"VehicleDefault"
+			"show_player"			"0"
+			"cockpit"				"main"
+			"stat_name"				"mcp_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+			"ability2"				"inside_mcp"
+		}
+
+		// first-person + cockpit
+		view {
+		 	eyeJoint		"pilot_cam"
+			hidevehicle
+			showCockpit
+			interior
+			foliageDepthHack 150
+			zoomTable		"vehicle_default_zoom"
+			sensitivityPitchScale	"m_heavyVehiclePitchScale"
+			sensitivityYawScale		"m_heavyVehicleYawScale"
+
+			clamp pitch {
+				min		-23
+				max		10
+			}
+
+			clamp yaw {
+				min		-60
+				max		60
+			}
+		}
+
+		view {
+			eyeJoint		"minigunner_cam"
+			eyeJointPivot	"minigun_arm"
+			type			"smooth"
+			thirdPerson
+			cameraHeight	100
+			cameraDistance	700
+			sensitivityPitchScale	"m_heavyVehiclePitchScale"
+			sensitivityYawScale		"m_heavyVehicleYawScale"
+
+			clamp pitch {
+				min		-10
+				max		10
+			}
+
+			clamp yaw {
+				min		-60
+				max		60
+			}
+		}
+
+		weapon {
+			weapon		"vehicle_mcp_weapon1"
+			type		"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min		-60
+				max		15
+			}
+
+			clamp yaw {
+				min		-60
+				max		60
+			}
+		}
+	}
+
+	positionDef {
+		name			"guis/vehicles/mcp_gunner"
+		hudname			"guis/vehicles/mcp_gunner"
+
+		data {
+			"stat_name"			"mcp_gunner"
+			"joint_icon"		"carrier_gunner1"
+			"cockpit"			"minigun_gunner"
+			"show_player"		"1"
+			"joint_attach"		"minigun_arm"
+			"player_anim"		"VehicleTitanPassenger"
+			"take_damage"		"1"
+			"ability1"			"inside_mcp"
+
+		}
+
+		
+		ik {
+			type		"sdVehicleIK_Steering"
+			parms {
+				"joint_left"		"left_hand_ik"
+				"joint_right"		"right_hand_ik"
+			}
+		}
+
+		view {
+			eyeJoint		"minigunner_cam"
+			eyeJointPivot	"minigun_arm"
+			type			"pivot"
+			followYaw
+			showCockpit
+			followPitch
+			interior
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-60
+				max		5
+			}
+			clamp yaw {
+				min		-90
+				max		185
+				rate	250
+			}
+		}
+
+		view {
+			eyeJoint		"minigunner_cam"
+			eyeJointPivot	"minigun_arm"
+			type			"smooth_free"
+			cameraDistance	500
+			cameraHeight	100
+			thirdPerson
+			hideDecoyInfo
+
+
+			clamp pitch {
+				min		-10
+				max		5
+			}
+			clamp yaw {
+				min		-90
+				max		185
+				rate	250
+			}
+		}
+
+		weapon {
+			weapon		"vehicle_mcp_weapon2"
+			type		"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min		-60
+				max		5
+			}
+			clamp yaw {
+				rate	250
+			}
+		}
+	}
+
+
+	exitDef {
+		joint			"exit_1"
+	}
+
+	exitDef {
+		joint			"exit_2"
+	}
+
+	exitDef {
+		joint			"exit_3"
+	}
+
+	exitDef {
+		joint			"exit_4"
+	}
+	simplePart {
+		"name"				"Main Body"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_mcp_main"
+		"health" 			"0"
+		"flip_master"		"1"
+		"flip_power"		"20"
+	}
+	simplePart {
+		"name"				"Scud"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_mcp_scud"
+		"health" 			"0"
+		"flip_master"		"1"
+		"flip_power"		"40"
+	}
+	simplePart {
+		"name"				"Shells"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_mcp_shells"
+		"health" 			"0"
+		"flip_master"		"1"
+		"flip_power"		"40"
+	}
+	track {
+		"direction"			"1 0 0"
+		"joint"				"right_wheel_rotation_04"
+		"shaderParmIndex"	"10"
+
+		"num_true_wheels"	"6"
+
+		"start_wheel"		"right_wheel_rotation_01"
+		"end_wheel"			"right_wheel_rotation_08"
+
+		"wheel_joint_2"			"right_wheel_rotation_02"
+		"wheel_suspension_2"	"right_wheel_dynamix_02"
+
+		"wheel_joint_3"			"right_wheel_rotation_03"
+		"wheel_suspension_3"	"right_wheel_dynamix_03"
+
+		"wheel_joint_4"			"right_wheel_rotation_04"
+		"wheel_suspension_4"	"right_wheel_dynamix_04"
+
+		"wheel_joint_5"			"right_wheel_rotation_05"
+		"wheel_suspension_5"	"right_wheel_dynamix_05"
+
+		"wheel_joint_6"			"right_wheel_rotation_06"
+		"wheel_suspension_6"	"right_wheel_dynamix_06"
+
+		"wheel_joint_7"			"right_wheel_rotation_07"
+		"wheel_suspension_7"	"right_wheel_dynamix_07"
+
+		"wheel_trace_index_2"	"6"
+		"wheel_trace_index_3"	"2"
+		"wheel_trace_index_4"	"10"
+		"wheel_trace_index_5"	"5"
+		"wheel_trace_index_6"	"9"
+		"wheel_trace_index_7"	"1"
+
+		useTemplate templates/vehicles/mcp/wheel_behavior<>
+	}
+
+	track {
+		"direction"			"1 0 0"
+		"joint"				"left_wheel_rotation_04"
+		"shaderParmIndex"	"9"
+
+		"num_true_wheels"	"6"
+
+		"start_wheel"		"left_wheel_rotation_01"
+		"end_wheel"			"left_wheel_rotation_08"
+
+		"wheel_joint_2"			"left_wheel_rotation_02"
+		"wheel_suspension_2"	"left_wheel_dynamix_02"
+
+		"wheel_joint_3"			"left_wheel_rotation_03"
+		"wheel_suspension_3"	"left_wheel_dynamix_03"
+
+		"wheel_joint_4"			"left_wheel_rotation_04"
+		"wheel_suspension_4"	"left_wheel_dynamix_04"
+
+		"wheel_joint_5"			"left_wheel_rotation_05"
+		"wheel_suspension_5"	"left_wheel_dynamix_05"
+
+		"wheel_joint_6"			"left_wheel_rotation_06"
+		"wheel_suspension_6"	"left_wheel_dynamix_06"
+
+		"wheel_joint_7"			"left_wheel_rotation_07"
+		"wheel_suspension_7"	"left_wheel_dynamix_07"
+
+		"wheel_trace_index_2"	"0"
+		"wheel_trace_index_3"	"8"
+		"wheel_trace_index_4"	"4"
+		"wheel_trace_index_5"	"11"
+		"wheel_trace_index_6"	"3"
+		"wheel_trace_index_7"	"7"
+
+		useTemplate templates/vehicles/mcp/wheel_behavior<>
+	}
+}
+
+stringMap vehicle_mcp_weapon1 {
+	"gunName"					"game/weapons/mg"
+	"weapon_name"				"gpmg"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"front_gun_muzzle"
+	"gunJointYaw"				"front_gun_arm"
+	"gunJointPitch"				"front_gun"
+
+	"muzzle"					"front_gun_muzzle"
+	"muzzle_tracer"				"fx_gpmg_tracer"
+	"muzzle_flash"				"fx_gpmg_muzzle"
+	"muzzle_sound"				"fx_gpmg_fire"
+	"muzzle_sound_local"		"fx_gpmg_fire"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.10"
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_gpmg"
+	"def_projectile"			"projectile_gpmg_mcp"
+	"client_projectile"			"projectile_gpmg_mcp"
+	
+	"crosshair"					"nospread"
+}
+
+stringMap vehicle_mcp_weapon2 {
+	"gunName"					"game/weapons/gatling"
+	"weapon_name"				"gatlinggun"
+
+	"charge_max"				"15"
+	"charge_per_use"			"2.5"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"minigun_muzzle"
+	"gunJointYaw"				"minigun_arm"
+	"gunJointPitch"				"minigun"
+
+	"muzzle"					"minigun_muzzle"
+	"spin_joint"				"minigun_barrel"
+
+	"muzzle_flash"				"fx_gatling_muzzle"
+
+	"fire_start_sound"			"snd_gatling_fire_start"
+	"fire_stop_sound"			"snd_gatling_fire_stop"
+	"barrel_loop_sound"			"snd_gatling_barrel_loop"
+	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
+	"brass_start_sound"			"snd_gatling_brass_start"
+	"brass_stop_sound"			"snd_gatling_brass_stop"
+
+	"spin_fire"					"1440"
+	"spin_stop"					"30"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08"
+	"trigger_delay"				"0.5"
+	"spread"					"0.5"
+	"scriptobject"				"vehicle_weapon_gatling"
+	"def_projectile"			"projectile_gatling"
+	"client_projectile"			"projectile_gatling"
+
+	"surface_name"				"lod0_minigun_base, lod0_minigun_barrel"
+	
+	"crosshair"					"nospread"
+}
+
+entityDef vehicle_mcp_cockpit {
+	"model"						"vehicle_mcp_cockpit"
+	"joint_attach"				"pilot_cam"
+
+	"climate_skin_key"			"weapon_gdf"
+
+	"offset" 					"7 0 -2"
+	"gui"						"guis/models/vehicles/mcp/cockpit"
+	"weaponDepthHack"			"1"
+
+	"ambientCubemap"			"cockpit_mcp"
+	"def_light1"				"vehicle_mcp_cockpit_front"
+}
+
+entityDef vehicle_mcp_cockpit_front {
+	"light_radius"				"36 36 48"
+
+	"_color"					"0.64 0.6 0.54"
+	"origin"					"80 21 180"
+	"weaponDepthHack"			"1"
+
+	"texture" 					"lights/round_flicker3"
+
+	"spawnclass"				"sdClientLight"
+	"scriptobject"				"vehicle_cockpit_light"
+
+}
+
+entityDef vehicle_mcp_minigun_cockpit {
+	"model"						"viewmodel_minigun"
+
+	"passenger_id"				"2"
+	"offset"					"5 1 0"
+
+	"climate_skin_key"			"weapon_gdf"
+
+	"joint_muzzle"				"muzzle"
+	"fx_muzzle"					"effects/weapons/gatling_muzzleflash"
+
+	"joint_barrel"				"barrel"
+
+	"surface_name"				"lod0_minigun_base, lod0_minigun_barrel"
+}
+
+entityDef part_vehicle_mcp_main {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_mcp/parts/base.lwo",
+			"0 0 2000",
+			"0 10 20",
+			"vehicles/misc/debris/metal_large",
+			"0.25",
+			"0.5",
+			"0.01",
+			"effects/vehicles/generic_debris_large"
+		>
+
+	"fx_firstbounce"				"effects/vehicles/anansi_explosion_impact"
+	"gravity"						"600"
+	"climate_skin_key"				"mcp"
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_mcp_scud {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_mcp/parts/scud.lwo",
+			"0 0 2000",
+			"0 10 20",
+			"vehicles/misc/debris/metal_large",
+			"0.25",
+			"0.5",
+			"0.01",
+			"effects/vehicles/generic_debris_large"
+		>
+
+//	"fx_firstbounce"				"effects/vehicles/anansi_explosion_impact"
+	"gravity"						"600"
+	"climate_skin_key"				"mcp"
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_mcp_shells {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_mcp/parts/shells.lwo",
+			"0 0 2000",
+			"0 10 20",
+			"vehicles/misc/debris/metal_large",
+			"0.25",
+			"0.5",
+			"0.01",
+			"effects/vehicles/generic_debris_large"
+		>
+
+//	"fx_firstbounce"				"effects/vehicles/anansi_explosion_impact"
+	"gravity"						"600"
+	"climate_skin_key"				"mcp"
+
+	"priority"						"1"
+}

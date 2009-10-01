@@ -1,0 +1,937 @@
+
+table trojan_gear_speedtable {
+	clamp
+	{
+		20, 30, 45, 60
+	}
+}
+
+table trojan_gear_forcetable {
+	clamp
+	{
+		1500000, 1200000, 1000000, 600000
+	}
+}
+
+template templates/vehicles/trojan/wheel_behavior {
+
+	parameters< FrontBackParm, LeftRightParm >
+	text {
+	    "name"							"m_FrontBackParm_LeftRightParm_wheel"
+		"surface1"						"m_FrontBackParm_LeftRightParm_wheel"
+		"surface2"						"s_FrontBackParm_LeftRightParm_wheel"
+		"joint"							"FrontBackParm_LeftRightParm_wheel"
+		"suspension"					"vehicle_trojan_FrontBackParm_LeftRightParm_suspension"
+		"def_brokenPart"				"part_vehicle_trojan_FrontBackParm_LeftRightParm_wheel"
+		"slowonLeftRightParm"			"1"
+
+		"health"						"100"
+
+		"radius"						"24"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"0"
+		"suspensionDownTrace"			"32"
+		"suspensionDamping"				"0.05"
+		"suspensionVelocityScale"		"150"
+		"suspensionBase"				"5000"
+		"suspensionRange"				"20"
+
+		"hasHandbrake"					"1"
+		"wheelSpinForceThreshhold"		"1000000"
+		"wheelSpinForceMultiplier"		"0.5"
+
+		"feedback_turning_min_speed"	"15"
+		"feedback_turning_max_speed"	"60"
+		"feedback_turning_speed_scale"	"5"
+
+		"slowScale"						"1"
+		"slowScaleSpeed"				"400"
+	}
+}
+
+vehicleDef trojan {
+	part {
+		"cm_model"		"models/vehicles/edf_trojan/parts/trojan_collision.lwo"
+		"offset"			"-10 -10 0"
+		"mass"				"1000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.5"
+		"waterDrag"			"0.2"
+	}
+
+	part {
+		"cm_model"		"models/vehicles/edf_trojan/parts/trojan_collision2.lwo"
+		"offset"			"-10 -10 0"
+		"mass"				"1000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.5"
+		"waterDrag"			"0.2"
+	}
+
+	hurtZone {
+		"mins"				"-130 -64 0"
+		"maxs"				"98 64 64"
+	}
+
+	// over the top
+	part {
+		"mins"				"-60 -20 108"
+		"maxs"				"40 20 140"
+		"mass"				"0.1"
+		"health"			"-1"
+		"contactFriction"	"0.4 0.4 0.4"
+	}
+
+	mass {
+		"origin"			"-12 0 32"
+		"mass"				"4000"
+	}
+
+	antiroll {
+		"angle_start"					"0.1"
+		"angle_end"						"7"
+		"strength"						"0.8"
+	}
+
+	wheel {
+		useTemplate templates/vehicles/trojan/wheel_behavior< "front", "left" >
+
+		"drive"							"1"
+		"turn"							"1"
+		"contactFriction"				"0.005 0.9 0.005"
+
+		"suspensionKCompress"			"9500"
+
+		"fx_splash"						"effects/water/generic_splash"
+		"fx_wake"						"effects/water/wheel_wake"
+
+		"control_steering"				"1"
+
+		"trace_index"					"0"
+	}
+
+	wheel {
+		useTemplate templates/vehicles/trojan/wheel_behavior< "front", "right" >
+
+		"drive"							"1"
+		"turn"							"1"
+		"contactFriction"				"0.005 0.9 0.005"
+
+		"suspensionKCompress"			"9500"
+
+		"fx_splash"						"effects/water/generic_splash"
+		"fx_wake"						"effects/water/wheel_wake"
+
+		"trace_index"					"3"
+	}
+
+	wheel {
+		useTemplate templates/vehicles/trojan/wheel_behavior< "rear", "left" >
+
+		"drive"							"1"
+
+		"contactFriction"				"0.005 0.8 0.005"
+
+		"suspensionKCompress"			"9500"
+
+		"fx_splash"						"effects/water/generic_splash"
+		"fx_wake"						"effects/water/wheel_wake"
+
+		"trace_index"					"1"
+	}
+
+	wheel {
+		useTemplate templates/vehicles/trojan/wheel_behavior< "rear", "right" >
+
+		"drive"							"1"
+
+		"contactFriction"				"0.005 0.8 0.005"
+
+		"suspensionKCompress"			"9500"
+
+		"fx_splash"						"effects/water/generic_splash"
+		"fx_wake"						"effects/water/wheel_wake"
+
+		"trace_index"					"4"
+	}
+
+	wheel {
+		useTemplate templates/vehicles/trojan/wheel_behavior< "middle_front", "left" >
+
+		"drive"							"1"
+		"turn"							"1"
+		"steerScale"					"0.75"
+
+		"contactFriction"				"0.005 0.85 0.005"
+
+		"suspensionKCompress"			"9500"
+
+		"fx_splash"						"effects/water/generic_splash"
+		"fx_wake"						"effects/water/wheel_wake"
+
+		"trace_index"					"5"
+	}
+
+	wheel {
+		useTemplate templates/vehicles/trojan/wheel_behavior< "middle_front", "right" >
+
+		"drive"							"1"
+		"turn"							"1"
+		"steerScale"					"0.75"
+
+		"contactFriction"				"0.005 0.85 0.005"
+
+		"suspensionKCompress"			"9500"
+
+		"fx_splash"						"effects/water/generic_splash"
+		"fx_wake"						"effects/water/wheel_wake"
+
+		"trace_index"					"2"
+	}
+
+	thruster {
+		"direction"						"1 0 0"
+		"direction_fixed"				"0 0 -0.5"
+		"origin"						"-126 42 42"
+		"force"							"1500000"
+		"need_water"					"1"
+		"name"							"left_thruster"
+	}
+
+	thruster {
+		"direction"						"1 0 0"
+		"direction_fixed"				"0 0 -0.5"
+		"origin"						"-126 -42 42"
+		"force"							"1500000"
+		"need_water"					"1"
+		"name"							"right_thruster"
+	}
+
+	exitDef {
+		joint			"exit_left_1"
+	}
+
+	exitDef {
+		joint			"exit_left_2"
+	}
+
+	exitDef {
+		joint			"exit_right_1"
+	}
+
+	exitDef {
+		joint			"exit_right_2"
+	}
+
+	exitDef {
+		joint			"exit_rear"
+	}
+
+	exitDef {
+		joint			"exit_front"
+	}
+
+
+	simplePart {
+		"name"				"left_box_1"
+		"surface1"			"m_left_box_1"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_left_box_1"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"left_box_2"
+		"surface1"			"m_left_box_2"
+		"surface2"			"s_left_box_2"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_left_box_2"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"right_box_1"
+		"surface1"			"m_right_box_1"
+		"surface2"			"s_right_box_1"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_right_box_1"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"right_box_2"
+		"surface1"			"m_right_box_2"
+		"surface2"			"s_right_box_2"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_right_box_2"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"right_box_3"
+		"surface1"			"m_right_box_3"
+		"surface2"			"s_right_box_3"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_right_box_3"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"left_mirror"
+		"surface1"			"m_left_mirror"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_left_mirror"
+		"health" 			"20"
+	}
+
+	simplePart {
+		"name"				"right_mirror"
+		"surface1"			"m_right_mirror"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_right_mirror"
+		"health" 			"20"
+	}
+
+	simplePart {
+		"name"				"sleeping_bag"
+		"surface1"			"m_sleeping_bag"
+		"surface2"			"s_sleeping_bag"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_sleeping_bag"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"main_body"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_trojan_main_body"
+		"health"			"0"
+		"flip_master"		"1"
+		"flip_power"		"20"
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_trojan_cockpit"
+		"scriptobject"		"vehicle_trojan_cockpit"
+	}
+
+
+	cockpit rear {
+		"def_cockpit"		"vehicle_trojan_rear_cockpit"
+		"scriptobject"		"vehicle_basic_cockpit"
+	}
+
+	positionDef {
+		name				"guis/vehicles/trojan_driver"
+		hudname				"guis/vehicles/trojan_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"joint_attach"			"driver_pos"
+			"player_anim"			"VehicleTrojanDriver"
+			"show_player"			"1"
+			"cockpit"				"main"
+			"stat_name"				"trojan_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+		}
+
+		// first-person + cockpit
+		view {
+			eyeJoint		"cam_1"
+			hideVehicle
+			showCockpit
+			autocenter
+			foliageDepthHack 100
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+
+			clamp pitch {
+				min		-32
+				max		15
+			}
+
+			clamp yaw {
+				min		-105
+				max		105
+			}
+		}
+
+		view {
+			eyeJoint		"gun"
+			type			"smooth"
+			cameraDistance	450
+			cameraHeight	150
+			thirdperson
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+
+			clamp pitch {
+				min		-30
+				max		15
+			}
+
+			clamp yaw {
+				min		-135
+				max		145
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_trojan_weapon1"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min		-60
+				max		15
+			}
+
+			clamp yaw {
+				min		-135
+				max		145
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/trojan_gunner"
+		hudname				"guis/vehicles/trojan_gunner"
+
+		data {
+			"joint_attach"			"player_pos_rear_left2"
+			"player_anim"			"VehicleTrojanPassenger1"
+			"show_player"			"1"
+			"cockpit"				"rear"
+			"stat_name"				"trojan_gunner"
+			"joint_icon"			"carrier_gunner1"
+		}
+
+
+		view {
+			eyeJoint		"rocket_cam"
+			type			"pivot"
+			followYaw
+			followPitch
+			hideDecoyInfo
+			showTargetingInfo
+
+			clamp pitch {
+				min		-60
+				max		5
+				rate	135
+			}
+
+			clamp yaw {
+				rate	135
+			}
+		}
+
+		view {
+			thirdperson
+			cameraDistance	350
+			cameraHeight	100
+			eyeJoint		"gun_2"
+			type			"smooth_free"
+
+			clamp pitch {
+				min		-30
+				max		5
+			}
+
+			clamp yaw {
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_trojan_weapon2"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min		-80
+				max		5
+				rate	135
+				sound	"sounds/vehicles/trojan/turret/pitch"
+			}
+
+			clamp yaw {
+				rate	135
+				sound	"sounds/vehicles/trojan/turret/yaw"
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/trojan_passenger_2"
+		hudname				"guis/vehicles/trojan_passenger_2"
+
+		data {
+			"joint_attach"			"player_pos_rear_right2"
+			"player_anim"			"VehicleTrojanPassenger2"
+			"show_player"			"1"
+			"cockpit"				"rear"
+			"stat_name"				"trojan_passenger"
+			"joint_icon"			"carrier_passenger2"
+		}
+
+		view {
+			eyeJoint		"player_camera_rear_right2"
+			hideVehicle
+			showCockpit
+			autocenter
+			foliageDepthHack 400
+			nomatchprevious
+
+			clamp pitch {
+				min	-80
+				max	80
+			}
+			clamp yaw {
+				min	-90
+				max	90
+			}
+		}
+
+		view {
+			eyeJoint		"gun"
+			type			"smooth"
+			cameraDistance	450
+			cameraHeight	150
+			thirdperson
+
+			clamp pitch {
+				min		-30
+				max		15
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/trojan_passenger_3"
+		hudname				"guis/vehicles/trojan_passenger_3"
+
+		data {
+			"joint_attach"			"player_pos_rear_left1"
+			"player_anim"			"VehicleTrojanPassenger3"
+			"show_player"			"1"
+			"cockpit"				"rear"
+			"stat_name"				"trojan_passenger"
+			"joint_icon"			"carrier_passenger3"
+		}
+
+		view {
+			eyeJoint		"player_camera_rear_left1"
+			hideVehicle
+			showCockpit
+			autocenter
+			foliageDepthHack 400
+			nomatchprevious
+
+			clamp pitch {
+				min	-80
+				max	80
+			}
+
+			clamp yaw {
+				min	-90
+				max	90
+			}
+		}
+
+		view {
+			eyeJoint		"gun"
+			type			"smooth"
+			cameraDistance	450
+			cameraHeight	150
+			thirdperson
+
+			clamp pitch {
+				min		-30
+				max		15
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/trojan_passenger_4"
+		hudname				"guis/vehicles/trojan_passenger_4"
+
+		data {
+			"joint_attach"			"player_pos_rear_right1"
+			"player_anim"			"VehicleTrojanPassenger4"
+			"show_player"			"1"
+			"cockpit"				"rear"
+			"stat_name"				"trojan_passenger"
+			"joint_icon"			"carrier_passenger4"
+		}
+
+		view {
+			eyeJoint		"player_camera_rear_right1"
+			hideVehicle
+			showCockpit
+			autocenter
+			foliageDepthHack 400
+			nomatchprevious
+
+			clamp pitch {
+				min	-80
+				max	80
+			}
+
+			clamp yaw {
+				min	-90
+				max	90
+			}
+		}
+
+		view {
+			eyeJoint		"gun"
+			type			"smooth"
+			cameraDistance	450
+			cameraHeight	150
+			thirdperson
+
+			clamp pitch {
+				min		-30
+				max		15
+			}
+		}
+	}
+}
+
+stringMap vehicle_trojan_front_right_suspension {
+	"type"			"vertical"
+	"joint"			"front_right_upper_wishbone"
+	"lerp_scale"	".2"
+}
+
+stringMap vehicle_trojan_front_left_suspension {
+	"type"			"vertical"
+	"joint"			"front_left_upper_wishbone"
+	"lerp_scale"	".2"
+}
+
+stringMap vehicle_trojan_middle_front_right_suspension {
+	"type"			"vertical"
+	"joint"			"middle_front_right_upper_wishbone"
+	"lerp_scale"	".2"
+}
+
+stringMap vehicle_trojan_middle_front_left_suspension {
+	"type"			"vertical"
+	"joint"			"middle_front_left_upper_wishbone"
+	"lerp_scale"	".2"
+}
+
+stringMap vehicle_trojan_rear_right_suspension {
+	"type"			"vertical"
+	"joint"			"rear_right_upper_wishbone"
+	"lerp_scale"	".2"
+}
+
+stringMap vehicle_trojan_rear_left_suspension {
+	"type"			"vertical"
+	"joint"			"rear_left_upper_wishbone"
+	"lerp_scale"	".2"
+}
+
+entityDef part_vehicle_trojan_left_box_1 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/left_box_1.lwo",
+			"800 -500 500",
+			"-2 4 -4"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_left_box_2 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/left_box_2.lwo",
+			"000 -500 500",
+			"-2 4 -4"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_right_box_1 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/right_box_1.lwo",
+			"-500 100 500",
+			"-2 4 -4"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_right_box_2 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/right_box_2.lwo",
+			"-750 100 500",
+			"-2 4 -4"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_right_box_3 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/right_box_3.lwo",
+			"-1000 100 500",
+			"-2 4 -4"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_left_mirror {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/left_mirror.lwo",
+			"500 500 500",
+			"-2 15 -4",
+			"vehicles/misc/debris/glass_small"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_right_mirror {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/right_mirror.lwo",
+			"500 -500 500",
+			"-2 15 -4",
+			"vehicles/misc/debris/glass_small"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_trojan_sleeping_bag {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/sleeping_bag.lwo",
+			"-300 100 900",
+			"0 0 -4"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_trojan_main_body {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/trojan.lwo",
+			"0 100 1000",
+			"10 10 45",
+			"vehicles/misc/debris/metal_large"
+			"0.1"
+		>
+	"climate_skin_key"				"trojan"
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_trojan_front_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/wheel.lwo",
+			"800 -500 1000",
+			"15 15 15",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"trojan"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_trojan_middle_front_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/wheel.lwo",
+			"0 -500 1000",
+			"15 15 15",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"trojan"
+
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_trojan_rear_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/wheel.lwo",
+			"-800 -500 1000",
+			"15 15 15",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"trojan"
+
+
+	"priority"						"2"
+}
+
+
+entityDef part_vehicle_trojan_front_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/wheel.lwo",
+			"800 500 1000",
+			"15 15 15",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"trojan"
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_trojan_middle_front_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/wheel.lwo",
+			"0 500 1000",
+			"15 15 15",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"trojan"
+
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_trojan_rear_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_trojan/parts/wheel.lwo",
+			"-800 500 1000",
+			"15 15 15",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"trojan"
+
+
+	"priority"						"1"
+}
+
+entityDef vehicle_trojan_cockpit {
+	"model"				"vehicle_trojan_cockpit_front"
+
+	"climate_skin_key"	"trojan_cockpit"
+
+	"base_anim"			"center"
+	"turn_left_anim"	"turning_left"
+	"turn_right_anim"	"turning_right"
+
+	"gui2"				"guis/models/vehicles/trojan/cockpit"
+	"gui"				"guis/models/vehicles/trojan/cockpit_info"
+	"gui3"				"guis/models/vehicles/gdf/cockpit_cm"
+	"weaponDepthHack"			"1"
+
+	"offset" 			"5 0 0"
+	"largeFov"			"-10 0 0"
+}
+
+entityDef vehicle_trojan_rear_cockpit {
+	"model"				"vehicle_trojan_cockpit_rear"
+	"weaponDepthHack"			"0"
+
+	"scriptobject"		"vehicle_trojan_rear_cockpit"
+	"spawnclass"		"sdClientAnimated"
+}
+
+stringMap vehicle_trojan_weapon1 {
+	"gunName"				"game/weapons/mg"
+	"weapon_name"			"gpmg"
+
+	"charge_max"			"10"
+	"charge_per_use"		"2"
+	"overheat_penalty"		"1"
+	"use_heat_bar"			"1"
+
+	"weapon1_muzzle"		"gun_muzzle"
+	"gunJointYaw"			"gun"
+	"gunJointPitch"			"gun2"
+
+	"muzzle"				"gun_muzzle"
+	"muzzle_tracer"			"fx_gpmg_tracer"
+	"muzzle_flash"			"fx_gpmg_muzzle"
+	"muzzle_sound"			"fx_gpmg_fire"
+	"muzzle_sound_local"	"fx_gpmg_fire"
+
+	"velocity"				"1 0 0"
+	"fire_rate"				"0.10"
+	"spread"				"0.5"
+	"scriptobject"			"vehicle_weapon_gpmg"
+	"def_projectile"		"projectile_gpmg_trojan"
+	"client_projectile"		"projectile_gpmg_trojan"
+
+	"crosshair"				"nospread"
+}
+
+stringMap vehicle_trojan_weapon2 {
+	"gunName"				"game/weapons/aamissile"
+	"weapon_name"			"law"
+
+	"charge_max"			"2.5"
+	"charge_per_use"		"100"
+	"overheat_penalty"		"0"
+	"use_heat_bar"			"0"
+
+	"lock_enabled"			"1"
+	"lock_distance"			"8192"
+	"lock_filter"			"target_lock_filter_trojan_antiair"
+
+	"snd_target_locking"	"sounds/weapons/misc/target_track_short"
+	"snd_target_locked"		"sounds/weapons/misc/target_lock"
+
+	"weapon1_muzzle"		"rocket_muzzle1"
+	"gunJointYaw"			"gun_2"
+	"gunJointPitch"			"rocket2"
+
+	"muzzle"				"rocket_muzzle1"
+	"muzzle_flash"			"fx_rocket_muzzle"
+	"muzzle_sound"			""
+	"muzzle_sound_local"	""
+
+	"velocity"				"2000 0 0"
+	"fire_rate"				"2.5"
+	"scriptobject"			"vehicle_weapon_sbc"
+	"def_projectile"		"projectile_trojan_law"
+
+	"crosshair"				"nospread"
+}
