@@ -283,6 +283,7 @@ entityDef projectile_sniperrifle {
 	"tracer_chance"						"1"
 	"tracer_server_only"				"1"
 	"fx_tracer"							"effects/weapons/sniperrifle_trail"
+	"fx_baseETQW12_tracer"				"effects/weapons/sniperrifle_trail_baseetqw12"
 }
 
 entityDef projectile_sniperrifle_scoped {
@@ -315,6 +316,7 @@ entityDef projectile_sniperrifle_scoped {
 	"tracer_chance"						"1"
 	"tracer_server_only"				"1"
 	"fx_tracer"							"effects/weapons/sniperrifle_trail"
+	"fx_baseETQW12_tracer"				"effects/weapons/sniperrifle_trail_baseetqw12"
 }
 
 entityDef scope_sniperrifle {

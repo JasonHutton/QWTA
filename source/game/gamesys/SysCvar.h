@@ -476,6 +476,8 @@ extern idCVar	g_useBaseETQWVehicleCharge;
 
 extern idCVar	g_disablePlayerRespawns;
 
+extern idCVar	g_useBaseETQW12SniperTrail;
+
 extern idCVar	g_trainingMode;
 
 extern idCVar	g_noQuickChats;

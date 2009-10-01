@@ -60,6 +60,11 @@ CHANGES:
 * Cvar g_allowHitBeep added.
   + Default 0.
   + Controls whether the hit feedback beep and flash are permitted.
+* Cvar g_useBaseETQW12SniperTrail added.
+  + Default 1.
+  + Sets QWTA to use the BaseETQW 1.2 Sniper Rifle trail/tracer effect.
+    This effect is more subtle than the BaseETQW 1.5 effect, and harder
+    to spot.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to

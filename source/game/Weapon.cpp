@@ -3040,7 +3040,16 @@ void idWeapon::Event_DoProjectileTracer( int projectileIndex, const idVec3& star
 	}
 
 	// draw a tracer
-	int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_tracer", "" );
+	int effectHandle;
+	idStr tempStr;
+
+	if ( g_useBaseETQW12SniperTrail.GetBool() && projectileDict.GetString( "fx_baseETQW12_tracer", "", tempStr ) ) {
+		effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_baseETQW12_tracer", "" );
+	} else {
+		effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_tracer", "" );
+	}
+	
+	
 	idVec3 dir = end - tracerMuzzleOrigin;
 	dir.Normalize();
 

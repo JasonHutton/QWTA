@@ -621,6 +621,8 @@ idCVar	g_disablePlayerRespawns(	"g_disablePlayerRespawns",		"0",		CVAR_GAME | CV
 
 idCVar	g_allowCrosshairs(			"g_allowCrosshairs",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow player's crosshairs." );
 
+idCVar	g_useBaseETQW12SniperTrail( "g_useBaseETQW12SniperTrail",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use the BaseETQW 1.2 sniper rifle's trail-tracer effect?" );
+
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

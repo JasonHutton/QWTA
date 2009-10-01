@@ -7718,7 +7718,16 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* originalIgnoreEntity, 
 		if ( forceTracer != 2 && ( forceTracer == 1 || missileRandom.RandomFloat() < projectileDict.GetFloat( "tracer_chance" ) ) ) {
 			if ( !gameLocal.isClient || !projectileDict.GetBool( "tracer_server_only" ) || owner == gameLocal.GetLocalPlayer() ) {
 				// draw a tracer
-				int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_tracer", "" );
+				//int effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_tracer", "" );
+				int effectHandle;
+				idStr tempStr;
+
+				if ( g_useBaseETQW12SniperTrail.GetBool() && projectileDict.GetString( "fx_baseETQW12_tracer", "", tempStr ) ) {
+					effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_baseETQW12_tracer", "" );
+				} else {
+					effectHandle = gameLocal.GetEffectHandle( projectileDict, "fx_tracer", "" );
+				}
+
 				idVec3 dir = lastTrace.endpos - tracerMuzzleOrigin;
 				dir.Normalize();
 
