@@ -1,0 +1,429 @@
+/***********************************************************************
+
+projectile_charge.script
+
+***********************************************************************/
+
+object projectile_charge : projectile_armable {
+	void		preinit();
+	void		destroy();
+	void		syncFields();
+
+	void		vSetOwner( entity other );
+	void		vSetNewTarget( entity target );
+
+	void		vOnEndGame();
+
+	float		OnUpdateCrosshairInfo( entity p );
+	void		DoExplodeEffect( entity collisionEnt );
+	float		FindObjectives();
+	void		GiveDisarmBonus( entity p );
+	
+	void		DoRadiusDamage();
+
+	void		OnDisarmed( entity p );
+	void		OnArmed( entity p );
+	void		OnUnbind();
+
+	void		SoundThread();
+
+	boolean		IsCharge();
+	
+	void		UpdateGUI( entity armee );
+
+	void		vOnTargetDestroyed();
+	
+	float		vGetFuseRemaining();
+	float		vGetFuseLength();
+	entity		vGetCurrentTarget();
+	boolean		vDecayBody() { return true; }
+
+	void		PlaceGlowThread();
+	
+	void		vOnContextDisarm( entity p );
+	
+	float		disarmProficiency;
+
+	entity		owner;
+	entity		armer;
+	entity		bindTarget;
+	float		disableRadius;
+	float		disableTime;
+	float		explodeTime;
+	
+	task		disarmTask;
+	
+	entity		objectiveTarget;
+
+	float		guiHandle;
+
+	flashpoint_obj flashpoint;
+}
+
+void projectile_charge::preinit() {
+	ScheduleFizzle( getFloatKeyWithDefault( "fizzle_time", 30 ) );
+
+	explodeTime			= GetGlobalFloat( "charge_explode_time" );
+
+	disarmProficiency	= GetProficiency( getKey( "prof_disarm" ) );
+
+	disableRadius		= getFloatKeyWithDefault( "disable_radius", 512 );
+	disableTime			= getFloatKeyWithDefault( "disable_time", 30 );
+	
+	guiHandle			= GUI_INVALID;
+
+	thread PlaceGlowThread();
+
+	stuck				= true;
+}
+
+void projectile_charge::syncFields() {
+	syncBroadcast( "bindTarget" );
+	syncBroadcast( "objectiveTarget" );
+	syncBroadcast( "owner" );
+}
+
+void projectile_charge::destroy() {
+	if ( disarmTask != $null_entity ) {
+		disarmTask.free();
+	}
+	
+	if ( owner == sys.getLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponChargePercent", 0 );
+	}
+
+	stopEffect( "fx_unarmed_glow" );
+	stopEffect( "fx_glow" );
+
+	if ( !sys.isClient() ) {
+		player p = owner;
+		
+		if ( p != $null_entity ) {
+			p.setPlayerChargeArmed( false, self );  //mal: if we fizzled, or blew up, clear out our owners tracker.
+		}
+	}
+
+	if ( flashpoint != $null ) {
+		delete flashpoint;
+	}
+
+	sys.killThread( "UpdateGUI_" + getName() );
+	sys.killThread( "SoundThread_" + getName() );
+}
+
+void projectile_charge::UpdateGUI( entity armee ) {
+	float length = vGetFuseLength();
+	if( length <= 0 ) {
+		return;
+	}
+	
+	// Gordon: Not sure why this is being done like this, it could easily be fire and forget
+
+	float value;
+	player p = owner;
+	float timeLeft;
+	boolean updateGui;
+	while( true ) {
+		value = 1.0 - ( vGetFuseRemaining() / length );
+		if( value >= 1.0f ) {
+			return;
+		}
+
+		updateGui = false;
+		if ( p != $null_entity ) {
+			if ( p == sys.getLocalPlayer() ) {
+				if ( getEntityAllegiance( p ) == TA_FRIEND ) {
+					float armeeClass = p.getPlayerClass();
+					if ( armeeClass == g_playerClassSoldier || armeeClass == g_playerClassAggressor ) {
+						updateGui = true;
+						sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponChargePercent", value );
+					}
+				}
+			}
+		}
+
+		if ( !updateGui ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponChargePercent", 0 );
+			break;
+		}
+
+		if ( guiHandle != GUI_INVALID ) {
+			sys.setGUIFloat( guiHandle, "charge.timeLeft", vGetFuseRemaining() );
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void projectile_charge::vSetOwner( entity other ) {
+	owner = other;
+}
+
+float projectile_charge::FindObjectives() {
+	return entitiesOfCollection( "hetrigger" );
+}
+
+void projectile_charge::OnArmed( entity p ) {
+	armer = p;
+
+	ProjectileArmable_OnArmed( p );
+
+	CancelFizzle();
+
+	if ( sys.doClientSideStuff() ) {
+		thread SoundThread();
+		thread UpdateGUI( p );
+	}
+
+	ScheduleExplosion( explodeTime, MS_EXPLODED );
+
+	if ( !sys.isClient() ) {
+		player playerEnt = p;
+		
+		if ( playerEnt != $null_entity ) {
+			playerEnt.setPlayerChargeArmed( true, self ); //mal: this charge is armed. Code elsewhere will notify the bots if its a noteworthy arming event.
+		}
+
+		// alert nearby entities
+		float count;
+		float i;
+		entity ent;
+
+		count = FindObjectives();
+
+		for ( i = 0; i < count; i++ ) {
+			ent = getBoundsCacheEntity( i );
+			if ( self.touches( ent, 0 ) ) {
+				if ( bindTarget != ent.vGetCurrentTarget() ) {
+					continue;
+				}
+				
+				if ( ent.vChargePlaced( self, armer ) ) {
+					objectiveTarget = ent.vGetCurrentTarget();
+
+					if ( getGameTeam() == gdfTeam ) {
+						objManager.PlaySound( getKey( "snd_disarm_strogg" ), stroggTeam );
+					} else {
+						objManager.PlaySound( getKey( "snd_disarm_gdf" ), gdfTeam );
+					}
+					break;
+				}
+			}
+		}
+
+		if ( objectiveTarget != $null_entity ) {
+			disarmTask = taskManager.allocEntityTask( GetPlayerTask( getKey( "task_defuse" ) ), self );
+		}
+	}
+}
+
+void projectile_charge::OnUnbind() {
+	if( armingEntity == sys.getLocalPlayer() ) { // Gordon: I don't really get what this is meant to do
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponChargePercent", 0 );
+	}
+
+	stopEffect( "fx_unarmed_glow" );
+	stopEffect( "fx_glow" );
+	Fizzle();
+}
+
+void projectile_charge::GiveDisarmBonus( entity p ) {
+	float useDisarmProficiency = disarmProficiency;
+
+	if ( objectiveTarget != $null_entity ) {
+		objectiveTarget.vChargeDisarmed( self, p );
+		
+		useDisarmProficiency = objectiveTarget.vGetDisarmProficiency();
+	}
+	
+	if ( useDisarmProficiency != -1 ) {
+		if ( getEntityAllegiance( p ) == TA_ENEMY ) {
+			p.giveProficiency( useDisarmProficiency, 1.f, disarmTask, "disarmed charge" );
+		}
+	}
+}
+
+void projectile_charge::OnDisarmed( entity p ) {
+	GiveDisarmBonus( p );
+
+	ProjectileArmable_OnDisarmed( p );
+	
+	if ( bindTarget.vIsDestructibleObjective() ) {
+		if ( getGameTeam() == gdfTeam ) {
+			objManager.PlaySound( getKey( "snd_disarmed_strogg" ), stroggTeam );
+		} else {
+			objManager.PlaySound( getKey( "snd_disarmed_gdf" ), gdfTeam );
+		}
+	}
+	
+	if ( owner == sys.getLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponChargePercent", 0 );
+	}
+
+	if ( !sys.isClient() ) {
+		if ( disarmTask != $null_entity ) {
+			disarmTask.free();
+		}
+	}
+
+	CancelExplosion();
+	stopEffect( "fx_glow" );
+	Fizzle();
+}
+
+float projectile_charge::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float health = getHealth();
+
+	chSetNumLines( 0 );
+	float index;
+	
+	team_base team;
+
+	if ( p != $null_entity ) {
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE && p.vHasActionItem( code ) ) {
+			index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+
+			CheckContextToolTip( allegiance, code, p );
+		}
+	}
+
+	handle nameHandle = sys.localizeString( getKey( "task_name" ) );
+	if ( objectiveTarget != $null_entity ) {
+		string objName = objectiveTarget.getKey( "charge_name" );
+		if ( objName != "" ) {
+			nameHandle = sys.localizeString( objName );
+		}
+	}
+	index = chAddLine();
+	chSetLineTextIndex( index, nameHandle );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	if( range <= 100 ) {
+		index = chAddLine();
+		chSetLineText( index, G_BuildRangeStr( range ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;
+}
+
+void projectile_charge::DoRadiusDamage() {
+	if ( splashDamageIndex != -1 ) {
+		float power = 1.f;		
+		sys.applyRadiusDamage( getWorldOrigin(), self, armer, radiusDamageIgnoreEntity, self, splashDamageIndex, power, 1.f );
+	}
+}
+
+void projectile_charge::DoExplodeEffect( entity collisionEnt ) {
+	if ( objectiveTarget != $null_entity ) {	
+		objectiveTarget.vChargeExploded( self, armer );
+	}
+
+	DoRadiusDamage();
+
+	ScheduleRemoval( 0.5f );
+}
+
+boolean projectile_charge::IsCharge() {
+	return true;
+}
+
+void projectile_charge::vSetNewTarget( entity target ) {
+	bindTarget = target;
+}
+
+void projectile_charge::SoundThread() {
+	stopEffect( "fx_unarmed_glow" );
+
+	sys.wait( startSound( "snd_armed", SND_WEAPON_SIG ) );
+
+	if ( IsCharge() ) {
+		// find a good position for the light
+		vector lStart = getWorldOrigin() + getWorldAxis( 0 );
+		vector lEnd = getWorldOrigin() + getWorldAxis( 0 ) * 50.0f;
+		float frac = sys.tracePoint( lStart, lEnd, CONTENTS_SOLID, self );
+		playOriginEffect( "fx_glow", "", lStart + ( lEnd - lStart ) * frac * 0.95f, vec3_up, 1 );
+		
+		sys.wait( 24.f );
+		
+		stopEffect( "fx_glow" );
+
+		while ( true ) {
+			playOriginEffect( "fx_glow", "", lStart + ( lEnd - lStart ) * frac * 0.95f, vec3_up, 1 );
+			sys.wait( 0.5f );
+			killEffect( "fx_glow" );
+		}
+	}
+}
+
+void projectile_charge::vOnTargetDestroyed() {
+	remove();
+}
+
+float projectile_charge::vGetFuseRemaining() {
+	return explodeTime - ( sys.getTime() - armTime );
+}
+
+float projectile_charge::vGetFuseLength() {
+	return explodeTime;
+}
+
+entity projectile_charge::vGetCurrentTarget() {
+	return objectiveTarget;
+}
+
+void projectile_charge::PlaceGlowThread() {
+	while ( true ) {
+		if ( getWorldOrigin() != vec3_origin ) {
+			break;
+		}
+		sys.wait( 1.0f );
+	}
+
+	vector lStart = getWorldOrigin() + getWorldAxis( 0 );
+	vector lEnd = getWorldOrigin() + getWorldAxis( 0 ) * 50.0f;
+	float frac = sys.tracePoint( lStart, lEnd, CONTENTS_SOLID, self );
+	playOriginEffect( "fx_unarmed_glow", "", lStart + ( lEnd - lStart ) * frac * 0.95f, vec3_up, 1 );
+}
+
+void projectile_charge::vOnContextDisarm( entity p ) {
+	player local = sys.getLocalViewPlayer();
+	if ( local == $null_entity || p == $null_entity ) {
+		return;
+	}
+
+	if ( objectiveTarget == $null_entity ) {
+		return;
+	}
+
+	if ( flashpoint != $null ) {
+		delete flashpoint;
+	}
+
+	flashpoint = new flashpoint_obj;
+	flashpoint.SetOwner( self );
+	flashpoint.SetMaterial( getKey( "mtr_icon_flash" ) );
+}
+
+void projectile_charge::vOnEndGame() {
+	stopEffect( "fx_unarmed_glow" );
+	stopEffect( "fx_glow" );
+	Fizzle();
+}
