@@ -1,0 +1,222 @@
+
+object vehicle_weapon_base {
+	void				preinit();
+	void				init();
+	void				destroy();
+
+	void				OnSetPlayer_Base( entity p );
+	void				OnSetPlayer( entity p ) { OnSetPlayer_Base( p ); }
+	void				OnBecomeViewWeapon();
+	void				OnFinishViewWeapon();
+
+	void				Idle();
+	void				IdleEmpty();
+	void				GoToIdle();
+
+	void				UpdateCharge_Base();
+	void				UpdateCharge() { UpdateCharge_Base(); }
+	float				CalcChargeUsed();
+	
+	void				vCheckProficiency();
+	
+	void				SetCrosshair();
+
+	float				chargeTime;
+	float				chargeMax;
+	float				chargePerUse;
+	float				baseChargePerUse;
+	float				userChargePerUse;
+	float				userChargeScale;
+
+	void				AddReFireDelay( float delay );
+
+	float				reFireTime;
+
+	float				fireDelayTime;
+	float				overheatPenalty;
+	
+
+	player				user;
+	base_bar			weaponBar;
+
+	boolean				WeaponCanFire();
+	
+	void				RemoveCharge();
+	boolean				CanRemoveCharge();
+	
+	entity				myVehicle;
+}
+
+void vehicle_weapon_base::preinit() {
+	weaponBar = new base_bar;
+	weaponBar.SetDisplayName( sys.localizeString( getKey( "gunName" ) ) );
+
+	chargeMax = getFloatKey( "charge_max" );
+	baseChargePerUse = getFloatKey( "charge_per_use" );
+	baseChargePerUse = ( baseChargePerUse / 100 ) * chargeMax;
+	
+	vCheckProficiency();
+	
+	overheatPenalty = getFloatKey( "overheat_penalty" );
+
+	OnSetPlayer( getPlayer() );
+	
+	myVehicle = getVehicle();
+}
+
+void vehicle_weapon_base::init() {
+	SetCrosshair();
+	GoToIdle();
+}
+
+void vehicle_weapon_base::destroy() {
+	if ( user == sys.getLocalViewPlayer() && user != $null_entity ) {	
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+	}
+
+	delete weaponBar;
+}
+
+void vehicle_weapon_base::GoToIdle() {
+	if ( user != $null_entity ) {
+		setState( "Idle" );
+	} else {		
+		setState( "IdleEmpty" );
+	}
+}
+
+void vehicle_weapon_base::OnSetPlayer_Base( entity p ) {
+	if ( user == p ) {
+		return;
+	}
+	
+	if( user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );	
+	}
+
+	user = p;
+	if ( user != $null_entity ) {
+		user.proxyFiringWeapon = false;
+		user.proxyFiringWeaponStart = false;
+	}
+	
+	vCheckProficiency();
+
+	weaponBar.SetOwner( user );
+
+	GoToIdle();
+}
+
+void vehicle_weapon_base::OnBecomeViewWeapon() {
+	SetCrosshair();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 1 );
+}
+
+void vehicle_weapon_base::OnFinishViewWeapon() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+}
+
+void vehicle_weapon_base::IdleEmpty() {
+}
+
+void vehicle_weapon_base::Idle() {
+	SetCrosshair();
+
+	while ( true ) {
+		sys.waitFrame();
+
+		UpdateCharge();
+
+		if ( user != $null_entity ) {
+			user.proxyFiringWeaponStart = false;
+			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
+				if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime ) {
+					user.proxyFiringWeaponStart = true;
+					if ( sys.getTime() >= reFireTime ) {
+						setState( "Fire" );
+					}
+				}
+			}
+		}
+	}
+}
+
+void vehicle_weapon_base::UpdateCharge_Base() {
+	float chargeUsedPercentage = CalcChargeUsed() / chargeMax;
+
+	if ( chargeUsedPercentage >= 0.95 ) {
+		fireDelayTime = sys.getTime() + overheatPenalty;
+	}
+	
+	boolean canRemove = CanRemoveCharge() || sys.getTime() < fireDelayTime;
+	if ( user == sys.getLocalViewPlayer() && user != $null_entity ) {	
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", !canRemove );
+
+		weaponBar.SetBarValue( 1 - chargeUsedPercentage );
+	}
+}
+
+float vehicle_weapon_base::CalcChargeUsed() {
+	float used = chargeTime - sys.getTime();
+
+	if ( used < 0 ) {
+		used = 0;
+	}
+
+	return used;
+}
+
+void vehicle_weapon_base::RemoveCharge() {
+	chargeTime = CalcChargeUsed() + sys.getTime() + chargePerUse;
+	
+	// don't use more charge than we have
+	float used = chargeTime - sys.getTime();
+	if ( used > chargeMax ) {
+		chargeTime = sys.getTime() + chargeMax;
+	}
+}
+
+boolean vehicle_weapon_base::CanRemoveCharge() {
+	return ( ( CalcChargeUsed() + chargePerUse ) <= chargeMax );
+}
+
+void vehicle_weapon_base::AddReFireDelay( float delay ) {	
+	reFireTime = sys.getTime() + delay;
+}
+
+void vehicle_weapon_base::vCheckProficiency() {
+	userChargeScale = 1.f;
+
+	if ( user != $null_entity ) {
+		if ( user.getProficiency( g_proficiencyVehicle ) >= 3 ) {
+			userChargeScale = 0.9f;
+		}
+	}
+	
+	userChargePerUse = baseChargePerUse * userChargeScale;
+	chargePerUse = userChargePerUse;
+}
+
+void vehicle_weapon_base::SetCrosshair() {
+	if ( user != $null_entity ) {
+		if ( user == sys.getLocalViewPlayer() ) {
+			string crosshair = "none";
+			if ( getKey( "crosshair" ) != "" ) {
+				crosshair = getKey( "crosshair" );
+			}
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshair );
+		}
+	}
+}
+
+//mal: lets the bots know if they can fire this vehicle based weapon, or not.
+boolean vehicle_weapon_base::WeaponCanFire() {
+	if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime && sys.getTime() >= reFireTime ) {
+		return true;
+	}
+
+	return false;
+}
