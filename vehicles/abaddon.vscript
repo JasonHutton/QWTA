@@ -611,7 +611,7 @@ stringMap vehicle_abaddon_weapon1 {
 	"def_projectile"			"projectile_flamethrower_napalm"
 
 	"crosshair"					"nospread"
-	"disabled_crosshair"		"blank"
+	"disabled_crosshair"		"explosive"
 	
 	"burn_time"					"0.5"
 	"damageRate"				"0.05"

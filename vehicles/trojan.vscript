@@ -935,5 +935,5 @@ stringMap vehicle_trojan_weapon2 {
 	"def_projectile"		"projectile_trojan_law"
 
 	"crosshair"				"nospread"
-	"disabled_crosshair"	"blank"
+	"disabled_crosshair"	"nospread"
 }
