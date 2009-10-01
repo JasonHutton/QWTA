@@ -226,6 +226,8 @@ object vehicle_base {
 	
 	entity			lastRepairer;
 	float			lastRepairTime;
+	
+	string			disabledCrosshairPrimary;
 }
 
 void vehicle_base::syncFields() {
@@ -304,6 +306,8 @@ void vehicle_base::preinit() {
 	g_drawVehicleIcons	= sys.getCVar( "g_drawVehicleIcons", "1" );
 	
 	normallyHaveKnockback = true;
+	
+	disabledCrosshairPrimary = getKeyWithDefault( "disabled_crosshair", "blank" );
 }
 
 void vehicle_base::OnDecoyChargeTimeChanged() {
@@ -976,7 +980,11 @@ void vehicle_base::OnPlayerEntered_Base( entity p, float position ) {
 			p.cancelToolTips();
 		}
 
-		sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "none" );
+		if ( g_allowCrosshairs.getBoolValue() ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "none" );
+		} else {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshairPrimary );
+		}
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );

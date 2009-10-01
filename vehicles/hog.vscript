@@ -673,6 +673,7 @@ stringMap vehicle_hog_weapon1 {
 	"q4hyper_snd_target_locked"		"sounds/weapons/misc/target_lock"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
 
 entityDef vehicle_hog_cockpit_gunner {

@@ -901,6 +901,7 @@ stringMap vehicle_trojan_weapon1 {
 	"client_projectile"		"projectile_gpmg_trojan"
 
 	"crosshair"				"nospread"
+	"disabled_crosshair"	"nospread"
 }
 
 stringMap vehicle_trojan_weapon2 {
@@ -934,4 +935,5 @@ stringMap vehicle_trojan_weapon2 {
 	"def_projectile"		"projectile_trojan_law"
 
 	"crosshair"				"nospread"
+	"disabled_crosshair"	"blank"
 }

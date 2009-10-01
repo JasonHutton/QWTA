@@ -528,6 +528,7 @@ stringMap vehicle_titan_weapon2 {
 	"weapon_priority"			"1"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
 
 stringMap vehicle_titan_weapon3 {

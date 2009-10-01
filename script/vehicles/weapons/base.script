@@ -203,11 +203,19 @@ void vehicle_weapon_base::vCheckProficiency() {
 void vehicle_weapon_base::SetCrosshair() {
 	if ( user != $null_entity ) {
 		if ( user == sys.getLocalViewPlayer() ) {
-			string crosshair = "none";
-			if ( getKey( "crosshair" ) != "" ) {
-				crosshair = getKey( "crosshair" );
+			if ( g_allowCrosshairs.getBoolValue() ) {
+				string crosshair = "none";
+				if ( getKey( "crosshair" ) != "" ) {
+					crosshair = getKey( "crosshair" );
+				}
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshair );
+			} else {
+				string disabledCrosshair = "blank";
+				if ( getKey( "disabled_crosshair" ) != "" ) {
+					disabledCrosshair = getKey( "disabled_crosshair" );
+				}
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshair );
 			}
-			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshair );
 		}
 	}
 }

@@ -633,6 +633,7 @@ stringMap vehicle_bumblebee_weapon1 {
 	"sound_channel_barrel_low"	"112"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
 
 stringMap vehicle_bumblebee_weapon2 {
@@ -675,6 +676,7 @@ stringMap vehicle_bumblebee_weapon2 {
 	"sound_channel_barrel_low"	"104"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"blank"
 }
 
 stringMap vehicle_bumblebee_weapon3 {
@@ -717,6 +719,7 @@ stringMap vehicle_bumblebee_weapon3 {
 	"sound_channel_barrel_low"	"108"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"blank"
 }
 
 entityDef vehicle_bumblebee_cockpit {

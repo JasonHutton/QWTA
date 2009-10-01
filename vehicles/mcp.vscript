@@ -458,6 +458,7 @@ stringMap vehicle_mcp_weapon1 {
 	"client_projectile"			"projectile_gpmg_mcp"
 	
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
 
 stringMap vehicle_mcp_weapon2 {

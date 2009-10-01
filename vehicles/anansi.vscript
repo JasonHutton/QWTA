@@ -500,6 +500,7 @@ stringMap vehicle_anansi_weapon1 {
 //	"no_tophat_crosshair"		"1"
 
 	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
 }
 
 stringMap vehicle_anansi_weapon2 {
@@ -571,6 +572,7 @@ stringMap vehicle_anansi_weapon2 {
 //	"no_tophat_crosshair"		"1"
 
 	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
 
 	"num_missiles"				"8"
 }
@@ -608,6 +610,7 @@ stringMap vehicle_anansi_weapon3 {
 	"client_projectile"			"projectile_gatling_anansi"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
 
 entityDef part_vehicle_anansi_left_front_thruster {

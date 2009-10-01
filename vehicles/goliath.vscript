@@ -294,6 +294,7 @@ stringMap vehicle_goliath_weapon2 {
 	"requires_consent"			"1"
 
 	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
 	"not_really_locked"			"1"
 	
 	"nrl_pitchClamp_enabled"	"1"

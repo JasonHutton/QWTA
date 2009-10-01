@@ -611,6 +611,7 @@ stringMap vehicle_abaddon_weapon1 {
 	"def_projectile"			"projectile_flamethrower_napalm"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"blank"
 	
 	"burn_time"					"0.5"
 	"damageRate"				"0.05"
@@ -643,6 +644,7 @@ stringMap vehicle_abaddon_weapon2 {
 	"range"						"8192"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 	
 	"min_damage_percent"		"90"
 	"min_damage_percent_players" "80"

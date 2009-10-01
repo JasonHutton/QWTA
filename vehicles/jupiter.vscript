@@ -459,4 +459,5 @@ stringMap vehicle_jupiter_weapon1 {
 	"clean_explode"				"fx_bfg_cleanexplode"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }

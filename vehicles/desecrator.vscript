@@ -620,6 +620,7 @@ stringMap vehicle_desecrator_weapon1 {
 	"q4hyper_snd_target_locked"		"sounds/weapons/misc/target_lock"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
 
 stringMap vehicle_desecrator_weapon2 {
@@ -653,4 +654,5 @@ stringMap vehicle_desecrator_weapon2 {
 	"def_projectile"			"projectile_plasmacannon_desecrator"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }

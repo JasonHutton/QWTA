@@ -578,6 +578,7 @@ stringMap vehicle_hornet_weapon1 {
 	"def_projectile"			"projectile_plasmacannon_small"
 
 	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
 
 //	"no_tophat_crosshair"		"1"
 }
@@ -627,6 +628,7 @@ stringMap vehicle_hornet_weapon2 {
 //	"no_tophat_crosshair"		"1"
 
 	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
 	"num_missiles"				"2"
 }
 
@@ -674,4 +676,5 @@ stringMap vehicle_hornet_weapon3 {
 	"q4hyper_snd_target_locked"		"sounds/weapons/misc/target_lock"
 
 	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 }
