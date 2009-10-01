@@ -1,0 +1,182 @@
+/***********************************************************************
+
+	reexportModels tools\defibrillator.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix DEFIBS_ -sourcedir models/tools/defibrillator/dev_sd -destdir models/tools/defibrillator/ -keep
+/*
+	mesh	defibrillator_base_file.mb		-dest models/tools/defibrillator/defibrillator_view.md5mesh
+*/
+	anim	defibrillator_idle.mb			-dest models/tools/defibrillator/defibrillator_idle.md5anim -quatprecision 0.0001
+  	anim	defibrillator_fire.mb			-dest models/tools/defibrillator/defibrillator_fire.md5anim
+ 	anim	defibrillator_raise.mb			-dest models/tools/defibrillator/defibrillator_raise.md5anim
+ 	anim	defibrillator_lower.mb			-dest models/tools/defibrillator/defibrillator_lower.md5anim
+  	anim	defibrillator_lower.mb			-dest models/tools/defibrillator/defibrillator_reload.md5anim
+}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_defibrillator {
+	mesh						models/tools/defibrillator/defibrillator_view.md5mesh
+
+	anim idle					models/tools/defibrillator/defibrillator_idle.md5anim {
+	}
+
+	anim fire					models/tools/defibrillator/defibrillator_fire.md5anim {
+		frame 7						effect fx_fire defibrillator_left
+		frame 7						effect fx_fire defibrillator_right
+	}
+	
+	anim fire_upgraded			models/tools/defibrillator/defibrillator_fire.md5anim {
+		frame 7						effect fx_fire_upgraded defibrillator_left
+		frame 7						effect fx_fire_upgraded defibrillator_right
+	}
+
+
+  	anim putaway 				models/tools/defibrillator/defibrillator_lower.md5anim {
+  	}
+
+  	anim raise 					models/tools/defibrillator/defibrillator_raise.md5anim {
+		frame 1						sound_channel snd_weapon_raise snd_raise
+ 	}
+
+  	anim reload					models/tools/defibrillator/defibrillator_reload.md5anim {
+  	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/tools/defibrillator {
+	type						"tool"
+	slot						"tool"
+	name						"game/weapons/defib"
+	model						"models/tools/defibrillator/defib_player.lwo"
+	joint						"Spine2"
+
+	data {
+		"model_view" 				"viewmodel_defibrillator"
+		"model_world" 				"models/tools/defibrillator/defibrillator_world.lwo"
+		"model_world_2"				"models/tools/defibrillator/defibrillator_world_2.lwo"
+
+		"joint_attach"				"RightHand"
+		"joint_attach_2"			"LeftHand"
+
+		"num_world_models"			"2"
+
+		"view_offset"				"-1 0 -1.8"
+
+		"anim_prefix"				"defib"
+		"anim_prefix_class"			"tool"
+
+		"weapon_scriptobject"		"tool_defibrillator"
+
+		"snd_fire"					"sounds/tools/defibrillator/fire"
+		"snd_fire_upgraded"			"sounds/tools/defibrillator/fire/upgrade"
+		"snd_charge"				"sounds/tools/defibrillator/charge"
+		"snd_shock"					"sounds/tools/defibrillator/shock"
+		"snd_raise"					"sounds/tools/defibrillator/raise"
+
+		"dmg_melee"					"damage_defib"
+		"melee_distance"			"88"
+
+		"activate_attack"			"1"
+
+		"tt_intro_1"				"defibrillator_intro_1"
+		"tt_intro_2"				"defibrillator_intro_2"
+		"tt_intro_3"				"defibrillator_intro_3"
+
+		"climate_skin_key"			"weapon_gdf"
+
+		"crosshair"					"small"
+
+		"charge_per_use"			"100"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"hide_clip"					"1"
+		"show_charge"				"1"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/defibrillator"
+		"weapon_menu_ignore"		"0"
+
+		"player_weapon_num"			"8"
+
+		"fx_fire"					"effects/tools/defibrillator_fire"
+		"fx_fire_upgraded"			"effects/tools/defibrillator_fire" // ao: ANDREW TODO
+
+	}
+}
+
+damageDef damage_defib {
+	damage								"damage_defib"
+	kickDir								( -1 0 0 )
+
+	noheadshot
+
+	knockback							20
+	kick_time							400
+	kick_amplitude						0.5
+
+	stat_name							"knife"
+
+	prof_damage							"pro_medic_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/defib"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/defib/teamkill"
+}
+
+damageFilter damage_defib {
+	type {
+		target	"target_player_all"
+		damage	20
+	}
+	
+	type {
+		target	"target_veh_light_all"
+		damage	5
+	}	
+
+	type {
+		target	"target_spawn_host"
+		damage	50
+	}
+}
+
+toolTip defibrillator_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/defibrillator_1"
+}
+
+toolTip defibrillator_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_use_item"
+}
+
+toolTip defibrillator_intro_3 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/defibrillator_2"
+}

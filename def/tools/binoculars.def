@@ -1,0 +1,118 @@
+/***********************************************************************
+
+	binoculars.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+export hauser {
+	options -prefix BINOCS_ -sourcedir models/items/binoculars/dev_sd -destdir models/items/binoculars/
+
+	mesh	binoculars_base_file.mb	-dest models/items/binoculars/binoculars_view.md5mesh
+/*
+	anim	binoculars_idle.mb		-dest models/items/binoculars/binoculars_idle.md5anim
+
+	anim	binoculars_raise.mb		-dest models/items/binoculars/binoculars_raise.md5anim
+ 	anim	binoculars_lower.mb		-dest models/items/binoculars/binoculars_lower.md5anim
+ 	anim	binoculars_zoom_in.mb	-dest models/items/binoculars/binoculars_zoom_in.md5anim
+ 	anim	binoculars_zoom_out.mb	-dest models/items/binoculars/binoculars_zoom_out.md5anim
+*/
+}
+
+// ========================================================================
+// view Models
+//
+model viewmodel_binoculars {
+	mesh					models/items/binoculars/binoculars_view.md5mesh
+
+	anim raise 				models/items/binoculars/binoculars_raise.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim idle 				models/items/binoculars/binoculars_idle.md5anim {
+	}
+
+	anim putaway 			models/items/binoculars/binoculars_lower.md5anim {
+	}
+
+	anim zoomin 			models/items/binoculars/binoculars_zoom_in.md5anim {
+	}
+
+	anim zoomout 			models/items/binoculars/binoculars_zoom_out.md5anim {
+	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+invItemDef inventory/tools/binoculars {
+	type									"tool"
+	slot									"binocs"
+	name									"game/weapons/binoc"
+
+	data {
+		"model_view" 						"viewmodel_binoculars"
+		"model_world" 						"models/tools/binoculars/binoculars2.lwo"
+		"joint_attach"						"RightHand"
+		"view_offset"						"0 -2 -2"
+
+		"anim_prefix"						"binoculars"
+		"anim_prefix_class"					"tool"
+
+		"weapon_scriptobject"				"binoculars"
+
+		"def_scopemodel"					"scope_binoculars"
+
+		"snd_zoomin"						"sounds/tools/binocs/zoom/in"
+		"snd_zoomout"						"sounds/tools/binocs/zoom/out"
+		"snd_raise"							"sounds/tools/binocs/raise"
+		"snd_scopeup"						"sounds/tools/binocs/zoom"
+
+		"binoculars_focustreshold_min"		"0.8"
+		"binoculars_focustreshold_max"		"1.75"
+		"binoculars_focusloststep"			"0.09"
+		"binoculars_focusgainstep"			"0.006"
+		"binoculars_zoomfocuslost"			"1"
+
+		"gui_overlay"						"guis/game/targeting/binoculars"
+		"hud_sort"							"999"
+//		"gui_overlay"						"game/sights/spotter"
+
+		"mtr_weaponmenu"					"guis/assets/icons/weapons/binoculars"
+
+		"climate_skin_key"					"weapon_gdf"
+
+		"crosshair"							"small"
+
+		"use_hold_anims"					"1"
+
+		"crosshair_spread_min"				"0.1"
+		"crosshair_spread_max"				"0.1"
+		"crosshair_spread_scale"			"1"
+
+		"spread_min"						"0"
+		"spread_max"						"0"
+
+		"spread_crouch_min"					"0"
+		"spread_crouch_max"					"0"
+
+		"spread_prone_min"					"0"
+		"spread_prone_max"					"0"
+
+		"spread_jump_min"					"0"
+		"spread_jump_max"					"0"
+
+		"player_weapon_num"					"9"
+
+		"weapon_menu_ignore"				"1"
+		
+		"num_zoom_levels"					"4"
+		"zoom_fov_1"						"45"
+		"zoom_fov_2"						"30"
+		"zoom_fov_3"						"20"
+		"zoom_fov_4"						"10"
+		"zoom_time"							"0.2"
+	}
+}

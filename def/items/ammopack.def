@@ -1,0 +1,217 @@
+/***********************************************************************
+
+	ammopack.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix AMMO_ -sourcedir models/items/ammopack/dev_sd -destdir models/items/ammopack/
+/*
+	mesh	ammo_pack_base_file.mb	-dest models/items/ammopack/ammopack_view.md5mesh
+	anim	ammo_pack_idle.mb		-dest models/items/ammopack/ammopack_idle.md5anim
+	anim	ammo_pack_raise.mb		-dest models/items/ammopack/ammopack_raise.md5anim
+ 	anim	ammo_pack_lower.mb		-dest models/items/ammopack/ammopack_lower.md5anim
+*/
+ 	anim	ammo_pack_fire.mb		-dest models/items/ammopack/ammopack_fire.md5anim -fps 30
+/*
+ 	anim	ammo_pack_lower.mb		-dest models/items/ammopack/ammopack_reload.md5anim
+*/
+}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_ammopack {
+	mesh						models/items/ammopack/ammopack_view.md5mesh
+
+	anim idle					models/items/ammopack/ammopack_idle.md5anim {
+	}
+
+	anim fire					models/items/ammopack/ammopack_fire.md5anim {
+		frame 5						sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim putaway 				models/items/ammopack/ammopack_lower.md5anim {
+	}
+
+	anim raise 					models/items/ammopack/ammopack_raise.md5anim {
+		frame 1						sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim reload 				models/items/ammopack/ammopack_reload.md5anim {
+	}
+}
+
+invItemDef inventory/items/ammopack {
+	type						"item"
+	slot						"item"
+	name						"game/weapons/ammo"
+	model						"models/items/ammopack/ammopack_player.lwo"
+	joint						"Spine"
+
+	data {
+		"model_view" 				"viewmodel_ammopack"
+		"model_world" 				"models/items/ammopack/ammopack_thirdperson.lwo"
+		"joint_attach"				"RightHand"
+		"view_offset"				"-2 -2 -3"
+
+		"anim_prefix"				"healthpack"
+		"anim_prefix_class"			"tool"
+
+		"weapon_scriptobject"		"item_supplypack_fieldops"
+
+		"snd_raise"					"sounds/tools/ammopack/raise"
+		"snd_fire"					"sounds/tools/ammopack/fire"
+		"snd_need_charge"			"sounds/ui/main/cannot"
+
+		"num_projectiles"			"1"
+		"hide_clip"					"1"
+		"fire_rate"					"1"
+		"trigger_delay"				"0.2"
+
+		"finish_fire_anim"			"1"
+
+		"timer_charge"				"energy_supply"
+		"charge_per_use"			"25"
+		"show_charge"				"1"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/ammopack"
+
+		"tt_intro_1"				"ammopack_intro_1"
+		"tt_intro_2"				"ammopack_intro_2"
+		"tt_need_charge"			"ammopack_need_charge"
+
+		"climate_skin_key"			"weapon_gdf"
+
+		"crosshair"					"small"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"player_weapon_num"			"19"
+	}
+
+	clip {
+		"projectile"			"projectile_ammopack"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+
+	clip {
+		"projectile"			"projectile_ammopack_mega"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectile_ammopack {
+	"spawnclass"				"idMoveableItem"
+
+	"model"						"models/items/ammopack/ammopack_world.lwo"
+
+	"mins"						"-2 -2 -4.5"
+	"maxs"						"2 2 4.5"
+
+	"maxVisDist"				"2048"
+
+	"scriptobject"				"supplypack"
+
+	"snd_acquire"				"sounds/tools/ammopack/pickup"
+
+	"pck_items"					"weapons/misc/ammopack"
+	"life_time"					"30000"
+	"wait_time"					"0.2"
+
+	"ability_ignore"			"fieldops"
+
+	"health"					"0"
+	"angular_velocity"			"0 0 0"
+	"speed"						"400"
+	"linear_friction"			"1"
+	"angular_friction"			"1"
+	"contact_friction"			"1"
+	"bouncyness"				"0.1"
+	"density"					"0.1"
+	"buoyancy"					"0.05"
+
+	"is_ammo"					"1"
+	"always_give_bonus"			"1"
+
+	"require_pickup"			"same_team == true"
+
+	"prof_pickup"				"pro_fieldops_supply"
+
+	"text_pickup"				"game/items/pickup/ammo"
+	
+	"fx_splash"					"effects/player/splash"	
+
+}
+
+entityDef projectile_ammopack_mega {
+	"inherit"					"projectile_ammopack"
+	"pck_items"					"weapons/misc/ammopack/mega"
+	"text_pickup"				"game/items/pickup/ammo/mega"
+}
+
+itemPackageDef weapons/misc/ammopack {
+	consumable					ammo assaultrifle		40
+	consumable					ammo gpmg				200
+	//consumable				ammo grenade			1
+	consumable					ammo grenade_rifle		2
+	consumable					ammo machinepistol		20
+	consumable					ammo pistol				10
+	consumable					ammo rocketlauncher		5
+	consumable					ammo shotgun			10
+	consumable					ammo sniperrifle		10
+}
+
+itemPackageDef weapons/misc/ammopack/mega {
+	consumable					ammo assaultrifle		80
+	consumable					ammo gpmg				400
+	//consumable				ammo grenade			2
+	consumable					ammo grenade_rifle		4
+	consumable					ammo machinepistol		40
+	consumable					ammo pistol				20
+	consumable					ammo rocketlauncher		10
+	consumable					ammo shotgun			20
+	consumable					ammo sniperrifle		20
+}
+
+#include "templates/tooltips.include"
+
+toolTip ammopack_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/ammopack_1"
+}
+
+toolTip ammopack_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_drop_item"
+}
+
+toolTip ammopack_need_charge {
+	alwaysPlay
+	length 2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}

@@ -1,0 +1,264 @@
+/***********************************************************************
+
+	reexportModels tools\repair_drone.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+
+export hauser {
+	options -prefix DRONE_ -sourcedir models/tools/repair_drone/dev_sd -destdir models/tools/repair_drone -keep sparks_joint_left sparks_joint_right main_main_joint
+
+
+
+	mesh	forearm_repair_drone_rework_base_file.mb	-dest models/tools/repair_drone/forearm_repair_drone_view.md5mesh
+	anim	forearm_repair_drone_rework_idle.mb			-dest models/tools/repair_drone/forearm_repair_drone_idle.md5anim
+ 	anim	forearm_repair_drone_rework_raise.mb		-dest models/tools/repair_drone/forearm_repair_drone_raise.md5anim
+ 	anim	forearm_repair_drone_rework_lower.mb		-dest models/tools/repair_drone/forearm_repair_drone_lower.md5anim
+ 	anim	forearm_repair_drone_rework_fire_loop.mb	-dest models/tools/repair_drone/forearm_repair_drone_fire.md5anim
+
+ 	anim	forearm_repair_drone_rework_fire_loop.mb	-dest models/tools/repair_drone/forearm_repair_drone_fire_start.md5anim -range 0 6
+ 	anim	forearm_repair_drone_rework_fire_loop.mb	-dest models/tools/repair_drone/forearm_repair_drone_fire_loop.md5anim -range 6 66
+ 	anim	forearm_repair_drone_rework_fire_loop.mb	-dest models/items/strogg_tools/repair_drone/forearm_repair_drone_fire_end.md5anim -range 50 56
+
+ 	anim	forearm_repair_drone_rework_release.mb		-dest models/tools/repair_drone/forearm_repair_drone_release.md5anim		-range 0 10
+ 	anim	forearm_repair_drone_rework_release.mb		-dest models/tools/repair_drone/forearm_repair_drone_released_idle.md5anim		-range 10 120
+ 	anim	forearm_repair_drone_rework_release.mb		-dest models/tools/repair_drone/forearm_repair_drone_released_raise.md5anim	-range 130 140
+ 	anim	forearm_repair_drone_rework_release.mb		-dest models/tools/repair_drone/forearm_repair_drone_released_lower.md5anim	-range 125 130
+
+ 	anim	forearm_repair_drone_rework_release.mb		-dest models/tools/repair_drone/forearm_repair_drone_catch.md5anim			-range 140 154
+
+}
+
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_repair_drone {
+	mesh							models/tools/repair_drone/forearm_repair_drone_view.md5mesh
+
+	anim raise						models/tools/repair_drone/forearm_repair_drone_raise.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+	}
+	anim idle 						models/tools/repair_drone/forearm_repair_drone_idle.md5anim
+	anim putaway 					models/tools/repair_drone/forearm_repair_drone_lower.md5anim
+
+	anim fire_start					models/tools/repair_drone/forearm_repair_drone_fire_start.md5anim
+	anim fire_loop					models/tools/repair_drone/forearm_repair_drone_fire_loop.md5anim
+	anim fire_stop					models/tools/repair_drone/forearm_repair_drone_fire_end.md5anim
+
+	anim release					models/tools/repair_drone/forearm_repair_drone_release.md5anim
+	anim catch						models/tools/repair_drone/forearm_repair_drone_catch.md5anim
+
+	anim idle_empty					models/tools/repair_drone/forearm_repair_drone_released_idle.md5anim
+	anim putaway_empty				models/tools/repair_drone/forearm_repair_drone_released_lower.md5anim
+	anim raise_empty				models/tools/repair_drone/forearm_repair_drone_released_raise.md5anim
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/tools/repair_drone {
+	type							"tool"
+	slot							"tool"
+	name							"game/weapons/drone_repair"
+	model							"models/tools/repair_drone/drone_player.lwo"
+	joint							"Spine"
+
+	data {
+ 		"model_view" 				"viewmodel_repair_drone"
+		"model_world" 				"models/tools/repair_drone/drone_off.lwo"
+		"joint_attach"				"RightForeArmRoll"
+
+		"view_offset"				"1.2 -2 0"
+		"view_foreshorten"				"0.7"
+
+		"anim_prefix"				"hands_drone"
+		"anim_prefix_class"			"hands"
+
+		"weapon_scriptobject"		"tool_repair_drone"
+		"use_hold_anims"			"1"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/repair_drone"
+		"crosshair"					"small"
+		"def_drone"					"strogg_repair_drone"
+
+
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"tt_intro_1"				"repair_drone_intro_1"
+		"tt_intro_2"				"repair_drone_intro_2"
+		"tt_intro_advanced_2"		"repair_drone_intro_advanced_2"
+		"tt_action_failed"			"repair_drone_action_failed"
+		"tt_enemy_repair"			"repair_drone_enemy_repair"
+		"tt_deployed_intro_1"		"repair_drone_deployed_intro_1"
+		"tt_deployed_intro_2"		"repair_drone_deployed_intro_2"
+
+		"snd_raise"					"sounds/tools/repairdrone/raise"
+		"snd_start"					"sounds/tools/repairdrone/beam"
+		"snd_stop"					"sounds/tools/constructor/stop"
+		"snd_target_locking"		"sounds/weapons/misc/target_track_short"
+		"snd_target_locked"			"sounds/weapons/misc/target_lock"
+		"snd_no_stroyent"			"sounds/ui/main/cannot"
+
+		"lock_distance"				"512"
+		"lock_friendly"				"1"
+		"lock_filter"				"target_repair_drone_targets"
+
+		"gui_camera_view"			"game/sights/repair_drone"
+		"hud_sort"					"999"
+
+		"fx_repair"					"effects/tools/repair"
+		"fx_sabotage"				"effects/tools/sabotage"
+
+		"charge_per_drone"			"200"
+		"repair_count"				"30"
+		"fire_rate"					"0.1"
+		"show_charge"				"0"
+		"hide_clip"					"1"
+		"show_all_ammo"				"1"
+		"clip_based"				"0"
+
+		"melee_distance"			"88"
+
+		"can_disarm_charge"			"1"
+		"can_arm_normal"			"1"
+		"can_enable"				"1"
+		"can_repair"				"1"
+		"can_construct"				"1"
+
+		"player_weapon_num"			"12"
+		"fx_loop"					"effects/weapons/repairdrone_loop"
+		"fx_loop_world"				"effects/weapons/repairdrone_loop_world"
+
+		"return_delay"				"1"
+	}
+	
+	clip {
+		// Need this for the ammo lookup when using remote repair drone
+		"type"							"stroyent"
+	}
+}
+
+entityDef strogg_repair_drone {
+	"spawnclass"					"sdRepairDrone"
+	"scriptobject"					"repair_drone"
+
+	"model" 						"models/tools/repair_drone/drone.lwo"
+
+	"mins"							"-8 -8 -4"
+	"maxs"							"8 8 4"
+
+	"option_simple_rigid_body_physics"	"1"
+	"option_network_interface"			"1"
+	"option_crosshair_interface"		"1"
+	"option_unlock_interpolate"			"1"
+
+	"gravity"						"1066"
+	"mass"							"100"
+
+	"health"						"100"
+	"collection_basedefense_attack"	"basedefense_attack"
+	"collection_vehicles"			"vehicles"
+
+	// the forward two jets are first
+	"jet1_position"					"8 -8 0"		// forward left
+	"jet2_position"					"8 8 0"		// forward right
+	"jet3_position"					"-8 -8 0"		// rear left
+	"jet4_position"					"-8 8 0"		// rear right
+
+	"force_needed_scale"			"0.05"
+	"velocity_dampening"			"5000"
+
+	"throttle_scale"				"0.15"
+	"throttle_max"					"35000"
+	"throttle_min"					"15000"
+	"throttle_vel_scale"			"9"
+
+	"velocity_to_angle"				"0.05"
+	"direction_recovery"			"10"
+	"angle_max"						"6"
+	"angle_to_force"				"2"
+
+	"max_side_velocity"				"60"
+	"max_up_velocity"				"80"
+
+	"debug_info"					"0"
+	"debug_force_scale"				"0.0003"
+
+	"fx_repairbeam"					"effects/tools/repairdrone/beam"
+	"fx_engine"						"effects/tools/repairdrone/engine"
+
+	"snd_seek"						"sounds/tools/repairdrone/seek"
+	"snd_return"					"sounds/tools/repairdrone/return"
+	"snd_repair"					"sounds/tools/repairdrone/repair"
+	"snd_idle"						"sounds/tools/repairdrone/idle"
+	"snd_beam"						"sounds/tools/repairdrone/beam"
+
+	"max_repair_scale"				"2.5"
+	"max_player_return_distance"	"1280"
+	"max_player_die_distance"		"2560"
+
+	"repair_count"					"10"
+	"repair_interval"				"0.1"
+	"arm_interval"					"1"
+	"enable_interval"				"1"
+	"construct_interval"			"1"
+	
+	"return_timeout"				"10"
+}
+
+toolTip repair_drone_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/repair_drone_1"
+}
+
+toolTip repair_drone_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_use_item"
+}
+
+toolTip repair_drone_intro_advanced_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/repair_drone_advanced"
+}
+
+toolTip repair_drone_action_failed {
+	sound "sounds/ui/main/cannot"
+	text "game/tt/intro/repair_drone_action_failed"
+}
+
+toolTip repair_drone_enemy_repair {
+	sound "sounds/ui/main/cannot"
+	text "game/tt/intro/repair_drone_enemy_repair"
+}
+
+toolTip repair_drone_deployed_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/repair_drone_deployed_intro_1"
+}
+
+toolTip repair_drone_deployed_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/repair_drone_deployed_intro_2"
+}
