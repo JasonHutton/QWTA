@@ -362,6 +362,7 @@ idCVar g_debugProficiency(			"g_debugProficiency",		"0",			CVAR_GAME | CVAR_BOOL
 idCVar g_weaponSwitchTimeout(		"g_weaponSwitchTimeout",	"1.5",			CVAR_GAME | CVAR_PROFILE | CVAR_ARCHIVE | CVAR_FLOAT, "" );
 
 idCVar g_hitBeep(					"g_hitBeep",				"1",			CVAR_GAME | CVAR_PROFILE | CVAR_ARCHIVE | CVAR_INTEGER, "play hit beep sound when you inflict damage.\n  0 = do nothing\n  1 = beep/flash cross-hair\n  2 = beep\n  3 = flash cross-hair" );
+idCVar g_allowHitBeep(				"g_allowHitBeep",			"0",			CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,				"Allow or disallow players' use of hitbeep damage feedbck." );
 
 idCVar fs_debug(					"fs_debug",					"0",			CVAR_SYSTEM | CVAR_INTEGER, "", 0, 2, idCmdSystem::ArgCompletion_Integer<0,2> );
 

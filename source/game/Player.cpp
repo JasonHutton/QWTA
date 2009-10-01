@@ -9126,7 +9126,7 @@ void idPlayer::SetLastDamageDealtTime( int time ) {
 		nextSndHitTime = gameLocal.realClientTime + 100;
 	}
 
-	if ( g_hitBeep.GetInteger() > 0 && g_hitBeep.GetInteger() < 3 && time > nextSndHitTime ) {
+	if ( g_allowHitBeep.GetBool() && g_hitBeep.GetInteger() > 0 && g_hitBeep.GetInteger() < 3 && time > nextSndHitTime ) {
 		idEntity* ent = lastHitEntity.GetEntity();
 		if ( ent != NULL ) {
 			int duration = ent->PlayHitBeep( this, lastHitHeadshot );

@@ -252,6 +252,7 @@ extern idCVar	g_debugNetworkWrite;
 extern idCVar	g_weaponSwitchTimeout;
 
 extern idCVar	g_hitBeep;
+extern idCVar	g_allowHitBeep;
 
 extern idCVar	pm_vehicleSoundLerpScale;
 

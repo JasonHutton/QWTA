@@ -501,7 +501,7 @@ void sdPlayerProperties::Update( idPlayer* player ) {
 	}
 
 	if ( player != NULL ) {
-		if ( g_hitBeep.GetInteger() > 0 && g_hitBeep.GetInteger() != 2 ) {
+		if ( g_allowHitBeep.GetBool() && g_hitBeep.GetInteger() > 0 && g_hitBeep.GetInteger() != 2 ) {
 			hitFeedback = player->NewDamageDealt();
 			player->ClearDamageDealt();
 			lastHitFeedbackType = player->GetLastDamageDealtType();

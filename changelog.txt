@@ -57,6 +57,9 @@ CHANGES:
     and in the case of the Strogg, that the crosshairs are not displayed
     unless the Strogg is looking through what's assumed to be a biotech
     interface for a gun camera. Ironsights are of course still available.
+* Cvar g_allowHitBeep added.
+  + Default 0.
+  + Controls whether the hit feedback beep and flash are permitted.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
