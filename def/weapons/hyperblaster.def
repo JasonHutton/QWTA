@@ -189,6 +189,7 @@ invItemDef inventory/weapons/hyperblaster {
 		"tt_intro_heat"					"generic_weapon_heat"
 
 		"crosshair"						"large"
+		"disabled_crosshair_secondary"	"large"
 
 		"crosshair_spread_min"			"-0.45"
 		"crosshair_spread_max"			"3"

@@ -185,6 +185,7 @@ invItemDef inventory/weapons/sniperrifle {
 		"hide_crosshair"				"0"
 		"crosshair"						"small"
 		"crosshair_secondary"			"none"
+		"disabled_crosshair_secondary"	"none"
 		"crosshair_spread_min"			"-0.5"
 		"crosshair_spread_max"			"3"
 		"crosshair_spread_scale"		"3"

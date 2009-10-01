@@ -172,6 +172,8 @@ object weapon_base {
 
 	string		crosshairPrimary;
 	string		crosshairSecondary;
+	string		disabledCrosshairPrimary;
+	string		disabledCrosshairSecondary;
 
 	float		fireChannelUpto;
 };
@@ -221,6 +223,9 @@ void weapon_base::preinit() {
 
 	crosshairPrimary = getKeyWithDefault( "crosshair", "small" );
 	crosshairSecondary = getKeyWithDefault( "crosshair_secondary", crosshairPrimary );
+	
+	disabledCrosshairPrimary = getKeyWithDefault( "disabled_crosshair", "blank" );
+	disabledCrosshairSecondary = getKeyWithDefault( "disabled_crosshair_secondary", disabledCrosshairPrimary );
 
 	reFire = 0;
 
@@ -281,10 +286,18 @@ void weapon_base::UpdateCrosshair() {
 }
 
 void weapon_base::SetCrosshair() {
-	if ( myPlayer.IsSniperScopeUp() || ironSightsEnabled ) {
-		sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshairSecondary );
+	if ( g_allowCrosshairs.getBoolValue() ) {
+		if ( myPlayer.IsSniperScopeUp() || ironSightsEnabled ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshairSecondary );
+		} else {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshairPrimary );
+		}
 	} else {
-		sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshairPrimary );
+		if ( myPlayer.IsSniperScopeUp() || ironSightsEnabled ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshairSecondary );
+		} else {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshairPrimary );
+		}
 	}
 }
 
@@ -307,7 +320,11 @@ void weapon_base::destroy() {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponNeedsAmmoBox", 0 );
 
-			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "small" );
+			if ( g_allowCrosshairs.getBoolValue() ) {
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "small" );
+			} else {
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "none" );
+			}
 
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 0 );

@@ -48,6 +48,15 @@ CHANGES:
     physics. While bots can use realistic physics too, their AI doesn't
     recognize it, leading to them doing very stupid things when trying to get
     from point A to point B. This setting works around that flaw.
+* Cvar g_allowCrosshairs added.
+  + Default 0.
+  + Controls whether most(not all, notably Strogg scopes, sniper weapons'
+    scopes, and most vehicles) crosshairs ingame are disabled.
+    This is largely intended for realism purposes, as its assumed crosshairs
+    for weapons aren't painted onto the personal HUDs GDF soldiers have,
+    and in the case of the Strogg, that the crosshairs are not displayed
+    unless the Strogg is looking through what's assumed to be a biotech
+    interface for a gun camera. Ironsights are of course still available.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to

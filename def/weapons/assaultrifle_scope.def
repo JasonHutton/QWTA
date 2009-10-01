@@ -173,6 +173,7 @@ invItemDef inventory/weapons/assaultrifle/scoped {
 
 		"crosshair"						"large"
 		"crosshair_secondary"			"none"
+		"disabled_crosshair_secondary"	"none"
 		"crosshair_spread_min"			"-0.5"
 		"crosshair_spread_max"			"4"
 		"crosshair_spread_scale"		"2"

@@ -180,6 +180,7 @@ invItemDef inventory/weapons/railgun {
 
 		"mtr_weaponmenu"				"guis/assets/icons/weapons/railgun"
 		"crosshair"						"small"
+		"disabled_crosshair_secondary"	"small"
 		"crosshair_spread_min"			"-0.5"
 		"crosshair_spread_max"			"3"
 		"crosshair_spread_scale"		"3"

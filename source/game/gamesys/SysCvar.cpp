@@ -618,6 +618,8 @@ idCVar	g_vehicleSpawnsUseFE(		"g_vehicleSpawnsUseFE",			"1",		CVAR_GAME | CVAR_B
 idCVar	g_disableVehicleRespawns(	"g_disableVehicleRespawns",		"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Are vehicles permitted to respawn after being destroyed?" );
 idCVar	g_disablePlayerRespawns(	"g_disablePlayerRespawns",		"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Are players permitted to respawn after being killed?" );
 
+idCVar	g_allowCrosshairs(			"g_allowCrosshairs",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow player's crosshairs." );
+
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

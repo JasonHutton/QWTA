@@ -189,6 +189,7 @@ invItemDef inventory/weapons/lacerator/scoped {
 		"mtr_weaponmenu"				"guis/assets/icons/weapons/lacerator_scope"
 
 		"crosshair"						"large"
+		"disabled_crosshair_secondary"	"large"
 
 		"crosshair_spread_min"			"-0.5"
 		"crosshair_spread_max"			"4"

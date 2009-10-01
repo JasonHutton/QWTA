@@ -197,6 +197,7 @@ invItemDef inventory/weapons/blaster {
 		"hud_sort"							"999"
 
 		"crosshair"							"small"
+		"disabled_crosshair_secondary"		"small"
 
 		"crosshair_spread_min"				"-0.5"
 		"crosshair_spread_max"				"4"

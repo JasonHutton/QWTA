@@ -360,6 +360,8 @@ void game_main() {
 	
 	g_disableVehicleRespawns	= sys.getCVar( "g_disableVehicleRespawns", "" );
 	g_disablePlayerRespawns	= sys.getCVar( "g_disablePlayerRespawns", "" );
+	
+	g_allowCrosshairs		=	sys.getCVar( "g_allowCrosshairs", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

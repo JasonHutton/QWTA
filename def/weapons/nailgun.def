@@ -181,6 +181,7 @@ invItemDef inventory/weapons/nailgun {
 		"tt_intro_heat"					"generic_weapon_heat"
 
 		"crosshair"						"shell"
+		"disabled_crosshair_secondary"	"shell"
 		"crosshair_spread_min"			"-2.3"
 		"crosshair_spread_max"			"2"
 		"crosshair_spread_scale"		"3.7"

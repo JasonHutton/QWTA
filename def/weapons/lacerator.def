@@ -224,6 +224,7 @@ invItemDef inventory/weapons/lacerator {
 		"hud_sort"						"999"
 
 		"crosshair"						"large"
+		"disabled_crosshair_secondary"	"large"
 
 		"crosshair_spread_min"			"-0.5"
 		"crosshair_spread_max"			"4"
