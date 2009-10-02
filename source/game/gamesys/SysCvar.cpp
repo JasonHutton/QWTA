@@ -620,6 +620,7 @@ idCVar	g_disableVehicleRespawns(	"g_disableVehicleRespawns",		"0",		CVAR_GAME | 
 idCVar	g_disablePlayerRespawns(	"g_disablePlayerRespawns",		"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Are players permitted to respawn after being killed?" );
 
 idCVar	g_allowCrosshairs(			"g_allowCrosshairs",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow player's crosshairs." );
+idCVar	g_allowTimerCircles(		"g_allowTimerCircles",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow the timer circles that normally surround the crosshairs." );
 
 idCVar	g_useBaseETQW12SniperTrail( "g_useBaseETQW12SniperTrail",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use the BaseETQW 1.2 sniper rifle's trail-tracer effect?" );
 

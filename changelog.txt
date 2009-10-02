@@ -65,6 +65,9 @@ CHANGES:
   + Sets QWTA to use the BaseETQW 1.2 Sniper Rifle trail/tracer effect.
     This effect is more subtle than the BaseETQW 1.5 effect, and harder
     to spot.
+* Cvar g_allowTimerCircles added.
+  + Default 0.
+  + Controls whether the circular timer bars are displayed in center screen.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to

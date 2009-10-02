@@ -95,7 +95,9 @@ void item_smoke_grenade_qwta::Fire() {
 	fuse = 4.f;
 
 	if ( myPlayer == sys.getLocalPlayer() ) {
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", fuse );
+		if ( g_allowTimerCircles.getBoolValue() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", fuse );
+		}
 	}
 
 	currentTime = sys.getTime();
