@@ -267,6 +267,8 @@ This is the main script that is loaded before any level scripts load.
 #include "script/items/smoke_grenade_qwta.script"
 #include "script/tools/force_shield_qwta.script"
 #include "script/misc/spawn_host_qwta.script"
+#include "script/items/healthpack_qwta.script"
+#include "script/items/supplypack_qwta.script"
 
 // Maps
 #include "script/maps/tactical_volcano.script"

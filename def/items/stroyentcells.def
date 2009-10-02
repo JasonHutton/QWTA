@@ -128,7 +128,7 @@ entityDef projectile_stroyentcells {
 
 	"snd_acquire"				"sounds/tools/stroyent/aquire"
 
-	"scriptobject"				"stroyentcells"
+	"scriptobject"				"stroyentcells_qwta"
 	"ability_ignore"			"technician"
 
 	"maxVistDist"				"2048"
@@ -147,6 +147,7 @@ entityDef projectile_stroyentcells {
 	"density"					"0.1"
 	"buoyancy"					"0.05"
 
+	"is_health"					"1"
 	"is_ammo"					"1"
 
 	"require_pickup"			"same_team == true"

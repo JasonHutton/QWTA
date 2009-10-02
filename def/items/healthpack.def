@@ -139,7 +139,7 @@ entityDef projectile_healthpack {
 	"life_time"					"30000"
 	"wait_time"					"0.2"
 
-	"scriptobject"				"healthpack"
+	"scriptobject"				"healthpack_qwta"
 	"health"					"0"
 	"angular_velocity"			"0 0 0"
 	"speed"						"400"
@@ -151,6 +151,8 @@ entityDef projectile_healthpack {
 	"buoyancy"					"0.05"
 
 	"ability_ignore"			"medic"
+	
+	"is_health"					"1"
 
 	"require_pickup"			"same_team == true"
 

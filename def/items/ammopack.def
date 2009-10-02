@@ -132,7 +132,7 @@ entityDef projectile_ammopack {
 
 	"maxVisDist"				"2048"
 
-	"scriptobject"				"supplypack"
+	"scriptobject"				"supplypack_qwta"
 
 	"snd_acquire"				"sounds/tools/ammopack/pickup"
 

@@ -248,6 +248,11 @@ void supply_crate::Supply() {
 		if ( p.givePackage( packageName ) ) {
 			supplyCount = supplyCount - 1;
 			OnSupplyCountChanged();
+			player testPlayer = p;
+			if ( testPlayer != $null_entity ) {
+				testPlayer.ShowAmmoParentBox( 2.f );
+				testPlayer.ShowHealthParentBox( 2.f );
+			}
 			
 			if ( owner != $null_entity ) {
 				if ( owner != p ) {
