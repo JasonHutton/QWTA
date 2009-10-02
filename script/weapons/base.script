@@ -94,6 +94,8 @@ object weapon_base {
 
 	void		Base_BeginReload();
 	void		Base_EndReload();
+	
+	void		ShowAmmoParentBox( float duration );
 
 	boolean		HasNoAmmo();
 
@@ -332,6 +334,8 @@ void weapon_base::destroy() {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 0 );
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+			
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", 0.f );
 		}
 	}
 
@@ -823,7 +827,10 @@ void weapon_base::Base_BeginReload() {
 	if ( ShouldRunGuis() ) {
 		float reloadTime = getAnimLength( "reload" );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", reloadTime );
+		
+		ShowAmmoParentBox( reloadTime + 1.f );
 	}
+	
 }
 
 void weapon_base::Base_EndReload() {
@@ -832,8 +839,21 @@ void weapon_base::Base_EndReload() {
 	}
 }
 
+void weapon_base::ShowAmmoParentBox( float duration ) {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", duration );
+			float hudHandle = getGUI( "hud" );	
+			if ( hudHandle != GUI_INVALID ) {
+				sys.guiPostNamedEvent( hudHandle, "AmmoParentBox", "updateAmmoParentBoxTime" );
+		}
+	}
+}
+
 void weapon_base::Base_Raise() {
 	UpdateCrosshair();
+	
+	ShowAmmoParentBox( 2.f );
+	
 	if ( myPlayer.AI_SPRINT ) {
 		DoRaise( "Sprint", 4 );
 	} else {

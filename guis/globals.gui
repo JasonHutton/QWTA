@@ -119,6 +119,8 @@ stringMap gameHud {
 	
 	"lifeStatsString"				"wstring"
 	"lifeStatsTitle"				"handle"
+	
+	"ammoParentBoxTime"				"float"
 }
 
 stringMap mcpObjective {
