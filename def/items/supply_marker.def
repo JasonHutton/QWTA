@@ -1,0 +1,227 @@
+
+
+invItemDef inventory/weapons/grenades/supply_marker_medic {
+	type								"item"
+	slot								"item"
+	name								"game/items/supplies/health"
+
+	data {
+		"model_view"					"viewmodel_grenade_smoke_green"
+		"model_world" 					"models/weapons/gdf_smoke_grenade/smoke_grenade_thirdperson_green.lwo"
+										 
+		"joint_attach"					"weapon_attach"
+
+		"view_offset"					"-1 -1 -1"
+ 		"view_foreshorten"				"0.8"
+
+		"anim_prefix"					"grenade"
+
+		"weapon_scriptobject"			"item_smoke_grenade"
+
+		"snd_raise"						"sounds/tools/medic/marker/raise"
+		"snd_throw"						"sounds/weapons/grenades/throw"
+		"snd_pin"						"sounds/weapons/grenades/pin"
+		"snd_need_charge"				"sounds/ui/main/cannot"
+		
+		"tt_intro_1"					"supply_marker_medic_intro_1"
+		"tt_intro_2"					"supply_marker_medic_intro_2"
+		"tt_need_charge"				"supply_marker_medic_need_charge"
+		
+		"climate_skin_key"				"weapon_gdf"
+
+		"stat_name"						"supply_medic"
+
+		"throw_quick"					"0.5"
+		"throw_normal"					"0.2"
+
+		"num_projectiles"				"1"
+		"hide_clip"						"1"
+		"show_charge"					"1"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/smoke_marker.tga"
+		"crosshair"						"small"
+
+		"timer_charge"					"energy_supply"
+		"charge_per_use"				"100"
+		
+		"player_weapon_num"				"25"
+	}
+
+	clip {
+		"projectile"					"projectile_grenade_supply_marker_medic"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+}
+
+entityDef misc_supplycrate_base {
+	"editor_color"					"0 .5 .8"
+	"editor_mins"					"-64 -64 0"
+	"editor_maxs"					"64 64 128"
+
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"supply_crate"
+
+	"model"							"models/structures/edf/deployables/supply_drop/crate.lwo"
+	"cm_model"						"models/structures/edf/deployables/supply_drop/crate.lwo"
+	
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_no_inhibit_physics"		"1"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"supplies"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_supplies"
+	"icon_size_cm"					"12"
+	
+	"force_door_collision"			"1"
+
+	"dmg_crush"						"damage_supplycrate_crush"
+
+	"snd_drop"						"sounds/deployables/misc/drop"
+	"snd_supply"					"sounds/tools/supplypack/pickup"
+
+	// jotun parachuting stuff
+	"option_simple_physics"			"1"
+	"drop_snap"						"1"
+	"freeze_on_spawn"				"1"
+	"parachute_offset"				"0 0 32"
+	"parachute_deploy_delay"		"2.7"
+
+	"collection_deployables"		"deployables"
+	"collection_supply_crate"		"supply_crate"
+	
+	"health"						"450"
+	"fx_fizzle"						"effects/deployables/landfall_hitground_vehicle"
+
+	"always_drop"					"1"
+	
+	"play_hitground_effect"			"1"
+	"fx_hitground"					"effects/deployables/landfall_hitground_small"
+
+	"deploybonus_requireactive"		"1"
+	"prof_deploybonus"				"pro_medic_deploy_bonus"
+}
+
+damageDef damage_supplycrate_crush {
+	damage						"damage_supplycrate_crush"
+	noGod
+	noTeam
+	
+	tt_obituary_unknown				"tooltips/killmsgs/items/supplycrate/crush"
+	tt_obituary_unknown_friendly	"tooltips/killmsgs/items/supplycrate/crush/friendly"
+}
+
+damageFilter damage_supplycrate_crush {
+	type {
+		target					"target_player_all"
+		damage					50000
+	}
+	type {
+		target					"target_veh_all"
+		damage					300
+	}
+}
+
+entityDef misc_supplycrate_health {
+	"inherit"						"misc_supplycrate_base"
+	"stat_name"						"supply_station_health"	
+	"object_name"					"game/items/supplies/health"
+	"pck_items"						"weapons/misc/supplycrate/health"	
+	"prof_used"						"pro_medic_supplydrop_used"
+}
+
+deployObject deployobject_supplycrate_health {
+	"wait_time"						"0"
+	"def_deployable"				"misc_supplycrate_health"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+}
+
+itemPackageDef weapons/misc/supplycrate/health {
+	consumable					health					25
+
+	consumable					ammo assaultrifle		40
+	consumable					ammo gpmg				200
+	consumable					ammo grenade			1
+	consumable					ammo grenade_rifle		2
+	consumable					ammo machinepistol		20
+	consumable					ammo pistol				10
+	consumable					ammo rocketlauncher		5
+	consumable					ammo shotgun			10
+	consumable					ammo sniperrifle		10
+}
+
+entityDef projectile_grenade_supply_marker_base {
+	"spawnclass"						"sdScriptEntity_Projectile"
+	
+	"option_simple_rigid_body_physics"	"1"
+	"option_interactive_interface"		"1"
+	"option_crosshair_interface"		"1"
+	"option_unlock_interpolate"			"1"
+	
+	"inherit"							"projectile_grenade"
+	"angular_velocity"					"5 6 4"
+
+	"scriptobject"						"supply_marker"
+
+	"mins"								"-3 -3 -5"
+	"maxs"								"3 3 6"
+	"model"			 					"models/weapons/grenades/smoke_grenade_world.lwo"
+	"bouncyness"						"0.35"
+
+	"fly_timeoffset"					"5"
+
+	"fx_trail"							"_default"
+	"fx_explode"						"effects/tools/repairdrone/fizzle"
+}
+
+entityDef projectile_grenade_supply_marker_medic {
+	"inherit"							"projectile_grenade_supply_marker_base"
+	
+	"supply_wait_time"					"10"
+	
+	"do_supply_item"					"deployobject_supplycrate_health"
+
+	"object_name"						"game/weapons/airstrike"
+
+	"fx_trail"							"effects/weapons/grenades/marker_smoke_green"
+	
+	"model"								"models/weapons/gdf_smoke_grenade/smoke_grenade_world_green.lwo"
+
+	"snd_smoke_start"					"sounds/tools/medic/marker/start"
+	"snd_smoke_stop"					"sounds/tools/medic/marker/stop"
+	"snd_unknown_target"				"sounds/ui/main/bad"
+	
+	"play_hitground_effect"				"1"
+	
+	"tt_unknown_target"					"supply_marker_unknown_target"
+}
+
+
+#include "templates/tooltips.include"
+
+toolTip supply_marker_medic_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/supply_marker_medic_1"
+}
+
+toolTip supply_marker_medic_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_throw_item"
+}
+
+toolTip supply_marker_medic_need_charge {
+	alwaysPlay
+	length 2
+	nextShowDelay 0
+	
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+toolTip supply_marker_unknown_target {
+	alwaysPlay
+	sound "silence"
+	text "game/tt/intro/unknown_targeting_location"
+}
