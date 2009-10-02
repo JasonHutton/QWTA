@@ -2482,7 +2482,7 @@ gui hud {
 	windowDef healthParentBox {
 		properties {
 			rect	rect 				= 2, SCREEN_HEIGHT - 51, 200, 50;
-			float 	visible			 	= gui.shouldShowNormalHud;
+			float 	visible			 	= gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
 			float	lastHealthValue		= immediate( player.health );
 			float	lowHealth			= false;
 
@@ -2611,7 +2611,39 @@ gui hud {
 			onCVarChanged "g_vehicleSpawnsUseFE" {
 				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
 			}
+			onPropertyChanged "globals.gameHud.healthParentBoxTime" {
+				timeline.healthParentBoxTimeline.duration = ( 1000 * globals.gameHud.healthParentBoxTime ) + immediate( gui.time );
+			}
+			onPropertyChanged "player.vehicleValid" {
+				visible		= gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );;
+			}
+			onNamedEvent "updateHealthParentBoxTime" {
+				timeline.healthParentBoxTimeline.duration = ( 1000 * globals.gameHud.healthParentBoxTime ) + immediate( gui.time );
+				timeline.healthParentBoxTimeline.active = true;
+				timeline.healthParentBoxTimeline.resetTime( 0 );
+			}
+			onCVarChanged "g_hideHud" {
+				visible 	= gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
+			}
 		}
+		
+		timeline healthParentBoxTimeline {
+			properties {
+				float active = false;
+				float duration = 0.f;
+			}
+			onTime 0 {
+				gui.healthParentBox.visible = gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || duration > immediate( gui.time ) || player.vehicleValid );
+			}
+			onTime 100 {
+				if ( visible ) {
+					resetTime( 0 );
+				} else {
+					active = false;
+				}
+			}
+		}
+		
 		windowDef healthFill {
 			type progress;
 			properties {

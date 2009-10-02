@@ -168,6 +168,9 @@ object player {
 	void		vTargetLockAttack( entity other );
 	void		vMineWarning( entity other );
 	
+	void		ShowAmmoParentBox( float duration );
+	void		ShowHealthParentBox( float duration );
+	
 	
 	float		GetRandomBurnJoint2( string option1, string option2 );
 	float		GetRandomBurnJoint3( string option1, string option2, string option3 );
@@ -1135,6 +1138,9 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags", CF_CROSSHAIR | CF_PLAYER_ICONS | CF_TASKS | CF_OBJ_MIS  );
 		}
 	}
+	
+	ShowHealthParentBox( 5.f );
+	ShowAmmoParentBox( 5.f );
 
 	unconsciousTime = -1;
 	deadTime = -1;
@@ -2021,6 +2027,9 @@ void player::OnConsumeHealth() {
 			setAmmo( g_ammoStroyent, stroySauce + refillAmount );
 		}
 	}
+	
+	ShowHealthParentBox( 1.5f );
+	ShowAmmoParentBox( 1.5f );
 }
 
 /*
@@ -2059,6 +2068,9 @@ void player::OnConsumeStroyent() {
 			setAmmo( g_ammoStroyent, stroySauce - stroy );
 		}
 	}
+	
+	ShowHealthParentBox( 1.5f );
+	ShowAmmoParentBox( 1.5f );
 }
 
 /*
@@ -3454,5 +3466,27 @@ player::vMineWarning
 void player::vMineWarning( entity other ) {
 	if ( isLocalPlayer() && g_allowMineTriggerWarning.getBoolValue() ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.mineWarningTime", sys.getTime() );
+	}
+}
+
+void player::ShowAmmoParentBox( float duration ) {
+	if ( isLocalPlayer() && self != $null_entity && self == sys.getLocalViewPlayer() ) {
+		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", duration );
+		float hudHandle = getGUI( "hud" );	
+		if ( hudHandle != GUI_INVALID ) {
+			sys.guiPostNamedEvent( hudHandle, "AmmoParentBox", "updateAmmoParentBoxTime" );
+		}
+	}
+}
+
+void player::ShowHealthParentBox( float duration ) {
+	if ( isLocalPlayer() && self != $null_entity && self == sys.getLocalViewPlayer() ) {
+		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.healthParentBoxTime", duration );
+		float hudHandle = getGUI( "hud" );	
+		if ( hudHandle != GUI_INVALID ) {
+			sys.guiPostNamedEvent( hudHandle, "healthParentBox", "updateHealthParentBoxTime" );
+		}
 	}
 }

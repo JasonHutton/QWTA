@@ -95,8 +95,6 @@ object weapon_base {
 	void		Base_BeginReload();
 	void		Base_EndReload();
 	
-	void		ShowAmmoParentBox( float duration );
-
 	boolean		HasNoAmmo();
 
 	void		Base_Raise();
@@ -828,7 +826,9 @@ void weapon_base::Base_BeginReload() {
 		float reloadTime = getAnimLength( "reload" );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", reloadTime );
 		
-		ShowAmmoParentBox( reloadTime + 1.f );
+		if ( myPlayer != $null_entity ) {
+			myPlayer.ShowAmmoParentBox( reloadTime + 1.f );
+		}
 	}
 	
 }
@@ -839,20 +839,12 @@ void weapon_base::Base_EndReload() {
 	}
 }
 
-void weapon_base::ShowAmmoParentBox( float duration ) {
-	if ( ShouldRunGuis() ) {
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", duration );
-			float hudHandle = getGUI( "hud" );	
-			if ( hudHandle != GUI_INVALID ) {
-				sys.guiPostNamedEvent( hudHandle, "AmmoParentBox", "updateAmmoParentBoxTime" );
-		}
-	}
-}
-
 void weapon_base::Base_Raise() {
 	UpdateCrosshair();
 	
-	ShowAmmoParentBox( 2.f );
+	if ( myPlayer != $null_entity ) {
+		myPlayer.ShowAmmoParentBox( 2.f );
+	}
 	
 	if ( myPlayer.AI_SPRINT ) {
 		DoRaise( "Sprint", 4 );
