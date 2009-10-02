@@ -2672,7 +2672,7 @@ gui hud {
 	windowDef AmmoParentBox {
 		properties {
 			rect	rect 		= SCREEN_WIDTH - ( rect.w + 2 ), SCREEN_HEIGHT - 54, 126, 50;
-			float 	visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHUD") == false || player.vehicleValid );
+			float 	visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
 			float	lastClip 	= immediate( player.weaponClip );
 
 			handle 	topFillMaterial		= gui.cacheMaterial( "atopFill", "_frame health_top_fill" );
@@ -2791,15 +2791,15 @@ gui hud {
 				timeline.ammoParentBoxTimeline.duration = ( 1000 * globals.gameHud.ammoParentBoxTime ) + immediate( gui.time );
 			}
 			onPropertyChanged "player.vehicleValid" {
-				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHUD" ) == false || player.vehicleValid );
+				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud" ) == false || player.vehicleValid );
 			}
 			onNamedEvent "updateAmmoParentBoxTime" {
 				timeline.ammoParentBoxTimeline.duration = ( 1000 * globals.gameHud.ammoParentBoxTime ) + immediate( gui.time );
 				timeline.ammoParentBoxTimeline.active = true;
 				timeline.ammoParentBoxTimeline.resetTime( 0 );
 			}
-			onCVarChanged "g_hideHUD" {
-				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHUD" ) == false || player.vehicleValid );
+			onCVarChanged "g_hideHud" {
+				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud" ) == false || player.vehicleValid );
 			}
 		}
 		
@@ -2809,7 +2809,7 @@ gui hud {
 				float duration = 0.f;
 			}
 			onTime 0 {
-				gui.AmmoParentBox.visible = ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHUD" ) == false || duration > immediate( gui.time ) || player.vehicleValid );
+				gui.AmmoParentBox.visible = ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud" ) == false || duration > immediate( gui.time ) || player.vehicleValid );
 			}
 			onTime 100 {
 				if ( visible ) {

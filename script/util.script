@@ -172,7 +172,7 @@ cvar	g_disablePlayerRespawns;
 cvar	g_allowCrosshairs;
 cvar	g_useBaseETQW12SniperTrail;
 cvar	g_allowTimerCircles;
-cvar	g_hideHUD;
+cvar	g_hideHud;
 
 object gameplay_base;
 gameplay_base gameplayManager;
