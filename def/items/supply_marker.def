@@ -16,7 +16,8 @@ invItemDef inventory/weapons/grenades/supply_marker_medic {
 
 		"anim_prefix"					"grenade"
 
-		"weapon_scriptobject"			"item_smoke_grenade"
+		"weapon_scriptobject"			"item_smoke_grenade_qwta"
+		"allow_alt_fire"				"0"
 
 		"snd_raise"						"sounds/tools/medic/marker/raise"
 		"snd_throw"						"sounds/weapons/grenades/throw"
@@ -60,7 +61,7 @@ entityDef misc_supplycrate_base {
 	"editor_maxs"					"64 64 128"
 
 	"spawnclass"					"sdScriptEntity"
-	"scriptObject"					"supply_crate"
+	"scriptObject"					"supply_crate_qwta"
 
 	"model"							"models/structures/edf/deployables/supply_drop/crate.lwo"
 	"cm_model"						"models/structures/edf/deployables/supply_drop/crate.lwo"
