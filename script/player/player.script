@@ -313,6 +313,9 @@ object player {
 	void		vSetLivesRemaining( float lives );
 	void		vDecreaseAvailableLives();
 	void		vIncreaseAvailableLives();
+	
+	float		lastHealthParentTime;
+	float		lastAmmoParentTime;
 }
 
 void player::vSetLivesRemaining( float lives ) {
@@ -628,6 +631,9 @@ void player::preinit() {
 	burningThreadActive		= false;
 	
 	livesRemaining			= vGetStartingLives();
+	
+	lastHealthParentTime	= 0;
+	lastAmmoParentTime		= 0;
 }
 
 void player::vDecreaseAvailableLives() {
@@ -3472,10 +3478,13 @@ void player::vMineWarning( entity other ) {
 void player::ShowAmmoParentBox( float duration ) {
 	if ( isLocalPlayer() && self != $null_entity && self == sys.getLocalViewPlayer() ) {
 		
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", duration );
-		float hudHandle = getGUI( "hud" );	
-		if ( hudHandle != GUI_INVALID ) {
-			sys.guiPostNamedEvent( hudHandle, "AmmoParentBox", "updateAmmoParentBoxTime" );
+		if ( sys.getTime() + duration > lastAmmoParentTime ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", duration );
+			float hudHandle = getGUI( "hud" );	
+			if ( hudHandle != GUI_INVALID ) {
+				sys.guiPostNamedEvent( hudHandle, "AmmoParentBox", "updateAmmoParentBoxTime" );
+			}
+			lastAmmoParentTime = sys.getTime() + duration;
 		}
 	}
 }
@@ -3483,10 +3492,13 @@ void player::ShowAmmoParentBox( float duration ) {
 void player::ShowHealthParentBox( float duration ) {
 	if ( isLocalPlayer() && self != $null_entity && self == sys.getLocalViewPlayer() ) {
 		
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.healthParentBoxTime", duration );
-		float hudHandle = getGUI( "hud" );	
-		if ( hudHandle != GUI_INVALID ) {
-			sys.guiPostNamedEvent( hudHandle, "healthParentBox", "updateHealthParentBoxTime" );
+		if ( sys.getTime() + duration > lastHealthParentTime ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.healthParentBoxTime", duration );
+			float hudHandle = getGUI( "hud" );	
+			if ( hudHandle != GUI_INVALID ) {
+				sys.guiPostNamedEvent( hudHandle, "healthParentBox", "updateHealthParentBoxTime" );
+			}
+			lastHealthParentTime = sys.getTime() + duration;
 		}
 	}
 }
