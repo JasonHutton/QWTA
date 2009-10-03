@@ -109,6 +109,12 @@ entityDef dead_body_gdf {
 	"max_possess_count"				"35"
 	"max_spawnhost_count"			"20"
 	
+	"bleed"							"1"
+	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
+	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
+	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
+	"mtr_splat4"					"textures/decals/gore_splat/dsplat11"
+	
 	"climate_key"					"body_gdf"
 	
 	"task_create_spawn_host"		"technician_create_spawnhost"
@@ -123,6 +129,12 @@ entityDef dead_body_strogg {
 	"spawnclass"					"sdPlayerBody"
 
 	"climate_key"					"body_strogg"
+	
+	"bleed"							"1"
+	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
+	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
+	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
+	"mtr_splat4"					"textures/decals/gore_splat/dsplat11"
 	
 	"max_possess_count"				"35"
 	"max_spawnhost_count"			"20"

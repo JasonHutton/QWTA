@@ -6715,6 +6715,47 @@ void idGameLocal::CreateProjectedDecal( const idVec3 &origin, const idVec3 &dir,
 	gameRenderWorld->AddToProjectedDecal( winding, projectionOrigin, parallel, color, model, spawnID );
 }
 
+void idGameLocal::BloodSplat( const idEntity* ent, const idVec3 &origin, const idVec3 &dirArg, float size, const char *material ) {
+
+	float halfSize = size * 0.5f;
+	idVec3 verts[] = {	idVec3( 0.0f, +halfSize, +halfSize ),
+						idVec3( 0.0f, +halfSize, -halfSize ),
+						idVec3( 0.0f, -halfSize, -halfSize ),
+						idVec3( 0.0f, -halfSize, +halfSize ) };
+	idVec3 dir = dirArg;
+	idTraceModel trm;
+	//personalVehicleClipModel = new idClipModel( idTraceModel( idBounds( mins, maxs ) ), false );
+	//const idClipModel* mdl;
+	//idClipModel* mdl = new idClipModel();
+	trace_t results;
+
+// RAVEN BEGIN
+// mekberg: changed from g_bloodEffects to g_decals
+	if ( !g_decals.GetBool() ) {
+		return;
+	}
+// RAVEN END
+
+	size = halfSize + random.RandomFloat() * halfSize;
+	trm.SetupPolygon( verts, 4 );
+	//const idClipModel* mdl = new idClipModel( trm, false );
+	//const idClipModel* mdl = idClipModel( trm, false );
+	//mdl->LoadTraceModel( trm, false );
+	//mdl->LoadModel( trm, NULL );
+
+	// I don't want dir to be axis aligned, as it is more likely to streak them (because most architecture is axis aligned
+	dir.Set( dirArg.x*.1f, dirArg.y*.1f, -1 );
+	dir.Normalize();
+
+// RAVEN BEGIN
+// ddynerman: multiple clip worlds
+	//Translation( ent, results, origin, origin + dir * 72.0f, mdl, mat3_identity, CONTENTS_SOLID, NULL );
+	//Translation( results, origin, origin + dir * 72.0f, &mdl, CONTENTS_SOLID );
+	Translation( results, origin, origin + dir * 72.0f, trm, CONTENTS_SOLID );
+// RAVEN END
+	ProjectDecal( results.endpos, dir, 2.0f * size, true, size, material );
+}
+
 /*
 =============
 idGameLocal::SetCamera

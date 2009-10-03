@@ -44,3 +44,76 @@ material textures/effects/particles_shapes/impact_smoke3_qwta
 		vertexColor
 	}
 }
+
+material textures/decals/gore_splat/dsplat11
+{
+	qer_editorimage	textures/decals/gore_splat/dsplat11.tga
+
+	nonsolid
+	noimpact
+	
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	
+	{       
+      	blend	gl_zero, gl_one_minus_src_color
+		map clamp	textures/decals/gore_splat/dsplat11.tga
+	}	
+}
+
+
+material textures/decals/gore_splat/dsplat2
+{
+	qer_editorimage	textures/decals/gore_splat/dsplat2.tga
+
+	nonsolid
+	noimpact
+	
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	
+	{       
+      	blend	gl_zero, gl_one_minus_src_color
+		map clamp	textures/decals/gore_splat/dsplat2.tga
+	}	
+}
+
+material textures/decals/gore_splat/dsplat5
+{
+	qer_editorimage	textures/decals/gore_splat/dsplat5.tga
+
+	nonsolid
+	noimpact
+	
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	
+	{       
+      	blend	gl_zero, gl_one_minus_src_color
+		map clamp	textures/decals/gore_splat/dsplat5.tga
+	}	
+}
+
+material textures/decals/gore_splat/dsplat7
+{
+	qer_editorimage	textures/decals/gore_splat/dsplat7.tga
+
+	nonsolid
+	noimpact
+	
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	
+	{       
+      	blend	gl_zero, gl_one_minus_src_color
+		map clamp	textures/decals/gore_splat/dsplat7.tga
+	}	
+}

@@ -183,6 +183,12 @@ entityDef player_base {
 	"fx_burning_small_smoke"			"effects/burning_small_smoke"
 	
 	"starting_lives"					"1"
+	
+	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
+	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
+	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
+	"mtr_splat4"					"textures/decals/gore_splat/dsplat11"
+
 }
 
 toolTip proficiency_upgrade_respawn {

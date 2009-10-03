@@ -1200,6 +1200,7 @@ public:
 	void							ProjectDecal( const idVec3 &origin, const idVec3 &dir, float depth, bool parallel, float size, const char *material, float angle = 0 );
 	void							CreateProjectedDecal( const idVec3 &origin, const idVec3 &dir, float depth, bool parallel, float width, float height, float angle, const idVec4& color, idRenderModel* model );
 	void							ProjectDecal( const idVec3 &origin, const idVec3 &dir, float depth, bool parallel, float size, const idMaterial *material, float angle = 0 );
+	void							BloodSplat( const idEntity* ent, const idVec3 &origin, const idVec3 &dir, float size, const char *material );
 
 	void							CallFrameCommand( const sdProgram::sdFunction* frameCommand );
 	void							CallFrameCommand( idScriptObject* object, const sdProgram::sdFunction* frameCommand );

@@ -862,6 +862,7 @@ idEntity::idEntity( void ) {
 	fl.forceDoorCollision	= false;
 	fl.forceDecalUsageLocal  = false;
 	fl.burnable				= false;
+	fl.bleed				= false;
 
 	burnResistThreshold	= 0;
 	burnTimeMax	= 0;
@@ -958,6 +959,10 @@ void idEntity::Spawn( void ) {
 
 	if ( spawnArgs.GetBool( "burnable" ) ) {
 		fl.burnable = true;
+	}
+
+	if ( spawnArgs.GetBool( "bleed" ) ) {
+		fl.bleed = true;
 	}
 
 	burnResistThreshold = SEC2MS( spawnArgs.GetFloat(  "burn_resist_threshold", "0" ) ); 
@@ -3989,6 +3994,65 @@ bool idEntity::CheckTeamDamage( idEntity *inflictor, const sdDeclDamage* damageD
 	return true;
 }
 
+void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, const sdDeclDamage* damageDecl, idEntity *inflictor ) {
+	// ddynerman: note, on client the collision struct is incomplete.  Only contains impact point and material
+	// Above comment is from Quake 4, but it still applies. To change this, send more data in the event. -- Azuvector
+	// We don't need the material anymore, lets grab the surfacetype instead.
+	// entNum, fraction, and surfaceType also passed clientside now.
+	const char *splat, *decal, *key, *collisionSurface;
+
+	if ( damageDecl == NULL || collision == NULL ) {
+		return;
+	}
+
+	if ( !fl.bleed ) {
+		return;
+	}
+
+	if ( gameLocal.isServer ) {
+		sdEntityBroadcastEvent msg( this, EVENT_DO_DAMAGE_EFFECT );
+		msg.WriteVector( collision->c.point );
+		msg.WriteDir( dir, 24 );
+		msg.WriteLong( damageDecl->Index() );
+		//msg.WriteLong( collision->c.material->Index() );
+		msg.WriteLong( collision->c.entityNum );
+		msg.WriteFloat( collision->fraction );
+		if ( collision->c.surfaceType != NULL ) {
+			msg.WriteLong( collision->c.surfaceType->Index() );
+		} else {
+			msg.WriteLong( -1 );
+		}
+		msg.Send( false, sdReliableMessageClientInfoAll() );
+	}
+
+	if ( !g_decals.GetBool() ) {
+		return;
+	}
+
+	/*
+	if ( gameLocal.GetLocalPlayer() && GetInstance() != gameLocal.GetLocalPlayer()->GetInstance() ) {
+		return; // no blood from other instances
+	}*/
+
+	idEntity* collisionEnt = gameLocal.GetTraceEntity( *collision );
+	if ( collision->c.surfaceType != NULL ) {
+		collisionSurface = collision->c.surfaceType->GetName();	
+	} else if ( collisionEnt != NULL ) {
+		collisionSurface = collisionEnt->GetDefaultSurfaceType();
+	}
+	splat = NULL;
+	if ( collisionSurface && *collisionSurface ) {
+		key = va( "mtr_splat_%s", collisionSurface );
+		splat = spawnArgs.RandomPrefix( key, gameLocal.random );
+	}
+	if ( !splat || !*splat ) {
+		splat = spawnArgs.RandomPrefix( "mtr_splat", gameLocal.random );
+	}
+	if ( splat && *splat ) {
+		gameLocal.BloodSplat( this, collision->c.point, dir, 48.0f, splat );
+	}
+}
+
 /*
 ============
 idEntity::Damage
@@ -5855,6 +5919,28 @@ idEntity::ClientReceiveEvent
 ================
 */
 bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
+	switch( event ) {
+		case EVENT_DO_DAMAGE_EFFECT: {
+			idVec3 origin = msg.ReadVector();
+			idVec3 dir = msg.ReadDir( 24 );
+			const sdDeclDamage* damageDecl = gameLocal.declDamageType.SafeIndex( msg.ReadLong() );
+			//const idMaterial* collisionMaterial = gameLocal.declMaterialType.SafeIndex( msg.ReadLong() );
+			int entNum = msg.ReadLong();
+			float fraction = msg.ReadFloat();
+			const sdDeclSurfaceType* surfDecl = gameLocal.declSurfaceTypeType.SafeIndex( msg.ReadLong() );
+
+			trace_t collision;
+			collision.c.point = origin;
+			//collision.c.material = collisionMaterial;
+			collision.c.entityNum = entNum;
+			collision.fraction = fraction;
+			collision.c.surfaceType = surfDecl;
+
+			DoDamageEffect( &collision, dir, damageDecl, NULL );
+			return true;
+		}
+	}
+
 	return false;
 }
 
@@ -7564,7 +7650,8 @@ bool idEntity::LaunchBullet( idEntity* owner, idEntity* ignoreEntity, const idDi
 	bool hit = false;
 	if ( doImpact ) {
 		if ( doEffects ) {
-			DoLaunchBullet( owner, ignoreEntity, projectileDict, startPos, endPos, tracerMuzzleOrigin, tracerMuzzleAxis, damagePower, forceTracer, tracerOut, clientMask, NULL, true, false, useAntiLag );
+			//DoLaunchBullet( owner, ignoreEntity, projectileDict, startPos, endPos, tracerMuzzleOrigin, tracerMuzzleAxis, damagePower, forceTracer, tracerOut, clientMask, NULL, true, false, useAntiLag );
+			DoLaunchBullet( owner, ignoreEntity, projectileDict, startPos, endPos, tracerMuzzleOrigin, tracerMuzzleAxis, damagePower, forceTracer, tracerOut, clientMask, bulletDamage, true, false, useAntiLag );
 		}
 		hit = DoLaunchBullet( owner, ignoreEntity, projectileDict, startPos, endPos, tracerMuzzleOrigin, tracerMuzzleAxis, damagePower, false, NULL, serverMask, bulletDamage, false, true, useAntiLag );
 		if ( hit ) {
@@ -7649,6 +7736,10 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* originalIgnoreEntity, 
 					idEntity* ent = gameLocal.entities[ trace.c.entityNum ];
 					eff->Monitor( ent );
 				}
+
+				idVec3 dir = endPos - startPos;
+				dir.Normalize();
+				collisionEnt->DoDamageEffect( &trace, dir, bulletDamage, owner );
 
 				// draw the hit decal
 				if ( (trace.c.material==NULL || trace.c.material->AllowOverlays()) ) {

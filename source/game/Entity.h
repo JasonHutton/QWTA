@@ -272,6 +272,8 @@ public:
 		bool				forceDecalUsageLocal :1;
 
 		bool				burnable			:1;
+
+		bool				bleed				:1;
 	} fl;
 
 	int								burnResistThreshold;
@@ -569,6 +571,7 @@ public:
 							// returns true if this entity can be damaged from the given origin
 	virtual bool			CanDamage( const idVec3 &origin, idVec3 &damagePoint, int mask, idEntity* passEntity, trace_t* tr = NULL ) const;
 
+	void					DoDamageEffect( const trace_t* collision, const idVec3 &dir, const sdDeclDamage* damageDecl, idEntity *inflictor );
 							// applies damage to this entity
 	virtual	void			Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &dir, const sdDeclDamage* damage, const float damageScale, const trace_t* collision, bool forceKill = false );
 
@@ -631,6 +634,7 @@ public:
 	bool					GetWorldOriginAxis( jointHandle_t joint, idVec3& org, idMat3& axis );
 
 	enum {
+		EVENT_DO_DAMAGE_EFFECT,
 		EVENT_MAXEVENTS
 	};
 
