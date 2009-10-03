@@ -1502,7 +1502,8 @@ gui hud {
 	windowDef tasks {
 		type list;
 		properties {
-			float	shouldShow 				= gui.shouldShowNormalHud && player.scoreboardActive == false;
+			float	visible					= gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+			float	shouldShow 				= gui.shouldShowNormalHud && player.scoreboardActive == false && visible;
 			rect 	rect 					= 2, 2, 196, 128;
 			float	flashAlpha				= 0;
 			rect	flashRectBase			= absoluteRect.x - flashRect.x, absoluteRect.y - flashRect.y, absoluteRect.w + flashRect.w, absoluteRect.h + flashRect.h;
@@ -1550,6 +1551,7 @@ gui hud {
 					// don't do it if we're collapsing, however
 					if( expanded ) {
 						gui.selectedTask = gui.blankWStr;
+						visible = gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
 					}
 					gui.selectedTask = getItemText( currentSelection, 1 );
 					lastSelectItem = immediate( currentSelection );
@@ -1571,14 +1573,18 @@ gui hud {
 				flashAlpha = transition( 0.8f, 0.f, 2000, "0.1,0.9" );
 				flashRect = transition( "4,4,8,8", "0,0,0,0", 350 );
 
-				gui.playGameSound( "good" );
+				if ( visible ) {
+					gui.playGameSound( "good" );
+				}
 			}
 
 			onPropertyChanged "player.taskExpiredTime" {
 				flashAlpha = transition( 0.8f, 0.f, 2000, "0.1,0.9" );
 				flashRect = transition( "4,4,8,8", "0,0,0,0", 350 );
 
-				gui.playGameSound( "bad" );
+				if ( visible ) {
+					gui.playGameSound( "bad" );
+				}
 			}
 
 			onPropertyChanged "player.taskSelectedTime" {
@@ -1593,13 +1599,34 @@ gui hud {
 				}
 			}
 			onPropertyChanged "player.hasTask" {
-				if ( player.hasTask ) {
+				if ( player.hasTask && visible ) {
 					gui.playGameSound( "accept" );
 				}
 			}
 			onNamedEvent "startFlash" {
 				timeline.flashStarter.active = true;
 				timeline.flashStarter.resetTime( 0 );
+			}
+			onCVarChanged "g_hideHud" {
+				visible 	= gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+			}
+			onPropertyChanged "expanded" {
+				if ( expanded ) {
+					visible = gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+				} else {
+					timeline.hideTask.active = true;
+					timeline.hideTask.resetTime( 0 );
+				}
+			}
+		}
+		timeline hideTask {
+			properties {
+				float active = false;
+			}
+			onTime 1000 {
+				timeline.hideTask.active = false;
+				timeline.hideTask.resetTime( 0 );
+				visible = gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
 			}
 		}
 		timeline flashStarter {
