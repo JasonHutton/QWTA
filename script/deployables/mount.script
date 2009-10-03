@@ -206,7 +206,15 @@ void weapon_mounted::vSetOwner( entity o ) {
 		ShowBar( 1 );
 
 		if ( getFloatKey( "option_crosshair_interface" ) ) {
-			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", getKey( "crosshair" ) );
+			if ( g_allowCrosshairs.getBoolValue() ) {
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", getKey( "crosshair" ) );
+			} else {
+				string disabledCrosshair = "blank";
+				if ( getKey( "disabled_crosshair" ) != "" ) {
+					disabledCrosshair = getKey( "disabled_crosshair" );
+				}
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshair );
+			}
 		}
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 	}
