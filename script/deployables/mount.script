@@ -1,0 +1,867 @@
+
+object weapon_mount;
+object weapon_mounted;
+
+// -------------------------------------------------
+
+// -------------------------------------------------
+// Weapon mount point
+// -------------------------------------------------
+object weapon_mount {
+	void			preinit();
+ 	void			init();
+	void			destroy();
+	        		
+	void			Idle();
+	void			IdleEmpty();
+	void			GoToIdle();
+
+	void			OnBrokenChanged();
+	void			OnWeaponDestroyed();
+	void			OnWeaponRepaired();
+	
+	void			UpdateAngles( vector angles );
+	
+	void			vOnCockpitCreated();
+	void			vOnCockpitDestroyed();
+
+	float			OnUsed( entity p, float distance );
+	void			OnEnter( entity user );
+	void			OnExit( entity user );
+	void			OnMountedWeaponSynced();
+	float			OnUpdateCrosshairInfo( entity p );
+	float			OnActivate( entity p, float distance );
+	void			OnPostThink();
+	
+	void			Use( entity user );
+	boolean			CanUse( entity user, boolean printToolTips );
+	
+	void			SetController( entity user );
+
+	void			vRepair( float count, entity p );
+	boolean			vCheckActionCode( entity p, float actionCode );
+	float			vGetPliersProgressBarValue( float action );
+
+	void			syncFields();
+	
+	void			BroadcastToolTip( entity user, float tip );
+	
+	void			vSetConstructed( boolean a );
+	void			OnConstructedChanged();
+
+	float			GetActivateCode( entity p, float distance );
+
+	string			vGetQuickChatString( entity p );
+	void			vOnContextDestroy( entity p );
+	void			vOnContextConstruct( entity p );
+
+	float 			invalidWeaponToolTip;
+	float			invalidPlayerToolTip;
+	float 			alreadyInUseToolTip;
+	
+	weapon_mounted	mountedWeapon;
+	float			mountJoint;
+	entity 			controller;
+	
+	boolean			constructed;
+	boolean			broken;
+
+	flashpoint_obj flashpoint;
+}
+
+// -------------------------------------------------
+object weapon_mounted {
+	void			preinit();
+	void			init();
+	void			destroy();
+	
+	void			Idle();
+	void			IdleEmpty();
+	void			Fire();
+	void			OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+	float			OnUpdateCrosshairInfo( entity p );
+	float			OnUsed( entity p, float distance );
+	float			OnActivate( entity p, float distance );
+	
+	void			ShowBar( boolean s );
+	void			SetBarValue( float v );	
+	
+	void			vSetOwner( entity o );	// owner is the player directing the view and firing
+	void			vSetParent( entity p );	// parent is the base we're bound to
+	boolean			vCheckActionCode( entity p, float actionCode );
+	void			vRepair( float count, entity p );
+	float			vGetPliersProgressBarValue( float action );
+	void			OnPostThink() { ; }
+
+	void			PlayBrokenAnim();
+	void			PlayRepairedAnim();
+	void			PlayLowerAnim();
+	void			PlayRaiseAnim();
+
+	boolean			NeedsRepair();
+	
+	void			GoToIdle();
+
+	float			GetActivateCode( entity p, float distance );
+
+	float			projectileIndex;
+	float			muzzleJoint;
+	
+	float			fireRate;
+	float			spread;
+	
+	float			reFireTime;
+	float			nextFire;
+	
+	float			fireUsageRate;
+	float			fireReChargeTime;
+	
+	player			playerEntity;
+	float 			charge;
+	
+	float			fireLowerBound;
+	float			fireLowerBoundDelay;
+
+	weapon_mount	parent;
+	
+	base_bar		displayBar;
+
+	handle			objectName;
+	handle			GetObjectNameHandle() { return objectName; }
+
+	string			vGetQuickChatString( entity p ) { return parent.vGetQuickChatString( p ); }
+	void			vOnContextDestroy( entity p ) { parent.vOnContextDestroy( p ); }
+	void			vOnContextConstruct( entity p ) { parent.vOnContextConstruct( p ); }
+}
+
+void weapon_mounted::preinit() {
+	displayBar = new base_bar;
+	
+	projectileIndex			= GetEntityDef( getKey( "def_projectile" ) );
+	muzzleJoint				= getJointHandle( getKey( "muzzle" ) );
+	if ( muzzleJoint == -1 ) {
+		sys.error( "weapon_mounted::preinit invalid muzzle joint" );
+	}
+	fireRate				= getFloatKey( "fire_rate" );
+	spread					= getFloatKey( "spread" );	
+	
+	if ( !getIntKey( "fire_notime" ) ) {
+		fireUsageRate		= getFloatKey( "fire_charge" ) / 100.f;
+		fireReChargeTime	= 1 / getFloatKey( "recharge_time" );
+	} else {
+		fireUsageRate		= 1.f;
+		fireReChargeTime	= fireRate;
+	}
+	
+	addHelper( GetStringMap( getKey( "str_playerik" ) ) );
+	
+	fireLowerBound		= getFloatKey( "fire_lower_bound" );
+	fireLowerBoundDelay = getFloatKey( "fire_lower_bound_delay" );
+	
+	charge				= 1.0f;
+
+	objectName			= sys.localizeString( getKey( "object_name" ) );
+}
+
+void weapon_mounted::init() {
+	PlayLowerAnim();
+
+	GoToIdle();
+}
+
+void weapon_mounted::GoToIdle() {
+	if ( playerEntity != $null_entity ) {
+		setState( "Idle" );
+	}
+}
+
+void weapon_mounted::destroy() {
+	delete displayBar;
+}
+
+void weapon_mounted::ShowBar( boolean s ) {
+	displayBar.ShowBar( s );
+}
+
+void weapon_mounted::SetBarValue( float v ) {
+	displayBar.SetBarValue( v );
+}
+
+void weapon_mounted::vSetOwner( entity o ) {
+	if ( playerEntity == sys.getLocalPlayer() && playerEntity != $null_entity ) {
+		ShowBar( 0 );
+	}
+
+	setIKTarget( o, 0 );
+	
+	playerEntity = o;
+	if ( playerEntity != $null_entity ) {
+		playerEntity.proxyFiringWeapon = false;
+		playerEntity.proxyFiringWeaponStart = false;
+	}
+	
+	displayBar.SetOwner( o );
+	
+	if ( playerEntity == sys.getLocalPlayer() && playerEntity != $null_entity ) {
+		ShowBar( 1 );
+
+		if ( getFloatKey( "option_crosshair_interface" ) ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", getKey( "crosshair" ) );
+		}
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
+	}
+
+	GoToIdle();
+}
+
+void weapon_mounted::vSetParent( entity p ) {
+	parent = p;
+}
+
+void weapon_mounted::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	parent.OnWeaponDestroyed();
+	setTakesDamage( false );
+}
+
+void weapon_mounted::IdleEmpty() {
+}
+
+void weapon_mounted::PlayBrokenAnim() {
+	playAnim( ANIMCHANNEL_ALL, "damaged" );
+	playEffect( "fx_damaged", "origin", true );
+}
+
+void weapon_mounted::PlayRepairedAnim() {
+	playAnim( ANIMCHANNEL_ALL, "repaired" );
+	stopEffect( "fx_damaged" );
+}
+
+void weapon_mounted::PlayLowerAnim() {
+	playAnim( ANIMCHANNEL_ALL, "lower" );
+	stopEffect( "fx_damaged" );
+}
+
+void weapon_mounted::PlayRaiseAnim() {
+	playAnim( ANIMCHANNEL_ALL, "raise" );
+	stopEffect( "fx_damaged" );
+}
+
+void weapon_mounted::Idle() {			
+	while( true ) {
+		sys.waitFrame();
+		
+		boolean wantAttack = false;
+		
+		if ( playerEntity != $null_entity ) {
+			wantAttack = playerEntity.getButton( PK_ATTACK );
+		} else {
+			if ( charge == 1.f ) {
+				setState( "IdleEmpty" );
+			}
+		}
+		
+		float now = sys.getTime();
+
+		if ( playerEntity != $null_entity ) {
+			playerEntity.proxyFiringWeaponStart = false;
+		}
+		if ( now >= nextFire && wantAttack ) {
+			if ( playerEntity != $null_entity ) {
+				playerEntity.proxyFiringWeaponStart = true;
+			}
+
+			if ( now >= reFireTime ) {
+				Fire();
+				
+				charge = charge - fireUsageRate;
+				if ( charge <= fireLowerBound ) {
+					startSound( "snd_overheat", SND_WEAPON_SIG );
+					nextFire = now + fireLowerBoundDelay;
+				}
+				if ( charge < 0 ) {
+					charge = 0.f;
+				}
+			}
+		}
+		
+		boolean recharge = true;
+		if ( playerEntity != $null_entity ) {
+			recharge = !playerEntity.proxyFiringWeaponStart;
+		}
+		
+		if ( recharge ) {
+			charge = charge + ( sys.getFrameTime() * fireReChargeTime );
+			if ( charge > 1.f ) {
+				charge = 1.f;
+			}
+		}
+
+		SetBarValue( charge );
+	}
+}
+
+void weapon_mounted::Fire() {
+	if ( playerEntity != $null_entity ) {
+		vector origin = playerEntity.getViewOrigin();
+		vector forward = sys.angToForward( playerEntity.getRenderViewAngles() );
+
+		launchBullet( playerEntity, self, projectileIndex, spread, origin, forward, TRACER_CHANCE, true );
+	}
+
+	if ( !isHidden() ) {
+		playJointEffect( "fx_muzzle_flash", muzzleJoint, 0 );
+	}
+	
+	playJointEffect( "fx_muzzle_tracer", muzzleJoint, 0 );
+	playJointEffect( "fx_muzzle_sound", muzzleJoint, 0 );
+
+	startSound( "snd_fire", SND_WEAPON_FIRE );
+	startSound( "snd_fire_far", SND_WEAPON_FIRE_FAR );
+	startSound( "snd_fire_local", SND_WEAPON_FIRE_LOCAL );
+
+	reFireTime = sys.getTime() + fireRate;
+}
+
+float weapon_mounted::OnUsed( entity p, float distance ) {
+	return parent.OnUsed( p, distance );
+}
+
+float weapon_mounted::OnActivate( entity p, float distance ) {
+	return parent.OnActivate( p, distance );
+}
+
+float weapon_mounted::OnUpdateCrosshairInfo( entity p ) {
+	return parent.OnUpdateCrosshairInfo( p );
+}
+
+void weapon_mounted::vRepair( float count, entity p ) {
+	float maxHealth = getMaxHealth();
+	float health = getHealth();
+	if ( health < 0 ) {
+		health = 0;
+	}
+	float lost = maxHealth - health;
+	if ( count >= lost ) {
+		count = lost;
+
+		parent.OnWeaponRepaired();
+	}
+
+	team_base team = p.getGameTeam();
+	if ( team != $null_entity ) {
+		team.GiveRepairProficiency( p, $null_entity, count );
+	}
+
+	float total = health + count;
+	setHealth( total );
+	setTakesDamage( true );
+}
+
+boolean weapon_mounted::vCheckActionCode( entity p, float actionCode ) {
+	if ( actionCode == AC_REPAIR ) {
+		if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+			return false;
+		}
+		
+		return getHealth() < getMaxHealth();
+	}
+	
+	return false;
+}
+
+boolean weapon_mounted::NeedsRepair() {
+	return getHealth() < getMaxHealth();
+}
+
+float weapon_mounted::vGetPliersProgressBarValue( float action ) {
+	if ( action == AC_REPAIR ) {
+		return getHealth() / getMaxHealth();
+	}
+	return 0.f;
+}
+
+float weapon_mounted::GetActivateCode( entity p, float distance ) {
+	return parent.GetActivateCode( p, distance );
+}
+
+// ==================================================
+
+void weapon_mount::syncFields() {
+	syncBroadcast( "mountedWeapon" );
+	syncBroadcast( "constructed" );
+	syncBroadcast( "broken" );
+	syncCallback( "mountedWeapon", "OnMountedWeaponSynced" );
+	syncCallback( "constructed", "OnConstructedChanged" );
+	syncCallback( "broken", "OnBrokenChanged" );
+}
+
+void weapon_mount::OnMountedWeaponSynced() {
+	if ( mountedWeapon != $null_entity ) {
+		mountedWeapon.vSetParent( self );
+		mountedWeapon.vSetOwner( controller );
+
+		if ( !constructed ) {
+			mountedWeapon.hide();
+		} else { 
+			mountedWeapon.show();
+			
+			if ( broken ) {
+				mountedWeapon.PlayBrokenAnim();
+			} else {
+				mountedWeapon.PlayLowerAnim();
+			}
+		}
+	}
+}
+
+void weapon_mount::preinit() {
+	constructed = true;
+
+	invalidWeaponToolTip = GetToolTip( getKey( "tt_invalid_weapon" ) );
+	invalidPlayerToolTip = GetToolTip( getKey( "tt_invalid_player" ) );
+	alreadyInUseToolTip = GetToolTip( getKey( "tt_already_in_use" ) );
+
+	string mountLocation = getKey( "mount_joint_weapon" );
+	mountJoint = getJointHandle( mountLocation );	
+	if ( mountJoint == -1 ) {
+		sys.error( "weapon_mount::preinit invalid joint " + mountLocation );
+	}
+
+	string teamName = getKey( "start_team" );
+	if ( teamName == "" ) {
+		sys.error( "weapon_mount::preinit no team specified" );
+	}
+	setGameTeam( sys.getTeam( teamName ) );
+}
+
+
+void weapon_mount::init() {
+	sys.waitFrame();
+
+	string autoMount = getKey( "def_automount" );
+	if ( autoMount == "" ) {
+		sys.error( "weapon_mount::init no mount specified" );
+	}
+
+	if ( !sys.isClient() ) {
+		mountedWeapon = sys.spawn( autoMount );
+		mountedWeapon.setOrigin( getJointPos( mountJoint ) );
+		mountedWeapon.vSetParent( self );
+		mountedWeapon.setGameTeam( getGameTeam() );
+
+		if ( !constructed ) {
+			mountedWeapon.hide();
+		}
+	}
+	
+	GoToIdle();
+}
+
+void weapon_mount::destroy() {
+	vSetOwner( $null_entity );
+
+	if ( flashpoint != $null ) {
+		delete flashpoint;
+	}
+}
+
+void weapon_mount::BroadcastToolTip( entity user, float tip ) {
+	if ( tip != -1 ) {
+		sys.broadcastToolTip( tip, user, wstr_empty, wstr_empty, wstr_empty, wstr_empty );		
+	} else {
+		sys.warning( "weapon_mount::BroadcastToolTip: invalid tooltip" );
+	}
+}
+
+void weapon_mount::GoToIdle() {
+	if ( controller == $null_entity ) {
+		setState( "IdleEmpty" );
+	} else {
+		setState( "Idle" );
+	}
+}
+
+void weapon_mount::UpdateAngles( vector angles ) {
+	if ( mountedWeapon != $null_entity ) {
+		mountedWeapon.setAngles( angles );
+		mountedWeapon.forceRunPhysics();
+	}
+}
+
+void weapon_mount::IdleEmpty() {
+	UpdateAngles( getAngles() );
+}
+
+void weapon_mount::Idle() {
+}
+
+void weapon_mount::OnPostThink() {
+	if ( controller != $null_entity ) {
+		UpdateAngles( sys.rotateAngles( controller.getViewAngles(), getAngles() ) );
+	}
+}
+
+boolean weapon_mount::CanUse( entity user, boolean printToolTips ) {
+	if ( user.getHealth() <= 0 ) {
+		return false;
+	}
+
+	if ( broken ) {
+		return false;
+	}
+
+	if ( controller != $null_entity ) {
+		if( printToolTips ) { 
+			BroadcastToolTip( user, alreadyInUseToolTip );
+		}
+		return false;
+	}
+
+	if( getEntityAllegiance( user ) == TA_ENEMY ) {
+		if( printToolTips ) { 
+			BroadcastToolTip( user, invalidPlayerToolTip );
+		}
+		return false;
+	}
+
+	vector dist		= getWorldOrigin() - user.getWorldOrigin();
+	float lengthSqr = sys.vecLengthSquared( dist );
+	
+	if( lengthSqr > ( 128 * 128 )) {
+		return false;
+	}
+
+	// keep players from using a mounted weapon from the wrong side
+	dist_z	= 0;
+	dist	= sys.vecNormalize( dist );
+
+	vector myAngles = getWorldAxis( 0 );
+	myAngles_z = 0;
+	myAngles = sys.vecNormalize( myAngles );
+
+	float dot = dist * myAngles;
+	if ( dot < 0.75 ) {
+		return false;
+	}
+
+	return true;
+}
+
+void weapon_mount::Use( entity user ) {
+	entity team = user.getGameTeam();
+	if ( team == $null_entity ) {
+		return;
+	}
+	
+	user.enter( self );
+}
+
+void weapon_mount::SetController( entity user ) {
+	if ( controller == user ) {
+		return;
+	}
+
+	controller = user;
+
+	if ( mountedWeapon != $null_entity ) {
+		mountedWeapon.vSetOwner( controller );
+	}
+		
+	GoToIdle();
+}
+
+float weapon_mount::OnUsed( entity p, float distance ) {
+	if ( broken ) {
+		return 0.f;
+	}
+
+	entity other = p.getProxyEntity();
+	if ( other != $null_entity ) {
+		sys.assert( self == other );
+
+		if ( !sys.isClient() ) {
+			removeBoundPlayer( p );
+		}
+
+		return 1.f;
+	}
+	
+	if ( !CanUse( p, true ) ) {
+		return 1.f;
+	}
+
+	if ( !sys.isClient() ) {
+		Use( p );
+	}
+
+	return 1.f;
+}
+	
+void weapon_mount::OnEnter( entity user ) {
+	if ( user.isDisguised() ) {
+		user.disguise( $null_entity );
+	}
+
+	mountedWeapon.PlayRaiseAnim();
+
+	SetController( user );
+
+	user.vHideNormalChargeBar( true );
+}
+
+void weapon_mount::OnExit( entity user ) {
+	if ( !broken ) {
+		mountedWeapon.PlayLowerAnim();
+	}
+
+	SetController( $null_entity );
+
+	user.vHideNormalChargeBar( false );
+}
+
+float weapon_mount::OnUpdateCrosshairInfo( entity p ) {
+	if ( isHidden() ) {
+		return 0.f;
+	}
+	
+	if ( mountedWeapon == $null_entity ) {
+		return 0.f;
+	}
+
+	if ( p != $null_entity ) {
+		if ( controller == p ) {
+			return 0.f;
+		}
+	}
+
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	chSetNumLines( 0 );
+
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float index;
+
+	if ( p != $null_entity ) {
+		// see if theres a valid action to perform
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE && p.vHasActionItem( code ) ) {
+			index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+		}
+	}
+
+	if ( range < 25 ) {
+		index = chAddLine();
+		chSetLineTextIndex( index, mountedWeapon.GetObjectNameHandle() );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+
+		index = chAddLine();
+		chSetLineColor( index, color, 0.5f );
+		chSetLineType( index, CI_BAR );
+		chSetLineFraction( index, mountedWeapon.getHealth() / mountedWeapon.getMaxHealth() );
+		chSetLineSize( index, 150, CROSSHAIR_INFO_BAR_HEIGHT );
+	}
+
+	return 1.f;
+}
+
+float weapon_mount::OnActivate( entity p, float distance ) {
+	if ( distance > 128.f ) {
+		return 0.f;
+	}
+	
+	if ( p.getViewingEntity() != p ) {
+		return 0.f;
+	}
+
+	player other = p;
+
+	float allegiance = getEntityAllegiance( p );
+	if ( allegiance == TA_FRIEND ) {
+		if ( mountedWeapon.getHealth() < mountedWeapon.getMaxHealth() ) {
+			p.setWeapon( p.vGetActionItem( AK_REPAIR ), 0 );
+		}
+	}
+
+	return 1.f;
+}
+
+void weapon_mount::vRepair( float count, entity p ) {
+	if ( mountedWeapon != $null_entity ) {
+		mountedWeapon.vRepair( count, p );
+	}
+}
+
+boolean weapon_mount::vCheckActionCode( entity p, float actionCode ) {
+	if ( mountedWeapon != $null_entity ) {
+		return mountedWeapon.vCheckActionCode( p, actionCode );
+	}
+	return false;
+}
+
+float weapon_mount::vGetPliersProgressBarValue( float action ) {
+	if ( mountedWeapon != $null_entity ) {
+		return mountedWeapon.vGetPliersProgressBarValue( action );
+	}
+	return 0.f;
+}
+
+void weapon_mount::vSetConstructed( boolean a ) {
+	constructed = a;
+	OnConstructedChanged();
+}
+
+void weapon_mount::OnConstructedChanged() {
+	if ( constructed ) {
+		show();
+		if ( mountedWeapon != $null_entity ) {
+			mountedWeapon.show();
+		}
+		forceEnableClip();
+		
+		if ( !sys.isClient() ) {
+			objManager.setBotActionStateForEvent( ACTION_STATE_GUN_READY, self ); //mal: the weapon is repaired
+		}		
+	} else {
+		broken = false;
+		OnBrokenChanged();
+		hide();
+		if ( mountedWeapon != $null_entity ) {
+			mountedWeapon.hide();
+			mountedWeapon.setHealth( mountedWeapon.getMaxHealth() );
+		}
+		forceDisableClip();
+	}
+}
+
+float weapon_mount::GetActivateCode( entity p, float distance ) {
+	if ( p.getViewingEntity() != p ) {
+		return AK_NONE;
+	}
+	
+	if ( p.getHealth() <= 0 ) {
+		return AK_NONE;
+	}
+	
+	if ( p.getVehicle() != $null_entity ) {
+		return AK_NONE;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+
+	if ( distance < DISTANCE_FOR_ACTION ) {
+		if ( allegiance == TA_FRIEND ) {
+			if ( p.vHasActionItem( AK_REPAIR ) ) {
+				if ( mountedWeapon.NeedsRepair() ) {
+					return AK_REPAIR;
+				}
+			}
+		}
+	}
+
+	if ( CanUse( p, false ) ) {
+		return AK_USEVEHICLE;
+	}
+
+	return AK_NONE;
+}
+
+void weapon_mount::OnBrokenChanged() {
+	if ( broken ) {
+		if ( mountedWeapon != $null_entity ) {
+			mountedWeapon.PlayBrokenAnim();
+		}
+	} else {
+		if ( mountedWeapon != $null_entity ) {
+			mountedWeapon.PlayRepairedAnim();
+		}
+	}
+}
+
+void weapon_mount::OnWeaponDestroyed() {
+	broken = true;
+	OnBrokenChanged();
+	if ( controller != $null_entity ) {
+		controller.setProxyEntity( $null_entity, 0 );	// kick the player
+		SetController( $null_entity );
+	}
+	GoToIdle();
+
+	if ( !sys.isClient() ) {
+		objManager.setBotActionStateForEvent( ACTION_STATE_GUN_DESTROYED, self ); //mal: the weapon is destroyed
+	}
+}
+
+void weapon_mount::OnWeaponRepaired() {
+	if ( !broken ) {
+		return;
+	}
+
+	if ( !sys.isClient() ) {
+		objManager.setBotActionStateForEvent( ACTION_STATE_GUN_READY, self ); //mal: the weapon is repaired
+	}
+
+	mountedWeapon.PlayRepairedAnim();
+	broken = false;
+}
+
+string weapon_mount::vGetQuickChatString( entity p ) {
+	if ( getEntityAllegiance( p ) == TA_ENEMY ) {
+		if ( !broken ) {
+			return "quickchat/context/destroy/mg_nest";
+		}
+	} else {
+		if ( mountedWeapon.NeedsRepair() ) {
+			return "quickchat/context/repair/mg_nest";
+		}
+	}
+	return "";
+}
+
+void weapon_mount::vOnCockpitCreated() {
+	mountedWeapon.hideInLocalView();
+}
+
+void weapon_mount::vOnCockpitDestroyed() {
+	mountedWeapon.showInLocalView();
+}
+
+void weapon_mount::vOnContextDestroy( entity p ) {
+	player local = sys.getLocalViewPlayer();
+	if ( local == $null_entity || p == $null_entity ) {
+		return;
+	}
+
+	if ( flashpoint != $null ) {
+		delete flashpoint;
+	}
+
+	flashpoint = new flashpoint_obj;
+	flashpoint.SetOwner( self );
+	flashpoint.SetMaterial( getKey( "mtr_icon_flash_destroy" ) );
+}
+
+void weapon_mount::vOnContextConstruct( entity p ) {
+	player local = sys.getLocalViewPlayer();
+	if ( local == $null_entity || p == $null_entity ) {
+		return;
+	}
+
+	if ( flashpoint != $null ) {
+		delete flashpoint;
+	}
+
+	flashpoint = new flashpoint_obj;
+	flashpoint.SetOwner( self );
+	flashpoint.SetMaterial( getKey( "mtr_icon_flash" ) );
+}
