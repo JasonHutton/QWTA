@@ -820,9 +820,9 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 							 * -- Azuvector
 							 */
 							if ( wcompare( _get_current_list_text( MapSource, 1 ), toWStr( "sdGameRulesTactical" ) ) ) {
-								rect.height = rect.width * 1.0f / ( 1.3333 );
+								rect.height = rect.width * 1.0f / ( 1.7777 );
 								previewMaterial = gui.tacticalPreview;
-								gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), CAMPAIGNSHOT );
+								gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), LEVELSHOT );
 							} else {
 								rect.height = rect.width * 1.0f / ( 1.7777 );
 								previewMaterial = gui.levelPreview;

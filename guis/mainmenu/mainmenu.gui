@@ -74,7 +74,7 @@ gui mainMenu {
 		
 		handle 		levelPreview		= cacheMaterial( "levelPreview",	"levelshot" );
 		handle 		campaignPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
-		handle 		tacticalPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
+		handle 		tacticalPreview 	= cacheMaterial( "levelPreview", 	"levelshot" );
 		handle		rankedIcon			= cacheMaterial( "ranked", 			"_st ranked" );
 		handle		punkBusterIcon		= cacheMaterial( "pb", 				"_st punkbuster" );		
 		

@@ -260,9 +260,9 @@ _dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_di
 						 * -- Azuvector
 						 */
 						if( wcompare( toWStr( gui.lstPlayCompGameType.type ), toWStr( "tacticalList" ) ) ) {
-							rect.h = rect.width * ( 1 / 1.3333 );
+							rect.h = rect.width * ( 1 / 1.7777 );
 							previewMaterial = gui.tacticalPreview;
-							gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), CAMPAIGNSHOT );
+							gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), LEVELSHOT );
 						} else {
 							rect.h = rect.width * ( 1 / 1.7777 );
 							previewMaterial = gui.levelPreview;
