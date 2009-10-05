@@ -110,6 +110,7 @@ entityDef dead_body_gdf {
 	"max_spawnhost_count"			"20"
 	
 	"bleed"							"1"
+	"mtr_wound"						"textures/decals/gore_splat/hurt02"
 	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
 	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
 	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
@@ -131,6 +132,7 @@ entityDef dead_body_strogg {
 	"climate_key"					"body_strogg"
 	
 	"bleed"							"1"
+	"mtr_wound"						"textures/decals/gore_splat/hurt02"
 	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
 	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
 	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"

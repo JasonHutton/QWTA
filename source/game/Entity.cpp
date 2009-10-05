@@ -1757,6 +1757,57 @@ void idEntity::PostMapSpawn() {
 }
 
 /*
+==============
+idEntity::ProjectOverlay
+==============
+*/
+void idEntity::ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float size, const char *material ) {
+	float s, c;
+	idMat3 axis, axistemp;
+	idVec3 localOrigin, localAxis[2];
+	idPlane localPlane[2];
+
+	// make sure the entity has a valid model handle
+	if ( modelDefHandle < 0 ) {
+		return;
+	}
+
+	// only do this on dynamic md5 models
+	if ( renderEntity.hModel->IsDynamicModel() != DM_CACHED ) {
+		return;
+	}
+
+	idMath::SinCos16( gameLocal.random.RandomFloat() * idMath::TWO_PI, s, c );
+
+	axis[2] = -dir;
+	axis[2].NormalVectors( axistemp[0], axistemp[1] );
+	axis[0] = axistemp[ 0 ] * c + axistemp[ 1 ] * -s;
+	axis[1] = axistemp[ 0 ] * -s + axistemp[ 1 ] * -c;
+
+	renderEntity.axis.ProjectVector( origin - renderEntity.origin, localOrigin );
+	renderEntity.axis.ProjectVector( axis[0], localAxis[0] );
+	renderEntity.axis.ProjectVector( axis[1], localAxis[1] );
+
+	size = 1.0f / size;
+	localAxis[0] *= size;
+	localAxis[1] *= size;
+
+	localPlane[0] = localAxis[0];
+	localPlane[0][3] = -( localOrigin * localAxis[0] ) + 0.5f;
+
+	localPlane[1] = localAxis[1];
+	localPlane[1][3] = -( localOrigin * localAxis[1] ) + 0.5f;
+
+	const idMaterial *mtr = declHolder.declMaterialType.LocalFind( material );//declManager->FindMaterial( material );
+
+	// project an overlay onto the model
+	gameRenderWorld->ProjectOverlay( modelDefHandle, localPlane, mtr );
+
+	// make sure non-animating models update their overlay
+	UpdateVisuals();
+}
+
+/*
 ================
 idEntity::Present
 
@@ -4050,6 +4101,21 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 	}
 	if ( splat && *splat ) {
 		gameLocal.BloodSplat( this, collision->c.point, dir, 48.0f, splat );
+	}
+
+	decal = NULL;
+	if ( collisionSurface && *collisionSurface ) {
+		key = va( "mtr_wound_%s", collisionSurface );
+		decal = spawnArgs.RandomPrefix( key, gameLocal.random );
+	}
+	if ( !decal || !*decal ) {
+		decal = spawnArgs.RandomPrefix( "mtr_wound", gameLocal.random );
+	}
+	if ( decal && *decal ) {
+		ProjectOverlay( collision->c.point, dir, 20.0f, decal );
+		/*if( IsType( idPlayer::GetClassType() ) ) {
+			ProjectHeadOverlay( collision.c.point, dir, 20.0f, decal );
+		}*/
 	}
 }
 

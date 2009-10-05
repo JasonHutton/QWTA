@@ -381,6 +381,8 @@ public:
 	virtual void			ReachedPosition( void ) { }
 	virtual void			PostMapSpawn( void );
 
+	virtual void			ProjectOverlay( const idVec3 &origin, const idVec3 &dir, float size, const char *material );
+
 	virtual const idVec3&	GetWayPointOrigin( void ) const { return GetPhysics()->GetOrigin(); }
 	virtual const idBounds&	GetWayPointBounds( void ) const { return GetPhysics()->GetBounds(); }
 	virtual const idMat3&	GetWayPointAxis( void ) const { return GetPhysics()->GetAxis(); }

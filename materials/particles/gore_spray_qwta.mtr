@@ -117,3 +117,18 @@ material textures/decals/gore_splat/dsplat7
 		map clamp	textures/decals/gore_splat/dsplat7.tga
 	}	
 }
+
+material textures/decals/gore_splat/hurt02
+{
+
+	qer_editorimage textures/decals/gore_splat/hurt02.tga
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+
+	{
+		blend gl_dst_color,gl_zero
+		map clamp	textures/decals/gore_splat/hurt02.tga
+	}
+}
