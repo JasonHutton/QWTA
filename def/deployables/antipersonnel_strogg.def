@@ -492,6 +492,9 @@ damageDef damage_deployable_antipersonnel_strogg {
 	tt_obituary_self				"tooltips/killmsgs/turrets/apt/self"
 	tt_obituary_team_kill			"tooltips/killmsgs/turrets/apt/teamkill"
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/apt/self"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_deployable_antipersonnel_strogg {

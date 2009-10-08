@@ -311,6 +311,9 @@ damageDef damage_ssg {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_ssg {
@@ -332,6 +335,9 @@ damageDef damage_ssg_splash {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_ssg_splash {

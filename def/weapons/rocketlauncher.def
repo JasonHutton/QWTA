@@ -338,6 +338,9 @@ damageDef damage_law {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/rocketlauncher/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/rocketlauncher/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/rocketlauncher/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_law {
@@ -365,6 +368,9 @@ damageDef damage_law_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/rocketlauncher/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/rocketlauncher/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/rocketlauncher/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_law_splash {
@@ -389,6 +395,9 @@ damageDef damage_law_anansi {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/law/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/law/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/law/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_law_anansi {
@@ -415,6 +424,9 @@ damageDef damage_law_splash_anansi {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/law/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/law/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/law/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_law_splash_anansi {

@@ -60,6 +60,9 @@ damageDef damage_stroybomb_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/stroybomb/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/stroybomb/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/stroybomb/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_stroybomb_splash {

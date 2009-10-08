@@ -73,6 +73,8 @@ public:
 	bool					GetAllowComplaint( void ) const { return !flags.noComplaint; }
 	bool					GetRecordHitStats( void ) const { return flags.recordHitStats; }
 	bool					GetNoDirection( void ) const { return flags.noDirection; }
+	bool					GetBleed( void ) const { return flags.bleed; }
+	const char*				GetBleedWoundType( void ) const { return bleedWoundType; }
 
 	bool					IsTeamDamage( void ) const { return flags.isTeamDamage; }
 
@@ -143,7 +145,10 @@ protected:
 		bool				recordHitStats		: 1;
 		bool				isTeamDamage		: 1;
 		bool				noDirection			: 1;
+		bool				bleed				: 1;
 	} damageFlags_t;
+
+	idStr					bleedWoundType;
 
 	damageFlags_t			flags;
 

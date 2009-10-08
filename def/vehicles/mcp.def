@@ -553,6 +553,9 @@ damageDef damage_scud {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/scud/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/scud/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/scud/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef damage_scudSplash {
@@ -564,6 +567,9 @@ damageDef damage_scudSplash {
 			// thus stopping objective progress.
 
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/scud/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef damage_scudSplash_objective {
@@ -573,6 +579,9 @@ damageDef damage_scudSplash_objective {
 	noTeam
 	noTrace // Avoid having strogg energy shields absorb all damage,
 			// thus stopping objective progress.
+			
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageFilter damage_scud {

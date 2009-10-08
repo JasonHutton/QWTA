@@ -440,6 +440,9 @@ damageDef damage_law_trojan {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/aamissile/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/aamissile/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/aamissile/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef damage_law_splash_trojan {
@@ -459,6 +462,9 @@ damageDef damage_law_splash_trojan {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/aamissile/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/aamissile/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/aamissile/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageFilter damage_law_trojan {

@@ -23,6 +23,9 @@ $template _vehicle_mg_damage( STATNAME )
 
 	tt_obituary							"tooltips/killmsgs/weapons/mg"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/mg/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 $endtemplate
 
 $template _templates/vehicles/weapons/hyperblaster/damage( STATNAME, PROFICIENCY )
@@ -42,6 +45,9 @@ $template _templates/vehicles/weapons/hyperblaster/damage( STATNAME, PROFICIENCY
 
 	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 $endtemplate
 
 $template _templates/vehicles/weapons/hyperblaster_qwta/damage( STATNAME, PROFICIENCY )
@@ -62,6 +68,9 @@ $template _templates/vehicles/weapons/hyperblaster_qwta/damage( STATNAME, PROFIC
 
 	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 $endtemplate
 
 $template _templates/vehicles/weapons/hyperblaster_qwta/damage_splash( STATNAME, PROFICIENCY )
@@ -85,6 +94,9 @@ $template _templates/vehicles/weapons/hyperblaster_qwta/damage_splash( STATNAME,
 	tt_obituary_team_kill					"tooltips/killmsgs/weapons/hyperblaster/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/hyperblaster/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/hyperblaster/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 $endtemplate
 
 #endif // !__damage_def__

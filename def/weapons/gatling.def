@@ -47,6 +47,9 @@ damageDef damage_gatling {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gatling"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_gatling {
@@ -69,6 +72,9 @@ damageDef damage_gatling_bumblebee {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gatling"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_gatling_bumblebee {
@@ -91,6 +97,9 @@ damageDef damage_gatling_anansi {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gatling"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_gatling_anansi {
@@ -113,6 +122,9 @@ damageDef damage_gatling_titan {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gatling"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_gatling_titan {

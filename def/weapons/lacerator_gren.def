@@ -373,6 +373,9 @@ damageDef damage_lacerator_gren {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railchucker/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/railchucker/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/railchucker/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_lacerator_gren {
@@ -397,6 +400,9 @@ damageDef damage_lacerator_gren_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railchucker/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/railchucker/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/railchucker/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_lacerator_gren_splash {

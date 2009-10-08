@@ -372,6 +372,9 @@ damageDef damage_strocket {
 	tt_obituary							"tooltips/killmsgs/weapons/strocket"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/strocket/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/strocket/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef damage_strocket_splash {
@@ -391,6 +394,9 @@ damageDef damage_strocket_splash {
 	tt_obituary							"tooltips/killmsgs/weapons/strocket"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/strocket/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/strocket/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageFilter damage_strocket {

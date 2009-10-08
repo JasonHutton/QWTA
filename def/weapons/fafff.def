@@ -70,6 +70,9 @@ damageDef damage_fafff {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/fafff/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/fafff/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/fafff/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_fafff {
@@ -96,6 +99,9 @@ damageDef damage_fafff_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/fafff/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/fafff/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/fafff/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_fafff_splash {

@@ -132,6 +132,8 @@ void sdDeclDamage::CopyDecl( const sdDeclDamage *decl ) {
 
 	flags				= decl->flags;
 
+	bleedWoundType		= decl->bleedWoundType;
+
 	stats				= decl->stats;
 
 	pushFlags			= decl->pushFlags;
@@ -228,6 +230,18 @@ bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 		} else if( !token.Icmp( "noHeadShot" ) ) {
 
 			flags.canHeadShot = false;
+
+		} else if ( !token.Icmp( "bleed" ) ) {
+
+			flags.bleed = true;
+
+		} else if( !token.Icmp( "bleedWoundType" ) ) {
+			if( !src.ExpectTokenType( TT_STRING, 0, &token ) ) {
+				src.Error( "sdDeclDamage::Parse Missing or Bad Parameter for 'bleedWoundType' keyword in damage def '%s'", base->GetName() );
+				return false;
+			}
+
+			bleedWoundType = token;
 
 		} else if( !token.Icmp( "melee" ) ) {
 
@@ -519,6 +533,9 @@ void sdDeclDamage::FreeData( void ) {
 	flags.recordHitStats		= false;
 	flags.isTeamDamage			= false;
 	flags.noDirection			= false;
+	flags.bleed					= false;
+
+	bleedWoundType					= "";
 
 	pushFlags.negativePush	= false;
 

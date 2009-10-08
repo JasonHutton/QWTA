@@ -70,6 +70,9 @@ damageDef damage_sbc {
 	tt_obituary							"tooltips/killmsgs/weapons/sbc"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sbc/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/sbc/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_sbc {
@@ -95,6 +98,9 @@ damageDef damage_sbc_splash {
 	tt_obituary							"tooltips/killmsgs/weapons/sbc"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sbc/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/sbc/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_sbc_splash {

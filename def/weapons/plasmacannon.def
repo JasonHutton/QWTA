@@ -115,6 +115,9 @@ template templates/vehicles/weapons/plasmacannon/damage {
 		tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
 		tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
 		tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+		
+		bleed
+		bleedWoundType						"explosive"
 	}
 }
 
@@ -138,6 +141,9 @@ template templates/vehicles/weapons/plasmacannon/damage/splash {
 		tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
 		tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
 		tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+		
+		bleed
+		bleedWoundType						"explosive"
 	}
 }
 
@@ -262,6 +268,9 @@ damageDef damage_plasmacannon_small {
 	tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_plasmacannon_small {
@@ -284,6 +293,9 @@ damageDef damage_plasmacannon_small_splash {
 	tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_plasmacannon_small_splash {

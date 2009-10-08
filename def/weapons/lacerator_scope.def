@@ -282,6 +282,9 @@ damageDef damage_lacerator_scoped {
 
 	tt_obituary							"tooltips/killmsgs/weapons/lacerator_scoped"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lacerator_scoped/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_lacerator_scoped {

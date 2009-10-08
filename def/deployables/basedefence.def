@@ -204,6 +204,9 @@ damageDef damage_deployable_basedefence {
 
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/basedefence_gdf"
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_gdf_team"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_deployable_basedefence {
@@ -227,6 +230,9 @@ damageDef damage_deployable_basedefence_strogg {
 
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/basedefence_strogg"
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/turrets/basedefence_strogg_team"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_deployable_basedefence_strogg {

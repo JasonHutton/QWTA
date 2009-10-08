@@ -262,6 +262,9 @@ damageDef damage_airstrike_marker_splash {
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/airstrike_marker/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/airstrike_marker/self"
 	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/airstrike_marker/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageFilter damage_airstrike_marker_splash {
@@ -302,6 +305,9 @@ damageDef damage_violator_beacon_splash {
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/violator_beacon/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/violator_beacon/self"
 	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/violator_beacon/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageFilter damage_violator_beacon_splash {

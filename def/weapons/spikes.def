@@ -259,6 +259,9 @@ damageDef damage_spikes {
 
 	tt_obituary							"tooltips/killmsgs/weapons/spikes"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/spikes/teamkill"
+	
+	bleed
+	bleedWoundType						"slash"
 }
 
 damageDef realistic_damage_spikes {
@@ -316,6 +319,9 @@ damageDef damage_spikes_stab {
 
 	tt_obituary							"tooltips/killmsgs/weapons/spikes/backstab"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/spikes/backstab/teamkill"
+	
+	bleed
+	bleedWoundType						"slash"
 }
 
 damageDef realistic_damage_spikes_stab {

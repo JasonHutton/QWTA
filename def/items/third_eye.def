@@ -262,6 +262,9 @@ damageDef damage_camera_explode {
 	tt_obituary						"tooltips/killmsgs/weapons/thirdeye"
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/thirdeye/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/thirdeye/self"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_camera_explode {

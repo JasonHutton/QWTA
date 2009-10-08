@@ -84,6 +84,9 @@ damageDef damage_ssg_splash_push {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssg/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/ssg/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssg/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef damage_ssg_splash_pull{

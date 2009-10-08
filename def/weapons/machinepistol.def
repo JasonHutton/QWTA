@@ -357,6 +357,9 @@ damageDef damage_machinepistol {
 
 	tt_obituary							"tooltips/killmsgs/weapons/machinepistol"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/machinepistol/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_machinepistol {
@@ -390,6 +393,9 @@ damageDef damage_machinepistol_silenced {
 
 	tt_obituary							"tooltips/killmsgs/weapons/machinepistol/silenced"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/machinepistol/silenced/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_machinepistol_silenced {

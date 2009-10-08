@@ -214,6 +214,9 @@ damageDef damage_knife {
 
 	tt_obituary							"tooltips/killmsgs/weapons/knife"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/knife/teamkill"
+	
+	bleed
+	bleedWoundType						"slash"
 }
 
 damageDef realistic_damage_knife {
@@ -273,6 +276,9 @@ damageDef damage_knife_stab {
 
 	tt_obituary							"tooltips/killmsgs/weapons/knife/backstab"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/knife/backstab/teamkill"
+	
+	bleed
+	bleedWoundType						"slash"
 }
 
 damageDef realistic_damage_knife_stab {

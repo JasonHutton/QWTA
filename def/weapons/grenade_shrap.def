@@ -258,6 +258,9 @@ damageDef damage_grenade_shrap_splash {
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/shrap/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/shrap/self"
 	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/shrap/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_grenade_shrap_splash {

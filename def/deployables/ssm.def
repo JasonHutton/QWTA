@@ -376,6 +376,9 @@ damageDef damage_ssm {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssm/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/ssm/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssm/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef damage_ssmSplash {
@@ -432,4 +435,7 @@ damageDef damage_ssm_crush {
 
 	tt_obituary_unknown				"tooltips/killmsgs/self/deployable_falling"
 	tt_obituary_unknown_friendly	"tooltips/killmsgs/self/deployable_falling/friendly"
+	
+	bleed
+	bleedWoundType						"explosive"
 }

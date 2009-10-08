@@ -319,6 +319,9 @@ damageDef damage_deployable_antiarmour_strogg {
 	tt_obituary_self				"tooltips/killmsgs/turrets/avt/self"
 	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_deployable_antiarmour_strogg {
@@ -341,6 +344,8 @@ damageDef damage_deployable_antiarmour_splash_strogg {
 	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
 	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
 
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_deployable_antiarmour_splash_strogg {

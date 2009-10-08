@@ -280,6 +280,9 @@ damageDef damage_shotgun {
 
 	tt_obituary							"tooltips/killmsgs/weapons/shotgun"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/shotgun/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_shotgun {

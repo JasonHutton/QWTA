@@ -323,6 +323,9 @@ damageDef damage_blaster {
 
 	tt_obituary							"tooltips/killmsgs/weapons/blaster"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/blaster/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_blaster {

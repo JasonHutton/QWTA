@@ -4049,7 +4049,7 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 	// ddynerman: note, on client the collision struct is incomplete.  Only contains impact point and material
 	// Above comment is from Quake 4, but it still applies. To change this, send more data in the event. -- Azuvector
 	// We don't need the material anymore, lets grab the surfacetype instead.
-	// entNum, fraction, and surfaceType also passed clientside now.
+	// entNum, fraction, and surfaceType also passed clientside now. material isn't anymore.
 	const char *splat, *decal, *key, *collisionSurface;
 
 	if ( damageDecl == NULL || collision == NULL ) {
@@ -4057,6 +4057,10 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 	}
 
 	if ( !fl.bleed ) {
+		return;
+	}
+
+	if ( !damageDecl->GetBleed() ) {
 		return;
 	}
 
@@ -4086,6 +4090,7 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 	}*/
 
 	idEntity* collisionEnt = gameLocal.GetTraceEntity( *collision );
+	collisionSurface = NULL;
 	if ( collision->c.surfaceType != NULL ) {
 		collisionSurface = collision->c.surfaceType->GetName();	
 	} else if ( collisionEnt != NULL ) {
@@ -4103,19 +4108,22 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 		gameLocal.BloodSplat( this, collision->c.point, dir, 48.0f, splat );
 	}
 
-	decal = NULL;
-	if ( collisionSurface && *collisionSurface ) {
-		key = va( "mtr_wound_%s", collisionSurface );
-		decal = spawnArgs.RandomPrefix( key, gameLocal.random );
-	}
-	if ( !decal || !*decal ) {
-		decal = spawnArgs.RandomPrefix( "mtr_wound", gameLocal.random );
-	}
-	if ( decal && *decal ) {
-		ProjectOverlay( collision->c.point, dir, 20.0f, decal );
-		/*if( IsType( idPlayer::GetClassType() ) ) {
-			ProjectHeadOverlay( collision.c.point, dir, 20.0f, decal );
-		}*/
+	if ( idStr::Icmp("", damageDecl->GetBleedWoundType() ) != 0 ) {
+		decal = NULL;
+		if ( collisionSurface && *collisionSurface ) {
+			key = va( "mtr_wound_%s_%s", damageDecl->GetBleedWoundType(), collisionSurface );
+			decal = spawnArgs.RandomPrefix( key, gameLocal.random );
+		}
+		if ( !decal || !*decal ) {
+			key = va( "mtr_wound_%s", damageDecl->GetBleedWoundType() );
+			decal = spawnArgs.RandomPrefix( key, gameLocal.random );
+		}
+		if ( decal && *decal ) {
+			ProjectOverlay( collision->c.point, dir, 20.0f, decal );
+			/*if( IsType( idPlayer::GetClassType() ) ) {
+				ProjectHeadOverlay( collision.c.point, dir, 20.0f, decal );
+			}*/
+		}
 	}
 }
 
@@ -7805,7 +7813,7 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* originalIgnoreEntity, 
 
 				idVec3 dir = endPos - startPos;
 				dir.Normalize();
-				collisionEnt->DoDamageEffect( &trace, dir, bulletDamage, owner );
+				collisionEnt->DoDamageEffect( &trace, dir, bulletDamage, this );
 
 				// draw the hit decal
 				if ( (trace.c.material==NULL || trace.c.material->AllowOverlays()) ) {

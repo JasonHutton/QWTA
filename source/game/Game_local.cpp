@@ -6351,7 +6351,7 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 					}
 				}
 
-				if ( !ent->fl.takedamage || ent == ignoreDamage ) {
+				if ( ( !ent->fl.takedamage || ent == ignoreDamage ) && !ent->fl.bleed ) {
 					continue;
 				}
 
@@ -6379,7 +6379,11 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 					damageScale = dmgPower * ( 1.0f - dist / radius );
 					dir = ent->GetPhysics()->GetOrigin() - inflictor->GetPhysics()->GetOrigin();
 					dir.Normalize();
-					ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
+
+					ent->DoDamageEffect( &tr, dir, damageDecl, inflictor );
+					if ( ent->fl.takedamage && ent != ignoreDamage ) {
+						ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
+					}
 				}
 			}
 		}

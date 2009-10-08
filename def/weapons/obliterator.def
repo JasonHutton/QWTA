@@ -321,6 +321,9 @@ damageDef damage_obliterator {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/obliterator/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/obliterator/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/obliterator/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_obliterator {
@@ -347,6 +350,9 @@ damageDef damage_obliterator_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/obliterator/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/obliterator/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/obliterator/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_obliterator_splash {

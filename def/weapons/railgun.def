@@ -358,6 +358,9 @@ damageDef damage_railgun {
 
 	tt_obituary							"tooltips/killmsgs/weapons/railgun"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railgun/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_railgun {
@@ -387,6 +390,9 @@ damageDef damage_railgun_scoped {
 
 	tt_obituary							"tooltips/killmsgs/weapons/railgun"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railgun/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_railgun_scoped {

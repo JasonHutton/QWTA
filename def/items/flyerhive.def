@@ -239,6 +239,9 @@ damageDef damage_flyerhive_selfdestruct {
 	tt_obituary_self				"tooltips/killmsgs/weapons/flyerhive/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/flyerhive"
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/flyerhive/teamkill"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_flyerhive_selfdestruct {

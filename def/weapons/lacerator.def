@@ -351,6 +351,9 @@ damageDef damage_lacerator {
 
 	tt_obituary							"tooltips/killmsgs/weapons/lacerator"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lacerator/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_lacerator {
@@ -374,6 +377,9 @@ damageDef damage_lacerator_gren_bullet {
 
 	tt_obituary							"tooltips/killmsgs/weapons/railchucker"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railchucker/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_lacerator_gren_bullet {

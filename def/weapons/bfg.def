@@ -76,6 +76,9 @@ damageDef damage_bfg {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_bfg {
@@ -97,6 +100,9 @@ damageDef damage_bfg_splash {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_bfg_splash {
@@ -118,6 +124,9 @@ damageDef damage_bfg_beam {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_bfg_beam {
@@ -138,6 +147,9 @@ damageDef damage_bfg_effect {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/bfg10k/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/bfg10k/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/bfg10k/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_bfg_effect {

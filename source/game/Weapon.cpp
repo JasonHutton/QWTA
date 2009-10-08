@@ -3271,6 +3271,10 @@ void idWeapon::Event_MeleeAttack( float damageScale ) {
 
 			ent->ApplyImpulse( this, meleeTrace.c.id, meleeTrace.c.point, impulse );
 
+			idVec3 damageDirEffect = playerViewAxis.ToAngles().ToForward();
+			damageDirEffect.Normalize();
+			ent->DoDamageEffect( &meleeTrace, damageDirEffect, damage, this );
+
 			if ( ent->fl.takedamage ) {
 				idVec3 damageDir = playerViewAxis.ToAngles().ToForward();
 				ent->Damage( this, owner, damageDir, damage, damageScale, &meleeTrace );

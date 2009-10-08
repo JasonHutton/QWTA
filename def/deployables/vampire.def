@@ -118,6 +118,9 @@ damageDef damage_vampire {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/vampire/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/vampire/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/vampire/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_vampire {
@@ -142,6 +145,9 @@ damageDef damage_vampire_splash {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/vampire/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/vampire/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/vampire/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_vampire_splash {

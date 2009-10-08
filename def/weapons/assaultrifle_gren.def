@@ -231,6 +231,9 @@ damageDef damage_assaultrifle_gren {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/grenadelauncher/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/grenadelauncher/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/grenadelauncher/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_assaultrifle_gren {
@@ -257,6 +260,9 @@ damageDef damage_assaultrifle_gren_splash {
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/grenadelauncher/teamkill"
 	tt_obituary_self					"tooltips/killmsgs/weapons/grenadelauncher/self"
 	tt_obituary_unknown					"tooltips/killmsgs/weapons/grenadelauncher/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
 }
 
 damageDef realistic_damage_assaultrifle_gren_splash {
