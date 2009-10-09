@@ -185,7 +185,7 @@ material textures/decals/gore_splat/splat2_fade
 	noimpact
 	translucent
 	nonSolid
-	decalinfo	10.0, 0.5
+	//decalinfo	10.0, 0.5
 
 	qer_editorimage	textures/decals/gore_splat/splat2.tga
 	{
