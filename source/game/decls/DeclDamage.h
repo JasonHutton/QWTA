@@ -75,6 +75,7 @@ public:
 	bool					GetNoDirection( void ) const { return flags.noDirection; }
 	bool					GetBleed( void ) const { return flags.bleed; }
 	const char*				GetBleedWoundType( void ) const { return bleedWoundType; }
+	bool					GetBleedExplode( void ) const { return flags.bleedExplode; }
 
 	bool					IsTeamDamage( void ) const { return flags.isTeamDamage; }
 
@@ -146,6 +147,7 @@ protected:
 		bool				isTeamDamage		: 1;
 		bool				noDirection			: 1;
 		bool				bleed				: 1;
+		bool				bleedExplode		: 1;
 	} damageFlags_t;
 
 	idStr					bleedWoundType;

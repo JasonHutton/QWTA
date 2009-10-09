@@ -73,6 +73,7 @@ damageDef damage_sbc {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_sbc {
@@ -101,6 +102,7 @@ damageDef damage_sbc_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_sbc_splash {

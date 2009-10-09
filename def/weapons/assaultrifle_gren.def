@@ -234,6 +234,7 @@ damageDef damage_assaultrifle_gren {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_assaultrifle_gren {
@@ -263,6 +264,7 @@ damageDef damage_assaultrifle_gren_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_assaultrifle_gren_splash {

@@ -376,6 +376,7 @@ damageDef damage_lacerator_gren {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_lacerator_gren {
@@ -403,6 +404,7 @@ damageDef damage_lacerator_gren_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_lacerator_gren_splash {

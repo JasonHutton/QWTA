@@ -245,6 +245,7 @@ damageDef damage_grenade_frag_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_grenade_frag_splash {

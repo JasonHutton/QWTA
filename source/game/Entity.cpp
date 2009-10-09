@@ -4045,7 +4045,7 @@ bool idEntity::CheckTeamDamage( idEntity *inflictor, const sdDeclDamage* damageD
 	return true;
 }
 
-void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, const sdDeclDamage* damageDecl, idEntity *inflictor ) {
+void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &origin, const idVec3 &dir, const sdDeclDamage* damageDecl, idEntity *inflictor ) {
 	// ddynerman: note, on client the collision struct is incomplete.  Only contains impact point and material
 	// Above comment is from Quake 4, but it still applies. To change this, send more data in the event. -- Azuvector
 	// We don't need the material anymore, lets grab the surfacetype instead.
@@ -4067,6 +4067,7 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 	if ( gameLocal.isServer ) {
 		sdEntityBroadcastEvent msg( this, EVENT_DO_DAMAGE_EFFECT );
 		msg.WriteVector( collision->c.point );
+		msg.WriteVector( origin );
 		msg.WriteDir( dir, 24 );
 		msg.WriteLong( damageDecl->Index() );
 		//msg.WriteLong( collision->c.material->Index() );
@@ -4108,6 +4109,13 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 		gameLocal.BloodSplat( this, collision->c.point, dir, 48.0f, splat );
 	}
 
+	if ( damageDecl->GetBleedExplode() ) {
+		jointHandle_t jh = GetAnimator()->GetJointHandle("hips");
+		if ( jh != INVALID_JOINT ) {
+			PlayEffect( "fx_bleed_explode", colorWhite.ToVec3(), NULL, jh );
+		}
+	}
+
 	if ( idStr::Icmp("", damageDecl->GetBleedWoundType() ) != 0 ) {
 		decal = NULL;
 		if ( collisionSurface && *collisionSurface ) {
@@ -4119,7 +4127,13 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &dir, cons
 			decal = spawnArgs.RandomPrefix( key, gameLocal.random );
 		}
 		if ( decal && *decal ) {
-			ProjectOverlay( collision->c.point, dir, 20.0f, decal );
+			if ( collision->fraction != 1.0f ) {
+				ProjectOverlay( collision->c.point, dir, 20.0f, decal );
+			} else {
+				trace_t trace;
+				gameLocal.clip.TracePoint( trace, origin, GetPhysics()->GetOrigin(), CONTENTS_SOLID, NULL );
+				ProjectOverlay( trace.c.point, dir, 20.0f, decal );
+			}
 			/*if( IsType( idPlayer::GetClassType() ) ) {
 				ProjectHeadOverlay( collision.c.point, dir, 20.0f, decal );
 			}*/
@@ -5996,6 +6010,7 @@ bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 	switch( event ) {
 		case EVENT_DO_DAMAGE_EFFECT: {
 			idVec3 origin = msg.ReadVector();
+			idVec3 origin2 = msg.ReadVector();
 			idVec3 dir = msg.ReadDir( 24 );
 			const sdDeclDamage* damageDecl = gameLocal.declDamageType.SafeIndex( msg.ReadLong() );
 			//const idMaterial* collisionMaterial = gameLocal.declMaterialType.SafeIndex( msg.ReadLong() );
@@ -6010,7 +6025,7 @@ bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 			collision.fraction = fraction;
 			collision.c.surfaceType = surfDecl;
 
-			DoDamageEffect( &collision, dir, damageDecl, NULL );
+			DoDamageEffect( &collision, origin2, dir, damageDecl, NULL );
 			return true;
 		}
 	}
@@ -7813,7 +7828,7 @@ bool idEntity::DoLaunchBullet( idEntity* owner, idEntity* originalIgnoreEntity, 
 
 				idVec3 dir = endPos - startPos;
 				dir.Normalize();
-				collisionEnt->DoDamageEffect( &trace, dir, bulletDamage, this );
+				collisionEnt->DoDamageEffect( &trace, startPos, dir, bulletDamage, this );
 
 				// draw the hit decal
 				if ( (trace.c.material==NULL || trace.c.material->AllowOverlays()) ) {

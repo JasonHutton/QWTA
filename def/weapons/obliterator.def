@@ -324,6 +324,7 @@ damageDef damage_obliterator {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_obliterator {
@@ -353,6 +354,7 @@ damageDef damage_obliterator_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_obliterator_splash {

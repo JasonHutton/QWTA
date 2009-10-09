@@ -322,6 +322,7 @@ damageDef damage_deployable_antiarmour_strogg {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_deployable_antiarmour_strogg {
@@ -346,6 +347,7 @@ damageDef damage_deployable_antiarmour_splash_strogg {
 
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_deployable_antiarmour_splash_strogg {

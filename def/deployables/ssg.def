@@ -314,6 +314,7 @@ damageDef damage_ssg {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_ssg {
@@ -338,6 +339,7 @@ damageDef damage_ssg_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_ssg_splash {

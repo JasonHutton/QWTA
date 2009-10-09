@@ -118,6 +118,7 @@ template templates/vehicles/weapons/plasmacannon/damage {
 		
 		bleed
 		bleedWoundType						"explosive"
+		bleedExplode
 	}
 }
 
@@ -144,6 +145,7 @@ template templates/vehicles/weapons/plasmacannon/damage/splash {
 		
 		bleed
 		bleedWoundType						"explosive"
+		bleedExplode
 	}
 }
 
@@ -271,6 +273,7 @@ damageDef damage_plasmacannon_small {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_plasmacannon_small {
@@ -296,6 +299,7 @@ damageDef damage_plasmacannon_small_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_plasmacannon_small_splash {

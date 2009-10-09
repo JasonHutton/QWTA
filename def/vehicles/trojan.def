@@ -443,6 +443,7 @@ damageDef damage_law_trojan {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_law_splash_trojan {
@@ -465,6 +466,7 @@ damageDef damage_law_splash_trojan {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_law_trojan {

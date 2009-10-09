@@ -87,6 +87,7 @@ damageDef damage_ssg_splash_push {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_ssg_splash_pull{

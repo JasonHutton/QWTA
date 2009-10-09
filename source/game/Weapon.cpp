@@ -3273,7 +3273,7 @@ void idWeapon::Event_MeleeAttack( float damageScale ) {
 
 			idVec3 damageDirEffect = playerViewAxis.ToAngles().ToForward();
 			damageDirEffect.Normalize();
-			ent->DoDamageEffect( &meleeTrace, damageDirEffect, damage, this );
+			ent->DoDamageEffect( &meleeTrace, owner->GetPhysics()->GetOrigin(), damageDirEffect, damage, this );
 
 			if ( ent->fl.takedamage ) {
 				idVec3 damageDir = playerViewAxis.ToAngles().ToForward();

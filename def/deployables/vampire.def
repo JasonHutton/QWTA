@@ -121,6 +121,7 @@ damageDef damage_vampire {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_vampire {
@@ -148,6 +149,7 @@ damageDef damage_vampire_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_vampire_splash {

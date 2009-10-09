@@ -6380,7 +6380,7 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 					dir = ent->GetPhysics()->GetOrigin() - inflictor->GetPhysics()->GetOrigin();
 					dir.Normalize();
 
-					ent->DoDamageEffect( &tr, dir, damageDecl, inflictor );
+					ent->DoDamageEffect( &tr, inflictor->GetPhysics()->GetOrigin(), dir, damageDecl, inflictor );
 					if ( ent->fl.takedamage && ent != ignoreDamage ) {
 						ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
 					}

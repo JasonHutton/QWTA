@@ -375,6 +375,7 @@ damageDef damage_strocket {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_strocket_splash {
@@ -397,6 +398,7 @@ damageDef damage_strocket_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_strocket {

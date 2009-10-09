@@ -556,6 +556,7 @@ damageDef damage_scud {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_scudSplash {
@@ -570,6 +571,7 @@ damageDef damage_scudSplash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_scudSplash_objective {
@@ -582,6 +584,7 @@ damageDef damage_scudSplash_objective {
 			
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_scud {

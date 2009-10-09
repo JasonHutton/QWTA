@@ -242,6 +242,7 @@ damageDef damage_flyerhive_selfdestruct {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_flyerhive_selfdestruct {

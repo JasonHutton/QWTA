@@ -379,6 +379,7 @@ damageDef damage_ssm {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_ssmSplash {
@@ -438,4 +439,5 @@ damageDef damage_ssm_crush {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }

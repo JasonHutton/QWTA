@@ -265,6 +265,7 @@ damageDef damage_airstrike_marker_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_airstrike_marker_splash {
@@ -308,6 +309,7 @@ damageDef damage_violator_beacon_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_violator_beacon_splash {

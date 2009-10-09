@@ -63,6 +63,7 @@ damageDef damage_stroybomb_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_stroybomb_splash {

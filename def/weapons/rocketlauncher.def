@@ -341,6 +341,7 @@ damageDef damage_law {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_law {
@@ -371,6 +372,7 @@ damageDef damage_law_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_law_splash {
@@ -398,6 +400,7 @@ damageDef damage_law_anansi {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_law_anansi {
@@ -427,6 +430,7 @@ damageDef damage_law_splash_anansi {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_law_splash_anansi {

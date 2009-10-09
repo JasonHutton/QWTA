@@ -73,6 +73,7 @@ damageDef damage_fafff {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_fafff {
@@ -102,6 +103,7 @@ damageDef damage_fafff_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_fafff_splash {

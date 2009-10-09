@@ -261,6 +261,7 @@ damageDef damage_grenade_shrap_splash {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_grenade_shrap_splash {

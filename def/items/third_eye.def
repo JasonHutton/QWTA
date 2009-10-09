@@ -265,6 +265,7 @@ damageDef damage_camera_explode {
 	
 	bleed
 	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef realistic_damage_camera_explode {
