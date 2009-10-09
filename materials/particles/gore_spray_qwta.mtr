@@ -190,7 +190,7 @@ material textures/decals/gore_splat/splat2_fade
 	qer_editorimage	textures/decals/gore_splat/splat2.tga
 	{
 		blend 	gl_zero,gl_one_minus_src_color
-		map 	textures/decals/splat2.tga
+		map 	textures/decals/gore_splat/splat2.tga
 		//vertexColor	
 		//rgb		decalFade[ DecalLife ]
 	}	
