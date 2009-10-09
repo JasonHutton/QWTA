@@ -132,3 +132,66 @@ material textures/decals/gore_splat/hurt02
 		map clamp	textures/decals/gore_splat/hurt02.tga
 	}
 }
+
+material textures/effects/gore_spray/bloodhit3
+{
+	qer_editorimage textures/effects/gore_spray/bloodhit3.tga
+	twoSided
+	noShadows
+	noimpact
+	translucent
+	{
+		blend blend
+		map textures/effects/gore_spray/bloodhit3.tga
+		vertexColor
+	}
+}
+
+material textures/effects/gore_spray/bloodhit4
+{
+	qer_editorimage textures/effects/gore_spray/bloodhit4.tga
+	twoSided
+	noShadows
+	noimpact
+	translucent
+	{
+		blend blend
+		map textures/effects/gore_spray/bloodhit4.tga
+		vertexColor
+	}
+}
+
+material textures/effects/gore_spray/bloodline1
+{
+	qer_editorimage textures/effects/gore_spray/bloodline1.tga
+	twoSided
+	noShadows
+	noimpact
+	translucent
+	{
+		blend blend
+		map clamp textures/effects/gore_spray/bloodline1.tga
+		vertexColor
+	}
+}
+
+material textures/decals/gore_splat/splat2_fade
+{
+	polygonOffset 1
+	discrete
+	sort decal
+	noShadows
+	
+	noimpact
+	translucent
+	nonSolid
+	decalinfo	10, 0.5
+
+	qer_editorimage	textures/decals/gore_splat/splat2.tga
+	{
+		blend 	gl_zero,gl_one_minus_src_color
+		map 	textures/decals/splat2.tga
+		//vertexColor	
+		//rgb		decalFade[ DecalLife ]
+	}	
+}
