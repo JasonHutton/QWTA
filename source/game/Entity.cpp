@@ -4131,8 +4131,15 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &origin, c
 				ProjectOverlay( collision->c.point, dir, 20.0f, decal );
 			} else {
 				trace_t trace;
-				gameLocal.clip.TracePoint( trace, origin, GetPhysics()->GetOrigin(), CONTENTS_SOLID, NULL );
-				ProjectOverlay( trace.c.point, dir, 20.0f, decal );
+				// 67845 / 0b10000100100000101 / 1, 3, 9, 12, 17
+				// CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_BODY | CONTENTS_RENDERMODEL | CONTENTS_FORCEFIELD
+				gameLocal.clip.TracePoint( trace, origin, GetPhysics()->GetOrigin(), MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, NULL );
+				if ( trace.fraction != 1.0f ) {
+					float scale = abs( trace.c.dist * 0.01f );
+					scale = 100.f - scale;
+					if ( scale < 0.f ) { scale = 0.f; }
+					ProjectOverlay( trace.c.point, dir, scale + 20.f, decal );
+				}
 			}
 			/*if( IsType( idPlayer::GetClassType() ) ) {
 				ProjectHeadOverlay( collision.c.point, dir, 20.0f, decal );
