@@ -193,6 +193,7 @@ entityDef player_base {
 	"mtr_wound_explosive"			"textures/decals/gore_splat/splat2_fade"
 	
 	"fx_bleed_explode"				"effects/impacts/gib"
+	"fx_bleed_explode_small"		"effects/impacts/gib_small"
 
 }
 

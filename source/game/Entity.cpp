@@ -4112,7 +4112,16 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &origin, c
 	if ( damageDecl->GetBleedExplode() ) {
 		jointHandle_t jh = GetAnimator()->GetJointHandle("hips");
 		if ( jh != INVALID_JOINT ) {
-			PlayEffect( "fx_bleed_explode", colorWhite.ToVec3(), NULL, jh );
+			idVec3 dist = origin - GetPhysics()->GetOrigin();
+			if ( dist.Length() < damageDecl->GetRadius() ) {
+				float damage = 100.0f; // Kludge because corpses aren't filtered as players and I'm wary of changing that for now.
+				float damageScale = damage * ( 1.0f - dist.Length() / damageDecl->GetRadius() );
+				if ( damageScale > 50 ) {
+					PlayEffect( "fx_bleed_explode", colorWhite.ToVec3(), NULL, jh );
+				} else {
+					PlayEffect( "fx_bleed_explode_small", colorWhite.ToVec3(), NULL, jh );
+				}
+			}
 		}
 	}
 

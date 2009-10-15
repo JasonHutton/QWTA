@@ -119,6 +119,7 @@ entityDef dead_body_gdf {
 	"mtr_wound_explosive"			"textures/decals/gore_splat/splat2_fade"
 	
 	"fx_bleed_explode"				"effects/impacts/gib"
+	"fx_bleed_explode_small"		"effects/impacts/gib_small"
 	
 	"climate_key"					"body_gdf"
 	
@@ -145,6 +146,7 @@ entityDef dead_body_strogg {
 	"mtr_wound_explosive"			"textures/decals/gore_splat/splat2_fade"
 	
 	"fx_bleed_explode"				"effects/impacts/gib"
+	"fx_bleed_explode_small"		"effects/impacts/gib_small"
 	
 	"max_possess_count"				"35"
 	"max_spawnhost_count"			"20"
