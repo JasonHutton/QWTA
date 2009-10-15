@@ -372,9 +372,7 @@ effect effects/impacts/gib
 			lineHit
 		}
 	}
-}
-
-effect effects/impacts/gib_splat
+}effect effects/impacts/gib_splat
 {
 	size	184
 
@@ -399,4 +397,212 @@ effect effects/impacts/gib_splat
 		}
 	}
 }
+
+
+
+effect effects/impacts/gib_splat_small
+{
+	size	114
+
+	decal "splat"
+	{
+		detail		0.9
+		start		0.002,0.002
+		decalAxis	3
+
+		decal
+		{
+			duration	0.002,0.002
+			material	"textures/decals/gore_splat/splat2_fade"
+			trailRepeat	1
+
+			start
+			{
+				size { box 50,50,1,80,80,1 }
+				rotate { box 0,1 }
+			}
+			lineHit
+		}
+	}
+}effect effects/impacts/gib_small
+{
+	size	252
+
+	spawner "splat"
+	{
+		count		10,10
+
+		sprite
+		{
+			duration	0.2,0.2
+			material	"textures/decals/gore_splat/dsplat2"
+			gravity		0.5,0.5
+			generatedOriginNormal
+			trailRepeat	1
+
+			start
+			{
+				position { cylinder -1,-1,-1,1,1,1 }
+				velocity { point 800,0,0 }
+				size { point 15,15 }
+				rotate { box 0,1 }
+			}
+
+			impact
+			{
+				remove	1
+				effect	"effects/impacts/gib_splat_small"
+			}
+			lineHit
+		}
+	}
+	spawner "blood"
+	{
+		count		3,3
+
+		sprite
+		{
+			duration	0.7,1
+			material	"textures/effects/gore_spray/bloodhit3"
+			gravity		0.05,0.05
+			trailRepeat	1
+
+			start
+			{
+				position { line 0,0,0,10,0,0 }
+				velocity { box 20,0,0,80,0,80 }
+				size { box 50,50,60,60 }
+				tint { line 0.0745098,0.00392157,0.00392157,0.156863,0,0 }
+				fade { line 0,1 }
+				rotate { box 0,0.00277778 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope fastinslowout }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { box 100,100,140,140 }
+				rotate { box -0.000277778,0.000277778 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "blood2"
+	{
+		count		3,3
+
+		sprite
+		{
+			duration	0.7,1
+			material	"textures/effects/gore_spray/bloodhit4"
+			gravity		0.05,0.05
+			trailRepeat	1
+
+			start
+			{
+				position { line 0,0,0,10,0,0 }
+				velocity { box 10,0,0,40,0,80 }
+				size { box 50,50,60,60 }
+				tint { line 0.117647,0.0156863,0.156863,0.156863,0,0 }
+				fade { line 0,1 }
+				rotate { box 0,0.00277778 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope fastinslowout }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { box 100,100,140,140 }
+				rotate { box -0.000277778,0.000277778 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "blood_rear"
+	{
+		count		3,3
+
+		sprite
+		{
+			duration	0.7,1
+			material	"textures/effects/gore_spray/bloodhit3"
+			gravity		0.05,0.05
+			flipNormal
+			trailRepeat	1
+
+			start
+			{
+				position { line 0,0,0,10,0,0 }
+				velocity { box 20,0,0,80,0,80 }
+				size { box 50,50,60,60 }
+				tint { line 0.0666667,0,0,0.156863,0,0 }
+				fade { line 0,1 }
+				rotate { box 0,0.00277778 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				fade { envelope fastinslowout }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { box 100,100,140,140 }
+				rotate { box -0.000277778,0.000277778 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "blood_streaks"
+	{
+		count		10,10
+		locked
+
+		line
+		{
+			duration	0.25,0.5
+			material	"textures/effects/gore_spray/bloodline1"
+			generatedOriginNormal
+			flipNormal
+			trailRepeat	1
+
+			start
+			{
+				position { cylinder -0.2,-0.3,-0.3,0.2,0.3,0.3 surface }
+				velocity { point 1,0,0 }
+				size { box 15,20 }
+				tint { point 0.309804,0.101961,0.0431373 }
+				length { box 40,0,0,45,0,0 }
+			}
+
+			motion
+			{
+				tint { envelope linear }
+				fade { envelope linear }
+				length { envelope linear }
+			}
+
+			end
+			{
+				tint { point 0.14902,0.0470588,0.0156863 }
+				length { box 150,0,0,200,0,0 }
+			}
+			lineHit
+		}
+	}
+}
+
+
 
