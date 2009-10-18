@@ -153,7 +153,7 @@ CHANGES:
     Husky(1) + Icarus(128) = 129
     Husky(1) + Icarus(128) + Platypus(2) + Armadillo(4) + Hog(256) = 391
     Anansi(64) + Tormentor(2048) = 2112
-    All vehicles except Jupiter = 4031
+    All vehicles except Jupiter = 4095
 * Cvar g_useSpecificRadar added.
   + Default 1.
   + Controls whether radar is prevented from detecting players.
