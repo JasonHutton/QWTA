@@ -1,0 +1,245 @@
+
+
+export hauser {
+	options -prefix TELEPORT_ -sourcedir models/items/teleporter/dev_sd -destdir models/items/teleporter
+
+
+	mesh	teleporter_idle.mb				-dest	 teleporter_view.md5mesh -range 1 1
+
+	anim	teleporter_raise.mb					-dest	 teleporter_raise.md5anim
+	anim	teleporter_idle.mb					-dest	 teleporter_idle.md5anim
+ 	anim	teleporter_lower.mb					-dest	 teleporter_lower.md5anim
+ 	anim	teleporter_fire.mb					-dest	 teleporter_fire.md5anim
+ 	anim	teleporter_empty_idle.mb			-dest	 teleporter_empty_idle.md5anim
+ 	anim	teleporter_empty_raise.mb			-dest	 teleporter_empty_raise.md5anim
+ 	anim	teleporter_empty_lower.mb			-dest	 teleporter_empty_lower.md5anim
+ 	anim	teleporter_empty_fire3.mb			-dest	 teleporter_empty_fire.md5anim
+}
+
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_teleporter {
+
+	mesh					models/items/teleporter/teleporter_view.md5mesh
+	anim raise				models/items/teleporter/teleporter_raise.md5anim {
+		frame begin				sound_channel snd_weapon_raise snd_raise
+	}
+	anim idle 				models/items/teleporter/teleporter_idle.md5anim
+	anim putaway 			models/items/teleporter/teleporter_lower.md5anim
+	anim fire 				models/items/teleporter/teleporter_fire.md5anim
+	anim empty_raise		models/items/teleporter/teleporter_empty_raise.md5anim
+	anim empty_idle 		models/items/teleporter/teleporter_empty_idle.md5anim
+	anim empty_putaway 		models/items/teleporter/teleporter_empty_lower.md5anim
+	anim empty_fire 		models/items/teleporter/teleporter_empty_fire.md5anim
+	anim throw_quick		models/items/teleporter/teleporter_fire.md5anim {
+		frame begin				sound_channel snd_weapon_fire snd_fire
+	}
+}
+
+
+/*
+	mesh					models/weapons/strogg_ammopack/ammopack_view.md5mesh
+	anim raise				models/weapons/strogg_ammopack/ammopack_raise.md5anim
+	anim idle 				models/weapons/strogg_ammopack/ammopack_idle.md5anim
+	anim throw_quick		models/weapons/strogg_ammopack/ammopack_fire.md5anim
+	anim putaway 			models/weapons/strogg_ammopack/ammopack_lower.md5anim
+	*/
+
+
+
+// ========================================================================
+// Item defs
+//
+
+invItemDef inventory/items/teleporter {
+	type						"item"
+	slot						"item"
+	name						"game/weapons/teleporter"
+
+	data {
+		"model_view"			"viewmodel_teleporter"
+		"model_world" 			"models/items/teleporter/teleporter2_thirdperson.lwo"
+
+		"joint_attach"			"RightForeArmRoll"
+		"view_offset"			"-7 -2 -1"
+
+		"anim_prefix"			"hands_teleporter"
+		"anim_prefix_class"		"hands"
+
+		"anim_prefix_alt"		"hands_teleport"
+
+		"weapon_scriptobject"	"tool_teleporter"
+
+		"mtr_weaponmenu"		"guis/assets/icons/weapons/teleportgun"
+
+		"crosshair"				"none"
+
+		"tt_intro_1"			"teleporter_intro_1"
+		"tt_intro_2"			"teleporter_intro_2"
+		"tt_deployed_intro_1"	"teleporter_deployed_intro_1"
+		"tt_deployed_intro_2"	"teleporter_deployed_intro_2"
+		"tt_need_charge"		"teleporter_need_charge"
+
+		"num_projectiles"		"1"
+		"hide_clip"				"1"
+		"show_charge"			"1"
+
+		"timer_charge"			"energy_device"
+		"charge_per_use"		"100"
+
+		"player_weapon_num"		"23"
+
+		"fx_idle"			"effects/items/teleporter_idle"
+		"fx_fire"			"effects/items/teleporter_fire"
+		"fx_idle_deployed"		"effects/items/teleporter_idle_deployed"
+		"fx_teleport"			"effects/items/teleporter_teleport"
+		"idle_effect_joint"		"teleporter_joint"
+
+		"snd_raise"				"sounds/tools/slipbeacon/raise"
+		"snd_fire"				"sounds/tools/slipbeacon/fire"
+		"snd_recall"			"sounds/tools/slipbeacon/recall"
+		"snd_invalid"			"sounds/tools/generic/error"
+		"snd_need_charge"		"sounds/ui/main/cannot"
+	}
+
+	clip {
+		"projectile"			"projectile_teleporter"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectile_teleporter {
+	"spawnclass"				"sdScriptEntity_Projectile"
+	"scriptObject"				"projectile_teleporter"
+
+	"mins"						"-7 -7 0"
+	"maxs"						"7 7 7"
+
+	"model" 					"models/items/teleporter/teleporter_projectile.lwo"
+
+	"offsetModel"				"0 0 -5"
+
+	"maxVistDist"				"2048"
+
+	"launchFromBarrel"			"1"
+	"health"					"0"
+	"velocity"					"1024 0 0"
+	"bouncyness"				"0.35"
+	"gravity"					"800"
+	"fuse"						"400"
+	"mass"						"20"
+	"linear_friction"			"0.5"
+	"angular_friction"			"0.5"
+	"contact_friction"			"0.4"
+	"buoyancy"					"0.3"
+
+	"option_simple_rigid_body_physics"	"1"
+	"option_crosshair_interface"		"1"
+	"option_interactive_interface"		"1"
+	"option_unlock_interpolate"			"1"
+
+	"detonate_on_trigger"		"1"
+
+	"snd_bounce"				"sounds/weapons/grenades/bounce"
+	"snd_invalid"				"sounds/tools/generic/error"
+
+	"fx_trail"					"effects/grenades/teleport_trail"
+	"fx_splash"					"effects/base/impact_water_large"
+	"fx_teleport_start"			"effects/tools/teleporter/start"
+	"fx_teleport_end"			"effects/tools/teleporter/end"
+	"fx_teleport_start_crouch"	"effects/tools/teleporter/start_crouch"
+	"fx_teleport_end_crouch"	"effects/tools/teleporter/end_crouch"
+	"fx_teleport_start_prone"	"effects/tools/teleporter/start_prone"
+	"fx_teleport_end_prone"		"effects/tools/teleporter/end_prone"
+
+	"icon_sort_cm"				"0"
+	"mtr_icon"					"hud/objectives/warp_location"
+	"icon_size_cm"				"10"
+
+	"tt_destroyed"				"teleporter_destroyed"
+	"tt_useMeToolTip1"			"teleporter_useMeToolTip1"
+	"tt_useMeToolTip2"			"teleporter_useMeToolTip2"
+	"tt_badLocation"			"teleporter_badLocation"
+
+	"collection_teleportbeacon"	"teleportbeacon"
+	"dmg_blocked"				"damage_teleporter_blocked"
+	
+	"ti_content_bounds_filter"	"target_content_bounds"
+}
+
+#include "templates/tooltips.include"
+
+toolTip teleporter_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/teleporter_1"
+}
+
+toolTip teleporter_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_deploy_item"
+}
+
+toolTip teleporter_deployed_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/teleporter_deployed_1"
+}
+
+toolTip teleporter_deployed_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/teleporter_deployed_2"
+}
+
+toolTip teleporter_need_charge {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+toolTip teleporter_destroyed {
+	sound "sounds/ui/main/bad"
+	length	5
+	alwaysPlay
+	text	"game/tt/teleporter_destroyed"
+}
+
+toolTip teleporter_useMeToolTip1 {
+	sound "sounds/ui/main/neutral"
+	length	5
+	text	"game/tt/intro/arm_me_1"
+}
+
+toolTip teleporter_useMeToolTip2 {
+	sound "sounds/ui/main/neutral"
+	length	5
+	text	"game/tt/intro/teleporter_destroy"
+}
+
+toolTip teleporter_badLocation {
+	// sound is played in the script
+	length	5
+	alwaysPlay
+	text	"game/tt/teleporter_badLocation"
+}
+
+damageDef damage_teleporter_blocked {
+	damage								"damage_teleporter_blocked"
+	noArmor
+	noGod
+
+	tt_obituary_self					"tooltips/killmsgs/items/teleporter/self"
+}
+
+damageFilter damage_teleporter_blocked {
+	type {
+		target	"target_player_all"
+		damage	100%
+		noScale
+	}
+}
