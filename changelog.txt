@@ -72,6 +72,7 @@ CHANGES:
   + Default 1.
   + When enabled, hides most HUD elements onscreen until you perform an action
     related to their function. (Reload or change weapons to see ammo, etc.)
+* Blood and gore effects improved considerably.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
@@ -79,6 +80,7 @@ BUG FIXES:
 * Adjusted the sound shaders of the BFG10k and the DMC to more appropriate
   volumes and distances.
 * Fixed a bug with class limit autoadjuster using GDF values for Strogg team.
+* Fixed a bug which was causing Flyer Drones to emit warning messages.
 
 
 QWTA v0.3.2:
