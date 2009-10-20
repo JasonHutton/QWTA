@@ -234,6 +234,10 @@ damageDef damage_teleporter_blocked {
 	noGod
 
 	tt_obituary_self					"tooltips/killmsgs/items/teleporter/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_teleporter_blocked {

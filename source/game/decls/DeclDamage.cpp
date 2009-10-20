@@ -247,6 +247,10 @@ bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 
 			flags.bleedExplode = true;
 
+		} else if( !token.Icmp( "bleedMeleeTrace" ) ) {
+
+			flags.bleedMeleeTrace = true;
+
 		} else if( !token.Icmp( "melee" ) ) {
 
 			flags.melee = true;
@@ -539,6 +543,7 @@ void sdDeclDamage::FreeData( void ) {
 	flags.noDirection			= false;
 	flags.bleed					= false;
 	flags.bleedExplode			= false;
+	flags.bleedMeleeTrace		= false;
 
 	bleedWoundType					= "";
 

@@ -390,6 +390,10 @@ damageDef damage_landmine_splash_strogg_mine {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/mines/landmine/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/mines/landmine/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/mines/landmine/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_landmine_splash_strogg_trap {
@@ -407,6 +411,10 @@ damageDef damage_landmine_splash_strogg_trap {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/mines/trapmine/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/mines/trapmine/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/mines/trapmine/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_landmine_splash_strogg_prox {
@@ -424,6 +432,10 @@ damageDef damage_landmine_splash_strogg_prox {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/mines/proxymine/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/mines/proxymine/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/mines/proxymine/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_landmine_splash_gdf_mine {
@@ -441,6 +453,10 @@ damageDef damage_landmine_splash_gdf_mine {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/mines/landmine/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/mines/landmine/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/mines/landmine/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_landmine_splash_gdf_trap {
@@ -458,6 +474,10 @@ damageDef damage_landmine_splash_gdf_trap {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/mines/trapmine/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/mines/trapmine/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/mines/trapmine/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageDef damage_landmine_splash_gdf_prox {
@@ -475,6 +495,10 @@ damageDef damage_landmine_splash_gdf_prox {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/mines/proxymine/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/mines/proxymine/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/mines/proxymine/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_landmine {

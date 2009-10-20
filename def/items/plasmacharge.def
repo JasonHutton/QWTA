@@ -211,6 +211,10 @@ damageDef damage/plasma_charge_splash {
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/charges/plasma/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/charges/plasma/self"
 	tt_obituary_unknown			"tooltips/killmsgs/weapons/charges/plasma/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage/plasma_charge {

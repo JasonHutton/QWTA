@@ -217,6 +217,10 @@ damageDef damage/charge_explosive_splash {
 	tt_obituary_team_kill		"tooltips/killmsgs/weapons/charges/he/teamkill"
 	tt_obituary_self			"tooltips/killmsgs/weapons/charges/he/self"
 	tt_obituary_unknown			"tooltips/killmsgs/weapons/charges/he/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage/charge_explosive {

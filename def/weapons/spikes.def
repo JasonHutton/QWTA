@@ -262,6 +262,7 @@ damageDef damage_spikes {
 	
 	bleed
 	bleedWoundType						"slash"
+	bleedMeleeTrace
 }
 
 damageDef realistic_damage_spikes {

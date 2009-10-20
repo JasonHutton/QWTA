@@ -267,6 +267,11 @@ damageDef damage_flyerhive_destroyed {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/flyerhive/teamkill"
 }
 
+// This is exclusively to avoid some warning messages ingame.
+damageDef realistic_damage_flyerhive_destroyed {
+	inherit							"damage_flyerhive_destroyed"
+}
+
 #include "templates/tooltips.include"
 
 toolTip flyerhive_intro_1 {

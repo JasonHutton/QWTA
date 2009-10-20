@@ -189,6 +189,7 @@ entityDef player_base {
 	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
 	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
 	"mtr_splat4"					"textures/decals/gore_splat/dsplat11"
+	"mtr_wound_slash"				"textures/decals/gore_splat/knifescratch"
 	
 	"mtr_wound_explosive"			"textures/decals/gore_splat/splat2_fade"
 	

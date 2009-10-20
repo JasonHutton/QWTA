@@ -4137,17 +4137,31 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &origin, c
 		}
 		if ( decal && *decal ) {
 			if ( collision->fraction != 1.0f ) {
-				ProjectOverlay( collision->c.point, dir, 20.0f, decal );
+				//gameRenderWorld->DebugArrow( colorCyan, origin, collision->c.point, 20, 10000 );
+				/*if ( damageDecl->GetBleedMeleeTrace() ) {
+					trace_t trace;
+					gameLocal.clip.TracePoint( trace, origin, GetPhysics()->GetOrigin(), MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, NULL );
+					if ( trace.fraction != 1.0f ) {
+						ProjectOverlay( trace.c.point, dir, 20.0f, decal );
+					}
+				} else {*/
+					ProjectOverlay( collision->c.point, dir, 20.0f, decal );
+				//}
 			} else {
 				trace_t trace;
 				// 67845 / 0b10000100100000101 / 1, 3, 9, 12, 17
 				// CONTENTS_SOLID | CONTENTS_WATER | CONTENTS_BODY | CONTENTS_RENDERMODEL | CONTENTS_FORCEFIELD
 				gameLocal.clip.TracePoint( trace, origin, GetPhysics()->GetOrigin(), MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, NULL );
 				if ( trace.fraction != 1.0f ) {
-					float scale = abs( trace.c.dist * 0.01f );
-					scale = 100.f - scale;
-					if ( scale < 0.f ) { scale = 0.f; }
-					ProjectOverlay( trace.c.point, dir, scale + 20.f, decal );
+					//gameRenderWorld->DebugArrow( colorMagenta, origin, GetPhysics()->GetOrigin(), 20, 10000 );
+					if ( damageDecl->GetBleedExplode() ) {
+						float scale = abs( trace.c.dist * 0.01f );
+						scale = 100.f - scale;
+						if ( scale < 0.f ) { scale = 0.f; }
+						ProjectOverlay( trace.c.point, dir, scale + 20.f, decal );
+					} else {
+						ProjectOverlay( trace.c.point, dir, 20.0f, decal );
+					}
 				}
 			}
 			/*if( IsType( idPlayer::GetClassType() ) ) {
@@ -6040,6 +6054,8 @@ bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 			collision.c.entityNum = entNum;
 			collision.fraction = fraction;
 			collision.c.surfaceType = surfDecl;
+
+			
 
 			DoDamageEffect( &collision, origin2, dir, damageDecl, NULL );
 			return true;

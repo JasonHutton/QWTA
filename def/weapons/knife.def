@@ -217,6 +217,7 @@ damageDef damage_knife {
 	
 	bleed
 	bleedWoundType						"slash"
+	bleedMeleeTrace
 }
 
 damageDef realistic_damage_knife {

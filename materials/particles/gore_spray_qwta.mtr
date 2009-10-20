@@ -185,13 +185,27 @@ material textures/decals/gore_splat/splat2_fade
 	noimpact
 	translucent
 	nonSolid
-	//decalinfo	10.0, 0.5
 
 	qer_editorimage	textures/decals/gore_splat/splat2.tga
 	{
 		blend 	gl_zero,gl_one_minus_src_color
 		map 	textures/decals/gore_splat/splat2.tga
-		//vertexColor	
-		//rgb		decalFade[ DecalLife ]
-	}	
+	}
+}
+
+material textures/decals/gore_splat/knifescratch
+{
+	qer_editorimage textures/decals/knifescratch.tga
+	sort decal
+	noShadows
+	noimpact
+	translucent
+	polygonOffset 1//0.125
+	{
+		blend GL_ZERO, GL_ONE_MINUS_SRC_COLOR
+		map textures/decals/knifescratch.tga
+		vertexcolor
+		maskalpha
+	}
+	decalInfo 5 5 ( 1 1 1 1 ) ( 0 0 0 0 )
 }
