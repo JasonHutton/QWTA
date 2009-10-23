@@ -1524,8 +1524,88 @@ void idGameLocal::Init( void ) {
 	isAutorecording = false;
 	hasTakenScoreShot = false;
 
+	ImportConfigs();
+
 	Printf( "game initialized.\n" );
 	Printf( "--------------------------------------\n" );
+}
+
+void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, bool importSDNetBinds, bool importSDNetConfig ) {
+
+	idStr localBindsFile = "etqwbinds.cfg";
+	idStr localConfigFile = "etqwconfig.cfg";
+	idStr sdNetBindsFile = "bindings.cfg";
+	idStr sdNetConfigFile = "profile.cfg";
+
+	if ( importLocalBinds ) {
+		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localBindsFile );
+		idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localBindsFile );
+
+		if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
+			fileSystem->CopyFileA( fromFile, toFile );
+		}
+	}
+
+	if ( importLocalConfig ) {
+		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localConfigFile );
+		idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localConfigFile );
+
+		if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
+			fileSystem->CopyFileA( fromFile, toFile );
+		}
+	}
+
+	idStr check1 = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localBindsFile );
+	idStr check2 = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localConfigFile );
+	idStr check3 = "";
+	idStr check4 = "";
+
+	sdNetUser* activeUser = networkService->GetActiveUser();
+	if ( activeUser != NULL ) {
+		idStr username = activeUser->GetUsername();
+		username.ToLower();
+
+		if ( importSDNetBinds ) {
+			idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), "base" ), sdNetBindsFile );
+			idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetBindsFile );
+
+			if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
+				fileSystem->CopyFileA( fromFile, toFile );
+			}
+		}
+
+		if ( importSDNetConfig ) {
+			idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), "base" ), sdNetConfigFile );
+			idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetConfigFile );
+
+			if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
+				fileSystem->CopyFileA( fromFile, toFile );
+			}
+		}
+
+		check3 = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetBindsFile );
+		check4 = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetConfigFile );
+	}
+
+	if ( !fileSystem->FileExistsExplicit( check1 ) || !fileSystem->FileExistsExplicit( check2 ) || !fileSystem->FileExistsExplicit( check3 ) || !fileSystem->FileExistsExplicit( check4 ) ) {
+		Printf("Partial or failed import of configs! Resetting defaults.\n");
+
+		cvarSystem->ResetFlaggedVariables( CVAR_PROFILE );
+
+		// Reset them to a white name. Colours might be changed, after all.
+		sdNetUser* activeUser = networkService->GetActiveUser();
+		if ( activeUser != NULL ) {
+			cvarSystem->SetCVarString("ui_name", activeUser->GetUsername() );
+		}
+
+		// Reset their key bindings.
+		idStr defaultBindConfig = va("%s/%s/%s", "localization", cvarSystem->GetCVarString("sys_lang"), "defaultbinds_base.cfg");
+		if ( fileSystem->FindFile( defaultBindConfig ) != FIND_NO ) {
+			cmdSystem->BufferCommandText( CMD_EXEC_NOW, va("exec %s\n", defaultBindConfig.c_str() ) );
+		} else {
+			Printf( "Unable to locate defaultbinds_base.cfg! Something has gone wrong...\n");
+		}
+	}
 }
 
 

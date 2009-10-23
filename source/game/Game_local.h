@@ -759,6 +759,7 @@ public:
 	bool					IsMetaDataValidForPlay( const metaDataContext_t& context, bool checkBrowserStatus );
 
 	virtual void			Init( void );
+	void					ImportConfigs( bool importLocalBinds = true, bool importLocalConfig = true, bool importSDNetBinds = true, bool importSDNetConfig = true );
 	virtual void			Shutdown( void );
 	virtual void			UserInfoChanged( int clientNum );
 	virtual bool			ValidateUserInfo( int clientNum, idDict& _userInfo );
