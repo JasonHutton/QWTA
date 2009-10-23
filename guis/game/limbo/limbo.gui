@@ -52,6 +52,7 @@
 #define GI_STATS 		2
 #define GI_ADMIN 		3
 #define GI_VOTE 		4
+#define GI_QWTAINFO		5
 
 // Player Info
 #define PI_INFO		1
@@ -1095,6 +1096,7 @@ gui limbo {
 			#include <guis/game/limbo/tabpages/player_stats.include>
 			#include <guis/game/limbo/tabpages/voting.include>
 			#include <guis/game/limbo/tabpages/admin.include>
+			#include <guis/game/limbo/tabpages/qwta_info.include>
 		_end_tab_container
 
 	}

@@ -66,7 +66,7 @@
 	// Tooltips
 	"#str_qwta_00000029" "The ^5Jupiter Tank^0 seats a Driver/Gunner and mounts a prototype BFG10k energy cannon. Press ^3%k(_vehiclecamera)^0 to change view."
 	"#str_qwta_00000040" "The ^5Abaddon Hovertank^0 seats a Driver and a Gunner. Press ^3%k(_vehiclecamera)^0 to change view and ^3%k(_activate)^0 to switch seats. Crouch to toggle hunkered siege mode, which gives increased firepower but sacrifices mobility."
-	
+		
 	// Gametypes
 	"#str_qwta_00000030"	"Tactical"
 	"#str_qwta_00000031"	"Set Tactical Mode"

@@ -1,0 +1,333 @@
+// str_qwta_menus_00000080
+
+/*
+=================
+ Menu Elements
+=================
+*/
+
+locString guis/limbo/qwta {
+	text "#str_qwta_menus_00000001"
+}
+
+locString guis/limbo/qwta/longname {
+	text "#str_qwta_menus_00000002"
+}
+
+locString guis/limbo/qwta/settings {
+	text "#str_qwta_menus_00000003"
+}
+
+locString guis/limbo/qwta/docs {
+	text "#str_qwta_menus_00000004"
+}
+
+locString guis/limbo/qwta/settings/useBaseETQW12Shotguns {
+	text "#str_qwta_menus_00000005"
+}
+
+locString guis/limbo/qwta/settings/disableVehicleSpawns {
+	text "#str_qwta_menus_00000007"
+}
+
+locString guis/limbo/qwta/settings/artilleryWarning {
+	text "#str_qwta_menus_00000009"
+}
+
+locString guis/limbo/qwta/settings/useQuake4DarkMatter {
+	text "#str_qwta_menus_00000011"
+}
+
+locString guis/limbo/qwta/settings/useDeathFading {
+	text "#str_qwta_menus_00000013"
+}
+
+locString guis/limbo/qwta/settings/useReverseAirstrikes {
+	text "#str_qwta_menus_00000015"
+}
+
+locString guis/limbo/qwta/settings/useNuclearHammer {
+	text "#str_qwta_menus_00000017"
+}
+
+locString guis/limbo/qwta/settings/useQuake4Hyperblaster {
+	text "#str_qwta_menus_00000019"
+}
+
+locString guis/limbo/qwta/settings/useGibKills {
+	text "#str_qwta_menus_00000021"
+}
+
+locString guis/limbo/qwta/settings/botUseVehicleDrops {
+	text "#str_qwta_menus_00000023"
+}
+
+locString guis/limbo/qwta/settings/useClassLimits {
+	text "#str_qwta_menus_00000025"
+}
+
+locString guis/limbo/qwta/settings/realisticDamage {
+	text "#str_qwta_menus_00000027"
+}
+
+locString guis/limbo/qwta/settings/realisticSpread {
+	text "#str_qwta_menus_00000029"
+}
+
+locString guis/limbo/qwta/settings/botUseStrafeJump {
+	text "#str_qwta_menus_00000031"
+}
+
+locString guis/limbo/qwta/settings/allowMineIcons {
+	text "#str_qwta_menus_00000033"
+}
+
+locString guis/limbo/qwta/settings/allowMineTriggerWarning {
+	text "#str_qwta_menus_00000035"
+}
+
+locString guis/limbo/qwta/settings/allowAPTWarning {
+	text "#str_qwta_menus_00000037"
+}
+
+locString guis/limbo/qwta/settings/ignorePersistentRanks {
+	text "#str_qwta_menus_00000039"
+}
+
+locString guis/limbo/qwta/settings/advancedVehicleDrops {
+	text "#str_qwta_menus_00000041"
+}
+
+locString guis/limbo/qwta/settings/useSpecificRadar {
+	text "#str_qwta_menus_00000043"
+}
+
+locString guis/limbo/qwta/settings/vDropsUseFE {
+	text "#str_qwta_menus_00000045"
+}
+
+locString guis/limbo/qwta/settings/useBaseVehicleCredits {
+	text "#str_qwta_menus_00000047"
+}
+
+locString guis/limbo/qwta/settings/useBaseProficiencies {
+	text "#str_qwta_menus_00000049"
+}
+
+locString guis/limbo/qwta/settings/useBaseVehicleCharge {
+	text "#str_qwta_menus_00000051"
+}
+
+locString guis/limbo/qwta/settings/vSpawnsUseFE {
+	text "#str_qwta_menus_00000053"
+}
+
+locString guis/limbo/qwta/settings/useQuake4Railgun {
+	text "#str_qwta_menus_00000055"
+}
+
+locString guis/limbo/qwta/settings/useShieldAbsorber {
+	text "#str_qwta_menus_00000057"
+}
+
+locString guis/limbo/qwta/settings/disableVehicleRespawns {
+	text "#str_qwta_menus_00000059"
+}
+
+locString guis/limbo/qwta/settings/disablePlayerRespawns {
+	text "#str_qwta_menus_00000061"
+}
+
+locString guis/limbo/qwta/settings/allowCrosshairs {
+	text "#str_qwta_menus_00000063"
+}
+
+locString guis/limbo/qwta/settings/allowHitBeep {
+	text "#str_qwta_menus_00000065"
+}
+
+locString guis/limbo/qwta/settings/useBaseETQW12SniperTrail {
+	text "#str_qwta_menus_00000067"
+}
+
+locString guis/limbo/qwta/settings/allowTimerCircles {
+	text "#str_qwta_menus_00000069"
+}
+
+locString guis/limbo/qwta/settings/hideHUD {
+	text "#str_qwta_menus_00000071"
+}
+
+locString guis/limbo/qwta/settings/showPlayerArrows {
+	text "#str_qwta_menus_00000073"
+}
+
+locString guis/limbo/qwta/settings/showPlayerArrows_0 {
+	text "#str_qwta_menus_00000074"
+}
+
+locString guis/limbo/qwta/settings/showPlayerArrows_1 {
+	text "#str_qwta_menus_00000075"
+}
+
+locString guis/limbo/qwta/settings/showPlayerArrows_2 {
+	text "#str_qwta_menus_00000076"
+}
+
+locString guis/limbo/qwta/settings/realisticMovement {
+	text "#str_qwta_menus_00000077"
+}
+
+locString guis/limbo/qwta/settings/realisticMovement_0 {
+	text "#str_qwta_menus_00000078"
+}
+
+locString guis/limbo/qwta/settings/realisticMovement_1 {
+	text "#str_qwta_menus_00000079"
+}
+
+locString guis/limbo/qwta/settings/realisticMovement_2 {
+	text "#str_qwta_menus_00000080"
+}
+
+/*
+=================
+ ToolTips
+=================
+*/
+
+locString guis/limbo/qwta/settings/useBaseETQW12Shotguns/tooltip {
+	text "#str_qwta_menus_00000006"
+}
+
+locString guis/limbo/qwta/settings/disableVehicleSpawns/tooltip {
+	text "#str_qwta_menus_00000008"
+}
+
+locString guis/limbo/qwta/settings/artilleryWarning/tooltip {
+	text "#str_qwta_menus_00000010"
+}
+
+locString guis/limbo/qwta/settings/useQuake4DarkMatter/tooltip {
+	text "#str_qwta_menus_00000012"
+}
+
+locString guis/limbo/qwta/settings/useDeathFading/tooltip {
+	text "#str_qwta_menus_00000014"
+}
+
+locString guis/limbo/qwta/settings/useReverseAirstrikes/tooltip {
+	text "#str_qwta_menus_00000016"
+}
+
+locString guis/limbo/qwta/settings/useNuclearHammer/tooltip {
+	text "#str_qwta_menus_00000018"
+}
+
+locString guis/limbo/qwta/settings/useQuake4Hyperblaster/tooltip {
+	text "#str_qwta_menus_00000020"
+}
+
+locString guis/limbo/qwta/settings/useGibKills/tooltip {
+	text "#str_qwta_menus_00000022"
+}
+
+locString guis/limbo/qwta/settings/botUseVehicleDrops/tooltip {
+	text "#str_qwta_menus_00000024"
+}
+
+locString guis/limbo/qwta/settings/useClassLimits/tooltip {
+	text "#str_qwta_menus_00000026"
+}
+
+locString guis/limbo/qwta/settings/realisticDamage/tooltip {
+	text "#str_qwta_menus_00000028"
+}
+
+locString guis/limbo/qwta/settings/realisticSpread/tooltip {
+	text "#str_qwta_menus_00000030"
+}
+
+locString guis/limbo/qwta/settings/botUseStrafeJump/tooltip {
+	text "#str_qwta_menus_00000032"
+}
+
+locString guis/limbo/qwta/settings/allowMineIcons/tooltip {
+	text "#str_qwta_menus_00000034"
+}
+
+locString guis/limbo/qwta/settings/allowMineTriggerWarning/tooltip {
+	text "#str_qwta_menus_00000036"
+}
+
+locString guis/limbo/qwta/settings/allowAPTWarning/tooltip {
+	text "#str_qwta_menus_00000038"
+}
+
+locString guis/limbo/qwta/settings/ignorePersistentRanks/tooltip {
+	text "#str_qwta_menus_00000040"
+}
+
+locString guis/limbo/qwta/settings/advancedVehicleDrops/tooltip {
+	text "#str_qwta_menus_00000042"
+}
+
+locString guis/limbo/qwta/settings/useSpecificRadar/tooltip {
+	text "#str_qwta_menus_00000044"
+}
+
+locString guis/limbo/qwta/settings/vDropsUseFE/tooltip {
+	text "#str_qwta_menus_00000046"
+}
+
+locString guis/limbo/qwta/settings/useBaseVehicleCredits/tooltip {
+	text "#str_qwta_menus_00000048"
+}
+
+locString guis/limbo/qwta/settings/useBaseProficiencies/tooltip {
+	text "#str_qwta_menus_00000050"
+}
+
+locString guis/limbo/qwta/settings/useBaseVehicleCharge/tooltip {
+	text "#str_qwta_menus_00000052"
+}
+
+locString guis/limbo/qwta/settings/vSpawnsUseFE/tooltip {
+	text "#str_qwta_menus_00000054"
+}
+
+locString guis/limbo/qwta/settings/useQuake4Railgun/tooltip {
+	text "#str_qwta_menus_00000056"
+}
+
+locString guis/limbo/qwta/settings/useShieldAbsorber/tooltip {
+	text "#str_qwta_menus_00000058"
+}
+
+locString guis/limbo/qwta/settings/disableVehicleRespawns/tooltip {
+	text "#str_qwta_menus_00000060"
+}
+
+locString guis/limbo/qwta/settings/disablePlayerRespawns/tooltip {
+	text "#str_qwta_menus_00000062"
+}
+
+locString guis/limbo/qwta/settings/allowCrosshairs/tooltip {
+	text "#str_qwta_menus_00000064"
+}
+
+locString guis/limbo/qwta/settings/allowHitBeep/tooltip {
+	text "#str_qwta_menus_00000066"
+}
+
+locString guis/limbo/qwta/settings/useBaseETQW12SniperTrail/tooltip {
+	text "#str_qwta_menus_00000068"
+}
+
+locString guis/limbo/qwta/settings/allowTimerCircles/tooltip {
+	text "#str_qwta_menus_00000070"
+}
+
+locString guis/limbo/qwta/settings/hideHUD/tooltip {
+	text "#str_qwta_menus_00000072"
+}
