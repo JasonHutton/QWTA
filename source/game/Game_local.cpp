@@ -1532,17 +1532,66 @@ void idGameLocal::Init( void ) {
 
 void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, bool importSDNetBinds, bool importSDNetConfig ) {
 
+	Printf("^2idGameLocal::ImportConfigs()\n");
+
+	//bool findChecksumOnly = false;
+
 	idStr localBindsFile = "etqwbinds.cfg";
 	idStr localConfigFile = "etqwconfig.cfg";
 	idStr sdNetBindsFile = "bindings.cfg";
 	idStr sdNetConfigFile = "profile.cfg";
 
+	/*
+	if ( findChecksumOnly ) {
+		sdNetUser* activeUser = networkService->GetActiveUser();
+		if ( activeUser != NULL ) {
+			idStr username = activeUser->GetUsername();
+			username.ToLower();
+		//idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localConfigFile );
+			idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetConfigFile );
+			if ( fileSystem->FileExistsExplicit( toFile ) ) {
+				unsigned long foundChecksum;
+				sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
+				if ( osFilePtr.IsValid() ) {
+					foundChecksum = fileSystem->FileChecksum( osFilePtr.Get() );
+					Printf( "Checksum: %s: %lu\n", toFile.c_str(), foundChecksum );
+					// etqwbinds.cfg english 3953309896
+					// etqwconfig.cfg english 4128123611
+					// bindings.cfg english 451032473
+					// profile.cfg english 590705083
+				}
+				fileSystem->CloseFile( osFilePtr.Get() );
+				osFilePtr.Release();
+			} else {
+				Printf( "Checksum: %s: does not exist\n", toFile.c_str() );
+			}
+		}
+		return;
+	}*/
+
 	if ( importLocalBinds ) {
 		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localBindsFile );
 		idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localBindsFile );
 
-		if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
-			fileSystem->CopyFileA( fromFile, toFile );
+		if ( fileSystem->FileExistsExplicit( fromFile ) ) {
+			if ( !fileSystem->FileExistsExplicit( toFile ) ) {
+				fileSystem->CopyFileA( fromFile, toFile );
+			} else {
+				unsigned long foundChecksum;
+				sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
+				if ( osFilePtr.IsValid() ) {
+					foundChecksum = fileSystem->FileChecksum( osFilePtr.Get() );
+					fileSystem->CloseFile( osFilePtr.Get() );
+					osFilePtr.Release();
+					if ( foundChecksum == 3953309896 ) {
+						fileSystem->RemoveExplicitFile( toFile );
+						fileSystem->CopyFileA( fromFile, toFile );
+					}
+				} else {
+					fileSystem->CloseFile( osFilePtr.Get() );
+					osFilePtr.Release();
+				}
+			}
 		}
 	}
 
@@ -1550,8 +1599,25 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localConfigFile );
 		idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localConfigFile );
 
-		if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
-			fileSystem->CopyFileA( fromFile, toFile );
+		if ( fileSystem->FileExistsExplicit( fromFile ) ) {
+			if ( !fileSystem->FileExistsExplicit( toFile ) ) {
+				fileSystem->CopyFileA( fromFile, toFile );
+			} else {
+				unsigned long foundChecksum;
+				sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
+				if ( osFilePtr.IsValid() ) {
+					foundChecksum = fileSystem->FileChecksum( osFilePtr.Get() );
+					fileSystem->CloseFile( osFilePtr.Get() );
+					osFilePtr.Release();
+					if ( foundChecksum == 4128123611 ) {
+						fileSystem->RemoveExplicitFile( toFile );
+						fileSystem->CopyFileA( fromFile, toFile );
+					}
+				} else {
+					fileSystem->CloseFile( osFilePtr.Get() );
+					osFilePtr.Release();
+				}
+			}
 		}
 	}
 
@@ -1569,8 +1635,25 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 			idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), "base" ), sdNetBindsFile );
 			idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetBindsFile );
 
-			if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
-				fileSystem->CopyFileA( fromFile, toFile );
+			if ( fileSystem->FileExistsExplicit( fromFile ) ) {
+				if ( !fileSystem->FileExistsExplicit( toFile ) ) {
+					fileSystem->CopyFileA( fromFile, toFile );
+				} else {
+					unsigned long foundChecksum;
+					sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
+					if ( osFilePtr.IsValid() ) {
+						foundChecksum = fileSystem->FileChecksum( osFilePtr.Get() );
+						fileSystem->CloseFile( osFilePtr.Get() );
+						osFilePtr.Release();
+						if ( foundChecksum == 451032473 ) {
+							fileSystem->RemoveExplicitFile( toFile );
+							fileSystem->CopyFileA( fromFile, toFile );
+						}
+					} else {
+						fileSystem->CloseFile( osFilePtr.Get() );
+						osFilePtr.Release();
+					}
+				}
 			}
 		}
 
@@ -1578,8 +1661,25 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 			idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), "base" ), sdNetConfigFile );
 			idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetConfigFile );
 
-			if ( fileSystem->FileExistsExplicit( fromFile ) && !fileSystem->FileExistsExplicit( toFile ) ) {
-				fileSystem->CopyFileA( fromFile, toFile );
+			if ( fileSystem->FileExistsExplicit( fromFile ) ) {
+				if ( !fileSystem->FileExistsExplicit( toFile ) ) {
+					fileSystem->CopyFileA( fromFile, toFile );
+				} else {
+					unsigned long foundChecksum;
+					sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
+					if ( osFilePtr.IsValid() ) {
+						foundChecksum = fileSystem->FileChecksum( osFilePtr.Get() );
+						fileSystem->CloseFile( osFilePtr.Get() );
+						osFilePtr.Release();
+						if ( foundChecksum == 590705083 ) {
+							fileSystem->RemoveExplicitFile( toFile );
+							fileSystem->CopyFileA( fromFile, toFile );
+						}
+					} else {
+						fileSystem->CloseFile( osFilePtr.Get() );
+						osFilePtr.Release();
+					}
+				}
 			}
 		}
 
