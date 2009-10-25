@@ -230,7 +230,7 @@ _dialog( keyBindings, localize( "guis/mainmenu/controls" ), PADDING, 44, ( gui.d
 			onNamedEvent "onYes" {
 				_close_popup
 				keyConfig = gui.getCVar( "sys_lang" );
-				gui.consoleCommand( "exec localization/" + keyConfig + "/defaultbinds_base.cfg" + _newline );
+				gui.consoleCommand( "exec localization/" + keyConfig + "/defaultbinds.cfg" + _newline );
 				timeline.default.active = true;
 				timeline.default.resetTime( 0 );
 				gui.broadcastEventToDescendants( "grpKeyBindings_Mouse", "resetCVar" );

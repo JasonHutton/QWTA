@@ -1524,7 +1524,7 @@ void idGameLocal::Init( void ) {
 	isAutorecording = false;
 	hasTakenScoreShot = false;
 
-	ImportConfigs();
+	// ImportConfigs(); // We're not going to use this actively in source for now.
 
 	Printf( "game initialized.\n" );
 	Printf( "--------------------------------------\n" );
@@ -1568,6 +1568,44 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 		}
 		return;
 	}*/
+/*
+	{
+		bool bReplaceBinds = false;
+		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localBindsFile );
+		idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localBindsFile );
+		if ( fileSystem->FileExistsExplicit( fromFile ) ) {
+			if ( !fileSystem->FileExistsExplicit( toFile ) ) {
+				Printf("^1%s does not exist.\n", localBindsFile.c_str() );
+				bReplaceBinds = true;
+			} else {
+				unsigned long foundChecksum;
+				sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
+				if ( osFilePtr.IsValid() ) {
+					foundChecksum = fileSystem->FileChecksum( osFilePtr.Get() );
+					fileSystem->CloseFile( osFilePtr.Get() );
+					osFilePtr.Release();
+					if ( foundChecksum == 3953309896 ) {
+						Printf("^1%s exists with matching default checksum.\n", localBindsFile.c_str() );
+						bReplaceBinds = true;
+					}
+				} else {
+					fileSystem->CloseFile( osFilePtr.Get() );
+					osFilePtr.Release();
+				}
+			}
+			if ( bReplaceBinds ) {
+				idStr autoFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), "autoexec.cfg" );
+				if ( !fileSystem->FileExistsExplicit( autoFile ) ) {
+					Printf("^1%s does not exist.\n", "autoexec.cfg" );
+					fileSystem->CopyFileA( fromFile, autoFile );
+				}
+			}
+		}
+		
+
+	}*/
+
+	bool bShutdown = false;
 
 	if ( importLocalBinds ) {
 		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localBindsFile );
@@ -1576,6 +1614,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 		if ( fileSystem->FileExistsExplicit( fromFile ) ) {
 			if ( !fileSystem->FileExistsExplicit( toFile ) ) {
 				fileSystem->CopyFileA( fromFile, toFile );
+				bShutdown = true;
 			} else {
 				unsigned long foundChecksum;
 				sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
@@ -1586,6 +1625,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 					if ( foundChecksum == 3953309896 ) {
 						fileSystem->RemoveExplicitFile( toFile );
 						fileSystem->CopyFileA( fromFile, toFile );
+						bShutdown = true;
 					}
 				} else {
 					fileSystem->CloseFile( osFilePtr.Get() );
@@ -1602,6 +1642,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 		if ( fileSystem->FileExistsExplicit( fromFile ) ) {
 			if ( !fileSystem->FileExistsExplicit( toFile ) ) {
 				fileSystem->CopyFileA( fromFile, toFile );
+				bShutdown = true;
 			} else {
 				unsigned long foundChecksum;
 				sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
@@ -1612,6 +1653,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 					if ( foundChecksum == 4128123611 ) {
 						fileSystem->RemoveExplicitFile( toFile );
 						fileSystem->CopyFileA( fromFile, toFile );
+						//bShutdown = true;
 					}
 				} else {
 					fileSystem->CloseFile( osFilePtr.Get() );
@@ -1638,6 +1680,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 			if ( fileSystem->FileExistsExplicit( fromFile ) ) {
 				if ( !fileSystem->FileExistsExplicit( toFile ) ) {
 					fileSystem->CopyFileA( fromFile, toFile );
+					bShutdown = true;
 				} else {
 					unsigned long foundChecksum;
 					sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
@@ -1648,6 +1691,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 						if ( foundChecksum == 451032473 ) {
 							fileSystem->RemoveExplicitFile( toFile );
 							fileSystem->CopyFileA( fromFile, toFile );
+							//bShutdown = true;
 						}
 					} else {
 						fileSystem->CloseFile( osFilePtr.Get() );
@@ -1664,6 +1708,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 			if ( fileSystem->FileExistsExplicit( fromFile ) ) {
 				if ( !fileSystem->FileExistsExplicit( toFile ) ) {
 					fileSystem->CopyFileA( fromFile, toFile );
+					bShutdown = true;
 				} else {
 					unsigned long foundChecksum;
 					sdFilePtr osFilePtr( fileSystem->OpenExplicitFileRead( toFile ) );
@@ -1674,6 +1719,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 						if ( foundChecksum == 590705083 ) {
 							fileSystem->RemoveExplicitFile( toFile );
 							fileSystem->CopyFileA( fromFile, toFile );
+							//bShutdown = true;
 						}
 					} else {
 						fileSystem->CloseFile( osFilePtr.Get() );
@@ -1687,6 +1733,41 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 		check4 = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s/%s", sdnet.GetName(), username.c_str(), fileSystem->GetGamePath() ), sdNetConfigFile );
 	}
 
+	if ( bShutdown ) {
+		Shutdown(); // This crashes the game in online mode. But appears to work!
+		//idCmdArgs args;
+		//args.AppendArg( "importConfigs" );
+		//args.Clear();
+
+		//cmdSystem->SetupReloadEngine( args );
+	}
+
+
+/*
+	if ( true ) {
+		idStr defaultBindConfig = va("%s/%s/%s", "localization", cvarSystem->GetCVarString("sys_lang"), "defaultbinds.cfg" );
+		//idStr defaultBindConfig = fileSystem->RelativePathToOSPath( va("%s/%s/%s", "localization", cvarSystem->GetCVarString("sys_lang"), "defaultbinds.cfg" ) );
+		idStr replaceBindConfig = fileSystem->BuildOSPath( fileSystem->GetUserPath(), va("%s/%s", "localization", cvarSystem->GetCVarString("sys_lang") ), "defaultbinds.cfg" );
+		//idStr backupFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), "defaultbinds.temp" );
+		//fileSystem->CopyFileA( defaultBindConfig, backupFile );
+
+		idStr fromFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), "base", localBindsFile );
+		idStr toFile = fileSystem->BuildOSPath( fileSystem->GetUserPath(), fileSystem->GetGamePath(), localBindsFile );
+
+		if ( fileSystem->FileExistsExplicit( fromFile ) ) {
+			if ( !fileSystem->FileExistsExplicit( toFile ) ) {
+				//fileSystem->CopyFileA( fromFile, toFile );
+				fileSystem->CopyFileA( fromFile, replaceBindConfig );
+
+				idStr execFile = fileSystem->OSPathToRelativePath( replaceBindConfig );
+				if ( fileSystem->FindFile( execFile ) != FIND_NO ) {
+					cmdSystem->BufferCommandText( CMD_EXEC_NOW, va("exec %s\n", execFile.c_str() ) );
+				}
+			}
+		}
+	}
+*/
+/*
 	if ( !fileSystem->FileExistsExplicit( check1 ) || !fileSystem->FileExistsExplicit( check2 ) || !fileSystem->FileExistsExplicit( check3 ) || !fileSystem->FileExistsExplicit( check4 ) ) {
 		Printf("Partial or failed import of configs! Resetting defaults.\n");
 
@@ -1706,6 +1787,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 			Printf( "Unable to locate defaultbinds_base.cfg! Something has gone wrong...\n");
 		}
 	}
+	*/
 }
 
 
