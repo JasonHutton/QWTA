@@ -1604,7 +1604,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 		
 
 	}*/
-
+/*
 	bool bShutdown = false;
 
 	if ( importLocalBinds ) {
@@ -1741,7 +1741,7 @@ void idGameLocal::ImportConfigs( bool importLocalBinds, bool importLocalConfig, 
 
 		//cmdSystem->SetupReloadEngine( args );
 	}
-
+*/
 
 /*
 	if ( true ) {
@@ -2427,6 +2427,17 @@ void idGameLocal::Printf( const char *fmt, ... ) const {
 	va_end( argptr );
 
 	common->Printf( "%s", text );
+}
+
+void idGameLocal::Transmit_Printf( const idStr &text ) const {
+
+	sdReliableServerMessage outMsg( GAME_RELIABLE_SMESSAGE_CHAT );
+	outMsg.WriteVector( vec3_origin );
+	outMsg.WriteChar( -1 );
+	outMsg.WriteString( va( L"Remote: %hs", text.c_str() ) );
+	outMsg.Send( sdReliableMessageClientInfoAll() );
+
+	rules->AddChatLine( vec3_origin, sdGameRules::CHAT_MODE_SAY, -1, va( L"Local: %hs", text.c_str() ) );
 }
 
 /*
@@ -6570,7 +6581,10 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 
 	float radius	= Max( 1.f, damageDecl->GetRadius() * radiusScale );
 
-	if ( !gameLocal.isClient ) {
+	bool doImpact = !gameLocal.isClient;
+	bool doEffects = gameLocal.DoClientSideStuff();
+
+	if ( doImpact || doEffects ) {
 		float		dist, damageScale;
 		idEntity*	ent;
 		idEntity*	entityList[ MAX_GENTITIES ];
@@ -6642,9 +6656,14 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 					dir = ent->GetPhysics()->GetOrigin() - inflictor->GetPhysics()->GetOrigin();
 					dir.Normalize();
 
-					ent->DoDamageEffect( &tr, inflictor->GetPhysics()->GetOrigin(), dir, damageDecl, inflictor );
-					if ( ent->fl.takedamage && ent != ignoreDamage ) {
-						ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
+					if ( doEffects ) {
+						ent->DoDamageEffect( &tr, inflictor->GetPhysics()->GetOrigin(), dir, damageDecl, inflictor );
+					}
+
+					if ( doImpact ) {
+						if ( ent->fl.takedamage && ent != ignoreDamage ) {
+							ent->Damage( inflictor, attacker, dir, damageDecl, damageScale, &tr );
+						}
 					}
 				}
 			}

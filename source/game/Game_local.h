@@ -1101,6 +1101,7 @@ public:
 	// ---------------------- Public idGameLocal Interface -------------------
 
 	void							Printf( const char *fmt, ... ) const;
+	void							Transmit_Printf( const idStr &text ) const;
 	void							DPrintf( const char *fmt, ... ) const;
 	void							Warning( const char *fmt, ... ) const;
 	void							DWarning( const char *fmt, ... ) const;

@@ -3255,7 +3255,10 @@ void idWeapon::Event_MeleeAttack( float damageScale ) {
 		}
 	}
 
-	if ( !gameLocal.isClient ) {
+	bool doImpact = !gameLocal.isClient;
+	bool doEffects = gameLocal.DoClientSideStuff();
+
+	if ( doImpact || doEffects ) {
 		idEntity* ownerent = owner;
 		idEntity* ent;
 
@@ -3269,20 +3272,26 @@ void idWeapon::Event_MeleeAttack( float damageScale ) {
 			float push = damage->GetPush();
 			idVec3 impulse = -push * meleeTrace.c.normal;
 
-			ent->ApplyImpulse( this, meleeTrace.c.id, meleeTrace.c.point, impulse );
+			if ( doImpact ) {
+				ent->ApplyImpulse( this, meleeTrace.c.id, meleeTrace.c.point, impulse );
+			}
 
-			idVec3 damageDirEffect = playerViewAxis.ToAngles().ToForward();
-			damageDirEffect.Normalize();
-			ent->DoDamageEffect( &meleeTrace, owner->GetPhysics()->GetOrigin(), damageDirEffect, damage, this );
+			if ( doEffects ) {
+				idVec3 damageDirEffect = playerViewAxis.ToAngles().ToForward();
+				damageDirEffect.Normalize();
+				ent->DoDamageEffect( &meleeTrace, owner->GetPhysics()->GetOrigin(), damageDirEffect, damage, this );
+			}
 
-			if ( ent->fl.takedamage ) {
-				idVec3 damageDir = playerViewAxis.ToAngles().ToForward();
-				ent->Damage( this, owner, damageDir, damage, damageScale, &meleeTrace );
-				hit = true;
+			if ( doImpact ) {
+				if ( ent->fl.takedamage ) {
+					idVec3 damageDir = playerViewAxis.ToAngles().ToForward();
+					ent->Damage( this, owner, damageDir, damage, damageScale, &meleeTrace );
+					hit = true;
 
-				if ( damage->GetRecordHitStats() ) {
-					if ( gameLocal.totalShotsHitStat != NULL ) {
-						gameLocal.totalShotsHitStat->IncreaseValue( owner->entityNumber, 1 );
+					if ( damage->GetRecordHitStats() ) {
+						if ( gameLocal.totalShotsHitStat != NULL ) {
+							gameLocal.totalShotsHitStat->IncreaseValue( owner->entityNumber, 1 );
+						}
 					}
 				}
 			}
