@@ -794,3 +794,169 @@ effect effects/weapons/flamethrower/napalm
 
 
 
+effect effects/weapons/flamethrower/blob
+{
+	size	142
+
+	emitter "Big Jet"
+	{
+		duration	0.25,0.25
+		count		5,5
+
+		sprite
+		{
+			duration	3,6
+			persist
+			material	"particles/karateka/simple_smoke_alpha"
+		parentvelocity
+			trailRepeat	1
+
+			start
+			{
+				position { point 0,0,0 cone }
+				size { point 5,5 }
+				tint { point 0,0,0 }
+				fade { point 0 }
+			}
+
+			motion
+			{
+				size { envelope exp_x2 }
+				tint { envelope faststart_zero_one }
+				fade { envelope fastinslowout }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 100,100 }
+				tint { line 0.0784314,0.0313726,0,0.0784314,0.0627451,0 }
+				fade { line 0.25,0.125 }
+				rotate { point 0 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "Main Jet"
+	{
+		duration	0.25,0.25
+		count		20,20
+		locked
+
+		sprite
+		{
+			duration	2,2
+			persist
+			material	"particles/karateka/simple_smoke_alpha"
+		parentvelocity
+			trailRepeat	1
+
+			start
+			{
+				position { point 0,0,0 cone }
+				size { point 5,5 }
+				tint { point 0,0,0 }
+				fade { point 0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope fastinslowout }
+				fade { envelope fastinslowout }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 75,75 }
+				tint { line 0.0784314,0.0313726,0,0.0784314,0.0627451,0 }
+				fade { line 0.25,0.125 }
+				rotate { point 0 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "White Highlight Jet"
+	{
+		duration	0.25,0.25
+		count		20,20
+		locked
+
+		sprite
+		{
+			duration	3,4
+			blend	add
+			persist
+			material	"particles/karateka/simple_smoke_alpha"
+		parentvelocity
+			trailRepeat	1
+
+			start
+			{
+				position { point 0,0,0 cone }
+				size { point 2,2 }
+				fade { point 0 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope faststart_zero_one }
+				fade { envelope fastinslowout }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 50,50 }
+				tint { line 0.0784314,0.0313726,0,0.0784314,0.0627451,0 }
+				fade { line 0.25,0.125 }
+				rotate { point 0 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "Fringe Flame"
+	{
+		duration	0.25,0.25
+		count		5,5
+
+		sprite
+		{
+			duration	2,3
+			blend	add
+			persist
+			material	"particles/cells_a"
+		parentvelocity
+			trailRepeat	1
+
+			start
+			{
+				angle { box 0,0,0,0,0,1 }
+				tint { line 0.87451,0.439216,0,0.247059,0,0 }
+				fade { line 1,0.75 }
+				offset { line 0,-2,-2,0,2,2 }
+			}
+
+			motion
+			{
+				size { envelope faststart_zero_one }
+				tint { envelope flickerblink }
+				fade { envelope rr2_concavefade_start_at_1_fast offset 0.025 }
+				angle { envelope linear }
+				rotate { envelope flickerblink count 0.1 }
+			}
+
+			end
+			{
+				size { point 75,75 }
+				tint { line 0,0,0,0.501961,0,0 }
+				angle { box 0,0,0,0,0,1 }
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+}
+
