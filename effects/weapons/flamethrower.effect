@@ -784,17 +784,7 @@ effect effects/weapons/flamethrower/napalm
 			lineHit
 		}
 	}
-}
-
-
-
-
-
-
-
-
-
-effect effects/weapons/flamethrower/blob
+}effect effects/weapons/flamethrower/blob
 {
 	size	142
 
@@ -936,7 +926,6 @@ effect effects/weapons/flamethrower/blob
 				angle { box 0,0,0,0,0,1 }
 				tint { line 0.87451,0.439216,0,0.247059,0,0 }
 				fade { line 1,0.75 }
-				offset { line 0,-2,-2,0,2,2 }
 			}
 
 			motion
@@ -959,4 +948,6 @@ effect effects/weapons/flamethrower/blob
 		}
 	}
 }
+
+
 
