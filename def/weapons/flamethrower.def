@@ -1,4 +1,55 @@
 
+entityDef projectile_flamethrower_blob {
+	"spawnclass"				"idProjectile_RigidBody"
+	//"scriptObject"				"projectile_missile"
+	"scriptObject"				"projectile_fluidic_blob"
+	"aor_layout"				"missile"
+	"mins"					"-5 -5 -5"
+	"maxs"					"5 5 5"
+	"cone"					"3"
+	"scale"					"1"
+	"noshadows"				"1"
+	"model" 				""
+	"launchFromBarrel"			"1"
+	"health"				"0"
+	"velocity"				"1200 0 0"
+	"face_velocity"				"1"
+	"angular_velocity"			"0 0 0"
+	"bounce"				"0.5"
+	//"bounce"				"0.0"
+	"linear_friction"			"0.5"
+	"contact_friction"			"0.3"
+	"mass"					"1"
+	"gravity"				"0"
+	"fuse"					"4.0"
+	"detonate_on_fuse"			"0"
+	"detonate_on_death"			"0"
+	"detonate_on_world"			"0"
+	"detonate_on_actor"			"0"
+	
+	"fx_splash"				"effects/base/impact_water_large"
+	"fx_trail"				"effects/weapons/flamethrower/blob"
+	//"fx_explode"				"effects/weapons/plasmacannon/explode_small"
+	//"fx_explode_sand"			"effects/weapons/plasmacannon/explode"
+	//"fx_explode_water"			"effects/water/explosion"
+	
+	"fx_ricochet"				"effects/base/bullets/ricochet"
+	"fx_ricochet_flesh"			"effects/base/bullets/ricochet_blank"
+	"fx_ricochet_water"			"effects/base/bullets/ricochet_blank"
+	
+	"fx_explode"				"effects/impacts/hyperblaster_qwta/impact_default"
+	
+	"dmg_damage"				"damage_flamethrower_stream"
+	"dmg_realistic_damage"		"realistic_damage_flamethrower_stream"
+	"dmg_splash_damage"			"damage_flamethrower_stream"
+	"dmg_realistic_splash_damage"		"realistic_damage_flamethrower_stream"
+	
+	"collection_mdfExport"				"mdfExport"
+	
+	//"has_postthink"					"1"
+	
+}
+/*
 entityDef projectile_flamethrower_napalm {
 	"inherit"							"projectile_grenade"
 	"spawnclass"						"idProjectile_RigidBody"
@@ -51,7 +102,7 @@ entityDef projectile_flamethrower_napalm {
 
 	//"fx_bounce_forcefield"		"effects/base/bullets/impact_forcefield"
 }
-
+*/
 
 damageDef damage_flamethrower_stream {
 		damage								"damage_flamethrower_stream"

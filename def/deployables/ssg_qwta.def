@@ -1,8 +1,8 @@
 
 entityDef projectile_deployable_dmg_ssg {
 	"spawnclass"					"idProjectile_RigidBody"
-	"mins"							"-24 -24 0"
-	"maxs"							"24 24 150"
+	"mins"							"-24 -24 -24"
+	"maxs"							"24 24 24"
 	"model"							""
 
 	//"scriptObject"					"projectile_ssm"
