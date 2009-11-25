@@ -973,9 +973,6 @@ public:
 
 	virtual void			UpdateLevelLoadScreen( const wchar_t* status );
 
-
-	virtual qwtaClientSprite*			PlaySprite			( const idMaterial* material, const idVec3& color, const idVec3& origin, const idMat3& axis, bool loop = false, const idVec3& endOrigin = vec3_origin, float distanceOffset = 0.0f );
-	qwtaClientSprite*					PlaySprite			( const idDict& args, const idVec3& color, const char* materialName, const char* materialType, const idVec3& origin, const idMat3& axis, bool loop = false, const idVec3& endOrigin = vec3_origin );
 	// RAVEN BEGIN
 	// bdube: added effect calls
 	const rvDeclEffect *			FindEffect( const char* name, bool makeDefault = true );
@@ -1714,12 +1711,6 @@ idGameLocal::ProjectDecal
 */
 ID_INLINE void idGameLocal::ProjectDecal( const idVec3 &origin, const idVec3 &dir, float depth, bool parallel, float size, const char *material, float angle ) {
 	ProjectDecal( origin, dir, depth, parallel, size, declHolder.declMaterialType.LocalFind( material ), angle );
-}
-
-ID_INLINE qwtaClientSprite* idGameLocal::PlaySprite ( const idDict& args, const idVec3& color, const char* materialName, const char* materialType, const idVec3& origin, const idMat3& axis, bool loop, const idVec3& endOrigin ) {
-	
-	return PlaySprite ( declHolder.declMaterialType.LocalFind( materialName ), color, origin, axis, loop, endOrigin );
-	//return PlaySprite ( GetEffectHandle ( args, effectName, materialType ), color, origin, axis, loop, endOrigin );
 }
 
 // RAVEN BEGIN

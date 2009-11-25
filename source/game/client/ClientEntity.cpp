@@ -18,7 +18,6 @@ static char THIS_FILE[] = __FILE__;
 #include "../Player.h"
 #include "../script/Script_Helper.h"
 #include "../script/Script_ScriptObject.h"
-#include "ClientSprite.h"
 #include "ClientEffect.h"
 #include "../../decllib/declTypeHolder.h"
 #include "../guis/UserInterfaceLocal.h"
@@ -166,50 +165,6 @@ void rvClientEntity::Bind( rvClientEntity* master, jointHandle_t joint ) {
 	bindNode.AddToEnd( bindMasterClient->clientEntities );
 
 	UpdateBind( false );
-}
-
-qwtaClientSprite* rvClientEntity::PlaySprite( const char* materialName, const idVec3& color, const char* materialType, jointHandle_t jointHandle, bool loop, const idVec3& endOrigin ) {
-	return NULL;
-}
-
-qwtaClientSprite* rvClientEntity::PlaySprite( const idMaterial* material, const idVec3& color, jointHandle_t joint, bool loop, const idVec3& endOrigin ) {
-	if ( !gameLocal.DoClientSideStuff() ) {
-		return NULL;
-	}
-
-//	assert ( joint != INVALID_JOINT );
-
-/*	if ( effectHandle < 0 ) {
-		return NULL;
-	}
-
-	rvClientEffect* effect = new rvClientEffect( effectHandle );
-	effect->SetOrigin( vec3_origin );
-	effect->SetAxis( mat3_identity );
-	effect->Bind( this, joint );
-	effect->SetGravity( gameLocal.GetGravity() );
-	effect->SetMaterialColor( color );
-
-	if ( !effect->Play ( gameLocal.time, loop, endOrigin ) ) {
-		delete effect;
-		return NULL;
-	}
-
-	return effect;*/
-	qwtaClientSprite* sprite = new qwtaClientSprite( material );
-	sprite->SetOrigin( vec3_origin );
-	sprite->SetAxis( mat3_identity );
-	sprite->Bind( this, joint );
-	//sprite->SetGravity( gameLocal.GetGravity() );
-	//sprite->SetMaterialColor( color );
-
-	if ( !sprite->Play ( gameLocal.time, loop, endOrigin ) ) {
-		delete sprite;
-		return NULL;
-	}
-
-
-	return sprite;
 }
 
 /*
@@ -574,7 +529,6 @@ CLASS_DECLARATION( rvClientEntity, sdClientScriptEntity )
 	EVENT( EV_GetFloatKey,					sdClientScriptEntity::Event_GetFloatKey )
 	EVENT( EV_GetVectorKey,					sdClientScriptEntity::Event_GetVectorKey )
 	EVENT( EV_GetEntityKey,					sdClientScriptEntity::Event_GetEntityKey )
-	EVENT( EV_PlaySprite,					sdClientScriptEntity::Event_PlaySprite )
 	EVENT( EV_PlayEffect,					sdClientScriptEntity::Event_PlayEffect )
 	EVENT( EV_StopEffect,					sdClientScriptEntity::Event_StopEffect )
 	EVENT( EV_StopEffectHandle,				sdClientScriptEntity::Event_StopEffectHandle )
@@ -919,21 +873,6 @@ void sdClientScriptEntity::Event_PlayMaterialEffect( const char *effectName, con
 	rvClientEntityPtr< rvClientEffect > eff;
 	eff = gameLocal.PlayEffect( spawnArgs, color, effectName, materialType, GetOrigin(), GetAxis(), loop );
 	sdProgram::ReturnHandle( eff.GetSpawnId() );
-}
-
-/*
-=====================
-sdClientScriptEntity::Event_PlaySprite
-=====================
-*/
-void sdClientScriptEntity::Event_PlaySprite( const char* materialName, const char* jointName, bool loop ) {
-	jointHandle_t joint;
-
-	joint = GetAnimator() ? GetAnimator()->GetJointHandle( jointName ) : INVALID_JOINT;
-
-	rvClientEntityPtr< qwtaClientSprite > sprite;
-	sprite = PlaySprite( materialName, colorWhite.ToVec3(), NULL, joint, loop );
-	sdProgram::ReturnHandle( sprite.GetSpawnId() );
 }
 
 /*

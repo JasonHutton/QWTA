@@ -39,7 +39,6 @@ class usercmd_t;
 
 // RAVEN BEGIN
 // bdube: forward reference
-class qwtaClientSprite;
 class rvClientEffect;
 class rvBSEManager;
 // RAVEN END

@@ -1576,10 +1576,6 @@
 					RelativePath=".\game\client\ClientMoveable.h"
 					>
 				</File>
-				<File
-					RelativePath=".\game\client\ClientSprite.h"
-					>
-				</File>
 			</Filter>
 			<Filter
 				Name="Source Files"
@@ -1596,10 +1592,6 @@
 				</File>
 				<File
 					RelativePath=".\game\client\ClientMoveable.cpp"
-					>
-				</File>
-				<File
-					RelativePath=".\game\client\ClientSprite.cpp"
 					>
 				</File>
 			</Filter>

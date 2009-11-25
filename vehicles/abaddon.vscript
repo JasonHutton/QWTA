@@ -579,7 +579,6 @@ entityDef part_vehicle_abaddon_rear_right_hover {
 
 //---------------------------------------------------------------------
 
-/*
 stringMap vehicle_abaddon_weapon1 {
 	"gunName"					"game/weapons/flamethrower"
 	"weapon_name"				"flamethrower"
@@ -618,38 +617,6 @@ stringMap vehicle_abaddon_weapon1 {
 	"damageRate"				"0.05"
 	
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
-}*/
-
-stringMap vehicle_abaddon_weapon1 {
-	"gunName"					"game/weapons/flamethrower"
-	"weapon_name"				"flamethrower"
-
-	"charge_max"				"10"
-	"charge_per_use"			"1"
-	"overheat_penalty"			"1"
-	"use_heat_bar"				"1"
-
-	"weapon1_muzzle"			"blaster_muzzle"
-
-	"gunJointYaw"				"blaster_base"
-	"gunJointPitch"				"blaster_turret"
-	"gunJointShoulder"			"turret_1"
-
-	"muzzle"					"blaster_muzzle"
-	"muzzle_tracer"				"fx_hyperblaster_tracer"
-	"muzzle_flash"				"fx_hyperblaster_muzzle"
-	"muzzle_sound"				"fx_hyperblaster_fire"
-	"muzzle_sound_local"		"fx_hyperblaster_fire"
-
-	"velocity"					"1 0 0"
-	"fire_rate"					"0.08"
-	"spread"					"0"
-	"scriptobject"				"vehicle_weapon_flamethrower"
-	"def_projectile"			"projectile_flamethrower_blob"
-	"client_projectile"			"projectile_flamethrower_blob"
-	
-	"crosshair"					"nospread"
-	"disabled_crosshair"		"nospread"
 }
 
 stringMap vehicle_abaddon_weapon2 {

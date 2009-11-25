@@ -16,7 +16,6 @@ static char THIS_FILE[] = __FILE__;
 #include "physics/Physics_Parametric.h"
 #include "physics/Physics_Actor.h"
 #include "physics/Physics_AF.h"
-#include "client/ClientSprite.h"
 #include "client/ClientEffect.h"
 #include "../bse/BSEInterface.h"
 #include "../bse/BSE_Envelope.h"
@@ -163,7 +162,6 @@ const idEventDef EV_DistanceTo( "distanceTo", 'f', DOC_TEXT( "Returns the distan
 const idEventDef EV_DistanceToPoint( "distanceToPoint", 'f', DOC_TEXT( "Returns the distance from this entity to the given point." ), 1, NULL, "v", "position", "Position to check the distance to in world space." );
 const idEventDef EV_GetMaster( "getMaster", 'e', DOC_TEXT( "Returns the master of the chain of bound entities to which this entity belongs, or $null$ is this entity is not in a chain." ), 0, NULL );
 
-const idEventDef EV_PlaySprite( "playSprite", 'h', DOC_TEXT( "Looks up a sprite on the entity and plays it at the specified joint, and returns a handle to the effect." ), 3, "If no joint is specified, the joint cannot be found, or the entity does not support animated models, the effect will be played at the entity's origin.", "s", "key", "Key to look up the sprite from.", "s", "joint", "Name of the joint to play the sprite on.", "b", "loop", "Whether the sprite should be once only, or loop." );
 const idEventDef EV_PlayMaterialEffect( "playMaterialEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 5, DOC_TEXT( "If no joint is specified, the joint cannot be found, or the entity does not support animated models, the effect will be played at the entity's origin.\nThe key must start with 'fx_'." ), "s", DOC_TEXT( "key" ), DOC_TEXT( "Key to look up the $decl:effect$ from." ), "v", DOC_TEXT( "color" ), DOC_TEXT( "RGB color components." ), "s", DOC_TEXT( "joint" ), DOC_TEXT( "Name of the joint to play the effect on." ), "s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ), "b", DOC_TEXT( "loop" ), DOC_TEXT( "Whether the effect should be once only, or loop." ) );
 const idEventDef EV_PlayMaterialEffectMaxVisDist( "playMaterialEffectMaxVisDist", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect. If a special version matching that of the $decl:surfaceType$ passed is found, that will be played, otherwise the exact key name will be used." ), 7, DOC_TEXT( "If no joint is specified, the joint cannot be found, or the entity does not support animated models, the effect will be played at the entity's origin.\nThe key must start with 'fx_'." ), "s", DOC_TEXT( "key" ), DOC_TEXT( "Key to look up the $decl:effect$ from." ), "v", DOC_TEXT( "color" ), DOC_TEXT( "RGB color components." ), "s", DOC_TEXT( "joint" ), DOC_TEXT( "Name of the joint to play the effect on." ), "s", DOC_TEXT( "surfacetype" ), DOC_TEXT( "$decl:surfaceType$ to look up any special effect from." ), "b", "loop", DOC_TEXT( "Whether the effect should be once only, or loop." ), "f", DOC_TEXT( "maxVisDist" ), DOC_TEXT( "Maximum distance the effect will be visible from." ), "b", DOC_TEXT( "isStatic" ), DOC_TEXT( "Whether the particle effect is static or not" ) );
 const idEventDef EV_PlayEffect( "playEffect", 'h', DOC_TEXT( "Looks up an effect on the entity and plays it at the specified joint, and returns a handle to the effect." ), 3, "If no joint is specified, the joint cannot be found, or the entity does not support animated models, the effect will be played at the entity's origin.\nThe key must start with 'fx_'.", "s", "key", "Key to look up the $decl:effect$ from.", "s", "joint", "Name of the joint to play the effect on.", "b", "loop", "Whether the effect should be once only, or loop." );
@@ -381,7 +379,6 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_EnablePhysics,				idEntity::Event_EnablePhysics )
 	EVENT( EV_GetMaster,					idEntity::Event_GetMaster )
 
-	EVENT( EV_PlaySprite,					idEntity::Event_PlaySprite )
 	EVENT( EV_PlayEffect,					idEntity::Event_PlayEffect )
 	EVENT( EV_PlayEffectMaxVisDist,			idEntity::Event_PlayEffectMaxVisDist )
 	EVENT( EV_PlayJointEffect,				idEntity::Event_PlayJointEffect )
@@ -1949,97 +1946,6 @@ renderView_t *idEntity::GetRenderView( void ) {
   effects
 	
 ***********************************************************************/
-
-qwtaClientSprite* idEntity::PlaySprite( const idMaterial* material, const idVec3& color, jointHandle_t joint, bool loop, const idVec3& endOrigin ) {
-	if ( !gameLocal.DoClientSideStuff() ) { 
-		return NULL;
-	}
-
-	if ( joint == INVALID_JOINT ) {
-		gameLocal.Warning( "idEntity::PlayEffect Invalid Joint" );
-		return NULL;
-	}
-//	assert ( joint != INVALID_JOINT );	
-
-	/*if ( effectHandle < 0 ) {
-		return NULL;
-	}*/
-
-/*	rvClientEffect* effect = new rvClientEffect ( effectHandle );
-	effect->SetOrigin( vec3_origin );
-	effect->SetAxis( mat3_identity );
-	effect->Bind( this, joint );
-	effect->SetGravity( gameLocal.GetGravity() );
-	effect->SetMaterialColor( color );
-	
-	if ( !effect->Play ( gameLocal.time, loop, endOrigin ) ) {
-		delete effect;
-		return NULL;
-	}
-	
-	return effect;*/
-
-	qwtaClientSprite* sprite = new qwtaClientSprite( material );
-	sprite->SetOrigin( vec3_origin );
-	sprite->SetAxis( mat3_identity );
-	sprite->Bind( this, joint );
-
-	if ( !sprite->Play ( gameLocal.time, loop, endOrigin ) ) {
-		delete sprite;
-		return NULL;
-	}
-
-	return sprite;
-}
-
-qwtaClientSprite* idEntity::PlaySprite ( const idMaterial* material, const idVec3& color, const idVec3& origin, const idMat3& axis, bool loop, const idVec3& endOrigin, bool viewsuppress ) {
-	if ( !gameLocal.DoClientSideStuff() ) {
-		return NULL;
-	}
-
-	idVec3 localOrigin;
-	idMat3 localAxis;
-	
-	// jrad - the isNewFrame check causes issues in network games for effects and sounds played via scripts
-	// since this is primarily how we play effects and sounds now, this check is removed
-//	if ( effectHandle < 0 /*|| !gameLocal.isNewFrame */ ) {
-//		return NULL;
-//	}
-/*
-	if ( entityNumber == ENTITYNUM_WORLD ) {
-		return gameLocal.PlayEffect( effectHandle, color, origin, axis, loop, endOrigin );
-	}
-*/
-	// Calculate the local origin and axis from the given globals
-	localOrigin = ( origin - renderEntity.origin ) * renderEntity.axis.Transpose();
-	localAxis   = axis * renderEntity.axis.Transpose();
-/*
-	rvClientEffect* effect = new rvClientEffect ( effectHandle );
-	effect->SetOrigin ( localOrigin );
-	effect->SetAxis ( localAxis );
-	effect->SetMaterialColor( color );
-	effect->Bind ( this );
-	effect->SetViewSuppress( viewsuppress );
-	effect->SetGravity( gameLocal.GetGravity() );
-	if ( !effect->Play ( gameLocal.time, loop, endOrigin ) ) {
-		delete effect;
-		return NULL;
-	}
-	
-	return effect;*/
-
-	qwtaClientSprite* sprite = new qwtaClientSprite( material );
-	sprite->SetOrigin( localOrigin );
-	sprite->SetAxis( localAxis );
-	sprite->Bind( this );
-
-	if ( !sprite->Play ( gameLocal.time, loop, endOrigin ) ) {
-		delete sprite;
-		return NULL;
-	}
-
-	return sprite;
-}
 
 /*
 ================
@@ -4641,21 +4547,6 @@ void idEntity::Event_PlayMaterialEffectMaxVisDist( const char *effectName, const
 	sdProgram::ReturnHandle( eff.GetSpawnId() );
 }
 
-void idEntity::Event_PlaySprite( const char *materialName, const char* jointName, bool loop ) {
-	//Event_PlayMaterialEffect( effectName, colorWhite.ToVec3(), jointName, NULL, loop );
-	jointHandle_t joint;
-	rvClientEntityPtr< qwtaClientSprite > sprite;
-
-	joint = GetAnimator() ? GetAnimator()->GetJointHandle( jointName ) : INVALID_JOINT;
-	if ( joint != INVALID_JOINT ) {
-		sprite = PlaySprite( materialName, colorWhite.ToVec3(), NULL, joint, loop );
-	} else {				  
-		sprite = PlaySprite( materialName, colorWhite.ToVec3(), NULL, renderEntity.origin, renderEntity.axis, loop );
-	}	
-
-	sdProgram::ReturnHandle( sprite.GetSpawnId() );
-}
-
 /*
 ================
 idEntity::Event_PlayEffect
@@ -7085,16 +6976,6 @@ void idEntity::Event_LookupEffect( const char* effectName, const char* materialT
 	}
 
 	sdProgram::ReturnString( declHolder.declEffectsType[ index ]->GetName() );
-}
-
-qwtaClientSprite*	idEntity::PlaySprite( const char* materialName, const idVec3& color, const char* materialType, const idVec3& origin, const idMat3& axis, bool loop, const idVec3& endOrigin, bool viewSuppress ) {
-	return PlaySprite( declHolder.declMaterialType.LocalFind( materialName ), color, origin, axis, loop, endOrigin, viewSuppress );
-	//return PlaySprite( gameLocal.GetEffectHandle( spawnArgs, effectName, materialType ), color, origin, axis, loop, endOrigin, viewSuppress );
-}
-
-qwtaClientSprite* idEntity::PlaySprite( const char* materialName, const idVec3& color, const char* materialType, jointHandle_t jointHandle, bool loop, const idVec3& endOrigin ) {
-	return PlaySprite( declHolder.declMaterialType.LocalFind( materialName ), color, jointHandle, loop, endOrigin );
-	//return PlaySprite( gameLocal.GetEffectHandle( spawnArgs, effectName, materialType ), color, jointHandle, loop, endOrigin );
 }
 
 /*

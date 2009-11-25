@@ -437,8 +437,6 @@ scriptEvent boolean	isBurning();
 scriptEvent boolean	applyBurnDamage( entity attacker, float time );
 scriptEvent float	getRemainingBurning();
 
-scriptEvent handle	playSprite( string effectname, string jointname, boolean loop );
-
 /***********************************************************************
 
 	system events (called via 'sys.')

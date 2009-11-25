@@ -1,73 +1,161 @@
 
-object vehicle_weapon_flamethrower : vehicle_weapon_vrof {
+object vehicle_weapon_flamethrower : vehicle_weapon_streamshot {
 	void				preinit();
-	
-	void				Fire();
+	void				init();
 
-	string				muzzleFlashFX;
-	string				muzzleSound;
-	string				muzzleSoundLocal;
+	void				DoStream( boolean doDamage );
+	void				DoParticleSpew( vector startPos, vector traceDir );
+	
+	void				Cleanup( boolean bCleanMuzzleToo );
 
 	float				fireRate;
-	float				spread;
+	float				fireRate2;
+	float				fire2Delay;
 
-	float				projectileIndex;
-	float				clientProjectileIndex;
-
-	float				jointHandle;
-
-	float				tracerCounter;
-	float				tracerInterval;
-
-	float				localSurface;
-
-	entity				vehicle;
-
-	entity				muzzleFX;
-	float				lastMuzzleFX;
-	float				muzzleFlashInterval;
+	float				nextFire2Time;
+	float				firingBegan;
+	
+	float				burnTime;
+	float				damageRate;
+	float				nextDamageTime;
 }
 
 void vehicle_weapon_flamethrower::preinit() {
-	muzzleFlashFX			= getKey( "muzzle_flash" );
-	muzzleSound				= getKey( "muzzle_sound" );
-	muzzleSoundLocal		= getKey( "muzzle_sound" );
-
 	fireRate				= getFloatKey( "fire_rate" );
-	spread					= getFloatKey( "spread" );
-	
-	projectileIndex			= GetEntityDef( getKey( "def_projectile" ) );
-	clientProjectileIndex	= GetEntityDef( getKey( "client_projectile" ) );
-	
-	localSurface			= -1;
-	
-	vehicle					= getVehicle();
+	fireRate2				= getFloatKey( "fire_rate2" );
+	fire2Delay				= getFloatKey( "fire2_delay" );
 
-	string localSurfaceName	= getKey( "surface_name" );
-	if ( localSurfaceName != "" ) {
-		localSurface = vehicle.getSurfaceId( localSurfaceName );
-	}
+	nextFire2Time			= 0;
+	firingBegan				= 0;
 	
-	jointHandle				= vehicle.getJointHandle( getKey( "muzzle" ) );
-	tracerCounter			= 0;
-	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
-	muzzleFlashInterval		= vehicle.getFloatKeyWithDefault( "muzzle_flash_interval", 0.5f );
+	nextDamageTime			= 0.0;
+	
+	burnTime				= getFloatKey( "burn_time" );
+	damageRate				= getFloatKey( "damageRate" );
 }
 
-void vehicle_weapon_flamethrower::Fire() {
-	
-	vector origin = vehicle.getJointPos( jointHandle );
-	
-	entity proj = vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, clientProjectileIndex, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
+void vehicle_weapon_flamethrower::init() {
+}
 
-	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
-	if( user == sys.getLocalPlayer() ) {
-		vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
-	} else {
-		vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+void vehicle_weapon_flamethrower::DoStream( boolean doDamage ) {
+//	fired();
+
+//	float mask = MASK_PROJECTILE | MASK_SHOT_BOUNDINGBOX;
+//	if ( sys.isClient() ) {
+//		mask = mask | CONTENTS_WATER;
+//	}
+//	sys.enablePlayerHeadModels();
+
+	vector startPos = vehicle.getJointPos( jointHandle );
+	vector traceDir = vehicle.getJointAxis( jointHandle, 0 );
+	vector endPos = startPos + ( traceDir * streamRadius );
+
+	vector mins, maxs;
+	mins_x = startPos_x - streamRadius;
+	mins_y = startPos_y - streamRadius;
+	mins_z = startPos_z - streamRadius;
+	
+	maxs_x = startPos_x + streamRadius;
+	maxs_y = startPos_y + streamRadius;
+	maxs_z = startPos_z + streamRadius;
+	
+	float count = vehicle.entitiesInBounds( mins, maxs, MASK_PROJECTILE, 1 );
+	/*
+		float traceFraction = sys.tracePoint( startPos, endPos, MASK_SHOT_RENDERMODEL, $null_entity );
+		vector endOrigin = endPos;
+		if( traceFraction < 1.0f ) {
+			endOrigin = sys.getTraceEndPos();
+	}*/
+	
+	float i;
+	float angleRange = sys.cos( streamArc * 0.5f );
+	
+	for ( i = 0; i < count; i++ ) {
+		entity ent = vehicle.getBoundsCacheEntity( i );
+		
+		if ( ent == $null_entity ) {
+			continue;
+		}
+
+		vector targetDir = sys.vecNormalize( ent.getWorldOrigin() - startPos );
+
+		if ( ent == vehicle ) {
+			continue;
+		}
+
+		if ( targetDir * traceDir < angleRange ) {
+			continue;
+		}
+		vector dist;
+		vector absMins = ent.getAbsMins();
+		vector absMaxs = ent.getAbsMaxs();
+		dist_x = GetAxisDistance( startPos_x, absMins_x, absMaxs_x );
+		dist_y = GetAxisDistance( startPos_y, absMins_y, absMaxs_y );
+		dist_z = GetAxisDistance( startPos_z, absMins_z, absMaxs_z );
+		float distance = sys.vecLength( dist );
+		
+		if ( distance >= streamRadius ) 
+		{
+			continue;
+		}
+		
+		if ( sys.tracePoint( ent.getWorldOrigin(), startPos, MASK_SHOT_RENDERMODEL, ent ) < 1.0f ) {
+			if ( sys.getTraceEntity() != vehicle ) {
+				
+				continue;
+			}
+		}
+		
+		float scale = 1.f;
+		player testPlayer = ent;
+		vehicle_base testVehicle = ent;
+		if ( testPlayer != $null_entity ) {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercentPlayers ) {
+				scale = minDamagePercentPlayers;
+			}
+			scale = 1.f - scale;
+		} else if ( testVehicle != $null_entity ) {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercentVehicles ) {
+				scale = minDamagePercentVehicles;
+			}
+			scale = 1.f - scale;
+		} else {
+			scale = ( distance / streamRadius );
+			if ( scale < minDamagePercent ) {
+				scale = minDamagePercent;
+			}
+			scale = 1.f - scale;
+		}
+		
+		if ( doDamage && sys.getTime() > nextDamageTime ) {
+			nextDamageTime = sys.getTime() + damageRate;
+			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
+			ent.applyBurnDamage( getPlayer(), burnTime );
+		}
 	}
+
+	// AddHeat();
+	// sys.disablePlayerHeadModels()
+
+	UpdateStreamEffect( endPos );
+	DoParticleSpew( startPos, traceDir );
+}
+
+void vehicle_weapon_flamethrower::DoParticleSpew( vector startPos, vector traceDir ) {
+	if ( !firingBegan ) {
+		firingBegan = sys.getTime();
+	}
+
+	if( (sys.getTime() - firingBegan) > fire2Delay && sys.getTime() > nextFire2Time ) {
+		vehicle.launchMissileSimple( user, vehicle, $null_entity, projectileIndex, -1, spread, startPos, traceDir * ((sys.random( 4.0f ) + 0.1f) * 200) );
+		nextFire2Time = sys.getTime() + fireRate2;
+	}
+}
 	
-	RemoveCharge();
-	
-	GoToIdle();
+void vehicle_weapon_flamethrower::Cleanup( boolean bCleanMuzzleToo ) {
+	Cleanup_Base( bCleanMuzzleToo );
+
+	firingBegan		= 0;
 }
