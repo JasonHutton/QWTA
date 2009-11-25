@@ -35,6 +35,7 @@ idCVar* idCVar::staticVars;
 #include "WorldSpawn.h"
 #include "Misc.h"
 #include "Camera.h"
+#include "client/ClientSprite.h"
 #include "client/ClientEffect.h"
 #include "client/ClientMoveable.h"
 #include "gamesys/SysCmds.h"
@@ -7769,6 +7770,39 @@ const rvDeclEffect *idGameLocal::FindEffect( const char* name, bool makeDefault 
 		}
 	}
 	return declHolder.FindEffect( name, makeDefault );
+}
+
+qwtaClientSprite* idGameLocal::PlaySprite( const idMaterial* material, const idVec3& color, const idVec3& origin, const idMat3& axis, bool loop, const idVec3& endOrigin, float distanceOffset ) {
+	if ( !gameLocal.DoClientSideStuff() ) {
+		return NULL;
+	}
+
+	//if ( !effectHandle ) {
+//		return NULL;
+//	}
+/*
+	rvClientEffect* effect = new rvClientEffect( effectHandle );
+	effect->SetOrigin( origin );
+	effect->SetAxis( axis );
+	effect->SetGravity( GetGravity() );
+	effect->SetMaterialColor( color );
+	effect->SetDistanceOffset( distanceOffset );
+	if ( !effect->Play( gameLocal.time, loop, endOrigin ) ) {
+		delete effect;
+		return NULL;
+	}
+
+	return effect;*/
+	qwtaClientSprite* sprite = new qwtaClientSprite( material );
+	sprite->SetOrigin( origin );
+	sprite->SetAxis( axis );
+
+	if ( !sprite->Play ( gameLocal.time, loop, endOrigin ) ) {
+		delete sprite;
+		return NULL;
+	}
+	
+	return sprite;
 }
 
 /*

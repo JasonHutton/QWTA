@@ -46,6 +46,7 @@ extern const idEventDef EV_SetSkin;
 extern const idEventDef EV_StartSoundShader;
 extern const idEventDef EV_StopSound;
 extern const idEventDef EV_StopAllEffects;
+extern const idEventDef EV_PlaySprite;
 extern const idEventDef EV_PlayEffect;
 extern const idEventDef EV_StopEffect;
 extern const idEventDef EV_StopEffectHandle;
@@ -455,6 +456,11 @@ public:
 
 	virtual void			OnEventRemove( void );
 
+
+	qwtaClientSprite*			PlaySprite		( const char* materialName, const idVec3& color, const char* materialType, jointHandle_t joint, bool loop = false, const idVec3& endOrigin = vec3_origin );
+	qwtaClientSprite*			PlaySprite		( const char* materialName, const idVec3& color, const char* materialType, const idVec3& origin, const idMat3& axis, bool loop = false, const idVec3& endOrigin = vec3_origin, bool viewsuppress = true );
+	qwtaClientSprite*			PlaySprite		( const idMaterial* material, const idVec3& color, jointHandle_t joint, bool loop = false, const idVec3& endOrigin = vec3_origin );
+	qwtaClientSprite*			PlaySprite		( const idMaterial* material, const idVec3& color, const idVec3& origin, const idMat3& axis, bool loop = false, const idVec3& endOrigin = vec3_origin, bool viewsuppress = true );
 // RAVEN BEGIN
 // bdube: added effect functions
 	// effects
@@ -957,6 +963,7 @@ protected:
 
 	void					Event_SetCanCollideWithTeam( bool canCollide );
 
+	void					Event_PlaySprite( const char* materialName, const char* boneName, bool loop );
 	void					Event_PlayMaterialEffect( const char *effectName, const idVec3& color, const char* jointName, const char* materialType, bool loop );
 	void					Event_PlayMaterialEffectMaxVisDist( const char *effectName, const idVec3& color, const char* jointName, const char* materialType, bool loop, float maxVisDist, bool isStatic );
 	void					Event_PlayEffect( const char* effectName, const char* boneName, bool loop );

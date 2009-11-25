@@ -246,7 +246,7 @@ void projectile_fluidic_blob::MonitorTrail() {
 	float nextTime = sys.getTime() + 0.5f;
 	while ( true ) {
 		if ( !trailUnderWater && isInWater() > 0.5f ) {
-			stopEffect( "fx_trail" );
+			//stopEffect( "fx_trail" );
 		}
 		vector velocity = getLinearVelocity();
 		float velSqr = sys.vecLengthSquared( velocity );
@@ -255,7 +255,7 @@ void projectile_fluidic_blob::MonitorTrail() {
 		}
 		if ( nextTime < sys.getTime() && removeTrailAtRest ) {
 			if ( !noTrail ) {
-				stopEffect( "fx_trail" );
+				//stopEffect( "fx_trail" );
 				noTrail = true;
 			}
 		}
@@ -266,9 +266,10 @@ void projectile_fluidic_blob::MonitorTrail() {
 void projectile_fluidic_blob::Idle() {
 	if ( !noTrail ) {
 		if ( trailUnderWater || isInWater() < 0.5f ) {
-			handle ent = playEffect( "fx_trail", "", 1 );
+			//handle ent = playEffect( "fx_trail", "", 1 );
+			playSprite( getKey("mtr_trail"), "", 1 );
 			if ( getIntKey( "trail_unbindrotation" ) ) {
-				detachRotationBind( ent );
+			//	detachRotationBind( ent );
 			}
 			CancelMonitorTrail();
 			thread MonitorTrail();
@@ -279,7 +280,7 @@ void projectile_fluidic_blob::Idle() {
 
 void projectile_fluidic_blob::destroy() {
 	if ( !noTrail ) {
-		stopEffect( "fx_trail" );
+		//stopEffect( "fx_trail" );
 	}
 	stopSound( SND_WEAPON_FIRE );
 }
@@ -475,7 +476,7 @@ void projectile_fluidic_blob::ExplodeVel( object traceObject, entity collisionEn
 	}
 	
 	if ( !noTrail ) {
-		stopEffect( "fx_trail" );
+		//stopEffect( "fx_trail" );
 	}
 	stopSound( SND_WEAPON_FIRE );
 
@@ -528,7 +529,7 @@ void projectile_fluidic_blob::Fizzle() {
 	MakeInactive();
 
 	if ( !noTrail ) {
-		stopEffect( "fx_trail" );
+		//stopEffect( "fx_trail" );
 	}
 	stopSound( SND_WEAPON_FIRE );
 

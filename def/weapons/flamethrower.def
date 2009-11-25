@@ -29,6 +29,7 @@ entityDef projectile_flamethrower_blob {
 	
 	"fx_splash"				"effects/base/impact_water_large"
 	"fx_trail"				"effects/weapons/flamethrower/blob"
+	"mtr_trail"				"particles/karateka/simple_smoke_alpha"
 	//"fx_explode"				"effects/weapons/plasmacannon/explode_small"
 	//"fx_explode_sand"			"effects/weapons/plasmacannon/explode"
 	//"fx_explode_water"			"effects/water/explosion"
