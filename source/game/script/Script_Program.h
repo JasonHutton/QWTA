@@ -20,14 +20,28 @@ class idProgram;
 class sdScriptHelper;
 class sdEntityStateNetworkData;
 
+/*
+const int MAX_STRING_LEN		= 128;
+const int MAX_GLOBALS			= 460800;		// in bytes
+const int MAX_STRINGS			= 1024;
+const int MAX_FUNCS				= 5120;
+const int MAX_STATEMENTS		= 131072;		// statement_t - 18 bytes last I checked
+const int MAX_OBJECTS			= 2048;
+*/
+
+// Double most of the values...
+
 const int MAX_STRING_LEN		= 128;
 //const int MAX_GLOBALS			= 460800;		// in bytes
 const int MAX_GLOBALS			= 921600;		// in bytes
-const int MAX_STRINGS			= 1024;
-const int MAX_FUNCS				= 5120;
+//const int MAX_STRINGS			= 1024;
+const int MAX_STRINGS			= 2048;
+//const int MAX_FUNCS				= 5120;
+const int MAX_FUNCS				= 10240;
 //const int MAX_STATEMENTS		= 131072;		// statement_t - 18 bytes last I checked
 const int MAX_STATEMENTS		= 262144;		// statement_t - 18 bytes last I checked
-const int MAX_OBJECTS			= 2048;
+//const int MAX_OBJECTS			= 2048;
+const int MAX_OBJECTS			= 4096;
 
 class function_t : public sdProgram::sdFunction {
 public:
