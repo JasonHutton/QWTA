@@ -160,9 +160,9 @@ void weapon_grenade::Fire() {
 	if ( ShouldRunGuis() ) {
 		startSound( "snd_grenade_timer", SND_WEAPON_SIG );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", 0 ); // make sure to override any previous grenades
-		if ( g_allowTimerCircles.getBoolValue() ) {
+		//if ( g_allowTimerCircles.getBoolValue() ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", fuse );
-		}
+		//}
 	}
 
 	currentTime = sys.getTime();

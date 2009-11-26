@@ -136,9 +136,9 @@ void projectile_charge::UpdateGUI( entity armee ) {
 					float armeeClass = p.getPlayerClass();
 					if ( armeeClass == g_playerClassSoldier || armeeClass == g_playerClassAggressor ) {
 						updateGui = true;
-						if ( g_allowTimerCircles.getBoolValue() ) {
+						//if ( g_allowTimerCircles.getBoolValue() ) {
 							sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponChargePercent", value );
-						}
+						//}
 					}
 				}
 			}

@@ -3,9 +3,10 @@ QWTA v0.3.3:
 CHANGES:
 * Main menu now displays QWTA logo.
 ***DEFERRED*** * Tactical gametype added. (WIP)
-* Abaddon hovertank added. (WIP) 100 FE, 8192 AVDBit. Plasma Beam. Flamethrower. (lit on fire)
-***SIMPLIFIED FLAMETHROWER IN USE***
-***NEED TO MAKE INTERACT WITH WATER***
+* Abaddon hovertank added. (WIP)
+  + This is a specialized version of the Desecrator, mounting two new weapons.
+  + Uses g_advancedVehicleDrops bitflag of 8192.
+  + Costs 100 FE to request a drop of.
 * Plasma Beam added. (Vehicle weapon only for now.)
   + A continuous-fire energy beam used by the Strogg for mining.
   + While highly damaging to vehicles and deployables, its effectiveness
@@ -14,6 +15,11 @@ CHANGES:
   + Spews a cone of flaming plasma across multiple targets, showering the
     ground beneath with sticky flamelets. Vehicles and deployables are
     immune to flame.
+  + Be advised due to QWTA v0.3.3 being kind of a rush-patch, the flamethrower
+    has significant issues(damage cone and flame graphics are desynchronized,
+    water will not extinguish flames, and flame -graphics- penetrate 
+    forcefields). The QWTA v0.4.0 flamethrower will correct these issues and 
+    introduce more realistic flame physics.
 * Players can now be lit on fire, burning and suffering damage.
 * Cvar g_useQuake4Railgun added.
   + Default 1.
@@ -33,7 +39,6 @@ CHANGES:
   damage, rather than triple.
 * Improvements to the BFG10k's visual effects.
 * The BFG10k is now charged manually.
-***NEED TO FIX HUD COLORING***
   + Hold down fire to charge the BFG. If you release too early, the 
     BFG energies fizzle out impotently and you must wait for the weapon to
     cool down and reload before trying to fire it again.
@@ -52,7 +57,6 @@ CHANGES:
     recognize it, leading to them doing very stupid things when trying to get
     from point A to point B. This setting works around that flaw.
 * Cvar g_allowCrosshairs added.
-***NEEDS TESTING***
   + Default 0.
   + Controls whether most(not all, notably Strogg scopes, sniper weapons'
     scopes, and most vehicles) crosshairs ingame are disabled.
@@ -69,15 +73,6 @@ CHANGES:
   + Sets QWTA to use the BaseETQW 1.2 Sniper Rifle trail/tracer effect.
     This effect is more subtle than the BaseETQW 1.5 effect, and harder
     to spot.
-* Cvar g_allowTimerCircles added.
-***DEFERRED***
-  + Default 0.
-  + Controls whether the circular timer bars are displayed in center screen.
-* Cvar g_hideHud added.
-***DEFERRED***
-  + Default 1.
-  + When enabled, hides most HUD elements onscreen until you perform an action
-    related to their function. (Reload or change weapons to see ammo, etc.)
 * Blood and gore effects improved considerably.
 
 BUG FIXES:

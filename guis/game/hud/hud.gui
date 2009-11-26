@@ -1502,7 +1502,7 @@ gui hud {
 	windowDef tasks {
 		type list;
 		properties {
-			float	visible					= gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+			float	visible					= gui.shouldShowNormalHud && player.scoreboardActive == false;// && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
 			float	shouldShow 				= gui.shouldShowNormalHud && player.scoreboardActive == false && visible;
 			rect 	rect 					= 2, 2, 196, 128;
 			float	flashAlpha				= 0;
@@ -1551,7 +1551,7 @@ gui hud {
 					// don't do it if we're collapsing, however
 					if( expanded ) {
 						gui.selectedTask = gui.blankWStr;
-						visible = gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+						visible = gui.shouldShowNormalHud && player.scoreboardActive == false;// && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
 					}
 					gui.selectedTask = getItemText( currentSelection, 1 );
 					lastSelectItem = immediate( currentSelection );
@@ -1607,12 +1607,12 @@ gui hud {
 				timeline.flashStarter.active = true;
 				timeline.flashStarter.resetTime( 0 );
 			}
-			onCVarChanged "g_hideHud" {
+/*			onCVarChanged "g_hideHud" {
 				visible 	= gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
-			}
+			}*/
 			onPropertyChanged "expanded" {
 				if ( expanded ) {
-					visible = gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+					visible = gui.shouldShowNormalHud && player.scoreboardActive == false;// && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
 				} else {
 					timeline.hideTask.active = true;
 					timeline.hideTask.resetTime( 0 );
@@ -1626,7 +1626,7 @@ gui hud {
 			onTime 1000 {
 				timeline.hideTask.active = false;
 				timeline.hideTask.resetTime( 0 );
-				visible = gui.shouldShowNormalHud && player.scoreboardActive == false && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
+				visible = gui.shouldShowNormalHud && player.scoreboardActive == false;// && ( gui.getCVarBool( "g_hideHud" ) == false || expanded );
 			}
 		}
 		timeline flashStarter {
@@ -2509,7 +2509,7 @@ gui hud {
 	windowDef healthParentBox {
 		properties {
 			rect	rect 				= 2, SCREEN_HEIGHT - 51, 200, 50;
-			float 	visible			 	= gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
+			float 	visible			 	= gui.shouldShowNormalHud;// && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
 			float	lastHealthValue		= immediate( player.health );
 			float	lowHealth			= false;
 
@@ -2642,16 +2642,16 @@ gui hud {
 				timeline.healthParentBoxTimeline.duration = ( 1000 * globals.gameHud.healthParentBoxTime ) + immediate( gui.time );
 			}
 			onPropertyChanged "player.vehicleValid" {
-				visible		= gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );;
+				visible		= gui.shouldShowNormalHud;// && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );;
 			}
 			onNamedEvent "updateHealthParentBoxTime" {
 				timeline.healthParentBoxTimeline.duration = ( 1000 * globals.gameHud.healthParentBoxTime ) + immediate( gui.time );
 				timeline.healthParentBoxTimeline.active = true;
 				timeline.healthParentBoxTimeline.resetTime( 0 );
 			}
-			onCVarChanged "g_hideHud" {
+/*			onCVarChanged "g_hideHud" {
 				visible 	= gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
-			}
+			}*/
 		}
 		
 		timeline healthParentBoxTimeline {
@@ -2660,7 +2660,7 @@ gui hud {
 				float duration = 0.f;
 			}
 			onTime 0 {
-				gui.healthParentBox.visible = gui.shouldShowNormalHud && ( gui.getCVarBool( "g_hideHud") == false || duration > immediate( gui.time ) || player.vehicleValid );
+				gui.healthParentBox.visible = gui.shouldShowNormalHud;// && ( gui.getCVarBool( "g_hideHud") == false || duration > immediate( gui.time ) || player.vehicleValid );
 			}
 			onTime 100 {
 				if ( visible ) {
@@ -2731,7 +2731,7 @@ gui hud {
 	windowDef AmmoParentBox {
 		properties {
 			rect	rect 		= SCREEN_WIDTH - ( rect.w + 2 ), SCREEN_HEIGHT - 54, 126, 50;
-			float 	visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
+			float 	visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) );// && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
 			float	lastClip 	= immediate( player.weaponClip );
 
 			handle 	topFillMaterial		= gui.cacheMaterial( "atopFill", "_frame health_top_fill" );
@@ -2850,16 +2850,16 @@ gui hud {
 				timeline.ammoParentBoxTimeline.duration = ( 1000 * globals.gameHud.ammoParentBoxTime ) + immediate( gui.time );
 			}
 			onPropertyChanged "player.vehicleValid" {
-				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud" ) == false || player.vehicleValid );
+				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) );// && ( gui.getCVarBool( "g_hideHud" ) == false || player.vehicleValid );
 			}
 			onNamedEvent "updateAmmoParentBoxTime" {
 				timeline.ammoParentBoxTimeline.duration = ( 1000 * globals.gameHud.ammoParentBoxTime ) + immediate( gui.time );
 				timeline.ammoParentBoxTimeline.active = true;
 				timeline.ammoParentBoxTimeline.resetTime( 0 );
 			}
-			onCVarChanged "g_hideHud" {
+/*			onCVarChanged "g_hideHud" {
 				visible 	= ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud" ) == false || player.vehicleValid );
-			}
+			}*/
 		}
 		
 		timeline ammoParentBoxTimeline {
@@ -2868,7 +2868,7 @@ gui hud {
 				float duration = 0.f;
 			}
 			onTime 0 {
-				gui.AmmoParentBox.visible = ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) ) && ( gui.getCVarBool( "g_hideHud" ) == false || duration > immediate( gui.time ) || player.vehicleValid );
+				gui.AmmoParentBox.visible = ( gui.shouldShowNormalHud && ( player.viewDead == false ) && ( ( player.spawning == false ) || ( gui.viewingOthers != 0.0f ) ) );// && ( gui.getCVarBool( "g_hideHud" ) == false || duration > immediate( gui.time ) || player.vehicleValid );
 			}
 			onTime 100 {
 				if ( visible ) {
@@ -2993,7 +2993,7 @@ gui hud {
 				rect 	rect				= 0, 14.5, 126, 14;//0, 20.5, 126, 7
 				color	foreColor			= 0,1,0,0.75;
 				float	flags				= immediate( flags | PF_DRAW_FROM_LOWER_END );
-				float	visible				= ( globals.weapons.powerup != 1.0f && globals.weapons.showPowerup == true ) || globals.gameHud.weaponReloadTime > 0 ;
+				float	visible				= globals.weapons.showPowerup == true && ( globals.weapons.powerup != 1.0f || globals.gameHud.weaponReloadTime > 0 );
 
 				float	startTime			= -1.0f;
 				float	targetTime			= -1.0f;

@@ -312,15 +312,15 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, 1, 2
 			localize( "guis/limbo/qwta/settings/useBaseETQW12SniperTrail" ),
 			localizeArgs( "guis/limbo/qwta/settings/useBaseETQW12SniperTrail/tooltip" ),
 			0, 0, BUTTON_WIDTH )
-		_qwtacheck( Setting_AllowTimerCircles, 
+/*		_qwtacheck( Setting_AllowTimerCircles, 
 			g_allowTimerCircles, 
 			localize( "guis/limbo/qwta/settings/allowTimerCircles" ),
 			localizeArgs( "guis/limbo/qwta/settings/allowTimerCircles/tooltip" ),
-			0, 0, BUTTON_WIDTH )
-		_qwtacheck( Setting_HideHUD, 
+			0, 0, BUTTON_WIDTH )*/
+/*		_qwtacheck( Setting_HideHUD, 
 			g_hideHUD, 
 			localize( "guis/limbo/qwta/settings/hideHUD" ),
 			localizeArgs( "guis/limbo/qwta/settings/hideHUD/tooltip" ),
-			0, 0, BUTTON_WIDTH )
+			0, 0, BUTTON_WIDTH )*/
 	_end_scrollable_container
 _end_tab_page

@@ -2410,21 +2410,21 @@ void player::ShowProgressBar( entity target, float action ) {
 			text = g_locStr_Reviving;
 		}
 
-		if ( g_allowTimerCircles.getBoolValue() ) {
+		//if ( g_allowTimerCircles.getBoolValue() ) {
 			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "progressBar.percent", value );
 			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "progressBar.text", text );
 			SetProgressBarVisible( true );
-		}
+		//}
 	} else if ( target == sys.getLocalPlayer() ) {
 		if ( action == AC_REVIVE ) {
 			value = target.vGetPliersProgressBarValue( action );
 			sys.pushLocString( sys.toWStr( getUserName() ) );
 
-			if ( g_allowTimerCircles.getBoolValue() ) {
+			//if ( g_allowTimerCircles.getBoolValue() ) {
 				sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", sys.localizeStringArgs( "game/revive_by" ) );
 				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "progressBar.percent", value );
 				SetProgressBarVisible( true );
-			}
+			//}
 		}
 	}
 
