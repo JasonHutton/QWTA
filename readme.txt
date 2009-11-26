@@ -1,5 +1,5 @@
 Quake Wars: Tactical Assault
-v0.4.0
+v0.3.3
 ================================
 http://qwta.moddb.com/
 
@@ -66,6 +66,13 @@ impression it had on a lot of people.
 * New vehicle: Jupiter Assault Tank.
 * BFG10k. (Jupiter tank's main cannon.)
 * Alternate firing modes for Vampire and Violator.
+* New vehicle: Abaddon Hovertank.
+* Plasma Beam. (Abaddon's main cannon.)
+* Flamethrower. (Abaddon's gunner weapon.)
+* Railgun fires through multiple targets like in other Quake games.
+* Alternate firing mode for Strogg Tactical Shield. Absorbs shields.
+* Crosshairs optionally removed.
+* Hitbeep notifications optionally removed.
 * Bot AI improvements.
 * BaseETQW bugfixes.
 
@@ -79,16 +86,16 @@ Next, simply start ETQW as normal, and use the Mod Menu to select QWTA.
 Alternatively, you can start ETQW with the commandline: +set fs_game qwta
 
 Finally, find yourself a server that's running QWTA, and give things a try. :)
+You can also simply start up ETQW, find a server running QWTA, and connect.
+The server will auto-download the mod and install it for you.
 
 4. Known Issues
 ================================
-* Magog-carried GDF vehicle drops on Island sometimes don't work properly.
-* Bots don't wait for their vehicle drop to arrive before moving on.
-* 3rd Eye Camera updates its radar origin even when not moving.
-* Players killed by being smashed against walls don't attribute frags properly
-* Dark Matter Cannon's gravity won't pull players away from mounted guns.
-* Dark Matter Cannon will (very slightly) damage nearby objects when fired.
-* Bots vehicle charge bars don't reset when going from warmup to ingame.
+Lots, at present. QWTA v0.3.3 is a bit of a rush-job release as some of
+the more severe issues with QWTA v0.3.2 were discovered during the development
+of QWTA v0.4.0. So v0.4.0 was put on hold and v0.3.3 was released.
+To be honest, I probably should have released just a tiny patch, but some of
+the new v0.4.0 features seemed enjoyable to include.
 
 5. Credits
 ================================
@@ -96,15 +103,16 @@ Azuvector
 -  Hi, this is me. Programmer, scripter, mod-founder, readme-writer, whatever.
 
 Special thanks to:
-jRAD 
+jRAD
 digibob
 RR2
--  Some of the Splash Damage folks who hang around on IRC and the community 
--  forums where they've been gracious enough to put up with newbie questions 
--  from me.
+- Some of the Splash Damage folks who hang around on IRC and the community 
+- forums where they've been gracious enough to put up with newbie questions 
+- from me.
 hannes
 jaybird
 Mxyzptlk
+Orange
 reyalP
 TimeStar
 WhiteAden

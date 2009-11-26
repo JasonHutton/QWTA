@@ -153,6 +153,11 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		return -1;
 	}
 
+	// We don't want bots calling in vehicles indoors.
+	if ( !LocationVis2Sky( player->GetPhysics()->GetOrigin() ) ) {
+		return -1;
+	}
+
 	botThreadData.GetGameWorldState()->clientInfo[ botNum ].vDeployDelayTime = botWorld->gameLocalInfo.time + 10000 + gameLocal.random.RandomInt(40000);
 
 
