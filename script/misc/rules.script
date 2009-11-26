@@ -292,9 +292,9 @@ boolean rules::IsStopwatch() {
 }
 
 boolean rules::IsTactical() {
-	if ( si_rules.getStringValue() == "sdGameRulesTactical" ) {
+/*	if ( si_rules.getStringValue() == "sdGameRulesTactical" ) {
 		return true;
-	}
+	}*/
 	
 	return false;
 }
