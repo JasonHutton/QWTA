@@ -2,7 +2,6 @@ QWTA v0.3.3:
 ==========
 CHANGES:
 * Main menu now displays QWTA logo.
-***DEFERRED*** * Tactical gametype added. (WIP)
 * Abaddon hovertank added. (WIP)
   + This is a specialized version of the Desecrator, mounting two new weapons.
   + Uses g_advancedVehicleDrops bitflag of 8192.
@@ -26,7 +25,6 @@ CHANGES:
   + Controls whether the Railgun has penetration properties, allowing it to
     be fired through multiple targets(players and corpses only), or not.
 * Cvar g_disableVehicleRespawns added.
-* Cvar g_disablePlayerRespawns added.
 * Cvar g_useShieldAbsorber added.
   + Default 1.
   + Allows the use of the Tactical Shield's altfire, which re-absorbs
@@ -47,6 +45,7 @@ CHANGES:
   + Charging the BFG properly takes practice. The difference between a
     properly charged projectile and an overload detonation is a 
     narrow window of opportunity.
+  + Bots are kind of retarded with this new behaviour so far.
 * Cvar pm_realisticMovement has had a setting added.
   + pm_realisticMovement may now be set to 2, as well.
   + pm_realisticMovement 2 is now the QWTA default setting.

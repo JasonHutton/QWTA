@@ -442,7 +442,7 @@ $template __center_print_info
 				postNamedEvent( "updateText" );
 			}
 			onNamedEvent "updateText" {
-				if ( !gui.getCVarBool( "g_disablePlayerRespawns" ) ) {
+//				if ( !gui.getCVarBool( "g_disablePlayerRespawns" ) ) {
 					if( player.limbo && player.spectator == false ) {
 						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
 							text 				= localizeArgs( "guis/hud/reenforce" );
@@ -482,7 +482,7 @@ $template __center_print_info
 						timeline.flashMedic.active = true;
 						return;
 					}
-				} else {
+/*				} else {
 					if( player.limbo && player.spectator == false ) {
 						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
 							if ( icompare( player.teamName, "strogg" ) && globals.gameHud.spawnHostActive ) {
@@ -520,7 +520,7 @@ $template __center_print_info
 						timeline.flashMedic.active = false;
 						return;
 					}
-				}
+				}*/
 				text = gui.blankWStr;		
 			}			
 		}	

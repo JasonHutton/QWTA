@@ -168,7 +168,7 @@ cvar	g_useBaseETQWVehicleCredits;
 cvar	g_vehicleSpawnsUseFE;
 
 cvar	g_disableVehicleRespawns;
-cvar	g_disablePlayerRespawns;
+//cvar	g_disablePlayerRespawns;
 cvar	g_allowCrosshairs;
 cvar	g_useBaseETQW12SniperTrail;
 //cvar	g_allowTimerCircles;

@@ -292,11 +292,11 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, 1, 2
 			localize( "guis/limbo/qwta/settings/disableVehicleRespawns" ),
 			localizeArgs( "guis/limbo/qwta/settings/disableVehicleRespawns/tooltip" ),
 			0, 0, BUTTON_WIDTH )
-		_qwtacheck( Setting_DisablePlayerRespawns, 
+/*		_qwtacheck( Setting_DisablePlayerRespawns, 
 			g_disablePlayerRespawns, 
 			localize( "guis/limbo/qwta/settings/disablePlayerRespawns" ),
 			localizeArgs( "guis/limbo/qwta/settings/disablePlayerRespawns/tooltip" ),
-			0, 0, BUTTON_WIDTH )
+			0, 0, BUTTON_WIDTH )*/
 		_qwtacheck( Setting_AllowCrosshairs, 
 			g_allowCrosshairs, 
 			localize( "guis/limbo/qwta/settings/allowCrosshairs" ),

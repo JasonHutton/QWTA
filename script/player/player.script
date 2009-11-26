@@ -637,25 +637,25 @@ void player::preinit() {
 }
 
 void player::vDecreaseAvailableLives() {
-	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
+/*	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
 		//sys.print("vDecreaseAvailableLives() called: Lives before call: " + livesRemaining + "\n");
 		livesRemaining = livesRemaining - 1.f;
 		if ( livesRemaining < 0.f ) {
 			sys.warning( "player::vDecreaseAvailableLives(): livesRemaining < 0: " + livesRemaining + "\n" );
 			livesRemaining = 0.f;
 		}
-	}
+	}*/
 }
 
 void player::vIncreaseAvailableLives() {
-	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
+/*	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
 		//sys.print("vIncreaseAvailableLives() called: Lives before call: " + livesRemaining + "\n");
  		livesRemaining = livesRemaining + 1.f;
  		if ( livesRemaining > vGetStartingLives() ) {
 			sys.warning( "player::vIncreaseAvailableLives(): livesRemaining > " + vGetStartingLives() + ": " + livesRemaining + "\n" );
 			livesRemaining = vGetStartingLives();
 		}
-	}
+	}*/
 }
 
 /*
