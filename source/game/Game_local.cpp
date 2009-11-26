@@ -6650,6 +6650,7 @@ void idGameLocal::RadiusDamage( const idVec3 &origin, idEntity *inflictor, idEnt
 				}
 
 				trace_t tr;
+				memset( &tr.c, 0, sizeof( tr.c ) ); // Hack around a stupid crash due to c.surfaceType being uninitialized. (SSM killing people = boom in DoDamageEffect()) -- Azuvector
 				if ( damageDecl->GetNoTrace() || ent->CanDamage( origin, damagePoint, MASK_EXPLOSIONSOLID, ignoreDamage, &tr ) ) {
 					// get the damage scale
 					damageScale = dmgPower * ( 1.0f - dist / radius );

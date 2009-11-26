@@ -6049,6 +6049,7 @@ bool idEntity::ClientReceiveEvent( int event, int time, const idBitMsg &msg ) {
 			const sdDeclSurfaceType* surfDecl = gameLocal.declSurfaceTypeType.SafeIndex( msg.ReadLong() );
 
 			trace_t collision;
+			memset( &collision.c, 0, sizeof( collision.c ) );
 			collision.c.point = origin;
 			//collision.c.material = collisionMaterial;
 			collision.c.entityNum = entNum;
