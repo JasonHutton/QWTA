@@ -1,0 +1,181 @@
+/***********************************************************************
+
+weapon_railgun.script
+
+***********************************************************************/
+
+object weapon_railgun : weapon_clip {
+	void		preinit();
+	void		init();
+	void		destroy();
+
+	void		DoFire();
+	void		FireCommon();
+	void		OnNetworkTracer( vector start, vector end, float strength );
+
+	void		PlayFireSound();
+
+	void		CreateUpdateEnergy();
+	void		KillUpdateEnergy();
+	void		UpdateEnergy();
+	float		GetEnergy();
+	void		ClearEnergy();
+
+	float		GetSoundPitch();
+	
+	float		rechargeTime;
+	float		energyTimerHandle;
+
+	float		threadId;
+};
+
+void weapon_railgun::preinit() {
+	hasScope		= true;
+	hasScopeZoom	= true;
+	hasIronSights	= false;
+	usesStroyent	= true;
+	
+	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+
+	rechargeTime	= getFloatKeyWithDefault( "recharge_time", 2.0f );
+	energyTimerHandle = sys.allocTargetTimer( getKeyWithDefault( "timer_energy", "railgun_energy" ) );
+
+	CreateUpdateEnergy();
+
+	threadId = -1;
+	if ( sys.getLocalPlayer() == myPlayer ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.distance", -2 );
+		threadId = thread RangeUpdateThread( myPlayer, 16384 );
+	}
+}
+
+void weapon_railgun::init() {
+	weaponState( "Raise", 0 );
+}
+
+void weapon_railgun::destroy() {
+	KillUpdateEnergy();
+
+	if ( threadId != -1 ) {
+		sys.terminate( threadId );
+	}
+}
+
+void weapon_railgun::DoFire() {
+	if ( !mainFireDown ) {
+		FireSingle();
+		ClearEnergy();
+	}
+}
+
+void weapon_railgun::FireCommon() {
+	PlayFireEffect();
+	PlayFireSound();
+	PlayBrassSound();
+
+	if ( myPlayer.IsSniperScopeUp() ) {
+		playAnim( ANIMCHANNEL_ALL, "fire_zoom" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "fire" );
+	}
+
+	float strength = GetEnergy();
+	launchProjectiles( numProjectiles, 0, getCurrentSpread(), 0, 1, strength );
+	if ( !sys.isClient() || sys.getLocalPlayer() == myPlayer ) {
+		handle effectHandle = getLastTracer();
+		if ( effectHandle ) {
+			vector color = g_vectorZero;
+			// scale the red & green unevenly
+			color_x = strength;
+			color_y = ( strength - 0.5 ) * 2 + 0.1;
+			setEffectColor( effectHandle, color, 1 );
+		}
+			
+		if ( !sys.isClient() ) {
+			// send an unreliable event so clients can show it
+			vector start = getBulletTracerStart();
+			vector end = getBulletTracerEnd();
+			sendTracerMessage( start, end, strength );
+		}
+	}
+	increaseSpread();
+	
+	UseAmmo_Stroyent( 0 );
+	AmmoCheck( 0 );
+}
+
+void weapon_railgun::OnNetworkTracer( vector start, vector end, float strength ) {
+	if ( sys.getLocalPlayer() != myPlayer ) {
+		doProjectileTracer( 0, start, end );
+		handle effectHandle = getLastTracer();
+		if ( effectHandle ) {
+			vector color = g_vectorZero;
+			// scale the red & green unevenly
+			color_x = strength;
+			color_y = ( strength - 0.5 ) * 2 + 0.1;
+			setEffectColor( effectHandle, color, 1 );
+		}
+	}
+}
+
+void weapon_railgun::PlayFireSound() {
+	startSound( "snd_fire_local", SND_WEAPON_FIRE_LOCAL );
+	startSound( "snd_fire", SND_WEAPON_FIRE );
+	startSound( "snd_fire_far", SND_WEAPON_FIRE_FAR );
+	startSound( "snd_charge", SND_WEAPON_MECH );
+}
+
+float weapon_railgun::GetEnergy() {
+	float value = sys.getTime() - sys.getTargetTimerValue( energyTimerHandle, myPlayer );
+	value = value / rechargeTime;
+	if ( value < 0 ) {
+		value = 0;
+	} else if ( value > 1 ) {
+		value = 1;
+	}
+
+	return value;
+}
+
+void weapon_railgun::ClearEnergy() {
+	sys.setTargetTimerValue( energyTimerHandle, myPlayer, sys.getTime() );
+}
+
+void weapon_railgun::CreateUpdateEnergy() {
+	if ( myPlayer == sys.getLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showHeat", 1.f );
+	}
+
+	thread UpdateEnergy();
+}
+
+void weapon_railgun::KillUpdateEnergy() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showHeat", 0.f );
+	}
+
+	setChannelPitchShift( SND_WEAPON_IDLE, 1.0f );
+
+	sys.killThread( "UpdateEnergy_" + getName() );
+}
+
+void weapon_railgun::UpdateEnergy() {
+	boolean isLocal = ShouldRunGuis();
+	float soundPitchSpeed = getFloatKeyWithDefault( "recharge_pitch", 1.f );
+	float newSoundPitch;
+
+	while ( true ) {
+		if ( isLocal ) {
+			float energy = GetEnergy();
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.heat", energy );
+			setChannelPitchShift( SND_WEAPON_IDLE, GetSoundPitch() );
+		}
+
+		sys.waitFrame();
+	}
+}
+
+float weapon_railgun::GetSoundPitch() {
+	float energy = GetEnergy();
+	return energy;
+}

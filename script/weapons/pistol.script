@@ -1,0 +1,98 @@
+/***********************************************************************
+
+weapon_pistol.script
+
+***********************************************************************/
+
+object weapon_pistol : weapon_clip {
+	void		preinit();
+	void		DoFire();
+
+	void		PlayFireAnim();
+	void		PlayIdleAnim();
+	void		PlayZoomInAnim();
+	void		PlayZoomOutAnim();
+	void		PlayStartSprintAnim();
+	void		PlayLeaveSprintAnim( string newState, float blend );
+}
+
+void weapon_pistol::preinit() {
+	hasScope		= false;
+	hasIronSights	= true;
+
+	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+}
+
+void weapon_pistol::DoFire() {
+	if ( !mainFireDown ) {
+		FireSingle();
+	}
+}
+
+void weapon_pistol::PlayFireAnim() {
+	if ( ironSightsEnabled ) {
+		if ( ammoInClip( 0 ) == 1 ) {
+			playAnim( ANIMCHANNEL_ALL, "fire_zoom_last" );
+		} else {
+			playAnim( ANIMCHANNEL_ALL, "fire_zoom" );
+		}
+	} else {
+		if ( ammoInClip( 0 ) == 1 ) {
+			playAnim( ANIMCHANNEL_ALL, "fire_last" );
+		} else {
+			playAnim( ANIMCHANNEL_ALL, "fire" );
+		}
+	}
+}
+
+void weapon_pistol::PlayIdleAnim() {
+	if ( ironSightsEnabled ) {
+		if ( ammoInClip( 0 ) == 0 ) {
+			playCycle( ANIMCHANNEL_ALL, "idle_zoom_outofammo" );
+		} else {
+			playCycle( ANIMCHANNEL_ALL, "idle_zoom" );
+		}
+	} else {
+		if ( ammoInClip( 0 ) == 0 ) {
+			playCycle( ANIMCHANNEL_ALL, "idle_outofammo" );
+		} else {
+			playCycle( ANIMCHANNEL_ALL, "idle" );
+		}
+	}
+}
+
+void weapon_pistol::PlayZoomInAnim() {
+	if ( ammoInClip( 0 ) == 0 ) {
+		playAnim( ANIMCHANNEL_ALL, "zoomin_outofammo" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "zoomin" );
+	}
+}
+
+void weapon_pistol::PlayZoomOutAnim() {
+	if ( ammoInClip( 0 ) == 0 ) {
+		playAnim( ANIMCHANNEL_ALL, "zoomout_outofammo" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "zoomout" );
+	}
+}
+
+void weapon_pistol::PlayStartSprintAnim() {
+	if ( ammoInClip( 0 ) == 0 ) {
+		playAnim( ANIMCHANNEL_ALL, "start_sprint_outofammo" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "start_sprint" );
+	}
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+}
+
+void weapon_pistol::PlayLeaveSprintAnim( string newState, float blend ) {
+	if ( ammoInClip( 0 ) == 0 ) {
+		playAnim( ANIMCHANNEL_ALL, "leave_sprint_outofammo" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "leave_sprint" );
+	}
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+}

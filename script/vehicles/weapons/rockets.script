@@ -1,0 +1,119 @@
+
+object vehicle_weapon_rockets : vehicle_weapon_base {
+	void					preinit();
+	void					init();
+	void					Fire();
+
+	float 	fireRate;
+	float 	projectileIndex;
+	float 	spread;
+	float 	currentWeapon;
+	float 	muzzleJointHandle;
+	float 	exhaustJointHandle;
+
+	string	muzzleFlashFX;
+	string	exhaustFlashFX;
+
+	float	muzzleJoint1;
+	float	muzzleJoint2;
+	float	exhaustJoint1;
+	float	exhaustJoint2;
+
+	vector	velocity;
+
+	entity	vehicle;
+};
+
+void vehicle_weapon_rockets::preinit() {
+	vehicle			= getVehicle();
+
+	projectileIndex = GetEntityDef( getKey( "def_projectile" ) );
+
+	muzzleFlashFX	= getKey( "muzzle_flash" );
+	exhaustFlashFX	= getKey( "exhaust_flash" );
+	fireRate		= getFloatKey( "fire_rate" );
+	spread			= getFloatKey( "spread" );
+	velocity		= getVectorKey( "velocity" );
+
+	muzzleJoint1	= vehicle.getJointHandle( getKey( "muzzle_pos" + 0 ) );
+	muzzleJoint2	= vehicle.getJointHandle( getKey( "muzzle_pos" + 1 ) );
+	exhaustJoint1	= vehicle.getJointHandle( getKey( "exhaust_pos" + 0 ) );
+	exhaustJoint2	= vehicle.getJointHandle( getKey( "exhaust_pos" + 1 ) );
+}
+
+void vehicle_weapon_rockets::init() {
+}
+
+
+void vehicle_weapon_rockets::Fire() {
+	RemoveCharge();
+
+	if ( currentWeapon == 0 ) {
+		muzzleJointHandle	= muzzleJoint1;
+		exhaustJointHandle	= exhaustJoint1;
+	} else {
+		muzzleJointHandle	= muzzleJoint2;
+		exhaustJointHandle	= exhaustJoint2;
+	}
+
+	vehicle.launchMissileSimple( user, vehicle, $null_entity, projectileIndex, -1, spread, vehicle.getJointPos( muzzleJointHandle ), vehicle.jointToWorldSpace( muzzleJointHandle, velocity ) );
+
+//	vehicle.playJointEffect( muzzleFlashFX, muzzleJointHandle, 0 );
+
+	if ( exhaustJointHandle != -1 ) {
+		vehicle.playJointEffect( exhaustFlashFX, exhaustJointHandle, 0 );
+	}
+
+	currentWeapon++;
+	if( currentWeapon == 2 ) {
+		currentWeapon = 0;
+	}
+
+	AddReFireDelay( fireRate );
+
+	GoToIdle();
+}
+
+/*
+void vehicle_weapon_rockets::Idle() {
+	entity playerEntity;
+	float muzzleJointHandle;
+	float exhaustJointHandle;
+
+	sys.waitFrame();
+
+	while ( true ) {
+		sys.waitFrame();
+
+		playerEntity = getPlayer();
+		if ( playerEntity == $null_entity ) {
+			continue;
+		}
+
+		if ( playerEntity.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && weaponGetAmmo( weaponIndex ) > 0 ) {
+			if ( currentWeapon == 0 ) {
+				muzzleJointHandle	= muzzleJoint1;
+				exhaustJointHandle	= exhaustJoint1;
+			} else {
+				muzzleJointHandle	= muzzleJoint2;
+				exhaustJointHandle	= exhaustJoint2;
+			}
+
+			vehicle.launchMissileSimple( playerEntity, vehicle, $null_entity, projectileIndex, -1, spread, vehicle.getJointPos( muzzleJointHandle ), vehicle.jointToWorldSpace( muzzleJointHandle, velocity ) );
+//			weaponUseAmmo( weaponIndex );
+
+			vehicle.playJointEffect( muzzleFlashFX, muzzleJointHandle, 0 );
+			if ( exhaustJointHandle != -1 ) {
+				vehicle.playJointEffect( exhaustFlashFX, exhaustJointHandle, 0 );
+			}
+
+			currentWeapon++;
+			if( currentWeapon == 2 ) {
+				currentWeapon = 0;
+			}
+
+			sys.wait( fireRate );
+		}
+	}
+}
+*/

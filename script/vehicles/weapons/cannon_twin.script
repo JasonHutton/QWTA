@@ -1,0 +1,156 @@
+
+object vehicle_weapon_cannon_twin : vehicle_weapon_base {
+	void				preinit();
+	void				init();
+	void				Fire();
+	void				UpdateCharge();
+
+	string				muzzleFlashFX;
+	string				muzzleFlashFXLocal;
+	string				muzzleTracerFX;
+	string				muzzleSound;
+
+	entity				vehicle;
+
+	float				projectileIndex;
+
+	float				fireRate;
+	float				spread;
+	vector				velocity;
+
+	float				muzzleJoint1;
+	float				muzzleJoint2;
+
+	float				muzzleJoint1Parent;
+	float				muzzleJoint2Parent;
+
+	float				currentWeapon;
+
+	boolean				fireAnim;
+	
+	float				chargePerUseSiegeScale;
+	float				baseChargeMax;
+
+	boolean				showViewMuzzleFlash;
+}
+
+void vehicle_weapon_cannon_twin::preinit() {
+	muzzleFlashFX		= getKey( "muzzle_flash" );
+	muzzleFlashFXLocal	= getKey( "muzzle_flash_local" );
+	muzzleTracerFX		= getKey( "muzzle_tracer" );
+	muzzleSound			= getKey( "muzzle_sound" );
+
+	if ( muzzleFlashFXLocal == "" ) {
+		muzzleFlashFXLocal = muzzleFlashFX;
+	}
+
+	projectileIndex		= GetEntityDef( getKey( "def_projectile" ) );
+
+	vehicle				= getVehicle();
+
+	muzzleJoint1		= vehicle.getJointHandle( getKey( "muzzle_left" ) );
+	muzzleJoint2		= vehicle.getJointHandle( getKey( "muzzle_right" ) );
+
+	muzzleJoint1Parent	= vehicle.getJointHandle( getKey( "muzzle_left_parent" ) );
+	muzzleJoint2Parent	= vehicle.getJointHandle( getKey( "muzzle_right_parent" ) );
+	
+	fireAnim			= getFloatKey( "fire_anim" ) != 0;
+
+	fireRate			= getFloatKey( "fire_rate" );
+	spread				= getFloatKey( "spread" );
+	velocity			= getVectorKey( "velocity" );
+	
+	chargePerUseSiegeScale	= getFloatKey( "charge_per_use_siege_scale" );
+	baseChargeMax			= getFloatKey( "charge_max" );
+}
+
+void vehicle_weapon_cannon_twin::init() {
+}
+
+
+void vehicle_weapon_cannon_twin::Fire() {
+	// Gordon: FIXME: This can easily get out of sync
+
+	float jointHandle;
+	float jointHandleCheck;
+	if ( currentWeapon == 0 ) {
+		jointHandle = muzzleJoint1;
+		jointHandleCheck = muzzleJoint1Parent;
+	} else {
+		jointHandle = muzzleJoint2;
+		jointHandleCheck = muzzleJoint2Parent;
+	}
+	
+	vector muzzleOrigin = vehicle.getJointPos( jointHandle );
+	
+	boolean allowFire = true;
+	
+	if ( jointHandleCheck != INVALID_JOINT ) {
+		vector muzzleCheckOrigin = vehicle.getJointPos( jointHandleCheck );		
+		if ( sys.tracePoint( muzzleCheckOrigin, muzzleOrigin, MASK_PROJECTILE, vehicle ) != 1.f ) {
+			allowFire = false;
+		}
+	}
+
+
+	if ( allowFire ) {
+		RemoveCharge();
+
+		if ( currentWeapon == 0 ) {
+			if( fireAnim ) {
+				vehicle.playAnim( ANIMCHANNEL_HEAD, "fire_left" );
+			}
+		} else {
+			if( fireAnim ) {
+				vehicle.playAnim( ANIMCHANNEL_HEAD, "fire_right" );
+			}
+		}
+		
+		vehicle.launchMissileSimple( user, vehicle, $null_entity, projectileIndex, -1, spread, vehicle.getJointPos( jointHandle ), vehicle.jointToWorldSpace( jointHandle, velocity ) );
+
+		if ( sys.doClientSideStuff() ) {
+			if ( sys.getLocalPlayer() != user ) {
+				vehicle.playJointEffectViewSuppress( muzzleFlashFX, jointHandle, 0, 0 );
+			} else {
+				vehicle.playJointEffectViewSuppress( muzzleFlashFXLocal, jointHandle, 0, 0 );
+			}
+			vehicle.playJointEffect( muzzleTracerFX, jointHandle, 0 );
+			vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+		}
+
+		currentWeapon++;
+		if ( currentWeapon == 2 ) {
+			currentWeapon = 0;
+		}
+	} else {
+		// Gordon: FIXME: Play error sound/tooltip
+	}
+
+	if ( myVehicle.inSiegeMode() ) {
+		myVehicle.startSound ( "snd_recharge_seige", SND_VEHICLE_INTERIOR_POWERUP );
+	}
+	else {
+		myVehicle.startSound ( "snd_recharge_nonseige", SND_VEHICLE_INTERIOR_POWERUP );
+	}
+	
+	AddReFireDelay( fireRate );
+
+	GoToIdle();
+}
+
+void vehicle_weapon_cannon_twin::UpdateCharge() {
+	float percentChargeUsed = CalcChargeUsed() / chargeMax;
+
+	chargePerUse = userChargePerUse;
+	chargeMax = baseChargeMax;
+	if ( myVehicle.inSiegeMode() ) {
+		chargePerUse = chargePerUse * chargePerUseSiegeScale;
+		chargeMax = chargeMax * chargePerUseSiegeScale;
+	}
+	
+
+	// recalculate the charge time to be the same %
+	chargeTime = sys.getTime() + chargeMax * percentChargeUsed;
+
+	UpdateCharge_Base();
+}

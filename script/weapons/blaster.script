@@ -1,0 +1,193 @@
+/***********************************************************************
+
+weapon_blaster.script
+
+***********************************************************************/
+
+object weapon_blaster : weapon_clip {
+	void		preinit();
+	void		destroy();
+	void		DoFire();
+	
+	void		Reload();
+	
+	void		FireSingle();
+	void		FireCommon();
+	void		PlayFireAnim();
+	void		PlayBlasterFireSound();
+
+	void		OnIronSightsEnabled() { hide(); }
+	void		OnIronSightsDisabled() { show(); }
+
+	float		blasterScale;
+
+	entity		fx1;
+	entity		fx2;
+}
+
+void weapon_blaster::preinit() {
+	hasScope		= false;
+	hasIronSights	= true;
+	infiniteAmmo	= true;
+	usesStroyent	= false;	
+	hasHeat			= true;
+
+	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.15f );
+
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+	}
+}
+
+void weapon_blaster::destroy() {
+	stopSound( SND_WEAPON_MOVE );
+
+	stopEffect( "fx_charge_left" );
+	if ( fx1 != $null_entity ) { fx1.unbind(); fx1.endEffect( true ); }
+	if ( fx2 != $null_entity ) { fx2.unbind(); fx2.endEffect( true ); }
+	entity worldModel = getWorldModel( 0 );
+	if ( worldModel != $null_entity ) {
+		worldModel.killEffect( "fx_charge_muzzle_world" );
+		worldModel.killEffect( "fx_charge_muzzle_loop_world" );
+	}
+}
+
+void weapon_blaster::DoFire() {
+	if ( !mainFireDown ) {
+		FireSingle();
+	}
+}
+
+void weapon_blaster::Reload() {
+	stopEffect( "fx_charge_left" );
+	if ( fx1 != $null_entity ) { fx1.unbind(); fx1.endEffect( true ); }
+	if ( fx2 != $null_entity ) { fx2.unbind(); fx2.endEffect( true ); }
+	entity worldModel = getWorldModel( 0 );
+	if ( worldModel != $null_entity ) {
+		worldModel.killEffect( "fx_charge_muzzle_world" );
+		worldModel.killEffect( "fx_charge_muzzle_loop_world" );
+	}
+	
+	Overheat();
+}
+
+void weapon_blaster::FireSingle() {
+	blasterScale = 1.f;
+	
+	if ( myPlayer.getProficiency( g_proficiencyLightWeapons ) >= 4 ) {
+		boolean effectPlaying;
+		entity worldModel;
+
+		startSound( "snd_charge", SND_WEAPON_MOVE );
+		
+		float idleAnimTime = sys.getTime() + playAnim( ANIMCHANNEL_ALL, "chargeup" );
+		boolean inIdle = false;
+
+		worldModel = getWorldModel( 0 );
+		if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+			worldModel.playEffect( "fx_charge_muzzle_world", "muzzle", 1.0f );
+		} else {
+			if ( !ironSightsEnabled ) {
+				// spawn explicitly so we can get an entity to call endEffect on.
+				fx1 = spawnClientEffect( "fx_charge_muzzle" );
+				if ( fx1 != $null_entity ) {
+					fx1.bindToJoint( self, "muzzle", 1 );
+				}
+				playEffect( "fx_charge_left", "overheat_left", 1 );
+			}
+		}
+
+		while ( true ) {
+			sys.waitFrame();
+
+			if ( !WEAPON_ATTACK || WEAPON_LOWERWEAPON ) {
+				break;
+			}
+
+			blasterScale = blasterScale + ( sys.getFrameTime() * 1.5f );
+			if ( blasterScale > 3.f ) {
+				if ( !effectPlaying ) {
+					if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+						worldModel.killEffect( "fx_charge_muzzle_world" );
+						worldModel.playEffect( "fx_charge_muzzle_loop_world", "muzzle", 1 );
+					} else {
+						if ( !ironSightsEnabled ) {
+							fx2 = spawnClientEffect( "fx_charge_muzzle_loop" );
+							if ( fx2 != $null_entity ) {
+								fx2.bindToJoint( self, "muzzle", 1 );
+								fx2.setEffectLooping( 1 );
+							}
+						}
+					}
+					effectPlaying = true;
+				}
+				blasterScale = 3.f;
+			}
+			
+			if ( !inIdle ) {
+				if ( sys.getTime() > idleAnimTime ) {
+					inIdle = true;
+					playCycle( ANIMCHANNEL_ALL, "charged_idle" );
+				}
+			}
+
+			setChannelPitchShift( SND_WEAPON_MOVE, blasterScale * 2.f );
+		}
+
+		stopEffect( "fx_charge_left" );
+		if ( fx1 != $null_entity ) { fx1.unbind(); fx1.endEffect( true ); }
+		if ( fx2 != $null_entity ) { fx2.unbind(); fx2.endEffect( true ); }
+		worldModel.killEffect( "fx_charge_muzzle_world" );
+		worldModel.killEffect( "fx_charge_muzzle_loop_world" );
+
+		stopSound( SND_WEAPON_MOVE );
+	}
+
+	FireCommon();
+
+	playEffect( "fx_tracer", "muzzle", 0 );
+
+	refireTime = sys.getTime() + fireRateSingle;
+}
+
+void weapon_blaster::PlayFireAnim() {
+	if ( blasterScale > 1.3f ) {
+		playAnim( ANIMCHANNEL_ALL, "charged_fire" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "fire" );
+	}
+}
+
+void weapon_blaster::PlayBlasterFireSound() {
+/*
+	if ( blasterScale < 1.6f ) {
+		PlayFireSound();
+	} else {
+		startSound( "snd_fire_charged_local", SND_WEAPON_FIRE_LOCAL );
+		startSound( "snd_fire_charged", SND_WEAPON_FIRE );
+		startSound( "snd_fire_far", SND_WEAPON_FIRE_FAR );
+	}
+*/
+	float chargedVolume = 0.f;
+
+	PlayFireSound();
+
+	if ( blasterScale > 1.1f ) {
+		chargedVolume = -50.f * ( 1 / ( blasterScale * blasterScale )) + 12.5f;
+		startSound( "snd_fire_charged_local", SND_WEAPON_FIRE2 );
+		fadeSound( SND_WEAPON_FIRE2, chargedVolume, 0.f );
+	}
+}
+
+void weapon_blaster::FireCommon() {
+	PlayFireEffect();
+	PlayBlasterFireSound();
+	PlayBrassSound();
+	PlayFireAnim();
+
+	playingFireAnim = true;
+	launchProjectiles( numProjectiles, 0, getCurrentSpread(), 0, 1, blasterScale );
+	increaseSpread();
+
+	AddHeat();
+}
