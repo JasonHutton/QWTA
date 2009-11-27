@@ -82,6 +82,9 @@ void vehicle_weapon_gatling::preinit() {
 	}
 	
 	fireRate				= getFloatKey( "fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate			= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	triggerDelay			= getFloatKey( "trigger_delay" );
 	spread					= getFloatKey( "spread" );
 

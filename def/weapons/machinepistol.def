@@ -205,6 +205,7 @@ template inventory/weapons/machinepistol_template {
 			"realistic_fov_spread"			"0.25"
 
 			"fire_rate"						"0.12"
+			"realistic_fire_rate"			"0.06"
 			"low_ammo"						"6"
 
 			"gui_sight"						"game/sights/assaultrifle_scope"
@@ -430,7 +431,7 @@ damageFilter realistic_damage_machinepistol {
 
 	type {
 		target							"target_player_all"
-		damage							39
+		damage							20
 	}
 
 	type {

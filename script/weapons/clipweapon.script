@@ -157,11 +157,20 @@ void weapon_clip::preinit() {
 	scopeGUIHandle	= -1;
 
 	fireRateAuto	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRateAuto	= getFloatKeyWithDefault( "realistic_fire_rate", fireRateAuto );
+	}
 	if ( g_useBaseETQW12Shotguns.getBoolValue() ) {
-			fireRateAuto	= getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRateAuto );
+		fireRateAuto	= getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRateAuto );
+		if ( g_realisticROF.getBoolValue() ) {
+			fireRateAuto	= getFloatKeyWithDefault( "realistic_baseETQW12_fire_rate", fireRateAuto );
+		}
 	}
 	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
 		fireRateAuto = getFloatKeyWithDefault( "q4hyper_fire_rate", fireRateAuto );
+		if ( g_realisticROF.getBoolValue() ) {
+			fireRateAuto	= getFloatKeyWithDefault( "realistic_q4hyper_fire_rate", fireRateAuto );
+		}
 	}
 	
 	fireRateSingle	= 0.15f;

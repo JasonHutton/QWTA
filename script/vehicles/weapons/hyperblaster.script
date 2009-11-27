@@ -45,7 +45,13 @@ void vehicle_weapon_hyperblaster::preinit() {
 	muzzleSoundLocal		= getKey( "muzzle_sound" );
 
 	fireRate				= getFloatKey( "fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	q4hyperFireRate			= getFloatKey( "q4hyper_fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		q4hyperFireRate	= getFloatKeyWithDefault( "realistic_q4hyper_fire_rate", q4hyperFireRate );
+	}
 	spread					= getFloatKey( "spread" );
 	q4hyperSpread			= getFloatKey( "q4hyper_spread" );
 

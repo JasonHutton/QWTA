@@ -382,6 +382,7 @@ invItemDef inventory/weapons/assaultrifle {
 		"realistic_fov_spread"			"0.25"
 
 		"fire_rate"						"0.12"
+		"realistic_fire_rate"			"0.06"
 		"num_projectiles"				"1"
 
 		"low_ammo"						"8"
@@ -566,7 +567,7 @@ damageFilter damage_assaultrifle {
 damageFilter realistic_damage_assaultrifle {
 	type {
 		target							"target_player_all"
-		damage							39
+		damage							20
 	}
 
 	type {

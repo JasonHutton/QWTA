@@ -25,6 +25,9 @@ void vehicle_weapon_law::preinit() {
 	muzzleFlashFX		= getKey( "muzzle_flash" );
 
 	fireRate			= getFloatKey( "fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	spread				= getFloatKey( "spread" );
 	velocity			= getVectorKey( "velocity" );
 	feedback			= getFloatKey( "feedback" );

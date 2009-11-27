@@ -33,6 +33,9 @@ void weapon_blaster::preinit() {
 	hasHeat			= true;
 
 	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.15f );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRateSingle	= getFloatKeyWithDefault( "realistic_fire_rate", fireRateSingle );
+	}
 
 	if ( sys.doClientSideStuff() ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );

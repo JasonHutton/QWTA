@@ -39,6 +39,7 @@ ABSTRACT_DECLARATION( idClass, sdVehicleWeapon )
 	EVENT( EV_GetKey,								sdVehicleWeapon::Event_GetKey )
 	EVENT( EV_GetFloatKey,							sdVehicleWeapon::Event_GetFloatKey )
 	EVENT( EV_GetVectorKey,							sdVehicleWeapon::Event_GetVectorKey )
+	EVENT( EV_GetFloatKeyWithDefault,				sdVehicleWeapon::Event_GetFloatKeyWithDefault )
 	EVENT( EV_GetVehicle,							sdVehicleWeapon::Event_GetVehicle )
 	EVENT( EV_VehicleWeapon_GetPlayer,				sdVehicleWeapon::Event_GetPlayer )
 	EVENT( EV_SetState,								sdVehicleWeapon::Event_SetState )
@@ -70,6 +71,13 @@ sdVehicleWeapon::Event_GetVectorKey
 */
 void sdVehicleWeapon::Event_GetVectorKey( const char* key ) {
 	sdProgram::ReturnVector( GetSpawnParms().GetVector( key ) );
+}
+
+void sdVehicleWeapon::Event_GetFloatKeyWithDefault( const char *key, float defaultvalue ) {
+	float result;
+
+	GetSpawnParms().GetFloat( key, va( "%f", defaultvalue ), result ); 
+	sdProgram::ReturnFloat( result );
 }
 
 /*

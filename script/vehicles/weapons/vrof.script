@@ -31,6 +31,9 @@ void vehicle_weapon_vrof::preinit() {
 	muzzleSoundLocal	= getKey( "muzzle_sound_local" );
 
 	fireRate			= getFloatKey( "fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	spread				= getFloatKey( "spread" );
 
 	velocity			= getVectorKey( "velocity" );

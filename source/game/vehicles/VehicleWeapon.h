@@ -57,6 +57,7 @@ public:
 	void								Event_GetKey( const char* key );
 	void								Event_GetFloatKey( const char* key );
 	void								Event_GetVectorKey( const char* key );
+	void								Event_GetFloatKeyWithDefault( const char* key, float defaultvalue );
 	void								Event_GetVehicle( void );
 	void								Event_GetPlayer( void );
 	void								Event_SetState( const char* state );

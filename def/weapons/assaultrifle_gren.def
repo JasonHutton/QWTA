@@ -75,6 +75,7 @@ invItemDef inventory/weapons/assaultrifle/grenade {
 		"realistic_fov_spread"			"0.25"
 
 		"fire_rate"						"0.15"
+		"realistic_fire_rate"			"0.075"
 		"num_projectiles"				"1"
 
 		"fire_rate_single"				"3"

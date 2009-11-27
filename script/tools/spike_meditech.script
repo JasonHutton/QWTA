@@ -38,6 +38,9 @@ object spike_meditech : weapon_base {
 void spike_meditech::init() {
 	meleeDistance		= getFloatKey( "melee_distance" );
 	fireRate			= getFloatKeyWithDefault( "fire_rate", 0.1 );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	spawnHostDef		= getKey( "def_spawn_host" );
 
 	if ( myPlayer.isLocalPlayer() ) {

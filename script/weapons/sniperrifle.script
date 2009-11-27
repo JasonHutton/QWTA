@@ -19,6 +19,9 @@ void weapon_sniperrifle::preinit() {
 	hasIronSights	= false;
 
 	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRateSingle	= getFloatKeyWithDefault( "realistic_fire_rate", fireRateSingle );
+	}
 
 	if ( sys.getLocalPlayer() == myPlayer ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.distance", -2 );

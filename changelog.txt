@@ -73,6 +73,17 @@ CHANGES:
     This effect is more subtle than the BaseETQW 1.5 effect, and harder
     to spot.
 * Blood and gore effects improved considerably.
+* Cvar g_realisticROF added.
+  + Default 1.
+  + Controls whether weapons' rates of fire are realistic or game-oriented.
+    Generally, GDF weapons fire faster than Strogg weapons.
+  + This cvar is not recommended for use with non-realistic damages, as
+    it relies upon damage tweaks to maintain balance between GDF and Strogg.
+* Lowered realistic damages for some weapons, to compensate for their
+  new, higher rates of fire. Generally speaking, most automatic GDF weapons
+  have 2x their normal fire rates, and the realistic damages have been lowered
+  from triple normal, to just 1.5x normal. GDF have to put more lead on target
+  to make a kill, but Strogg are more likely to kill in fewer shots.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to

@@ -307,6 +307,7 @@ invItemDef inventory/weapons/gpmg {
 
 		"trigger_delay"					"0"
 		"fire_rate"						"0.10"
+		"realistic_fire_rate"			"0.05"
 		"num_projectiles"				"1"
 
 		"zoomFov"						"60"
@@ -409,6 +410,7 @@ entityDef mountable_gdf_gpmg {
 	"effectchance fx_tracer"			"0.1"
 
 	"fire_rate"							"0.1"
+	"realistic_fire_rate"				"0.05"
 	"spread"							"0.2"
 	"range"								"8192"
 	"muzzle"							"muzzle"
@@ -656,7 +658,7 @@ damageFilter realistic_damage_gpmg {
 
 	type {
 		target							"target_player_all"
-		damage							51
+		damage							26
 	}
 
 	type {
@@ -690,7 +692,7 @@ damageFilter damage_gpmg_mount {
 damageFilter realistic_damage_gpmg_mount {
 	type {
 		target							"target_player_all"
-		damage							63
+		damage							32
 	}
 
 	type {

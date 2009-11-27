@@ -21,6 +21,9 @@ void weapon_pistol::preinit() {
 	hasIronSights	= true;
 
 	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRateSingle	= getFloatKeyWithDefault( "realistic_fire_rate", fireRateSingle );
+	}
 }
 
 void weapon_pistol::DoFire() {

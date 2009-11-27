@@ -36,6 +36,9 @@ void weapon_railgun::preinit() {
 	usesStroyent	= true;
 	
 	fireRateSingle	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRateSingle	= getFloatKeyWithDefault( "realistic_fire_rate", fireRateSingle );
+	}
 
 	rechargeTime	= getFloatKeyWithDefault( "recharge_time", 2.0f );
 	energyTimerHandle = sys.allocTargetTimer( getKeyWithDefault( "timer_energy", "railgun_energy" ) );

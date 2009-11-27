@@ -452,6 +452,7 @@ stringMap vehicle_mcp_weapon1 {
 
 	"velocity"					"1 0 0"
 	"fire_rate"					"0.10"
+	"realistic_fire_rate"		"0.05"
 	"spread"					"1"
 	"scriptobject"				"vehicle_weapon_gpmg"
 	"def_projectile"			"projectile_gpmg_mcp"
@@ -491,6 +492,7 @@ stringMap vehicle_mcp_weapon2 {
 
 	"velocity"					"1 0 0"
 	"fire_rate"					"0.08"
+	"realistic_fire_rate"		"0.04"
 	"trigger_delay"				"0.5"
 	"spread"					"0.5"
 	"scriptobject"				"vehicle_weapon_gatling"

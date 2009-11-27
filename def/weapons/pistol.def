@@ -276,6 +276,7 @@ template inventory/weapons/pistol_template {
 			"realistic_fov_spread"				"0.25"
 
 			"fire_rate"							"0.12"
+			"realistic_fire_rate"				"0.06"
 			"low_ammo"							"4"
 
 			"tt_intro_1"						"pistol_intro_1"
@@ -534,7 +535,7 @@ damageFilter realistic_damage_pistol {
 
 	type {
 		target								"target_player_all"
-		damage								42
+		damage								21
 	}
 
 	type {

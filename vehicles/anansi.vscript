@@ -603,6 +603,7 @@ stringMap vehicle_anansi_weapon3 {
 
 	"velocity"					"1 0 0"
 	"fire_rate"					"0.08"
+	"realistic_fire_rate"		"0.04"
 	"trigger_delay"				"0.5"
 	"spread"					"0.5"
 	"scriptobject"				"vehicle_weapon_gatling"

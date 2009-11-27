@@ -32,6 +32,9 @@ void vehicle_weapon_rockets::preinit() {
 	muzzleFlashFX	= getKey( "muzzle_flash" );
 	exhaustFlashFX	= getKey( "exhaust_flash" );
 	fireRate		= getFloatKey( "fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	spread			= getFloatKey( "spread" );
 	velocity		= getVectorKey( "velocity" );
 

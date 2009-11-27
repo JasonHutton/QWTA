@@ -624,6 +624,7 @@ idCVar	g_allowCrosshairs(			"g_allowCrosshairs",			"0",		CVAR_GAME | CVAR_BOOL |
 
 idCVar	g_useBaseETQW12SniperTrail( "g_useBaseETQW12SniperTrail",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use the BaseETQW 1.2 sniper rifle's trail-tracer effect?" );
 //idCVar	g_hideHud(					"g_hideHud",					"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Disables most aspects of the HUD, revealing them only when they're accessed in some way." );
+idCVar	g_realisticROF(				"g_realisticROF",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should weapon rate of fire be realistic, or game-oriented?" );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

@@ -57,6 +57,9 @@ void vehicle_weapon_cannon_twin::preinit() {
 	fireAnim			= getFloatKey( "fire_anim" ) != 0;
 
 	fireRate			= getFloatKey( "fire_rate" );
+	if ( g_realisticROF.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
 	spread				= getFloatKey( "spread" );
 	velocity			= getVectorKey( "velocity" );
 	

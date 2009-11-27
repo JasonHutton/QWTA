@@ -895,6 +895,7 @@ stringMap vehicle_trojan_weapon1 {
 
 	"velocity"				"1 0 0"
 	"fire_rate"				"0.10"
+	"realistic_fire_rate"	"0.05"
 	"spread"				"0.5"
 	"scriptobject"			"vehicle_weapon_gpmg"
 	"def_projectile"		"projectile_gpmg_trojan"
