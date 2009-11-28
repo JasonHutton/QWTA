@@ -77,7 +77,7 @@ entityDef vehicle_abaddon {
 	"scriptObject"					"vehicle_abaddon"
 	"vs_vehicleScript"				"abaddon"
 
-	"control_context"				"g_bind_context_desecrator"
+	"control_context"				"g_bind_context_abaddon"
 
 	"angular_friction"				"0.2"
 	"linear_friction"				"0.6"

@@ -83,7 +83,7 @@ entityDef vehicle_jupiter {
 
 	"vs_vehicleScript"				"jupiter"
 
-	"control_context"				"g_bind_context_titan"
+	"control_context"				"g_bind_context_jupiter"
 
 	"angular_friction"				"0.2"
 	"linear_friction"				"0.1"
