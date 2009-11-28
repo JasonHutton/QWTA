@@ -84,6 +84,12 @@ CHANGES:
   have 2x their normal fire rates, and the realistic damages have been lowered
   from triple normal, to just 1.5x normal. GDF have to put more lead on target
   to make a kill, but Strogg are more likely to kill in fewer shots.
+* Bind contexts for Jupiter, Abaddon, Strogg team, and GDF team, added.
+  + Jupiter: "g_bind_context_jupiter"
+  + Abaddon: "g_bind_context_abaddon"
+  + Strogg: "strogg" (Includes all the Strogg classes.)
+  + GDF: "gdf" (Includes all the GDF classes.)
+  + Jupiter and Abaddon are included as part of the bind context "vehicle" too
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
