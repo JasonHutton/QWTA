@@ -53,6 +53,7 @@
 	"#str_qwta_menus_00000078" "BaseETQW player movement"
 	"#str_qwta_menus_00000079" "Realistic player movement"
 	"#str_qwta_menus_00000080" "Realistic except for bots"
+	"#str_qwta_menus_00000081" "Realistic Rates of Fire"
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -89,4 +90,5 @@
 	"#str_qwta_menus_00000068" "Uses the old BaseETQW 1.2 sniper rifle tracer. It's subtler and harder to see."
 	"#str_qwta_menus_00000070" "Allows the use of the timer circles around the crosshair."
 	"#str_qwta_menus_00000072" "Hides the HUD, for the most part. Will reappear when something affects things on it. (Example: Reloading will show you your ammo briefly.)"
+	"#str_qwta_menus_00000082" "GDF automatic weapons fire at more realistic speeds, faster than BaseETQW."
 }

@@ -1,4 +1,4 @@
-// str_qwta_menus_00000080
+// str_qwta_menus_00000082
 
 /*
 =================
@@ -190,6 +190,10 @@ locString guis/limbo/qwta/settings/realisticMovement_2 {
 	text "#str_qwta_menus_00000080"
 }
 
+locString guis/limbo/qwta/settings/realisticROF {
+	text "#str_qwta_menus_00000081"
+}
+
 /*
 =================
  ToolTips
@@ -330,4 +334,8 @@ locString guis/limbo/qwta/settings/allowTimerCircles/tooltip {
 
 locString guis/limbo/qwta/settings/hideHUD/tooltip {
 	text "#str_qwta_menus_00000072"
+}
+
+locString guis/limbo/qwta/settings/realisticROF/tooltip {
+	text "#str_qwta_menus_00000082"
 }
