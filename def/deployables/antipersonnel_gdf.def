@@ -182,6 +182,7 @@ entityDef deployable_antipersonnel_gdf {
 	"action_time"					"10"
 
 	"fireRate"						"0.15"
+	"realisticFireRate"				"0.075"
 
 	"upgrade_bonus"					"0.75"
 
@@ -208,7 +209,7 @@ entityDef deployable_antipersonnel_gdf {
 
 	"joint_spin_barrel"				"barrel"
 
-	"def_projectile"				"projectile_deployable_antipersonnel"
+	"def_projectile"				"projectile_deployable_antipersonnel_gdf"
 
 //	"fx_fire"						"effects/deployables/antipersonnel_fire"
 	"fx_muzzle"						"effects/deployables/antipersonnel_muzzleflash"
@@ -337,6 +338,12 @@ entityDef projectile_deployable_antipersonnel {
 	"dmg_realistic_damage"				"realistic_damage_deployable_antipersonnel"
 }
 
+entityDef projectile_deployable_antipersonnel_gdf {
+	"inherit"						"projectile_deployable_antipersonnel"
+
+	"dmg_realistic_damage"			"realistic_damage_deployable_antipersonnel_gdf"
+}
+
 damageFilter damage_deployable_antipersonnel {
 
 	type {
@@ -350,6 +357,14 @@ damageFilter realistic_damage_deployable_antipersonnel {
 	type {
 		target	"target_all"
 		damage	21
+	}
+}
+
+damageFilter realistic_damage_deployable_antipersonnel_gdf {
+
+	type {
+		target	"target_all"
+		damage	14
 	}
 }
 
@@ -378,4 +393,9 @@ damageDef damage_deployable_antipersonnel {
 damageDef realistic_damage_deployable_antipersonnel {
 	inherit							"damage_deployable_antipersonnel"
 	damage							"realistic_damage_deployable_antipersonnel"
+}
+
+damageDef realistic_damage_deployable_antipersonnel_gdf {
+	inherit							"realistic_damage_deployable_antipersonnel"
+	damage							"realistic_damage_deployable_antipersonnel_gdf"
 }
