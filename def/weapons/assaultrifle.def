@@ -572,7 +572,7 @@ damageFilter realistic_damage_assaultrifle {
 
 	type {
 		target							"target_veh_light_all"
-		damage							15
+		damage							7
 	}
 
 	type {
@@ -582,6 +582,6 @@ damageFilter realistic_damage_assaultrifle {
 
 	type {
 		target							"target_deployables_all"
-		damage							15
+		damage							7
 	}
 }

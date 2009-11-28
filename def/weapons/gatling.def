@@ -154,11 +154,11 @@ damageFilter realistic_damage_gatling {
 	}
 	type {
 		target	"target_veh_all"
-		damage	25
+		damage	12
 	}
 	type {
 		target	"target_deployables_all"
-		damage	25
+		damage	12
 	}
 }
 
@@ -184,10 +184,10 @@ damageFilter realistic_damage_gatling_mcp {
 	}
 	type {
 		target	"target_veh_all"
-		damage	40
+		damage	20
 	}
 	type {
 		target	"target_deployables_all"
-		damage	40
+		damage	20
 	}
 }

@@ -663,12 +663,12 @@ damageFilter realistic_damage_gpmg {
 
 	type {
 		target							"target_veh_all"
-		damage							25
+		damage							12
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							25
+		damage							12
 	}
 }
 
@@ -697,12 +697,12 @@ damageFilter realistic_damage_gpmg_mount {
 
 	type {
 		target							"target_veh_all"
-		damage							30
+		damage							15
 	}
 
 	type {
 		target							"target_deployables_all"
-		damage							30
+		damage							15
 	}
 }
 

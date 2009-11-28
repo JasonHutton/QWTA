@@ -540,7 +540,7 @@ damageFilter realistic_damage_pistol {
 
 	type {
 		target								"target_veh_light_all"
-		damage								14
+		damage								7
 	}
 
 	type {
@@ -550,6 +550,6 @@ damageFilter realistic_damage_pistol {
 
 	type {
 		target								"target_deployables_all"
-		damage								14
+		damage								7
 	}
 }
