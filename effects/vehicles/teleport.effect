@@ -681,9 +681,7 @@ effect effects/vehicles/teleporter/hog/end
 			lineHit
 		}
 	}
-}
-
-effect effects/vehicles/teleporter/desecrator/end
+}effect effects/vehicles/teleporter/desecrator/end
 {
 	size	440
 
@@ -829,10 +827,3 @@ effect effects/vehicles/teleporter/desecrator/end
 		}
 	}
 }
-
-
-
-
-
-
-
