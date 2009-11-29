@@ -54,6 +54,7 @@ void vehicle_weapon_vrof::Fire() {
 	
 	AddReFireDelay( fireRate );
 	RemoveCharge();
+	RemoveAmmo();
 	
 	GoToIdle();
 }

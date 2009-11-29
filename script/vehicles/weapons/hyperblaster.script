@@ -93,11 +93,12 @@ void vehicle_weapon_hyperblaster::Idle() {
 		sys.waitFrame();
 
 		UpdateCharge();
+		UpdateAmmo();
 
 		if ( user != $null_entity ) {
 			user.proxyFiringWeaponStart = false;
 			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isWeaponDisabled() ) {
-				if ( CanRemoveCharge() ) {
+				if ( CanRemoveCharge() && CanRemoveAmmo() ) {
 					if ( sys.getTime() >= fireDelayTime ) {
 						user.proxyFiringWeaponStart = true;
 						if ( sys.getTime() >= reFireTime ) {
@@ -124,6 +125,7 @@ void vehicle_weapon_hyperblaster::Fire() {
 	boolean showMuzzle = true;
 	
 	RemoveCharge();
+	RemoveAmmo();
 	
 	if ( localSurface != -1 ) {
 		if ( vehicle.isSurfaceHidden( localSurface ) ) {

@@ -69,6 +69,7 @@ void vehicle_weapon_plasmacannon::Fire() {
 		}
 		
 		RemoveCharge();
+		RemoveAmmo();
 
 		myVehicle.launchMissileSimple( user, myVehicle, $null_entity, projectileIndex, -1, spreadActual, origin, myVehicle.jointToWorldSpace( jointHandle, velocity ) );
 		myVehicle.applyImpulse( origin, -feedback * myVehicle.getJointAxis( jointHandle, 0 ) );

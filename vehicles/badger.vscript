@@ -665,4 +665,7 @@ stringMap vehicle_badger_weapon2 {
 	"client_projectile"			"projectile_gpmg_badger"
 
 	"crosshair"					"nospread"
+	
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
 }

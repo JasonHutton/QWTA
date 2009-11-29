@@ -26,11 +26,12 @@ void vehicle_weapon_chargeshot::Idle() {
 		sys.waitFrame();
 
 		UpdateCharge();
+		UpdateAmmo();
 
 		if ( user != $null_entity ) {
 			user.proxyFiringWeaponStart = false;
 			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
-				if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime ) {
+				if ( CanRemoveCharge() && CanRemoveAmmo() && sys.getTime() >= fireDelayTime ) {
 					vehicle.playJointEffect( muzzleChargeFX, jointHandle, 0 );
 					if( user == sys.getLocalPlayer() ) {
 						vehicle.playJointEffect( muzzleChargeSoundLocal, jointHandle, 0 );
@@ -86,6 +87,7 @@ void vehicle_weapon_chargeshot::Fire() {
 
 	AddReFireDelay( fireRate );
 	RemoveCharge();
+	RemoveAmmo();
 
 	GoToIdle();
 }

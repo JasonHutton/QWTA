@@ -989,6 +989,8 @@ void vehicle_base::OnPlayerEntered_Base( entity p, float position ) {
 		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
 		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
+		
 		if ( position == 0 ) {
 			if ( CalcDecoyChargeUsed() > 0 ) {
 				StartDecoyChargeThread();
@@ -1028,6 +1030,8 @@ void vehicle_base::OnPlayerExited_Base( entity p, float position ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );
+		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
 		
 		sys.startSoundDirect( "", SND_VEHICLE_INTERIOR_LOWHEALTH );
 		playingKlaxon = false;

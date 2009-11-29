@@ -127,7 +127,7 @@ void vehicle_weapon_gatling::Fire() {
 	float startFiringTime = sys.getTime() + triggerDelay;
 	
 	wantsFire = true;
-	while ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && CanRemoveCharge() ) {
+	while ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && CanRemoveCharge() && CanRemoveAmmo() ) {
 
 		if ( spinSpeed < spinFire ) {
 			sys.waitFrame();
@@ -147,6 +147,7 @@ void vehicle_weapon_gatling::Fire() {
 		}
 
 		UpdateCharge();
+		UpdateAmmo();
 
 		if ( !playingFireSound ) {
 			playingFireSound = true;
@@ -163,6 +164,7 @@ void vehicle_weapon_gatling::Fire() {
 			nextFireTime = sys.getTime() + fireRate;
 
 			RemoveCharge();
+			RemoveAmmo();
 		}
 
 		if ( showMuzzle ) {

@@ -290,6 +290,9 @@ stringMap vehicle_platypus_weapon1 {
 	"surface_name"			"GPMG1"
 
 	"crosshair"				"nospread"
+	
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
 }
 
 entityDef part_vehicle_platypus_main_body {

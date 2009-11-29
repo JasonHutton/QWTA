@@ -61,6 +61,7 @@ void vehicle_weapon_stroybomb::Fire() {
 	
 	AddReFireDelay( fireRate );
 	RemoveCharge();
+	RemoveAmmo();
 	
 	GoToIdle();
 }

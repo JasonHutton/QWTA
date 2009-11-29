@@ -50,6 +50,7 @@ void vehicle_weapon_rockets::init() {
 
 void vehicle_weapon_rockets::Fire() {
 	RemoveCharge();
+	RemoveAmmo();
 
 	if ( currentWeapon == 0 ) {
 		muzzleJointHandle	= muzzleJoint1;

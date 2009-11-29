@@ -98,6 +98,7 @@ void vehicle_weapon_cannon_twin::Fire() {
 
 	if ( allowFire ) {
 		RemoveCharge();
+		RemoveAmmo();
 
 		if ( currentWeapon == 0 ) {
 			if( fireAnim ) {

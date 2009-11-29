@@ -35,6 +35,7 @@ void vehicle_weapon_law::preinit() {
 
 void vehicle_weapon_law::Fire() {
 	RemoveCharge();
+	RemoveAmmo();
 
 	jointHandle = vehicle.getJointHandle( getKey( "missile_pos" + currentWeaponIndex ) );
 	vector origin = vehicle.getJointPos( jointHandle );

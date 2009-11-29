@@ -44,7 +44,16 @@ object vehicle_weapon_base {
 	void				RemoveCharge();
 	boolean				CanRemoveCharge();
 	
+	void				RemoveAmmo();
+	boolean				CanRemoveAmmo();
+	void				UpdateAmmo_Base();
+	void				UpdateAmmo() { UpdateAmmo_Base(); }
+	
 	entity				myVehicle;
+	
+	float				ammoMax;
+	float				ammoPerUse;
+	float				ammo;
 }
 
 void vehicle_weapon_base::preinit() {
@@ -62,6 +71,10 @@ void vehicle_weapon_base::preinit() {
 	OnSetPlayer( getPlayer() );
 	
 	myVehicle = getVehicle();
+	
+	ammoMax		= getFloatKeyWithDefault( "ammo_max", -1.f );
+	ammoPerUse	= getFloatKeyWithDefault( "ammo_per_use", 1.f );
+	ammo		= ammoMax;
 }
 
 void vehicle_weapon_base::init() {
@@ -129,11 +142,12 @@ void vehicle_weapon_base::Idle() {
 		sys.waitFrame();
 
 		UpdateCharge();
+		UpdateAmmo();
 
 		if ( user != $null_entity ) {
 			user.proxyFiringWeaponStart = false;
 			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
-				if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime ) {
+				if ( CanRemoveCharge() && CanRemoveAmmo() && sys.getTime() >= fireDelayTime ) {
 					user.proxyFiringWeaponStart = true;
 					if ( sys.getTime() >= reFireTime ) {
 						setState( "Fire" );
@@ -183,6 +197,25 @@ boolean vehicle_weapon_base::CanRemoveCharge() {
 	return ( ( CalcChargeUsed() + chargePerUse ) <= chargeMax );
 }
 
+void vehicle_weapon_base::RemoveAmmo() {
+	if ( ammoMax > 0 && g_useVehicleAmmo.getBoolValue() ) {
+		ammo = ammo - ammoPerUse;
+		UpdateAmmo();
+	}
+}
+
+void vehicle_weapon_base::UpdateAmmo_Base() {
+	if( user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		if ( g_useVehicleAmmo.getBoolValue() && ammoMax > 0 ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponAmmoString", ammo );
+		}
+	}
+}
+
+boolean vehicle_weapon_base::CanRemoveAmmo() {
+	return ( ammoMax < 0 || !g_useVehicleAmmo.getBoolValue() || ( ammo > 0 && ammoPerUse <= ammo ) );
+}
+
 void vehicle_weapon_base::AddReFireDelay( float delay ) {	
 	reFireTime = sys.getTime() + delay;
 }
@@ -216,13 +249,18 @@ void vehicle_weapon_base::SetCrosshair() {
 				}
 				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshair );
 			}
+			if ( g_useVehicleAmmo.getBoolValue() && ammoMax > 0 ) {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 1 );
+			} else {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
+			}
 		}
 	}
 }
 
 //mal: lets the bots know if they can fire this vehicle based weapon, or not.
 boolean vehicle_weapon_base::WeaponCanFire() {
-	if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime && sys.getTime() >= reFireTime ) {
+	if ( CanRemoveCharge() && CanRemoveAmmo() && sys.getTime() >= fireDelayTime && sys.getTime() >= reFireTime ) {
 		return true;
 	}
 

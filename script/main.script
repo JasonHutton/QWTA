@@ -369,6 +369,7 @@ void game_main() {
 //	g_allowTimerCircles			= sys.getCVar( "g_allowTimerCircles", "" );
 //	g_hideHud					= sys.getCVar( "g_hideHud", "" );
 	g_realisticROF				= sys.getCVar( "g_realisticROF", "" );
+	g_useVehicleAmmo			= sys.getCVar( "g_useVehicleAmmo", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

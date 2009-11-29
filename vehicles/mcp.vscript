@@ -460,6 +460,9 @@ stringMap vehicle_mcp_weapon1 {
 	
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_mcp_weapon2 {
@@ -502,6 +505,9 @@ stringMap vehicle_mcp_weapon2 {
 	"surface_name"				"lod0_minigun_base, lod0_minigun_barrel"
 	
 	"crosshair"					"nospread"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
 }
 
 entityDef vehicle_mcp_cockpit {

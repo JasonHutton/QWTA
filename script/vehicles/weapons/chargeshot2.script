@@ -130,6 +130,7 @@ void vehicle_weapon_chargeshot2::Idle() {
 		sys.waitFrame();
 
 		UpdateCharge();
+		UpdateAmmo();
 		
 		boolean bFiringHeld = false;
 		
@@ -137,7 +138,7 @@ void vehicle_weapon_chargeshot2::Idle() {
 			user.proxyFiringWeaponStart = false;
 			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting()  && ( sys.getTargetTimerValue( powerupTimerHandle, user ) - sys.getTime() <= 0 || bPowerupInProgress ) ) {
 				AddPowerup();
-				if ( CanRemoveCharge() && sys.getTime() >= fireDelayTime ) {
+				if ( CanRemoveCharge() && CanRemoveAmmo() && sys.getTime() >= fireDelayTime ) {
 					bFiringHeld = true;
 					if ( !bPowerupInProgress ) {
 						bPowerupInProgress = true;
@@ -208,6 +209,7 @@ void vehicle_weapon_chargeshot2::Overcharge() {
 	
 	AddReFireDelay( fireRate );
 	RemoveCharge();
+	RemoveAmmo();
 
 	bPowerupInProgress = false;
 	
@@ -224,6 +226,7 @@ void vehicle_weapon_chargeshot2::Fizzle() {
 	
 	AddReFireDelay( fireRate );
 	RemoveCharge();
+	RemoveAmmo();
 	
 	bPowerupInProgress = false;
 	
@@ -263,6 +266,7 @@ void vehicle_weapon_chargeshot2::Fire() {
 
 	AddReFireDelay( fireRate );
 	RemoveCharge();
+	RemoveAmmo();
 	
 	bPowerupInProgress = false;
 

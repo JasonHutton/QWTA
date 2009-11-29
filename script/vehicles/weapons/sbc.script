@@ -57,6 +57,7 @@ void vehicle_weapon_sbc::Fire() {
 
 	if ( allowFire ) {
 		RemoveCharge();
+		RemoveAmmo();
 
 		vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, -1, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
 

@@ -529,6 +529,14 @@ stringMap vehicle_titan_weapon2 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"40"
+	"ammo_per_use"				"1"
+	
+	//M1A1 main gun reference:
+	//Main gun: 120mm M256
+	//Ammunition Stowage: 17 ready/23 stowed
+	//Default Ammunition: 13/17 M829A1 APFSDS, 4/6 M830 HEAT
 }
 
 stringMap vehicle_titan_weapon3 {
@@ -574,6 +582,9 @@ stringMap vehicle_titan_weapon3 {
 	"client_projectile"			"projectile_gatling_titan"
 
 	"crosshair"					"nospread"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
 }
 
 entityDef vehicle_titan_cockpit {

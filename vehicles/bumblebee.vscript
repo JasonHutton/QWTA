@@ -635,6 +635,9 @@ stringMap vehicle_bumblebee_weapon1 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_bumblebee_weapon2 {
@@ -679,6 +682,9 @@ stringMap vehicle_bumblebee_weapon2 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"blank"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_bumblebee_weapon3 {
@@ -723,6 +729,9 @@ stringMap vehicle_bumblebee_weapon3 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"blank"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
 }
 
 entityDef vehicle_bumblebee_cockpit {

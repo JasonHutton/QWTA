@@ -501,6 +501,9 @@ stringMap vehicle_anansi_weapon1 {
 
 	"crosshair"					"explosive"
 	"disabled_crosshair"		"explosive"
+	
+	"ammo_max"					"38"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_anansi_weapon2 {
@@ -575,6 +578,9 @@ stringMap vehicle_anansi_weapon2 {
 	"disabled_crosshair"		"explosive"
 
 	"num_missiles"				"8"
+	
+	"ammo_max"					"8"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_anansi_weapon3 {
@@ -612,6 +618,9 @@ stringMap vehicle_anansi_weapon3 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
 }
 
 entityDef part_vehicle_anansi_left_front_thruster {

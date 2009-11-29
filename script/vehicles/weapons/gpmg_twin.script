@@ -64,6 +64,7 @@ void vehicle_weapon_gpmg_twin::Fire() {
 	}
 	
 	RemoveCharge();
+	RemoveAmmo();
 
 	float jointHandle;
 	if ( currentWeapon == 0 ) {
