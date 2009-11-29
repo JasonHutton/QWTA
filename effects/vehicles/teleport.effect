@@ -244,9 +244,7 @@ effect effects/vehicles/teleporter/end
 			lineHit
 		}
 	}
-}
-
-effect effects/vehicles/teleporter/hog/start
+}effect effects/vehicles/teleporter/hog/start
 {
 	size	524
 
@@ -381,8 +379,6 @@ effect effects/vehicles/teleporter/hog/start
 			start
 			{
 				size { point 0.9,0.9,0.9 }
-				offset { point -8,-2,0 }
-				rotate { point 0,1,0 }
 			}
 
 			motion
@@ -393,7 +389,9 @@ effect effects/vehicles/teleporter/hog/start
 			lineHit
 		}
 	}
-}effect effects/vehicles/teleporter/hog/end
+}
+
+effect effects/vehicles/teleporter/hog/end
 {
 	size	440
 
@@ -539,6 +537,8 @@ effect effects/vehicles/teleporter/hog/start
 		}
 	}
 }
+
+
 
 
 
