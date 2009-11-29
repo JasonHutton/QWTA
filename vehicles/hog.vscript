@@ -674,6 +674,10 @@ stringMap vehicle_hog_weapon1 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"q4hyper_ammo_max"			"400"
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
 }
 
 entityDef vehicle_hog_cockpit_gunner {

@@ -617,6 +617,9 @@ stringMap vehicle_abaddon_weapon1 {
 	"damageRate"				"0.05"
 	
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
+	
+	"ammo_max"					"1500"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_abaddon_weapon2 {
@@ -651,4 +654,7 @@ stringMap vehicle_abaddon_weapon2 {
 	"min_damage_percent_vehicles" "90"
 			
 	//"snd_gpmg_overheat"			"sounds/weapons/blaster/steam"
+	
+	"ammo_max"					"1500"
+	"ammo_per_use"				"1"
 }

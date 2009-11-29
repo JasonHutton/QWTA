@@ -581,6 +581,9 @@ stringMap vehicle_hornet_weapon1 {
 	"disabled_crosshair"		"explosive"
 
 //	"no_tophat_crosshair"		"1"
+
+	"ammo_max"					"40"
+	"ammo_per_use"				"1"
 }
 
 
@@ -630,6 +633,9 @@ stringMap vehicle_hornet_weapon2 {
 	"crosshair"					"explosive"
 	"disabled_crosshair"		"explosive"
 	"num_missiles"				"2"
+	
+	"ammo_max"					"12"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_hornet_weapon3 {
@@ -677,4 +683,8 @@ stringMap vehicle_hornet_weapon3 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"q4hyper_ammo_max"			"400"
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
 }

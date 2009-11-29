@@ -300,6 +300,9 @@ stringMap vehicle_goliath_weapon2 {
 	"nrl_pitchClamp_enabled"	"1"
 	"nrl_pitchClamp_min"		"-45"
 	"nrl_pitchClamp_max"		"40"
+	
+	"ammo_max"					"50"
+	"ammo_per_use"				"1"
 }
 
 entityDef vehicle_goliath_driver_cockpit {

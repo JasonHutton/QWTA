@@ -941,6 +941,6 @@ stringMap vehicle_trojan_weapon2 {
 	"crosshair"				"nospread"
 	"disabled_crosshair"	"nospread"
 	
-	"ammo_max"					"32" // 8+8 reload=16 normal, not usually mounted on apc, 8+8x3 reloads=32
+	"ammo_max"					"16" // 8+8 reload=16 normal, not usually mounted on apc, 8+8x3 reloads=32 ? dunno
 	"ammo_per_use"				"1"
 }

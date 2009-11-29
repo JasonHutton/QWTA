@@ -73,7 +73,13 @@ void vehicle_weapon_base::preinit() {
 	myVehicle = getVehicle();
 	
 	ammoMax		= getFloatKeyWithDefault( "ammo_max", -1.f );
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		ammoMax = getFloatKeyWithDefault( "q4hyper_ammo_max", ammoMax );
+	}
 	ammoPerUse	= getFloatKeyWithDefault( "ammo_per_use", 1.f );
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		ammoPerUse = getFloatKeyWithDefault( "q4hyper_ammo_per_use", ammoPerUse );
+	}
 	ammo		= ammoMax;
 }
 

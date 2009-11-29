@@ -460,4 +460,7 @@ stringMap vehicle_jupiter_weapon1 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"20"
+	"ammo_per_use"				"1"
 }

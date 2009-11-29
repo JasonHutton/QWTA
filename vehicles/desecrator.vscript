@@ -621,6 +621,10 @@ stringMap vehicle_desecrator_weapon1 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"q4hyper_ammo_max"			"400"
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
 }
 
 stringMap vehicle_desecrator_weapon2 {
@@ -655,4 +659,7 @@ stringMap vehicle_desecrator_weapon2 {
 
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"40"
+	"ammo_per_use"				"1"
 }

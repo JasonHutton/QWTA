@@ -208,5 +208,8 @@ stringMap vehicle_icarus_weapon1 {
 	"def_projectile"			"projectile_stroybomb"
 
 	"crosshair"					"explosive"
+	
+	"ammo_max"					"6"
+	"ammo_per_use"				"1"
 }
 
