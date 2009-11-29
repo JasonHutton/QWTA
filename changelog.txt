@@ -90,6 +90,10 @@ CHANGES:
   + Strogg: "strogg" (Includes all the Strogg classes.)
   + GDF: "gdf" (Includes all the GDF classes.)
   + Jupiter and Abaddon are included as part of the bind context "vehicle" too
+* Cvar g_useVehicleAmmo added,
+  + Default 1.
+  + Controls whether vehicle weapons consume depletable ammunition or if they
+    have an infinite supply of munitions.
 
 BUG FIXES:
 * Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
