@@ -29,7 +29,7 @@ effect effects/vehicles/teleporter/start
 
 			start
 			{
-				position { model models/characters/strogg_player/infiltratorstand.lwo,0,0,0,1,1,1 }
+				position { sphere -20,-20,-20,20,20,20 }
 				size { point 2,2 }
 				tint { point 1,0.501961,0.247059 }
 				offset { sphere -300,-300,-300,300,300,300 }
@@ -98,7 +98,7 @@ effect effects/vehicles/teleporter/start
 
 			start
 			{
-				position { model models/characters/strogg_player/infiltratorstand.lwo,0,0,0,1,1,1 }
+				position { sphere -20,-20,-20,20,20,20 }
 				velocity { box -60,-60,-10,60,60,20 }
 				size { point 30,30 }
 				rotate { box 0,1 }
@@ -153,7 +153,7 @@ effect effects/vehicles/teleporter/end
 
 			start
 			{
-				position { model models/characters/strogg_player/infiltratorstand.lwo,0,0,0,1,1,1 }
+				position { sphere -20,-20,-20,20,20,20 }
 				size { point 2,2 }
 				tint { point 1,0.501961,0.247059 }
 				offset { sphere -300,-300,-100,300,300,100 }
@@ -222,7 +222,7 @@ effect effects/vehicles/teleporter/end
 
 			start
 			{
-				position { model models/characters/strogg_player/infiltratorstand.lwo,0,0,0,1,1,1 }
+				position { sphere -20,-20,-20,20,20,20 }
 				velocity { box -60,-60,-10,60,60,20 }
 				size { point 30,30 }
 				rotate { box 0,1 }
@@ -245,3 +245,304 @@ effect effects/vehicles/teleporter/end
 		}
 	}
 }
+
+effect effects/vehicles/teleporter/hog/start
+{
+	size	524
+
+	sound "Teleport Sound2"
+	{
+		soundShader	"sounds/items/slipbeacon/depart"
+	}
+	spawner "spark out2"
+	{
+		count		80,80
+		attenuateEmitter
+		attenuation	1500,2000
+
+		sprite
+		{
+			duration	0.7,0.7
+			blend	add
+			persist
+			material	"particles/penta/bosonorb_trail"
+			trailRepeat	1
+			trailType	motion
+			trailTime	0.5,0.5
+			trailCount	3,3
+			trailScale	0.500000
+			trailMaterial	"particles/penta/bosonorb_sparktrail2"
+
+			start
+			{
+				position { model models/vehicles/strogg_hog/strogg_hog.obj,0,0,0,1,1,1 }
+				size { point 2,2 }
+				tint { point 1,0.501961,0.247059 }
+				offset { sphere -300,-300,-300,300,300,300 }
+			}
+
+			motion
+			{
+				tint { envelope linear }
+				offset { envelope jrad_convexfade }
+			}
+			lineHit
+		}
+	}
+	emitter "fire"
+	{
+		duration	1,1
+		count		50,50
+		attenuateEmitter
+		attenuation	1000,2000
+
+		sprite
+		{
+			duration	3,3
+			persist
+			material	"particles/fire5a"
+			trailRepeat	1
+
+			start
+			{
+				velocity { box -60,-60,10,60,60,20 }
+				size { point 30,30 }
+				tint { line 0.266667,0.105882,0.00784314,0.490196,0.196078,0.0156863 }
+				offset { box -15,-15,0,15,15,70 }
+				rotate { box 0,1 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope jrad_cmzoom }
+				fade { envelope jrad_smokefade }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 50,50 }
+				rotate { box 0.25,0.277778 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "heat"
+	{
+		duration	1,1
+		count		50,50
+		attenuateEmitter
+		attenuation	1000,2000
+
+		sprite
+		{
+			duration	3,3
+			persist
+			material	"textures/particles/muzzleflash_haze"
+			trailRepeat	1
+
+			start
+			{
+				position { model models/vehicles/strogg_hog/strogg_hog.obj,0,0,0,1,1,1 }
+				velocity { box -60,-60,-10,60,60,20 }
+				size { point 30,30 }
+				rotate { box 0,1 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope jrad_cmzoom }
+				fade { envelope jrad_smokefade }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 50,50 }
+				rotate { box 0.25,0.277778 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "vehicle"
+	{
+		duration	1,1
+		count		1,1
+
+		model
+		{
+			duration	0.7,0.7
+			material	"models/vehicles/strogg_hog/hog"
+			model		"models/vehicles/strogg_hog/strogg_hog.obj"
+			trailRepeat	1
+
+			start
+			{
+				size { point 0.9,0.9,0.9 }
+				offset { point -8,-2,0 }
+				rotate { point 0,1,0 }
+			}
+
+			motion
+			{
+				size { envelope blasttable count 3,3,3 }
+				tint { envelope jrad_linear }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/vehicles/teleporter/hog/end
+{
+	size	440
+
+	sound "Teleport Sound"
+	{
+		soundShader	"sounds/items/slipbeacon/arrive"
+	}
+	spawner "spark out"
+	{
+		count		80,80
+		attenuateEmitter
+		attenuation	1500,2000
+
+		sprite
+		{
+			duration	0.7,0.7
+			blend	add
+			persist
+			material	"particles/penta/bosonorb_trail"
+			trailRepeat	1
+			trailType	motion
+			trailTime	0.5,0.5
+			trailCount	3,3
+			trailScale	0.500000
+			trailMaterial	"particles/penta/bosonorb_sparktrail2"
+
+			start
+			{
+				position { model models/vehicles/strogg_hog/strogg_hog.obj,0,0,0,1,1,1 }
+				size { point 2,2 }
+				tint { point 1,0.501961,0.247059 }
+				offset { sphere -300,-300,-100,300,300,100 }
+			}
+
+			motion
+			{
+				tint { envelope linear }
+				offset { envelope jrad_convexfade }
+			}
+			lineHit
+		}
+	}
+	emitter "fire"
+	{
+		duration	1,1
+		count		50,50
+		attenuateEmitter
+		attenuation	1000,2000
+
+		sprite
+		{
+			duration	3,3
+			persist
+			material	"particles/fire5a"
+			trailRepeat	1
+
+			start
+			{
+				velocity { box -60,-60,10,60,60,20 }
+				size { point 30,30 }
+				tint { line 0.266667,0.105882,0.00784314,0.490196,0.196078,0.0156863 }
+				offset { box -50,-50,0,50,50,70 }
+				rotate { box 0,1 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope jrad_cmzoom }
+				fade { envelope jrad_smokefade }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 50,50 }
+				rotate { box 0.25,0.277778 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "heat"
+	{
+		duration	1,1
+		count		50,50
+		attenuateEmitter
+		attenuation	1000,2000
+
+		sprite
+		{
+			duration	3,3
+			persist
+			material	"textures/particles/muzzleflash_haze"
+			trailRepeat	1
+
+			start
+			{
+				position { model models/vehicles/strogg_hog/strogg_hog.obj,0,0,0,1,1,1 }
+				velocity { box -60,-60,-10,60,60,20 }
+				size { point 30,30 }
+				rotate { box 0,1 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope jrad_cmzoom }
+				fade { envelope jrad_smokefade }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 50,50 }
+				rotate { box 0.25,0.277778 relative }
+			}
+			lineHit
+		}
+	}
+	emitter "vehicle"
+	{
+		duration	1,1
+		count		1,1
+
+		model
+		{
+			duration	0.7,0.7
+			material	"models/vehicles/strogg_hog/hog"
+			model		"models/vehicles/strogg_hog/strogg_hog.obj"
+			trailRepeat	1
+
+			start
+			{
+				size { point 0.9,0.9,0.9 }
+				offset { point -8,0,0 }
+				rotate { point 0,1,0 }
+			}
+
+			motion
+			{
+				size { envelope blasttable count 3,3,3 }
+				tint { envelope jrad_linear }
+			}
+			lineHit
+		}
+	}
+}
+
+
+
