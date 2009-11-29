@@ -22,6 +22,7 @@ object strogg_drop {
 
 	void			ClearRequest();
 
+	void			SetupItem_Base();
 	void			SetupItem();
 	void			SetupTrajectory();
 
@@ -279,7 +280,7 @@ void strogg_drop::OnSetDeploymentParms( float deploymentItemIndex, float playerI
 	SetupItem();
 }
 
-void strogg_drop::SetupItem() {
+void strogg_drop::SetupItem_Base() {
 	if ( item == $null_entity ) {
 		return;
 	}
@@ -290,6 +291,10 @@ void strogg_drop::SetupItem() {
 	item.setAngles( getAngles() );
 	item.setGameTeam( getGameTeam() );
 	item.vSetManualDeploy();
+}
+
+void strogg_drop::SetupItem() {
+	SetupItem_Base();
 }
 
 void strogg_drop::SetupTrajectory() {
