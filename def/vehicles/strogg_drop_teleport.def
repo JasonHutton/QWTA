@@ -21,8 +21,10 @@ entityDef vehicle_strogg_drop_teleport {
 	
 	"fx_teleport_start_default"		"effects/vehicles/teleporter/start"
 	"fx_teleport_end_default"		"effects/vehicles/teleporter/end"
-	//"fx_teleport_start_hog"			"effects/vehicles/teleporter/start"
-	//"fx_teleport_end_hog"			"effects/vehicles/teleporter/end"
+	"fx_teleport_start_hog"			"effects/vehicles/teleporter/hog/start"
+	"fx_teleport_end_hog"			"effects/vehicles/teleporter/hog/end"
+	"fx_teleport_start_desecrator"	"effects/vehicles/teleporter/desecrator/start"
+	"fx_teleport_end_desecrator"	"effects/vehicles/teleporter/desecrator/end"
 
 	"snd_landfall"					"sounds/vehicles/slamship/landfall"
 	"snd_landfall_far"				"sounds/vehicles/slamship/landfall/far"

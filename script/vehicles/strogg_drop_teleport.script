@@ -123,8 +123,17 @@ void strogg_drop_teleport::Idle() {
 	}
 
 	setOrigin( itemTargetPos );
-	playEffect( fxEnd, "", false );
-	//sys.wait( 0.5 );
+	
+	vector anglesTemp;
+	anglesTemp_y = itemRotation;
+	
+	playOriginEffect( fxEnd, "", itemTargetPos, sys.angToForward( anglesTemp ), false );
+	//playEffect( fxEnd, "", false );
+	
+	if ( fxEnd != "fx_teleport_end_default" ) {
+		sys.wait( 0.5 );
+	}
+	item.setAngles( anglesTemp );
 	item.setOrigin( itemTargetPos );
 
 	//stopEffect( "fx_trail" );
