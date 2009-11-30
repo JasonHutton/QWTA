@@ -204,8 +204,8 @@ template inventory/weapons/machinepistol_template {
 			"fov_spread"					"0.5"
 			"realistic_fov_spread"			"0.25"
 
-			"fire_rate"						"0.12"
-			"realistic_fire_rate"			"0.06"
+			"fire_rate"						"0.12" // 8.3 RPS
+			"realistic_fire_rate"			"0.05" // 20.0 RPS
 			"low_ammo"						"6"
 
 			"gui_sight"						"game/sights/assaultrifle_scope"

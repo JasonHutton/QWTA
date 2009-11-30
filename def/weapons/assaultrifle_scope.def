@@ -142,8 +142,8 @@ invItemDef inventory/weapons/assaultrifle/scoped {
 		"snd_dryfire"					"sounds/weapons/misc/dryfire"
 
 		"trigger_delay"					"0"
-		"fire_rate"						"0.15"
-		"realistic_fire_rate"			"0.075"
+		"fire_rate"						"0.15" // 6.6 RPS
+		"realistic_fire_rate"			"0.08" // 12.5 RPS
 		"num_projectiles"				"1"
 
 		"low_ammo"						"8"

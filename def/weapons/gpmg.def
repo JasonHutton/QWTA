@@ -306,8 +306,8 @@ invItemDef inventory/weapons/gpmg {
 		"realistic_fov_spread"			"0.05"
 
 		"trigger_delay"					"0"
-		"fire_rate"						"0.10"
-		"realistic_fire_rate"			"0.05"
+		"fire_rate"						"0.10" // 10.0 RPS
+		"realistic_fire_rate"			"0.063" // 15.8 RPS
 		"num_projectiles"				"1"
 
 		"zoomFov"						"60"
@@ -409,8 +409,8 @@ entityDef mountable_gdf_gpmg {
 	"fx_tracer"							"effects/base/tracers_large"
 	"effectchance fx_tracer"			"0.1"
 
-	"fire_rate"							"0.1"
-	"realistic_fire_rate"				"0.05"
+	"fire_rate"							"0.1" // 10.0 RPS
+	"realistic_fire_rate"				"0.063" // 15.8 RPS
 	"spread"							"0.2"
 	"range"								"8192"
 	"muzzle"							"muzzle"

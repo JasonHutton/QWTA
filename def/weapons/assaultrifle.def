@@ -381,8 +381,8 @@ invItemDef inventory/weapons/assaultrifle {
 		"fov_spread"					"0.5"
 		"realistic_fov_spread"			"0.25"
 
-		"fire_rate"						"0.12"
-		"realistic_fire_rate"			"0.06"
+		"fire_rate"						"0.12" // 8.3 RPS
+		"realistic_fire_rate"			"0.08" // 12.5 RPS
 		"num_projectiles"				"1"
 
 		"low_ammo"						"8"
