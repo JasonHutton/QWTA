@@ -22,11 +22,11 @@ object vehicle_weapon_flamethrower : vehicle_weapon_streamshot {
 
 void vehicle_weapon_flamethrower::preinit() {
 	fireRate				= getFloatKey( "fire_rate" );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
 	}
 	fireRate2				= getFloatKey( "fire_rate2" );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate2	= getFloatKeyWithDefault( "realistic_fire_rate2", fireRate2 );
 	}
 	fire2Delay				= getFloatKey( "fire2_delay" );

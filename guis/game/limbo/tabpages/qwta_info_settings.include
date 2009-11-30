@@ -187,20 +187,10 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, 1, 2
 				_button_disable_if( "", true )
 			_end_radio
 		_end_group_box_vertical
-		_qwtacheck( Setting_RealisticDamage, 
-			g_realisticDamage, 
-			localize( "guis/limbo/qwta/settings/realisticDamage" ),
-			localizeArgs( "guis/limbo/qwta/settings/realisticDamage/tooltip" ),
-			0, 0, BUTTON_WIDTH )
-		_qwtacheck( Setting_RealisticSpread, 
-			g_realisticSpread, 
-			localize( "guis/limbo/qwta/settings/realisticSpread" ),
-			localizeArgs( "guis/limbo/qwta/settings/realisticSpread/tooltip" ),
-			0, 0, BUTTON_WIDTH )
-		_qwtacheck( SettingRealisticROF,
-			g_realisticROF,
-			localize( "guis/limbo/qwta/settings/realisticROF" ),
-			localizeArgs( "guis/limbo/qwta/settings/realisticROF/tooltip" ),
+		_qwtacheck( Setting_UseRealisticWeapons, 
+			g_useRealisticWeapons, 
+			localize( "guis/limbo/qwta/settings/useRealisticWeapons" ),
+			localizeArgs( "guis/limbo/qwta/settings/useRealisticWeapons/tooltip" ),
 			0, 0, BUTTON_WIDTH )
 		_qwtacheck( Setting_BotUseStrafeJump, 
 			bot_useStrafeJump, 

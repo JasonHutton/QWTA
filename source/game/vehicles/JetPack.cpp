@@ -234,7 +234,7 @@ void sdJetPack::Spawn( void ) {
 	}
 
 	const char* damagename;
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damagename = spawnArgs.GetString( "dmg_realistic_collide", spawnArgs.GetString( "dmg_collide" ) );
 	}
 	else {
@@ -247,7 +247,7 @@ void sdJetPack::Spawn( void ) {
 		}
 	}
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damagename = spawnArgs.GetString( "dmg_realistic_fall", spawnArgs.GetString( "dmg_fall" ) );
 	}
 	else {

@@ -3235,14 +3235,14 @@ const sdDeclDamage* idGameLocal::RealFindDeclDamageType( const idDict& dict, con
 	const sdDeclDamage* declDamage = NULL;
 	const char* damageDefName;
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damageDefName = dict.GetString( realName );
 		if ( *damageDefName ) {
 			declDamage = gameLocal.declDamageType[ damageDefName ];
 		}
 	}
 	if ( declDamage == NULL ) {
-		if ( g_realisticDamage.GetBool() ) {
+		if ( g_useRealisticWeapons.GetBool() ) {
 			gameLocal.Warning( "idGameLocal::RealFindDeclDamageType Couldn't find realistic Damage Type '%s', falling through to normal damage...", damageDefName );
 		}
 		damageDefName = dict.GetString( name );

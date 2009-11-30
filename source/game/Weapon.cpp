@@ -346,7 +346,7 @@ bool idWeapon::defaultSpreadsInitialized = false;
 weaponSpreadValues_t idWeapon::defaultSpreadValues[ WSV_NUM ];
 
 void idWeapon::ChangeSpreadValueSet() {
-	if ( g_realisticSpread.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		if ( this->playerWeaponNum == SHOTGUN && g_useBaseETQW12Shotguns.GetBool() ) {
 			pSpreadValues = &spreadValues[ WSVT_REAL12 ];
 		} else if ( this->playerWeaponNum == HEAVY_MG && this->playerWeaponSubNum == 1 && g_useQuake4Hyperblaster.GetBool() ) {
@@ -966,7 +966,7 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	barrelJointView		= animator.GetJointHandle( "muzzle" );
 
 	const char* damagename;
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damagename = spawnArgs.GetString( "dmg_realistic_melee", spawnArgs.GetString( "dmg_melee" ) );
 	}
 	else {
@@ -979,7 +979,7 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 		}
 	}
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damagename = spawnArgs.GetString( "dmg_realistic_melee_special", spawnArgs.GetString( "dmg_melee_special" ) );
 	}
 	else {

@@ -457,8 +457,6 @@ extern idCVar	g_noTVChat;
 
 #endif // SD_SUPPORT_REPEATER
 
-extern idCVar	g_realisticDamage;
-extern idCVar	g_realisticSpread;
 extern idCVar	g_useBaseETQW12Shotguns;
 extern idCVar	g_useQuake4Hyperblaster;
 extern idCVar	g_useQuake4Railgun;
@@ -477,6 +475,7 @@ extern idCVar	g_useBaseETQWVehicleCharge;
 extern idCVar	g_disablePlayerRespawns;
 
 extern idCVar	g_useBaseETQW12SniperTrail;
+extern idCVar	g_useRealisticWeapons;
 
 extern idCVar	g_trainingMode;
 

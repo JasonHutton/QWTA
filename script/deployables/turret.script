@@ -96,7 +96,7 @@ void deployable_turret::preinit() {
 	firingRange			= MetresToInches( getFloatKeyWithDefault( "range_firing", InchesToMetres( maxRange ) ) );
 
 	fireRate			= getFloatKey( "fireRate" );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate		= getFloatKeyWithDefault( "realisticFireRate", fireRate );
 	}
 	

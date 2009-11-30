@@ -3597,7 +3597,7 @@ void sdTransport::Spawn( void ) {
 	
 	const char* damageName;
 	
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damageName			= spawnArgs.GetString( "dmg_realistic_kill_players", spawnArgs.GetString( "dmg_kill_players" ) );
 	}
 	else {
@@ -3608,7 +3608,7 @@ void sdTransport::Spawn( void ) {
 		gameLocal.Warning( "sdVehicle::Spawn Invalid Kill Player Damage Type '%s'", damageName );
 	}
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damageName			= spawnArgs.GetString( "dmg_realistic_flipped", spawnArgs.GetString( "dmg_flipped" ) );
 	}
 	else {
@@ -3646,7 +3646,7 @@ void sdTransport::Spawn( void ) {
 	vehicleFlags.amphibious				= spawnArgs.GetBool( "amphibious" );
 	vehicleFlags.weaponDisabled			= false;
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damageName			= spawnArgs.GetString( "dmg_realistic_water", spawnArgs.GetString( "dmg_water" ) );	
 	}
 	else {

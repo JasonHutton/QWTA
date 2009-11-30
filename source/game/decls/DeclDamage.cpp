@@ -578,7 +578,7 @@ const sdDeclDamage* sdDeclDamage::DamageForName( const char* name, bool makeDefa
 
 const sdDeclDamage* sdDeclDamage::RealDamageForName( const char* realName, const char* name, bool makeDefault ) {
 	const sdDeclDamage* declDamage = NULL;
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		declDamage = gameLocal.declDamageType.LocalFind( realName, false );
 	}
 	if ( declDamage == NULL ) {

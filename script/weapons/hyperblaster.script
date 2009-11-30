@@ -234,7 +234,7 @@ float weapon_hyperblaster::GetFovSpread() {
 	}
 	
 	if ( ironSightsEnabled ) {
-		if ( g_realisticSpread.getBoolValue() ) {
+		if ( g_useRealisticWeapons.getBoolValue() ) {
 			return q4hyperRealisticFovSpread;
 		}
 		else {

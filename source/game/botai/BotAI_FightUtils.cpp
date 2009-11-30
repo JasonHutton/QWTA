@@ -1435,7 +1435,7 @@ bool idBotAI::Bot_PickPostCombatGoal() {
 	}
 
 	//mal: slows the game down too much in ETQW.
-	if ( g_realisticSpread.GetBool() || g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		if ( botThreadData.random.RandomInt( 100 ) > 80 && !LocationVis2Sky( botInfo->origin ) ) { //mal: sometimes, when indoors, take a sec to look around for more enemies.
 			nbgOrigin = enemyInfo.enemy_FS_Pos;
 			ROOT_AI_NODE = &idBotAI::Run_NBG_Node;		
@@ -2238,7 +2238,7 @@ void idBotAI::Bot_CheckAttack() {
 	bool useLockon = ( botInfo->weapInfo.weapon == ROCKET && botWorld->clientInfo[ enemy ].proxyInfo.entNum != CLIENT_HAS_NO_VEHICLE ) ? true : false;
 
 	float minUseScopeDist;
-	if( g_realisticSpread.GetBool() ) {
+	if( g_useRealisticWeapons.GetBool() ) {
 		minUseScopeDist = ( botInfo->weapInfo.weapon == HEAVY_MG ) ? 200.0f : 350.0f;
 	}
 	else {
@@ -2297,7 +2297,7 @@ void idBotAI::Bot_CheckAttack() {
 		shotIsBlockedCounter++;
 	}
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		if ( EntityIsHeavyVehicle( gunTargetEntNum, false, false) ) {
 			if ( botInfo->weapInfo.weapon == KNIFE ||
 				botInfo->weapInfo.weapon == PISTOL ||

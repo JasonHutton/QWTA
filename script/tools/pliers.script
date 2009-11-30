@@ -80,7 +80,7 @@ void tool_pliers::preinit() {
 	canDisguise		= getIntKey( "can_disguise" );
 	
 	fireRate		= getFloatKeyWithDefault( "fire_rate", 0.1f );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
 	}
 	repairCount		= getFloatKeyWithDefault( "repair_count", 5.f );

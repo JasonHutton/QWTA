@@ -592,8 +592,6 @@ idCVar g_mineTriggerWarning(		"g_mineTriggerWarning",			"1",		CVAR_GAME | CVAR_B
 idCVar g_allowAPTWarning(			"g_allowAPTWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC | CVAR_RANKLOCKED, "Allow clients to draw warning text on the HUD for APT lock ons." );
 idCVar g_aptWarning(				"g_aptWarning",					"3",		CVAR_GAME | CVAR_INTEGER | CVAR_ARCHIVE | CVAR_PROFILE,		"Show warning message on HUD when APT is locking on. 0: Off 1: Visual warning only 2: Beep only 3: Visual and beep" );
 
-idCVar	g_realisticDamage(			"g_realisticDamage",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Should damages ingame be realistic, or game-oriented?" );
-idCVar	g_realisticSpread(			"g_realisticSpread",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,						"Should weapon spreads ingame be realistic, or game-oriented?" );
 idCVar	g_useBaseETQW12Shotguns(	"g_useBaseETQW12Shotguns",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use BaseETQW v1.2 behaviour for shotgun and nailgun." );
 idCVar	g_useQuake4DarkMatter(		"g_useQuake4DarkMatter",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use Quake 4-style Dark Matter weaponry." );
 idCVar	g_artilleryWarning(			"g_artilleryWarning",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Notify players of the launch of Hammer or DMC artillery." );
@@ -624,7 +622,7 @@ idCVar	g_allowCrosshairs(			"g_allowCrosshairs",			"0",		CVAR_GAME | CVAR_BOOL |
 
 idCVar	g_useBaseETQW12SniperTrail( "g_useBaseETQW12SniperTrail",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use the BaseETQW 1.2 sniper rifle's trail-tracer effect?" );
 //idCVar	g_hideHud(					"g_hideHud",					"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Disables most aspects of the HUD, revealing them only when they're accessed in some way." );
-idCVar	g_realisticROF(				"g_realisticROF",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should weapon rate of fire be realistic, or game-oriented?" );
+idCVar	g_useRealisticWeapons(		"g_useRealisticWeapons",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should weapons behave in a realistic manner, or more game-oriented?" );
 idCVar	g_useVehicleAmmo(			"g_useVehicleAmmo",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle weapons consume ammunition or not?" );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );

@@ -92,7 +92,7 @@ sdVehicle_RigidBody::Spawn
 void sdVehicle_RigidBody::Spawn( void ) {
 	const char* damagename;
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damagename = spawnArgs.GetString( "dmg_realistic_collide", spawnArgs.GetString( "dmg_collide" ) );
 	}
 	else {
@@ -107,7 +107,7 @@ void sdVehicle_RigidBody::Spawn( void ) {
 		collideDamage = NULL;
 	}
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		damagename = spawnArgs.GetString( "dmg_realistic_collide_fatal", spawnArgs.GetString( "dmg_collide_fatal" ) );
 	}
 	else {

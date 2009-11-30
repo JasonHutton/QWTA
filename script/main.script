@@ -347,8 +347,7 @@ void game_main() {
 	g_mineIconSize				= sys.getCVar( "g_mineIconSize", "" );
 	g_mineIconAlphaScale		= sys.getCVar( "g_mineIconAlphaScale", "" );
 
-	g_realisticDamage			= sys.getCVar( "g_realisticDamage", "" );
-	g_realisticSpread			= sys.getCVar( "g_realisticSpread", "" );
+	g_useRealisticWeapons		= sys.getCVar( "g_useRealisticWeapons", "" );
 	g_useBaseETQW12Shotguns		= sys.getCVar( "g_useBaseETQW12Shotguns", "" );
 	g_useQuake4DarkMatter		= sys.getCVar( "g_useQuake4DarkMatter", "" );
 	g_artilleryWarning			= sys.getCVar( "g_artilleryWarning", "" );
@@ -368,7 +367,6 @@ void game_main() {
 	g_useBaseETQW12SniperTrail	= sys.getCVar( "g_useBaseETQW12SniperTrail", "" );
 //	g_allowTimerCircles			= sys.getCVar( "g_allowTimerCircles", "" );
 //	g_hideHud					= sys.getCVar( "g_hideHud", "" );
-	g_realisticROF				= sys.getCVar( "g_realisticROF", "" );
 	g_useVehicleAmmo			= sys.getCVar( "g_useVehicleAmmo", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );

@@ -692,7 +692,7 @@ void tool_repair_drone::preinit() {
 	canConstruct	= getIntKey( "can_construct" );
 
 	fireRate 		= getFloatKeyWithDefault( "fire_rate", 0.1f );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
 	}
 	repairCount 	= getFloatKeyWithDefault( "repair_count", 5.f );

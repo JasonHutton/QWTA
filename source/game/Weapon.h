@@ -243,9 +243,9 @@ public:
 
 	float					GetSpreadValue() const;
 	float					GetSpreadValueNormalized( bool useGlobalMax = true ) const;
-	float					GetCrosshairSpreadMin() const { return g_realisticSpread.GetBool() ? realisticCrosshairSpreadMin : crosshairSpreadMin; }
-	float					GetCrosshairSpreadMax() const { return g_realisticSpread.GetBool() ? realisticCrosshairSpreadMax : crosshairSpreadMax; }
-	float					GetCrosshairSpreadScale() const { return g_realisticSpread.GetBool() ? realisticCrosshairSpreadScale : crosshairSpreadScale; }
+	float					GetCrosshairSpreadMin() const { return g_useRealisticWeapons.GetBool() ? realisticCrosshairSpreadMin : crosshairSpreadMin; }
+	float					GetCrosshairSpreadMax() const { return g_useRealisticWeapons.GetBool() ? realisticCrosshairSpreadMax : crosshairSpreadMax; }
+	float					GetCrosshairSpreadScale() const { return g_useRealisticWeapons.GetBool() ? realisticCrosshairSpreadScale : crosshairSpreadScale; }
 
 	int						GetGrenadeFuseTime( void );
 
@@ -277,7 +277,7 @@ public:
 	const playerWeaponTypes_t&		GetPlayerWeaponNum( void ) const { return playerWeaponNum; }
 	bool							IsIronSightsEnabled( void );
 
-	const weaponAimValues_t&		GetAimValues( weaponAimValueIndex_t index ) { return g_realisticSpread.GetBool() ? realisticAimValues[ index ] : aimValues[ index ]; }
+	const weaponAimValues_t&		GetAimValues( weaponAimValueIndex_t index ) { return g_useRealisticWeapons.GetBool() ? realisticAimValues[ index ] : aimValues[ index ]; }
 
 	virtual sdNetworkInterface*			GetNetworkInterface( void ) { return &networkInterface; }
 

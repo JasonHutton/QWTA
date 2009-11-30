@@ -1657,7 +1657,7 @@ void idPlayer::Spawn( void ) {
 
 	oobDamageInterval					= spawnArgs.GetInt( "oob_damage_interval", "500" );
 	const char* oobDamageName;
-	if( g_realisticDamage.GetBool() ) {
+	if( g_useRealisticWeapons.GetBool() ) {
 		oobDamageName			= spawnArgs.GetString( "dmg_realistic_oob", spawnArgs.GetString( "dmg_oob" ) );
 	}
 	else {

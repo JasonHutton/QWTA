@@ -153,8 +153,7 @@ cvar	g_allowMineTriggerWarning;
 cvar	g_allowAPTWarning;
 cvar	g_aptWarning;
 
-cvar	g_realisticDamage;
-cvar	g_realisticSpread;
+cvar	g_useRealisticWeapons;
 cvar	g_useBaseETQW12Shotguns;
 cvar	g_useQuake4DarkMatter;
 cvar	g_artilleryWarning;
@@ -173,7 +172,6 @@ cvar	g_allowCrosshairs;
 cvar	g_useBaseETQW12SniperTrail;
 //cvar	g_allowTimerCircles;
 //cvar	g_hideHud;
-cvar	g_realisticROF;
 cvar	g_useVehicleAmmo;
 
 object gameplay_base;
@@ -369,7 +367,7 @@ GetDamage
 float GetDamage( string value ) {
 	float index = -1;
 
-	if ( g_realisticDamage.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		index = sys.getDeclIndex( sys.getDeclType( "damageDef" ), "realistic_" + value );
 	}
 

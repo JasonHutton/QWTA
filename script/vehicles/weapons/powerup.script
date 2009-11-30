@@ -35,7 +35,7 @@ void vehicle_weapon_powerup::preinit() {
 	powerupThreadId = -1;
 	
 	fireRate			= getFloatKey( "fire_rate" );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
 	}
 	spread				= getFloatKey( "spread" );

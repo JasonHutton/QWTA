@@ -184,20 +184,20 @@ boolean weapon_base::ShouldRunGuis() {
 
 void weapon_base::preinit() {
 	fireRate = getFloatKeyWithDefault( "fire_rate", 0.2f );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
 	}
 	numProjectiles = getFloatKeyWithDefault( "num_projectiles", 1.f );
 	if ( g_useBaseETQW12Shotguns.getBoolValue() ) {
 			fireRate = getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRate );
-			if ( g_realisticROF.getBoolValue() ) {
+			if ( g_useRealisticWeapons.getBoolValue() ) {
 				fireRate	= getFloatKeyWithDefault( "realistic_baseETQW12_fire_rate", fireRate );
 			}
 			numProjectiles = getFloatKeyWithDefault( "baseETQW12_num_projectiles", numProjectiles );
 	}
 	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
 		fireRate = getFloatKeyWithDefault( "q4hyper_fire_rate", fireRate );
-		if ( g_realisticROF.getBoolValue() ) {
+		if ( g_useRealisticWeapons.getBoolValue() ) {
 			fireRate	= getFloatKeyWithDefault( "realistic_q4hyper_fire_rate", fireRate );
 		}
 	}
@@ -359,7 +359,7 @@ void weapon_base::destroy() {
 
 float weapon_base::GetFovSpread_Base() {
 	if ( ironSightsEnabled ) {
-			if ( g_realisticSpread.getBoolValue() ) {
+			if ( g_useRealisticWeapons.getBoolValue() ) {
 				return realisticFovSpread;
 			}
 			else {

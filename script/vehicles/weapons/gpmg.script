@@ -40,7 +40,7 @@ void vehicle_weapon_gpmg::preinit() {
 	muzzleSoundLocal		= getKey( "muzzle_sound" );
 
 	fireRate				= getFloatKey( "fire_rate" );
-	if ( g_realisticROF.getBoolValue() ) {
+	if ( g_useRealisticWeapons.getBoolValue() ) {
 		fireRate			= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
 	}
 	spread					= getFloatKey( "spread" );

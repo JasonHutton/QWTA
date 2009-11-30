@@ -295,7 +295,7 @@ void sdWalker::Spawn( void ) {
 	physicsObj.SetMaxStepHeight( spawnArgs.GetFloat( "ik_maxStepSpeed", "1" ) );
 	physicsObj.SetContents( CONTENTS_MONSTER );
 
-	if ( g_realisticDamage.GetBool() ) {
+	if ( g_useRealisticWeapons.GetBool() ) {
 		stompDamage			= gameLocal.declDamageType[ spawnArgs.GetString( "dmg_realistic_stomp", spawnArgs.GetString( "dmg_stomp" ) ) ];
 	}
 	else {
