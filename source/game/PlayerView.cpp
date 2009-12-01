@@ -134,12 +134,19 @@ Called when a weapon fires, generates head twitches, etc
 */
 void idPlayerView::WeaponFireFeedback( const weaponFeedback_t& feedback ) {
 	// don't shorten a damage kick in progress
-	if ( feedback.recoilTime != 0 && kickFinishTime < gameLocal.time ) {
-		kickAngles = feedback.recoilAngles;
-		int	finish = gameLocal.time + static_cast< int >( g_kickTime.GetFloat() * feedback.recoilTime );
-		kickFinishTime = finish;
-	}	
-
+	if ( g_useRealisticWeapons.GetBool() ) {
+		if ( feedback.realisticRecoilTime != 0 && kickFinishTime < gameLocal.time ) {
+			kickAngles = feedback.realisticRecoilAngles;
+			int	finish = gameLocal.time + static_cast< int >( g_kickTime.GetFloat() * feedback.realisticRecoilTime );
+			kickFinishTime = finish;
+		}
+	} else {
+		if ( feedback.recoilTime != 0 && kickFinishTime < gameLocal.time ) {
+			kickAngles = feedback.recoilAngles;
+			int	finish = gameLocal.time + static_cast< int >( g_kickTime.GetFloat() * feedback.recoilTime );
+			kickFinishTime = finish;
+		}
+	}
 }
 
 /*

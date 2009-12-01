@@ -132,6 +132,11 @@ struct weaponFeedback_t {
 	idAngles				recoilAngles;
 	float					kickback;
 	float					kickbackProne;
+
+	int						realisticRecoilTime;
+	idAngles				realisticRecoilAngles;
+	float					realisticKickback;
+	float					realisticKickbackProne;
 };
 
 enum weaponSpreadValueIndex_t {

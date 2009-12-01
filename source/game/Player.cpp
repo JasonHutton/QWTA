@@ -3529,10 +3529,18 @@ void idPlayer::WeaponFireFeedback( const weaponFeedback_t& feedback ) {
 	}
 
 	idAngles temp = viewAngles;
-	if ( IsProne() ) {
-		temp.pitch -= feedback.kickbackProne;
+	if ( g_useRealisticWeapons.GetBool() ) {
+		if ( IsProne() ) {
+			temp.pitch -= feedback.realisticKickbackProne;
+		} else {
+			temp.pitch -= feedback.realisticKickback;
+		}
 	} else {
-		temp.pitch -= feedback.kickback;
+		if ( IsProne() ) {
+			temp.pitch -= feedback.kickbackProne;
+		} else {
+			temp.pitch -= feedback.kickback;
+		}
 	}
 	SetViewAngles( temp );
 }

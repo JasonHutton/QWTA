@@ -914,6 +914,34 @@ void idWeapon::GetWeaponDef( const sdDeclInvItem* item ) {
 	feedback.kickback		= spawnArgs.GetFloat( "kickback" );
 	feedback.kickbackProne	= spawnArgs.GetFloat( "kickback_prone" );
 
+	int rrtTemp;
+	if ( spawnArgs.GetInt( "realistic_recoilTime", "0", rrtTemp ) ) {
+		feedback.realisticRecoilTime = rrtTemp;
+	} else {
+		feedback.realisticRecoilTime = feedback.recoilTime;
+	}
+
+	idAngles rraTemp;
+	if ( spawnArgs.GetAngles( "realistic_recoilAngles", "0 0 0", rraTemp ) ) {
+		feedback.realisticRecoilAngles = rraTemp;
+	} else {
+		feedback.realisticRecoilAngles = feedback.recoilAngles;
+	}
+
+	float kbTemp;
+	if ( spawnArgs.GetFloat( "realistic_kickback", "0.0", kbTemp ) ) {
+		feedback.realisticKickback = kbTemp;
+	} else {
+		feedback.realisticKickback = feedback.kickback;
+	}
+
+	if ( spawnArgs.GetFloat( "realistic_kickback_prone", "0.0", kbTemp ) ) {
+		feedback.realisticKickbackProne = kbTemp;
+	} else {
+		feedback.realisticKickbackProne = feedback.kickbackProne;
+	}
+
+
 	int maxVisDist = spawnArgs.GetInt( "maxVisDist", "2048" );
 	spawnArgs.SetInt( "maxVisDist", maxVisDist );
 
