@@ -48,8 +48,7 @@ impression it had on a lot of people.
 * Most QWTA-specific features are optional. You can play BaseETQW using QWTA!
   (Or a strange combination of both.)
 * Realistic movement.
-* Realistic damage.
-* Realistic weapon accuracy.
+* Realistic weapons. (Behave more like their real-world counterparts.)
 * Other realism-oriented features...
 * Radar no longer detects infantry. (But 3rd eye cameras do!)
 * Adaptive class-number limiting.
@@ -73,6 +72,7 @@ impression it had on a lot of people.
 * Alternate firing mode for Strogg Tactical Shield. Absorbs shields.
 * Crosshairs optionally removed.
 * Hitbeep notifications optionally removed.
+* Vehicles use depletable ammunition.
 * Bot AI improvements.
 * BaseETQW bugfixes.
 
