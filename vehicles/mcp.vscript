@@ -451,8 +451,8 @@ stringMap vehicle_mcp_weapon1 {
 	"muzzle_sound_local"		"fx_gpmg_fire"
 
 	"velocity"					"1 0 0"
-	"fire_rate"					"0.10"
-	"realistic_fire_rate"		"0.05"
+	"fire_rate"					"0.10" // 10.0 RPS // 600 RPM
+	"realistic_fire_rate"		"0.063" // 15.8 RPS // 948 RPM
 	"spread"					"1"
 	"scriptobject"				"vehicle_weapon_gpmg"
 	"def_projectile"			"projectile_gpmg_mcp"
@@ -494,8 +494,8 @@ stringMap vehicle_mcp_weapon2 {
 	"spin_stop"					"30"
 
 	"velocity"					"1 0 0"
-	"fire_rate"					"0.08"
-	"realistic_fire_rate"		"0.04"
+	"fire_rate"					"0.08" // 12.5 RPS // 750 RPM
+	"realistic_fire_rate"		"0.04" // 25.0 RPS // 1500 RPM
 	"trigger_delay"				"0.5"
 	"spread"					"0.5"
 	"scriptobject"				"vehicle_weapon_gatling"

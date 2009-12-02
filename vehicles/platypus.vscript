@@ -280,8 +280,8 @@ stringMap vehicle_platypus_weapon1 {
 	"muzzle_sound_local"	"fx_gpmg_fire_local"
 
 	"velocity"				"1 0 0"
-	"fire_rate"				"0.10"
-	"realistic_fire_rate"	"0.05"
+	"fire_rate"				"0.10" // 10.0 RPS // 600 RPM
+	"realistic_fire_rate"	"0.063" // 15.8 RPS // 948 RPM
 	"spread"				"1"
 	"scriptobject"			"vehicle_weapon_gpmg"
 	"def_projectile"		"projectile_gpmg_platypus"
