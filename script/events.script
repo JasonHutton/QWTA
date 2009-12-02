@@ -386,6 +386,7 @@ scriptEvent string	getDeploymentTitle( float deployObjectIndex );
 scriptEvent float	getForceEscalation();
 scriptEvent float	getDeploymentForceEscalationRequirement( float deployObjectIndex );
 scriptEvent float	getDeploymentAVDBit( float deployObjectIndex );
+scriptEvent float	getDeploymentTerrainDisallowed( float deployObjectIndex );
 
 scriptEvent vector	getWorldMins();
 scriptEvent vector	getWorldMaxs();

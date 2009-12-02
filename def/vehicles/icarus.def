@@ -52,6 +52,7 @@ deployObject deployobject_icarus {
 	"rank_required"					"private"
 	"force_escalation_required"		"15"
 	"avdbit"						AVDBIT_ICARUS
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_icarus_visuals {

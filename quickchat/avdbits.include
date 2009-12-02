@@ -20,4 +20,8 @@
 #define AVDBIT_ABADDON		8192
 
 
+#define TERRAIN_DISALLOW_LAND	1
+#define TERRAIN_DISALLOW_WATER	2
+
+
 #endif

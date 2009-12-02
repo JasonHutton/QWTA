@@ -100,6 +100,7 @@ deployObject deployobject_hornet {
 	"rank_required"					"third_lieutenant"
 	"force_escalation_required"		"80"
 	"avdbit"						AVDBIT_TORMENTOR
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_hornet {

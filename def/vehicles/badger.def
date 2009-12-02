@@ -47,6 +47,7 @@ deployObject deployobject_badger {
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"20"
 	"avdbit"						AVDBIT_ARMADILLO
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_badger {

@@ -58,6 +58,7 @@ deployObject deployobject_bumblebee {
 	"rank_required"					"gunnery_sergeant"
 	"force_escalation_required"		"50"
 	"avdbit"						AVDBIT_BUMBLEBEE
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_bumblebee {

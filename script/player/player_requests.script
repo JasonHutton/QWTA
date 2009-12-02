@@ -1,3 +1,5 @@
+#include <quickchat/avdbits.include>
+
 object player {
 	void		RequestDeployment( string objectName );
 
@@ -320,6 +322,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	//float rankRequired = sys.getDeploymentRankRequirement( GetDeployObject( objectName ) );
 	float forceEscalationRequired = sys.getDeploymentForceEscalationRequirement( GetDeployObject( objectName ) );
 	float avdbit = sys.getDeploymentAVDBit( GetDeployObject( objectName ) );
+	float terrainDisallowed = sys.getDeploymentTerrainDisallowed( GetDeployObject( objectName ) );
 
 	entity proxy = getProxyEntity();
 
@@ -341,7 +344,9 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 		return false;
 	} else if ( getHealth() <= 0 ) {
 		return false;
-	} else if ( AI_INWATER ) {
+	} else if ( AI_INWATER && ( terrainDisallowed & TERRAIN_DISALLOW_WATER ) ) {
+		return false;
+	} else if ( AI_ONGROUND && ( terrainDisallowed & TERRAIN_DISALLOW_LAND ) ) {
 		return false;
 	} else {
 		// check if we already have a vehicle

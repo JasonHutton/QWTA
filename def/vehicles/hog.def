@@ -73,6 +73,7 @@ deployObject deployobject_hog {
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"30"
 	"avdbit"						AVDBIT_HOG
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_hog {

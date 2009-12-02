@@ -30,6 +30,7 @@ public:
 	int								GetRankLevelRequired( void ) const { return rankRequired != NULL ? rankRequired->GetLevel() : -1; }
 	int								GetForceEscalationRequired( void ) const { return forceEscalationRequired; }
 	int								GetAVDBit( void ) const { return avdbit; }
+	int								GetTerrainDisallowed( void ) const { return terrainDisallowed; }
 	static void						CacheFromDict( const idDict& dict );
 	bool							AllowRotation( void ) const { return allowRotation; }
 
@@ -49,6 +50,7 @@ private:
 	const sdDeclRank*				rankRequired;
 	int								forceEscalationRequired;
 	int								avdbit;
+	int								terrainDisallowed;
 };
 
 #endif // __DECLDEPLOYABLEOBJECT_H__

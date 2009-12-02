@@ -70,6 +70,7 @@ deployObject deployobject_platypus {
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"15"
 	"avdbit"						AVDBIT_PLATYPUS
+	"terrain_disallowed"			"1"
 }
 
 entityDef vehicle_platypus {

@@ -225,6 +225,7 @@ deployObject deployobject_goliath {
 	"rank_required"					"master_chief"
 	"force_escalation_required"		"60"
 	"avdbit"						AVDBIT_CYCLOPS
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_goliath {

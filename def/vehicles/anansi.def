@@ -96,6 +96,7 @@ deployObject deployobject_anansi {
 	"rank_required"					"third_lieutenant"
 	"force_escalation_required"		"90"
 	"avdbit"						AVDBIT_ANANSI
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_anansi {

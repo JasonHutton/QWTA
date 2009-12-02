@@ -89,6 +89,7 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 	}
 	forceEscalationRequired = temp.GetInt( "force_escalation_required" );
 	avdbit	= temp.GetInt( "avdbit", "-1" );
+	terrainDisallowed = temp.GetInt( "terrain_disallowed", "0" );
 
 	const char* entityType;
 
@@ -155,6 +156,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	rankRequired		= NULL;
 	forceEscalationRequired = 0;
 	avdbit				= -1;
+	terrainDisallowed	= 0;
 }
 
 

@@ -61,6 +61,7 @@ deployObject deployobject_jupiter {
 	"rank_required"					"captain"
 	"force_escalation_required"		"120"
 	"avdbit"						AVDBIT_JUPITER
+	"terrain_disallowed"			"2"
 }
 
 entityDef vehicle_jupiter {
