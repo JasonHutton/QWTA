@@ -81,8 +81,8 @@ CHANGES:
     features into one cvar. Generally, GDF weapons have a higher rate of fire
     than in BaseETQW. Realistic damages for these weapons lowered slightly,
     to make up for the ability to put more lead on target. Strogg weapons
-    remain slow-firing and high-damage. More ammunition is also given to these
-    GDF weapons...
+    remain slow-firing and higher-damage, but their accuracies have also
+    improved.
 * Bind contexts for Jupiter, Abaddon, Strogg team, and GDF team, added.
   + Jupiter: "g_bind_context_jupiter"
   + Abaddon: "g_bind_context_abaddon"
