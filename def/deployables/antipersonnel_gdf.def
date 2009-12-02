@@ -356,7 +356,7 @@ damageFilter realistic_damage_deployable_antipersonnel {
 
 	type {
 		target	"target_all"
-		damage	21
+		damage	18
 	}
 }
 
