@@ -191,9 +191,7 @@ invItemDef inventory/weapons/sniperrifle {
 		"crosshair_spread_scale"		"3"
 
 		"spread_min"					"2"
-		"realistic_spread_min"			"20"
 		"spread_max"					"20"
-		"realistic_spread_max"			"38"
 		"spread_inc"					"20"
 
 		"spread_viewrate_min"			"2"
@@ -203,9 +201,7 @@ invItemDef inventory/weapons/sniperrifle {
 		"spread_max_settle_time"		"1200"
 
 		"spread_crouch_min"				"1.5"
-		"realistic_spread_crouch_min"	"15"
 		"spread_crouch_max"				"15"
-		"realistic_spread_crouch_max"	"28.5"
 		"spread_crouch_inc"				"15"
 
 		"spread_crouch_viewrate_min"	"1.5"
@@ -215,9 +211,7 @@ invItemDef inventory/weapons/sniperrifle {
 		"spread_crouch_max_settle_time"	"1100"
 
 		"spread_prone_min"				"1"
-		"realistic_spread_prone_min"	"10"
 		"spread_prone_max"				"10"
-		"realistic_spread_prone_max"	"19"
 		"spread_prone_inc"				"10"
 
 		"spread_prone_viewrate_min"		"1"

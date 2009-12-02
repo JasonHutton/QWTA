@@ -229,7 +229,7 @@ invItemDef inventory/weapons/lacerator/grenade {
 		"fov_spread"					"0.5"
 		"realistic_fov_spread"			"0.25"
 
-		"fire_rate"						"0.18"
+		"fire_rate"						"0.18" // 5.5 RPS // 330 RPM
 		"num_projectiles"				"1"
 
 		"fire_rate_single"				"3"
@@ -249,9 +249,7 @@ invItemDef inventory/weapons/lacerator/grenade {
 		"crosshair_spread_scale"		"2"
 
 		"spread_min"					"1"
-		"realistic_spread_min"			"3.6"
 		"spread_max"					"3.6"
-		"realistic_spread_max"			"6.2"
 		"spread_inc"					"1"
 
 		"spread_viewrate_min"			"1"
@@ -261,9 +259,7 @@ invItemDef inventory/weapons/lacerator/grenade {
 		"spread_max_settle_time"		"700" // settles slower than standard lacerator (extra weight of grenade launcher)
 
 		"spread_crouch_min"				"0.75"
-		"realistic_spread_crouch_min"	"2.8"
 		"spread_crouch_max"				"2.8"
-		"realistic_spread_crouch_max"	"4.85"
 		"spread_crouch_inc"				"1"
 
 		"spread_crouch_viewrate_min"	"0.75"
@@ -273,9 +269,7 @@ invItemDef inventory/weapons/lacerator/grenade {
 		"spread_crouch_max_settle_time"	"650"
 
 		"spread_prone_min"				"0.5"
-		"realistic_spread_prone_min"	"2"
 		"spread_prone_max"				"2"
-		"realisti_spread_prone_max"		"3.5"
 		"spread_prone_inc"				"1"
 
 		"spread_prone_viewrate_min"		"0.5"
@@ -285,9 +279,7 @@ invItemDef inventory/weapons/lacerator/grenade {
 		"spread_prone_max_settle_time"	"600"
 
 		"spread_jump_min"					"4"
-		"realistic_spread_jump_min"			"8"
 		"spread_jump_max"					"4"
-		"realistic_spread_jump_max"			"8"
 		"spread_jump_inc"					"4"
 
 		"spread_jump_max_settle_time"		"600"

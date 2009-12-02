@@ -379,10 +379,10 @@ invItemDef inventory/weapons/assaultrifle {
 		"fov_time"						"0.25"
 		"fov_speed"						"0.5"
 		"fov_spread"					"0.5"
-		"realistic_fov_spread"			"0.25"
+		"realistic_fov_spread"			"0.125"
 
-		"fire_rate"						"0.12" // 8.3 RPS
-		"realistic_fire_rate"			"0.08" // 12.5 RPS
+		"fire_rate"						"0.12" // 8.3 RPS // 498 RPM
+		"realistic_fire_rate"			"0.08" // 12.5 RPS // 750 RPM
 		"num_projectiles"				"1"
 
 		"low_ammo"						"8"
@@ -399,9 +399,7 @@ invItemDef inventory/weapons/assaultrifle {
 		"crosshair_spread_scale"		"2"
 
 		"spread_min"					"1"
-		"realistic_spread_min"			"3.5"
 		"spread_max"					"3.5"
-		"realistic_spread_max"			"6"
 		"spread_inc"					"1"
 
 		"spread_viewrate_min"			"1"
@@ -411,9 +409,7 @@ invItemDef inventory/weapons/assaultrifle {
 		"spread_max_settle_time"		"600"
 
 		"spread_crouch_min"				"0.75"
-		"realistic_spread_crouch_min"	"2.8"
 		"spread_crouch_max"				"2.8"
-		"realistic_spread_crouch_max"	"4.85"
 		"spread_crouch_inc"				"1"
 
 		"spread_crouch_viewrate_min"	"0.75"
@@ -423,9 +419,7 @@ invItemDef inventory/weapons/assaultrifle {
 		"spread_crouch_max_settle_time"	"550"
 
 		"spread_prone_min"				"0.5"
-		"realistic_spread_prone_min"	"2"
 		"spread_prone_max"				"2"
-		"realistic_spread_prone_max"	"3.5"
 		"spread_prone_inc"				"1"
 
 		"spread_prone_viewrate_min"		"0.5"
@@ -435,9 +429,7 @@ invItemDef inventory/weapons/assaultrifle {
 		"spread_prone_max_settle_time"	"500"
 
 		"spread_jump_min"					"4"
-		"realistic_spread_jump_min"			"8"
 		"spread_jump_max"					"4"
-		"realistic_spread_jump_max"			"8"
 		"spread_jump_inc"					"4"
 
 		"spread_jump_max_settle_time"		"600"

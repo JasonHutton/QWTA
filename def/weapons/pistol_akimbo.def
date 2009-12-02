@@ -209,6 +209,7 @@ template inventory/weapons/pistol_akimbo_template {
 			"fov_time"							"0.25"
 			"fov_speed"							"0.5"
 			"fov_spread"						"0.5"
+			"realistic_fov_spread"				"0.125"
 
 			"fire_rate"							"0.12"
 			"low_ammo"							"4"

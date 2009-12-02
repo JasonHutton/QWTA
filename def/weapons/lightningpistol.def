@@ -278,7 +278,7 @@ damageFilter realistic_damage_lightningpistol {
 
 	type {
 		target							"target_player_all"
-		damage							18
+		damage							23
 	}
 
 	type {

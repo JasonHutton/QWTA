@@ -164,8 +164,6 @@ invItemDef inventory/weapons/hyperblaster {
 		"fov_speed"						"0.5"
 		"fov_spread"					"0.5"
 		"realistic_fov_spread"			"0.25"
-		"q4hyper_fov_spread"			"0.5"
-		"q4hyper_realistic_fov_spread"	"0.5"
 
 		"trigger_delay"					"0"
 		"fire_rate"						"0.08"
@@ -196,16 +194,9 @@ invItemDef inventory/weapons/hyperblaster {
 		"crosshair_spread_scale"		"3"
 
 		"spread_min"					"0.68"
-		"realistic_spread_min"			"3.5"
 		"spread_max"					"3.5"
-		"realistic_spread_max"			"6.32"
 		"spread_inc"					"1"
 		
-		"q4hyper_spread_min"			"0.68"
-		"q4hyper_realistic_spread_min"	"0.68"
-		"q4hyper_spread_max"			"3.5"
-		"q4hyper_realistic_spread_max"	"3.5"
-
 		"spread_viewrate_min"			"0.68"
 		"spread_viewrate_max"			"3.5"
 		"spread_viewrate_inc"			"2"
@@ -213,16 +204,9 @@ invItemDef inventory/weapons/hyperblaster {
 		"spread_max_settle_time"		"700"
 
 		"spread_crouch_min"				"0.62"
-		"realistic_spread_crouch_min"	"3"
 		"spread_crouch_max"				"3"
-		"realistic_spread_crouch_max"	"5.38"
 		"spread_crouch_inc"				"1"
 		
-		"q4hyper_spread_crouch_min"		"0.62"
-		"q4hyper_realistic_spread_crouch_min"	"0.62"
-		"q4hyper_spread_crouch_max"		"3"
-		"q4hyper_realistic_spread_crouch_max"	"3"
-
 		"spread_crouch_viewrate_min"	"0.62"
 		"spread_crouch_viewrate_max"	"3"
 		"spread_crouch_viewrate_inc"	"1.5"
@@ -230,16 +214,9 @@ invItemDef inventory/weapons/hyperblaster {
 		"spread_crouch_max_settle_time"	"450"
 
 		"spread_prone_min"				"0.55"
-		"realistic_spread_prone_min"	"2.5"
 		"spread_prone_max"				"2.5"
-		"realistic_spread_prone_max"	"4.45"
 		"spread_prone_inc"				"1"
 		
-		"q4hyper_spread_prone_min"		"0.55"
-		"q4hyper_realistic_spread_prone_min"	"0.55"
-		"q4hyper_spread_prone_max"		"2.5"
-		"q4hyper_realistic_spread_prone_max"	"2.5"
-
 		"spread_prone_viewrate_min"		"0.55"
 		"spread_prone_viewrate_max"		"2.5"
 		"spread_prone_viewrate_inc"		"1"
@@ -459,7 +436,7 @@ damageFilter realistic_damage_hyperblaster {
 
 	type {
 		target							"target_player_all"
-		damage							57
+		damage							48
 	}
 
 	type {

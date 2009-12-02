@@ -222,7 +222,7 @@ damageFilter realistic_damage_hyperblaster_qwta {
 
 	type {
 		target							"target_player_all"
-		damage							57
+		damage							48
 	}
 
 	type {
