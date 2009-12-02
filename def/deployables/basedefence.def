@@ -120,6 +120,8 @@ entityDef deployable_basedefence {
 entityDef deployable_basedefence_gdf {
 	"inherit"						"deployable_basedefence"
 	"inherit1"						"deployable_gdf"
+	
+	"realisticFireRate"				"0.024"
 
 	"task_hack"						""
 	"task_repair"					""
@@ -184,7 +186,23 @@ damageFilter realistic_damage_deployable_basedefence {
 
 	type {
 		target	"target_all"
-		damage	24
+		damage	12
+	}
+}
+
+damageFilter damage_deployable_basedefence_strogg {
+
+	type {
+		target	"target_all"
+		damage	8
+	}
+}
+
+damageFilter realistic_damage_deployable_basedefence_strogg {
+
+	type {
+		target	"target_all"
+		damage	20
 	}
 }
 
@@ -215,7 +233,7 @@ damageDef realistic_damage_deployable_basedefence {
 }
 
 damageDef damage_deployable_basedefence_strogg {
-	damage							"damage_deployable_basedefence"
+	damage							"damage_deployable_basedefence_strogg"
 
 	prof_damage						""
 
@@ -237,5 +255,5 @@ damageDef damage_deployable_basedefence_strogg {
 
 damageDef realistic_damage_deployable_basedefence_strogg {
 	inherit							"damage_deployable_basedefence_strogg"
-	damage							"realistic_damage_deployable_basedefence"
+	damage							"realistic_damage_deployable_basedefence_strogg"
 }
