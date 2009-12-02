@@ -96,6 +96,24 @@ the more severe issues with QWTA v0.3.2 were discovered during the development
 of QWTA v0.4.0. So v0.4.0 was put on hold and v0.3.3 was released.
 To be honest, I probably should have released just a tiny patch, but some of
 the new v0.4.0 features seemed enjoyable to include.
+Without further ado, the complete list:
+* Magog-carried GDF vehicle will fail to deploy if the vehicle is destroyed.
+* Bots don't wait for their vehicle drop to arrive before moving on.
+* 3rd Eye Camera updates its radar origin even when not moving.
+* Players killed by being smashed against walls don't attribute frags properly
+* Dark Matter Cannon's gravity won't pull players away from mounted guns.
+* Dark Matter Cannon will (very slightly) damage nearby objects when fired.
+* Bots vehicle charge bars don't reset when going from warmup to ingame.
+* FE costs are not listed anywhere ingame.
+* Hyperblaster projectiles continue to home in on a freshly respawned player.
+* Blood effects' player wound decals are not copied to corpses.
+* Blood effects' splatter effects are not properly scaled or rate limited.
+* Blood effects' decals don't get cleared until after a corpse is decomposed.
+* Blood effects' player wound decals are not applied for knife wounds.
+* Hog, Desecrator, and Abaddon teleport-drop use a simplified effect.
+* Abaddon Flamethrower uses very simplified physics for now.
+* There's no cap on the number of vehicles dropped by different players.
+* Documentation tab on Limbo menu QWTA page, is blank.
 
 5. Credits
 ================================
