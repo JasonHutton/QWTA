@@ -1,4 +1,4 @@
-// str_qwta_menus_00000084
+// str_qwta_menus_00000086
 
 /*
 =================
@@ -198,6 +198,10 @@ locString guis/limbo/qwta/settings/useRealisticWeapons {
 	text "#str_qwta_menus_00000083"
 }
 
+locString guis/limbo/qwta/settings/useVehicleAmmo {
+	text "#str_qwta_menus_00000085"
+}
+
 /*
 =================
  ToolTips
@@ -346,4 +350,8 @@ locString guis/limbo/qwta/settings/realisticROF/tooltip {
 
 locString guis/limbo/qwta/settings/useRealisticWeapons/tooltip {
 	text "#str_qwta_menus_00000084"
+}
+
+locString guis/limbo/qwta/settings/useVehicleAmmo/tooltip {
+	text "#str_qwta_menus_00000086"
 }

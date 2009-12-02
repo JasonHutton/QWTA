@@ -55,6 +55,7 @@
 	"#str_qwta_menus_00000080" "Realistic except for bots"
 	"#str_qwta_menus_00000081" "Realistic Rates of Fire"
 	"#str_qwta_menus_00000083" "Use Realistic Weapons"
+	"#str_qwta_menus_00000085" "Use Vehicle Ammo"
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -93,4 +94,5 @@
 	"#str_qwta_menus_00000072" "Hides the HUD, for the most part. Will reappear when something affects things on it. (Example: Reloading will show you your ammo briefly.)"
 	"#str_qwta_menus_00000082" "GDF automatic weapons fire at more realistic speeds, faster than BaseETQW."
 	"#str_qwta_menus_00000084" "Use realistic weapon behaviour and properties. Alternatively, use BaseETQW weapon behaviour and properties."
+	"#str_qwta_menus_00000086" "Vehicles use depletable ammunition."
 }
