@@ -110,6 +110,7 @@ Without further ado, the complete list:
 * Blood effects' splatter effects are not properly scaled or rate limited.
 * Blood effects' decals don't get cleared until after a corpse is decomposed.
 * Blood effects' player wound decals are not applied for knife wounds.
+* Blood effects' player wound decals will spam console with warning messages.
 * Hog, Desecrator, and Abaddon teleport-drop use a simplified effect.
 * Abaddon Flamethrower uses very simplified physics for now.
 * There's no cap on the number of vehicles dropped by different players.
