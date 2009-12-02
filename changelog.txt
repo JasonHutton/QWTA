@@ -101,6 +101,7 @@ BUG FIXES:
   volumes and distances.
 * Fixed a bug with class limit autoadjuster using GDF values for Strogg team.
 * Fixed a bug which was causing Flyer Drones to emit warning messages.
+* Some rudimentary fixes to vehicle drop permissions for land/sea deployments.
 
 
 QWTA v0.3.2:
