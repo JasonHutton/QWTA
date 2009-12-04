@@ -595,6 +595,9 @@ damageDef damage_gpmg {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gpmg"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gpmg/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_gpmg {
@@ -623,6 +626,9 @@ damageDef damage_gpmg_mount {
 
 	tt_obituary							"tooltips/killmsgs/weapons/gpmg"
 	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gpmg/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
 }
 
 damageDef realistic_damage_gpmg_mount {
