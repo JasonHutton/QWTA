@@ -25,12 +25,12 @@ CHANGES:
   + Controls whether the Railgun has penetration properties, allowing it to
     be fired through multiple targets(players and corpses only), or not.
 * Cvar g_disableVehicleRespawns added.
+  + Default 0.
+  + Allows or disallows vehicles respawning after they're destroyed.
 * Cvar g_useShieldAbsorber added.
   + Default 1.
   + Allows the use of the Tactical Shield's altfire, which re-absorbs
     shields that have been deployed.
-* Railgun and Sniper Rifle infantry realistic-mode damage decreased.
-  + Rather than double BaseETQW damages, they're simply +20 each.
 * Matched the Quake4-style Hyperblaster's damages to the BaseETQW
   Hyperblaster's in response to player feedback. Changed the realistic
   damages for the Quake4-style Hyperblaster to be double for the splash
