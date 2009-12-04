@@ -108,6 +108,7 @@ Without further ado, the complete list:
 * Hyperblaster projectiles continue to home in on a freshly respawned player.
 * Blood effects' player wound decals are not copied to corpses.
 * Blood effects' splatter effects are not properly scaled or rate limited.
+* Blood effects' splatter decals disappear suddenly rather than fading.
 * Blood effects' decals don't get cleared until after a corpse is decomposed.
 * Blood effects' player wound decals are not applied for knife wounds.
 * Blood effects' player wound decals will spam console with warning messages.
