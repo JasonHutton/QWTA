@@ -1096,7 +1096,7 @@ gui limbo {
 			#include <guis/game/limbo/tabpages/player_stats.include>
 			#include <guis/game/limbo/tabpages/voting.include>
 			#include <guis/game/limbo/tabpages/admin.include>
-			#include <guis/game/limbo/tabpages/qwta_info.include>
+			//#include <guis/game/limbo/tabpages/qwta_info.include>
 		_end_tab_container
 
 	}
