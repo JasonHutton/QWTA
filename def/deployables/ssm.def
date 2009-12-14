@@ -396,6 +396,10 @@ damageDef damage_ssmSplash {
 	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssm/teamkill"
 	tt_obituary_self				"tooltips/killmsgs/weapons/ssm/self"
 	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssm/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
 }
 
 damageFilter damage_ssm {
