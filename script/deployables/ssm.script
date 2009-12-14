@@ -37,6 +37,7 @@ object deployable_ssm : deployable_base {
 	float			vGetFireSupportMode();
 
 	float			projectileIndex;
+	float			nukeProjectileIndex;
 
 	float			launchJoint;
 
@@ -95,6 +96,7 @@ void deployable_ssm::preinit() {
 
 	entityDeclIndex		= sys.getDeclType( "entityDef" );
 	projectileIndex		= sys.getDeclIndex( entityDeclIndex, getKey( "def_projectile" ) );
+	nukeProjectileIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_nuke_projectile" ) );
 
 	fsStatus = new fireSupportStatus;
 
@@ -273,7 +275,11 @@ void deployable_ssm::Launch() {
 
 	if ( CalcFiringVelocity( target, missilePos ) ) {
 		if( !sys.isClient() ) {
-			missile = launchMissileSimple( owner, self, $null_entity, projectileIndex, -1, 0.f, missilePos, firingVelocity );
+			if ( g_useNuclearHammer.getBoolValue() ) {
+				missile = launchMissileSimple( owner, self, $null_entity, nukeProjectileIndex, -1, 0.f, missilePos, firingVelocity );
+			} else {
+				missile = launchMissileSimple( owner, self, $null_entity, projectileIndex, -1, 0.f, missilePos, firingVelocity );
+			}
 			missile.vSetNewTarget( targetEntity );
 		}
 	} else {

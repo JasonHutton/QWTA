@@ -181,6 +181,7 @@ entityDef deployable_ssm {
 	"action_time"					"30"
 
 	"def_projectile"				"projectile_deployable_ssm"
+	"def_nuke_projectile"			"projectile_deployable_ssm_qwta"
 
 	"snd_deploy"					"sounds/deployables/ssm/deploy"
 	"snd_deploy_feet"				"sounds/deployables/ssm/deploy_feet"
@@ -355,10 +356,6 @@ entityDef projectile_deployable_ssm {
 	"collection_antissm"			"antissm"
 
 	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
-
-	"emp_radius"					"2458"
-	"emp_time"						"10"
-	"emp_weapon_time"				"2"
 
 	"prof_destroy"					"pro_constructor_antimissile_hammer"
 }
