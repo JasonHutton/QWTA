@@ -1,0 +1,64 @@
+
+object radiation_point {
+	void			preinit();
+	void			init();
+	
+	void		Idle();
+	void		Activate( entity p );
+	void		Dissipate();
+	
+	entity		owner;
+	
+	float		rate;
+	float		lifetime;
+	float		nextRadburstTime;
+	
+	float		spawnTime;
+}
+
+void radiation_point::preinit() {
+	owner		= $null_entity;
+	rate		= getFloatKey( "rate" );
+	lifetime	= getFloatKey( "lifetime" );
+	nextRadburstTime	= 0.f;
+	
+	spawnTime	= sys.getTime();
+}
+
+void radiation_point::init() {
+	// idle until the owner has been sent by the server
+	while ( true ) {
+		if ( owner != $null_entity ) {
+			break;
+		}
+		sys.waitFrame();
+	}
+	
+	setState( "Idle" );
+}
+
+void radiation_point::Idle() {
+	while(true) {
+		sys.waitFrame();
+		
+		if ( sys.getTime() > spawnTime + lifetime ) {
+			break;
+		}
+		
+		if ( sys.getTime() > nextRadburstTime ) {
+			nextRadburstTime = sys.getTime() + rate;
+			
+			sys.applyRadiusDamage( getWorldOrigin(), self, owner, $null_entity, $null_entity, GetDamage( getKey( "dmg_radiation" ) ), 1.f, 1.f );
+		}
+	}
+	
+	setState( "Dissipate" );
+}
+
+void radiation_point::Dissipate() {
+	remove();
+}
+
+void radiation_point::Activate( entity p ) {
+	owner = p;
+}

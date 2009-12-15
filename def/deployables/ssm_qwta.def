@@ -54,4 +54,46 @@ entityDef projectile_deployable_ssm_qwta {
 	"emp_weapon_time"				"5"
 
 	"prof_destroy"					"pro_constructor_antimissile_hammer"
+	
+	"def_radiation"					"radiation_point_ssm"
+}
+
+entityDef radiation_point_ssm {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"radiation_point"
+	
+	"rate"							"0.5"
+	"lifetime"						"10.0"
+	
+	"dmg_radiation"					"damage_radiation"
+}
+
+damageFilter damage_radiation {
+	type {
+		target					"target_player_all"
+		damage					5
+	}
+}
+
+damageDef damage_radiation {
+	damage							"damage_radiation"
+	radius							3072
+	//push							10000000
+
+	noheadshot
+	
+	stat_name						"hammer"
+	
+	prof_damage						"pro_fieldops_damage"
+	
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssm"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssm/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssm/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssm/unknown"
+	
+	//bleed
+	//bleedWoundType						"explosive"
+	//bleedExplode
 }

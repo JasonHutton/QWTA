@@ -15,12 +15,20 @@ object projectile_ssm_qwta : projectile_ssm {
 	float			empRadius;
 	float			empTime;
 	float			weaponEmpTime;
+	
+	float			entityDeclIndex;
+	
+	float			radiationIndex;
 }
 
 void projectile_ssm_qwta::preinit() {
+	entityDeclIndex	= sys.getDeclType( "entityDef" );
+	
 	empRadius		= getFloatKey( "emp_radius" );
 	empTime			= getFloatKey( "emp_time" );
 	weaponEmpTime	= getFloatKey( "emp_weapon_time" );
+	
+	radiationIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_radiation" ) );
 }
 
 void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
@@ -41,6 +49,11 @@ void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
 		entity ent = getBoundsCacheEntity( i );
 		ent.vApplyEmpDamage( owner, empTime, weaponEmpTime );
 	}
+	
+	radiation_point radiationPoint = sys.spawnType( radiationIndex );
+	radiationPoint.setWorldOrigin( getWorldOrigin() );
+	radiationPoint.setAngles( g_vectorUp );
+	radiationPoint.Activate( getOwner() );
 
 	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
 	ScheduleRemoval( removeDelay );

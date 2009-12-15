@@ -264,6 +264,7 @@ This is the main script that is loaded before any level scripts load.
 #include "script/vehicles/weapons/plasmabeam.script"
 
 // Weapons
+#include "script/projectiles/radiation.script"
 #include "script/projectiles/ssm_qwta.script"
 
 // Items
