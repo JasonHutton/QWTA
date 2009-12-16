@@ -75,7 +75,9 @@ void projectile_ssm_qwta::BlindFlash() {
 void projectile_ssm_qwta::EMPPulse() {
 	entitiesOfCollection( "emp" );
 	filterEntitiesByRadius( getWorldOrigin(), empRadius, true );
-	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	if ( !g_allowEMPFriendlyFire.getBoolValue() ) {
+		filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	}
 
 	entity owner = getOwner();
 

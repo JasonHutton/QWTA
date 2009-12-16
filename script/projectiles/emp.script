@@ -39,7 +39,9 @@ void projectile_emp::DoExplodeEffect( entity collisionEnt ) {
 
 	entitiesOfCollection( "emp" );
 	filterEntitiesByRadius( getWorldOrigin(), empRadius, true );
-	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	if ( !g_allowEMPFriendlyFire.getBoolValue() ) {
+		filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	}
 	
 	entity owner = getOwner();
 	

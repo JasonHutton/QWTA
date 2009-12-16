@@ -624,6 +624,7 @@ idCVar	g_useBaseETQW12SniperTrail( "g_useBaseETQW12SniperTrail",	"1",		CVAR_GAME
 //idCVar	g_hideHud(					"g_hideHud",					"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Disables most aspects of the HUD, revealing them only when they're accessed in some way." );
 idCVar	g_useRealisticWeapons(		"g_useRealisticWeapons",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should weapons behave in a realistic manner, or more game-oriented?" );
 idCVar	g_useVehicleAmmo(			"g_useVehicleAmmo",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle weapons consume ammunition or not?" );
+idCVar	g_allowEMPFriendlyFire(		"g_allowEMPFriendlyFire",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow EMP effects from affecting friendly units." );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 

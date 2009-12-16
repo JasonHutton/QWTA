@@ -1,3 +1,25 @@
+QWTA v0.4.0:
+==========
+CHANGES:
+* More changes to the tactical nuke behaviours for the Hammer.
+  + All changes rely on g_useNuclearHammer.
+  + Explosion effect enhanced: Bigger flash and flare, more smoke, 
+    bigger mushroom cloud, mushroom cloud lasts longer.
+  + Hammer explosion's EMP effects increased based on player feedback.
+  + Hammer explosion leaves an area of radioactivity for 10 seconds after
+    the initial explosion. Blocking line of sight or entering a vehicle
+    shields from these effects. Damage from radioactivity decreases
+    the farther from ground zero you are.
+  + Hammer explosions now cause a blinding flash, when nuclear. Hiding behind
+    cover, fleeing the area to gain distance, or simply looking away from the
+    detonation, reduce the effects of blinding.
+* Cvar g_allowEMPFriendlyFire added.
+  + Default 1.
+  + Allows EMP effects to affect friendly units, for realism purposes.
+
+BUG FIXES:
+* Hammer explosions now cause blood splatters.
+
 QWTA v0.3.3:
 ==========
 CHANGES:
