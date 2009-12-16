@@ -4,7 +4,19 @@ object vehicle_weapon_chargeshot : vehicle_weapon_vrof {
 
 	void		Idle();
 	void		Fire();
-
+	
+	void		destroy();
+	void		OnSetPlayer_Base( entity p );
+	void		OnSetPlayer( entity p );
+	void		OnBecomeViewWeapon();
+	void		OnFinishViewWeapon();
+	void		KillUpdatePowerup();
+	void		CreateUpdatePowerup();
+	
+	void		UpdatePowerup();
+	void		AddPowerup();
+	
+		
 	float	trigger_delay;
 
 	string	muzzleChargeFX;
@@ -24,6 +36,12 @@ object vehicle_weapon_chargeshot : vehicle_weapon_vrof {
 	handle		muzzleFlashEffectHandle;
 	float		muzzleFlashSoundTime;
 	float		muzzleFlashSoundLocalTime;
+	
+	float				powerupThreadId;
+	float				powerupTimerHandle;
+	float				powerupPerShot;
+	float				powerupLength;
+	float				powerupSafeLength;
 }
 
 void vehicle_weapon_chargeshot::preinit() {
@@ -46,6 +64,12 @@ void vehicle_weapon_chargeshot::preinit() {
 	muzzleFlashEffectHandle = 0;
 	muzzleFlashSoundTime = 0;
 	muzzleFlashSoundLocalTime = 0;	
+	
+	powerupTimerHandle = sys.allocTargetTimer( myVehicle.getKeyWithDefault( "timer_powerup", "powerup_default" ) );
+	powerupPerShot = myVehicle.getFloatKeyWithDefault( "powerup_per_shot", 0.5f );
+	powerupLength = myVehicle.getFloatKeyWithDefault( "powerup_length", 5.0f );
+	powerupSafeLength = powerupLength - 0.5f;
+	powerupThreadId = -1;
 }
 
 void vehicle_weapon_chargeshot::Idle() {
@@ -59,7 +83,7 @@ void vehicle_weapon_chargeshot::Idle() {
 
 		if ( user != $null_entity ) {
 			user.proxyFiringWeaponStart = false;
-			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
+			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() && ( sys.getTargetTimerValue( powerupTimerHandle, user ) - sys.getTime() <= 0 ) ) {
 				if ( CanRemoveCharge() && CanRemoveAmmo() && sys.getTime() >= fireDelayTime ) {
 					
 					
@@ -70,16 +94,12 @@ void vehicle_weapon_chargeshot::Idle() {
 					else {
 						myVehicle.startSound( muzzleChargeSound, SND_WEAPON_FIRE );
 					}
-					
-					/*					
-					vehicle.playJointEffect( muzzleChargeFX, jointHandle, 0 );
-					if( user == sys.getLocalPlayer() ) {
-						vehicle.playJointEffect( muzzleChargeSoundLocal, jointHandle, 0 );
+
+					float delayTime = sys.getTime() + trigger_delay;
+					while( sys.getTime() <= delayTime ) {
+						sys.waitFrame();
+						AddPowerup();
 					}
-					else {
-						vehicle.playJointEffect( muzzleChargeSound, jointHandle, 0 );
-					}*/
-					sys.wait( trigger_delay );
 
 					if( !myVehicle.isWeaponEMPed() && !myVehicle.isTeleporting() ) {
 						user.proxyFiringWeaponStart = true;
@@ -133,4 +153,124 @@ void vehicle_weapon_chargeshot::Fire() {
 	RemoveAmmo();
 
 	GoToIdle();
+}
+
+void vehicle_weapon_chargeshot::destroy() {
+	if ( user == sys.getLocalViewPlayer() && user != $null_entity ) {	
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+		KillUpdatePowerup();
+	}
+
+	delete weaponBar;
+}
+
+void vehicle_weapon_chargeshot::OnSetPlayer_Base( entity p ) {
+	if ( user == p ) {
+		return;
+	}
+	
+	if( user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0 );
+	}
+
+	user = p;
+	if ( user != $null_entity ) {
+		user.proxyFiringWeapon = false;
+		user.proxyFiringWeaponStart = false;
+	}
+	
+	vCheckProficiency();
+
+	weaponBar.SetOwner( user );
+
+	GoToIdle();
+}
+
+void vehicle_weapon_chargeshot::OnSetPlayer( entity p ) {
+	OnSetPlayer_Base( p );
+	
+	if( user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0 );	
+	}
+	
+	if ( /*hasHeat &&*/ user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		CreateUpdatePowerup();
+	} /*else if ( myVehicle.vGetManualDeploy() ) {
+		KillUpdatePowerup();
+	}*/
+}
+
+void vehicle_weapon_chargeshot::OnBecomeViewWeapon() {
+	SetCrosshair();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 1 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0 );
+	if ( /*hasHeat &&*/ user == sys.getLocalViewPlayer() && user != $null_entity ) {
+		CreateUpdatePowerup();
+	}
+}
+
+void vehicle_weapon_chargeshot::OnFinishViewWeapon() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 0.f );
+	KillUpdatePowerup();
+}
+
+void vehicle_weapon_chargeshot::KillUpdatePowerup() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showPowerup", 0.f );
+	sys.killThread( "UpdatePowerup_" + myVehicle.getName() );
+}
+
+void vehicle_weapon_chargeshot::CreateUpdatePowerup() {
+	KillUpdatePowerup();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showPowerup", 1.f );
+	thread UpdatePowerup();
+}
+
+// This is one ugly hack of a function. Would be much better if I could divine a way to
+// terminate it properly from outside...
+void vehicle_weapon_chargeshot::UpdatePowerup() {
+	float powerupValue;
+	float fraction;
+
+	while ( true && user != $null_entity ) {
+		sys.waitFrame();
+
+		if ( user != $null_entity ) {
+			powerupValue = sys.getTargetTimerValue( powerupTimerHandle, user ) - sys.getTime();
+			if ( powerupValue < 0 ) {
+				powerupValue = 0;
+			} else if ( powerupValue > powerupLength ) {
+				powerupValue = powerupLength;
+			}
+
+			fraction = 1 - ( powerupValue / powerupLength );
+
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", fraction );
+		} else {
+			// Because this is threaded and killing itself internally, we don't know if it'll be 
+			// timely or not, so we should zero out infantry's powerup bar...
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.powerup", 1.f );
+		}
+		//sys.print("UpdatePowerup()\n"); // So we know if it's shutting itself off or not.
+	}
+}
+
+void vehicle_weapon_chargeshot::AddPowerup() {
+	float powerupValue = sys.getTargetTimerValue( powerupTimerHandle, user );
+
+	if ( powerupValue < sys.getTime() ) {
+		powerupValue = sys.getTime();
+	}
+	
+	if ( powerupValue > powerupLength + sys.getTime() ) {
+		powerupValue = powerupLength + sys.getTime();
+	} else {
+		powerupValue = powerupValue + powerupPerShot;
+	}
+
+	sys.setTargetTimerValue( powerupTimerHandle, user, powerupValue );
 }

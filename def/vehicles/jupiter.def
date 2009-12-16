@@ -349,10 +349,10 @@ entityDef vehicle_jupiter {
 	"validate_drop"					"1"
 	
 	"timer_powerup"					"powerup_bfg"
-	//"powerup_per_shot"				"0.1"
-	//"powerup_length"				"5.0"
-	"powerup_per_shot"				"0.5"
-	"powerup_length"				"20.0"
+	"powerup_per_shot"				"0.1"
+	"powerup_length"				"5.0"
+	//"powerup_per_shot"				"0.5"
+	//"powerup_length"				"20.0"
 	//"fx_bfg_cleanexplode"			"effects/weapons/bfg/explode"
 }
 
