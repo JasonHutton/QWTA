@@ -481,12 +481,6 @@ void idBotAI::Bot_CheckVehicleAttack() {
 		return;
 	}
 
-	if ( botInfo->proxyInfo.weapon == BFG10K ) {
-		botUcmd->botCmds.attack = true;
-		botUcmd->botCmds.chargeDangerWeapon = true;
-		return;
-	}
-
 	if ( botInfo->proxyInfo.hasTurretWeapon ) {
 		if ( botVehicleInfo->type > ICARUS && botInfo->proxyInfo.weapon == MINIGUN ) {
 			botUcmd->botCmds.attack = true;

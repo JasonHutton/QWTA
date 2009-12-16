@@ -542,8 +542,6 @@ struct botCommands_t {
 
 	bool					constantFire;		// we want the bot to fire constantly
 
-	bool					chargeDangerWeapon; // We're charging a weapon that overcharging can be hazardous for our health.
-
 	bool					hasNoGoals;			// a special flag that lets the waypointer know the bot has no goals yet, so the bots are just gonna take a smoke break.
 
 	bool					hasMedicInFOV;		// if dead, does this client have a medic in their view?

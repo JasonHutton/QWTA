@@ -54,7 +54,6 @@ idBot::idBot() {
 	movingForward = 0;
 	proneDelay = 0;
 	hornTime = 0;
-	chargeDangerWeaponTime = 0;
 	lowSkillAimPoint.Zero();
 	decoyTime = 0;
 	botNextWeapTime = 0;
@@ -1339,18 +1338,6 @@ void idBot::ActionUcmds( usercmd_t &ucmd ) {
 		}
 	}
 
-	if ( clientUcmd.botCmds.attack ) {
-		if ( clientUcmd.botCmds.chargeDangerWeapon || chargeDangerWeaponTime > gameLocal.time ) {
-			if ( chargeDangerWeaponTime > gameLocal.time ) {
-				ucmd.buttons.btn.attack = true;
-			}
-			if ( chargeDangerWeaponTime < gameLocal.time ) {
-				ucmd.buttons.btn.attack = false;
-				chargeDangerWeaponTime = gameLocal.time + 1500;
-			}
-		}
-	}
-	
 	if ( clientUcmd.botCmds.attack ) {
 		if ( clientUcmd.botCmds.constantFire || ( clientInfo.classType == SOLDIER && clientInfo.weapInfo.weapon == PISTOL && clientInfo.team == STROGG ) ) {
 			ucmd.buttons.btn.attack = true;
