@@ -19,9 +19,13 @@ CHANGES:
 * External ordinance on Anansi now visually in sync with ammo usage.
   + g_useVehicleAmmo needs to be on.
   + LAWs disappear as they're fired, and reappear as they're rearmed.
-
+* Revert BFG10k back to automatic charging due to player feedback.
+  + Kept the green HUD chargebar the manual BFG had.
+  + Kept the green HUD chargebar cooldown time too.
+  
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
+
 
 QWTA v0.3.3:
 ==========
