@@ -2135,3 +2135,5 @@ virtual void		vSetLivesRemaining( float lives );
 virtual	void		vDecreaseAvailableLives();
 virtual	void		vIncreaseAvailableLives();
 virtual void		vResetAvailableLives();
+
+virtual void		vBlind( vector origin, float radius, float time );

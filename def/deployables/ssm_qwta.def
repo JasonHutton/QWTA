@@ -55,6 +55,9 @@ entityDef projectile_deployable_ssm_qwta {
 
 	"prof_destroy"					"pro_constructor_antimissile_hammer"
 	
+	"blind_radius"					"5120"
+	"blind_time"					"20"
+	
 	"def_radiation"					"radiation_point_ssm"
 }
 

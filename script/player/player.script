@@ -68,6 +68,9 @@ object player {
 	boolean		vRevive( entity p, float healthScale );
 	void		vForceRespawn();
 	void		vOnSpawnWavePassed();
+	
+	void		vBlind( vector origin, float radius, float time );
+	float		GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing );
 
 	void		vGiveSpotProficiency();
 
@@ -296,6 +299,7 @@ object player {
 
 	float		unconsciousTime;
 	float		deadTime;
+	float		blindTime;
 	
 	handle		burningEffectHandle0;
 	handle		burningEffectHandle1;
@@ -620,6 +624,7 @@ void player::preinit() {
 
 	unconsciousTime			= -1;
 	deadTime				= -1;
+	blindTime				= -1;
 	
 	burningEffectHandle0	= 0;
 	burningEffectHandle1	= 0;
@@ -1150,6 +1155,7 @@ void player::OnSpawn( boolean isRevived, boolean parachute ) {
 
 	unconsciousTime = -1;
 	deadTime = -1;
+	blindTime = -1;
 }
 
 /*
@@ -1476,6 +1482,17 @@ void player::LocalViewerUpdate() {
 	}
 	else {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.deadTime", deadTime );
+	}
+	if ( blindTime > -1.f ) {
+		if ( blindTime > sys.getTime() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.blindTime", blindTime - sys.getTime() );
+		} else {
+			blindTime = -1.f;
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.blindTime", blindTime );
+		}
+	}
+	else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.blindTime", blindTime );
 	}
 }
 
@@ -2894,6 +2911,49 @@ player::vOnSpawnWavePassed
 */
 void player::vOnSpawnWavePassed() {
 	waitedForRevive = true;
+}
+
+void player::vBlind( vector origin, float radius, float time ) {
+
+	float facing = GetFacingAngle( origin, vec3_origin, true );
+	
+	float workRadius = radius / 2.f;
+	float dist = sys.vecLength( getOrigin() - origin );
+	float reduction = workRadius / dist;
+	if ( reduction > 1.5f ) {
+		reduction = 1.5f;
+	}
+	
+	reduction = reduction * ( facing / 180.f / 1.5f );
+		
+	if ( facing < 120.f ) { // This is reversed, so it's actually more like > 120
+		reduction = reduction / 1.5f;
+	}
+
+	time = time * reduction;
+	if ( time > 0.f ) {
+		blindTime = sys.getTime() + time;
+	}
+	
+//	sys.print( "Blind time: " + time + " Dist: " + dist + " Facing: " + facing + " Reduction: " + reduction + "\n" );
+}
+
+float player::GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing ) {
+	
+	vector vecOrigins;
+	
+	if ( bOppositeFacing ) {
+		// Check if we're facing away from something, instead. 0 = facing away, 180 = facing toward
+		vecOrigins = sys.vecNormalize( getOrigin() - ( origin + offset ) );
+	} else {
+		// 0 = facing toward, 180 = facing away
+		vecOrigins = sys.vecNormalize( ( origin + offset ) - getOrigin() );
+	}
+	vector vecAngles = sys.vecNormalize( sys.angToForward( getViewAngles() ) );
+	
+	float dot = dotproduct( vecOrigins, vecAngles );
+	
+	return sys.acos( dot );
 }
 
 /*

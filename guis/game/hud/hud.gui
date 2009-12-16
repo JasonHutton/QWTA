@@ -880,6 +880,42 @@ gui hud {
 		}
 	}
 	
+	windowDef blindFading {
+		properties {
+			color	foreColor		= COLOR_WHITE;
+			rect	rect			= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float	blindTime		= globals.gameHud.blindTime;
+			float	showFading		= true;
+			float	conditionals		= player.endGame == false && player.endGameCamera == false && showFading == true;
+			float	visible 		= conditionals;
+			float	tempValue		= 0;
+		}
+		events {
+			onCreate {
+				foreColor.a = 0;
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, foreColor );
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "blindTime" {
+				if(blindTime > -1) {
+					tempValue = blindTime/10.0;//4.0;
+					if(tempValue < 1.0) {
+						foreColor.a = tempValue;
+					}
+					else {
+						foreColor.a = 1.0;
+					}
+				}
+				else {
+					foreColor.a = 0;
+				}
+			}
+		}
+	}
+	
 	/*
 	windowDef deathBlur {
 		properties {

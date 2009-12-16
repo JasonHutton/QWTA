@@ -233,6 +233,18 @@ float max( float value1, float value2 ) {
 
 /*
 ==================
+dotproduct
+
+Performs a dot product on two vectors
+==================
+*/
+float dotproduct( vector v1, vector v2 ) {
+
+	return ( v1_x * v2_x ) + ( v1_y * v2_y ) + ( v1_z * v2_z );
+}
+
+/*
+==================
 delayRemoveThread
 
 Service thread for delayRemove.

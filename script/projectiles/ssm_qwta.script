@@ -11,10 +11,17 @@ object projectile_ssm_qwta : projectile_ssm {
 	}
 
 	void			preinit();
+	
+	void			BlindFlash();
+	void			EMPPulse();
+	void			Irradiate();
 
 	float			empRadius;
 	float			empTime;
 	float			weaponEmpTime;
+	
+	float			blindRadius;
+	float			blindTime;
 	
 	float			entityDeclIndex;
 	
@@ -28,15 +35,66 @@ void projectile_ssm_qwta::preinit() {
 	empTime			= getFloatKey( "emp_time" );
 	weaponEmpTime	= getFloatKey( "emp_weapon_time" );
 	
+	blindRadius		= getFloatKey( "blind_radius" );
+	blindTime		= getFloatKey( "blind_time" );
+	
 	radiationIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_radiation" ) );
 }
 
 void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
 	float removeDelay;
 	SetRadiusDamageIgnoreEntity( collisionEnt );
+	
+	BlindFlash();
+	
+	EMPPulse();
 
 	DoRadiusDamage();
 
+	Irradiate();
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+	ScheduleRemoval( removeDelay );
+}
+
+void projectile_ssm_qwta::BlindFlash() {
+	// Vehicle portion of this doesn't work atm... -- Azuvector
+	/*
+	entitiesOfCollection( "players" );
+	filterEntitiesByRadius( getWorldOrigin(), blindRadius, true );
+	//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+
+	float count = getBoundsCacheCount();
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		ent.vBlind( getWorldOrigin(), blindRadius, blindTime );
+	}
+	
+	entitiesOfCollection( "vehicles" );
+	filterEntitiesByRadius( getWorldOrigin(), blindRadius, true );
+	//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	
+	float count2 = getBoundsCacheCount();
+	float i2;
+	for ( i2 = 0; i2 < count; i2++ ) {
+		vehicle_base veh = getBoundsCacheEntity( i2 );
+		if ( veh == $null_entity ) {
+			continue;
+		}
+		
+		float positions = veh.getNumPositions();
+		float i3;
+		for ( i3 = 0; i3 < positions; i3++ ) {
+			player vehPlayer = veh.getPositionPlayer( i3 );
+			if ( vehPlayer != $null_entity ) {
+				vehPlayer.vBlind( getWorldOrigin(), blindRadius, blindTime );
+			}
+		}
+	}*/
+}
+
+void projectile_ssm_qwta::EMPPulse() {
 	entitiesOfCollection( "emp" );
 	filterEntitiesByRadius( getWorldOrigin(), empRadius, true );
 	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
@@ -49,12 +107,11 @@ void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
 		entity ent = getBoundsCacheEntity( i );
 		ent.vApplyEmpDamage( owner, empTime, weaponEmpTime );
 	}
-	
+}
+
+void projectile_ssm_qwta::Irradiate() {
 	radiation_point radiationPoint = sys.spawnType( radiationIndex );
 	radiationPoint.setWorldOrigin( getWorldOrigin() );
 	radiationPoint.setAngles( g_vectorUp );
 	radiationPoint.Activate( getOwner() );
-
-	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
-	ScheduleRemoval( removeDelay );
 }
