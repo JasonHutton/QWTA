@@ -1,0 +1,54 @@
+
+/***********************************************************************
+
+projectile_emp.script
+
+***********************************************************************/
+
+object projectile_emp : projectile_grenade {
+	void			init();
+	void			preinit();
+
+	void			DoExplodeEffect( entity collisionEnt );
+
+	float			empRadius;
+	float			empTime;
+	float			weaponEmpTime;
+};
+
+void projectile_emp::init() {
+	SetupContents();
+	setState( "Idle" );
+}
+
+void projectile_emp::preinit() {
+	empRadius		= getFloatKey( "emp_radius" );
+	empTime			= getFloatKey( "emp_time" );
+	weaponEmpTime	= getFloatKey( "emp_weapon_time" );
+}
+
+void projectile_emp::DoExplodeEffect( entity collisionEnt ) {
+	float removeDelay;
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+
+	DoRadiusDamage();
+
+
+
+
+	entitiesOfCollection( "emp" );
+	filterEntitiesByRadius( getWorldOrigin(), empRadius, true );
+	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	
+	entity owner = getOwner();
+	
+	float count = getBoundsCacheCount();
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		ent.vApplyEmpDamage( owner, empTime, weaponEmpTime );
+	}
+
+	ScheduleRemoval( removeDelay );
+}
