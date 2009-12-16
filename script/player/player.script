@@ -2918,7 +2918,7 @@ void player::vBlind( vector origin, float radius, float time ) {
 	float facing = GetFacingAngle( origin, vec3_origin, true );
 	
 	float workRadius = radius / 2.f;
-	float dist = sys.vecLength( getOrigin() - origin );
+	float dist = sys.vecLength( getWorldOrigin() - origin );
 	float reduction = workRadius / dist;
 	if ( reduction > 1.5f ) {
 		reduction = 1.5f;
@@ -2935,7 +2935,7 @@ void player::vBlind( vector origin, float radius, float time ) {
 		blindTime = sys.getTime() + time;
 	}
 	
-//	sys.print( "Blind time: " + time + " Dist: " + dist + " Facing: " + facing + " Reduction: " + reduction + "\n" );
+	//sys.print( "Blind time: " + time + "\nDist: " + dist + " Facing: " + facing + " Reduction: " + reduction + "\nName: " + getName() + "\n");
 }
 
 float player::GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing ) {

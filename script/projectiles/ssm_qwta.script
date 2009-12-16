@@ -58,8 +58,6 @@ void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
 }
 
 void projectile_ssm_qwta::BlindFlash() {
-	// Vehicle portion of this doesn't work atm... -- Azuvector
-	/*
 	entitiesOfCollection( "players" );
 	filterEntitiesByRadius( getWorldOrigin(), blindRadius, true );
 	//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
@@ -67,31 +65,11 @@ void projectile_ssm_qwta::BlindFlash() {
 	float count = getBoundsCacheCount();
 	float i;
 	for ( i = 0; i < count; i++ ) {
-		entity ent = getBoundsCacheEntity( i );
-		ent.vBlind( getWorldOrigin(), blindRadius, blindTime );
+		player plyr = getBoundsCacheEntity( i );
+		if ( plyr != $null_entity ) {
+			plyr.vBlind( getWorldOrigin(), blindRadius, blindTime );
+		}
 	}
-	
-	entitiesOfCollection( "vehicles" );
-	filterEntitiesByRadius( getWorldOrigin(), blindRadius, true );
-	//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
-	
-	float count2 = getBoundsCacheCount();
-	float i2;
-	for ( i2 = 0; i2 < count; i2++ ) {
-		vehicle_base veh = getBoundsCacheEntity( i2 );
-		if ( veh == $null_entity ) {
-			continue;
-		}
-		
-		float positions = veh.getNumPositions();
-		float i3;
-		for ( i3 = 0; i3 < positions; i3++ ) {
-			player vehPlayer = veh.getPositionPlayer( i3 );
-			if ( vehPlayer != $null_entity ) {
-				vehPlayer.vBlind( getWorldOrigin(), blindRadius, blindTime );
-			}
-		}
-	}*/
 }
 
 void projectile_ssm_qwta::EMPPulse() {
