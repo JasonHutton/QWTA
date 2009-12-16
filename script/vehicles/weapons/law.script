@@ -6,6 +6,7 @@ object vehicle_weapon_law : vehicle_weapon_base {
 	string	muzzleFlashFX;
 
 	float	jointHandle;
+	float	surfHandle;
 	float	fireRate;
 	float	spread;
 	float	projectileIndex;
@@ -36,14 +37,19 @@ void vehicle_weapon_law::preinit() {
 void vehicle_weapon_law::Fire() {
 	RemoveCharge();
 	RemoveAmmo();
-
+	
 	jointHandle = vehicle.getJointHandle( getKey( "missile_pos" + currentWeaponIndex ) );
 	vector origin = vehicle.getJointPos( jointHandle );
-
+	
 	vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, -1, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
 	vehicle.applyImpulse( origin, -feedback * vehicle.getJointAxis( jointHandle, 0 ) );
 
 	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+
+	surfHandle = vehicle.getSurfaceId( getKey ( "missile_surface" + currentWeaponIndex ) );
+	if ( !vehicle.isSurfaceHidden( surfHandle ) ) {
+		vehicle.hideSurface( surfHandle );
+	}
 
 	currentWeaponIndex++;
 

@@ -16,6 +16,9 @@ CHANGES:
 * Cvar g_allowEMPFriendlyFire added.
   + Default 1.
   + Allows EMP effects to affect friendly units, for realism purposes.
+* External ordinance on Anansi now visually in sync with ammo usage.
+  + g_useVehicleAmmo needs to be on.
+  + LAWs disappear as they're fired, and reappear as they're rearmed.
 
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
