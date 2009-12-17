@@ -763,10 +763,10 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 						setItemText( toWStr( "setStopWatchMap" ), index, 3 );
 						
 						// Tactical
-/*						index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
+						index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
 						setItemText( toWStr( "sdGameRulesTactical" ), index, 1 );
 						setItemText( toWStr( "tacticalList" ), index, 2 );
-						setItemText( toWStr( "setTactical" ), index, 3 );*/
+						setItemText( toWStr( "setTactical" ), index, 3 );
 					}
 					onNamedEvent "onShow" {
 						index = findItem( toWStr( gui.getCVar( "si_rules" ) ), 1 );
@@ -819,15 +819,15 @@ _tab_page( Admin, localize( "guis/limbo/admin" ), gameInfo, GI_ADMIN, _to_right_
 							 * but it pukes on the 'if' because it's expecting a '{' 
 							 * -- Azuvector
 							 */
-/*							if ( wcompare( _get_current_list_text( MapSource, 1 ), toWStr( "sdGameRulesTactical" ) ) ) {
+							if ( wcompare( _get_current_list_text( MapSource, 1 ), toWStr( "sdGameRulesTactical" ) ) ) {
 								rect.height = rect.width * 1.0f / ( 1.7777 );
 								previewMaterial = gui.tacticalPreview;
 								gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), LEVELSHOT );
-							} else {*/
+							} else {
 								rect.height = rect.width * 1.0f / ( 1.7777 );
 								previewMaterial = gui.levelPreview;
 								gui.uploadLevelShot( toStr( _get_current_list_text( Maps, 2 ) ), LEVELSHOT );
-//							}
+							}
 						}
 					}
 				}
