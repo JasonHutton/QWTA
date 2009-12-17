@@ -73,6 +73,9 @@ public:
 	void						SetAxis				( const idMat3& axis );
 	const idVec3&				GetOrigin			( void );
 	const idMat3&				GetAxis				( void );
+
+	qwtaClientSprite*				PlaySprite( const idMaterial* material, const idVec3& color, jointHandle_t joint, bool loop = false, const idVec3& endOrigin = vec3_origin );
+	virtual qwtaClientSprite*		PlaySprite( const char* materialName, const idVec3& color, const char* materialType, jointHandle_t joint, bool loop = false, const idVec3& endOrigin = vec3_origin );
 	
 	rvClientEffect*				PlayEffect( const int effectHandle, const idVec3& color, jointHandle_t joint, bool loop = false, const idVec3& endOrigin = vec3_origin );
 	virtual rvClientEffect*		PlayEffect( const char* effectName, const idVec3& color, const char* materialType, jointHandle_t joint, bool loop = false, const idVec3& endOrigin = vec3_origin );
@@ -236,6 +239,7 @@ public:
 	void					Event_SetAngles( const idAngles& ang );
 	void					Event_SetWorldAxis( const idVec3& fwd, const idVec3& right, const idVec3& up );
 	void					Event_PlayMaterialEffect( const char *effectName, const idVec3& color, const char* jointName, const char* materialType, bool loop );
+	void					Event_PlaySprite( const char* materialName, const char* boneName, bool loop );
 	void					Event_PlayEffect( const char* effectName, const char* boneName, bool loop );
 	void					Event_StopEffect( const char* effectName );
 	void					Event_StopEffectHandle( int handle );

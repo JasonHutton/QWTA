@@ -1,0 +1,72 @@
+object vehicle_weapon_flamethrower2 : vehicle_weapon_vrof {
+	void				preinit();
+	
+	void				Fire();
+
+	string				muzzleFlashFX;
+	string				muzzleSound;
+	string				muzzleSoundLocal;
+
+	float				fireRate;
+	float				spread;
+
+	float				projectileIndex;
+	float				clientProjectileIndex;
+
+	float				jointHandle;
+
+	float				tracerCounter;
+	float				tracerInterval;
+
+	float				localSurface;
+
+	entity				vehicle;
+
+	entity				muzzleFX;
+	float				lastMuzzleFX;
+	float				muzzleFlashInterval;
+}
+
+void vehicle_weapon_flamethrower2::preinit() {
+	muzzleFlashFX			= getKey( "muzzle_flash" );
+	muzzleSound				= getKey( "muzzle_sound" );
+	muzzleSoundLocal		= getKey( "muzzle_sound" );
+
+	fireRate				= getFloatKey( "fire_rate" );
+	spread					= getFloatKey( "spread" );
+	
+	projectileIndex			= GetEntityDef( getKey( "def_projectile" ) );
+	clientProjectileIndex	= GetEntityDef( getKey( "client_projectile" ) );
+	
+	localSurface			= -1;
+	
+	vehicle					= getVehicle();
+
+	string localSurfaceName	= getKey( "surface_name" );
+	if ( localSurfaceName != "" ) {
+		localSurface = vehicle.getSurfaceId( localSurfaceName );
+	}
+	
+	jointHandle				= vehicle.getJointHandle( getKey( "muzzle" ) );
+	tracerCounter			= 0;
+	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
+	muzzleFlashInterval		= vehicle.getFloatKeyWithDefault( "muzzle_flash_interval", 0.5f );
+}
+
+void vehicle_weapon_flamethrower2::Fire() {
+	
+	vector origin = vehicle.getJointPos( jointHandle );
+	
+	entity proj = vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, clientProjectileIndex, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
+
+	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+	if( user == sys.getLocalPlayer() ) {
+		vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
+	} else {
+		vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+	}
+	
+	RemoveCharge();
+	
+	GoToIdle();
+}
