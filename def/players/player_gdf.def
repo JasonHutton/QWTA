@@ -3031,12 +3031,14 @@ model models/players/gdf {
 		}
 
 		anim legs_run_jump								models/characters/animations/initial_edf/edf_tools_jump_idle.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_gdf
 		}
 
 		anim torso_jump									models/characters/animations/initial_edf/gdf_he_charge_idle_001.md5anim {
 		}
 
 		anim legs_jump									models/characters/animations/initial_edf/edf_tools_jump_sprint.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_gdf
 		}
 
 		anim torso_fall									models/characters/animations/initial_edf/gdf_he_charge_idle_001.md5anim {
@@ -3339,12 +3341,14 @@ model models/players/gdf {
 		}
 
 		anim legs_run_jump								models/characters/animations/initial_edf/edf_tools_jump_idle.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_gdf
 		}
 
 		anim torso_jump									models/characters/animations/initial_edf/gdf_he_charge_idle_001.md5anim {
 		}
 
 		anim legs_jump									models/characters/animations/initial_edf/edf_tools_jump_sprint.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_gdf
 		}
 
 		anim torso_fall									models/characters/animations/initial_edf/gdf_he_charge_idle_001.md5anim {
@@ -4079,6 +4083,7 @@ model models/players/gdf {
 		}
 
 		anim legs_run_jump						models/characters/animations/initial_edf/edf_knife_jump_idle.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_gdf
 		}
 
 		anim lean_left_idle						models/characters/animations/initial_edf/gdf_tool_lean_left.md5anim {
