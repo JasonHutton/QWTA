@@ -25,6 +25,9 @@ CHANGES:
   
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
+* Fixed BaseETQW bug: The "Sniper Rifle Reload Skip Exploit" no longer works.
+  + A serious exploit exists in BaseETQW 1.5, that has been fixed in QWTA.
+  + Also fixes the same issue for the Railgun.
 
 
 QWTA v0.3.3:
