@@ -438,7 +438,7 @@ $template __center_print_info
 					
 				postNamedEvent( "updateText" );
 			}
-			onCVarChanged "gui_showRespawnText" {
+			onCVarChanged "gui_showRespawnText" "g_disablePlayerRespawns" {
 				postNamedEvent( "updateText" );
 			}
 			onNamedEvent "updateText" {
