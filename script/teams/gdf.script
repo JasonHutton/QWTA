@@ -138,7 +138,7 @@ boolean team_gdf::OnAllowRespawn( entity p ) {
 	
 	player testPlayer = p;
 	if ( testPlayer != $null_entity ) {
-		boolean bCVarAllows = true;//!g_disablePlayerRespawns.getBoolValue();
+		boolean bCVarAllows = !g_disablePlayerRespawns.getBoolValue();
 		boolean bEnoughLives = testPlayer.vGetLivesRemaining() > 0.f;
 		
 		return bRespawnTimerAllows && ( bCVarAllows || ( bEnoughLives ) );
