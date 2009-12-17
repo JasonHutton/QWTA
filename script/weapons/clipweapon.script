@@ -264,16 +264,18 @@ void weapon_clip::IdleClipWeapon() {
 		// if its not already playing the idle effect it'll start playing it
 		StartIdleEffect();
 	}
+	
+	boolean bComingUp = false;
 
 	float time = sys.getTime();
 
 	if ( hasIronSights ) {
 		CheckIronSights();
 	} else if ( hasScope ) {
-		CheckScope( false );
+		bComingUp = CheckScope( false );
 	}
 
-	if ( WEAPON_LOWERWEAPON ) {
+	if ( WEAPON_LOWERWEAPON && !playingFireAnim ) { // Don't believe !playingFireAnim is necessary, but just in case, for the sniper-reload-skip bug. Doesn't seem to hurt anything. -- Azuvector
 		StopIdleEffect();
 		weaponState( "Lower", 4 );
 	}
@@ -287,7 +289,7 @@ void weapon_clip::IdleClipWeapon() {
 
 		if ( CanFire() && !NeedsReload() ) {
 			dryfireAttack = false;
-			if ( time >= refireTime && !changingScopeStatus ) {
+			if ( time >= refireTime && !changingScopeStatus && !bComingUp ) { // !bComingUp is the fix for the sniper-reload-skip bug. -- Azuvector
 				DoFire();
 				mainFireDown = true;
 			}
