@@ -250,9 +250,9 @@ entityDef projectile_law {
 	"scriptObject"						"projectile_homingmissile"
 
 	"dmg_damage"						"damage_law"
-	"dmg_realistic_damage"					"realistic_damage_law"
+	"dmg_realistic_damage"				"realistic_damage_law"
 	"dmg_splash_damage"					"damage_law_splash"
-	"dmg_realistic_splash_damage"				"realistic_damage_law_splash"
+	"dmg_realistic_splash_damage"		"realistic_damage_law_splash"
 
 	"launchFromBarrel"					"1"
 	"health"							"0"
@@ -285,9 +285,9 @@ entityDef projectile_anansi_law {
 	"inherit"							"projectile_law"
 
 	"dmg_damage"						"damage_law_anansi"
-	"dmg_realistic_damage"					"realistic_damage_law_anansi"
+	"dmg_realistic_damage"				"realistic_damage_law_anansi"
 	"dmg_splash_damage"					"damage_law_splash_anansi"
-	"dmg_realistic_splash_damage"				"realistic_damage_law_splash_anansi"
+	"dmg_realistic_splash_damage"		"realistic_damage_law_splash_anansi"
 
 	"fx_trail"							"effects/weapons/law_anansi_missile_trail"
 
@@ -409,7 +409,7 @@ damageDef realistic_damage_law_anansi {
 }
 
 damageDef damage_law_splash_anansi {
-	damage								"damage_law_anansi_splash"
+	damage								"damage_law_splash_anansi"
 	radius								512
 	knockback							50
 
@@ -570,7 +570,7 @@ damageFilter realistic_damage_law_anansi {
 	}
 }
 
-damageFilter damage_law_anansi_splash {
+damageFilter damage_law_splash_anansi {
 	type {
 		target							"target_player_all"
 		damage							135
@@ -592,7 +592,7 @@ damageFilter damage_law_anansi_splash {
 	}
 }
 
-damageFilter realistic_damage_law_anansi_splash {
+damageFilter realistic_damage_law_splash_anansi {
 	type {
 		target							"target_player_all"
 		damage							270
