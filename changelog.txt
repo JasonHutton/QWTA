@@ -32,6 +32,7 @@ BUG FIXES:
 * Fixed BaseETQW bug: Jump sounds added while carrying Health Pack.
 * Fixed BaseETQW bug: Jump sounds added while carrying Ammo Pack.
 * Fixed BaseETQW bug: Jump sound(jogging) added while carrying Binoculars.
+* Fixed Anansi's LAWs having zero splash damage.
 
 QWTA v0.3.3:
 ==========
