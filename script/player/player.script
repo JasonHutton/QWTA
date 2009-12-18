@@ -2932,7 +2932,9 @@ void player::vBlind( vector origin, float radius, float time ) {
 
 	time = time * reduction;
 	if ( time > 0.f ) {
-		blindTime = sys.getTime() + time;
+		if ( blindTime < 0.f || ( blindTime - sys.getTime() ) < time ) {
+			blindTime = sys.getTime() + time;
+		}
 	}
 	
 	//sys.print( "Blind time: " + time + "\nDist: " + dist + " Facing: " + facing + " Reduction: " + reduction + "\nName: " + getName() + "\n");

@@ -581,6 +581,8 @@ stringMap vehicle_anansi_weapon2 {
 	
 	"ammo_max"					"8"
 	"ammo_per_use"				"1"
+	
+	"external_ordinance"		"1"
 }
 
 stringMap vehicle_anansi_weapon3 {

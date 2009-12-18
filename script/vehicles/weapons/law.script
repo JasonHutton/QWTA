@@ -16,6 +16,8 @@ object vehicle_weapon_law : vehicle_weapon_base {
 	vector	velocity;
 
 	entity	vehicle;
+	
+	float	externalOrdinance;
 };
 
 void vehicle_weapon_law::preinit() {
@@ -32,6 +34,8 @@ void vehicle_weapon_law::preinit() {
 	spread				= getFloatKey( "spread" );
 	velocity			= getVectorKey( "velocity" );
 	feedback			= getFloatKey( "feedback" );
+	
+	externalOrdinance	= getFloatKeyWithDefault( "external_ordinance", 0.f );
 }
 
 void vehicle_weapon_law::Fire() {
@@ -46,9 +50,11 @@ void vehicle_weapon_law::Fire() {
 
 	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
 
-	surfHandle = vehicle.getSurfaceId( getKey ( "missile_surface" + currentWeaponIndex ) );
-	if ( !vehicle.isSurfaceHidden( surfHandle ) ) {
-		vehicle.hideSurface( surfHandle );
+	if ( externalOrdinance ) {
+		surfHandle = vehicle.getSurfaceId( getKey ( "missile_surface" + currentWeaponIndex ) );
+		if ( !vehicle.isSurfaceHidden( surfHandle ) ) {
+			vehicle.hideSurface( surfHandle );
+		}
 	}
 
 	currentWeaponIndex++;
