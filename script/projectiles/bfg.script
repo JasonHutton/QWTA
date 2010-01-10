@@ -28,7 +28,6 @@ object projectile_bfg : projectile_missile {
 	boolean 		TargetIsValid( entity targetEnt );
 
 	void			destroyEffects();
-	void			destroyEffects2();
 	void			destroyTargets();
 
 	void			DoExplodeEffect_bfg( entity collisionEnt );
@@ -36,8 +35,6 @@ object projectile_bfg : projectile_missile {
 						DoExplodeEffect_bfg( collisionEnt );
 					}
 	void			DoBFGEffect();
-
-	void			AssignBlastEffect( vector pos );
 
 	float			beamIndex;
 	float			bfgEffectIndex;
@@ -59,15 +56,6 @@ object projectile_bfg : projectile_missile {
 	object			impactEffect5;
 	object			impactEffect6;
 	object			impactEffect7;
-
-	object			blastEffect0;
-	object			blastEffect1;
-	object			blastEffect2;
-	object			blastEffect3;
-	object			blastEffect4;
-	object			blastEffect5;
-	object			blastEffect6;
-	object			blastEffect7;
 
 	entity			beamTarget0;
 	entity			beamTarget1;
@@ -94,43 +82,7 @@ void projectile_bfg::preinit() {
 
 void projectile_bfg::destroy() {
 	destroyEffects();
-	destroyEffects2();
 	destroyTargets();
-}
-
-void projectile_bfg::destroyEffects2() {
-	if ( blastEffect0 != $null_entity ) {
-		blastEffect0.remove();
-		blastEffect0 = $null_entity;
-	}
-	if ( blastEffect1 != $null_entity ) {
-		blastEffect1.remove();
-		blastEffect1 = $null_entity;
-	}
-	if ( blastEffect2 != $null_entity ) {
-		blastEffect2.remove();
-		blastEffect2 = $null_entity;
-	}
-	if ( blastEffect3 != $null_entity ) {
-		blastEffect3.remove();
-		blastEffect3 = $null_entity;
-	}
-	if ( blastEffect4 != $null_entity ) {
-		blastEffect4.remove();
-		blastEffect4 = $null_entity;
-	}
-	if ( blastEffect5 != $null_entity ) {
-		blastEffect5.remove();
-		blastEffect5 = $null_entity;
-	}
-	if ( blastEffect6 != $null_entity ) {
-		blastEffect6.remove();
-		blastEffect6 = $null_entity;
-	}
-	if ( blastEffect7 != $null_entity ) {
-		blastEffect7.remove();
-		blastEffect7 = $null_entity;
-	}
 }
 
 void projectile_bfg::destroyEffects() {
@@ -787,118 +739,64 @@ void projectile_bfg::DoExplodeEffect_bfg( entity collisionEnt ) {
 }
 
 void projectile_bfg::DoBFGEffect() {
-	float count = entitiesInRadius( g_vectorZero, BFG_EFFECT_RANGE, -1, 0 );
-
-	float index = 0;
-
-	for ( index = 0; index < count; index++ ) {
-		entity ent = getBoundsCacheEntity( index );
-
-		if ( !TargetIsValid( ent ) ) {
+	vehicle_base veh = self.getOwner().getVehicle();
+	if ( veh == $null_entity )
+		return;
+	
+	entitiesInRadius( getWorldOrigin(), BFG_EFFECT_RANGE, -1, true );
+	filterEntitiesByDisguiseAllegiance( TA_FLAG_ENEMY, 1 );
+	filterEntitiesByBoundsTrace( getWorldOrigin(), MASK_PROJECTILE, veh, true );
+	
+	float blastCache = saveCachedEntities(); // We need to save, temporarily, or we get a lot of nulls inexplicably. (threading?)
+		
+	entitiesInRadius( veh.getWorldOrigin(), BFG_EFFECT_RANGE, -1, true );
+	filterEntitiesByDisguiseAllegiance( TA_FLAG_ENEMY, 1 );
+	filterEntitiesByBoundsTrace( veh.getWorldOrigin(), MASK_PROJECTILE, veh, true );
+	
+	float vehCache = saveCachedEntities(); // We need to save, temporarily, or we get a lot of nulls inexplicably. (threading?)
+	
+	float blastCount = getSavedCacheCount( blastCache );
+	float vehCount = getSavedCacheCount( vehCache );
+	
+	float i;
+	for ( i = 0; i < blastCount; i++ ) {
+		
+		entity blastEnt = getSavedCacheEntity( blastCache, i );
+		
+		if ( blastEnt == $null_entity )
 			continue;
+		
+		float j;
+		for ( j = 0; j < vehCount; j++ ) {
+			entity vehEnt = getSavedCacheEntity( vehCache, j );
+			
+			if ( vehEnt == $null_entity )
+				continue;
+				
+			if ( vehEnt != blastEnt )
+				continue;
+				
+			if ( !blastEnt.takesDamage() || blastEnt.getHealth() <= 0 )
+				continue;
+				
+			if ( !blastEnt.inCollection( "deployables" )
+				&& !blastEnt.inCollection( "players" ) 
+				&& !blastEnt.inCollection( "vehicles" )) {
+				continue;
+			}
+			
+			force_shield shieldTest = blastEnt;
+			if ( shieldTest != $null_entity )
+				continue;
+				
+			sys.playWorldEffect ( getKey("fx_bfg_effect"), '1 1 1', GetTargetPos( blastEnt ), vec3_up );
+
+			blastEnt.applyDamage( self, getOwner(), sys.vecNormalize( GetTargetPos( blastEnt ) - getWorldOrigin() ), bfgEffectIndex, 1.0f, $null_entity );
 		}
-
-		vector line = GetTargetPos( ent ) - getWorldOrigin();
-		if ( sys.vecLength( line ) > BFG_EFFECT_RANGE ) {
-			continue;
-		}
-
-		sys.tracePoint( getWorldOrigin(), GetTargetPos( ent ), MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, self );
-
-		if ( sys.getTraceFraction() == 1.0f ) {
-			continue;
-		}
-
-		entity traceEnt = sys.getTraceEntity();
-		if ( traceEnt == $null_entity ) {
-			continue;
-		}
-		if ( traceEnt != ent ) {
-			continue;
-		}
-
-		vehicle_base vehOwner = self.getOwner().getVehicle();
-		if( vehOwner == $null_entity ) {
-			continue;
-		}
-
-		sys.tracePoint( getWorldOrigin(), GetTargetPos( vehOwner ), MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, $null_entity);
-
-		if ( sys.getTraceFraction() == 1.0f ) {
-			continue;
-		}
-
-		entity traceEnt2 = sys.getTraceEntity();
-		if ( traceEnt2 == $null_entity ) {
-			continue;
-		}
-		if ( traceEnt2 != vehOwner ) {
-			continue;
-		}
-
-		AssignBlastEffect( GetTargetPos( ent ) );
-
-		ent.applyDamage( self, getOwner(), sys.vecNormalize( GetTargetPos( ent ) - getWorldOrigin() ), bfgEffectIndex, 1.0f, $null_entity );
 	}
+	
+	freeSavedCache( blastCache );
+	freeSavedCache( vehCache );
 
 	bBFGEffectDone = true;
-}
-
-void projectile_bfg::AssignBlastEffect( vector pos ) {
-	if ( blastEffect0 == $null_entity ) {
-		blastEffect0 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect0 != $null_entity ) {
-			blastEffect0.setOrigin( pos );
-			blastEffect0.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect1 == $null_entity ) {
-		blastEffect1 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect1 != $null_entity ) {
-			blastEffect1.setOrigin( pos );
-			blastEffect1.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect2 == $null_entity ) {
-		blastEffect2 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect2 != $null_entity ) {
-			blastEffect2.setOrigin( pos );
-			blastEffect2.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect3 == $null_entity ) {
-		blastEffect3 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect3 != $null_entity ) {
-			blastEffect3.setOrigin( pos );
-			blastEffect3.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect4 == $null_entity ) {
-		blastEffect4 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect4 != $null_entity ) {
-			blastEffect4.setOrigin( pos );
-			blastEffect4.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect5 == $null_entity ) {
-		blastEffect5 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect5 != $null_entity ) {
-			blastEffect5.setOrigin( pos );
-			blastEffect5.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect6 == $null_entity ) {
-		blastEffect6 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect6 != $null_entity ) {
-			blastEffect6.setOrigin( pos );
-			blastEffect6.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
-	else if ( blastEffect7 == $null_entity ) {
-		blastEffect7 = spawnClientEffect( "fx_bfg_effect" );
-		if ( blastEffect7 != $null_entity ) {
-			blastEffect7.setOrigin( pos );
-			blastEffect7.setAngles( sys.vecToAngles( vec3_up ) );
-		}
-	}
 }
