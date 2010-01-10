@@ -22,6 +22,7 @@ CHANGES:
 * Revert BFG10k back to automatic charging due to player feedback.
   + Kept the green HUD chargebar the manual BFG had.
   + Kept the green HUD chargebar cooldown time too.
+* Some optimizations and improvements to the BFG's script.
   
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
