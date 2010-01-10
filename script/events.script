@@ -259,6 +259,7 @@ scriptEvent float	filterEntitiesByAllegiance( float allegianceFlags, boolean inc
 scriptEvent float	filterEntitiesByDisguiseAllegiance( float allegianceFlags, boolean inclusive );
 scriptEvent float	filterEntitiesByFilter( float filterIndex, boolean inclusive );
 scriptEvent float	filterEntitiesByTouching( boolean inclusive );
+scriptEvent float	filterEntitiesByBoundsTrace( vector origin, float contents, entity passEntity, boolean inclusive );
 
 scriptEvent float	getBoundsCacheCount();
 scriptEvent entity	getBoundsCacheEntity( float index );
@@ -2138,4 +2139,4 @@ virtual	void		vDecreaseAvailableLives();
 virtual	void		vIncreaseAvailableLives();
 virtual void		vResetAvailableLives();
 
-virtual void		vBlind( vector origin, float radius, float time );
+virtual void		vBlind( vector origin, float radius, float time, boolean bAccountForFacing );

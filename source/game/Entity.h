@@ -886,6 +886,7 @@ protected:
 	void					Event_FilterEntitiesByDisguiseAllegiance( int mask, bool inclusive );
 	void					Event_FilterEntitiesByFilter( int filterIndex, bool inclusive );
 	void					Event_FilterEntitiesByTouching( bool inclusive );
+	void					Event_FilterEntitiesByBoundsTrace( const idVec3& origin, int mask, idEntity* passEntity, bool inclusive );
 	void					Event_GetBoundsCacheCount( void );
 	void					Event_GetBoundsCacheEntity( int index );
 	void					Event_GetEntityAllegiance( idEntity* entity );

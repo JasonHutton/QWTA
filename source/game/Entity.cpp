@@ -208,6 +208,7 @@ const idEventDef EV_FilterEntitiesByAllegiance( "filterEntitiesByAllegiance", 'd
 const idEventDef EV_FilterEntitiesByDisguiseAllegiance( "filterEntitiesByDisguiseAllegiance", 'd', DOC_TEXT( "Removes entities from the entity cache based on whether they are of the given allegiance relative to this entity, and returns the number that are left." ), 2, "This includes disguise information, to not do that use $event:filterEntitiesByAllegiance$.", "d", "mask", "Mask of which allegiances to match. This may include TA_FLAG_FRIEND, TA_FLAG_NEUTRAL, and TA_FLAG_ENEMY.", "b", "inclusive", "Whether to include or exclude matched entities." );
 const idEventDef EV_FilterEntitiesByFilter( "filterEntitiesByFilter", 'd', DOC_TEXT( "Removes entities from the entity cache based on whether they match the specified $decl:targetInfo$ filter, and returns the number that are left." ), 2, "If the index is out of range, nothing will be removed.", "d", "index", "Index of the $decl:targetInfo$ filter to use.", "b", "inclusive", "Whether to include or exclude entities which match the given filter." );
 const idEventDef EV_FilterEntitiesByTouching( "filterEntitiesByTouching", 'd', DOC_TEXT( "Removes entities from the entity cache based on whether their bounds overlap the bounds of this entity." ), 1, NULL, "b", "inclusive", "Whether to include or exclude entities which match." );
+const idEventDef EV_FilterEntitiesByBoundsTrace( "filterEntitiesByBoundsTrace", 'd', DOC_TEXT( "Removes entities from the entity cache based on whether traces to their bounds from the given origin are successful." ), 4, NULL, "v", "origin", "Origin to begin trace from.", "d", "mask", "Content mask the trace is constrained by.", "E", "passEntity", "Entity the traces should ignore.", "b", "inclusive", "Whether ot include or exclude entities which can be traced to." );
 
 const idEventDef EV_GetBoundsCacheCount( "getBoundsCacheCount", 'd', DOC_TEXT( "Returns the number of entities in the entity cache." ), 0, NULL );
 const idEventDef EV_GetBoundsCacheEntity( "getBoundsCacheEntity", 'e', DOC_TEXT( "Returns the entity at the given index in the entity cache." ), 1, "This may return $null$ if the entity has been removed since being added to the cache, or the index is out of range.", "d", "index", "Index of the entity to look up." );
@@ -423,6 +424,7 @@ ABSTRACT_DECLARATION( idClass, idEntity )
 	EVENT( EV_FilterEntitiesByDisguiseAllegiance,	idEntity::Event_FilterEntitiesByDisguiseAllegiance )
 	EVENT( EV_FilterEntitiesByFilter,		idEntity::Event_FilterEntitiesByFilter )
 	EVENT( EV_FilterEntitiesByTouching,		idEntity::Event_FilterEntitiesByTouching )
+	EVENT( EV_FilterEntitiesByBoundsTrace,	idEntity::Event_FilterEntitiesByBoundsTrace )
 
 	EVENT( EV_GetBoundsCacheCount,			idEntity::Event_GetBoundsCacheCount )
 	EVENT( EV_GetBoundsCacheEntity,			idEntity::Event_GetBoundsCacheEntity )
@@ -6549,6 +6551,22 @@ void idEntity::Event_FilterEntitiesByTouching( bool inclusive ) {
 			scriptEntityCache.RemoveIndex( i );
 		} else {
 			i++;			
+		}
+	}
+	sdProgram::ReturnInteger( scriptEntityCache.Num() );
+}
+
+void idEntity::Event_FilterEntitiesByBoundsTrace( const idVec3& origin, int mask, idEntity* passEntity, bool inclusive ) {
+
+	idVec3 damagePoint;
+
+	int i;
+	for ( i = 0; i < scriptEntityCache.Num(); ) {
+		idEntity* other = scriptEntityCache[ i ];
+		if ( other->CanDamage( origin, damagePoint, mask, passEntity ) == ( inclusive ? false : true ) ) {
+			scriptEntityCache.RemoveIndex( i );
+		} else {
+			i++;
 		}
 	}
 	sdProgram::ReturnInteger( scriptEntityCache.Num() );

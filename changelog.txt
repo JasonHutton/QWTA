@@ -1,4 +1,4 @@
-QWTA v0.4.0:
+QWTA v0.3.4:
 ==========
 CHANGES:
 * More changes to the tactical nuke behaviours for the Hammer.
@@ -6,7 +6,7 @@ CHANGES:
   + Explosion effect enhanced: Bigger flash and flare, more smoke, 
     bigger mushroom cloud, mushroom cloud lasts longer.
   + Hammer explosion's EMP effects increased based on player feedback.
-  + Hammer explosion leaves an area of radioactivity for 10 seconds after
+  + Hammer explosion leaves an area of radioactivity for 20 seconds after
     the initial explosion. Blocking line of sight or entering a vehicle
     shields from these effects. Damage from radioactivity decreases
     the farther from ground zero you are.

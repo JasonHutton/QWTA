@@ -1,5 +1,5 @@
 Quake Wars: Tactical Assault
-v0.3.3
+v0.3.4
 ================================
 http://qwta.moddb.com/
 

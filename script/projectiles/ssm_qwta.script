@@ -58,16 +58,37 @@ void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
 }
 
 void projectile_ssm_qwta::BlindFlash() {
-	entitiesOfCollection( "players" );
-	filterEntitiesByRadius( getWorldOrigin(), blindRadius, true );
-	//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
-
-	float count = getBoundsCacheCount();
+	
+	vector explodeOrigin = getWorldOrigin();
+	
 	float i;
-	for ( i = 0; i < count; i++ ) {
-		player plyr = getBoundsCacheEntity( i );
-		if ( plyr != $null_entity ) {
-			plyr.vBlind( getWorldOrigin(), blindRadius, blindTime );
+	for ( i = 0; i < 2; i++ ) {
+		explodeOrigin_z = explodeOrigin_z + (1024 * i); // Check from halfway up the blast too, since it's pretty big.
+		
+		entitiesOfCollection( "players" );
+		filterEntitiesByRadius( explodeOrigin, blindRadius, true );
+		//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+
+		// First, nail anyone nearby, wall between or not, with some weak blinding..
+		float count = getBoundsCacheCount();
+		float j;
+		for ( j = 0; j < count; j++ ) {
+			player plyr = getBoundsCacheEntity( j );
+			if ( plyr != $null_entity ) {
+				plyr.vBlind( explodeOrigin, blindRadius / 20.f, blindTime, false );
+			}
+		}
+
+		// Next, nail the people who aren't behind cover, harder.
+		filterEntitiesByBoundsTrace( explodeOrigin, CONTENTS_OPAQUE, $null_entity, true );
+		
+		float count2 = getBoundsCacheCount();
+		float k;
+		for ( k = 0; k < count2; k++ ) {
+			player plyr2 = getBoundsCacheEntity( k );
+			if ( plyr2 != $null_entity ) {
+				plyr2.vBlind( explodeOrigin, blindRadius, blindTime, true );
+			}
 		}
 	}
 }

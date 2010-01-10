@@ -69,7 +69,7 @@ object player {
 	void		vForceRespawn();
 	void		vOnSpawnWavePassed();
 	
-	void		vBlind( vector origin, float radius, float time );
+	void		vBlind( vector origin, float radius, float time, boolean bAccountForFacing );
 	float		GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing );
 
 	void		vGiveSpotProficiency();
@@ -2913,7 +2913,7 @@ void player::vOnSpawnWavePassed() {
 	waitedForRevive = true;
 }
 
-void player::vBlind( vector origin, float radius, float time ) {
+void player::vBlind( vector origin, float radius, float time, boolean bAccountForFacing ) {
 
 	float facing = GetFacingAngle( origin, vec3_origin, true );
 	
@@ -2924,10 +2924,12 @@ void player::vBlind( vector origin, float radius, float time ) {
 		reduction = 1.5f;
 	}
 	
-	reduction = reduction * ( facing / 180.f / 1.5f );
-		
-	if ( facing < 120.f ) { // This is reversed, so it's actually more like > 120
-		reduction = reduction / 1.5f;
+	if ( bAccountForFacing ) {
+		reduction = reduction * ( facing / 180.f / 1.5f );
+
+		if ( facing < 120.f ) { // This is reversed, so it's actually more like > 120
+			reduction = reduction / 1.5f;
+		}
 	}
 
 	time = time * reduction;
@@ -2936,8 +2938,6 @@ void player::vBlind( vector origin, float radius, float time ) {
 			blindTime = sys.getTime() + time;
 		}
 	}
-	
-	//sys.print( "Blind time: " + time + "\nDist: " + dist + " Facing: " + facing + " Reduction: " + reduction + "\nName: " + getName() + "\n");
 }
 
 float player::GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing ) {

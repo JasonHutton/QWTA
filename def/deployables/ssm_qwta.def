@@ -66,7 +66,7 @@ entityDef radiation_point_ssm {
 	"scriptObject"					"radiation_point"
 	
 	"rate"							"0.5"
-	"lifetime"						"10.0"
+	"lifetime"						"20.0"
 	
 	"dmg_radiation"					"damage_radiation"
 }
