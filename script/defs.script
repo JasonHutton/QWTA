@@ -1,0 +1,652 @@
+/***********************************************************************
+
+defs.script
+
+This defines some variables needed by the game script.
+
+***********************************************************************/
+
+#ifndef __DOOM_DEFS__
+#define __DOOM_DEFS__
+
+#define NULL			0
+
+#define UP				-1
+#define DOWN			-2
+#define LEFT			-3
+#define RIGHT			-4
+#define FORWARD			-5
+#define BACK			-6
+#define REL_UP			-7
+#define REL_DOWN		-8
+#define REL_LEFT		-9
+#define REL_RIGHT		-10
+#define REL_FORWARD		-11
+#define REL_BACK		-12
+#define EAST			0
+#define NORTH			90
+#define WEST			180
+#define SOUTH			270
+
+#define X_AXIS			0
+#define Y_AXIS			1
+#define Z_AXIS			2
+
+#define YAW				0
+#define PITCH			1
+#define ROLL			2
+
+#define M_PI			3.14159265358979323846
+#define DEG2RAD( a )	( (a) * (M_PI / 180.0f ) )
+#define RAD2DEG( a )	( (a) * (180.0f / M_PI ) )
+
+#define LIMBO_FORCE_HEALTH -100
+
+//
+// Joint modifiers
+//
+#define JOINTMOD_NONE			0	// no modification
+#define JOINTMOD_LOCAL			1	// modifies the joint's position or orientation in joint local space
+#define JOINTMOD_LOCAL_OVERRIDE	2	// sets the joint's position or orientation in joint local space
+#define JOINTMOD_WORLD			3	// modifies joint's position or orientation in model space
+#define JOINTMOD_WORLD_OVERRIDE	4	// sets the joint's position or orientation in model space
+
+#define BIT( num )					( 1 << ( num ) )
+
+//
+// shader parms
+//
+#define SHADERPARM_RED				0
+#define SHADERPARM_GREEN			1
+#define SHADERPARM_BLUE				2
+#define SHADERPARM_ALPHA			3
+#define SHADERPARM_TIMESCALE		3
+#define SHADERPARM_TIMEOFFSET		4
+#define SHADERPARM_DIVERSITY		5	// random between 0.0 and 1.0 for some effects (muzzle flashes, etc)
+#define SHADERPARM_MODE				7	// for selecting which shader passes to enable
+#define SHADERPARM_TIME_OF_DEATH	7	// for the monster skin-burn-away effect enable and time offset
+
+//
+// Contents flags
+//
+
+#define CONTENTS_SOLID				1			// an eye is never valid in a solid
+#define CONTENTS_OPAQUE				2			// blocks visibility (for ai)
+#define CONTENTS_WATER				4			// used for water
+#define CONTENTS_PLAYERCLIP			8			// solid to players
+#define CONTENTS_BOTCLIP			16			// solid to monsters
+#define CONTENTS_MOVEABLECLIP		32			// solid to moveable entities
+#define CONTENTS_IKCLIP				64			// solid to IK
+#define CONTENTS_SLIDEMOVER			128			// contains players & vehicles that move like players (with a SlideMove)
+#define CONTENTS_BODY				256			// used for actors
+#define CONTENTS_PROJECTILE			512			// used for projectiles
+#define CONTENTS_CORPSE				1024		// used for dead bodies
+#define CONTENTS_RENDERMODEL		2048		// used for render models for collision detection
+#define CONTENTS_TRIGGER			4096		// used for triggers
+#define CONTENTS_VEHICLECLIP		8192		// solid to vehicles
+#define CONTENTS_EXPLOSIONSOLID		16384		// used for selection traces
+#define CONTENTS_MONSTER			32768		// monster physics
+#define CONTENTS_FORCEFIELD			65536		// these can be hit by projectiles but other things can move through them
+#define CONTENTS_SHADOWCOLLISION	131072
+#define CONTENTS_CROSSHAIRSOLID		262144
+#define CONTENTS_FLYERHIVECLIP		524288		// flyer hive only
+
+//
+// content masks
+//
+#define	MASK_ALL					(-1)
+#define	MASK_SOLID					(CONTENTS_SOLID)
+#define MASK_VEHICLESOLID			(CONTENTS_SOLID|CONTENTS_VEHICLECLIP|CONTENTS_BODY|CONTENTS_SLIDEMOVER)
+#define	MASK_PLAYERSOLID			(CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY|CONTENTS_SLIDEMOVER)
+#define	MASK_DEADSOLID				(CONTENTS_SOLID|CONTENTS_PLAYERCLIP)
+#define	MASK_WATER					(CONTENTS_WATER)
+#define	MASK_OPAQUE					(CONTENTS_OPAQUE)
+#define MASK_SHOT_RENDERMODEL		(CONTENTS_SOLID|CONTENTS_RENDERMODEL|CONTENTS_FORCEFIELD)
+#define	MASK_SHOT_BOUNDINGBOX		(CONTENTS_SOLID|CONTENTS_BODY)
+#define MASK_PROJECTILE				(CONTENTS_SOLID|CONTENTS_RENDERMODEL|CONTENTS_PROJECTILE|CONTENTS_FORCEFIELD)
+
+//
+// sound shader flags
+//
+#define SSF_PRIVATE_SOUND				1
+#define SSF_ANTI_PRIVATE_SOUND			2
+#define SSF_NO_OCCLUSION				4
+#define SSF_GLOBAL						8
+#define SSF_OMNIDIRECTIONAL				16
+#define SSF_LOOPING						32		// scripts shouldn't touch this
+#define SSF_PLAY_ONCE					64
+#define SSF_UNCLAMPED					128
+#define SSF_NO_FLICKER					256
+#define SSF_NO_DUPS						512
+
+//
+// sound channels
+//
+
+// IMPORTANT NOTE: These should be kept in sync with the enum in game_local.h and def/sound.def!!!
+
+#define SND_ANY							0
+#define SND_VOICE						1
+#define SND_BODY						2
+#define SND_DOOR						3
+#define SND_ITEM						4
+#define SND_MUSIC						5
+
+
+#define SND_ENGINE_0					10
+#define SND_ENGINE_1					11
+#define SND_ENGINE_2					12
+#define SND_ENGINE_3					13
+#define SND_ENGINE_4					14
+#define SND_ENGINE_5					15
+#define SND_ENGINE_6					16
+#define SND_ENGINE_7					17
+
+#define SND_WALKER_LEGS_0				20
+#define SND_WALKER_LEGS_1				21
+#define SND_WALKER_LEGS_2				22
+#define SND_WALKER_LEGS_3				23
+#define SND_WALKER_LEGS_4				24
+#define SND_WALKER_LEGS_5				25
+#define SND_WALKER_LEGS_6				26
+#define SND_WALKER_LEGS_7				27
+
+
+#define SND_PLAYER						50
+#define SND_PLAYER_JUMP					51
+#define SND_PLAYER_LAND					52
+#define SND_PLAYER_HURT					53
+#define SND_PLAYER_DEATH				54
+#define SND_PLAYER_CHAT					55
+#define SND_PLAYER_VO					56
+#define SND_PLAYER_VO_MCP_UPDATE		57
+#define SND_PLAYER_TARGETLOCK			58
+#define SND_PLAYER_TOOLTIP				59
+#define SND_PLAYER_FALL					60
+#define SND_PLAYER_MOVE					61
+#define SND_PLAYER_ALARM				62
+
+#define SND_WEAPON						100
+#define SND_WEAPON_BRASS				101
+#define SND_WEAPON_FIRE					102
+#define SND_WEAPON_FIRE2				103
+#define SND_WEAPON_FIRE3				104
+#define SND_WEAPON_FIRE_FAR				105
+#define SND_WEAPON_FIRE_LOCAL			107
+#define SND_WEAPON_RELOAD				108
+#define SND_WEAPON_COCK					109
+#define SND_WEAPON_RAISE				110
+#define SND_WEAPON_LOWER				111
+#define SND_WEAPON_SIG					112
+#define SND_WEAPON_MECH					113
+#define SND_WEAPON_MOVE					114
+#define SND_WEAPON_FOLEY				115
+#define SND_WEAPON_BOUNCE				116
+#define SND_WEAPON_ARM					117
+#define SND_WEAPON_DISARM				118
+#define SND_WEAPON_REMOVE				119
+#define SND_WEAPON_DEPLOY				120
+#define SND_WEAPON_IDLE					121
+#define SND_WEAPON_MODE					122
+#define SND_WEAPON_DRYFIRE				123
+#define SND_WEAPON_DEPLOY_ROTATION		124
+#define SND_WEAPON_DEPLOY_MISC			125
+
+// ranges of sounds to be played so that samples don't cut each other off in automatic weapons
+#define SND_WEAPON_FIRE_NUM				2
+#define SND_WEAPON_FIRE_LOCAL_START		126
+#define SND_WEAPON_FIRE_LOCAL_END		(SND_WEAPON_FIRE_LOCAL_START + SND_WEAPON_FIRE_NUM - 1)
+
+
+
+#define SND_VEHICLE						200
+#define SND_VEHICLE_IDLE				201
+#define SND_VEHICLE_START				202
+#define SND_VEHICLE_STOP				203
+#define SND_VEHICLE_BRAKE				204
+#define SND_VEHICLE_ENTER				205
+#define SND_VEHICLE_EXIT				206
+#define SND_VEHICLE_POWERUP				207
+#define SND_VEHICLE_POWERDOWN			208
+#define SND_VEHICLE_DEATH				209
+#define SND_VEHICLE_DISABLE				210
+#define SND_VEHICLE_OVERDRIVE			211
+#define SND_VEHICLE_SKID				212
+#define SND_VEHICLE_MISC				213
+#define SND_VEHICLE_RADIO				214
+#define SND_VEHICLE_ALARM				215
+#define SND_VEHICLE_OFFROAD				216
+#define SND_VEHICLE_DRIVE				217
+#define SND_VEHICLE_DRIVE2				218
+#define SND_VEHICLE_DRIVE3				219
+#define SND_VEHICLE_DRIVE4				220
+#define SND_VEHICLE_DRIVE5				221
+#define SND_VEHICLE_WALK				222
+#define SND_VEHICLE_WALK2				223
+#define SND_VEHICLE_WALK3				224
+#define SND_VEHICLE_WALK4				225
+#define SND_VEHICLE_WALK5				226
+#define SND_VEHICLE_WALK6				227
+#define SND_VEHICLE_HORN				228
+#define SND_VEHICLE_REV					229
+#define SND_VEHICLE_JUMP				230
+#define SND_VEHICLE_ZOOM				231
+
+#define SND_VEHICLE_INTERIOR			250
+#define SND_VEHICLE_INTERIOR_IDLE		251
+#define SND_VEHICLE_INTERIOR_START		252
+#define SND_VEHICLE_INTERIOR_STOP		253
+#define SND_VEHICLE_INTERIOR_POWERUP	254
+#define SND_VEHICLE_INTERIOR_POWERDOWN	255
+#define SND_VEHICLE_INTERIOR_OFFROAD	256
+#define SND_VEHICLE_INTERIOR_DRIVE		257
+#define SND_VEHICLE_INTERIOR_DRIVE2		258
+#define SND_VEHICLE_INTERIOR_DRIVE3		259
+#define SND_VEHICLE_INTERIOR_DRIVE4		260
+#define SND_VEHICLE_INTERIOR_DRIVE5		261
+#define SND_VEHICLE_INTERIOR_OVERDRIVE	262
+#define SND_VEHICLE_INTERIOR_LOWHEALTH	263
+
+#define SND_DEPLOYABLE					300
+#define SND_DEPLOYABLE_BRASS			301
+#define SND_DEPLOYABLE_FIRE				302
+#define SND_DEPLOYABLE_FIRE2			303
+#define SND_DEPLOYABLE_FIRE3			304
+#define SND_DEPLOYABLE_FIRE_FAR			305
+#define SND_DEPLOYABLE_RELOAD			306
+#define SND_DEPLOYABLE_SIG				307
+#define SND_DEPLOYABLE_MECH				308
+#define SND_DEPLOYABLE_IDLE				309
+#define SND_DEPLOYABLE_DEATH			310
+#define SND_DEPLOYABLE_DEPLOY			311
+#define SND_DEPLOYABLE_DEPLOY2			312
+#define SND_DEPLOYABLE_DEPLOY3			313
+#define SND_DEPLOYABLE_DEPLOY4			314
+#define SND_DEPLOYABLE_DEPLOY5			315
+#define SND_DEPLOYABLE_YAW				316
+#define SND_DEPLOYABLE_PITCH			317
+
+#define SND_STRUCTURE					400
+#define SND_STRUCTURE_IDLE				401
+#define SND_STRUCTURE_POWERUP			402
+#define SND_STRUCTURE_POWERDOWN			403
+#define SND_STRUCTURE_ALARM				404
+#define SND_STRUCTURE_DEPLOY			405
+#define SND_STRUCTURE_DEPLOY2			406
+#define SND_STRUCTURE_DEPLOY3			407
+#define SND_STRUCTURE_DEPLOY4			408
+#define SND_STRUCTURE_DEPLOY5			409
+#define SND_STRUCTURE_SPAWNLOCATION		410
+#define SND_STRUCTURE_CAPTUREPOINT		411
+
+#define SND_MOVER						500
+#define SND_MOVER_IDLE					501
+#define SND_MOVER_POWERUP				502
+#define SND_MOVER_POWERDOWN				503
+#define SND_MOVER_ALARM					504
+#define SND_MOVER_START					505
+#define SND_MOVER_MOVE					506
+#define SND_MOVER_STOP					507
+
+#define SND_QUICKCHAT_START				1000
+
+//
+// animation channels
+//
+#define ANIMCHANNEL_ALL			0
+#define ANIMCHANNEL_TORSO		1
+#define	ANIMCHANNEL_LEGS		2
+#define	ANIMCHANNEL_HEAD		3
+
+// structure states
+#define SS_BUILT				0
+#define SS_DAMAGED				1
+#define SS_DISABLED				2
+
+// team status
+#define TA_FRIEND				0
+#define TA_NEUTRAL				1
+#define TA_ENEMY				2
+
+#define TA_FLAG_FRIEND			1
+#define TA_FLAG_NEUTRAL			2
+#define TA_FLAG_ENEMY			4
+
+//
+// projectile states
+//
+#define PROJECTILE_SPAWNED		0
+#define PROJECTILE_CREATED		1
+#define PROJECTILE_LAUNCHED		2
+#define PROJECTILE_FIZZLED		3
+#define PROJECTILE_EXPLODED		4
+
+#define SURF_NODAMAGE			1
+#define SURF_SLICK				2
+#define SURF_COLLISION			4
+#define SURF_LADDER				8
+#define SURF_NOIMPACT			16
+#define SURF_NOSTEPS			32
+#define SURF_DISCRETE			64
+#define SURF_NOFRAGMENT			128
+#define SURF_NULLNORMAL			256
+#define SURF_NONSOLID			512
+#define SURF_NOPLANT			1024
+
+#define MPS_DISABLED			0
+#define MPS_FIRING_PREPARE		1
+#define MPS_FIRING				2
+#define MPS_RELOADING			3
+#define MPS_READY				4
+#define MPS_OUT_OF_RANGE		5
+#define MPS_WAITING				6
+#define MPS_NONE_ACTIVE			7
+#define MPS_NOT_LOCKED			8
+#define MPS_LOCKING				9
+#define MPS_LOCKED				10
+#define MPS_INVALID				11
+#define MPS_LOCKED_ROCKETS		12
+
+#define BUTTON_ATTACK			1
+#define BUTTON_RUN				2
+#define BUTTON_ZOOM				4
+#define BUTTON_MODESWITCH		8
+#define BUTTON_MLOOKOFF			16
+#define BUTTON_SPRINT			32
+#define BUTTON_ACTIVATE			64
+#define BUTTON_ALTFIRE			128
+
+#define MAX_WORLD_COORD			( 128 * 1024 )
+#define MIN_WORLD_COORD			( -128 * 1024 )
+#define MAX_WORLD_SIZE			( MAX_WORLD_COORD - MIN_WORLD_COORD )
+
+#define CI_BAR					0
+#define CI_TEXT					1
+#define CI_IMAGE				2
+
+#define eachFrame		for( 0; 1; sys.waitFrame() )
+#define waitUntil( x )	while ( !( x ) ) { sys.waitFrame(); }
+
+#define PK_ATTACK				0
+#define PK_RUN					1
+#define PK_MODESWITCH			2
+#define PK_MOUSELOOKOFF			3
+#define PK_SPRINT				4
+#define PK_ACTIVATE				5
+#define PK_ALTFIRE				6
+#define PK_LEANLEFT				7
+#define PK_LEANRIGHT			8
+#define PK_TOPHAT				9
+
+#define GUI_INVALID				0
+#define INVALID_JOINT			-1
+
+#define RM_RADAR				1
+
+#define DM_MATERIAL				0
+#define DM_CIRCLE				1
+#define DM_ARC					2
+#define DM_ROTATED_MATERIAL		3
+#define DM_TEXT					4
+#define DM_CROSSHAIR			5
+
+#define CM_NORMAL				0
+#define CM_FRIENDLY				1
+#define CM_ALLEGIANCE			2
+
+#define SM_FIXED				0
+#define SM_WORLD				1
+
+#define PM_ENTITY				0
+#define PM_FIXED				1
+
+#define CMF_TEAMONLY					1
+#define CMF_NOADJUST					2
+#define CMF_ALWAYSKNOWN					4
+#define CMF_ONLYSHOWKNOWN				8
+#define CMF_DROPSHADOW					16
+#define CMF_ENEMYONLY					32
+#define CMF_FOLLOWROTATION				64
+#define CMF_ENEMYALWAYSKNOWN			128
+#define CMF_ONLYSHOWONFULLVIEW			256
+#define CMF_FIRETEAMONLY				512
+#define CMF_FIRETEAMKNOWN				1024
+#define CMF_FOLLOWREMOTECAMERAORIGIN	2048
+#define CMF_PLAYERROTATIONONLY			4096
+#define CMF_FIRETEAMCOLORING			8192
+
+#define GUI_GLOBALS_HANDLE		-999
+
+#define DR_CLEAR				0
+#define DR_WARNING				1
+#define DR_FAILED				2
+#define DR_CONDITION_FAILED		3
+#define DR_OUT_OF_RANGE			4
+
+// action codes
+#define	AC_NONE					0
+#define	AC_ARM					1
+#define	AC_DISARM				2
+#define AC_REPAIR				3
+#define	AC_CONSTRUCT			4
+#define AC_CAPTURE				5
+#define AC_HACK					6
+#define AC_ARM_CHARGE			7
+#define AC_DISARM_CHARGE		8
+#define AC_POSSESS				9
+#define AC_SPAWNHOST			10
+#define AC_DISMANTLE			11
+#define AC_REVIVE				12
+#define AC_LIBERATE				13
+#define AC_DISARM_SPAWNHOST		14
+
+// used for sending tooltips
+#define AC_ENEMY_REPAIR			20
+
+// activate key codes - used for selecting weapons for activate key actions
+// TODO: Possibly merge them with the above? They're similar
+#define AK_NONE					0
+#define AK_REPAIR				1
+#define	AK_HACK					2
+#define AK_CHARGEARM			3
+#define AK_ARM					4
+#define AK_CONSTRUCT			5
+#define AK_DISGUISE				6
+#define AK_SPAWNHOST			7
+#define AK_REVIVE				8
+#define AK_SPAWNCAP				9
+#define AK_BLANK1				10
+#define	AK_STAB					11
+#define	AK_USE					12
+#define AK_PLANT				13
+#define AK_CHARGEDISARM			14
+#define AK_DISARM_SPAWNHOST		15
+#define AK_USEVEHICLE			16
+#define AK_FLYERDRONE			17
+
+#define AK_INWARMUP				20
+
+// animation prefix types
+#define AP_WEAPON				0
+#define AP_WEAPON_CLASS			1
+#define AP_STANCE				2
+#define AP_STANCE_ACTION		3
+#define AP_CHANNEL_NAME			4
+
+// sdGeneralMover states
+#define	GMS_MOVING				0
+#define	GMS_WAITING				1
+
+// locational damage areas
+#define	LDA_LEGS				0
+#define LDA_TORSO				1
+#define LDA_HEAD				2
+
+// vehicle kick flags
+#define EF_KILL_PLAYERS			1
+
+// vote modes
+#define VM_GLOBAL				0
+#define VM_TEAM					1
+#define VM_PRIVATE				2
+
+#define TARGET_ARTILLERY		0
+#define TARGET_ROCKETS			1
+#define TARGET_SSM				2
+
+// construction states
+#define	CSTATE_NONE							0
+#define	CSTATE_FIRST_PROGRESS				1
+#define	CSTATE_FIRST						2
+#define	CSTATE_FIRST_SECOND_PROGRESS		3
+#define	CSTATE_FIRST_SECOND					4
+#define	CSTATE_DESTROY						5 // Gordon: special state that will be just CSTATE_NONE, but causes some notification
+
+// game state
+#define	GS_INACTIVE 			0			// not running
+#define	GS_WARMUP 				1			// warming up
+#define	GS_COUNTDOWN 			2			// post warmup pre-game
+#define	GS_GAMEON 				3			// game is on
+#define	GS_GAMEREVIEW			4			// game is over, scoreboard is up
+#define	GS_NEXTGAME				5
+#define	GS_NEXTMAP 				6
+
+#define	TARGET_LOCK_NOT_LOCKED		0
+#define	TARGET_LOCK_LOCKING			1
+#define	TARGET_LOCK_LOCKED			2
+
+#define WAIT_FOR_TOOLTIP while( myPlayer.isToolTipPlaying() || myPlayer.getVehicle() != $null_entity ) { sys.wait( 0.2 ); }
+
+#define CROSSHAIR_INFO_BAR_HEIGHT 6
+
+#define FIRESUPPORT_TIMER_NAME "firesupport_timer"
+#define FIRESUPPORT_TIMER_START_NAME "firesupport_start_timer"
+
+#define VEHICLECREDIT_TIMER_NAME "vehiclecredit_timer"
+
+#define OBJECTIVEMESSAGE_WAIT_TIME ( 90.f )
+
+#define TRACER_CHANCE			0
+#define TRACER_FORCE			1
+#define TRACER_OFF				2
+
+#define DISTANCE_FOR_ACTION		88.0f
+
+#define SPOTTED_FLASH_TIME		5.0f
+
+// gui defines in uicrosshairinfo.h
+#define CF_CROSSHAIR		1
+#define CF_PLAYER_ICONS		2
+#define CF_TASKS			4
+#define CF_OBJ_MIS			8
+
+#define CROSSHAIR_TRACE_DIST 8192
+
+// 'interfaces'
+object target_marker {
+	void	SetTarget( object traceObject, entity targetEntity, float targetLocked ) { ; }
+	void	SetTargetPosition( vector position ) { ; }
+};
+
+object player {
+	boolean IsSniperScopeUp();
+};
+
+//mal: some bot script defines =============================================================================
+
+//mal: bot actions states - these MUST match the defines in BotAI_Actions.h!!
+#define	ACTION_STATE_NULL 		-1	//mal: action is dead/deactivated/etc
+#define	ACTION_STATE_NORMAL		0	//mal: nothing to see here, move along....
+#define	ACTION_STATE_START_BUILD	1
+#define	ACTION_STATE_PLANTED		2
+#define	ACTION_STATE_START_HACK		3
+#define	ACTION_STATE_OBJ_STOLEN		4
+#define	ACTION_STATE_DEFUSED		5
+#define	ACTION_STATE_BUILD_FIZZLED	6
+#define	ACTION_STATE_HACK_FIZZLED 	7
+#define	ACTION_STATE_OBJ_RETURNED	8
+#define	ACTION_STATE_OBJ_DROPPED	9
+#define ACTION_STATE_FINISH_BUILD	10
+#define	ACTION_STATE_OBJ_BORN		11
+#define	ACTION_STATE_OBJ_DELIVERED	12
+#define	ACTION_STATE_GUN_READY		13
+#define	ACTION_STATE_GUN_DESTROYED	14
+
+#define	ACTION_GOAL_NULL			-1
+#define	ACTION_GOAL_ROAM			0
+#define	ACTION_GOAL_CAMP			1
+#define	ACTION_GOAL_DENY_SPAWNPOINT	2
+#define	ACTION_GOAL_MAJOR_OBJ_BUILD	3
+#define	ACTION_GOAL_MINOR_OBJ_BUILD	4
+#define	ACTION_GOAL_PREVENT_BUILD	5
+#define	ACTION_GOAL_HE_CHARGE		6
+#define	ACTION_GOAL_DEFUSE			7
+#define	ACTION_GOAL_HACK			8
+#define	ACTION_GOAL_PREVENT_HACK	9
+#define	ACTION_GOAL_STEAL			10
+#define	ACTION_GOAL_PREVENT_STEAL	11
+#define	ACTION_GOAL_SNIPE			12
+#define	ACTION_GOAL_DELIVER			13
+#define	ACTION_GOAL_LANDMINE		14
+#define	ACTION_GOAL_FIRESUPPORT		15
+#define	ACTION_GOAL_AIRCAN_HINT		16
+#define	ACTION_GOAL_SMOKE_HINT		17
+#define	ACTION_GOAL_NADE_HINT		18
+#define	ACTION_GOAL_VEHICLE_CAMP	19
+#define	ACTION_GOAL_VEHICLE_ROAM	20
+#define	ACTION_GOAL_SUPPLY_HINT		21
+#define	ACTION_GOAL_MCP_OUTPOST		22
+#define	ACTION_GOAL_TELEPORTER_HINT	23
+#define	ACTION_GOAL_SHIELD_HINT		24
+#define	ACTION_GOAL_FORWARD_SPAWN	25
+#define	ACTION_GOAL_PREVENT_DELIVER	26
+#define	ACTION_GOAL_DROP_DEPLOYABLE	27
+#define	ACTION_GOAL_MCP_START		28
+#define	ACTION_GOAL_DEFENSE_CAMP	29
+#define	ACTION_GOAL_DEFENSE_MINE	30
+#define	ACTION_GOAL_VEHICLE_GRAB	31
+	
+// bot action types
+#define ACTION_TYPE_BASE			1
+#define ACTION_TYPE_BBOX			2
+#define ACTION_TYPE_VEHICLE_PATH	3
+#define ACTION_TYPE_TARGET			4
+
+// player class/team types - these MUST match the values in BotAI_Main.h!
+#define	NOCLASS				-1
+#define	MEDIC					0
+#define	SOLDIER				1
+#define	ENGINEER				2
+#define	FIELDOPS				3
+#define COVERTOPS					4
+
+#define NOTEAM					-1
+#define GDF						0
+#define STROGG					1
+
+// some bot weapon values, so that you can have the bots switch weapons thru the script
+#define SMG						2		// the assault rifle and Lacerator weapon of each team, available to all classes.
+#define ROCKET_LAUNCHER				5		// soldier only weapon
+#define HEAVY_MACHINEGUN			6		// ditto
+#define SHOTGUN					11		// medics, engineers and soldiers
+#define SNIPERRIFLE				15		// covert ops only
+
+#define AAS_PLAYER				0
+#define AAS_VEHICLE				1
+
+// end of bot script defines ===========================================================================
+
+
+// Entity icon defines
+
+// positions
+#define EI_CENTER		0
+#define EI_ABOVE		1
+
+// color modes
+#define EI_NONE			0
+#define EI_WHITE		0
+#define EI_TEAM			1
+
+
+#endif
