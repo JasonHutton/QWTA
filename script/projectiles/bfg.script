@@ -564,10 +564,8 @@ void projectile_bfg::FindGoodBeams() {
 		}
 
 		if ( !AlreadyTarget( ent ) ) {
-			if( ent != $null_entity ) {
-				if( TargetValid( ent, GetTargetPos( ent ) ) ) {
-					AssignBeamTarget( ent );
-				}
+			if( TargetValid( ent, GetTargetPos( ent ) ) ) {
+				AssignBeamTarget( ent );
 			}
 		}
 	}
