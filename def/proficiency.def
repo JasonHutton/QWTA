@@ -8,6 +8,11 @@ proficiencyType fieldops {
 	level 24
 	level 48
 	level 96
+	
+	qwtalevel 12
+	qwtalevel 24
+	qwtalevel 48
+	qwtalevel 96
 }
 
 proficiencyType soldier {
@@ -18,6 +23,11 @@ proficiencyType soldier {
 	level 24
 	level 48
 	level 96
+	
+	qwtalevel 12
+	qwtalevel 24
+	qwtalevel 48
+	qwtalevel 96
 }
 
 proficiencyType covertops {
@@ -28,6 +38,11 @@ proficiencyType covertops {
 	level 24
 	level 48
 	level 96
+	
+	qwtalevel 12
+	qwtalevel 24
+	qwtalevel 48
+	qwtalevel 96
 }
 
 proficiencyType engineer {
@@ -38,6 +53,11 @@ proficiencyType engineer {
 	level 24
 	level 48
 	level 96
+	
+	qwtalevel 12
+	qwtalevel 24
+	qwtalevel 48
+	qwtalevel 96
 }
 
 proficiencyType medic {
@@ -48,6 +68,11 @@ proficiencyType medic {
 	level 24
 	level 48
 	level 96
+	
+	qwtalevel 12
+	qwtalevel 24
+	qwtalevel 48
+	qwtalevel 96
 }
 
 
@@ -62,6 +87,11 @@ proficiencyType battlesense {
 	level 16
 	level 32
 	level 64
+	
+	qwtalevel 8
+	qwtalevel 16
+	qwtalevel 32
+	qwtalevel 64
 }
 
 proficiencyType weapon_handling {
@@ -73,6 +103,11 @@ proficiencyType weapon_handling {
 	level 16
 	level 32
 	level 64
+	
+	qwtalevel 8
+	qwtalevel 16
+	qwtalevel 32
+	qwtalevel 64
 }
 
 proficiencyType vehicle {
