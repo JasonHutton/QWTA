@@ -23,6 +23,15 @@ CHANGES:
   + Kept the green HUD chargebar the manual BFG had.
   + Kept the green HUD chargebar cooldown time too.
 * Some optimizations and improvements to the BFG's script.
+* Second set of bind contexts for players added as part of a bugfix for 
+  the bind contexts not working properly/being broken last release...
+  The "strogg" and "gdf" bind contexts are now overridden by class-specific
+  bind contexts. This means you can bind something to the gdf/strogg bind
+  contexts, AND to the class-specific contexts(eg: "medic"), and for a class
+  that has a class-specific context, that will be used. Or for a class without
+  a class-specific context, the team context will be used. If neither is
+  setup, the default context will be used, as usual.
+  Class Context -> Team Context -> Default Context
   
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
@@ -34,6 +43,7 @@ BUG FIXES:
 * Fixed BaseETQW bug: Jump sounds added while carrying Ammo Pack.
 * Fixed BaseETQW bug: Jump sound(jogging) added while carrying Binoculars.
 * Fixed Anansi's LAWs having zero splash damage.
+* Fixed a stupid issue with the bind contexts being broken in v0.3.3.
 
 QWTA v0.3.3:
 ==========
