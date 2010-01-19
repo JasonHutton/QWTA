@@ -1,0 +1,714 @@
+
+#include <def/players/player_includes.include>
+
+//=============================================================================
+//== GDF WEAPON PACKAGES ======================================================
+//=============================================================================
+
+itemPackageDef package/weapons/law {
+	item					"inventory/weapons/law"
+}
+
+itemPackageDef package/weapons/gpmg {
+	item					"inventory/weapons/gpmg"
+}
+
+itemPackageDef package/weapons/sniperrifle {
+	item					"inventory/weapons/sniperrifle"
+}
+
+itemPackageDef package/weapons/machinepistol {
+	item					"inventory/weapons/machinepistol"
+}
+
+itemPackageDef package/weapons/machinepistol/silenced {
+	item					"inventory/weapons/machinepistol/silenced"
+}
+
+itemPackageDef package/weapons/assaultrifle {
+	item					"inventory/weapons/assaultrifle"
+}
+
+itemPackageDef package/weapons/assaultrifle/scoped {
+	item					"inventory/weapons/assaultrifle/scoped"
+}
+
+itemPackageDef package/weapons/shotgun {
+	item					"inventory/weapons/shotgun"
+}
+
+itemPackageDef package/weapons/none {
+}
+
+itemPackageDef disguise_gdf {
+	item							"inventory/weapons/knife/strogg"
+	item							"inventory/weapons/assaultrifle_dummy"
+}
+
+//=============================================================================
+//== GDF CLASSES ==============================================================
+//=============================================================================
+
+itemPackageDef class_soldier {
+	item							"inventory/weapons/knife"
+	item							"inventory/weapons/machinepistol"
+
+	{
+		require						"light_weapons_spawn_level_4 == true"
+		item						"inventory/weapons/pistol_akimbo"
+	}
+
+	item							"inventory/weapons/grenades/frag"
+	item							"inventory/tools/pliers/charge"
+	item							"inventory/items/he_charge"
+	item							"inventory/tools/binoculars"
+	item							"inventory/tools/gdf_parachute"
+
+	consumable						ammo assaultrifle 120
+	consumable						ammo rocketlauncher 10
+	consumable						ammo gpmg 200
+	consumable						ammo shotgun 30
+	consumable						ammo machinepistol 100
+	consumable						ammo pistol 30
+	consumable						ammo grenade 2
+	consumable						ammo infinite 1 // never used
+}
+
+playerClass soldier {
+	info {
+		"items"						"class_soldier"
+		"items_disguised"			"disguise_gdf"
+		"model"						"models/players/gdf/soldier"
+		"title"						"game/classes/soldier"
+		"team"						"gdf"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/soldier"
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/binoculars"
+		"weapon_tool1"				"inventory/tools/pliers/charge"
+		"weapon_item1"				"inventory/items/he_charge"		
+
+		"stat_name"					"soldier"
+
+		"player_class_num"			"1"
+
+		"def_dead_body"				"dead_body_gdf"
+
+		"climate_skin_key"			"gdf"
+		
+		"class_context_cvar"		"g_class_context_soldier"
+
+		templates/players/request_icons
+		templates/classes/footsteps/gdf
+		templates/classes/pain/gdf
+	}
+
+	proficiency soldier {
+		text		"game/proficiency/soldier"
+		level 1 {
+			text	"game/proficiency/soldier/reward1"
+			title	"game/proficiency/soldier/reward1_title"
+			icon	"soldier/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/soldier/reward2"
+			title	"game/proficiency/soldier/reward2_title"
+			icon	"soldier/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/soldier/reward3"
+			title	"game/proficiency/soldier/reward3_title"
+			icon	"soldier/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/soldier/reward4"
+			title	"game/proficiency/soldier/reward4_title"
+			icon	"soldier/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+
+	templates/players/common_proficiencies_gdf
+
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/gdf_head_offset
+	}
+
+	abilities {
+		soldier
+	}
+
+	ammoLimits {
+		"machinepistol"				"100"
+		"assaultrifle"				"200"
+		"shotgun"					"50"
+		"rocketlauncher"			"10"
+		"gpmg"						"400"
+		"grenade"					"2"
+		"pistol"					"50"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/weapons/assaultrifle"
+		"package/weapons/law"
+		"package/weapons/gpmg"
+		"package/weapons/shotgun"
+	}
+}
+
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_medic {
+	item							"inventory/weapons/knife"
+
+	{
+		require						"light_weapons_spawn_level_4 == false"
+		item						"inventory/weapons/pistol"
+	}
+
+	{
+		require						"light_weapons_spawn_level_4 == true"
+		item						"inventory/weapons/pistol_akimbo"
+	}
+
+	//item							"inventory/weapons/assaultrifle"
+	item							"inventory/weapons/grenades/frag"
+	item							"inventory/tools/defibrillator"
+	item							"inventory/items/healthpack"
+	item							"inventory/weapons/grenades/supply_marker_medic"
+	item							"inventory/tools/binoculars"
+	item							"inventory/tools/gdf_parachute"
+
+	consumable						ammo assaultrifle	80
+	consumable						ammo shotgun		20
+	consumable						ammo pistol			30
+	consumable						ammo grenade		1
+	consumable						ammo infinite		1 // never used
+}
+
+playerClass medic {
+	info {
+		"items"						"class_medic"
+		"items_disguised"			"disguise_gdf"
+		"model"						"models/players/gdf/medic"
+		"title"						"game/classes/medic"
+		"team"						"gdf"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/paratech"
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/binoculars"
+		"weapon_tool1"				"inventory/tools/defibrillator"
+		"weapon_item1"				"inventory/items/healthpack"
+		"weapon_item2"				"inventory/weapons/grenades/supply_marker_medic"
+
+		"def_dead_body"				"dead_body_gdf"
+
+		"climate_skin_key"			"gdf"
+
+		"class_context_cvar"		"g_class_context_medic"
+
+		"stat_name"					"medic"
+
+		"player_class_num"			"0"
+
+		templates/players/request_icons
+		templates/classes/footsteps/gdf
+		templates/classes/pain/gdf
+	}
+
+	proficiency medic {
+		text		"game/proficiency/medic"
+		level 1 {
+			text	"game/proficiency/medic/reward1"
+			title	"game/proficiency/medic/reward1_title"
+			icon	"medic/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/medic/reward2"
+			title	"game/proficiency/medic/reward2_title"
+			icon	"medic/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/medic/reward3"
+			title	"game/proficiency/medic/reward3_title"
+			icon	"medic/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/medic/reward4"
+			title	"game/proficiency/medic/reward4_title"
+			icon	"medic/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+
+	templates/players/common_proficiencies_gdf
+
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/gdf_head_offset
+	}
+
+	abilities {
+		revive
+		medic
+		healthBoost
+		deadview
+		qcItems
+	}
+
+	ammoLimits {
+		"pistol"					"40"
+		"shotgun"					"40"
+		"assaultrifle"				"120"
+		"grenade"					"2"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/weapons/assaultrifle"
+		"package/weapons/shotgun"		
+	}
+}
+
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_engineer {
+	item							"inventory/weapons/knife"
+
+	{
+		require						"light_weapons_spawn_level_4 == false"
+		item						"inventory/weapons/pistol"
+	}
+
+	{
+		require						"light_weapons_spawn_level_4 == true"
+		item						"inventory/weapons/pistol_akimbo"
+	}
+
+	item							"inventory/weapons/grenades/frag"
+	item							"inventory/tools/pliers"
+	item							"inventory/tools/deploytool/engineer"
+	item							"inventory/items/landmine"
+	item							"inventory/tools/binoculars"
+	item							"inventory/tools/gdf_parachute"
+
+	consumable						ammo assaultrifle	80
+	consumable						ammo grenade_rifle	5
+	consumable						ammo shotgun 		30
+	consumable						ammo pistol			30
+	consumable						ammo grenade		2
+	consumable						ammo infinite		1 // never used
+}
+
+itemPackageDef package/engineer/weapons/assaultrifle {
+	item					"inventory/weapons/assaultrifle"
+}
+
+itemPackageDef package/engineer/weapons/assaultrifle/grenade {
+	{
+		require				"engineer_level_1 == true"
+		item				"inventory/weapons/assaultrifle/grenade"
+	}
+}
+
+playerClass engineer {
+	info {
+		"items"						"class_engineer"
+		"items_disguised"			"disguise_gdf"
+		"model"						"models/players/gdf/engineer"
+		"title"						"game/classes/engineer"
+		"team"						"gdf"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/engineer"
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/binoculars"
+		"weapon_tool1"				"inventory/tools/pliers"
+		"weapon_tool2"				"inventory/tools/deploytool/engineer"
+		"weapon_item1"				"inventory/items/landmine"
+
+		"def_dead_body"				"dead_body_gdf"
+
+		"climate_skin_key"			"gdf"
+
+		"class_context_cvar"		"g_class_context_engineer"
+
+		"stat_name"					"engineer"
+
+		"player_class_num"			"2"
+
+		templates/players/request_icons
+		templates/classes/footsteps/gdf
+		templates/classes/pain/gdf
+	}
+
+	proficiency engineer {
+		text		"game/proficiency/engineer"
+		level 1 {
+			text	"game/proficiency/engineer/reward1"
+			title	"game/proficiency/engineer/reward1_title"
+			icon	"engineer/reward1"
+			tooltip	"proficiency_upgrade_weapselect"
+			sound	"sounds/tooltips/upgrade_new_weapon/info"
+		}
+		level 2 {
+			text	"game/proficiency/engineer/reward2"
+			title	"game/proficiency/engineer/reward2_title"
+			icon	"engineer/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/engineer/reward3"
+			title	"game/proficiency/engineer/reward3_title"
+			icon	"engineer/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/engineer/reward4"
+			title	"game/proficiency/engineer/reward4_title"
+			icon	"engineer/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+
+	templates/players/common_proficiencies_gdf
+
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/gdf_head_offset
+	}
+
+	abilities {
+		engineer
+		repair
+		canDeploy
+		qcItems
+	}
+
+	ammoLimits {
+		"pistol"					"40"
+		"shotgun"					"40"
+		"assaultrifle"				"120"
+		"grenade_rifle"				"5"
+		"grenade"					"2"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/engineer/weapons/assaultrifle"
+		"package/weapons/shotgun"
+		"package/engineer/weapons/assaultrifle/grenade"
+	}
+}
+
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_fieldops {
+	item							"inventory/weapons/knife"
+
+	{
+		require						"light_weapons_spawn_level_4 == false"
+		item						"inventory/weapons/pistol"
+	}
+
+	{
+		require						"light_weapons_spawn_level_4 == true"
+		item						"inventory/weapons/pistol_akimbo"
+	}
+
+	item							"inventory/weapons/grenades/frag"
+	item							"inventory/items/ammopack"
+	item							"inventory/tools/deploytool/fieldops"
+	item							"inventory/tools/binoculars/fieldops"
+	item							"inventory/weapons/grenades/airstrike_marker_gdf"
+	item							"inventory/tools/gdf_parachute"
+
+	consumable						ammo assaultrifle	80
+	consumable						ammo pistol			30
+	consumable						ammo grenade		2
+	consumable						ammo infinite		1 // never used
+}
+
+itemPackageDef package/fieldops/weapons/assaultrifle {
+	item					"inventory/weapons/assaultrifle"
+}
+
+itemPackageDef package/fieldops/weapons/assaultrifle/scoped {
+	{
+		require				"fieldops_level_1 == true"
+		item				"inventory/weapons/assaultrifle/scoped"
+	}
+}
+
+playerClass fieldops {
+	info {
+		"items"						"class_fieldops"
+		"items_disguised"			"disguise_gdf"
+		"model"						"models/players/gdf/fieldops"
+		"title"						"game/classes/fieldops"
+		"team"						"gdf"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/fieldops"
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/binoculars/fieldops"
+		"weapon_tool1"				"inventory/tools/deploytool/fieldops"
+		"weapon_item1"				"inventory/items/ammopack"
+		"weapon_item2"				"inventory/weapons/grenades/airstrike_marker_gdf"
+
+		"def_dead_body"				"dead_body_gdf"
+
+		"stat_name"					"fieldops"
+
+		"climate_skin_key"			"gdf"
+
+		"class_context_cvar"		"g_class_context_fieldops"
+
+		"player_class_num"			"3"
+
+		templates/players/request_icons
+		templates/classes/footsteps/gdf
+		templates/classes/pain/gdf
+	}
+
+	proficiency fieldops {
+		text		"game/proficiency/fieldops"
+		level 1 {
+			text	"game/proficiency/fieldops/reward1"
+			title	"game/proficiency/fieldops/reward1_title"
+			icon	"fieldops/reward1"
+			tooltip	"proficiency_upgrade_weapselect"
+			sound	"sounds/tooltips/upgrade_new_weapon/info"
+		}
+		level 2 {
+			text	"game/proficiency/fieldops/reward2"
+			title	"game/proficiency/fieldops/reward2_title"
+			icon	"fieldops/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/fieldops/reward3"
+			title	"game/proficiency/fieldops/reward3_title"
+			icon	"fieldops/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/fieldops/reward4"
+			title	"game/proficiency/fieldops/reward4_title"
+			icon	"fieldops/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+
+	templates/players/common_proficiencies_gdf
+
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/gdf_head_offset
+	}
+
+	abilities {
+		fieldops
+		giveAmmo
+		canDeploy
+		qcItems
+	}
+
+	ammoLimits {
+		"pistol"					"40"
+		"assaultrifle"				"120"
+		"grenade"					"2"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/fieldops/weapons/assaultrifle"
+		"package/fieldops/weapons/assaultrifle/scoped"
+	}
+}
+
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_covertops {
+	item							"inventory/weapons/knife"
+
+	{
+		require						"covertops_spawn_level_1 == false"
+
+		{
+			require					"light_weapons_spawn_level_4 == false"
+			item					"inventory/weapons/pistol/silenced"
+		}
+
+		{
+			require					"light_weapons_spawn_level_4 == true"
+			item					"inventory/weapons/pistol_akimbo/silenced"
+		}
+	}
+
+	{
+		require						"covertops_spawn_level_1 == true"
+		item						"inventory/weapons/machinepistol/silenced"
+	}
+
+	item							"inventory/weapons/grenades/emp"
+	item							"inventory/tools/pliers_hack"
+	item							"inventory/tools/deploytool/ranger"
+	item							"inventory/tools/binoculars"
+	item							"inventory/items/third_eye"
+	item							"inventory/weapons/grenades/smoke"
+	item							"inventory/tools/gdf_parachute"
+
+	consumable						ammo sniperrifle 30
+	consumable						ammo assaultrifle 80
+	consumable						ammo machinepistol 40
+	consumable						ammo pistol		30
+	consumable						ammo grenade	2
+	consumable						ammo infinite 1 // never used
+}
+
+playerClass covertops {
+	info {
+		"items"						"class_covertops"
+		"items_disguised"			"disguise_gdf"
+		"model"						"models/players/gdf/covertops"
+		"title"						"game/classes/covertops"
+		"team"						"gdf"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/ranger"
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/binoculars"
+		"weapon_tool1"				"inventory/tools/pliers_hack"
+		"weapon_tool2"				"inventory/tools/deploytool/ranger"
+		"weapon_item1"				"inventory/items/third_eye"
+		"weapon_item2"				"inventory/weapons/grenades/smoke"
+
+//		"cvar_limit"				"g_maxRangers"
+
+		"def_dead_body"				"dead_body_gdf"
+
+		"climate_skin_key"			"gdf"
+
+		"class_context_cvar"		"g_class_context_covertops"
+
+		"stat_name"					"covertops"
+
+		"player_class_num"			"4"
+
+		templates/players/request_icons
+		templates/classes/footsteps/gdf
+		templates/classes/pain/gdf
+	}
+
+	proficiency covertops {
+		text		"game/proficiency/covertops"
+		level 1 {
+			text	"game/proficiency/covertops/reward1"
+			title	"game/proficiency/covertops/reward1_title"
+			icon	"covertops/reward1"
+			tooltip	"proficiency_upgrade_respawn"
+			sound	"sounds/tooltips/upgrade_on_respawn/info"
+		}
+		level 2 {
+			text	"game/proficiency/covertops/reward2"
+			title	"game/proficiency/covertops/reward2_title"
+			icon	"covertops/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/covertops/reward3"
+			title	"game/proficiency/covertops/reward3_title"
+			icon	"covertops/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/covertops/reward4"
+			title	"game/proficiency/covertops/reward4_title"
+			icon	"covertops/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+	
+	templates/players/common_proficiencies_gdf
+
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/gdf_head_offset
+	}
+
+	abilities {
+		covertops
+		hack
+		canDeploy
+	}
+
+	ammoLimits {
+		"pistol"					"40"
+		"machinepistol"				"60"
+		"sniperrifle"				"40"
+		"assaultrifle"				"120"
+		"grenade"					"2"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/weapons/assaultrifle/scoped"
+		"package/weapons/sniperrifle"
+	}
+}
