@@ -21,9 +21,9 @@ _tab_page( QWTAInfo, localize( "guis/limbo/qwta" ), gameInfo, GI_QWTAINFO, _to_r
 	
 	
 
-	properties {
-		float visible = true;//player.serverIsRepeater == false;
-	}
+	//properties {
+	//	float visible = true;//player.serverIsRepeater == false;
+	//}
 _end_tab_page
 
 #endif
