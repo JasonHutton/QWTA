@@ -101,6 +101,7 @@ playerClass soldier {
 		"climate_skin_key"			"gdf"
 		
 		"class_context_cvar"		"g_class_context_soldier"
+		"class_context2_cvar"		"g_class_context2_soldier"
 
 		templates/players/request_icons
 		templates/classes/footsteps/gdf
@@ -226,6 +227,7 @@ playerClass medic {
 		"climate_skin_key"			"gdf"
 
 		"class_context_cvar"		"g_class_context_medic"
+		"class_context2_cvar"		"g_class_context2_medic"
 
 		"stat_name"					"medic"
 
@@ -365,6 +367,7 @@ playerClass engineer {
 		"climate_skin_key"			"gdf"
 
 		"class_context_cvar"		"g_class_context_engineer"
+		"class_context2_cvar"		"g_class_context2_engineer"
 
 		"stat_name"					"engineer"
 
@@ -505,6 +508,7 @@ playerClass fieldops {
 		"climate_skin_key"			"gdf"
 
 		"class_context_cvar"		"g_class_context_fieldops"
+		"class_context2_cvar"		"g_class_context2_fieldops"
 
 		"player_class_num"			"3"
 
@@ -642,6 +646,7 @@ playerClass covertops {
 		"climate_skin_key"			"gdf"
 
 		"class_context_cvar"		"g_class_context_covertops"
+		"class_context2_cvar"		"g_class_context2_covertops"
 
 		"stat_name"					"covertops"
 

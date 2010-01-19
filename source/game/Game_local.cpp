@@ -9224,21 +9224,31 @@ sdKeyCommand* idGameLocal::Translate( const idKey& key ) {
 	idPlayer* localPlayer = GetLocalPlayer();
 	if ( localPlayer != NULL ) {
 		sdBindContext* specialContext = NULL;
+		sdBindContext* specialContext2 = NULL;
 
 		idEntity* proxy = localPlayer->GetProxyEntity();
 		if ( proxy != NULL ) {
 			specialContext = proxy->GetBindContext();
+			specialContext2 = proxy->GetBindContext2();
 		} else {
 			if ( !localPlayer->IsSpectator() ) {
 				const sdDeclPlayerClass* cls = localPlayer->GetInventory().GetClass();
 				if ( cls != NULL ) {
 					specialContext = cls->GetBindContext();
+					specialContext2 = cls->GetBindContext2();
 				}
 			}
 		}
 
 		if ( specialContext != NULL ) {
 			sdKeyCommand* cmd = keyInputManager->GetCommand( specialContext, key );
+			if ( cmd != NULL ) {
+				return cmd;
+			}
+		}
+
+		if ( specialContext2 != NULL ) {
+			sdKeyCommand* cmd = keyInputManager->GetCommand( specialContext2, key );
 			if ( cmd != NULL ) {
 				return cmd;
 			}

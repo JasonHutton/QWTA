@@ -85,8 +85,10 @@ public:
 	const idDeclEntityDef*		GetBodyDef( void ) const				{ return deadBodyDef; }
 	const playerClassTypes_t&	GetPlayerClassNum( void ) const			{ return playerClassNum; }
 	sdBindContext*				GetBindContext( void ) const			{ return bindContext; }
+	sdBindContext*				GetBindContext2( void ) const			{ return bindContext2; }
 
 	void						OnContextCVarChanged( void ) const;
+	void						OnContextCVar2Changed( void ) const;
 	void						OnInputInit( void ) const;
 	void						OnInputShutdown( void ) const;
 
@@ -137,7 +139,9 @@ private:
 	playerClassTypes_t			playerClassNum;
 
 	sdPlayerClassContextCallback	contextCallback;
+	sdPlayerClassContextCallback	contextCallback2;
 	mutable sdBindContext*			bindContext;
+	mutable sdBindContext*			bindContext2;
 };
 
 #endif // __DECLPLAYERCLASS_H__

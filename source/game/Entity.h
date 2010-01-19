@@ -435,6 +435,7 @@ public:
 	virtual void			OnGuiDeactivated( void ) { ; }
 
 	virtual sdBindContext*	GetBindContext( void ) { return NULL; }
+	virtual sdBindContext*	GetBindContext2( void ) { return NULL; }
 
 	// sound
 	bool					StartSound( const char *soundName, const soundChannel_t channelStart, const soundChannel_t channelEnd, int soundShaderFlags, int *length );

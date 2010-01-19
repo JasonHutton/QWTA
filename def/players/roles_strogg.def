@@ -78,6 +78,7 @@ playerClass aggressor {
 		"stat_name"					"aggressor"
 		
 		"class_context_cvar"		"g_class_context_aggressor"
+		"class_context2_cvar"		"g_class_context2_aggressor"
 
 		"player_class_num"			"1"
 		
@@ -186,6 +187,7 @@ playerClass technician {
 		"stat_name"					"technician"
 		
 		"class_context_cvar"		"g_class_context_technician"
+		"class_context2_cvar"		"g_class_context2_technician"
 
 		"player_class_num"			"0"
 
@@ -307,6 +309,7 @@ playerClass constructor {
 		"stat_name"					"constructor"
 		
 		"class_context_cvar"		"g_class_context_constructor"
+		"class_context2_cvar"		"g_class_context2_constructor"
 
 		"player_class_num"			"2"
 
@@ -428,6 +431,7 @@ playerClass oppressor {
 		"stat_name"					"oppressor"
 		
 		"class_context_cvar"		"g_class_context_oppressor"
+		"class_context2_cvar"		"g_class_context2_oppressor"
 
 		"player_class_num"			"3"
 
@@ -537,6 +541,7 @@ playerClass infiltrator {
 		"stat_name"					"infiltrator"
 		
 		"class_context_cvar"		"g_class_context_infiltrator"
+		"class_context2_cvar"		"g_class_context2_infiltrator"
 
 		"player_class_num"			"4"
 

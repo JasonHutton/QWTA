@@ -30,6 +30,7 @@ sdDeclPlayerClass::sdDeclPlayerClass
 */
 sdDeclPlayerClass::sdDeclPlayerClass( void ) {
 	contextCallback.Init( this );
+	contextCallback2.Init( this );
 	FreeData();
 	proficiencies.SetGranularity( 4 );
 }
@@ -345,6 +346,10 @@ void sdDeclPlayerClass::ReadFromDict( const idDict& info ) {
 		contextCallback.SetCVar( cvarSystem->Find( text ) );
 	}
 
+	if ( info.GetString( "class_context2_cvar", "", &text ) ) {
+		contextCallback2.SetCVar( cvarSystem->Find( text ) );
+	}
+
 	if ( info.GetString( "climate_skin_key", "", &text ) ) {
 		climateSkinKey = text;
 	}
@@ -396,6 +401,7 @@ void sdDeclPlayerClass::FreeData( void ) {
 	climateSkinKey		= "";
 	limitCVar			= NULL;
 	bindContext			= NULL;
+	bindContext2		= NULL;
 
 	totalAmmoLimit		= 0;
 	maxHealth			= 100;
@@ -419,6 +425,7 @@ void sdDeclPlayerClass::FreeData( void ) {
 	options.Clear();
 	proficiencies.Clear();
 	contextCallback.SetCVar( NULL );
+	contextCallback2.SetCVar( NULL );
 }
 
 /*
@@ -560,6 +567,16 @@ void sdDeclPlayerClass::OnContextCVarChanged( void ) const {
 	bindContext = keyInputManager->AllocBindContext( contextName );
 }
 
+void sdDeclPlayerClass::OnContextCVar2Changed( void ) const {
+	const char* contextName = contextCallback2.GetValue();
+	if ( *contextName == '\0' ) {
+		bindContext2 = NULL;
+		return;
+	}
+
+	bindContext2 = keyInputManager->AllocBindContext( contextName );
+}
+
 /*
 ============
 sdDeclPlayerClass::OnInputInit
@@ -567,6 +584,7 @@ sdDeclPlayerClass::OnInputInit
 */
 void sdDeclPlayerClass::OnInputInit( void ) const {
 	OnContextCVarChanged();
+	OnContextCVar2Changed();
 }
 
 /*
@@ -576,6 +594,7 @@ sdDeclPlayerClass::OnInputShutdown
 */
 void sdDeclPlayerClass::OnInputShutdown( void ) const {
 	bindContext = NULL;
+	bindContext2 = NULL;
 }
 
 
@@ -596,6 +615,7 @@ void sdPlayerClassContextCallback::SetCVar( idCVar* _cvar ) {
 	}
 
 	playerClass->OnContextCVarChanged();
+	playerClass->OnContextCVar2Changed();
 }
 
 /*
@@ -605,4 +625,5 @@ sdPlayerClassContextCallback::OnChanged
 */
 void sdPlayerClassContextCallback::OnChanged( void ) {
 	playerClass->OnContextCVarChanged();
+	playerClass->OnContextCVar2Changed();
 }
