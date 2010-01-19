@@ -4181,6 +4181,10 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &origin, c
 		return;
 	}
 
+	if( !g_blood.GetBool() ) {
+
+	}
+
 	/*
 	if ( gameLocal.GetLocalPlayer() && GetInstance() != gameLocal.GetLocalPlayer()->GetInstance() ) {
 		return; // no blood from other instances

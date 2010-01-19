@@ -477,6 +477,8 @@ extern idCVar	g_disablePlayerRespawns;
 extern idCVar	g_useBaseETQW12SniperTrail;
 extern idCVar	g_useRealisticWeapons;
 
+extern idCVar	g_blood;
+
 extern idCVar	g_trainingMode;
 
 extern idCVar	g_noQuickChats;

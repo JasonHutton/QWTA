@@ -626,6 +626,8 @@ idCVar	g_useRealisticWeapons(		"g_useRealisticWeapons",		"1",		CVAR_GAME | CVAR_
 idCVar	g_useVehicleAmmo(			"g_useVehicleAmmo",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle weapons consume ammunition or not?" );
 idCVar	g_allowEMPFriendlyFire(		"g_allowEMPFriendlyFire",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow EMP effects from affecting friendly units." );
 
+idCVar	g_blood(					"g_blood",						"1",		CVAR_GAME | CVAR_PROFILE | CVAR_ARCHIVE | CVAR_BOOL,		"Show blood" );
+
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );
 
 idCVar g_objectiveDecayTime(		"g_objectiveDecayTime",			"5",		CVAR_GAME | CVAR_FLOAT | CVAR_RANKLOCKED,					"Length of time in seconds that it takes a construct/hack objective to decay once after the initial timeout is complete" );

@@ -32,6 +32,13 @@ CHANGES:
   a class-specific context, the team context will be used. If neither is
   setup, the default context will be used, as usual.
   Class Context -> Team Context -> Default Context
+* Cvar g_blood added.
+  + Default 1.
+  + Allows most of the blood effects to be turned on and off.
+  + This is particularly useful as the decal-applying parts of this code
+    will often spam error messages in the console(Don't think they're properly
+    thread-safe yet.), and some of the splatters can get a little excessive
+    when a lot of explosions are occurring in a small area near corpses.
   
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
