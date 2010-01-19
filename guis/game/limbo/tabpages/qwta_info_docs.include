@@ -1,0 +1,8 @@
+
+#ifndef __qwta_info_docs__
+#define __qwta_info_docs__
+
+_tab_page( QWTA_Docs, localize( "guis/limbo/qwta/docs" ), QWTAInfo, QWTA_DOCS, 2, 0 )
+_end_tab_page
+
+#endif

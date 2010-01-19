@@ -1,4 +1,7 @@
 
+#ifndef __qwta_info_settings__
+#define __qwta_info_settings__
+
 $template _qwtacheck( NameParm, CVarParm, TextParm, ToolTipParm, xPos, yPos, WidthParm )
 	_check( NameParm, TextParm, xPos, yPos, WidthParm )
 		_admin_check_synced( CVarParm, "", "" )
@@ -92,7 +95,7 @@ $template _end_qwta_group_box_vertical
 	_end_qwta_group_box
 $endtemplate
 
-_tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, 1, 2, 0 )
+_tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA_SETTINGS, _to_right_of( tabpQWTA_Docs ), 0 )
 	_scrollable_container( QWTA_SettingsCont, PADDING, PADDING, _fill_to_right_of( tabpQWTA_SettingsContent ), _fill_to_bottom_of( tabpQWTA_SettingsContent ) )
 		_qwtacheck( Setting_UseBaseETQW12Shotguns, 
 			g_useBaseETQW12Shotguns, 
@@ -324,3 +327,5 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, 1, 2
 			0, 0, BUTTON_WIDTH )
 	_end_scrollable_container
 _end_tab_page
+
+#endif
