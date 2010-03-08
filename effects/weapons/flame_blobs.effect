@@ -1,11 +1,12 @@
 effect effects/weapons/flamethrower/blobs/blob1_yellow1
 {
-	size	76
+	size	47
 
 	spawner "secondaryblob"
 	{
 		count		1,1
 		locked
+		constant
 
 		sprite
 		{
@@ -17,14 +18,14 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 			start
 			{
 				position { line -5,-5,-5,5,5,5 }
-				size { box 40,40,50,50 }
+				size { box 20,20,30,30 }
 				tint { point 1,0.501961,0 }
 				fade { point 0.75 }
 			}
 
 			motion
 			{
-				rotate { envelope linear }
+				rotate { envelope lerp2table rate 0.75 }
 			}
 
 			end
@@ -38,6 +39,7 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 	{
 		count		1,1
 		locked
+		constant
 
 		sprite
 		{
@@ -49,14 +51,14 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 			start
 			{
 				position { line -5,-5,-5,5,5,5 }
-				size { box 40,40,50,50 }
+				size { box 20,20,30,30 }
 				tint { point 1,0.501961,0 }
 				fade { point 0.75 }
 			}
 
 			motion
 			{
-				rotate { envelope linear }
+				rotate { envelope lerp2table rate 0.75 }
 			}
 
 			end
@@ -70,6 +72,7 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 	{
 		count		1,1
 		locked
+		constant
 
 		sprite
 		{
@@ -80,12 +83,12 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 			start
 			{
 				position { line -5,-5,-5,5,5,5 }
-				size { box 20,20,30,30 }
+				size { box 10,10,20,20 }
 			}
 
 			motion
 			{
-				rotate { envelope linear }
+				rotate { envelope lerp2table rate 0.75 }
 			}
 
 			end
@@ -99,6 +102,7 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 	{
 		count		1,1
 		locked
+		constant
 
 		sprite
 		{
@@ -109,12 +113,12 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 			start
 			{
 				position { line -5,-5,-5,5,5,5 }
-				size { box 20,20,30,30 }
+				size { box 10,10,20,20 }
 			}
 
 			motion
 			{
-				rotate { envelope linear }
+				rotate { envelope lerp2table rate 0.75 }
 			}
 
 			end
@@ -125,4 +129,6 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 		}
 	}
 }
+
+
 
