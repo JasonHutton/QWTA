@@ -1,0 +1,128 @@
+effect effects/weapons/flamethrower/blobs/blob1_yellow1
+{
+	size	76
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 40,40,50,50 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 40,40,50,50 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,30,30 }
+			}
+
+			motion
+			{
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,30,30 }
+			}
+
+			motion
+			{
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
