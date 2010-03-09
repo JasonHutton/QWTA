@@ -132,3 +132,867 @@ effect effects/weapons/flamethrower/blobs/blob1_yellow1
 
 
 
+effect effects/weapons/flamethrower/blobs/blob2_yellow1
+{
+	size	61
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 30,30,40,40 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 30,30,40,40 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/flamethrower/blobs/blob3_yellow1
+{
+	size	76
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 40,40,50,50 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 40,40,50,50 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/flamethrower/blobs/blob4_yellow1
+{
+	size	90
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 50,50,60,60 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 50,50,60,60 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 20,20,25,25 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/flamethrower/blobs/blob5_yellow1
+{
+	size	104
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 60,60,70,70 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 60,60,70,70 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 15,15,20,20 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 15,15,20,20 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/flamethrower/blobs/blob6_yellow1
+{
+	size	118
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 70,70,80,80 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 70,70,80,80 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 10,10,15,15 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 10,10,15,15 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/flamethrower/blobs/blob7_yellow1
+{
+	size	125
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 75,75,85,85 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 75,75,85,85 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 5,5,10,10 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "mainblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 5,5,10,10 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
+effect effects/weapons/flamethrower/blobs/blob8_yellow1
+{
+	size	125
+
+	spawner "secondaryblob"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 80,80,85,85 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point 1 }
+			}
+			lineHit
+		}
+	}
+	spawner "secondaryblob2"
+	{
+		count		1,1
+		locked
+		constant
+
+		sprite
+		{
+			duration	1,1
+			blend	add
+			material	"particles/karateka/simple_smoke_alpha"
+			trailRepeat	1
+
+			start
+			{
+				position { line -5,-5,-5,5,5,5 }
+				size { box 80,80,85,85 }
+				tint { point 1,0.501961,0 }
+				fade { point 0.75 }
+			}
+
+			motion
+			{
+				rotate { envelope lerp2table rate 0.75 }
+			}
+
+			end
+			{
+				rotate { point -1 }
+			}
+			lineHit
+		}
+	}
+}
+
