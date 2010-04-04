@@ -25,6 +25,8 @@ object vehicle_weapon_flamethrower2 : vehicle_weapon_vrof {
 	entity				muzzleFX;
 	float				lastMuzzleFX;
 	float				muzzleFlashInterval;
+	
+	float				velocityRelative;
 }
 
 void vehicle_weapon_flamethrower2::preinit() {
@@ -51,13 +53,25 @@ void vehicle_weapon_flamethrower2::preinit() {
 	tracerCounter			= 0;
 	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
 	muzzleFlashInterval		= vehicle.getFloatKeyWithDefault( "muzzle_flash_interval", 0.5f );
+	
+	velocityRelative		= getFloatKeyWithDefault( "velocity_relative", 0.f );
 }
 
 void vehicle_weapon_flamethrower2::Fire() {
 	
 	vector origin = vehicle.getJointPos( jointHandle );
+	vector vehicleVelocity = vehicle.getLinearVelocity();
+	vector projectileVelocity = velocity;
 	
-	entity proj = vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, clientProjectileIndex, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
+	if ( velocityRelative ) {
+		projectileVelocity *= 1200.f;
+		projectileVelocity += vehicleVelocity;
+		
+		projectileVelocity = sys.vecNormalize( projectileVelocity );
+	}
+	
+//	sys.print("v: " + velocity + " vv: " + vehicleVelocity + " pv: " + projectileVelocity + "\n");
+	entity proj = vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, clientProjectileIndex, spread, origin, vehicle.jointToWorldSpace( jointHandle, projectileVelocity ) );
 
 	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
 	if( user == sys.getLocalPlayer() ) {

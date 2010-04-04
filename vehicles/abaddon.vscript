@@ -640,8 +640,8 @@ stringMap vehicle_abaddon_weapon1 {
 	"muzzle"					"blaster_muzzle"
 	"muzzle_tracer"				"fx_hyperblaster_tracer"
 	"muzzle_flash"				"fx_hyperblaster_muzzle"
-	"muzzle_sound"				"fx_hyperblaster_fire"
-	"muzzle_sound_local"		"fx_hyperblaster_fire"
+	//"muzzle_sound"				"fx_hyperblaster_fire"
+	//"muzzle_sound_local"		"fx_hyperblaster_fire"
 
 	"velocity"					"1 0 0"
 	"fire_rate"					"0.08"
@@ -652,6 +652,8 @@ stringMap vehicle_abaddon_weapon1 {
 	
 	"crosshair"					"nospread"
 	"disabled_crosshair"		"nospread"
+	
+	"velocity_relative"			"1"
 }
 
 stringMap vehicle_abaddon_weapon2 {
