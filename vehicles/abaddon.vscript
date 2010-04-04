@@ -579,7 +579,7 @@ entityDef part_vehicle_abaddon_rear_right_hover {
 
 //---------------------------------------------------------------------
 
-/*stringMap vehicle_abaddon_weapon1 {
+stringMap vehicle_abaddon_weapon1 {
 	"gunName"					"game/weapons/flamethrower"
 	"weapon_name"				"flamethrower"
 
@@ -620,9 +620,9 @@ entityDef part_vehicle_abaddon_rear_right_hover {
 	
 	"ammo_max"					"1500"
 	"ammo_per_use"				"1"
-}*/
+}
 
-stringMap vehicle_abaddon_weapon1 {
+/*stringMap vehicle_abaddon_weapon1 {
 	"gunName"					"game/weapons/flamethrower"
 	"weapon_name"				"flamethrower"
 
@@ -654,7 +654,7 @@ stringMap vehicle_abaddon_weapon1 {
 	"disabled_crosshair"		"nospread"
 	
 	"velocity_relative"			"1"
-}
+}*/
 
 stringMap vehicle_abaddon_weapon2 {
 	"gunName"					"game/weapons/plasmabeam"
