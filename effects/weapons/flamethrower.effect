@@ -798,7 +798,7 @@ effect effects/weapons/flamethrower/napalm
 			duration	3,6
 			persist
 			material	"particles/karateka/simple_smoke_alpha"
-		parentvelocity
+		//parentvelocity
 			trailRepeat	1
 
 			start
@@ -838,7 +838,7 @@ effect effects/weapons/flamethrower/napalm
 			duration	2,2
 			persist
 			material	"particles/karateka/simple_smoke_alpha"
-		parentvelocity
+		//parentvelocity
 			trailRepeat	1
 
 			start
@@ -879,7 +879,7 @@ effect effects/weapons/flamethrower/napalm
 			blend	add
 			persist
 			material	"particles/karateka/simple_smoke_alpha"
-		parentvelocity
+		//parentvelocity
 			trailRepeat	1
 
 			start
@@ -918,7 +918,7 @@ effect effects/weapons/flamethrower/napalm
 			blend	add
 			persist
 			material	"particles/cells_a"
-		parentvelocity
+		//parentvelocity
 			trailRepeat	1
 
 			start
