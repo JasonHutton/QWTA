@@ -20,6 +20,7 @@ stringMap soundChannelMap {
 	"snd_player_tooltip"				"59"
 	"snd_player_footstep"				"60"
 	"snd_player_move"					"61"
+	"snd_player_alarm"					"62"
 
 	"snd_weapon"						"100"
 	"snd_weapon_brass"					"101"
