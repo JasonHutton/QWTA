@@ -300,6 +300,17 @@ gui loadscreen {
 		_map_icon( 1, position1, title1, status1, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
 		_map_icon( 2, position2, title2, status2, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
 		_map_icon( 3, position3, title3, status3, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 4, position4, title4, status4, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 5, position5, title5, status5, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 6, position6, title6, status6, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 7, position7, title7, status7, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 8, position8, title8, status8, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 9, position9, title9, status9, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 10, position10, title10, status10, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 11, position11, title11, status11, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		_map_icon( 12, position12, title12, status12, ( SCREEN_WIDTH - VIRTUAL_WIDTH ), 1.0, 1.0, VIRTUAL_WIDTH )
+		
+		
 		
 		_group_box( Tip, _to_right_of( grpMapInfo ) + PADDING, _bottom( desktop ), 300, gui.lblTip.absoluteRect.h + 4 )
 			_label_literal( Tip, gui.getLoadTip(), 20, 2, gui.grpTip.rect.w - 24, 16, COLOR_WHITE )
