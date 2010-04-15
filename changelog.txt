@@ -42,6 +42,7 @@ CHANGES:
 * Cvar g_allowRadFriendlyFire added.
   + Default 1.
   + Allows radiation effects to affect friendly units, for realism purposes.
+* Campaign loading screen can now display up to 12 maps in a campaign.
   
 BUG FIXES:
 * Hammer explosions now cause blood splatters.
