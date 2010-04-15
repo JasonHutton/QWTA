@@ -118,7 +118,7 @@ const idEventDef EV_GetTraceSurfaceColor( "getTraceSurfaceColor", 'v', DOC_TEXT(
 const idEventDef EV_GetTraceJoint( "getTraceJoint", 's', DOC_TEXT( "Returns the name of the joint with most influence on the surface where the collision occured." ), 0, "If the trace fraction is 1, then this result has no meaning.\nIf the model does not support animation, an empty string will be returned." );
 const idEventDef EV_GetTraceBody( "getTraceBody", 's', DOC_TEXT( "Returns the name of the body where the collision occured." ), 0, "If the trace fraction is 1, then this result has no meaning.\nIf the entity is not articulated figure based, an empty string will be returned." );
 const idEventDef EV_Thread_StartMusic( "music", '\0', DOC_TEXT( "Plays the specified sound on the non localized music channel." ), 1, "This is just a shortcut to using $event:startSoundDirect$.\nPassing a blank string will stop any existing sound on the music channel.", "s", "sound", "Name of the sound shader to play." );
-const idEventDef EV_Thread_StartSoundDirect( "startSoundDirect", '\0', DOC_TEXT( "Plays the specified sound on a non localized channel." ), 2, "Passing an empty string will stop any existing sound on the channel.", "s", "sound", "Name of the sound shader to play.", "d", "channel", "Index of the channel to play on." );
+const idEventDef EV_Thread_StartSoundDirect( "startSoundDirect", 'f', DOC_TEXT( "Plays the specified sound on a non localized channel and returns the length of the sound." ), 2, "Passing an empty string will stop any existing sound on the channel.", "s", "sound", "Name of the sound shader to play.", "d", "channel", "Index of the channel to play on." );
 const idEventDef EV_Thread_Error( "error", '\0', DOC_TEXT( "Throws an error with the specified text in the error message" ), 1, NULL, "s", "text", "Text to include in the error message." );
 const idEventDef EV_Thread_Warning( "warning", '\0', DOC_TEXT( "Prints a warning on the console, and adds it to the warnings log." ), 1, NULL, "s", "text", "Text to include in the warning message." );
 const idEventDef EV_Thread_StrLen( "strLength", 'd', DOC_TEXT( "Returns the number of characters in a string." ), 1, NULL, "s", "text", "The string to count." );
@@ -1439,7 +1439,9 @@ sdSysCallThread::Event_StartSoundDirect
 ================
 */
 void sdSysCallThread::Event_StartSoundDirect( const char* shader, int channel ) {
-	gameSoundWorld->PlayShaderDirectly( gameLocal.declSoundShaderType[ shader ], channel );
+	int time;
+	gameSoundWorld->PlayShaderDirectly( gameLocal.declSoundShaderType[ shader ], channel, &time );
+	sdProgram::ReturnFloat( MS2SEC( time ) );
 }
 
 /*

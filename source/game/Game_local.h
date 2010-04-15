@@ -1780,6 +1780,7 @@ typedef enum {
 	SND_PLAYER_FALL,
 	SND_PLAYER_MOVE,
 	SND_PLAYER_ALARM,
+	SND_PLAYER_ALARM2,
 
 	//
 	// Weapon sounds
