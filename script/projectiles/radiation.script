@@ -3,6 +3,8 @@ object radiation_point {
 	void			preinit();
 	void			init();
 	
+	vector			GetTargetPos( entity target );
+	
 	void		Idle();
 	void		Activate( entity p );
 	void		Dissipate();
@@ -37,6 +39,16 @@ void radiation_point::init() {
 	setState( "Idle" );
 }
 
+vector radiation_point::GetTargetPos( entity target ) {
+	// Warning, calling this will a null target does bad things.
+	vector absMins = target.getVectorKeyWithDefault( "selection_mins", target.getMins() );
+	vector absMaxs = target.getVectorKeyWithDefault( "selection_maxs", target.getMaxs() );
+	absMins = sys.toWorldSpace( absMins, target );
+	absMaxs = sys.toWorldSpace( absMaxs, target );
+
+	return ( absMins + absMaxs ) * 0.5f;
+}
+
 void radiation_point::Idle() {
 	while(true) {
 		sys.waitFrame();
@@ -48,7 +60,36 @@ void radiation_point::Idle() {
 		if ( sys.getTime() > nextRadburstTime ) {
 			nextRadburstTime = sys.getTime() + rate;
 			
-			sys.applyRadiusDamage( getWorldOrigin(), self, owner, $null_entity, $null_entity, GetDamage( getKey( "dmg_radiation" ) ), 1.f, 1.f );
+			entitiesInRadius( getWorldOrigin(), 3072.f, -1, true );
+			if ( !g_allowRadFriendlyFire.getBoolValue() ) {
+				filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+			}
+			filterEntitiesByBoundsTrace( getWorldOrigin(), MASK_PROJECTILE, self, true );
+				
+			float blastCache = saveCachedEntities(); // We need to save, temporarily, or we get a lot of nulls inexplicably. (threading?)
+			float blastCount = getSavedCacheCount( blastCache );
+			
+			float i;
+			for ( i = 0; i < blastCount; i++ ) {
+					
+				entity blastEnt = getSavedCacheEntity( blastCache, i );
+					
+				if ( blastEnt == $null_entity )
+					continue;
+					
+				if ( !blastEnt.inCollection( "players" ) )
+					continue;
+
+				float ratio = ( 1.f - self.distanceTo( blastEnt ) / 3072.f );
+					
+				blastEnt.applyDamage( self, owner, sys.vecNormalize( GetTargetPos( blastEnt ) - getWorldOrigin() ), GetDamage( getKey( "dmg_radiation" ) ), ratio, $null_entity );
+				
+				player blastPlayer = blastEnt;
+				if ( blastPlayer != $null_entity ) {
+					blastPlayer.vIrradiate(ratio);
+				}
+			}
+			
 		}
 	}
 	

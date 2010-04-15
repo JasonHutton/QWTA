@@ -325,7 +325,27 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA
 			localize( "guis/limbo/qwta/settings/useVehicleAmmo" ),
 			localizeArgs( "guis/limbo/qwta/settings/useVehicleAmmo/tooltip" ),
 			0, 0, BUTTON_WIDTH )
-	_end_scrollable_container
+		_qwtacheck( Setting_AllowEMPFriendlyFire, 
+			g_allowEMPFriendlyFire, 
+			localize( "guis/limbo/qwta/settings/allowEMPFriendlyFire" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowEMPFriendlyFire/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowRadFriendlyFire, 
+			g_allowRadFriendlyFire, 
+			localize( "guis/limbo/qwta/settings/allowRadFriendlyFire" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowRadFriendlyFire/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_check( Setting_Blood, 
+			localize( "guis/limbo/qwta/settings/blood" ), 
+			0, 0, BUTTON_WIDTH )
+			_cvar_bool( g_blood )
+			events {
+				onQueryTooltip {
+					toolTipText = localizeArgs( "guis/limbo/qwta/settings/blood/tooltip" );
+				}
+			}
+		_end_check
+		_end_scrollable_container
 _end_tab_page
 
 #endif

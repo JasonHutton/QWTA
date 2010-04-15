@@ -649,8 +649,8 @@ scriptEvent string	getTraceBody();
 // Starts playing background music.
 scriptEvent	void 	music( string shaderName );
 
-// Plays a sound on the local player head, on the specified channel
-scriptEvent	void 	startSoundDirect( string shaderName, float channel );
+// Plays a sound on the local player head, on the specified channel, and return the sound length
+scriptEvent	float 	startSoundDirect( string shaderName, float channel );
 
 // Issues an error.
 scriptEvent	void 	error( string text );
@@ -2140,3 +2140,4 @@ virtual	void		vIncreaseAvailableLives();
 virtual void		vResetAvailableLives();
 
 virtual void		vBlind( vector origin, float radius, float time, boolean bAccountForFacing );
+virtual void		vIrradiate( float amount );

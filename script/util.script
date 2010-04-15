@@ -174,6 +174,8 @@ cvar	g_useBaseETQW12SniperTrail;
 //cvar	g_hideHud;
 cvar	g_useVehicleAmmo;
 cvar	g_allowEMPFriendlyFire;
+cvar	g_allowRadFriendlyFire;
+cvar	g_blood;
 
 object gameplay_base;
 gameplay_base gameplayManager;

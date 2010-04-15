@@ -375,6 +375,8 @@ void game_main() {
 //	g_hideHud					= sys.getCVar( "g_hideHud", "" );
 	g_useVehicleAmmo			= sys.getCVar( "g_useVehicleAmmo", "" );
 	g_allowEMPFriendlyFire		= sys.getCVar( "g_allowEMPFriendlyFire", "" );
+	g_allowRadFriendlyFire		= sys.getCVar( "g_allowRadFriendlyFire", "" );
+	g_blood						= sys.getCVar( "g_blood", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

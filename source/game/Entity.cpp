@@ -4182,7 +4182,7 @@ void idEntity::DoDamageEffect( const trace_t* collision, const idVec3 &origin, c
 	}
 
 	if( !g_blood.GetBool() ) {
-
+		return;
 	}
 
 	/*

@@ -1,0 +1,41 @@
+sound sounds/tools/geigercounter/geiger1 {
+	volume 0
+	playOnce
+	
+	sounds/tools/geigercounter/geiger1.wav
+}
+
+sound sounds/tools/geigercounter/geiger2 {
+	volume 0
+	playOnce
+	
+	sounds/tools/geigercounter/geiger2.wav
+}
+
+sound sounds/tools/geigercounter/geiger3 {
+	volume 0
+	playOnce
+	
+	sounds/tools/geigercounter/geiger3.wav
+}
+
+sound sounds/tools/geigercounter/geiger4 {
+	volume 0
+	playOnce
+	
+	sounds/tools/geigercounter/geiger4.wav
+}
+
+sound sounds/tools/geigercounter/geiger5 {
+	volume 0
+	playOnce
+	
+	sounds/tools/geigercounter/geiger5.wav
+}
+
+sound sounds/tools/geigercounter/geiger6 {
+	volume 0
+	playOnce
+	
+	sounds/tools/geigercounter/geiger6.wav
+}

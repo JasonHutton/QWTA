@@ -56,6 +56,9 @@
 	"#str_qwta_menus_00000081" "Realistic Rates of Fire"
 	"#str_qwta_menus_00000083" "Use Realistic Weapons"
 	"#str_qwta_menus_00000085" "Use Vehicle Ammo"
+	"#str_qwta_menus_00000087" "Allow EMP Friendly Fire"
+	"#str_qwta_menus_00000089" "Allow Radiation Friendly Fire"
+	"#str_qwta_menus_00000091" "Blood"
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -64,7 +67,7 @@
 	"#str_qwta_menus_00000012" "Dark Matter Cannon fires miniature Black Holes, with gravitational effects."
 	"#str_qwta_menus_00000014" "Fades the screen to red when you're unconscious, and to black when you're dead."
 	"#str_qwta_menus_00000016" "The Vampire and Violator attack from opposite their normal directions when thrown with alt-fire."
-	"#str_qwta_menus_00000018" "Hammer explosions gain a brief EMP effect."
+	"#str_qwta_menus_00000018" "Hammer explosions gain the properties of a nuclear blast, including a blinding flash, EMP effects, and radioactive fallout."
 	"#str_qwta_menus_00000020" "Hyperblaster has lower ROF, and fires physical projectiles that explode in a small area effect. Ironsights can lock onto targets, and Hyperblaster bolts will home in upon them."
 	"#str_qwta_menus_00000022" "Some attacks(presently knife/spikes backstabs), when they kill, gib a player to an unrevivable state."
 	"#str_qwta_menus_00000024" "Bots are able to utilize vehicle drops."
@@ -95,4 +98,7 @@
 	"#str_qwta_menus_00000082" "GDF automatic weapons fire at more realistic speeds, faster than BaseETQW."
 	"#str_qwta_menus_00000084" "Use realistic weapon behaviour and properties. Alternatively, use BaseETQW weapon behaviour and properties."
 	"#str_qwta_menus_00000086" "Vehicles use depletable ammunition."
+	"#str_qwta_menus_00000088" "Allow EMP effects to affect friendly units."
+	"#str_qwta_menus_00000090" "Allow Radiation effects to affect friendly units."
+	"#str_qwta_menus_00000092" "Enabled or disables most of QWTA's blood effects."
 }

@@ -165,6 +165,7 @@ This defines some variables needed by the game script.
 #define SND_PLAYER_FALL					60
 #define SND_PLAYER_MOVE					61
 #define SND_PLAYER_ALARM				62
+#define SND_PLAYER_ALARM2				63
 
 #define SND_WEAPON						100
 #define SND_WEAPON_BRASS				101

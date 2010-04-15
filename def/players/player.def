@@ -195,7 +195,14 @@ entityDef player_base {
 	
 	"fx_bleed_explode"				"effects/impacts/gib"
 	"fx_bleed_explode_small"		"effects/impacts/gib_small"
-
+	
+	"snd_geiger1"					"sounds/tools/geigercounter/geiger1"
+	"snd_geiger2"					"sounds/tools/geigercounter/geiger2"
+	"snd_geiger3"					"sounds/tools/geigercounter/geiger3"
+	"snd_geiger4"					"sounds/tools/geigercounter/geiger4"
+	"snd_geiger5"					"sounds/tools/geigercounter/geiger5"
+	"snd_geiger6"					"sounds/tools/geigercounter/geiger6"
+	
 }
 
 toolTip proficiency_upgrade_respawn {

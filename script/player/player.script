@@ -71,6 +71,11 @@ object player {
 	
 	void		vBlind( vector origin, float radius, float time, boolean bAccountForFacing );
 	float		GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing );
+	void		vIrradiate( float amount );
+	
+	void		CreateRadThread();
+	void		RadThread();
+	void		KillRadThread();
 
 	void		vGiveSpotProficiency();
 
@@ -300,6 +305,10 @@ object player {
 	float		unconsciousTime;
 	float		deadTime;
 	float		blindTime;
+	
+	float		radThreadId;
+	float		radAmount;
+	float		radCheckTime;
 	
 	handle		burningEffectHandle0;
 	handle		burningEffectHandle1;
@@ -625,6 +634,10 @@ void player::preinit() {
 	unconsciousTime			= -1;
 	deadTime				= -1;
 	blindTime				= -1;
+	
+	radThreadId				= -1;
+	radAmount				= 0;
+	radCheckTime			= 0;
 	
 	burningEffectHandle0	= 0;
 	burningEffectHandle1	= 0;
@@ -1743,6 +1756,8 @@ void player::OnFullyKilled() {
 	FreeSpawnHostTask();
 	FreeMedicIcon();
 	FreeBurning(); // Stop the damage thread. The effects can continue.
+	KillRadThread();
+	radAmount = 0;
 
 	team_base team = getGameTeam();
 	if ( team != $null_entity ) {
@@ -2956,6 +2971,50 @@ float player::GetFacingAngle( vector origin, vector offset, boolean bOppositeFac
 	float dot = dotproduct( vecOrigins, vecAngles );
 	
 	return sys.acos( dot );
+}
+
+void player::vIrradiate( float amount ) {
+	radAmount = radAmount + amount;
+	radCheckTime = sys.getTime() + 2.f;
+	if ( radThreadId == -1 ) {
+		CreateRadThread();
+	}
+}
+
+void player::KillRadThread() {
+	sys.killThread( "RadThread_" + getName() );
+	radThreadId = -1;
+}
+
+void player::CreateRadThread() {
+	if ( sys.getLocalPlayer() == $null_entity ) {
+		return;
+	}
+
+	KillRadThread();
+	radThreadId = thread RadThread();
+}
+
+void player::RadThread() {
+	while( radAmount > 0.f ) {
+		float lastSoundLength;
+		float randomResult;
+		
+		randomResult = int( sys.random( 6.4 ) );
+		stopSound( SND_PLAYER_ALARM2 );
+		lastSoundLength = startSound( "snd_geiger" + randomResult, SND_PLAYER_ALARM2 );
+		
+		if ( sys.getTime() > radCheckTime ) {
+			radAmount = radAmount - 5.f;
+		} else {
+			radAmount = radAmount - 1.f;
+		}
+		
+		sys.wait( lastSoundLength + ( sys.random( 0.1f ) - 0.05f ) );
+	}
+
+	radAmount = 0;
+	radThreadId = -1;
 }
 
 /*
