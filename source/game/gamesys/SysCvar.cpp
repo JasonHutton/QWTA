@@ -609,6 +609,7 @@ idCVar	g_useGibKills(				"g_useGibKills",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_
 idCVar	g_advancedVehicleDrops(		"g_advancedVehicleDrops",		"-1",		CVAR_GAME | CVAR_INTEGER | CVAR_NETWORKSYNC,				"Bitfield that specifies which vehicles may be dropped in via quickchat commands." );
 idCVar	g_useSpecificRadar(			"g_useSpecificRadar",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should players(but not vehicles) be invisible to radar? (3rd eye and MCP exempt.)" );
 idCVar	g_vehicleDropsUseFE(		"g_vehicleDropsUseFE",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle drops have Force Escalation requirements for their use?" );
+idCVar	g_huskyIcarusDropsIgnoreFE(	"g_huskyIcarusDropsIgnoreFE",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the Husky and Icarus ignore FE requirements? (Treat them as costing 0 FE.)" );
 idCVar	g_useBaseETQWVehicleCredits("g_useBaseETQWVehicleCredits",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the Icarus and Husky use BaseETQW vehicle credit costs?" );
 idCVar	g_useBaseETQWProficiencies(	"g_useBaseETQWProficiencies",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should BaseETQW proficiencies be used? (QWTA gives free Vehicle Drops otherwise.)" );
 idCVar	g_useBaseETQWVehicleCharge(	"g_useBaseETQWVehicleCharge",	"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should the BaseETQW vehicle credit charge timer duration be used?" );

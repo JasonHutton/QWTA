@@ -363,6 +363,7 @@ void game_main() {
 	g_useQuake4Hyperblaster		= sys.getCVar( "g_useQuake4Hyperblaster", "" );
 	g_advancedVehicleDrops		= sys.getCVar( "g_advancedVehicleDrops", "" );
 	g_vehicleDropsUseFE			= sys.getCVar( "g_vehicleDropsUseFE", "" );
+	g_huskyIcarusDropsIgnoreFE	= sys.getCVar( "g_huskyIcarusDropsIgnoreFE", "" );
 	g_useBaseETQWVehicleCredits	= sys.getCVar( "g_useBaseETQWVehicleCredits", "" );
 	g_vehicleSpawnsUseFE		= sys.getCVar( "g_vehicleSpawnsUseFE", "" );
 	

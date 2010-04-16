@@ -89,6 +89,25 @@ typedef enum vDeployType_t
 	VD_MAX
 };
 
+// Keep these in sync with avdbits.include!!!
+#define AVDBIT_HUSKY		1
+#define AVDBIT_PLATYPUS		2
+#define AVDBIT_ARMADILLO	4
+#define AVDBIT_TROJAN		8
+#define AVDBIT_BUMBLEBEE	16
+#define AVDBIT_TITAN		32
+#define AVDBIT_ANANSI		64
+
+#define AVDBIT_ICARUS		128
+#define AVDBIT_HOG			256
+#define AVDBIT_DESECRATOR	512
+#define AVDBIT_CYCLOPS		1024
+#define AVDBIT_TORMENTOR	2048
+
+#define AVDBIT_JUPITER		4096
+#define AVDBIT_ABADDON		8192
+// Keep these in sync with avdbits.include!!!
+
 //mal: vehicles can have multiple flags ( ex: icarus can be a personal vehicle, as well as an air one, trojan can be a big ground, and a water ).
 #define NO_VEHICLE						-1
 #define NULL_VEHICLE_FLAGS				0

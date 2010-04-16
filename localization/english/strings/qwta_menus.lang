@@ -59,6 +59,7 @@
 	"#str_qwta_menus_00000087" "Allow EMP Friendly Fire"
 	"#str_qwta_menus_00000089" "Allow Radiation Friendly Fire"
 	"#str_qwta_menus_00000091" "Blood"
+	"#str_qwta_menus_00000093" "Husky & Icarus Vehicle Drops Ignore FE"	
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -101,4 +102,5 @@
 	"#str_qwta_menus_00000088" "Allow EMP effects to affect friendly units."
 	"#str_qwta_menus_00000090" "Allow Radiation effects to affect friendly units."
 	"#str_qwta_menus_00000092" "Enabled or disables most of QWTA's blood effects."
+	"#str_qwta_menus_00000094" "The Husky and Icarus ignore FE Requirements for vehicle drops."
 }

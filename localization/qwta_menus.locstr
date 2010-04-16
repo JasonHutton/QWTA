@@ -1,4 +1,4 @@
-// str_qwta_menus_00000092
+// str_qwta_menus_00000094
 
 /*
 =================
@@ -214,6 +214,11 @@ locString guis/limbo/qwta/settings/blood {
 	text "#str_qwta_menus_00000091"
 }
 
+locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreFE {
+	text "#str_qwta_menus_00000093"
+}
+
+
 /*
 =================
  ToolTips
@@ -378,4 +383,8 @@ locString guis/limbo/qwta/settings/allowRadFriendlyFire/tooltip {
 
 locString guis/limbo/qwta/settings/blood/tooltip {
 	text "#str_qwta_menus_00000092"
+}
+
+locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreFE/tooltip {
+	text "#str_qwta_menus_00000094"
 }

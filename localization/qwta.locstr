@@ -1,4 +1,4 @@
-// str_qwta_00000054
+// str_qwta_00000056
 
 /*
 =================
@@ -93,7 +93,8 @@ locString guis/hud/dead_spawnhost {
 */
 
 locString gdf/quickchat/vehicles/vehicledrops/nv_husky  {
-	text "#str_0200101" // "Request Husky"
+	//text "#str_0200101" // "Request Husky"
+	text "#str_qwta_00000055" // "Request Husky"
 }
 
 locString gdf/quickchat/vehicles/vehicledrops/nv_armadillo  {
@@ -135,7 +136,8 @@ locString gdf/quickchat/vehicles/vehicledrops/nv_jupiter {
 */
 
 locString strogg/quickchat/vehicles/vehicledrops/nv_icarus  {
-	text "#str_0201101" // "Request Icarus"
+	//text "#str_0201101" // "Request Icarus"
+	text "#str_qwta_00000056" // "Request Icarus"
 }
 
 locString strogg/quickchat/vehicles/vehicledrops/nv_hog  {

@@ -334,7 +334,7 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	//	return false;
 	} else if ( g_advancedVehicleDrops.getIntValue() >= 0 && !( g_advancedVehicleDrops.getIntValue() & avdbit ) ) {
 		return false;
-	} else if ( g_vehicleDropsUseFE.getBoolValue() && currentForceEscalation < forceEscalationRequired ) {
+	} else if ( g_vehicleDropsUseFE.getBoolValue() && currentForceEscalation < forceEscalationRequired && !( g_huskyIcarusDropsIgnoreFE.getBoolValue() && ( avdbit & AVDBIT_HUSKY || avdbit & AVDBIT_ICARUS ) ) ) {
 		return false;
 	} else if ( credit < creditRequired ) {
 		return false;

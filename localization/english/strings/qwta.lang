@@ -25,18 +25,21 @@
 	"#str_qwta_00000048" "%b^1 &lbrPlasma Beam&rbr ^0%a"
 	
 	// Chat
-	"#str_qwta_00000002" "Request Armadillo"
-	"#str_qwta_00000003" "Request Trojan"
-	"#str_qwta_00000004" "Request Titan"
-	"#str_qwta_00000005" "Request Anansi"
-	"#str_qwta_00000006" "Request Bumblebee"
-	"#str_qwta_00000007" "Request Platypus"
-	"#str_qwta_00000014" "Request Jupiter"
-	"#str_qwta_00000008" "Request Hog"
-	"#str_qwta_00000009" "Request Desecrator"
-	"#str_qwta_00000010" "Request Cyclops"
-	"#str_qwta_00000011" "Request Tormentor"
-	"#str_qwta_00000036" "Request Abaddon"
+	"#str_qwta_00000002" "Request Armadillo (20FE)"
+	"#str_qwta_00000003" "Request Trojan (40FE)"
+	"#str_qwta_00000004" "Request Titan (60FE)"
+	"#str_qwta_00000005" "Request Anansi (90FE)"
+	"#str_qwta_00000006" "Request Bumblebee (50FE)"
+	"#str_qwta_00000007" "Request Platypus (15FE)"
+	"#str_qwta_00000014" "Request Jupiter (120FE)"
+	"#str_qwta_00000008" "Request Hog (25FE)"
+	"#str_qwta_00000009" "Request Desecrator (45FE)"
+	"#str_qwta_00000010" "Request Cyclops (60FE)"
+	"#str_qwta_00000011" "Request Tormentor (80FE)"
+	"#str_qwta_00000036" "Request Abaddon (100FE)"
+
+	"#str_qwta_00000055" "Request Husky (10FE)"
+	"#str_qwta_00000056" "Request Icarus (15FE)"
 	
 	// Quickchat menus
 	"#str_qwta_00000012" "Vehicle Drops"

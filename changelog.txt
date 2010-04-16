@@ -46,6 +46,12 @@ CHANGES:
   + Allows radiation effects to affect friendly units, for realism purposes.
 * Campaign loading screen can now display up to 12 maps in a campaign.
 * Jumping into water of sufficient depth can now extinguish flames.
+* Cvar g_huskyIcarusDropsIgnoreFE added.
+  + Default 0.
+  + Lets the Husky and Icarus Vehicle Drops ignore Force Escalation 
+    requirements. This lets them be called in with 0 FE while the heavier
+    vehicles continue to require FE to be dropped onto the battlefield.
+* Vehicle Drop Force Escalation requirements now appear on the quickchat menu.
   
 BUG FIXES:
 * Hammer explosions now cause blood splatters.

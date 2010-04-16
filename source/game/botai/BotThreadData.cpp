@@ -4511,7 +4511,8 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 			continue;
 		}
 		if ( g_vehicleDropsUseFE.GetBool() ) {
-			if ( vehicleDropDecls[i].forceEscalationRequired > gameLocal.GetForceEscalation() ) {
+			if ( vehicleDropDecls[i].forceEscalationRequired > gameLocal.GetForceEscalation() &&
+				!( g_huskyIcarusDropsIgnoreFE.GetBool() && ( i == VD_HUSKY || i == VD_ICARUS ) ) ) {
 				vPref[i] = -1;
 				continue;
 			}

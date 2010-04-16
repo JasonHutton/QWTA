@@ -205,7 +205,9 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		gameLocal.Printf("DEBUG: %s: Can't afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
 	}*/
 
-	if ( !g_vehicleDropsUseFE.GetBool() || gameLocal.GetForceEscalation() >= object->GetForceEscalationRequired() ) {
+	if ( !g_vehicleDropsUseFE.GetBool() || 
+		( gameLocal.GetForceEscalation() >= object->GetForceEscalationRequired() ||
+		( g_huskyIcarusDropsIgnoreFE.GetBool() && ( ( object->GetAVDBit() & AVDBIT_HUSKY ) || ( object->GetAVDBit() & AVDBIT_ICARUS ) ) ) ) ) {
 		float vCredit = player->GetVehicleCredit();
 		//gameLocal.Printf("%s trying to get a %s with %f credit. %f required.\n", player->GetName(), object->GetTitle(), player->GetVehicleCredit(), object->GetCreditRequired() );
 		if( vCredit >= object->GetCreditRequired() ) {
