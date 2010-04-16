@@ -120,10 +120,13 @@ _dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_di
 					setItemText( toWStr( "sdGameRulesStopWatch" ), index, 1 );
 					setItemText( toWStr( "mapList" ), index, 2 );
 					
+					// sdGameRulesTactical
 					// Tactical
+/*
 					index = insertItem( toWStr( "<loc = 'game/gametype/tactical'>" ), 3, 0 );
 					setItemText( toWStr( "sdGameRulesTactical" ), index, 1 );
 					setItemText( toWStr( "tacticalList" ), index, 2 );
+*/
 				}
 				onCVarChanged "si_rules" {
 					postNamedEvent( "updateRules" );
@@ -259,15 +262,17 @@ _dialog( playComp, localize( "guis/mainmenu/playcomp" ), PADDING, 44, _client_di
 						 * but it pukes on the 'if' because it's expecting a '{' 
 						 * -- Azuvector
 						 */
+						 // sdGameRulesTactical
+/*
 						if( wcompare( toWStr( gui.lstPlayCompGameType.type ), toWStr( "tacticalList" ) ) ) {
 							rect.h = rect.width * ( 1 / 1.7777 );
 							previewMaterial = gui.tacticalPreview;
 							gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), LEVELSHOT );
-						} else {
+						} else { */
 							rect.h = rect.width * ( 1 / 1.7777 );
 							previewMaterial = gui.levelPreview;
 							gui.uploadLevelShot( toStr( _get_current_list_text( PlayCompMaps, 2 ) ), LEVELSHOT );					
-						}
+//						}
 					}
 				}
 			}
