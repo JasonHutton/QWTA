@@ -60,6 +60,7 @@ BUG FIXES:
 * Fixed a stupid issue with the bind contexts being broken in v0.3.3.
 * The QWTA Limbo Menu tab has been fixed and re-added.
 
+
 QWTA v0.3.3:
 ==========
 CHANGES:
