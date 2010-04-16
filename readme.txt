@@ -104,7 +104,6 @@ Without further ado, the complete list:
 * Dark Matter Cannon's gravity won't pull players away from mounted guns.
 * Dark Matter Cannon will (very slightly) damage nearby objects when fired.
 * Bots vehicle charge bars don't reset when going from warmup to ingame.
-* FE costs are not listed anywhere ingame.
 * Hyperblaster projectiles continue to home in on a freshly respawned player.
 * Blood effects' player wound decals are not copied to corpses.
 * Blood effects' splatter effects are not properly scaled or rate limited.
@@ -115,7 +114,6 @@ Without further ado, the complete list:
 * Hog, Desecrator, and Abaddon teleport-drop use a simplified effect.
 * Abaddon Flamethrower uses very simplified physics for now.
 * There's no cap on the number of vehicles dropped by different players.
-* Documentation tab on Limbo menu QWTA page, is blank.
 
 5. Credits
 ================================
