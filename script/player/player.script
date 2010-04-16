@@ -3371,118 +3371,93 @@ float player::GetRandomBurnJoint4( string option1, string option2, string option
 }
 
 void player::BurningThread( entity attacker ) {
-	if ( !burningEffectHandle0 ) {
-		float burnJoint0 = getJointHandle( "hips" );
-		
-		if ( burnJoint0 != INVALID_JOINT ) {
-			burningEffectHandle0 = playJointEffect( "fx_burning_smoke", burnJoint0, 1 );
-		}
-	}
-	
-	if ( !burningEffectHandle1 && !burningEffectHandle2 && !burningEffectHandle3 && !burningEffectHandle4 && !burningEffectHandle5 && !burningEffectHandle6 ) {
-		float burnJoint1 = GetRandomBurnJoint4( "righthand", "rightarm", "rightshoulder", "" );
-		float burnJoint2 = GetRandomBurnJoint4( "lefthand", "leftarm", "leftshoulder", "" );
-		float burnJoint3 = GetRandomBurnJoint3( "neck", "head", "" );
-		float burnJoint4 = GetRandomBurnJoint3( "hips", "spine", "" );
-		float burnJoint5 = GetRandomBurnJoint3( "rightfoot", "rightleg", "" );
-		float burnJoint6 = GetRandomBurnJoint3( "leftfoot", "leftleg", "" );
-		
-		if ( burnJoint1 == INVALID_JOINT && burnJoint2 == INVALID_JOINT ) {
-			burnJoint1 = GetRandomBurnJoint4( "rightarm", "rightshoulder", "leftarm", "leftshoulder" );
-		}
-		
-		if ( burnJoint1 != INVALID_JOINT && burnJoint2 != INVALID_JOINT ) {
-			if ( sys.random( 2.f ) > 1.f ) {
-				if ( sys.random( 2.f ) > 1.f ) {
-					burnJoint1 = INVALID_JOINT;
-				} else {
-					burnJoint2 = INVALID_JOINT;
-				}
+	if ( isInWater() < 0.5f ) {
+		if ( !burningEffectHandle0 ) {
+			float burnJoint0 = getJointHandle( "hips" );
+
+			if ( burnJoint0 != INVALID_JOINT ) {
+				burningEffectHandle0 = playJointEffect( "fx_burning_smoke", burnJoint0, 1 );
 			}
 		}
-		
-		if ( burnJoint3 == INVALID_JOINT && burnJoint4 == INVALID_JOINT ) {
-			burnJoint3 = GetRandomBurnJoint4( "neck", "head", "hips", "spine" );
-		}
-		
-		if ( burnJoint3 != INVALID_JOINT && burnJoint4 != INVALID_JOINT ) {
-			if ( sys.random( 2.f ) > 1.f ) {
+
+		if ( !burningEffectHandle1 && !burningEffectHandle2 && !burningEffectHandle3 && !burningEffectHandle4 && !burningEffectHandle5 && !burningEffectHandle6 ) {
+			float burnJoint1 = GetRandomBurnJoint4( "righthand", "rightarm", "rightshoulder", "" );
+			float burnJoint2 = GetRandomBurnJoint4( "lefthand", "leftarm", "leftshoulder", "" );
+			float burnJoint3 = GetRandomBurnJoint3( "neck", "head", "" );
+			float burnJoint4 = GetRandomBurnJoint3( "hips", "spine", "" );
+			float burnJoint5 = GetRandomBurnJoint3( "rightfoot", "rightleg", "" );
+			float burnJoint6 = GetRandomBurnJoint3( "leftfoot", "leftleg", "" );
+
+			if ( burnJoint1 == INVALID_JOINT && burnJoint2 == INVALID_JOINT ) {
+				burnJoint1 = GetRandomBurnJoint4( "rightarm", "rightshoulder", "leftarm", "leftshoulder" );
+			}
+
+			if ( burnJoint1 != INVALID_JOINT && burnJoint2 != INVALID_JOINT ) {
 				if ( sys.random( 2.f ) > 1.f ) {
-					burnJoint3 = INVALID_JOINT;
-				} else {
-					burnJoint4 = INVALID_JOINT;
+					if ( sys.random( 2.f ) > 1.f ) {
+						burnJoint1 = INVALID_JOINT;
+					} else {
+						burnJoint2 = INVALID_JOINT;
+					}
 				}
 			}
-		}
-		
-		if ( burnJoint5 == INVALID_JOINT && burnJoint6 == INVALID_JOINT ) {
-			burnJoint5 = GetRandomBurnJoint4( "rightfoot", "rightleg", "leftfoot", "leftleg" );
-		}
-		
-		if ( burnJoint5 != INVALID_JOINT && burnJoint6 != INVALID_JOINT ) {
-			if ( sys.random( 3.f ) < 1.f ) {
+
+			if ( burnJoint3 == INVALID_JOINT && burnJoint4 == INVALID_JOINT ) {
+				burnJoint3 = GetRandomBurnJoint4( "neck", "head", "hips", "spine" );
+			}
+
+			if ( burnJoint3 != INVALID_JOINT && burnJoint4 != INVALID_JOINT ) {
 				if ( sys.random( 2.f ) > 1.f ) {
-					burnJoint5 = INVALID_JOINT;
-				} else {
-					burnJoint6 = INVALID_JOINT;
+					if ( sys.random( 2.f ) > 1.f ) {
+						burnJoint3 = INVALID_JOINT;
+					} else {
+						burnJoint4 = INVALID_JOINT;
+					}
 				}
 			}
+
+			if ( burnJoint5 == INVALID_JOINT && burnJoint6 == INVALID_JOINT ) {
+				burnJoint5 = GetRandomBurnJoint4( "rightfoot", "rightleg", "leftfoot", "leftleg" );
+			}
+
+			if ( burnJoint5 != INVALID_JOINT && burnJoint6 != INVALID_JOINT ) {
+				if ( sys.random( 3.f ) < 1.f ) {
+					if ( sys.random( 2.f ) > 1.f ) {
+						burnJoint5 = INVALID_JOINT;
+					} else {
+						burnJoint6 = INVALID_JOINT;
+					}
+				}
+			}
+
+			if ( burnJoint1 != INVALID_JOINT ) {
+				burningEffectHandle1 = playJointEffect( "fx_burning_small", burnJoint1, 1 );
+			}
+			if ( burnJoint2 != INVALID_JOINT ) {
+				burningEffectHandle2 = playJointEffect( "fx_burning_small", burnJoint2, 1 );
+			}
+			if ( burnJoint3 != INVALID_JOINT ) {
+				burningEffectHandle3 = playJointEffect( "fx_burning_small", burnJoint3, 1 );
+			}
+			if ( burnJoint4 != INVALID_JOINT ) {
+				burningEffectHandle4 = playJointEffect( "fx_burning_small", burnJoint4, 1 );
+			}
+			if ( burnJoint5 != INVALID_JOINT ) {
+				burningEffectHandle5 = playJointEffect( "fx_burning_small", burnJoint5, 1 );
+			}
+			if ( burnJoint6 != INVALID_JOINT ) {
+				burningEffectHandle6 = playJointEffect( "fx_burning_small", burnJoint6, 1 );
+			}
 		}
-		
-		if ( burnJoint1 != INVALID_JOINT ) {
-			burningEffectHandle1 = playJointEffect( "fx_burning_small", burnJoint1, 1 );
-		}
-		if ( burnJoint2 != INVALID_JOINT ) {
-			burningEffectHandle2 = playJointEffect( "fx_burning_small", burnJoint2, 1 );
-		}
-		if ( burnJoint3 != INVALID_JOINT ) {
-			burningEffectHandle3 = playJointEffect( "fx_burning_small", burnJoint3, 1 );
-		}
-		if ( burnJoint4 != INVALID_JOINT ) {
-			burningEffectHandle4 = playJointEffect( "fx_burning_small", burnJoint4, 1 );
-		}
-		if ( burnJoint5 != INVALID_JOINT ) {
-			burningEffectHandle5 = playJointEffect( "fx_burning_small", burnJoint5, 1 );
-		}
-		if ( burnJoint6 != INVALID_JOINT ) {
-			burningEffectHandle6 = playJointEffect( "fx_burning_small", burnJoint6, 1 );
+
+		while ( isInWater() < 0.5f ) {
+			applyDamage( $null_entity, attacker, g_vectorZero, GetDamage( "damage_flamethrower_burning" ), 1.f, $null_entity );
+			sys.waitFrame();
 		}
 	}
-	
-	while ( true ) {
-		applyDamage( $null_entity, attacker, g_vectorZero, GetDamage( "damage_flamethrower_burning" ), 1.f, $null_entity );
-		sys.waitFrame();
-	}
-	
-	
-	if ( burningEffectHandle0 ) {
-		stopEffectHandle( burningEffectHandle0 );
-		burningEffectHandle0 = 0;
-	}
-	if ( burningEffectHandle1 ) {
-		stopEffectHandle( burningEffectHandle1 );
-		burningEffectHandle1 = 0;
-	}
-	if ( burningEffectHandle2 ) {
-		stopEffectHandle( burningEffectHandle2 );
-		burningEffectHandle2 = 0;
-	}
-	if ( burningEffectHandle3 ) {
-		stopEffectHandle( burningEffectHandle3 );
-		burningEffectHandle3 = 0;
-	}
-	if ( burningEffectHandle4 ) {
-		stopEffectHandle( burningEffectHandle4 );
-		burningEffectHandle4 = 0;
-	}
-	if ( burningEffectHandle5 ) {
-		stopEffectHandle( burningEffectHandle5 );
-		burningEffectHandle5 = 0;
-	}
-	if ( burningEffectHandle6 ) {
-		stopEffectHandle( burningEffectHandle6 );
-		burningEffectHandle6 = 0;
-	}
+
+	burningThreadActive = false;	
+	FreeBurning();
 }
 
 void player::FreeBurning() {	
