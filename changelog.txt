@@ -32,6 +32,7 @@ CHANGES:
   a class-specific context, the team context will be used. If neither is
   setup, the default context will be used, as usual.
   Class Context -> Team Context -> Default Context
+  + The cvars for this bind context are "g_class_context2_classnamehere".
 * Cvar g_blood added.
   + Default 1.
   + Allows most of the blood effects to be turned on and off.
