@@ -41,6 +41,8 @@ CHANGES:
     thread-safe yet.), and some of the splatters can get a little excessive
     when a lot of explosions are occurring in a small area near corpses.
   + Servers should generally leave this enabled; clients can turn it off.
+  + You can avoid console spam by setting g_useThreadedRenderer to 0 if
+    you're using g_blood.
 * Cvar g_allowRadFriendlyFire added.
   + Default 1.
   + Allows radiation effects to affect friendly units, for realism purposes.

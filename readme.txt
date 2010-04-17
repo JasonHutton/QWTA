@@ -114,6 +114,7 @@ Without further ado, the complete list:
 * Hog, Desecrator, and Abaddon teleport-drop use a simplified effect.
 * Abaddon Flamethrower uses very simplified physics for now.
 * There's no cap on the number of vehicles dropped by different players.
+* g_blood 1 is incompatible with g_useThreadedRenderer 1 or 2.
 
 5. Credits
 ================================
