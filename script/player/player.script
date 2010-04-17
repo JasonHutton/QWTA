@@ -2987,12 +2987,10 @@ void player::KillRadThread() {
 }
 
 void player::CreateRadThread() {
-	if ( sys.getLocalPlayer() == $null_entity ) {
-		return;
+	if ( isLocalPlayer() ) {
+		KillRadThread();
+		radThreadId = thread RadThread();
 	}
-
-	KillRadThread();
-	radThreadId = thread RadThread();
 }
 
 void player::RadThread() {

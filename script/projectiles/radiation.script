@@ -1,6 +1,7 @@
 
 object radiation_point {
 	void			preinit();
+	void			syncFields();
 	void			init();
 	
 	vector			GetTargetPos( entity target );
@@ -25,6 +26,10 @@ void radiation_point::preinit() {
 	nextRadburstTime	= 0.f;
 	
 	spawnTime	= sys.getTime();
+}
+
+void radiation_point::syncFields() {
+	syncBroadcast( "owner" );
 }
 
 void radiation_point::init() {
