@@ -1,0 +1,129 @@
+/***********************************************************************
+
+weapon_law.script
+
+***********************************************************************/
+
+object weapon_law : weapon_clip {
+	void		preinit();
+	void		destroy();
+
+	void		Lower();
+	void		DoFire();
+	
+	void		vCheckProficiency();
+	
+	boolean		cancelFire;
+	void		vCancelFire() { cancelFire = true; }
+
+	float		OnActivate( entity p, float distance );
+	float		OnActivateHeld( entity p, float distance );
+	float		OnUsed( entity p, float distance );
+	
+	boolean		warmupEffect;
+	boolean		disableProxyEnter;
+}
+
+void weapon_law::preinit() {
+	hasScope		= true;
+	hasScopeLock	= true;
+	hasIronSights	= false;
+	warmupEffect	= false;
+
+	vCheckProficiency();
+}
+
+void weapon_law::destroy() {
+	if ( myPlayer != $null_entity ) {
+		myPlayer.setTargetTimeScale( 1.f );
+	}
+}
+
+void weapon_law::Lower() {
+	myPlayer.setTargetTimeScale( 1.f );
+	
+	ScopeDown( true );
+	Base_Lower();
+}
+
+void weapon_law::DoFire() {
+	if ( mainFireDown ) {
+		return;
+	}
+	
+	disableProxyEnter = true;
+	
+	cancelFire = false;
+	
+	refireTime = sys.getTime() + fireRate;
+
+	float index = 0;
+	if ( myPlayer.getEnemy() == $null_entity ) {
+		index = 1;
+		startSound( "snd_charge", SND_WEAPON_SIG );
+		
+		if ( warmupEffect ) {
+			if ( sys.getLocalViewPlayer() == myPlayer && !pm_thirdperson.getBoolValue() ) {
+				playEffect( "fx_charge", "muzzle", 0.f );
+			}
+		}
+		
+		sys.wait( triggerDelay );
+	}
+	
+	if ( cancelFire ) {
+		disableProxyEnter = false;
+		return;
+	}
+
+	PlayFireEffect();
+	PlayFireSound();
+	
+	if ( !usesStroyent ) {
+		LaunchProjectile( 0, index );
+	} else {
+		LaunchProjectile_Stroyent( 0, index );
+	}
+		
+	playAnim( ANIMCHANNEL_ALL, "fire" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+
+	disableProxyEnter = false;
+
+	if ( !usesStroyent ) {
+		AmmoCheckClip( 0 );
+		if ( CanReload() ) {
+			weaponState( "Reload", 0 );
+		}
+	} else {
+		AmmoCheck( 0 );
+		if ( ammoAvailable( 0 ) > 0 ) {
+			weaponState( "Reload", 0 );
+		}
+	}
+}
+
+float weapon_law::OnActivate( entity p, float distance ) {
+	if ( myPlayer.IsSniperScopeUp() ) {
+		myPlayer.resetTargetLock();
+		return true;
+	}
+	return false;
+}
+
+float weapon_law::OnActivateHeld( entity p, float distance ) {
+	return myPlayer.IsSniperScopeUp();
+}
+
+float weapon_law::OnUsed( entity p, float distance ) {
+	return disableProxyEnter;
+}
+
+void weapon_law::vCheckProficiency() {
+	team_base team = myPlayer.getGameTeam();
+	if ( team != $null ) {
+		if ( team.HasFastTargetLock( myPlayer ) ) {
+			myPlayer.setTargetTimeScale( 2.f );
+		}
+	}
+}
