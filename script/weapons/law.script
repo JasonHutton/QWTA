@@ -22,6 +22,8 @@ object weapon_law : weapon_clip {
 	
 	boolean		warmupEffect;
 	boolean		disableProxyEnter;
+	
+	boolean		isRocketLauncher;
 }
 
 void weapon_law::preinit() {
@@ -29,6 +31,7 @@ void weapon_law::preinit() {
 	hasScopeLock	= true;
 	hasIronSights	= false;
 	warmupEffect	= false;
+	isRocketLauncher = getFloatKeyWithDefault( "isRocketLauncher", 0.f );
 
 	vCheckProficiency();
 }
@@ -59,32 +62,36 @@ void weapon_law::DoFire() {
 
 	float index = 0;
 	if ( myPlayer.getEnemy() == $null_entity ) {
-		index = 1;
-		startSound( "snd_charge", SND_WEAPON_SIG );
-		
-		if ( warmupEffect ) {
-			if ( sys.getLocalViewPlayer() == myPlayer && !pm_thirdperson.getBoolValue() ) {
-				playEffect( "fx_charge", "muzzle", 0.f );
+		if ( isRocketLauncher && g_useStraightRockets.getBoolValue() ) {
+			index = 2;
+		} else {
+			index = 1;
+			startSound( "snd_charge", SND_WEAPON_SIG );
+
+			if ( warmupEffect ) {
+				if ( sys.getLocalViewPlayer() == myPlayer && !pm_thirdperson.getBoolValue() ) {
+					playEffect( "fx_charge", "muzzle", 0.f );
+				}
 			}
+
+			sys.wait( triggerDelay );
 		}
-		
-		sys.wait( triggerDelay );
 	}
 	
 	if ( cancelFire ) {
 		disableProxyEnter = false;
 		return;
 	}
-
+	
 	PlayFireEffect();
 	PlayFireSound();
-	
+
 	if ( !usesStroyent ) {
 		LaunchProjectile( 0, index );
 	} else {
 		LaunchProjectile_Stroyent( 0, index );
 	}
-		
+
 	playAnim( ANIMCHANNEL_ALL, "fire" );
 	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
 

@@ -219,6 +219,8 @@ invItemDef inventory/weapons/law {
 		"require_use"					"stance_prone != true"
 
 		"player_weapon_num"				"5"
+		
+		"isRocketLauncher"				"1"
 	}
 
 	clip {
@@ -230,6 +232,13 @@ invItemDef inventory/weapons/law {
 
 	clip {
 		"projectile"					"projectile_law_arcing"
+		"type"							"rocketlauncher"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"0"
+	}
+	
+	clip {
+		"projectile"					"projectile_law_qwta"
 		"type"							"rocketlauncher"
 		"ammo_per_shot"					"1"
 		"max_ammo"						"0"
@@ -319,6 +328,15 @@ entityDef projectile_law_arcing {
 
 	"use_air_burst"						"1"
 	"fx_airburst"						"effects/impacts/rocket/explosion_air"
+}
+
+entityDef projectile_law_qwta {
+	"inherit"							"projectile_law_arcing"
+
+	//"velocity"							"2000 0 0"
+	"velocity"							"4000 0 0"
+	//"gravity"							"120"
+	"gravity"							"0"
 }
 
 damageDef damage_law {

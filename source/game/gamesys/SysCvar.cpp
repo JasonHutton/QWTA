@@ -621,6 +621,8 @@ idCVar	g_disablePlayerRespawns(	"g_disablePlayerRespawns",		"0",		CVAR_GAME | CV
 idCVar	g_allowCrosshairs(			"g_allowCrosshairs",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow player's crosshairs." );
 //idCVar	g_allowTimerCircles(		"g_allowTimerCircles",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow the timer circles that normally surround the crosshairs." );
 
+idCVar	g_useStraightRockets(		"g_useStraightRockets",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use Rocket Launcher projectiles that fly straight, or keep the flight arc of the BaseETQW Rocket Launcher?" );
+
 idCVar	g_useBaseETQW12SniperTrail( "g_useBaseETQW12SniperTrail",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Use the BaseETQW 1.2 sniper rifle's trail-tracer effect?" );
 //idCVar	g_hideHud(					"g_hideHud",					"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Disables most aspects of the HUD, revealing them only when they're accessed in some way." );
 idCVar	g_useRealisticWeapons(		"g_useRealisticWeapons",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should weapons behave in a realistic manner, or more game-oriented?" );

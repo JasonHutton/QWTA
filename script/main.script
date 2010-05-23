@@ -372,6 +372,7 @@ void game_main() {
 	
 	g_allowCrosshairs		=	sys.getCVar( "g_allowCrosshairs", "" );
 	g_useBaseETQW12SniperTrail	= sys.getCVar( "g_useBaseETQW12SniperTrail", "" );
+	g_useStraightRockets		= sys.getCVar( "g_useStraightRockets", "" );
 //	g_allowTimerCircles			= sys.getCVar( "g_allowTimerCircles", "" );
 //	g_hideHud					= sys.getCVar( "g_hideHud", "" );
 	g_useVehicleAmmo			= sys.getCVar( "g_useVehicleAmmo", "" );
