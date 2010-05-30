@@ -8,6 +8,8 @@ CHANGES:
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
+* Fixed Abaddon's Flamethrower using improper crosshair when using standard 
+  crosshair settings.
 
 
 QWTA v0.3.4:
