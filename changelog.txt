@@ -5,11 +5,20 @@ CHANGES:
   + Default 1.
   + Allows unguided Rocket Launcher rockets to fly straight and fast
     instead of in a low-velocity arc. Does not affect the Obliterator.
+* Cvar g_forgivingBotMatch added.
+  + Default 0.
+  + Makes BotMatches more forgiving for a player by turning off certain
+    advantages that are given to the player in a BotMatch. A BotMatch is 
+    essentially a single-player game.
+    BaseETQW would lower enemy bots' health on low skill levels.
+    BaseETQW would prevent vehicle explosions from damaging players.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
 * Fixed Abaddon's Flamethrower using improper crosshair when using standard 
   crosshair settings.
+* Fixed BaseETQW oversight: Frags made by vehicle explosions are now properly
+  attributed to the player who caused the explosion.
 
 
 QWTA v0.3.4:
