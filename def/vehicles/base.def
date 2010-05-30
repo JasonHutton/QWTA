@@ -1,0 +1,307 @@
+entityDef vehicle_base {
+	"editor_skipmenu"				"1"
+
+	"mtr_commandmap_unknown"		"guis/assets/qet/cm_unknown"
+
+	"option_commandmap_interface"	"1"
+	"option_crosshair_interface"	"1"
+	"option_network_interface"		"1"
+	"option_prediction_error_decay"	"1"
+
+	"maxVisDist"					"10240"
+	
+	"editor_var skin"				"Skin to apply to the model"
+	"editor_callback skin"			"decl://skin"
+	
+	"max_enter_distance"			"100"
+
+	"bouncyness"					"0.4"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"50"
+	"damage_level2"					"30"
+	"damage_level3"					"10"
+	"repair_threshold"				"40"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large"
+	"fx_damage_level_smoke"			"effects/vehicles/generic_smoke"			// this will play at the same time as the fx_damage_level1, 2 or 3 effects
+
+	"fx_splash"						"effects/water/generic_splash"
+	"fx_wake"						"effects/water/trojan_wake"
+
+	"fx_crash_light"				"effects/vehicles/crash"
+	"fx_crash_medium"				"effects/vehicles/crash"
+	"fx_crash_heavy"				"effects/vehicles/crash"
+
+	"fx_skid_default"				"effects/vehicles/dust/tire_dust_sand"
+
+	"fx_scrape_light_default"		"effects/vehicles/scrape1"
+	"fx_scrape_medium_default"		"effects/vehicles/scrape1"
+	"fx_scrape_heavy_default"		"effects/vehicles/scrape1"
+	
+	"speed_scrape_light"			"150"
+	"speed_scrape_medium"			"350"
+	"speed_scrape_heavy"			"600"
+
+	"fx_destroy"					"effects/vehicles/destroy_default"
+
+	"fx_destroy_water"				"effects/water/explosion"
+	//"fx_destroy_submerged"			""
+	"destroy_delay"					"0.25"
+
+	"fx_decay"						"effects/vehicles/decay"
+	//"snd_decay"						"sounds/vehicles/misc/decay"
+
+	"snd_brake"						"sounds/vehicles/misc/brake"
+	//"snd_crash_heavy"				"sounds/vehicles/misc/crash"
+	//"snd_crash_light"				"sounds/vehicles/misc/crash"
+	//"snd_crash_medium"				"sounds/vehicles/misc/crash"
+
+	//"snd_jump_heavy"				"sounds/vehicles/misc/jump/hard"
+	//"snd_jump_light"				"sounds/vehicles/misc/jump/soft"
+	//"snd_jump_medium"				"sounds/vehicles/misc/jump/medium"
+	"snd_overdrive"					"sounds/vehicles/misc/overdrive"
+	//"snd_afterburner"				"sounds/vehicles/misc/afterburner"
+	//"snd_player_collide"			"sounds/vehicles/misc/body/crash"
+	//"snd_squish"					"sounds/vehicles/misc/body/squish"
+	"snd_target_lock_alarm"			"sounds/weapons/misc/target_lock_alarm"
+
+	"snd_skid"						"sounds/vehicles/misc/skid/default"
+	"snd_skid_none"					"sounds/vehicles/misc/skid/metal"
+	"snd_skid_offroad"				"sounds/vehicles/misc/skid/offroad"
+	"snd_skid_grass"				"sounds/vehicles/misc/skid/offroad"
+	"snd_skid_gravel"				"sounds/vehicles/misc/skid/offroad"
+	"snd_skid_metal"				"sounds/vehicles/misc/skid/metal"
+	"snd_skid_pavement"				"sounds/vehicles/misc/skid/default"
+	"snd_skid_sand"					"sounds/vehicles/misc/skid/offroad"
+	"snd_skid_stone"				"sounds/vehicles/misc/skid/default"
+
+	"snd_wheel"						"sounds/vehicles/misc/drive/default"
+	"snd_wheel_none"				"sounds/vehicles/misc/drive/metal"
+	"snd_wheel_offroad"				"sounds/vehicles/misc/drive/offroad"
+	"snd_wheel_grass"				"sounds/vehicles/misc/drive/offroad"
+	"snd_wheel_gravel"				"sounds/vehicles/misc/drive/offroad"
+	"snd_wheel_metal"				"sounds/vehicles/misc/drive/metal"
+	"snd_wheel_pavement"			"sounds/vehicles/misc/drive/default"
+	"snd_wheel_sand"				"sounds/vehicles/misc/drive/offroad"
+	"snd_wheel_stone"				"sounds/vehicles/misc/drive/offroad"
+
+	"snd_water_enter"				"sounds/vehicles/misc/water/enter"
+	"snd_water_exit"				"sounds/vehicles/misc/water/exit"
+	"snd_water_idle"				"sounds/vehicles/misc/water/splash"
+	"snd_water_wake"				"sounds/vehicles/misc/water/wake"
+	"snd_water_splash"				"sounds/vehicles/misc/water/splash"
+
+	"snd_horn_loop"					"sounds/vehicles/misc/horn"
+	"snd_horn_stop"					"sounds/vehicles/misc/horn/stop"
+
+	"snd_cockpit_emped"				"sounds/vehicles/misc/interior/cockpit/emped"
+	"snd_cockpit_end_emped"			"sounds/vehicles/misc/interior/cockpit/endemped"
+
+	"klaxon_threshold"				"0.25"
+
+	"amphibious"					"0"
+	"water_damage"					"200"
+	"trace_depth"					"32"
+
+	"def_projectile_decoy"			"projectile_decoy"
+	"projectile_decoy_count"		"-1"
+	"projectile_decoy_rate"			"1.5"
+	"projectile_decoy_joint"		"origin"
+	"projectile_decoy_velocity"		"200 0 100"
+
+	"projectile_decoy_charge"		"33" // %
+	"projectile_decoy_max"			"20" // time to refill completely
+
+	"no_drop"						"0"
+	"joint_attach"					"origin"
+
+	// wils: check flyer drone whenever you update these, as it's treated as a vehicle but doesn't inherit from this def
+	"collection_basedefense_attack"	"basedefense_attack"
+	"collection_vehicles"			"vehicles"
+	"collection_emp"				"emp"
+	"collection_spottable"			"spottable"
+	"collection_he"					"he"
+	"collection_arty"				"arty"
+	"collection_ss"					"ss"
+	"collection_gamereviewwatch"	"gamereviewwatch"
+	
+	"enable_time"					"10"
+
+	"icon_sort_cm"					"1"
+	"icon_sort_cm_ft_ring"			"0"
+	"icon_sort_cm_request"			"-1"
+
+	"mtr_cm_icon_need_repair"		"hud/icons/missionsystem/tsk_engineer"
+	"require_view_repair"			"ability_repair && same_team"
+
+	"tt_abandon"					"vehicle_abandon"
+	"tt_player_banned"				"vehicle_player_banned"
+	"tt_player_kicked"				"vehicle_player_kicked"
+	"tt_use_vehicle"				"vehicle_use"
+	"tt_cannot_repair"				"vehicle_cannot_repair"
+	"tt_cannot_exit"				"vehicle_cannot_exit"
+
+	"dmg_flipped"					"damage_vehicle_flipped"
+	"dmg_water"						"damage_vehicle_water"
+	"dmg_kill_players"				"damage_triggerhurt_1000"
+
+	// Wakes
+	"mtr_wake_center"				"particles/water/wake_center"
+	"mtr_wake_edge"					"particles/water/wake_test"
+	"wake_center_width"				"80 80"
+	"wake_edge_width"				"60 20"
+	"wake_center_scale"				"0.0001 -0.0001"
+	"wake_edge_scale"				"0.0001 -0.0001"
+	"wake_edge_texcoord"			"1 0"
+	"wake_point_0"					"-20 45 0"
+	"wake_point_1"					"-20 -45 0"
+	"wake_point_2"					"-250 -40 0"
+	"wake_point_3"					"-250 40 0"
+
+	"option_take_oob_damage"		"1"
+	"oob_damage_interval"			"500"
+	
+	"option_write_bind"				"1"
+	
+	"def_parachute"					"round_parachute"
+	
+	"mtr_icon_team_ring"			"hud/icons/player/hurtring"
+	"team_ring_size"				"1.15"
+
+	// Stats
+	"stat_kill_suffix"				"vehicle"
+	
+	"task_need_passenger"			"need_passenger"
+	"task_need_gunner"				"need_gunner"
+	"task_need_pilot"				"need_pilot"
+	
+	"occlusion_query"				"1"
+	
+	// world icon stuff
+	"option_icon_interface"			"1"
+	"mtr_worldicon"					"hud/icons/player/god"
+	"world_icon_cutoff_dist"		"2048"
+	"world_icon_size"				"16"
+	
+	"tt_decoy"						"lockon_decoy_tooltip"
+}
+
+entityDef vehicle_base_gdf {
+	"inherit"						"vehicle_base"
+	
+	"task_destroy"					"destroy_vehicle_strogg"
+	"task_repair"					"engineer_repair_vehicle"
+
+	"prof_disable"					"pro_infiltrator_emp_vehicle"
+}
+
+entityDef vehicle_base_strogg {
+	"inherit"						"vehicle_base"
+
+	"task_destroy"					"destroy_vehicle_gdf"
+	"task_repair"					"constructor_repair_vehicle"
+
+	"prof_disable"					"pro_covertops_emp_vehicle"
+}
+
+// damage filter for submerged vehicles
+damageDef damage_vehicle_water {
+	damage						"damage_vehicle_water"
+	forcePassengerKill
+
+	tt_obituary					"tooltips/killmsgs/vehicles/water"
+	tt_obituary_self			"tooltips/killmsgs/vehicles/water"
+	tt_obituary_unknown			"tooltips/killmsgs/vehicles/water"
+	tt_obituary_team_kill		"tooltips/killmsgs/vehicles/water"
+}
+
+damageFilter damage_vehicle_water {
+	type {
+		target					"target_veh_all"
+		damage					400
+	}
+}
+
+// damage applied to vehicles which have been flipped
+damageDef damage_vehicle_flipped {
+	damage						"damage_vehicle_flipped"
+
+	tt_obituary_unknown			"tooltips/killmsgs/vehicles/flipped"
+}
+
+damageFilter damage_vehicle_flipped {
+	type {
+		target					"target_veh_all"
+		damage					10%
+	}
+}
+
+// damage filter for exploding vehicles
+damageDef damage_vehicle_explode {
+	damage						"damage_vehicle_explode"
+	radius						256
+	push						10000000
+
+	tt_obituary					"tooltips/killmsgs/vehicles/explode"
+	tt_obituary_self			"tooltips/killmsgs/vehicles/explode"
+	tt_obituary_unknown			"tooltips/killmsgs/vehicles/explode"
+	tt_obituary_team_kill		"tooltips/killmsgs/vehicles/explode"
+}
+
+damageFilter damage_vehicle_explode {
+	type {
+		target					"target_all"
+		damage					200
+	}
+}
+
+toolTip vehicle_abandon {
+	sound	"sounds/ui/main/bad"
+	length	3
+	maxPlayCount 2
+	useSoundLength
+	singlePlayerToolTip
+	text	"game/tt/vehicle_abandoned"
+	sound	"sounds/tooltips/vehicle_abandon/info"
+}
+
+toolTip vehicle_player_banned {
+	sound "sounds/ui/main/bad"
+	length	5
+	text	"game/tt/vehicle_player_banned"
+	alwaysPlay
+}
+
+toolTip vehicle_player_kicked {
+	singlePlayerToolTip
+	useSoundLength
+	maxPlayCount	2
+	text	"game/tt/vehicle_player_kicked"
+	sound	"sounds/tooltips/vehicle_player_kicked/info"
+}
+
+toolTip vehicle_repaired {
+	sound "sounds/ui/main/good"
+	length	5
+	text	"game/tt/vehicle_repaired_fully"
+}
+
+toolTip vehicle_use {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/vehicle/enter"
+}
+
+toolTip vehicle_cannot_repair {
+	sound "sounds/ui/main/bad"
+	text "game/tt/vehicle_cannot_repair"
+	alwaysPlay
+}
+
+toolTip vehicle_cannot_exit {
+	sound "sounds/ui/main/bad"
+	text "game/tt/vehicle_cannot_exit"
+	alwaysPlay
+}
