@@ -77,6 +77,8 @@ sdPhysics_Parabola::sdPhysics_Parabola( void ) {
 
 	clipModel	= NULL;
 
+	waterLevel = 0.0f;
+
 	baseOrg.Zero();
 	baseVelocity.Zero();
 	baseAcceleration.Zero();
