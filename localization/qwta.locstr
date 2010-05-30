@@ -1,4 +1,4 @@
-// str_qwta_00000056
+// str_qwta_00000059
 
 /*
 =================
@@ -248,6 +248,22 @@ locString game/obit/plasmabeam_unknown {
 
 locString game/obit/plasmabeam_team {
 	text "#str_qwta_00000048" // "%b^1 [Plasma Beam] ^0%a"
+}
+
+locString game/obit/veh_exp {
+	text "#str_qwta_00000057" // "%b^0 [Vehicle Explosion] %a"
+}
+
+locString game/obit/veh_exp_self {
+	text "#str_qwta_00000058" // "^1[Vehicle Explosion] ^0%a"
+}
+
+locString game/obit/veh_exp_unknown {
+	text "#str_qwta_00000058" // "^1[Vehicle Explosion] ^0%a"
+}
+
+locString game/obit/veh_exp_team {
+	text "#str_qwta_00000059" // "%b^1 [Vehicle Explosion] ^0%a"
 }
 
 /*

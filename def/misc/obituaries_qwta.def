@@ -137,3 +137,25 @@ Strogg Vehicles Teamkills
 tooltip tooltips/killmsgs/vehicles/abaddon/teamkill {
 	text "game/obit/abaddon_team"
 }
+
+
+/*
+==================
+Vehicle Explosions
+==================
+*/
+tooltip tooltips/killmsgs/vehicles/explode {
+	text "game/obit/veh_exp"
+}
+
+tooltip tooltips/killmsgs/vehicles/explode/self {
+	text "game/obit/veh_exp_self"
+}
+
+tooltip tooltips/killmsgs/vehicles/explode/unknown {
+	text "game/obit/veh_exp_unknown"
+}
+
+tooltip tooltips/killmsgs/vehicles/explode/teamkill {
+	text "game/obit/veh_exp_team"
+}

@@ -630,6 +630,8 @@ idCVar	g_useVehicleAmmo(			"g_useVehicleAmmo",				"1",		CVAR_GAME | CVAR_BOOL | 
 idCVar	g_allowEMPFriendlyFire(		"g_allowEMPFriendlyFire",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow EMP effects from affecting friendly units." );
 idCVar	g_allowRadFriendlyFire(		"g_allowRadFriendlyFire",		"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Allow or disallow radiation effects from affecting friendly units." );
 
+idCVar	g_forgivingBotMatch(		"g_forgivingBotMatch",			"0",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Make BotMatches be more forgiving for a player." );
+
 idCVar	g_blood(					"g_blood",						"1",		CVAR_GAME | CVAR_PROFILE | CVAR_ARCHIVE | CVAR_BOOL,		"Show blood" );
 
 idCVar g_trainingMode(				"g_trainingMode",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_NOCHEAT,						"whether the game is in training mode or not" );

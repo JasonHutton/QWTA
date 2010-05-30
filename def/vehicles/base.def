@@ -245,10 +245,14 @@ damageDef damage_vehicle_explode {
 	radius						256
 	push						10000000
 
+	//tt_obituary					"tooltips/killmsgs/vehicles/explode"
+	//tt_obituary_self			"tooltips/killmsgs/vehicles/explode"
+	//tt_obituary_unknown			"tooltips/killmsgs/vehicles/explode"
+	//tt_obituary_team_kill		"tooltips/killmsgs/vehicles/explode"
 	tt_obituary					"tooltips/killmsgs/vehicles/explode"
-	tt_obituary_self			"tooltips/killmsgs/vehicles/explode"
-	tt_obituary_unknown			"tooltips/killmsgs/vehicles/explode"
-	tt_obituary_team_kill		"tooltips/killmsgs/vehicles/explode"
+	tt_obituary_self			"tooltips/killmsgs/vehicles/explode/self"
+	tt_obituary_unknown			"tooltips/killmsgs/vehicles/explode/unknown"
+	tt_obituary_team_kill		"tooltips/killmsgs/vehicles/explode/teamkill"
 }
 
 damageFilter damage_vehicle_explode {

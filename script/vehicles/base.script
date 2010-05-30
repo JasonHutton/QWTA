@@ -108,7 +108,7 @@ object vehicle_base {
 
 	void			OnDecoyLaunched();
 
-	void			DestroyThread();
+	void			DestroyThread( entity attacker );
 	void			DecayThread();
 
 	void			DamageEffectThread();
@@ -699,7 +699,7 @@ void vehicle_base::OnKilledRemove( entity inflictor, entity attacker, float dama
 	// the body would start falling here, so disable the model
 	disableModel( 1 );
 
-	thread DestroyThread();
+	thread DestroyThread( attacker );
 }
 
 void vehicle_base::OnPostDamage( entity attacker, float oldHealth, float newHealth ) {
@@ -1057,7 +1057,7 @@ float vehicle_base::vGetTargetLockCountBasedefence() {
 	return 0;
 }
 
-void vehicle_base::DestroyThread() {
+void vehicle_base::DestroyThread( entity attacker ) {
 	sys.wait( destroyDelay );
 
 	// totally submerged vehicles don't explode
@@ -1065,7 +1065,11 @@ void vehicle_base::DestroyThread() {
 	if( water < 1.0f ) {
 		vector middle = ( getMins() + getMaxs() ) * 0.5f;
 		middle = sys.toWorldSpace( middle, self );		
-		sys.applyRadiusDamage( middle, self, self, $null_entity, self, GetDamage( "damage_vehicle_explode" ), 1.f, 1.f );
+		if ( attacker != $null_entity ) {
+			sys.applyRadiusDamage( middle, self, attacker, $null_entity, self, GetDamage( "damage_vehicle_explode" ), 1.f, 1.f );
+		} else {
+			sys.applyRadiusDamage( middle, self, self, $null_entity, self, GetDamage( "damage_vehicle_explode" ), 1.f, 1.f );
+		}
 	}
 	
 	if( !sys.isClient() ) {

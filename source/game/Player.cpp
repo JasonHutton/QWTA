@@ -3739,7 +3739,7 @@ void idPlayer::SetHealth( int count ) {
 	int oldHealth = health;
 
 	if ( userInfo.isBot ) {
-		if ( ( botThreadData.GetBotSkill() == BOT_SKILL_DEMO || botThreadData.GetBotSkill() == BOT_SKILL_EASY ) && botThreadData.GetGameWorldState()->gameLocalInfo.gameIsBotMatch ) {
+		if ( ( botThreadData.GetBotSkill() == BOT_SKILL_DEMO || botThreadData.GetBotSkill() == BOT_SKILL_EASY ) && botThreadData.GetGameWorldState()->gameLocalInfo.gameIsBotMatch && g_forgivingBotMatch.GetBool() ) {
 			idPlayer* localPlayer = gameLocal.GetLocalPlayer();
 			bool lowerHealth = false;
 			if ( team != NULL && localPlayer != NULL && localPlayer->team != NULL ) {
@@ -8198,7 +8198,7 @@ void idPlayer::Damage( idEntity *inflictor, idEntity *attacker, const idVec3 &di
 		damage = health;
 	}
 
-	if ( botThreadData.GetGameWorldState()->gameLocalInfo.gameIsBotMatch ) {
+	if ( botThreadData.GetGameWorldState()->gameLocalInfo.gameIsBotMatch && g_forgivingBotMatch.GetBool() ) {
 		sdTransport* vehicle = inflictor->Cast< sdTransport >();
 
 		if ( vehicle != NULL ) {
@@ -10943,7 +10943,7 @@ modified to have low skilled bots, on the opposite team of the local player, be 
 */
 void idPlayer::SetMaxHealth( int count ) {
 	if ( userInfo.isBot ) {
-		if ( ( botThreadData.GetBotSkill() == BOT_SKILL_DEMO || botThreadData.GetBotSkill() == BOT_SKILL_EASY ) && botThreadData.GetGameWorldState()->gameLocalInfo.gameIsBotMatch ) {
+		if ( ( botThreadData.GetBotSkill() == BOT_SKILL_DEMO || botThreadData.GetBotSkill() == BOT_SKILL_EASY ) && botThreadData.GetGameWorldState()->gameLocalInfo.gameIsBotMatch && g_forgivingBotMatch.GetBool() ) {
 			idPlayer* localPlayer = gameLocal.GetLocalPlayer();
 			if ( localPlayer != NULL && localPlayer->team != NULL && team != NULL ) {
 				if ( team->GetBotTeam() != localPlayer->team->GetBotTeam() ) {
