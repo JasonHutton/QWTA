@@ -5043,20 +5043,45 @@ const sdDeclRank* idGameLocal::FindRankForLevel( int rankLevel ) {
 }
 
 int idGameLocal::GetForceEscalation() {
-	double forceEscalation = 0.0f;
+	double forceEscalation[MAX_CLIENTS];
+	double average = 0.0, result = 0.0;
+	int countableClients = 0;
 
 	for(int i = 0;i < MAX_CLIENTS;i++) {
 		idPlayer* player = GetClient( i );
 		if( !player ) {
+			forceEscalation[i] = -1.0;
 			continue;
 		}
-		forceEscalation += static_cast< double >( player->GetProficiencyTable().GetXP() );
+		forceEscalation[i] = static_cast< double >( player->GetProficiencyTable().GetXP() );
+		average += forceEscalation[i];
 	}
 
-	forceEscalation /= numClients;
-	forceEscalation *= 1.0 + (0.1 * numClients);
+	if(numClients > 0) {
+		average /= numClients;
+	}
+	
+	for(int i = 0;i < MAX_CLIENTS;i++) {
+		if(forceEscalation[i] < 0)
+			continue;
 
-	return static_cast< int >( floor( forceEscalation ) );
+		// Discard players who are below half the average XP on the server.
+		if(forceEscalation[i] < (average / 2))
+			continue;
+
+		++countableClients;
+		result += forceEscalation[i];
+	}
+
+	if(numClients > 0) {
+		// Boost FE slightly based on the number of clients connected. More people = more FE.
+		result *= 1.0 + (0.05 * (numClients - 1));
+	}
+	if(countableClients > 0) {
+		result /= countableClients;
+	}
+
+	return static_cast< int >( floor( result ) );
 }
 
 /*
