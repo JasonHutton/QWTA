@@ -39,7 +39,7 @@ struct gameVersion_t {
 #define MOD_NAME "QWTA"
 #define MOD_VERSION_MAJOR 0
 #define MOD_VERSION_MINOR 3
-#define MOD_VERSION_REVISION 4
+#define MOD_VERSION_REVISION 5
 
 struct modVersion_t {
 	static const int strSize = 256;

@@ -12,11 +12,9 @@ CHANGES:
     essentially a single-player game.
     BaseETQW would lower enemy bots' health on low skill levels.
     BaseETQW would prevent vehicle explosions from damaging players.
-* Force Escalation is now multiplied by (1.0 + (0.1 * numClients)), where
-  numClients is the number of clients connected. This is intended to bias
-  Force Escalation to be easier to accrue the more players there are in
-  a game. So the heavy vehicles are more likely to be brought out in a game
-  with many players, than a game with few.
+* The way Force Escalation is calculated has been changed to discard low-XP 
+  outliers and to increase overall Force Escalation when many players are on
+  a server.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
