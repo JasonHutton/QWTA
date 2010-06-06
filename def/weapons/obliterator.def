@@ -231,6 +231,12 @@ invItemDef inventory/weapons/obliterator {
 		"ammo_per_shot"					"1"
 		"max_ammo"						"1"
 	}
+	clip {
+		"projectile"					"projectile_obliterator_qwta"
+		"type"							"stroyent_packet"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"1"
+	}
 }
 
 entityDef projectile_obliterator {
@@ -298,6 +304,15 @@ entityDef projectile_obliterator_arcing {
 	"use_air_burst"						"1"
 	"fx_airburst"						"effects/weapons/obliterator_explosion_air"
 
+}
+
+entityDef projectile_obliterator_qwta {
+	"inherit"							"projectile_obliterator_arcing"
+
+	//"velocity"							"2000 0 0"
+	"velocity"							"4000 0 0"
+	//"gravity"							"120"
+	"gravity"							"0"
 }
 
 entityDef projectile_obliterator_arcing_firesound {

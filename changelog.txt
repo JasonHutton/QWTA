@@ -4,7 +4,7 @@ CHANGES:
 * Cvar g_useStraightRockets added.
   + Default 1.
   + Allows unguided Rocket Launcher rockets to fly straight and fast
-    instead of in a low-velocity arc. Does not affect the Obliterator.
+    instead of in a low-velocity arc. Affects the Obliterator too.
 * Cvar g_forgivingBotMatch added.
   + Default 0.
   + Makes BotMatches more forgiving for a player by turning off certain

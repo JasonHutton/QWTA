@@ -62,20 +62,20 @@ void weapon_law::DoFire() {
 
 	float index = 0;
 	if ( myPlayer.getEnemy() == $null_entity ) {
-		if ( isRocketLauncher && g_useStraightRockets.getBoolValue() ) {
+		if ( /*isRocketLauncher &&*/ g_useStraightRockets.getBoolValue() ) {
 			index = 2;
 		} else {
 			index = 1;
-			startSound( "snd_charge", SND_WEAPON_SIG );
-
-			if ( warmupEffect ) {
-				if ( sys.getLocalViewPlayer() == myPlayer && !pm_thirdperson.getBoolValue() ) {
-					playEffect( "fx_charge", "muzzle", 0.f );
-				}
-			}
-
-			sys.wait( triggerDelay );
 		}
+		startSound( "snd_charge", SND_WEAPON_SIG );
+
+		if ( warmupEffect ) {
+			if ( sys.getLocalViewPlayer() == myPlayer && !pm_thirdperson.getBoolValue() ) {
+				playEffect( "fx_charge", "muzzle", 0.f );
+			}
+		}
+
+		sys.wait( triggerDelay );
 	}
 	
 	if ( cancelFire ) {
