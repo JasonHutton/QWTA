@@ -1,4 +1,4 @@
-// str_qwta_menus_00000094
+// str_qwta_menus_00000098
 
 /*
 =================
@@ -218,6 +218,14 @@ locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreFE {
 	text "#str_qwta_menus_00000093"
 }
 
+locString guis/limbo/qwta/settings/useStraightRockets {
+	text "#str_qwta_menus_00000095"
+}
+
+locString guis/limbo/qwta/settings/forgivingBotMatch {
+	text "#str_qwta_menus_00000097"
+}
+
 
 /*
 =================
@@ -387,4 +395,12 @@ locString guis/limbo/qwta/settings/blood/tooltip {
 
 locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreFE/tooltip {
 	text "#str_qwta_menus_00000094"
+}
+
+locString guis/limbo/qwta/settings/useStraightRockets/tooltip {
+	text "#str_qwta_menus_00000096"
+}
+
+locString guis/limbo/qwta/settings/forgivingBotMatch/tooltip {
+	text "#str_qwta_menus_00000098"
 }

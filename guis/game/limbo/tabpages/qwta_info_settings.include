@@ -350,6 +350,16 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA
 				}
 			}
 		_end_check
+		_qwtacheck( Setting_UseStraightRockets,
+			g_useStraightRockets,
+			localize( "guis/limbo/qwta/settings/useStraightRockets" ),
+			localizeArgs( "guis/limbo/qwta/settings/useStraightRockets/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_ForgivingBotMatch,
+			g_forgivingBotMatch,
+			localize( "guis/limbo/qwta/settings/forgivingBotMatch" ),
+			localizeArgs( "guis/limbo/qwta/settings/forgivingBotMatch/tooltip" ),
+			0, 0, BUTTON_WIDTH )
 		_end_scrollable_container
 _end_tab_page
 

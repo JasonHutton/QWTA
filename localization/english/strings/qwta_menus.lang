@@ -60,6 +60,8 @@
 	"#str_qwta_menus_00000089" "Allow Radiation Friendly Fire"
 	"#str_qwta_menus_00000091" "Blood"
 	"#str_qwta_menus_00000093" "Husky & Icarus Vehicle Drops Ignore FE"	
+	"#str_qwta_menus_00000095" "Straight Rockets"
+	"#str_qwta_menus_00000097" "Forgiving BotMatch"
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -103,4 +105,6 @@
 	"#str_qwta_menus_00000090" "Allow Radiation effects to affect friendly units."
 	"#str_qwta_menus_00000092" "Enabled or disables most of QWTA's blood effects."
 	"#str_qwta_menus_00000094" "The Husky and Icarus ignore FE Requirements for vehicle drops."
+	"#str_qwta_menus_00000096" "Rocket Launcher/Obliterator rockets fly straight and fast rather than in a slow parabolic arc."
+	"#str_qwta_menus_00000098" "BotMatches handicap bots in gameplay-inconsistent ways at low skill levels."
 }
