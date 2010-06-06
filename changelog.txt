@@ -15,6 +15,30 @@ CHANGES:
 * The way Force Escalation is calculated has been changed to discard low-XP 
   outliers and to increase overall Force Escalation when many players are on
   a server.
+* Cvar family g_vehicleSpawnMinPlayers* added.
+  + Default 0.
+  + Number of connected clients needs to meet or exceed each cvar for the
+    associated vehicle to spawn. Does not affect vehicle drops.
+  + Full cvar list for this group of cvars:
+    g_vehicleSpawnMinPlayersHusky
+    g_vehicleSpawnMinPlayersPlatypus
+    g_vehicleSpawnMinPlayersArmadillo
+    g_vehicleSpawnMinPlayersTrojan
+    g_vehicleSpawnMinPlayersBumblebee
+    g_vehicleSpawnMinPlayersTitan
+    g_vehicleSpawnMinPlayersAnansi
+    g_vehicleSpawnMinPlayersIcarus
+    g_vehicleSpawnMinPlayersHog
+    g_vehicleSpawnMinPlayersDesecrator
+    g_vehicleSpawnMinPlayersCyclops
+    g_vehicleSpawnMinPlayersTormentor
+    g_vehicleSpawnMinPlayersJupiter
+    g_vehicleSpawnMinPlayersAbaddon
+  + These are more meant to be used with BaseETQW settings. I've noticed over
+    time that some of the better BaseETQW servers like to informally restrict
+    vehicle use based on the number of people playing. This should allow that
+    without some newly connected player jumping in and slaughtering everyone
+    playing by the agreed upon restrictions.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
