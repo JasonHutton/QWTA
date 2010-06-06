@@ -14,6 +14,7 @@ object auto_respawn {
 
 	boolean			SpawnVehicle();
 	boolean			CheckSpawn();
+	boolean			MinClientsForSpawn( float numClients );
 
 	void			UpdateThread( float initialWait );
 
@@ -123,6 +124,10 @@ boolean auto_respawn::CheckSpawn() {
 	if ( g_disableVehicleRespawns.getBoolValue() && bHasSpawnedOnce ) {
 		return false;
 	}
+	
+	if( !MinClientsForSpawn( sys.getNumClients() ) ) {
+		return false;
+	}
 
 	float count = entitiesInBounds( getMins(), getMaxs(), CONTENTS_VEHICLECLIP | CONTENTS_BODY | CONTENTS_SLIDEMOVER | CONTENTS_MONSTER | CONTENTS_SOLID, 0 );
 	float index;
@@ -145,6 +150,73 @@ boolean auto_respawn::CheckSpawn() {
 		return false;
 	}
 
+	return true;
+}
+
+boolean auto_respawn::MinClientsForSpawn( float numClients ) {
+	
+	// GDF BaseETQW
+	
+	if ( getKey( "def_construction" ) == "vehicle_husky" && numClients < g_vehicleSpawnMinPlayersHusky.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_platypus" && numClients < g_vehicleSpawnMinPlayersPlatypus.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_badger" && numClients < g_vehicleSpawnMinPlayersArmadillo.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_trojan" && numClients < g_vehicleSpawnMinPlayersTrojan.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_bumblebee" && numClients < g_vehicleSpawnMinPlayersBumblebee.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_titan" && numClients < g_vehicleSpawnMinPlayersTitan.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_anansi" && numClients < g_vehicleSpawnMinPlayersAnansi.getIntValue() ) {
+		return false;
+	}
+	
+	// Strogg BaseETQW
+	
+	if ( getKey( "def_construction" ) == "vehicle_icarus" && numClients < g_vehicleSpawnMinPlayersIcarus.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_hog" && numClients < g_vehicleSpawnMinPlayersHog.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_desecrator" && numClients < g_vehicleSpawnMinPlayersDesecrator.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_goliath" && numClients < g_vehicleSpawnMinPlayersCyclops.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_hornet" && numClients < g_vehicleSpawnMinPlayersTormentor.getIntValue() ) {
+		return false;
+	}
+	
+	// QWTA Vehicles
+	
+	if ( getKey( "def_construction" ) == "vehicle_jupiter" && numClients < g_vehicleSpawnMinPlayersJupiter.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_abaddon" && numClients < g_vehicleSpawnMinPlayersAbaddon.getIntValue() ) {
+			return false;
+	}
+	
 	return true;
 }
 

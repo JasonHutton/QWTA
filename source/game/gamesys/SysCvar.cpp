@@ -641,3 +641,20 @@ idCVar g_objectiveDecayTime(		"g_objectiveDecayTime",			"5",		CVAR_GAME | CVAR_F
 idCVar g_noQuickChats(				"g_noQuickChats",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE | CVAR_PROFILE,		"disables sound and text of quickchats" );
 
 idCVar g_maxProficiency(			"g_maxProficiency",				"0",		CVAR_GAME | CVAR_BOOL | CVAR_RANKLOCKED, "" );
+
+idCVar g_vehicleSpawnMinPlayersHusky(	"g_vehicleSpawnMinPlayersHusky", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersPlatypus(	"g_vehicleSpawnMinPlayersPlatypus", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersArmadillo(	"g_vehicleSpawnMinPlayersArmadillo", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersTrojan(	"g_vehicleSpawnMinPlayersTrojan", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersBumblebee(	"g_vehicleSpawnMinPlayersBumblebee", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersTitan(	"g_vehicleSpawnMinPlayersTitan", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersAnansi(	"g_vehicleSpawnMinPlayersAnansi", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+
+idCVar g_vehicleSpawnMinPlayersIcarus(	"g_vehicleSpawnMinPlayersIcarus", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersHog(	"g_vehicleSpawnMinPlayersHog", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersDesecrator(	"g_vehicleSpawnMinPlayersDesecrator", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersCyclops(	"g_vehicleSpawnMinPlayersCyclops", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersTormentor(	"g_vehicleSpawnMinPlayersTormentor", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+
+idCVar g_vehicleSpawnMinPlayersJupiter(	"g_vehicleSpawnMinPlayersJupiter", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");
+idCVar g_vehicleSpawnMinPlayersAbaddon(	"g_vehicleSpawnMinPlayersAbaddon", "0",	CVAR_GAME | CVAR_NETWORKSYNC,								"The minimum players that have to be on server before this vehicle will spawn.");

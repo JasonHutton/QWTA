@@ -233,6 +233,8 @@ const idEventDef EV_Thread_GetDeploymentCredit( "getDeploymentCredit", 'f', DOC_
 const idEventDef EV_Thread_GetDeploymentRankRequirement( "getDeploymentRankRequirement", 'd', DOC_TEXT( "Returns the rank requirement of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 const idEventDef EV_Thread_GetDeploymentTitle( "getDeploymentTitle", 's', DOC_TEXT( "Returns the title of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 
+const idEventDef EV_THREAD_GetNumClients( "getNumClients", 'd', DOC_TEXT("Returns the number of connected clients."), 0, NULL );
+
 const idEventDef EV_Thread_GetForceEscalation( "getForceEscalation", 'd', DOC_TEXT( "Returns an average amount of XP for all players on the server." ), 0, NULL );
 const idEventDef EV_Thread_GetDeploymentForceEscalationRequirement( "getDeploymentForceEscalationRequirement", 'd', DOC_TEXT( "Returns the force escalation requirement of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
 const idEventDef EV_Thread_GetDeploymentAVDBit( "getDeploymentAVDBit", 'd', DOC_TEXT( "Returns the Advanced Vehicle Drop bit of this deployobject." ), 1, "", "d", "object", "Index of the $decl:deployObject$ to use." );
@@ -490,6 +492,8 @@ ABSTRACT_DECLARATION( sdProgramThread, sdSysCallThread )
 	EVENT( EV_Thread_GetDeploymentCredit,			sdSysCallThread::Event_GetDeploymentCredit )
 	EVENT( EV_Thread_GetDeploymentRankRequirement,	sdSysCallThread::Event_GetDeploymentRankRequirement )
 	EVENT( EV_Thread_GetDeploymentTitle,			sdSysCallThread::Event_GetDeploymentTitle )
+
+	EVENT( EV_THREAD_GetNumClients,					sdSysCallThread::Event_GetNumClients )
 
 	EVENT( EV_Thread_GetForceEscalation,			sdSysCallThread::Event_GetForceEscalation )
 	EVENT( EV_Thread_GetDeploymentForceEscalationRequirement,	sdSysCallThread::Event_GetDeploymentForceEscalationRequirement )
@@ -2802,6 +2806,10 @@ void sdSysCallThread::Event_GetDeploymentTitle( int deploymentObjectIndex ) {
 	}
 
 	sdProgram::ReturnString( object->GetTitle() );
+}
+
+void sdSysCallThread::Event_GetNumClients() {
+	sdProgram::ReturnInteger( gameLocal.numClients );
 }
 
 /*

@@ -379,6 +379,23 @@ void game_main() {
 	g_allowEMPFriendlyFire		= sys.getCVar( "g_allowEMPFriendlyFire", "" );
 	g_allowRadFriendlyFire		= sys.getCVar( "g_allowRadFriendlyFire", "" );
 	g_blood						= sys.getCVar( "g_blood", "" );
+	
+	g_vehicleSpawnMinPlayersHusky	= sys.getCVar( "g_vehicleSpawnMinPlayersHusky", "" );
+	g_vehicleSpawnMinPlayersPlatypus	= sys.getCVar( "g_vehicleSpawnMinPlayersPlatypus", "" );
+	g_vehicleSpawnMinPlayersArmadillo	= sys.getCVar( "g_vehicleSpawnMinPlayersArmadillo", "" );
+	g_vehicleSpawnMinPlayersTrojan	= sys.getCVar( "g_vehicleSpawnMinPlayersTrojan", "" );
+	g_vehicleSpawnMinPlayersBumblebee	= sys.getCVar( "g_vehicleSpawnMinPlayersBumblebee", "" );
+	g_vehicleSpawnMinPlayersTitan	= sys.getCVar( "g_vehicleSpawnMinPlayersTitan", "" );
+	g_vehicleSpawnMinPlayersAnansi	= sys.getCVar( "g_vehicleSpawnMinPlayersAnansi", "" );
+	
+	g_vehicleSpawnMinPlayersIcarus	= sys.getCVar( "g_vehicleSpawnMinPlayersIcarus", "" );
+	g_vehicleSpawnMinPlayersHog	= sys.getCVar( "g_vehicleSpawnMinPlayersHog", "" );
+	g_vehicleSpawnMinPlayersDesecrator	= sys.getCVar( "g_vehicleSpawnMinPlayersDesecrator", "" );
+	g_vehicleSpawnMinPlayersCyclops	= sys.getCVar( "g_vehicleSpawnMinPlayersCyclops", "" );
+	g_vehicleSpawnMinPlayersTormentor	= sys.getCVar( "g_vehicleSpawnMinPlayersTormentor", "" );
+
+	g_vehicleSpawnMinPlayersJupiter	= sys.getCVar( "g_vehicleSpawnMinPlayersJupiter", "" );
+	g_vehicleSpawnMinPlayersAbaddon	= sys.getCVar( "g_vehicleSpawnMinPlayersAbaddon", "" );
 
 	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
 	g_locStr_Disabled			= sys.localizeString( "game/disabled" );

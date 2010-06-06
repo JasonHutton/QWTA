@@ -179,6 +179,23 @@ cvar	g_allowEMPFriendlyFire;
 cvar	g_allowRadFriendlyFire;
 cvar	g_blood;
 
+cvar	g_vehicleSpawnMinPlayersHusky;
+cvar	g_vehicleSpawnMinPlayersPlatypus;
+cvar	g_vehicleSpawnMinPlayersArmadillo;
+cvar	g_vehicleSpawnMinPlayersTrojan;
+cvar	g_vehicleSpawnMinPlayersBumblebee;
+cvar	g_vehicleSpawnMinPlayersTitan;
+cvar	g_vehicleSpawnMinPlayersAnansi;
+
+cvar	g_vehicleSpawnMinPlayersIcarus;
+cvar	g_vehicleSpawnMinPlayersHog;
+cvar	g_vehicleSpawnMinPlayersDesecrator;
+cvar	g_vehicleSpawnMinPlayersCyclops;
+cvar	g_vehicleSpawnMinPlayersTormentor;
+
+cvar	g_vehicleSpawnMinPlayersJupiter;
+cvar	g_vehicleSpawnMinPlayersAbaddon;
+
 object gameplay_base;
 gameplay_base gameplayManager;
 

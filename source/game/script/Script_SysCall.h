@@ -204,6 +204,8 @@ public:
 	void						Event_GetDeploymentRankRequirement( int deploymentObjectIndex );
 	void						Event_GetDeploymentTitle( int deploymentObjectIndex );
 
+	void						Event_GetNumClients( void );
+
 	void						Event_GetForceEscalation( void );
 	void						Event_GetDeploymentForceEscalationRequirement( int deploymentObjectIndex );
 	void						Event_GetDeploymentAVDBit( int deploymentObjectIndex );

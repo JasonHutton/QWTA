@@ -384,6 +384,8 @@ scriptEvent float	getDeploymentCredit( float deployObjectIndex );
 scriptEvent float	getDeploymentRankRequirement( float deployObjectIndex );
 scriptEvent string	getDeploymentTitle( float deployObjectIndex );
 
+scriptEvent float	getNumClients();
+
 scriptEvent float	getForceEscalation();
 scriptEvent float	getDeploymentForceEscalationRequirement( float deployObjectIndex );
 scriptEvent float	getDeploymentAVDBit( float deployObjectIndex );
