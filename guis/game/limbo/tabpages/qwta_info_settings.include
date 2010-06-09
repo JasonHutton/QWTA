@@ -95,6 +95,25 @@ $template _end_qwta_group_box_vertical
 	_end_qwta_group_box
 $endtemplate
 
+$template _qwtatextbox( NameParm, CVarParm, TextParm, xPos, yPos, WidthParm )
+	_edit( NameParm, xPos+WidthParm, yPos, 0, BUTTON_HEIGHT )
+		_draw_left_edit_label( TextParm, COLOR_TEXT, WidthParm )
+		_button_disable_if( "", true )
+
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				editText = gui.getCVar( #CVarParm );
+			}
+			
+			onCVarChanged #CVarParm	{ 
+				clearText();
+				editText = gui.getCVar( #CVarParm );
+			}
+		}
+	_end_edit
+$endtemplate
+
 _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA_SETTINGS, _to_right_of( tabpQWTA_Docs ), 0 )
 	_scrollable_container( QWTA_SettingsCont, PADDING, PADDING, _fill_to_right_of( tabpQWTA_SettingsContent ), _fill_to_bottom_of( tabpQWTA_SettingsContent ) )
 		_qwtacheck( Setting_UseBaseETQW12Shotguns, 
@@ -360,6 +379,31 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA
 			localize( "guis/limbo/qwta/settings/forgivingBotMatch" ),
 			localizeArgs( "guis/limbo/qwta/settings/forgivingBotMatch/tooltip" ),
 			0, 0, BUTTON_WIDTH )
+		_group_box( Setting_MinPlayersForVehicle, PADDING, PADDING, _fill_to_right_of( lstQWTA_SettingsContElements ), $evalfloat( ( 20 ) * 7 + 12 ) )
+			_label_localized( MPFVL, localize( "guis/limbo/qwta/settings/vehicleSpawnMinPlayers" ), PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, "1,1,1,0.35" )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+				}
+			_end_label
+			_qwta_group_box_vertical( Setting_MPFV1, PADDING, _to_bottom_of( lblMPFVL ), BUTTON_WIDTH, $evalfloat( ( 20 ) * 6 + PADDING ), false )
+				_qwtatextbox( S_MPFV_Icarus, g_vehicleSpawnMinPlayersIcarus, localize( "game/vec/icarus" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Hog, g_vehicleSpawnMinPlayersHog, localize( "game/vec/hog" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Desecrator, g_vehicleSpawnMinPlayersDesecrator, localize( "game/vec/desecrator" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Cyclops, g_vehicleSpawnMinPlayersCyclops, localize( "game/vec/goliath" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Abaddon, g_vehicleSpawnMinPlayersAbaddon, localize( "game/vec/abaddon" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Tormentor, g_vehicleSpawnMinPlayersTormentor, localize( "game/vec/hornet" ), 0, 0, 60 )
+			_end_qwta_group_box_vertical
+			_qwta_group_box_vertical( Setting_MPFV2, _to_right_of( grpSetting_MPFV1 ) + PADDING + 40, PADDING, BUTTON_WIDTH, $evalfloat( ( 20 ) * 7 + PADDING ), false )
+			_qwtatextbox( S_MPFV_Husky, g_vehicleSpawnMinPlayersHusky, localize( "game/vec/husky" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Armadillo, g_vehicleSpawnMinPlayersArmadillo, localize( "game/vec/badger" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Trojan, g_vehicleSpawnMinPlayersTrojan, localize( "game/vec/trojan" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Titan, g_vehicleSpawnMinPlayersTitan, localize( "game/vec/titan" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Jupiter, g_vehicleSpawnMinPlayersJupiter, localize( "game/vec/jupiter" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Anansi, g_vehicleSpawnMinPlayersAnansi, localize( "game/vec/anansi" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Bumblebee, g_vehicleSpawnMinPlayersBumblebee, localize( "game/vec/bumblebee" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Platypus, g_vehicleSpawnMinPlayersPlatypus, localize( "game/vec/platypus" ), 0, 0, 60 )
+			_end_qwta_group_box_vertical
+		_end_group_box
 		_end_scrollable_container
 _end_tab_page
 

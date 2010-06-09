@@ -1,4 +1,4 @@
-// str_qwta_menus_00000098
+// str_qwta_menus_00000099
 
 /*
 =================
@@ -226,6 +226,9 @@ locString guis/limbo/qwta/settings/forgivingBotMatch {
 	text "#str_qwta_menus_00000097"
 }
 
+locString guis/limbo/qwta/settings/vehicleSpawnMinPlayers {
+	text "#str_qwta_menus_00000099"
+}
 
 /*
 =================

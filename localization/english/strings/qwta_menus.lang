@@ -62,6 +62,7 @@
 	"#str_qwta_menus_00000093" "Husky & Icarus Vehicle Drops Ignore FE"	
 	"#str_qwta_menus_00000095" "Straight Rockets"
 	"#str_qwta_menus_00000097" "Forgiving BotMatch"
+	"#str_qwta_menus_00000099" "Minimum Players for Vehicle Spawn"
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
