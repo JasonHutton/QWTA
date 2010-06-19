@@ -81,6 +81,7 @@ public:
 	bool					IsTeamDamage( void ) const { return flags.isTeamDamage; }
 
 	bool					GetNegativePush( void ) const { return pushFlags.negativePush; }
+	bool					GetMountDisconnect( void ) const { return pushFlags.mountDisconnect; }
 
 	bool					GetCVarGib( void ) const { return g_useGibKills.GetBool() ? cvarDamageFlags.cvarGib : false; }
 
@@ -158,6 +159,7 @@ protected:
 
 	typedef struct pushFlags_s {
 		bool				negativePush		: 1;
+		bool				mountDisconnect		: 1;
 	} pushFlags_t;
 	
 	pushFlags_t				pushFlags;

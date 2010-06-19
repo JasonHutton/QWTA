@@ -263,6 +263,10 @@ bool sdDeclDamage::Parse( const char *text, const int textLength ) {
 			
 			pushFlags.negativePush = true;
 		
+		} else if ( !token.Icmp( "mountDisconnect" ) ) {
+			
+			pushFlags.mountDisconnect = true;
+
 		} else if ( !token.Icmp( "cvarGib" ) ) {
 
 			cvarDamageFlags.cvarGib = true;
@@ -548,6 +552,7 @@ void sdDeclDamage::FreeData( void ) {
 	bleedWoundType					= "";
 
 	pushFlags.negativePush	= false;
+	pushFlags.mountDisconnect = false;
 
 	cvarDamageFlags.cvarGib = false;
 
