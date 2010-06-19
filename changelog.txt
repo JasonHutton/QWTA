@@ -39,6 +39,7 @@ CHANGES:
     vehicle use based on the number of people playing. This should allow that
     without some newly connected player jumping in and slaughtering everyone
     playing by the agreed upon restrictions.
+* Slightly increased the Dark Matter Cannon's gravitational effects.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
