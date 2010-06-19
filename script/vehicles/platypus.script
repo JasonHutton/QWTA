@@ -1,0 +1,131 @@
+
+object vehicle_platypus : vehicle_base {
+	void			preinit();
+	void			init();
+
+	void			OnCollision( object traceObject, float velocity, vector mins, vector maxs );
+
+	void			OnWeaponSelected( entity p, float index );
+
+	void			OnPlayerEntered( entity p, float position );
+	
+	void			DriverAnimThread();
+	
+	float			driverAnimThread;
+	
+	float			steerJoint;
+	float			throttleJoint;
+}
+
+void vehicle_platypus::preinit() {
+	driverAnimThread = -1;
+
+	steerJoint = getJointHandle( getKey( "joint_steer" ) );
+	throttleJoint = getJointHandle( getKey( "joint_throttle" ) );
+}
+
+void vehicle_platypus::init() {
+	setLightsEnabled( 0, false );
+}
+
+void vehicle_platypus::OnCollision( object traceObject, float velocity, vector mins, vector maxs ) {
+	OnCollision_Base( traceObject, velocity, mins, maxs );
+}
+
+void vehicle_platypus::OnWeaponSelected( entity p, float index ) {
+	if ( index == 0 ) {
+		FireDecoy( p );
+	}
+}
+
+void vehicle_platypus::OnPlayerEntered( entity p, float position ) {
+	OnPlayerEntered_Base( p, position );
+	
+	if ( position == 0 ) {
+		if ( driverAnimThread == -1 ) {
+			driverAnimThread = thread DriverAnimThread();
+		}
+	}
+}
+
+#define PLATYPUS_STEER_SPEED 3.f
+#define PLATYPUS_STEER_LIMIT 60.f
+#define PLATYPUS_STEER_AXIS steerAngles_x
+
+#define PLATYPUS_THROTTLE_SPEED 1.f
+#define PLATYPUS_THROTTLE_LIMIT 30.f
+#define PLATYPUS_THROTTLE_AXIS throttleAngles_y
+
+void vehicle_platypus::DriverAnimThread() {
+	vector steerAngles;
+	vector throttleAngles;
+
+	while ( true ) {
+		entity driver = getDriver();
+
+		vector input;
+		if ( driver == $null_entity ) {
+			if ( PLATYPUS_STEER_AXIS == 0.f && PLATYPUS_THROTTLE_AXIS == 0.f ) {
+				break;
+			}
+			input = '0 0 0';
+		} else {
+			input = driver.getMove();
+		}
+
+		if ( input_x > 0.f ) {
+			PLATYPUS_THROTTLE_AXIS += PLATYPUS_THROTTLE_SPEED;
+			if ( PLATYPUS_THROTTLE_AXIS > PLATYPUS_THROTTLE_LIMIT ) {
+				PLATYPUS_THROTTLE_AXIS = PLATYPUS_THROTTLE_LIMIT;
+			}
+		} else if ( input_x < 0.f ) {
+			PLATYPUS_THROTTLE_AXIS -= PLATYPUS_THROTTLE_SPEED;
+			if ( PLATYPUS_THROTTLE_AXIS < -PLATYPUS_THROTTLE_LIMIT ) {
+				PLATYPUS_THROTTLE_AXIS = -PLATYPUS_THROTTLE_LIMIT;
+			}
+		} else {
+			if ( PLATYPUS_THROTTLE_AXIS > 0.f ) {
+				PLATYPUS_THROTTLE_AXIS -= PLATYPUS_THROTTLE_SPEED;
+				if ( PLATYPUS_THROTTLE_AXIS < 0.f ) {
+					PLATYPUS_THROTTLE_AXIS = 0.f;
+				}
+			} else if ( PLATYPUS_THROTTLE_AXIS < 0.f ) {
+				PLATYPUS_THROTTLE_AXIS += PLATYPUS_THROTTLE_SPEED;
+				if ( PLATYPUS_THROTTLE_AXIS > 0.f ) {
+					PLATYPUS_THROTTLE_AXIS = 0.f;
+				}
+			}
+		}
+
+		if ( input_y < 0.f ) {
+			PLATYPUS_STEER_AXIS += PLATYPUS_STEER_SPEED;
+			if ( PLATYPUS_STEER_AXIS > PLATYPUS_STEER_LIMIT ) {
+				PLATYPUS_STEER_AXIS = PLATYPUS_STEER_LIMIT;
+			}
+		} else if ( input_y > 0.f ) {
+			PLATYPUS_STEER_AXIS -= PLATYPUS_STEER_SPEED;
+			if ( PLATYPUS_STEER_AXIS < -PLATYPUS_STEER_LIMIT ) {
+				PLATYPUS_STEER_AXIS = -PLATYPUS_STEER_LIMIT;
+			}
+		} else {
+			if ( PLATYPUS_STEER_AXIS > 0.f ) {
+				PLATYPUS_STEER_AXIS -= PLATYPUS_STEER_SPEED;
+				if ( PLATYPUS_STEER_AXIS < 0.f ) {
+					PLATYPUS_STEER_AXIS = 0.f;
+				}
+			} else if ( PLATYPUS_STEER_AXIS < 0.f ) {
+				PLATYPUS_STEER_AXIS += PLATYPUS_STEER_SPEED;
+				if ( PLATYPUS_STEER_AXIS > 0.f ) {
+					PLATYPUS_STEER_AXIS = 0.f;
+				}
+			}
+		}
+		
+		setJointAngle( steerJoint, JOINTMOD_LOCAL, steerAngles );
+		setJointAngle( throttleJoint, JOINTMOD_LOCAL, throttleAngles );
+
+		sys.waitFrame();
+	}
+
+	driverAnimThread = -1;
+}

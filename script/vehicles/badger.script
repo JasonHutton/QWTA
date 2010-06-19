@@ -1,0 +1,28 @@
+
+object vehicle_badger : vehicle_base {
+	void			init();
+
+	void			OnCollision( object traceObject, float velocity, vector mins, vector maxs );
+
+	void			OnWeaponSelected( entity p, float index );
+
+	float			vGetSteerScale();
+}
+
+void vehicle_badger::init() {
+	setLightsEnabled( 0, false );
+}
+
+void vehicle_badger::OnCollision( object traceObject, float velocity, vector mins, vector maxs ) {
+	OnCollision_Base( traceObject, velocity, mins, maxs );
+}
+
+void vehicle_badger::OnWeaponSelected( entity p, float index ) {
+	if ( index == 0 ) {
+		FireDecoy( p );
+	}
+}
+
+float vehicle_badger::vGetSteerScale() {
+	return getSteerAngle() / 10.f;
+}
