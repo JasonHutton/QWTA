@@ -93,7 +93,7 @@ damageDef damage_ssg_splash_push {
 damageDef damage_ssg_splash_pull{
 	damage							"damage_ssg"
 	//radius							2048
-	radius							2048
+	radius							3072
 
 	prof_damage						"pro_oppressor_damage"
 
@@ -101,7 +101,7 @@ damageDef damage_ssg_splash_pull{
 
 	team_kill_cvar					"g_allowComplaint_firesupport"
 
-	knockback						800
+	knockback						1600
 	push							80000000
 
 	negativePush
