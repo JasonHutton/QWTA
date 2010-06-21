@@ -88,6 +88,7 @@ bool sdDeclDeployableObject::Parse( const char *text, const int textLength ) {
 		}
 	}
 	forceEscalationRequired = temp.GetInt( "force_escalation_required" );
+	logisticsPointsRequired = temp.GetInt( "logistics_points_required" );
 	avdbit	= temp.GetInt( "avdbit", "-1" );
 	terrainDisallowed = temp.GetInt( "terrain_disallowed", "0" );
 
@@ -155,6 +156,7 @@ void sdDeclDeployableObject::FreeData( void ) {
 	qwtaCreditRequired	= creditRequired;
 	rankRequired		= NULL;
 	forceEscalationRequired = 0;
+	logisticsPointsRequired = 0;
 	avdbit				= -1;
 	terrainDisallowed	= 0;
 }

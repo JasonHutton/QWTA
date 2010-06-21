@@ -390,6 +390,7 @@ scriptEvent float	getForceEscalation();
 scriptEvent float	getDeploymentForceEscalationRequirement( float deployObjectIndex );
 scriptEvent float	getDeploymentAVDBit( float deployObjectIndex );
 scriptEvent float	getDeploymentTerrainDisallowed( float deployObjectIndex );
+scriptEvent float	getDeploymentLogisticsPointsRequirement( float deployObjectIndex );
 
 scriptEvent vector	getWorldMins();
 scriptEvent vector	getWorldMaxs();
@@ -1235,6 +1236,8 @@ scriptEvent void	giveProficiency( float index, float scale, object task, string 
 scriptEvent void	giveClassProficiency( float count, string reason );
 scriptEvent float	getProficiency( float type );
 scriptEvent float	getXP( float type, boolean fromBase );
+scriptEvent float	getLP();
+scriptEvent boolean	consumeLP( float amount );
 scriptEvent float	heal( float count );
 scriptEvent float	unheal( float count );
 scriptEvent void	makeInvulnerable( float len );

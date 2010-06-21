@@ -29,6 +29,7 @@ public:
 	float							GetCreditRequired( void ) const { return g_useBaseETQWVehicleCredits.GetBool() ? creditRequired : qwtaCreditRequired; }
 	int								GetRankLevelRequired( void ) const { return rankRequired != NULL ? rankRequired->GetLevel() : -1; }
 	int								GetForceEscalationRequired( void ) const { return forceEscalationRequired; }
+	int								GetLogisticsPointsRequired( void ) const { return logisticsPointsRequired; }
 	int								GetAVDBit( void ) const { return avdbit; }
 	int								GetTerrainDisallowed( void ) const { return terrainDisallowed; }
 	static void						CacheFromDict( const idDict& dict );
@@ -49,6 +50,7 @@ private:
 	float							qwtaCreditRequired;
 	const sdDeclRank*				rankRequired;
 	int								forceEscalationRequired;
+	int								logisticsPointsRequired;
 	int								avdbit;
 	int								terrainDisallowed;
 };

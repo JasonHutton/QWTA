@@ -1276,6 +1276,8 @@ public:
 	void					Event_GetRankLevel( void );
 	void					Event_GetProficiencyLevel( int index );
 	void					Event_GetXP( int index, bool base );
+	void					Event_GetLP( void );
+	void					Event_ConsumeLP( float amount );
 	void					Event_GetMaxHealth( void );
 	void					Event_GetCrosshairEntity( void );
 	void					Event_GetCrosshairDistance( bool needValidInfo );

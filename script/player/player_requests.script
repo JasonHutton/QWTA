@@ -71,6 +71,14 @@ void player::RequestDeployment( string objectName ) {
 	if ( allowDeploy ) {
 		vUseVehicleCredit( sys.getDeploymentCredit( GetDeployObject( objectName ) ) );
 	}
+	
+	if ( allowDeploy ) {
+		// This is really redundant. Need to do this better. -- Azuvector
+		float avdbit = sys.getDeploymentAVDBit( GetDeployObject( objectName ) );
+		if ( g_vehicleDropsUseLP.getBoolValue() && !( g_huskyIcarusDropsIgnoreLP.getBoolValue() && ( avdbit & AVDBIT_HUSKY || avdbit & AVDBIT_ICARUS ) ) ) {
+			consumeLP( sys.getDeploymentLogisticsPointsRequirement( GetDeployObject( objectName ) ) );
+		}
+	}
 
 	thread DeploymentFeedbackThread( allowDeploy );
 }
@@ -318,9 +326,11 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	float credit = vGetVehicleCredit();
 	//float currentRank = self.getRankLevel();
 	float currentForceEscalation = sys.getForceEscalation();
+	float currentLogisticsPoints = getLP();
 	float creditRequired = sys.getDeploymentCredit( GetDeployObject( objectName ) );
 	//float rankRequired = sys.getDeploymentRankRequirement( GetDeployObject( objectName ) );
 	float forceEscalationRequired = sys.getDeploymentForceEscalationRequirement( GetDeployObject( objectName ) );
+	float logisticsPointsRequired = sys.getDeploymentLogisticsPointsRequirement( GetDeployObject( objectName ) );
 	float avdbit = sys.getDeploymentAVDBit( GetDeployObject( objectName ) );
 	float terrainDisallowed = sys.getDeploymentTerrainDisallowed( GetDeployObject( objectName ) );
 
@@ -335,6 +345,8 @@ boolean player::CheckCanRequestVehicle( string objectName ) {
 	} else if ( g_advancedVehicleDrops.getIntValue() >= 0 && !( g_advancedVehicleDrops.getIntValue() & avdbit ) ) {
 		return false;
 	} else if ( g_vehicleDropsUseFE.getBoolValue() && currentForceEscalation < forceEscalationRequired && !( g_huskyIcarusDropsIgnoreFE.getBoolValue() && ( avdbit & AVDBIT_HUSKY || avdbit & AVDBIT_ICARUS ) ) ) {
+		return false;
+	} else if ( g_vehicleDropsUseLP.getBoolValue() && currentLogisticsPoints < logisticsPointsRequired && !( g_huskyIcarusDropsIgnoreLP.getBoolValue() && ( avdbit & AVDBIT_HUSKY || avdbit & AVDBIT_ICARUS ) ) ) {
 		return false;
 	} else if ( credit < creditRequired ) {
 		return false;

@@ -404,7 +404,17 @@ _tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA
 				_qwtatextbox( S_MPFV_Platypus, g_vehicleSpawnMinPlayersPlatypus, localize( "game/vec/platypus" ), 0, 0, 60 )
 			_end_qwta_group_box_vertical
 		_end_group_box
-		_end_scrollable_container
+		_qwtacheck( Setting_VDropsUseLP, 
+			g_vehicleDropsUseLP, 
+			localize( "guis/limbo/qwta/settings/vDropsUseLP" ),
+			localizeArgs( "guis/limbo/qwta/settings/vDropsUseLP/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_HuskyIcarusDropsIgnoreLP,
+			g_huskyIcarusDropsIgnoreLP, 
+			localize( "guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP" ),
+			localizeArgs( "guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP/tooltip" ),
+			0, 0, BUTTON_WIDTH )			
+	_end_scrollable_container
 _end_tab_page
 
 #endif

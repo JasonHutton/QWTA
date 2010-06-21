@@ -163,7 +163,9 @@ cvar	g_useNuclearHammer;
 cvar	g_useQuake4Hyperblaster;
 cvar	g_advancedVehicleDrops;
 cvar	g_vehicleDropsUseFE;
+cvar	g_vehicleDropsUseLP;
 cvar	g_huskyIcarusDropsIgnoreFE;
+cvar	g_huskyIcarusDropsIgnoreLP;
 cvar	g_useBaseETQWVehicleCredits;
 cvar	g_vehicleSpawnsUseFE;
 

@@ -1,4 +1,4 @@
-// str_qwta_00000059
+// str_qwta_00000060
 
 /*
 =================
@@ -85,6 +85,11 @@ locString guis/hud/dead_spawnhost {
 	text "#str_qwta_00000054" // "You are dead, but have a spawnhost available.\nYou will deploy in the next reinforcement wave.\nPress ^1%1[limbo menu key]^0 for the Limbo Menu."
 	arguments 1
 }
+
+locString guis/game/scoreboard/lp { 
+	text "#str_qwta_00000060" // "LP"
+}
+
 
 /*
 ==================

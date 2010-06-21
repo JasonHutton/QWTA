@@ -407,6 +407,8 @@ const idEventDef EV_Player_GetRank( "getRankName", 'h', DOC_TEXT( "Returns a loc
 const idEventDef EV_Player_GetRankLevel( "getRankLevel", 'd', DOC_TEXT( "Returns the player's current rank's level." ), 0, NULL );
 const idEventDef EV_Player_GetProficiency( "getProficiency", 'd', DOC_TEXT( "Returns the level the player has achieved in the specified $decl:proficiencyType$." ), 1, "If the index is out of range, the game will likely crash or return garbage data.", "d", "index", "Index of the $decl:proficiencyType$." );
 const idEventDef EV_Player_GetXP( "getXP", 'f', DOC_TEXT( "Returns the amount of XP the player has been awarded in the specified $decl:proficiencyType$." ), 2, "If the index is -1, the overall total XP will be returned.\nIf the index is otherwise out of range, the game will likely crash or return garbage data.\nThe fromBase setting only matters in campaign mode, and does not apply when the index is -1.", "d", "index", "Index of the $decl:proficiencyType$, or -1.", "b", "fromBase", "If set, only the XP from this map will be returned." );
+const idEventDef EV_Player_GetLP( "getLP", 'f', DOC_TEXT( "Returns the amonut of LP the player has built up and not spent..." ), 0, NULL );
+const idEventDef EV_Player_ConsumeLP( "consumeLP", 'b', DOC_TEXT( "Returns if you're able to consume this amount of LP without going negative." ), 1, NULL, "f", "amount", "The amount of LP to attempt to consume." );
 const idEventDef EV_Player_GetCrosshairEntity( "getCrosshairEntity", 'e', DOC_TEXT( "Returns the entity under the player's crosshair, or $null$ if none." ), 0, NULL );
 const idEventDef EV_Player_GetCrosshairDistance( "getCrosshairDistance", 'f', DOC_TEXT( "Returns the distance to the item under the crosshair." ), 1, NULL, "b", "needValidInfo", "If set, and there isn't a valid entity under the crosshair, the result will be 'infinity'." );
 const idEventDef EV_Player_GetCrosshairEndPos( "getCrosshairEndPos", 'v', DOC_TEXT( "Returns the end position of the crosshair trace." ), 0, NULL );
@@ -563,6 +565,8 @@ CLASS_DECLARATION( idActor, idPlayer )
 	EVENT( EV_Player_GetRankLevel,			idPlayer::Event_GetRankLevel )
 	EVENT( EV_Player_GetProficiency,		idPlayer::Event_GetProficiencyLevel )
 	EVENT( EV_Player_GetXP,					idPlayer::Event_GetXP )
+	EVENT( EV_Player_GetLP,					idPlayer::Event_GetLP )
+	EVENT( EV_Player_ConsumeLP,				idPlayer::Event_ConsumeLP )
 	EVENT( EV_Player_GetCrosshairEntity,	idPlayer::Event_GetCrosshairEntity )
 	EVENT( EV_Player_GetCrosshairDistance,	idPlayer::Event_GetCrosshairDistance )
 	EVENT( EV_Player_GetCrosshairEndPos,	idPlayer::Event_GetCrosshairEndPos )
@@ -10310,6 +10314,15 @@ void idPlayer::Event_GetXP( int index, bool base ) {
 
 	sdProgram::ReturnFloat( GetProficiencyTable().GetPoints( index ) );
 }
+
+void idPlayer::Event_GetLP( void ) {
+	sdProgram::ReturnFloat( GetProficiencyTable().GetLP() );
+}
+
+void idPlayer::Event_ConsumeLP( float amount ) {
+	sdProgram::ReturnBoolean( GetProficiencyTable().ConsumeLP( amount ) );
+}
+
 
 /*
 ===============

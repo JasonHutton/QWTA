@@ -40,6 +40,27 @@ CHANGES:
     without some newly connected player jumping in and slaughtering everyone
     playing by the agreed upon restrictions.
 * Slightly increased the Dark Matter Cannon's gravitational effects.
+* Logistics Points introduced as a concept.
+  + Logistics Points is a direct count of your accumulated XP, with one
+    catch, when you use them, they disappear. Think of them as money.
+    Vehicle Drops now use Logistics Points to determine when each vehicle
+    can be called in. In order to help combat wasteful vehicle spam, 
+    central command is only willing to help out players so many times.
+  + Logistics point costs are listed next to FE on the quickchat menu.
+* Cvar g_vehicleDropsUseLP added.
+  + Default 1.
+  + Controls whether Logistics Points are used as a requirement of 
+    vehicle drops. It's recommended to leave this on when heavier vehicles
+    are allowed to be dropped.
+* Cvar g_huskyIcarusDropsIgnoreLP added.
+  + Default 0.
+  + Lets the Husky and Icarus Vehicle Drops ignore Logistics Points
+    requirements. This lets them be called in with 0 LP while the heavier
+    vehicles continue to require LP to be dropped onto the battlefield.
+* Modified the HUD element for Force Escalation, and added a Logistics Points
+  HUD element right below it. The vehicle charge bar has also been added to
+  the main HUD for easy viewing. These elements disappear automatically when
+  the cvars that control their use are disabled.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.

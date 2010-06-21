@@ -68,6 +68,7 @@
 	"#str_qwta_00000051" "You have been wounded too badly to continue, and have no spawnhost available.\nYou must wait for a technician.\nPress ^1%1[limbo menu key]^0 for the Limbo Menu."
 	"#str_qwta_00000052" "You have been wounded too badly to continue, but have a spawnhost available.\nYou are waiting for a technician.\nPress ^1%1[key]^0 to deploy with the next wave of reinforcements.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
 	"#str_qwta_00000053" "You have been wounded too badly to continue, but have a spawnhost available.\nYou will deploy in the next reinforcement wave.\nPress ^1%1[key]^0 to wait for a technician.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	"#str_qwta_00000060" "LP" // Logistics Points
 
 	// Tooltips
 	"#str_qwta_00000029" "The ^5Jupiter Tank^0 seats a Driver/Gunner and mounts a prototype BFG10k energy cannon. Press ^3%k(_vehiclecamera)^0 to change view."

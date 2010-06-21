@@ -123,8 +123,23 @@ void sdProficiencyTable::AddProficiency( int index, float amount ) {
 	points[ index ] += amount;
 	UpdateXP();
 	UpdateLevel( index );
+
+	AddLP( amount );
 }
 
+void sdProficiencyTable::SetLP( float amount ) {
+	lp = amount;
+}
+void sdProficiencyTable::AddLP( float amount ) {
+	lp += amount;
+}
+bool sdProficiencyTable::ConsumeLP( float amount ) {
+	if ( lp - amount < 0.0 )
+		return false;
+
+	lp -= amount;
+	return true;
+}
 /*
 ================
 sdProficiencyTable::StoreBasePoints
@@ -178,6 +193,7 @@ void sdProficiencyTable::Clear( bool all ) {
 	}
 
 	xp						= 0.0f;
+	SetLP( 0.0f );
 	if ( all || !fixedRank ) {
 		rank				= NULL;
 		fixedRank			= false;

@@ -303,6 +303,13 @@ private:
 	sdFloatProperty		fe;
 
 	SD_UI_PROPERTY_TAG(
+	title				= "PlayerProperties/Lp";
+	desc				= "Local View player LP.";
+	datatype			= "float";
+	)
+	sdFloatProperty		lp;
+
+	SD_UI_PROPERTY_TAG(
 	title				= "PlayerProperties/Rank";
 	desc				= "View player's rank or invalid handle if there's no rank.";
 	datatype			= "int";

@@ -95,7 +95,12 @@ public:
 	void				AddProficiency( int index, float amount );
 	void				Clear( bool all );
 
+	void				SetLP( float amount );
+	void				AddLP( float amount );
+	bool				ConsumeLP( float amount );
+
 	float				GetXP( void ) const { return xp; }
+	float				GetLP( void ) const { return lp; }
 	float				GetPoints( int index ) const { return points[ index ]; }
 	float				GetPointsSinceBase( int index ) const { return points[ index ] - basePoints[ index ]; }
 	void				ResetToBasePoints( void );
@@ -126,6 +131,7 @@ private:
 	idList< int >		levels;
 	idList< int >		spawnLevels;	// levels when the player spawned
 	float				xp;
+	float				lp;
 	const sdDeclRank*	rank;
 	bool				fixedRank;
 };

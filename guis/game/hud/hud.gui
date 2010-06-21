@@ -1209,7 +1209,7 @@ gui hud {
 
 				// match info
 				drawText( toWStr( msToHMS( player.matchTime ) ), matchTextRect, gui.iconDimColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_BOTTOM );
-				//drawCachedMaterial( matchMaterial, matchRect, gui.iconDimColor );
+				//drawCachedMaterial( matchMaterial, matchRect, gui.iconDimColor );				
 
 				popColor();
 
@@ -1274,6 +1274,94 @@ gui hud {
 			}
 			onTime 1000 {
 				resetTime( 0 );
+			}
+		}
+	}
+	
+	windowDef qwtaData {
+		properties {
+			rect	rect 		= 132, SCREEN_HEIGHT - 51, 41, 35;
+			float 	visible	 	= gui.shouldShowNormalHud;// && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );
+			float	fontSize	= 12;
+			
+			rect	feRect		= rect.x, rect.y, 41, 16;
+			rect	feTextRect	= feRect.x + 4, feRect.y + 1, feRect.w - 5, feRect.h;
+			rect	feTextRectStr	= feRect.x + 4, feRect.y + 1, feRect.w - 6, feRect.h;
+
+			handle 	feFillMaterial	= gui.cacheMaterial( "htopFill", "_frame health_top_fill" );
+			handle 	feLineMaterial	= gui.cacheMaterial( "htopLine", "_frame health_top_line" );
+			
+			handle 	botFillMaterial	= gui.cacheMaterial( "abotFill", "_frame ammo_bottom_fill" );
+			handle 	botLineMaterial	= gui.cacheMaterial( "abotLine", "_frame ammo_bottom_line" );
+			
+			rect	lpRect		= rect.x, rect.y + 19, 41, 16;
+			rect	lpTextRect	= lpRect.x + 4, lpRect.y + 1, lpRect.w - 5, lpRect.h;
+			rect	lpTextRectStr	= lpRect.x + 4, lpRect.y + 1, lpRect.w - 6, lpRect.h;
+			
+			float	feVisible	= gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
+			float	lpVisible	= gui.getCVarBool( "g_vehicleDropsUseLP" );
+			float	chargeVisible	= feVisible || lpVisible;
+			
+			color	vehicleCreditColor	= "1, 1, 1, 0.5";
+			rect 	vehicleProgressRect	= rect.x, rect.y + 16, 41, 3;
+		}
+
+		events {
+			onCVarChanged "g_vehicleDropsUseFE" {
+				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
+				chargeVisible	= feVisible || lpVisible;
+			}
+			onCVarChanged "g_vehicleSpawnsUseFE" {
+				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
+				chargeVisible	= feVisible || lpVisible;
+			}
+			onCVarChanged "g_vehicleDropsUseLP" {
+				lpVisible = gui.getCVarBool( "g_vehicleDropsUseLP" );
+				chargeVisible	= feVisible || lpVisible;
+			}
+			onPropertyChanged "globals.vehicles.vehicle_charge" {
+				if ( gui.getCVarBool( "g_useBaseETQWVehicleCredits" ) ) {
+					if ( globals.vehicles.vehicle_charge < 0.1f ) {
+						vehicleCreditColor = "1, 0, 0, 0.5";
+					} else {
+						vehicleCreditColor = "1, 1, 1, 0.5";
+					}
+				} else {
+					if ( globals.vehicles.vehicle_charge < 0.5f ) {
+						vehicleCreditColor = "1, 0, 0, 0.5";
+					} else {
+						vehicleCreditColor = "1, 1, 1, 0.5";
+					}
+				}
+				drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y, vehicleProgressRect.w, 3", ".1,.1,.1,0.45" );
+				drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y, vehicleProgressRect.w * globals.vehicles.vehicle_charge, 3", vehicleCreditColor );
+			}
+			onPreDraw {
+				if( feVisible ) {
+					drawCachedMaterial( feFillMaterial, feRect, gui.dialogFillColor );
+					drawCachedMaterial( feLineMaterial, feRect, gui.dialogLineColor );
+
+					drawText( toWStr( toString( max( 0, player.fe ), 0 ) ), feTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawLocalizedText( localize( "guis/game/scoreboard/fe" ), feTextRectStr, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+				}
+				
+				if ( lpVisible ) {
+					drawCachedMaterial( botFillMaterial, lpRect, gui.dialogFillColor );
+					drawCachedMaterial( botLineMaterial, lpRect, gui.dialogLineColor );
+					
+					drawText( toWStr( toString( max( 0, player.lp ), 0 ) ), lpTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawLocalizedText( localize( "guis/game/scoreboard/lp" ), lpTextRectStr, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+				}
+				
+				if ( chargeVisible ) {
+					drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y, vehicleProgressRect.w, 3", ".1,.1,.1,0.45" );
+					drawCachedMaterial( gui.whiteMaterial, "vehicleProgressRect.x, vehicleProgressRect.y, vehicleProgressRect.w * globals.vehicles.vehicle_charge, 3", vehicleCreditColor );
+				}
+
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "player.vehicleValid" {
+				visible		= gui.shouldShowNormalHud;// && ( gui.getCVarBool( "g_hideHud") == false || player.vehicleValid );;
 			}
 		}
 	}
@@ -2553,10 +2641,6 @@ gui hud {
 			handle 	topLineMaterial		= gui.cacheMaterial( "htopLine", "_frame health_top_line" );
 			handle 	topGradMaterial		= gui.cacheMaterial( "htopGrad", "_3h health_top_grad" );
 			
-			handle 	feFillMaterial		= gui.cacheMaterial( "htopFill", "_frame health_top_fill" );
-			handle 	feLineMaterial		= gui.cacheMaterial( "htopLine", "_frame health_top_line" );
-			handle 	feGradMaterial		= gui.cacheMaterial( "htopGrad", "_3h health_top_grad" );
-
 			handle 	botFillMaterial		= gui.cacheMaterial( "hbotFill", "_frame health_bottom_fill" );
 			handle 	botLineMaterial		= gui.cacheMaterial( "hbotLine", "_frame health_bottom_line" );
 
@@ -2571,9 +2655,6 @@ gui hud {
 			rect	topRect				= absoluteRect.x, absoluteRect.y, 58, 16;
 			rect	iconRect			= topRect.x + 5, topRect.y + 2, 12, 12;
 			rect	textRect			= topRect.x + 22, topRect.y + 1, 36, 16;
-			rect	feRect				= topRect.x + topRect.w + 27, topRect.y, 41, 16;
-			rect	feTextRect			= feRect.x + 4, feRect.y + 1, feRect.w - 5, feRect.h;
-			rect	feTextRectStr			= feRect.x + 4, feRect.y + 1, feRect.w - 6, feRect.h;
 			rect	dividerRect			= topRect.x + 22, ( topRect.y + topRect.h ) - 7, 1, 7;
 			rect	healthBarRect		= topRect.x, topRect.y + 15, 126, 13;
 			rect	botRect				= topRect.x, topRect.y + 28, 85, 21;
@@ -2590,8 +2671,6 @@ gui hud {
 			color	flashXPColor		= 1,1,1,0;
 
 			color	xpFillColor			= COLOR_HUD_PROGRESS;
-			
-			float	feVisible		= gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
 		}
 
 		// feedback
@@ -2601,12 +2680,6 @@ gui hud {
 				drawCachedMaterial( topGradMaterial, topRect, gui.barGradientColor );
 				drawCachedMaterial( topLineMaterial, topRect, gui.dialogLineColor );
 				
-				if( feVisible ) {
-					drawCachedMaterial( feFillMaterial, feRect, gui.dialogFillColor );
-					drawCachedMaterial( feGradMaterial, feRect, gui.barGradientColor );
-					drawCachedMaterial( feLineMaterial, feRect, gui.dialogLineColor );
-				}
-
 				drawCachedMaterial( botFillMaterial, botRect, gui.dialogFillColor );
 				drawCachedMaterial( botLineMaterial, botRect, gui.dialogLineColor );
 
@@ -2635,10 +2708,7 @@ gui hud {
 
 				drawLocalizedText( player.roleTitle, classTextRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
 				drawText( toWStr( toString( max( 0, player.health ), 0 ) ), textRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
-				if( feVisible ) {
-					drawText( toWStr( toString( max( 0, player.fe ), 0 ) ), feTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
-					drawLocalizedText( localize( "guis/game/scoreboard/fe" ), feTextRectStr, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
-				}
+				
 				drawText( toWStr( toString( player.xp, 0 ) ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
 				drawLocalizedText( localize( "guis/game/scoreboard/xp" ), xpTextRect, COLOR_WHITE, fontSize - 2, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
 
@@ -2667,12 +2737,6 @@ gui hud {
 				}
 
 				lastHealthValue = immediate( player.health );
-			}
-			onCVarChanged "g_vehicleDropsUseFE" {
-				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
-			}
-			onCVarChanged "g_vehicleSpawnsUseFE" {
-				feVisible = gui.getCVarBool( "g_vehicleDropsUseFE" ) || gui.getCVarBool( "g_vehicleSpawnsUseFE" );
 			}
 			onPropertyChanged "globals.gameHud.healthParentBoxTime" {
 				timeline.healthParentBoxTimeline.duration = ( 1000 * globals.gameHud.healthParentBoxTime ) + immediate( gui.time );

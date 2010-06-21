@@ -1585,6 +1585,10 @@ void LocalPlayerUpdateThread() {
 					useParachuteToolTip = true;
 				}
 			}
+			
+			if ( localPlayer == viewer ) {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "vehicles.vehicle_charge", localPlayer.vGetVehicleCredit() );
+			}
 		}
 
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.needsParachute", needsParachute );

@@ -210,6 +210,7 @@ public:
 	void						Event_GetDeploymentForceEscalationRequirement( int deploymentObjectIndex );
 	void						Event_GetDeploymentAVDBit( int deploymentObjectIndex );
 	void						Event_GetDeploymentTerrainDisallowed( int deploymentObjectIndex );
+	void						Event_GetDeploymentLogisticsPointsRequirement( int deploymentObjectIndex );
 
 	void						Event_GetWorldMins( void );
 	void						Event_GetWorldMaxs( void );

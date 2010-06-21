@@ -1,4 +1,4 @@
-// str_qwta_menus_00000099
+// str_qwta_menus_00000103
 
 /*
 =================
@@ -230,6 +230,14 @@ locString guis/limbo/qwta/settings/vehicleSpawnMinPlayers {
 	text "#str_qwta_menus_00000099"
 }
 
+locString guis/limbo/qwta/settings/vDropsUseLP {
+	text "#str_qwta_menus_00000100"
+}
+
+locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP {
+	text "#str_qwta_menus_00000102"
+}
+
 /*
 =================
  ToolTips
@@ -406,4 +414,12 @@ locString guis/limbo/qwta/settings/useStraightRockets/tooltip {
 
 locString guis/limbo/qwta/settings/forgivingBotMatch/tooltip {
 	text "#str_qwta_menus_00000098"
+}
+
+locString guis/limbo/qwta/settings/vDropsUseLP/tooltip {
+	text "#str_qwta_menus_00000101"
+}
+
+locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP/tooltip {
+	text "#str_qwta_menus_00000103"
 }

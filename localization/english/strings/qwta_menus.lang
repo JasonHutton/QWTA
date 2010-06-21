@@ -59,10 +59,12 @@
 	"#str_qwta_menus_00000087" "Allow EMP Friendly Fire"
 	"#str_qwta_menus_00000089" "Allow Radiation Friendly Fire"
 	"#str_qwta_menus_00000091" "Blood"
-	"#str_qwta_menus_00000093" "Husky & Icarus Vehicle Drops Ignore FE"	
+	"#str_qwta_menus_00000093" "Husky & Icarus Vehicle Drops Ignore FE"
 	"#str_qwta_menus_00000095" "Straight Rockets"
 	"#str_qwta_menus_00000097" "Forgiving BotMatch"
 	"#str_qwta_menus_00000099" "Minimum Players for Vehicle Spawn"
+	"#str_qwta_menus_00000100" "Vehicle Drops use Logistics Points (LP)"
+	"#str_qwta_menus_00000102" "Husky & Icarus Vehicle Drops Ignore LP"	
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -108,4 +110,6 @@
 	"#str_qwta_menus_00000094" "The Husky and Icarus ignore FE Requirements for vehicle drops."
 	"#str_qwta_menus_00000096" "Rocket Launcher/Obliterator rockets fly straight and fast rather than in a slow parabolic arc."
 	"#str_qwta_menus_00000098" "BotMatches handicap bots in gameplay-inconsistent ways at low skill levels."
+	"#str_qwta_menus_00000101" "Vehicle drops only become active after sufficient Logistics Points (LP) have accrued through the course of play."
+	"#str_qwta_menus_00000103" "The Husky and Icarus ignore LP Requirements for vehicle drops."
 }
