@@ -334,6 +334,9 @@ entityDef vehicle_jupiter {
 	"projectile_decoy_charge"		"100"
 	"projectile_decoy_max"			"3"
 	"projectile_decoy_velocity"		"0 0 500"
+	
+	"projectile_decoy_ammo_max"		"20"
+	"projectile_decoy_ammo_per_use"	"1"
 
 // 	"fx_decoy_extra"				"effects/weapons/flare_titan"
 //	"extra_decoy_count"				"1"

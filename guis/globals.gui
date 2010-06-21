@@ -123,6 +123,8 @@ stringMap gameHud {
 	
 	"ammoParentBoxTime"				"float"
 	"healthParentBoxTime"				"float"
+	
+	"decoyAmmo"					"float"
 }
 
 stringMap mcpObjective {

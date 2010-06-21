@@ -1,4 +1,4 @@
-// str_qwta_00000060
+// str_qwta_00000061
 
 /*
 =================
@@ -88,6 +88,10 @@ locString guis/hud/dead_spawnhost {
 
 locString guis/game/scoreboard/lp { 
 	text "#str_qwta_00000060" // "LP"
+}
+
+locString guis/hud/decoyammo { 
+	text "#str_qwta_00000061" // "Decoys:"
 }
 
 

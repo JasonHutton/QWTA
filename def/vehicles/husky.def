@@ -319,6 +319,9 @@ entityDef vehicle_husky {
 	"projectile_decoy_charge"		"100"
 	"projectile_decoy_max"			"3"
 	"projectile_decoy_velocity"		"50 0 500"
+	
+	"projectile_decoy_ammo_max"		"2"
+	"projectile_decoy_ammo_per_use"	"1"
 
 //mal: give the bots an easy means of identifying a vehicle and its traits
 	"vehicle_num"					"husky"

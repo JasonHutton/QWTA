@@ -122,6 +122,8 @@ object vehicle_base {
 	boolean			DecoyHasCharge();
 	void			DecoyUseAmmo();
 	boolean			DecoyHasAmmo();
+	void			UpdateDecoyAmmo_Base();
+	void			UpdateDecoyAmmo() { UpdateDecoyAmmo_Base(); }
 	float			CalcDecoyChargeUsed();
 	void			StartDecoyChargeThread();
 	void			StopDecoyChargeThread();
@@ -250,9 +252,9 @@ void vehicle_base::preinit() {
 	decoyJointHandle		= getJointHandle( getKey( "projectile_decoy_joint" ) );
 	decoyLaunchVelocity		= getVectorKey( "projectile_decoy_velocity" );
 	decoyProjectileIndex	= GetEntityDef( getKey( "def_projectile_decoy" ) );
-	decoyAmmoMax			= getFloatKey( "projectile_decoy_ammo_max" );
+	decoyAmmoMax			= getFloatKeyWithDefault( "projectile_decoy_ammo_max", -1.f );
 	decoyAmmo				= decoyAmmoMax;
-	decoyAmmoPerUse			= getFloatKey( "projectile_decoy_ammo_per_use" );
+	decoyAmmoPerUse			= getFloatKeyWithDefault( "projectile_decoy_ammo_per_use", 1.f );
 
 	crosshairName			= sys.localizeString( getKey( "info_name" ) );
 
@@ -1006,6 +1008,8 @@ void vehicle_base::OnPlayerEntered_Base( entity p, float position ) {
 				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );	
 			}
 		}
+		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyAmmo", decoyAmmo );		
 
 		float healthFrac = getHealth() / getMaxHealth();
 		if ( healthFrac < klaxonThreshold ) {
@@ -1038,6 +1042,8 @@ void vehicle_base::OnPlayerExited_Base( entity p, float position ) {
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyChargeFraction", 1 );
+		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyAmmo", decoyAmmo );
 		
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
 		
@@ -1199,15 +1205,25 @@ boolean vehicle_base::DecoyHasCharge() {
 }
 
 void vehicle_base::DecoyUseAmmo() {
-	decoyAmmo = decoyAmmo - decoyAmmoPerUse;
+	if ( decoyAmmoMax > 0 && g_useVehicleDecoyAmmo.getBoolValue() ) {
+		decoyAmmo = decoyAmmo - decoyAmmoPerUse;
+	}
+	UpdateDecoyAmmo();
+	
 }
 
 boolean vehicle_base::DecoyHasAmmo() {
-	if ( decoyAmmo - decoyAmmoPerUse >= 0.f ) {
+	if ( decoyAmmoMax < 0 || !g_useVehicleDecoyAmmo.getBoolValue() || ( decoyAmmo > 0 && decoyAmmoPerUse <= decoyAmmo ) ) {
 		return true;
 	}
 	
 	return false;
+}
+
+void vehicle_base::UpdateDecoyAmmo_Base() {
+	if ( g_useVehicleDecoyAmmo.getBoolValue() && decoyAmmoMax > 0 ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.decoyAmmo", decoyAmmo );
+	}
 }
 
 float vehicle_base::CalcDecoyChargeUsed() {

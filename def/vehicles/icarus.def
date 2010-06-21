@@ -189,6 +189,9 @@ entityDef vehicle_icarus {
 	"projectile_decoy_charge"		"100"
 	"projectile_decoy_max"			"3"
 	"projectile_decoy_joint"		"body"
+	
+	"projectile_decoy_ammo_max"		"2"
+	"projectile_decoy_ammo_per_use"	"1"
 
 	"fx_groundeffect_none"			"effects/vehicles/icarus/groundeffect_dirt"
 	"fx_groundeffect_grass"			"effects/vehicles/icarus/groundeffect_grass"

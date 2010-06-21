@@ -274,6 +274,9 @@ entityDef vehicle_hornet {
 	"projectile_decoy_charge"		"100"
 	"projectile_decoy_max"			"6"
 	
+	"projectile_decoy_ammo_max"		"15"
+	"projectile_decoy_ammo_per_use"	"1"
+	
 	"careen_speed"					"700"
 	"careen_height"					"1024"
 

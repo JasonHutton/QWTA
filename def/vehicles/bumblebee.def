@@ -237,6 +237,9 @@ entityDef vehicle_bumblebee {
 	"projectile_decoy_velocity"		"0 0 -300"
 	"projectile_decoy_charge"		"100"
 	"projectile_decoy_max"			"2"
+	
+	"projectile_decoy_ammo_max"		"30"
+	"projectile_decoy_ammo_per_use"	"1"
 
 	"cycle_all_positions"			"1"
 
