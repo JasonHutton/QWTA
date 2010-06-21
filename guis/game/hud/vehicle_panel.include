@@ -1,0 +1,357 @@
+
+#include <guis/common/utility.include>
+#include <guis/common/colors.include>
+#include <guis/mainmenu/effects.include>
+#include <guis/game/hud/hud.include>
+
+#ifndef __hud_vehicle_panel__
+#define __hud_vehicle_panel__
+
+#define __VEHICLE_CAPTION_WIDTH 127
+
+#ifdef PADDING
+#undef PADDING
+#endif
+
+#define PADDING 4
+
+#define VEHICLE_PANEL_BASE 208
+
+$template _class_icons
+	materials {
+		"vehicle_decoy_icon"				"guis/assets/icons/icons_sheet1, rect( 226, 49, 14, 14 )"
+		"vehicle_hicon"						"guis/assets/icons/icons_sheet1, rect( 225, 34, 14, 14 )"
+		"vehicle_boost_icon"				"guis/assets/icons/icons_sheet1, rect( 240, 49, 14, 14 )"
+
+		"position_ring"						"guis/assets/hud/gdf/sheet, rect( 220, 40, 20, 20 )"
+		"position_ring_fill"				"guis/assets/hud/gdf/sheet, rect( 240, 40, 20, 20 )"
+	}
+$endtemplate
+
+$template __vehicle_bar( NameParm, XPos, YPos, WidthParm, IconParm, Percent, Flash )		
+	windowDef progress##NameParm {		
+		properties {
+			rect rect 			= XPos, YPos, WidthParm, 10;
+			rect fillRect 		= borderRect.x + 2, borderRect.y + 2, ( borderRect.w * min( position, 1.0f ) ) - 4, borderRect.h - 4;
+			rect borderRect	 	= absoluteRect.x + 16, absoluteRect.y, absoluteRect.w - 16, absoluteRect.h;
+			rect iconRect		= absoluteRect.x, absoluteRect.y - 2, 14, 14;
+			float position		= Percent;			
+			color barColor		= COLOR_VEHICLE_BAR;
+			color borderColor	= COLOR_VEHICLE_BAR_LINE;
+			color foreColor		= COLOR_HUD_PROGRESS;
+			color foreColorBase	= COLOR_HUD_PROGRESS;
+			color dimColor		= COLOR_ICON_DIM;
+			float flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+	
+//			handle gradMaterial = gui.cacheMaterial( "grad", "_st button_grad_c" );
+			handle iconMaterial = gui.cacheMaterial( "icon" ## #NameParm, IconParm );
+		}
+		events {
+			onCreate {
+				setParent( "backGround" );
+				$if( Flash == "flash" )
+					postNamedEvent( "UpdatePosition" );
+				$endif
+			}
+			onPreDraw {
+				drawCachedMaterial( iconMaterial, iconRect, 		dimColor );
+
+				drawCachedMaterial( gui.btnFillMaterial, borderRect,	barColor );
+				drawCachedMaterial( gui.btnLineMaterial, borderRect, 	borderColor );
+				
+				clipToRect( fillRect );
+				drawCachedMaterial( gui.btnFillMaterial, borderRect, 	foreColorBase );
+				drawCachedMaterial( gui.btnFillMaterial, borderRect, 	foreColor );
+				unclipRect();
+				
+				gui.scriptPushFloat( false );	
+			}
+			
+			$if( Flash == "flash" )
+			onNamedEvent "UpdatePosition" {
+				if( position > 0.5 ) {
+					timeline.default.active = false;
+					foreColor = foreColorBase;
+					return;
+				}
+				
+				timeline.default.active = true;
+				if( position > 0.25 ) {
+					foreColor.g		= 0.5;
+					foreColor.b		= 0;
+					return;
+				}
+				foreColor.g		= 0;
+				foreColor.b		= 0;		
+			}
+			onPropertyChanged "position" {
+				postNamedEvent( "UpdatePosition" );
+			}
+			$endif
+		}
+		$if( Flash == "flash" )
+			timeline {
+				properties {
+					float active = 0;
+				}
+				onTime 0 {
+					foreColor.a = transition( foreColor.a, 0.2, 300 );
+				}
+				onTime 300 {
+					foreColor.a = transition( foreColor.a, 1, 300 );
+				}
+				onTime 600 {
+					resetTime( 0 );
+				}
+			}
+		$endif
+$endtemplate
+
+$template __vehicle_bar_end
+	}
+$endtemplate
+
+$template _base_icon
+	_btn_init
+	_wnd_init
+	_dlg_init
+
+	// gui events	
+	events {
+		onActivate {
+			gui.desktop.fade = transition ( gui.desktop.fade, 1, 500 );
+		}
+		onDeactivate {
+			gui.desktop.fade = 0;
+		}
+	}
+
+	windowDef desktop {
+		properties {
+			rect rect 		= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float	isSpectatorClass	= icompare( player.teamName, "spectating" );
+			float	viewingOthers		= ( player.localView == false && ( isSpectatorClass == true || player.spectating == true ) );						
+			color	colorMultiplier		= 1,1,1,cvarFade * fade;
+			float	fade				= 0;
+		}
+		__cvar_fadable( gui_vehicleAlpha )
+	}	
+	windowDef backGround {
+		properties {
+			rect rect 				= 2, SCREEN_HEIGHT - ( rect.h + 54 ), 140, 56 + gui.vPlayerList.absoluteRect.height;
+			color fillColor 		= COLOR_VEHICLE_OUTER_FILL;
+			color lineColor 		= COLOR_VEHICLE_BOXES_LINE;
+			color foreColor 		= COLOR_WHITE;
+			float flags 			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+		}
+
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
+				drawLocalizedText( player.vehiclePosition, "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y, ( absoluteRect.w * 0.75 ) - 4, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
+				gui.scriptPushFloat( false );
+			}
+			onCreate {
+				changeZOrder( ZO_BACK );
+			}
+		}
+
+		windowDef vehicleIcon {
+			properties {
+				rect 	rect		= 4, 4, 24, 48;
+				color	backColor	= COLOR_HUD_LIGHT;
+				string	material 	= "icon";
+				float flags 			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+				float alpha;
+			}
+			events {
+				onCreate {
+					alpha = immediate( backColor.a );
+					backColor.a = alpha * cvarFade;
+				}
+			}
+			__cvar_fadable( gui_vehicleAlpha )
+		}
+		
+		__vehicle_bar( health, 42, 16, ( gui.background.absoluteRect.w * 0.75 ) - 12, "_st vehicle_hicon", player.vehicleHealth, "flash" )		
+			properties {
+				float lastVehicleHealth = -1.0f;
+			}
+			events {
+					onPropertyChanged "player.vehicleHealth" {
+					if ( lastVehicleHealth != -1 && lastVehicleHealth < player.vehicleHealth ) {
+						postNamedEvent( "flashGreen" );
+					}
+					lastVehicleHealth = player.vehicleHealth;
+				}
+				onNamedEvent "flashGreen" {
+					if ( player.vehicleHealth > 0.5 ) {
+						foreColor.r = transition( 0, foreColorBase.r, 200 );
+						foreColor.b = transition( 0, foreColorBase.b, 200 );
+						return;
+					}
+					
+					if ( player.vehicleHealth > 0.25 ) {
+						foreColor.g = transition( 1, 0.5, 200 );
+						foreColor.r = transition( 0, foreColorBase.r, 200 );
+						foreColor.b = transition( 0, 0, 200 );
+						return;
+					}
+					
+					foreColor.g = transition( 1, 0, 200 );
+					foreColor.r = transition( 0, 1, 200 );
+				}
+			}
+		__vehicle_bar_end
+		__vehicle_bar( decoy, 42, 28, ( gui.background.absoluteRect.w * 0.75 ) - 12, "_st vehicle_decoy_icon", globals.gameHud.decoyChargeFraction, "noflash" )
+		__vehicle_bar_end
+		
+		windowDef vPlayerList {
+			type list;
+			properties {
+				rect	rect 				= 4, 52, _fill_to_right_of( background ), 100;
+				float	fontSize 			= 12;
+				vec2 	textAlignment 		= TA_LEFT, TA_VCENTER;
+				color	backColor			= 0,0,0,0;
+				float	flags				= immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_TRUNCATE_TEXT | WF_INHERIT_PARENT_COLORS;
+				color	colorFill			= COLOR_VEHICLE_PASSENGER_LIST_FILL;
+				color	colorLine			= COLOR_VEHICLE_BOXES_LINE;
+				float	lastNumPlayers		= 0;
+				color	foreColor			= 1, 1, 1, 1;
+				float	showTime			= 0;
+				float	show				= gui.time - showTime <= 2000;
+			}
+			events {
+				onActivate {
+					lastNumPlayers = 0;
+				}
+				onCreate {
+					insertColumn( gui.blankWStr, 16, 0 );				// icon
+					insertColumn( toWStr( "<width = 100%>" ), 0, 1 );	// name
+					fillFromEnumerator( "vehiclePlayerList" );
+					setItemMaterialSize( "16,16", -1, 0 );
+
+				}
+				onPropertyChanged "player.vehicleValid" {
+					timeline.updateList.resetTime( 0 );
+				}
+				onPreDraw {
+					drawCachedMaterial( gui.wndFillMaterial, absoluteRect, colorFill );
+					drawCachedMaterial( gui.wndLineMaterial, absoluteRect, colorLine );
+
+					gui.scriptPushFloat( true );
+				}
+				onPropertyChanged "show" {					
+					if( gui.getCVarBool( "g_advancedHud" ) ) {
+						rect.height = SCREEN_HEIGHT;
+						return;
+					}
+					if ( show ) {
+						rect.height = transition( rect.height, SCREEN_HEIGHT, 1000, "0.7, 0.1" );
+					} else {
+						rect.height = transition( rect.height, 0, 1000, "0.7, 0.1" );
+					}
+				}
+			}
+			timeline updateList {
+				onTime 0 {
+					fillFromEnumerator( "vehiclePlayerList" );
+					setItemMaterialSize( "16,16", -1, 0 );
+					gui.background.requestLayout();
+					
+					if ( numItems != lastNumPlayers ) {
+						showTime = immediate( gui.time );
+						lastNumPlayers = immediate( numItems );						
+					}
+				}
+				onTime 250 {
+					resetTime( 0 );
+				}
+			}
+		}
+	}
+$endtemplate
+
+$template _position( PositionParm, XPos, YPos )
+	events {
+		onNamedEvent "selfEnterPosition" ## #PositionParm {
+			gui.positionFill##PositionParm.postNamedEvent( "selfEnter" );
+		}
+		onNamedEvent "otherEnterPosition" ## #PositionParm {
+			gui.positionFill##PositionParm.postNamedEvent( "otherEnter" );
+		}
+		onNamedEvent "exitPosition" ## #PositionParm {
+			gui.positionFill##PositionParm.postNamedEvent( "exit" );
+		}
+	}
+	windowDef position##PositionParm {
+		properties {
+			rect 	rect 		= XPos, YPos, 20, 20;
+			color 	backColor 	= COLOR_HUD_DARK;
+			string 	material	= "_st position_ring";
+			float flags 		= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+		}
+		events {
+			onCreate {
+				setParent( "vehicleIcon" );
+			}
+		}
+		windowDef positionFill##PositionParm {
+			properties {
+				rect 	rect 		= 0, 0, 20, 20;
+				color 	backColor 	= 0.6,0.6,0.6,1;
+				string 	material	= "_st position_ring_fill";
+				float flags 			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+			}
+			events {
+				onNamedEvent "selfEnter" {
+					backColor = transition( backColor, "0.2,0.5,0.9,1", 100 );
+				}
+				onNamedEvent "otherEnter" {
+					backColor = transition( backColor, "0.5,0.9,0,1", 100 );
+				}
+				onNamedEvent "exit" {
+					backColor = transition( backColor, "0.6,0.6,0.6,1", 100 );
+				}
+			}
+		}
+	}
+$endtemplate
+
+$template _vehicle_facing
+	materials {
+		 "guis/assets/vehicles/gdf/rotabase" 	 "guis/assets/vehicles/gdf/rotabase"
+		 "guis/assets/vehicles/gdf/rotaturret"	"guis/assets/vehicles/gdf/rotaturret"
+	}
+	properties {
+		color colorTint = gui.getCVarColor( "gui_crosshairColor" );
+	}
+	events {
+		onCVarChanged "gui_crosshairColor" {
+			colorTint = gui.getCVarColor( "gui_crosshairColor" );
+		}
+	}
+	windowDef rotateBase {
+		properties {
+			rect rect = _center( desktop, width ),128,224,224;
+			color backColor = gui.colorTint.r,gui.colorTint.g,gui.colorTint.b,cvarFade;
+			string material = "guis/assets/vehicles/gdf/rotabase";
+			float rotation = player.yaw - player.vehicleYaw;
+			float visible = player.vehicleThirdPerson == false;
+		}
+		__cvar_fadable( gui_vehicleDirectionAlpha )
+	}
+	windowDef rotateTurret {
+		properties {
+			rect rect = _center( desktop, width ),128,224,224;
+			color backColor = gui.colorTint.r,gui.colorTint.g,gui.colorTint.b,cvarFade;
+			string material = "guis/assets/vehicles/gdf/rotaturret";
+			float visible = player.vehicleThirdPerson == false;
+		}
+		__cvar_fadable( gui_vehicleDirectionAlpha )
+	}
+$endtemplate
+
+#endif // __hud_vehicle_panel__
+
