@@ -72,6 +72,7 @@ deployObject deployobject_hog {
 	"credit_required"				"1"
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"25"
+	"logistics_points_required"		"20"
 	"avdbit"						AVDBIT_HOG
 	"terrain_disallowed"			"2"
 }

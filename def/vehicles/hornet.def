@@ -99,6 +99,7 @@ deployObject deployobject_hornet {
 	"credit_required"				"1"
 	"rank_required"					"third_lieutenant"
 	"force_escalation_required"		"80"
+	"logistics_points_required"		"70"
 	"avdbit"						AVDBIT_TORMENTOR
 	"terrain_disallowed"			"2"
 }

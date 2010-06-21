@@ -95,6 +95,7 @@ deployObject deployobject_anansi {
 	"credit_required"				"1"
 	"rank_required"					"third_lieutenant"
 	"force_escalation_required"		"90"
+	"logistics_points_required"		"80"
 	"avdbit"						AVDBIT_ANANSI
 	"terrain_disallowed"			"2"
 }

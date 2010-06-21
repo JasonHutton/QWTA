@@ -60,6 +60,7 @@ deployObject deployobject_titan {
 	"credit_required"				"1"
 	"rank_required"					"master_chief"
 	"force_escalation_required"		"60"
+	"logistics_points_required"		"50"
 	"avdbit"						AVDBIT_TITAN
 	"terrain_disallowed"			"2"
 }

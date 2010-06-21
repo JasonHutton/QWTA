@@ -70,6 +70,7 @@ deployObject deployobject_trojan {
 	"credit_required"				"1"
 	"rank_required"					"sergeant"
 	"force_escalation_required"		"40"
+	"logistics_points_required"		"30"
 	"avdbit"						AVDBIT_TROJAN
 }
 

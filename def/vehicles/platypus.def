@@ -69,6 +69,7 @@ deployObject deployobject_platypus {
 	"credit_required"				"0.5"
 	"rank_required"					"lance_corporal"
 	"force_escalation_required"		"15"
+	"logistics_points_required"		"5"
 	"avdbit"						AVDBIT_PLATYPUS
 	"terrain_disallowed"			"1"
 }

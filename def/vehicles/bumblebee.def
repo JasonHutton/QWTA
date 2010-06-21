@@ -57,6 +57,7 @@ deployObject deployobject_bumblebee {
 	"credit_required"				"1"
 	"rank_required"					"gunnery_sergeant"
 	"force_escalation_required"		"50"
+	"logistics_points_required"		"40"
 	"avdbit"						AVDBIT_BUMBLEBEE
 	"terrain_disallowed"			"2"
 }
