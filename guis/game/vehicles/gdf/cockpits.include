@@ -1,0 +1,18 @@
+
+#include <guis/common/utility.include>
+#include <guis/game/hud/hud.include>
+#include <guis/game/hud/vehicle_panel.include>
+
+#ifndef __cockpits_include__
+#define __cockpits_include__
+
+$template _speed_arc( material, percent )
+	events {
+		onPreDraw {
+			drawMaterialArc( "guis/assets/badger/radial", "absoluteRect.x + ( absoluteRect.w * 0.5f ), absoluteRect.y + ( absoluteRect.h * 0.5f )", backColor, "absoluteRect.w * 0.5f", 76, percent );
+			gui.scriptPushFloat( false );	// don't continue normal windowDef drawing
+		}
+	}
+$endtemplate
+
+#endif // ! __cockpits_include__

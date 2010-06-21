@@ -1,0 +1,439 @@
+
+#include <guis/game/hud/hud.include>
+#include <guis/game/hud/vehicle_panel.include>
+#include <guis/common/utility.include>
+#include <guis/game/sights/strogg/generic_gun.include>
+
+gui guis/vehicles/strogg_hog {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+	materials {
+		"icon"		"guis/assets/hud/strogg/vehicles/hog"
+	}
+	
+	_class_icons
+	_base_icon
+	_hud_materials
+	_position( 0, 2, 2 )
+	_position( 1, 2, 18 )
+	
+	_strogg_generic_gun_sight
+}
+
+gui guis/models/vehicles/hog/cockpit {
+
+	materials {
+
+		"guis/assets/ethud/strogg/add_mapticks"		"guis/assets/ethud/strogg/add_mapticks"
+
+		
+		"guis/assets/vehicles/strogg/center1"	"guis/assets/vehicles/strogg/center1"
+		"guis/assets/vehicles/strogg/center2"	"guis/assets/vehicles/strogg/center2"
+		"guis/assets/vehicles/strogg/center3"	"guis/assets/vehicles/strogg/center3"
+		"guis/assets/vehicles/strogg/angle"	"guis/assets/vehicles/strogg/angle"
+		"guis/assets/vehicles/strogg/compass"	"guis/assets/vehicles/strogg/compass"
+		"guis/assets/vehicles/strogg/blurline"	"guis/assets/vehicles/strogg/blurline"
+		"guis/assets/vehicles/strogg/dotline"	"guis/assets/vehicles/strogg/dotline"
+		"guis/assets/vehicles/strogg/thickline"	"guis/assets/vehicles/strogg/thickline"
+		"guis/assets/vehicles/strogg/thinline"	"guis/assets/vehicles/strogg/thinline"
+		"guis/assets/vehicles/strogg/bar"	"guis/assets/vehicles/strogg/bar"
+		"guis/assets/vehicles/strogg/speed"	"guis/assets/vehicles/strogg/speed"
+		"guis/assets/vehicles/strogg/warning"	"guis/assets/vehicles/strogg/warning"
+		"guis/assets/vehicles/strogg/warning2"	"guis/assets/vehicles/strogg/warning2"
+	}
+	properties {
+		//string postProcessMaterial = "system/noglare";		
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+	}
+	
+	windowDef desktop {
+		properties {
+		//	color backColor	= 0.062,0.125,0.192,1;		
+		}
+	}
+//
+	/*windowDef BackgroundImageTL0 {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/blurline";
+			rect	rect		= 155, 0, -70, -160;
+		}
+	}
+	windowDef BackgroundImageTL1 {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/thickline";
+			rect	rect		= 172, 18, -70, -160;
+		}
+	}
+	windowDef BackgroundImageTL2 {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/thinline";
+			rect	rect		= 174, 26, -70, -160;
+		}
+	}
+	windowDef BackgroundImageTL3 {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/dotline";
+			rect	rect		= 192, 10, -70, -160;
+		}
+	}*/
+//
+	windowDef AngleTL {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/angle";
+			rect	rect		= 220, 90, 20, 30;
+		}
+	}
+	windowDef AngleTR {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/angle";
+			rect	rect		= 398, 90, -20, 30;
+		}
+	}
+	windowDef AngleBL {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/angle";
+			rect	rect		= 255, 340, 20, -30;
+		}
+	}
+	windowDef AngleBR {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/angle";
+			rect	rect		= 365, 340, -20, -30;
+		}
+	}
+	windowDef BackgroundImageTL {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/center1";
+			rect	rect		= 150, 45, -70, 120;
+		}
+	}
+	windowDef BackgroundImageBL {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/center2";
+			rect	rect		= 137, 200, -140, 260;
+		}
+	}
+	
+	windowDef BackgroundImageTR {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/center1";
+			rect	rect		= 420, 45, 70, 120;
+		}
+	}
+	windowDef BackgroundImageBR {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/center2";
+			rect	rect		= 370, 200, 140, 260;
+		}
+	}
+	windowDef Warning {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/warning";
+			rect	rect		= 230, 330, 20, 30;
+		}
+	}
+	windowDef WarningRed {
+		properties {
+			color backColor 	= 1,1,1,1;
+			string material 	= "guis/assets/vehicles/strogg/warning2";
+			rect	rect		= 230, 330, 20, 30;
+			float visible = player.vehicleHealth <= 0.3;
+		}
+		timeLine {
+			onTime 0 {
+				backColor = transition( backColor, "1, 0, 0, 1", 250 );
+			}
+			onTime 250 {
+				backColor = transition( backColor, "0.1, 0, 0, 1", 250 );
+			}
+			onTime 500 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+	windowDef Center1 {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/ethud/strogg/add_mapticks";
+			rect	rect		= 215, 110, 210, 230;
+			float	rotation = ( player.vehicleYaw/2 ) +270;
+		}
+	}
+	windowDef Center2 {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/compass";
+			rect	rect		= 225, 120, 190, 210;
+			float	rotation = ( player.vehicleYaw ) +270;
+		}
+	}
+	windowDef Center3a {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/center3";
+			rect	rect		= 285, 180, 70, 35;
+		}
+	}
+	windowDef Center3b {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/center3";
+			rect	rect		= 285, 240, 70, -35;
+		}
+	}
+	windowDef vehicleRadial1Clip {
+		properties {
+		//	rect	rect		= 178,275,130,115;
+			rect	rect		= 178, (115-player.vehicleHealth*115)+275, 130, 100 * player.vehicleHealth;
+			float flags = WF_CLIP_TO_RECT;
+		}
+
+		windowDef vehicleRadial1 {
+			properties {
+				color backColor = 1,1,1,1;
+				string material = "guis/assets/vehicles/strogg/bar";
+				rect	rect		= 0,(player.vehicleHealth*120)-105,130,175;
+				vec2	materialScale	= -1, 1;
+			}
+		}
+	}
+	/*windowDef vehicleRadial2Clip {
+		properties {
+		//rect	rect		= 340,275,130,120;
+			rect	rect		= 340,(123-globals.weapons.energyBarCharge*123)+275, 130, 120 * globals.weapons.energyBarCharge;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef vehicleRadial2 {
+			properties {
+				color backColor = 1,1,1,1;
+				string material = "guis/assets/vehicles/strogg/bar";
+				rect	rect		= 0,(globals.weapons.energyBarCharge*123)-123,130,220;
+			}
+		}
+	}*/
+	windowDef vehicleSpeed {
+		properties {
+			rect rect = 220, 290, 200, 100;
+			wstring text = toWString( player.speed, 0 );
+			float fontSize = 16;
+			vec2 	textAlignment = 1, 1;
+			color forecolor = 1,0.9,0.8,0;
+		}
+	}
+	windowDef SpeedLClip {
+		properties {
+			rect	rect		= 320-(player.speed/2), 332, player.speed/2, 30;//261, 322, 59, 39;
+			float flags = WF_CLIP_TO_RECT;
+		}	
+		windowDef SpeedL {
+			properties {
+				color backColor = 1,1,1,1;
+				string material = "guis/assets/vehicles/strogg/speed";
+				rect	rect		= ((player.speed/2)+(-59)), 0, 59, 30;//((player.speed/2)*-1)
+			}
+		}
+	}
+	windowDef SpeedRClip {
+		properties {
+			rect	rect		= 320, 332, player.speed/2, 30;//player.speed/100
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef SpeedR {
+			properties {
+				color backColor = 1,1,1,1;
+				string material = "guis/assets/vehicles/strogg/speed";
+				rect	rect		= 0, 0, -59, 30;
+			}
+		}
+	}
+}
+
+
+
+gui guis/models/vehicles/hog/cockpit_cm {
+	materials {
+		"guis/assets/vehicles/strogg/veins"	"guis/assets/vehicles/strogg/veins"
+		"guis/assets/vehicles/strogg/veins2"	"guis/assets/vehicles/strogg/veins2"
+		"guis/assets/vehicles/strogg/overlay_map" "guis/assets/vehicles/strogg/overlay_map"
+		"guis/assets/common/outershadow"	"guis/assets/common/outershadow"
+	}
+	properties {
+		//string 	postProcessMaterial = "system/noglare";
+		float 	mapZoomLevel = 0.4;
+		float 	lastSpeed = 0;
+		float 	drawSquare = 1;
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+		float	iconScaleAdjustment = 4.0f;		
+	}
+	
+	windowDef desktop {
+		properties {
+			float flags = WF_CLIP_TO_RECT;
+			color backcolor = 0,0,0,0.6;
+		}
+	}
+	windowDef BackgroundImage2 {
+		properties {
+			color backColor = 1,1,1,0.1;
+			string material = "guis/assets/vehicles/strogg/veins2";
+			rect	rect		= 0, 0, 640, 480;
+		}
+	}
+	windowDef BackgroundImage {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/veins";
+			rect	rect		= 0, 0, 640, 480;
+		}
+	}
+	windowDef OverlayImage {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/overlay_map";
+			rect	rect		= 0, 10, 640, 460;
+		}
+	}
+	windowDef mapShadow {
+		properties {
+			string	material = "guis/assets/common/outershadow";
+			color	backColor = 1,1,1,1;
+			rect	rect		= 10, 15, 620, 440;
+		}
+	}
+	windowDef mapCLIP {
+		properties {
+			rect rect = 82,66,475,349;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef map {
+			properties {
+				rect rect = 0,0,640,640;
+			}
+			events {
+				onCreate {
+					attachRenderCallback( "commandMap" );
+					gui.setShaderParm( 4, 1 );	// enable static
+					gui.setShaderParm( 5, 0.6 );		// enable static
+					gui.setShaderParm( 6, 0.3 );	// enable static
+					gui.setShaderParm( 7, 4 );		// enable static
+					gui.setShaderParm( 11, 1 );		// disable depth functions
+				}
+			}
+		}
+		windowDef mapIcons {
+			properties {
+				rect rect = 0,0,640,640;
+			}
+			events {
+				onCreate {
+					/*
+					attachRenderCallback( "commandMapIcons" );
+					gui.setShaderParm( 4, 1 );	// enable static
+					gui.setShaderParm( 5, 0.6 );		// enable static
+					gui.setShaderParm( 6, 0.3 );	// enable static
+					gui.setShaderParm( 7, 4 );		// enable static
+					gui.setShaderParm( 11, 1 );		// disable depth functions
+					*/
+				}
+			}
+		}		
+	}
+}
+
+gui guis/models/vehicles/hog/cockpit_center {
+	materials {
+		"guis/assets/vehicles/strogg/veins"	"guis/assets/vehicles/strogg/veins"
+		"guis/assets/vehicles/strogg/veins2"	"guis/assets/vehicles/strogg/veins2"
+		"guis/assets/vehicles/strogg/overlay_hog"	"guis/assets/vehicles/strogg/overlay_hog"
+		"guis/assets/vehicles/strogg/hog"	"guis/assets/vehicles/strogg/hog"
+		"guis/assets/common/outershadow"	"guis/assets/common/outershadow"
+	}
+	properties {		
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+	}
+	
+	windowDef desktop {
+		properties {
+			color backColor	= 0,0,0,0.75;
+		}
+	}
+	windowDef BackgroundImage2 {
+		properties {
+			color backColor = 1,1,1,0.07;
+			string material = "guis/assets/vehicles/strogg/veins2";
+			rect	rect		= 5, 0, 630, 480;
+		}
+	}
+	windowDef BackgroundImage {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/veins";
+			rect	rect		= 5, 0, 630, 480;
+		}
+	}
+	windowDef OverlayImage {
+		properties {
+			color backColor = 1,1,1,1;
+			string material = "guis/assets/vehicles/strogg/overlay_hog";
+			rect	rect		= 0, 0, 640, 480;
+		}
+	}
+	windowDef Vehicle {
+		properties {
+			color backColor = 0.55,0.55,0.55,1;
+			string material = "guis/assets/vehicles/strogg/hog";
+			rect	rect		= 435, 120, 150, 120;
+		}
+	}
+	windowDef mapShadow {
+		properties {
+			string	material = "guis/assets/common/outershadow";
+			color	backColor = 1,1,1,0.8;
+			rect	rect		= 0, 8, 640, 468;
+		}
+	}
+	windowDef crew {
+		properties {
+			rect	rect = 40, 122, 146, 14;
+			handle	localizedText = localize( "guis/vehicles/crew" ); // "crew";
+			vec2 textAlignment = 0, 0;
+			color	foreColor = 1, 0.75, 0.5, 0.73;
+			float	fontSize = 54;
+		}
+	}
+	windowDef vPlayerList {
+		type list;
+		properties {
+			float 	fontSize 		= 54;			
+			rect 	rect 			= 24, 160, 590, 350;
+			color	backColor		= 0,0,0,0;
+			float	flags			= immediate( flags ) | WF_AUTO_SIZE_WIDTH | WF_TRUNCATE_TEXT;
+		}
+		events {
+			onCreate {
+				insertColumn( gui.blankWStr, 0, 0 );	
+				insertColumn( gui.blankWStr, 590, 1 );	
+			}	
+		}
+		timeLine {
+			onTime 250 {
+				fillFromEnumerator( "vehiclePlayerList" );
+				resetTime( 0 );
+			}
+		}
+	}
+}

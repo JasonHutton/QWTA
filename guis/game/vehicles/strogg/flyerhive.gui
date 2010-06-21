@@ -1,0 +1,124 @@
+
+#include <guis/game/sights/strogg_scope.include>
+
+gui guis/vehicles/strogg_flyerhive {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+	
+	materials {
+		"textures/sfx/railgunScope"	"textures/sfx/railgunScope"
+		"binocs"	"guis/assets/qet/binocs"
+
+		"guis/assets/weapons/sniper/border"		"guis/assets/weapons/sniper/border"
+		"guis/assets/weapons/sniper/circle"		"guis/assets/weapons/sniper/circle"
+		"guis/assets/weapons/sniper/circlelines1"	"guis/assets/weapons/sniper/circlelines1"
+		"guis/assets/weapons/sniper/circlelines2"	"guis/assets/weapons/sniper/circlelines2"
+		
+		"guis/assets/vehicles/strogg/optiveins"		"guis/assets/vehicles/strogg/optiveins"
+		"guis/assets/vehicles/strogg/circle"		"guis/assets/vehicles/strogg/circle"
+		"guis/assets/vehicles/strogg/circlebracket"	"guis/assets/vehicles/strogg/circlebracket"
+
+		"guis/assets/ethud/strogg/add_mapticks"		"guis/assets/ethud/strogg/add_mapticks"
+		"guis/assets/vehicles/strogg/angle"		"guis/assets/vehicles/strogg/angle"
+
+	}
+	
+	__scope_init( 0.95 )
+	
+	properties {	
+		float	effectPixellation = 0.05;
+	}
+	
+	events {
+		onActivate {	
+			globals.gameHud.showPostProcess = immediate( globals.gameHud.showPostProcess + 1 );
+		}
+		onDeactivate {			
+			globals.gameHud.showPostProcess = immediate( globals.gameHud.showPostProcess - 1 );
+		}
+		onNamedEvent "onDriverHurt" {
+			effectPixellation = transition( "1", "0.05", 1200 );
+		}
+	}
+
+	windowDef desktop {
+		properties {
+			rect rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+		windowDef scopeEffect {
+			properties {
+				color backColor = gui.effectPixellation, 1, 1, 1;
+				string material = "textures/sfx/railgunScope";
+				rect rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			}
+		}
+		windowDef background {
+			properties {
+				rect rect = gui.borderWidth, 0, VIRTUAL_WIDTH - gui.borderWidth, VIRTUAL_HEIGHT;
+			}
+			__underlays( "noeffect" )
+			
+			/*windowDef infoText {
+				properties {
+					rect	rect = 160, 420, 320, 50;
+					wstring	keyText = gui.blankWStr;
+					wstring keyText2 = gui.blankWStr;
+					wstring	text = localizeArgs( "guis/game/viewer/destruct/flyer_drone", keyText, keyText2 );
+					float	fontSize = 22;	
+					float	visible = 1;
+					float	flags = immediate( flags ) | WF_MULTILINE_TEXT;
+				}
+				
+				events {
+					onCreate "visible" {
+						if ( visible ) {
+							keyText = gui.getKeyBind( "_attack", "" );
+							keyText2 = gui.getKeyBind( "_altattack", "" );
+						}
+					}
+				}
+			}*/
+			
+			windowDef Center1 {
+				properties {
+					color backColor = 1,0.9,0.8,0.6;
+					string material = "guis/assets/ethud/strogg/add_mapticks";
+					rect	rect		= 200, 120, 240, 240;
+					float	rotation = player.yaw;
+				}
+			}
+		
+			windowDef bgOtl4 {
+				properties {
+					rect rect = 286,212,20,16;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/angle";
+				}
+			}
+			windowDef bgOtr4 {
+				properties {
+					rect rect = 334,212,-20,16;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/angle";
+				}
+			}
+			windowDef bgObl4 {
+				properties {
+					rect rect = 286,252,20,-16;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/angle";
+				}
+			}		
+			
+			windowDef bgObr4 {
+				properties {
+					rect rect = 334,252,-20,-16;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/angle";
+				}
+			}			
+		}
+		
+	}
+}

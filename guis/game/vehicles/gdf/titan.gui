@@ -1,0 +1,22 @@
+
+
+#include <guis/game/vehicles/gdf/cockpits.include>
+#include <guis/game/sights/gdf/generic_missile.include>	
+
+gui guis/vehicles/edf_titan {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+	_class_icons
+	
+	materials {
+		"icon"		"guis/assets/hud/gdf/vehicles/titan"
+	}
+
+	_base_icon
+	_hud_materials
+	_position( 0, 2, 10 )
+	_position( 1, 2, 24 )
+	
+	_gdf_generic_missile_sight( "dontshowlines", "0,0,0,1", "0,0,0,1" )
+}

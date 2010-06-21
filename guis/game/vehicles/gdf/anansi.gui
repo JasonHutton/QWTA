@@ -1,0 +1,409 @@
+#include <guis/game/hud/vehicle_panel.include>
+#include <guis/game/hud/hud.include>
+#include <guis/game/sights/gdf/generic_gun.include>	
+
+gui guis/vehicles/edf_anansi {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+	_class_icons
+	_hud_materials
+
+	materials {
+		"icon"		"guis/assets/hud/gdf/vehicles/anansi"
+	}
+
+	_base_icon
+	_position( 0, 2, -3 )
+	_position( 1, 2, 5 )
+	
+	_gdf_generic_gun_sight
+}
+
+gui guis/models/vehicles/anansi/cockpit_left {
+	properties {
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+		float 	mapZoomLevel = 0.15;
+		float 	drawSquare = 1;
+	}
+
+	materials {
+		"textures/sfx/scanlines"				"textures/sfx/scanlines"
+		"guis/assets/common/outershadow"		"guis/assets/common/outershadow"
+		"guis/assets/common/bglow"				"guis/assets/common/bglow"
+		"guis/assets/common/addhighlight"		"guis/assets/common/addhighlight"
+		
+		//"minigun"								"guis/assets/vehicles/anansi/n93gun"
+		"fafff"									"guis/assets/vehicles/anansi/n53omissile"
+		"law"									"guis/assets/vehicles/anansi/n65imissile"		
+	
+		"guis/assets/etlimbo/objframe"			"guis/assets/etlimbo/objframe"
+	}
+
+	windowDef desktop {
+		properties {
+			color backColor	= 0.072,0.075,0.112,1;
+		}
+	}
+	windowDef mapCLIP {
+		properties {
+			rect rect = 204,16,342,194;
+			float flags = immediate( flags ) | WF_CLIP_TO_RECT;
+		}
+		windowDef map {
+			properties {
+				rect rect = 0,0,342,194;
+			}
+			events {
+				onCreate {
+					attachRenderCallback( "commandMap" );
+					gui.setShaderParm( 11, 1 );		// disable depth functions
+				}
+			}
+		}
+		windowDef mapIcons {
+			properties {
+				rect rect = 0,0,342,194;
+			}
+			events {
+				onCreate {
+					//attachRenderCallback( "commandMapIcons" );
+				}
+			}
+		}		
+	}
+
+
+	windowDef ObjFrameLeft {
+		properties {
+			rect	rect = 200, 308, 220, 160;
+			string	material = "guis/assets/etlimbo/objframe";
+			color	backColor = 0.8, 0.65, 0.65, 0.5;
+			vec2 materialScale = -1,1;
+		}
+	}
+
+	windowDef ObjFrameRight {
+		properties {
+			rect	rect = 420, 308, 144, 160;
+			string	material = "guis/assets/etlimbo/objframe";
+			color	backColor = 0.8, 0.65, 0.65, 0.5;
+		}
+	}
+	
+	windowDef WeaponSub {
+		properties {
+			rect rect = 140,322,500,85;
+			color	backColor = 0.1,0.25,0.25,0.2;			
+		}
+		events {
+			onCreate {
+				if( player.vehicleValid ) {
+					material = player.weaponLookupName;
+				}				
+			}		
+			onPropertyChanged "player.vehicleValid" {
+				if( player.vehicleValid ) {
+					material = player.weaponLookupName;
+				} else {
+					material = "";
+				}
+			}
+		}
+	}
+	windowDef Weapon {
+		properties {
+			rect rect = 140,322,500,85;
+			color	backColor = 0.65,0.75,0.75,0.2;
+		}	
+		events {
+			onCreate {
+				if( player.vehicleValid ) {
+					material = player.weaponLookupName;
+				}				
+			}
+			onPropertyChanged "player.vehicleValid" {
+				if( player.vehicleValid ) {
+					material = player.weaponLookupName;
+				} else {
+					material = "";
+				}
+			}
+		}		
+	}	
+	windowDef AmmoFill {
+		properties {
+			rect	rect = 220, 392, 320 * globals.weapons.energyBarCharge, 15;
+			color	backColor = 0.85,0.9,0.9,0.5;
+		}
+	}
+
+	windowDef mapGlow {
+		properties {
+			rect rect = 215,30,330,170;
+			string	material = "guis/assets/common/bglow";
+			color	backColor = 0.4,1,0.4,0.1;
+		}
+	}
+	windowDef mapLight {
+		properties {
+			rect rect = 215,30,320,170;
+			string	material = "guis/assets/common/addhighlight";
+			color	backColor = 1,1,1,1;
+		}
+	}
+	windowDef mapShadow {
+		properties {
+			rect rect = 204,21,342,190;
+			string	material = "guis/assets/common/outershadow";
+			color	backColor = 1,1,1,1;
+		}
+	}
+	windowDef BG2 {
+		properties {
+			rect rect = 54,317,200,1;
+			string	material = "guis/assets/common/outershadow";
+			color	backColor = 1,1,1,1;
+		}
+	}
+}
+
+gui guis/models/vehicles/anansi/cockpit_center {
+	properties {
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+		//string	postProcessMaterial = "system/noglare";
+	}
+	materials {
+	
+		"attitude"								"guis/assets/qet/hud_attitude_overlay"		
+		"guis/assets/vehicles/anansi/right"		"guis/assets/vehicles/anansi/right"
+		"guis/assets/vehicles/anansi/hitbox"	"guis/assets/vehicles/anansi/hitbox"
+		"guis/assets/ethud/strogg/nesw"			"guis/assets/ethud/strogg/nesw"
+		"guis/assets/ethud/strogg/mapticks"		"guis/assets/ethud/strogg/add_mapticks"
+		"guis/assets/common/addhighlight"		"guis/assets/common/addhighlight"
+		
+		//"minigun"								"guis/assets/vehicles/anansi/n93fullgun"
+		"fafff"									"guis/assets/vehicles/anansi/n53fullomissile"
+		"law"									"guis/assets/vehicles/anansi/n65fullimissile"
+	}
+
+	windowDef desktop {
+		properties {
+			color backColor	= 0.052,0.075,0.142,1;
+		}
+	}
+	windowDef Ticks1 {
+		properties {
+			rect	rect = -8, 347, 376, 290;
+			string	material = "guis/assets/ethud/strogg/mapticks";
+			color	backColor = 0, 1, 0, 1;
+			float	rotation = player.yaw / 1.5;
+		}
+	}
+	windowDef Ticks2 {
+		properties {
+			rect	rect = 24, 379, 312, 260;
+			string	material = "guis/assets/ethud/strogg/mapticks";
+			color	backColor = 0, 1, 0, 1;
+			float	rotation = player.yaw * 1.5;
+		}
+	}
+	windowDef CompassClip {
+		properties {
+			rect	rect = 0, 355, 360, 125;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef Compass {
+			properties {
+				rect	rect = 0, 0, 360, 290;
+				string	material = "guis/assets/ethud/strogg/nesw";
+				color	backColor = 1, 1, 1, 1;
+				float	rotation = player.yaw + 270;
+			}
+		}
+	}
+	
+	windowDef imaBoostBar {
+		properties {
+			rect  rect	= 12, (245 - target * 240) + 53, 28, target * 245;
+			color backColor = 0.85,0.9,0.9,0.5;
+			float target = immediate( globals.vehicles.overDriveFraction );			
+		}
+		events {
+			onPropertyChanged "globals.vehicles.overDriveFraction" {
+				target = transition( target, globals.vehicles.overDriveFraction, 200 );
+			}
+		}
+	}
+	windowDef imaPowerBar {
+		properties {
+			rect  rect	= 321, (245 - globals.vehicles.collectiveValue * 245) + 53, 28, globals.vehicles.collectiveValue * 245;
+			color backColor = 0.85,0.9,0.9,0.5;
+		}
+	}
+	windowDef vehicleAttitudeBG {
+		properties {
+			rect rect = 42,74,276,190;
+			string material = "attitude";
+			color backColor = 1,1,1,1;
+		}
+
+		events {
+			onCreate {
+				attachRenderCallback( "vehicleAttitude" );
+			}
+		}
+	}
+	windowDef BG {
+		properties {
+			string	material = "guis/assets/vehicles/anansi/right";
+			color	backColor = 1,0.8,0.7,0.8;
+		}
+	}
+	windowDef Speed {
+		properties {
+			rect	rect = 20, 332, 60, 14;
+			wstring	text = toWStr( "SPD" );
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			color	foreColor = 1, 1, 1, 0.6;
+			string	font = "digital";
+			float	fontSize = 48;
+		}
+	}
+	windowDef Speed2 {
+		properties {
+			rect	rect = _to_right_of( Speed ) + 32, 332, 146, 14;
+			wstring  text = toWString( player.speed, 0 );
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			color	foreColor = 1, 1, 1, 1;
+			string	font = "digital";
+			float	fontSize = 48;
+		}
+	}
+	windowDef Altitude {
+		properties {
+			rect	rect = 278, 332, 58, 14;
+			wstring	text = toWStr( "ALT" );
+			vec2 textAlignment = TA_RIGHT, TA_VCENTER;
+			color	foreColor = 1, 1, 1, 0.6;
+			string	font = "digital";
+			float	fontSize = 48;
+		}
+	}
+	windowDef Altitude2 {
+		properties {
+			rect	rect = _to_left_of( Altitude ) - 24, 332, 146, 14;
+			wstring  text = toWString( player.position.z, 0 );
+			vec2 textAlignment = TA_RIGHT, TA_VCENTER;
+			color	foreColor = 1, 1, 1, 1;
+			string	font = "digital";
+			float	fontSize = 48;
+		}
+	}	
+	windowDef AnansiGun {
+		properties {
+			rect  rect	= 472, 52, 124, 300;
+			color	backColor = 1,1,1,1;
+		}	
+		events {
+			onCreate {
+				if( player.vehicleValid ) {
+					material = player.weaponLookupName;
+				}				
+			}		
+			onPropertyChanged "player.vehicleValid" {
+				if( player.vehicleValid ) {
+					material = player.weaponLookupName;
+				} else {
+					material = "";
+				}
+			}
+		}
+	}
+	windowDef hitboxRed {
+		properties {
+			rect rect = 463,330,146,73;
+			string	material = "guis/assets/vehicles/anansi/hitbox";
+			color	backColor = 1,0,0,0.1;
+			float visible = player.vehicleHealth <= 0.3;
+		}
+		timeline {
+			onTime 200 {
+				backColor = transition( "1,0,0,0.1", "1,0,0,0.15", 200 );
+			}
+			onTime 400 {
+				backColor = transition( "1,0,0,0.15", "1,0,0,0.1", 200 );
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}	
+	
+	windowDef hitbox {
+		properties {
+			rect rect = 463,338,146,64;
+			string	material = "guis/assets/vehicles/anansi/hitbox";
+			color	backColor = 0.4,0.8,1,0.1;
+			float visible = player.vehicleHealth > 0.3;
+		}
+	}
+	windowDef hullHealth {
+		properties {
+			rect	rect = 460, 350, 146, 14;
+			wstring  text = toWStr( toString( player.vehicleHealth * 100, 0 ) + "%" );
+			vec2 textAlignment = 1, 0;
+			color	foreColor = 1, 1, 1, 1;
+			string	font = "digital";
+			float	fontSize = 48;
+		}
+	}
+	windowDef mapLight {
+		properties {
+			rect rect = 18,65,322,50;
+			string	material = "guis/assets/common/addhighlight";
+			color	backColor = 0.8,0.8,0.8,1;
+		}
+	}
+
+	windowDef mapLight1 {
+		properties {
+			rect rect = 458,65,164,100;
+			string	material = "guis/assets/common/addhighlight";
+			color	backColor = 0.6,0.6,0.6,1;
+		}
+	}
+	windowDef vehicleAttitudeShad {
+		properties {
+			rect rect = 45,53,270,230;
+			string material = "attitude";
+			color backColor = 0,0,0,0.9;
+		}
+	}
+	windowDef vehicleAttitude {
+		properties {
+			rect rect = 45,52,270,230;
+			string material = "attitude";
+			color backColor = 0.9,1,1,1;
+		}
+	}
+}
+
+gui guis/models/vehicles/anansi/cockpit_right {
+	properties {
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+		//string	postProcessMaterial = "system/noglare";
+	}
+	materials {
+		"guis/assets/vehicles/anansi/right"		"guis/assets/vehicles/anansi/right"
+	}
+	windowDef desktop {
+		properties {
+			color backColor	= 0,0,0,1;
+		}
+	}
+	windowDef BG {
+		properties {
+			string	material = "guis/assets/vehicles/anansi/right";
+			color	backColor = 0.76, 0.87, 0.54, 1;
+		}
+	}
+}
