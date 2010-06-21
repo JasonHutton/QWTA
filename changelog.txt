@@ -61,6 +61,10 @@ CHANGES:
   HUD element right below it. The vehicle charge bar has also been added to
   the main HUD for easy viewing. These elements disappear automatically when
   the cvars that control their use are disabled.
+* Cvar g_useVehicleDecoyAmmo added,
+  + Default 1.
+  + Controls whether vehicle decoys consume depletable ammunition or if they
+    have an infinite supply of flares.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.

@@ -1,4 +1,4 @@
-// str_qwta_menus_00000103
+// str_qwta_menus_00000105
 
 /*
 =================
@@ -238,6 +238,10 @@ locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP {
 	text "#str_qwta_menus_00000102"
 }
 
+locString guis/limbo/qwta/settings/useVehicleDecoyAmmo {
+	text "#str_qwta_menus_00000104"
+}
+
 /*
 =================
  ToolTips
@@ -422,4 +426,8 @@ locString guis/limbo/qwta/settings/vDropsUseLP/tooltip {
 
 locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP/tooltip {
 	text "#str_qwta_menus_00000103"
+}
+
+locString guis/limbo/qwta/settings/useVehicleDecoyAmmo/tooltip {
+	text "#str_qwta_menus_00000105"
 }

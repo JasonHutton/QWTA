@@ -177,6 +177,7 @@ cvar	g_useStraightRockets;
 //cvar	g_allowTimerCircles;
 //cvar	g_hideHud;
 cvar	g_useVehicleAmmo;
+cvar	g_useVehicleDecoyAmmo;
 cvar	g_allowEMPFriendlyFire;
 cvar	g_allowRadFriendlyFire;
 cvar	g_blood;

@@ -120,6 +120,8 @@ object vehicle_base {
 	
 	void			DecoyUseCharge();
 	boolean			DecoyHasCharge();
+	void			DecoyUseAmmo();
+	boolean			DecoyHasAmmo();
 	float			CalcDecoyChargeUsed();
 	void			StartDecoyChargeThread();
 	void			StopDecoyChargeThread();
@@ -143,6 +145,9 @@ object vehicle_base {
 	float			decoyProjectileIndex;
 	boolean			decoyChargeThreadActive;
 	float			decoyChargePerUse;
+	float			decoyAmmo;
+	float			decoyAmmoMax;
+	float			decoyAmmoPerUse;
 	
 	float			commandMapRequest;
 
@@ -245,6 +250,9 @@ void vehicle_base::preinit() {
 	decoyJointHandle		= getJointHandle( getKey( "projectile_decoy_joint" ) );
 	decoyLaunchVelocity		= getVectorKey( "projectile_decoy_velocity" );
 	decoyProjectileIndex	= GetEntityDef( getKey( "def_projectile_decoy" ) );
+	decoyAmmoMax			= getFloatKey( "projectile_decoy_ammo_max" );
+	decoyAmmo				= decoyAmmoMax;
+	decoyAmmoPerUse			= getFloatKey( "projectile_decoy_ammo_per_use" );
 
 	crosshairName			= sys.localizeString( getKey( "info_name" ) );
 
@@ -1159,13 +1167,16 @@ void vehicle_base::FireDecoy( entity p ) {
 	localAxis += decoyLaunchVelocity_z * zAxis;
 
 	if ( sys.getTime() > nextDecoyTime ) {
-		if ( DecoyHasCharge() ) {
+		if ( DecoyHasCharge() && ( !g_useVehicleDecoyAmmo.getBoolValue() || DecoyHasAmmo() ) ) {
 			vector origin = getJointPos( decoyJointHandle );
 
 			entity projectileEntity = launchMissileSimple( p, self, $null_entity, decoyProjectileIndex, -1, 0, origin, localAxis );
 			if ( projectileEntity != $null_entity ) {
 				projectileEntity.vSetOwner( self );
 				DecoyUseCharge();
+				if ( g_useVehicleDecoyAmmo.getBoolValue() ) {
+					DecoyUseAmmo();
+				}
 			}
 			
 			team_base team = p.getGameTeam();
@@ -1185,6 +1196,18 @@ void vehicle_base::DecoyUseCharge() {
 
 boolean vehicle_base::DecoyHasCharge() {
 	return ( CalcDecoyChargeUsed() + decoyChargePerUse ) <= decoyChargeMax;
+}
+
+void vehicle_base::DecoyUseAmmo() {
+	decoyAmmo = decoyAmmo - decoyAmmoPerUse;
+}
+
+boolean vehicle_base::DecoyHasAmmo() {
+	if ( decoyAmmo - decoyAmmoPerUse >= 0.f ) {
+		return true;
+	}
+	
+	return false;
 }
 
 float vehicle_base::CalcDecoyChargeUsed() {

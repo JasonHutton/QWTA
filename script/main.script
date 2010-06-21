@@ -378,6 +378,7 @@ void game_main() {
 //	g_allowTimerCircles			= sys.getCVar( "g_allowTimerCircles", "" );
 //	g_hideHud					= sys.getCVar( "g_hideHud", "" );
 	g_useVehicleAmmo			= sys.getCVar( "g_useVehicleAmmo", "" );
+	g_useVehicleDecoyAmmo		= sys.getCVar( "g_useVehicleDecoyAmmo", "" );
 	g_allowEMPFriendlyFire		= sys.getCVar( "g_allowEMPFriendlyFire", "" );
 	g_allowRadFriendlyFire		= sys.getCVar( "g_allowRadFriendlyFire", "" );
 	g_blood						= sys.getCVar( "g_blood", "" );
