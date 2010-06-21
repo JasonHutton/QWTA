@@ -1,0 +1,369 @@
+
+#ifndef __gdf_generic_sight__
+#define __gdf_generic_sight__
+
+$template  _gdf_generic_missile_sight( ShowCrossLines, BorderColor, BarColor )
+	materials {
+		"guis/assets/vehicles/gdf/compass"	"guis/assets/vehicles/gdf/compass"
+		"guis/assets/vehicles/gdf/largecircle"	"guis/assets/vehicles/gdf/largecircle"
+		"guis/assets/vehicles/gdf/qbg2"		"guis/assets/vehicles/gdf/qbg2"	
+		"guis/assets/vehicles/gdf/qbgside"	"guis/assets/vehicles/gdf/qbgside"
+		"guis/assets/vehicles/gdf/smcircle"	"guis/assets/vehicles/gdf/smcircle"
+
+		"guis/assets/vehicles/gdf/backcorner"	"guis/assets/vehicles/gdf/backcorner"
+		"guis/assets/vehicles/gdf/backhbar"		"guis/assets/vehicles/gdf/backhbar"
+		"guis/assets/vehicles/gdf/backvbar"		"guis/assets/vehicles/gdf/backvbar"
+		"guis/assets/vehicles/gdf/bgedge"		"guis/assets/vehicles/gdf/bgedge"
+		"guis/assets/vehicles/gdf/brightcorner"	"guis/assets/vehicles/gdf/brightcorner"
+		"guis/assets/vehicles/gdf/brighthbar"	"guis/assets/vehicles/gdf/brighthbar"
+		"guis/assets/vehicles/gdf/brightvbar"	"guis/assets/vehicles/gdf/brightvbar"
+		
+		"guis/assets/vehicles/gdf/rotabase"		"guis/assets/vehicles/gdf/rotabase"
+		"guis/assets/vehicles/gdf/rotaturret"	"guis/assets/vehicles/gdf/rotaturret"
+	}
+
+	properties {
+		float borderWidth = ceil( SCREEN_WIDTH - VIRTUAL_WIDTH ) * 0.5f;
+		color colorTint = gui.getCVarColor( "gui_crosshairColor" );
+	}
+	events {
+		onCVarChanged "gui_crosshairColor" {
+			colorTint = gui.getCVarColor( "gui_crosshairColor" );
+		}
+	}
+	
+	windowDef targetingBackground {
+		properties {
+			rect rect = gui.borderWidth, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+	//background black images
+		windowDef targetingInfo {
+			properties {
+				float visible = player.showTargetingInfo;
+			}
+		
+		//black crosshair
+		$if( ShowCrossLines == "showlines" )
+			windowDef crossHairHL {
+				properties {
+					rect rect = 0,240,310,1;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairHR {
+				properties {
+					rect rect = 330,240,310,1;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairH1 {
+				properties {
+					rect rect = gui.borderWidth * -1,239,207 + gui.borderWidth,3;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairH2 {
+				properties {
+					rect rect = 433,239,207 + gui.borderWidth,3;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairVT {
+				properties {
+					rect rect = 320,0,1,230;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairVR {
+				properties {
+					rect rect = 320,250,1,230;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairV1 {
+				properties {
+					rect rect = 319,0,3,126;
+					color backColor = 0,0,0,1;
+				}
+			}
+			windowDef crossHairV2 {
+				properties {
+					rect rect = 319,354,3,126;
+					color backColor = 0,0,0,1;
+				}
+			}	
+			windowDef crossHairV3 {
+				properties {
+					rect rect = 206,228,2,24;
+					color backColor = 0,0,0,1;
+				}
+			}	
+			windowDef crossHairV4 {
+				properties {
+					rect rect = 432,228,2,24;
+					color backColor = 0,0,0,1;
+				}
+			}
+		$endif
+		//background black
+			windowDef bgt {
+				properties {
+					rect rect = 0,0,640,86;
+					color backColor = 0,0,0,0.3;
+				}
+			}
+			windowDef bgb {
+				properties {
+					rect rect = 0,393,640,87;
+					color backColor = 0,0,0,0.3;
+				}
+			}
+			windowDef bgl {
+				properties {
+					rect rect = 0,86,127,307;
+					color backColor = 0,0,0,0.3;
+				}
+			}
+			windowDef bgr {
+				properties {
+					rect rect = 514,86,126,307;
+					color backColor = 0,0,0,0.3;
+				}
+			}
+		//background black images
+			windowDef bgfadetl {
+				properties {
+					rect rect = 0,0,320,240;
+					color backColor = BorderColor;
+					string material = "guis/assets/vehicles/gdf/bgedge";
+				}
+			}
+			windowDef bgfadetr {
+				properties {
+					rect rect = 320,0,320,240;
+					color backColor = BorderColor;
+					string material = "guis/assets/vehicles/gdf/bgedge";
+					vec2 materialScale = -1,1;
+				}
+			}
+			windowDef bgfadebl {
+				properties {
+					rect rect = 0,240,320,240;
+					color backColor = BorderColor;
+					string material = "guis/assets/vehicles/gdf/bgedge";
+					vec2 materialScale = 1,-1;
+				}
+			}
+			windowDef bgfadebr {
+				properties {
+					rect rect = 320,240,320,240;
+					color backColor = BorderColor;
+					string material = "guis/assets/vehicles/gdf/bgedge";
+					vec2 materialScale = -1,-1;
+				}
+			}
+			
+		
+			windowDef bgitl {
+				properties {
+					rect rect = 127,86,26,26;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backcorner";
+				}
+			}
+			windowDef bgibl {
+				properties {
+					rect rect = 127,367,26,-26;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backcorner";
+				}
+			}
+			windowDef bgitr {
+				properties {
+					rect rect = 488,86,-26,26;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backcorner";
+				}
+			}
+			windowDef bgibr {
+				properties {
+					rect rect = 488,367,-26,-26;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backcorner";
+				}
+			}
+			windowDef bgit {
+				properties {
+					rect rect = 153,86,335,26;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backhbar";
+				}
+			}
+			windowDef bgib {
+				properties {
+					rect rect = 153,367,335,-26;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backhbar";
+				}
+			}
+			windowDef bgil {
+				properties {
+					rect rect = 127,112,26,255;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backvbar";
+				}
+			}
+			windowDef bgir {
+				properties {
+					rect rect = 488,112,-26,255;
+					color backColor = 0,0,0,0.3;
+					string material = "guis/assets/vehicles/gdf/backvbar";
+				}
+			}
+			
+		//Overlayimages
+		$if( ShowCrossLines == "showlines" )
+			windowDef bgOtl {
+				properties {
+					rect rect = 127,86,26,26;
+					color backColor = 0.35,0.85,0.35,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+			windowDef bgObl {
+				properties {
+					rect rect = 127,367,26,-26;
+					color backColor = 0.35,0.85,0.35,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+			windowDef bgOtr {
+				properties {
+					rect rect = 488,86,-26,26;
+					color backColor = 0.35,0.85,0.35,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+			windowDef bgObr {
+				properties {
+					rect rect = 488,367,-26,-26;
+					color backColor = 0.35,0.85,0.35,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+		//
+			windowDef bgOtl2 {
+				properties {
+					rect rect = 275,201,26,26;
+					color backColor = 0.05,0.15,0.05,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+			windowDef bgObl2 {
+				properties {
+					rect rect = 275,251,26,-26;
+					color backColor = 0.05,0.2,0.05,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+			windowDef bgOtr2 {
+				properties {
+					rect rect = 339,201,-26,26;
+					color backColor = 0.05,0.2,0.05,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+			windowDef bgObr2 {
+				properties {
+					rect rect = 339,251,-26,-26;
+					color backColor = 0.05,0.2,0.05,1;
+					string material = "guis/assets/vehicles/gdf/brightcorner";
+				}
+			}
+		$endif
+		//
+			windowDef bgOt2 {
+				properties {
+					rect rect = 153,88,335,7;
+					color backColor = 0.15,0.35,0.15,1;
+					string material = "guis/assets/vehicles/gdf/brighthbar";
+					vec2	materialScale		= 3,1;
+				}
+			}
+			windowDef bgOb {
+				properties {
+					rect rect = 153,384,335,-7;
+					color backColor = 0.15,0.35,0.15,1;
+					string material = "guis/assets/vehicles/gdf/brighthbar";
+					vec2	materialScale		= 3,1;
+				}
+			}
+			windowDef bgOl {
+				properties {
+					rect rect = 129,112,-7,255;
+					color backColor = 0.15,0.35,0.15,1;
+					string material = "guis/assets/vehicles/gdf/brightvbar";
+					vec2	materialScale		= 1,2.5;
+				}
+			}
+			windowDef bgOr {
+				properties {
+					rect rect = 505,112,7,255;
+					color backColor = 0.15,0.35,0.15,1;
+					string material = "guis/assets/vehicles/gdf/brightvbar";
+					vec2	materialScale		= 1,2.5;
+				}
+			}
+			
+		//Dynamic
+		
+			windowDef compass {
+				properties {
+					rect rect = 220,93,200,32;
+					color backColor = 0.15,0.35,0.15,1;
+					string material = "guis/assets/vehicles/gdf/compass";
+					vec2	materialScale		= 0.6,1;
+					vec2	materialShift = ( ( player.yaw + 78 ) / 360 ) - 0.25, 0;
+				}
+			}		
+		}
+		windowDef rotateBase {
+			properties {
+				rect rect = 208,128,224,224;
+				color backColor = gui.colorTint.r,gui.colorTint.g,gui.colorTint.b,cvarFade;
+				string material = "guis/assets/vehicles/gdf/rotabase";
+				float rotation = player.yaw - player.vehicleYaw;
+				float visible = player.showTargetingInfo;
+			}
+			__cvar_fadable( gui_vehicleDirectionAlpha )
+		}
+		windowDef rotateTurret {
+			properties {
+				rect rect = 208,128,224,224;
+				color backColor = gui.colorTint.r,gui.colorTint.g,gui.colorTint.b,cvarFade;
+				string material = "guis/assets/vehicles/gdf/rotaturret";
+				float visible = player.showTargetingInfo;	
+				//color colorMultiplier = 1,1,1,cvarFade;
+			}
+			__cvar_fadable( gui_vehicleDirectionAlpha )
+		}
+		windowDef bars {
+			properties {
+				rect rect = gui.borderWidth, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT;		
+				handle 	white = gui.cacheMaterial( "_mat", "white" );
+				float 	barWidth = ( ( SCREEN_WIDTH - rect.w ) * 0.5f );
+				float 	screenHeight = SCREEN_HEIGHT;
+				float visible = player.showTargetingInfo;
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( white, "0, 0, gui.borderWidth, screenHeight", BarColor );
+					drawCachedMaterial( white, "gui.borderWidth + rect.w, 0, gui.borderWidth, screenHeight", BarColor );
+					gui.scriptPushFloat( false );
+				}		
+			}	
+		}		
+	}
+$endtemplate
+
+#endif // !__gdf_generic_sight__

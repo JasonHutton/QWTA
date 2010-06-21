@@ -1,0 +1,310 @@
+
+#include <guis/game/sights/strogg_scope.include>
+
+#ifndef __strogg_generic_sight__
+#define __strogg_generic_sight__
+
+$template _strogg_generic_gun_sight
+	materials {
+		"guis/assets/vehicles/strogg/centera"		"guis/assets/vehicles/strogg/centera"
+		"guis/assets/vehicles/strogg/techlinesrnd"	"guis/assets/vehicles/strogg/techlinesrnd"
+		"guis/assets/vehicles/strogg/bgfade"		"guis/assets/vehicles/strogg/bgfade"
+		"guis/assets/vehicles/strogg/archframe"		"guis/assets/vehicles/strogg/archframe"
+		"guis/assets/vehicles/strogg/archlines"		"guis/assets/vehicles/strogg/archlines"
+		"guis/assets/vehicles/strogg/archfill"		"guis/assets/vehicles/strogg/archfill"
+		
+		"guis/assets/ethud/strogg/add_mapticks"		"guis/assets/ethud/strogg/add_mapticks"
+		"guis/assets/vehicles/strogg/alt"			"guis/assets/vehicles/strogg/alt"
+		
+		"guis/assets/vehicles/strogg/optiveins"		"guis/assets/vehicles/strogg/optiveins"
+	
+	}
+	
+	__scope_init( 0.25 )
+
+//background black images
+	properties {
+		float borderWidth = ceil( SCREEN_WIDTH - VIRTUAL_WIDTH ) * 0.5f;
+	}
+	windowDef targetingBackground {
+		properties {
+			rect rect = gui.borderWidth, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+		windowDef targetingInfo {
+			properties {
+				float visible = player.showTargetingInfo;
+			}
+			
+			__underlays( "noeffect" )						
+			
+			windowDef bgtl {
+				properties {
+					rect rect = 0,0,320,240;
+					color backColor = 0.05,0,0,0.3;
+					string material = "guis/assets/vehicles/strogg/techlinesrnd";
+				}
+			}
+			windowDef bgtr {
+				properties {
+					rect rect = 320,0,-320,240;
+					color backColor = 0.05,0,0,0.3;
+					string material = "guis/assets/vehicles/strogg/techlinesrnd";
+				}
+			}
+			windowDef bgbl {
+				properties {
+					rect rect = 0,240,320,-240;
+					color backColor = 0.05,0,0,0.3;
+					string material = "guis/assets/vehicles/strogg/techlinesrnd";
+				}
+			}
+			windowDef bgbr {
+				properties {
+					rect rect = 320,240,-320,-240;
+					color backColor = 0.05,0,0,0.3;
+					string material = "guis/assets/vehicles/strogg/techlinesrnd";
+				}
+			}
+			
+			windowDef bars {
+				properties {
+					rect rect = gui.borderWidth, 0, VIRTUAL_WIDTH, VIRTUAL_HEIGHT;		
+					handle 	white = gui.cacheMaterial( "_mat", "white" );
+					float 	barWidth = ( ( SCREEN_WIDTH - rect.w ) * 0.5f );
+					float 	screenHeight = SCREEN_HEIGHT;
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( white, "0, 0, gui.borderWidth, screenHeight", "0,0,0,0.3" );
+						drawCachedMaterial( white, "gui.borderWidth + rect.w, 0, gui.borderWidth, screenHeight", "0,0,0,0.3" );
+						gui.scriptPushFloat( false );
+					}		
+				}
+			}			
+			
+		//Overlayimages
+		
+			windowDef bgOtl1 {
+				properties {
+					rect rect = 86,36,116,204;
+					color backColor = 0.7,0.8,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archframe";
+				}
+			}
+			windowDef bgObl1 {
+				properties {
+					rect rect = 86,240,116,-204;
+					color backColor = 0.7,0.8,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archframe";
+				}
+			}
+			windowDef bgOtr1 {
+				properties {
+					rect rect = 438,36,-116,204;
+					color backColor = 0.7,0.8,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archframe";
+				}
+			}
+			windowDef bgObr1 {
+				properties {
+					rect rect = 438,240,-116,-204;
+					color backColor = 0.7,0.8,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archframe";
+				}
+			}
+		
+			windowDef bgOtl2 {
+				properties {
+					rect rect = 89,36,206,204;
+					color backColor = 0.7,0.7,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archlines";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.7,0.7,0.7,2", "0.6,0.6,0.6,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.6,0.6,0.6,1", "0.7,0.7,0.7,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+			windowDef bgObl2 {
+				properties {
+					rect rect = 89,240,206,-204;
+					color backColor = 0.7,0.7,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archlines";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.7,0.7,0.7,2", "0.6,0.6,0.6,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.6,0.6,0.6,1", "0.7,0.7,0.7,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+		
+			windowDef bgOtr2 {
+				properties {
+					rect rect = 345,36,-206,204;
+					color backColor = 0.7,0.7,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archlines";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.7,0.7,0.7,2", "0.6,0.6,0.6,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.6,0.6,0.6,1", "0.7,0.7,0.7,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+		
+			windowDef bgObr2 {
+				properties {
+					rect rect = 345,240,-206,-204;
+					color backColor = 0.7,0.7,0.7,1;
+					string material = "guis/assets/vehicles/strogg/archlines";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.7,0.7,0.7,2", "0.6,0.6,0.6,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.6,0.6,0.6,1", "0.7,0.7,0.7,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+		
+		
+			windowDef bgOtl3 {
+				properties {
+					rect rect = 92,106,-104,134;
+					color backColor = 0.6,0.8,1,1;
+					string material = "guis/assets/vehicles/strogg/archfill";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.6,0.8,1,2", "0.55,0.75,0.95,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.55,0.75,0.95,1", "0.6,0.8,1,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+			windowDef bgObl3 {
+				properties {
+					rect rect = 92,240,-104,-134;
+					color backColor = 0.6,0.8,1,1;
+					string material = "guis/assets/vehicles/strogg/archfill";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.6,0.8,1,2", "0.55,0.75,0.95,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.55,0.75,0.95,1", "0.6,0.8,1,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+		
+			windowDef bgOtr3 {
+				properties {
+					rect rect = 444,106,104,134;
+					color backColor = 0.6,0.8,1,1;
+					string material = "guis/assets/vehicles/strogg/archfill";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.6,0.8,1,2", "0.55,0.75,0.95,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.55,0.75,0.95,1", "0.6,0.8,1,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+		
+			windowDef bgObr3 {
+				properties {
+					rect rect = 444,240,104,-134;
+					color backColor = 0.6,0.8,1,1;
+					string material = "guis/assets/vehicles/strogg/archfill";
+				}
+				timeline {
+					onTime 200 {
+						backColor = transition( "0.6,0.8,1,2", "0.55,0.75,0.95,1", 200 );
+					}
+					onTime 400 {
+						backColor = transition( "0.55,0.75,0.95,1", "0.6,0.8,1,1", 200 );
+						timeline.default.resetTime( 0 );
+					}
+				}
+			}
+		
+		
+			windowDef crossHairSMCircleTL {
+				properties {
+					rect rect = 300,220,20,20;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/centera";
+				}
+			}
+			windowDef crossHairSMCircleTR {
+				properties {
+					rect rect = 320,220,-20,20;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/centera";
+				}
+			}
+			windowDef crossHairSMCircleBL {
+				properties {
+					rect rect = 300,240,20,-20;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/centera";
+				}
+			}
+			windowDef crossHairSMCircleBR {
+				properties {
+					rect rect = 320,240,-20,-20;
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/vehicles/strogg/centera";
+				}
+			}
+			
+			windowDef Center1 {
+				properties {
+					color backColor = 1,1,1,1;
+					string material = "guis/assets/ethud/strogg/add_mapticks";
+					rect	rect		= 250, 170, 140, 140;
+					float	rotation = player.yaw;
+				}
+			}
+			windowDef Centera {
+				properties {
+					color backColor 	= 1,1,1,1;
+					string material 	= "guis/assets/vehicles/strogg/alt";
+					rect	rect		= 253, 173, 136, -136;
+					float rotation 		= ( player.vehicleYaw - player.yaw );
+				}
+			}
+			windowDef Centerb {
+				properties {
+					color backColor 	= 1,1,1,1;
+					string material 	= "guis/assets/vehicles/strogg/alt";
+					rect	rect		= 253, 173, 136, 136;
+					float	rotation	= 180;	
+				}
+			}		
+		}				
+	}
+	
+$endtemplate
+
+#endif // !__strogg_generic_sight__
