@@ -644,6 +644,7 @@ struct vehicleDropData_t {
 	int				declIndex;
 	float			creditRequired;
 	int				forceEscalationRequired;
+	int				logisticsPointsRequired;
 };
 
 class idBotThreadData {

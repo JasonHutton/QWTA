@@ -1,5 +1,5 @@
 Quake Wars: Tactical Assault
-v0.3.4
+v0.3.5
 ================================
 http://qwta.moddb.com/
 
@@ -47,37 +47,39 @@ impression it had on a lot of people.
 ================================
 * Most QWTA-specific features are optional. You can play BaseETQW using QWTA!
   (Or a strange combination of both.)
-* Realistic movement.
-* Realistic weapons. (Behave more like their real-world counterparts.)
-* Other realism-oriented features...
+* Features intended to enhance the realism of gameplay, including player
+  movement, weapon behaviour, and vehicle armour that ignores small arms.
 * Radar no longer detects infantry. (But 3rd eye cameras do!)
 * Adaptive class-number limiting.
-* Blood effects!
-* Death/unconscious screen tinting and fading.
+* Blood effects, and new wounded and dead visual effects.
 * Mxyzptlk's megatexture autodownload.
 * Improved spectator controls.
-* Dark Matter Cannon mimics Quake 4-singleplayer Dark Matter Gun.
-* Hammer missile behaves more like a tactical nuke.
-* Hyperblaster mimics Quake 4-singleplayer Nailgun.
+* Weapons, vehicles and deployables changed to mimic Quake 2 and 4
+  behaviours where it makes sense to do so.
+* Hammer missile behaves more like a tactical nuclear weapon.
 * Any vehicle may be airdropped.
 * Persistent ranks can be ignored in favour of campaign ranks.
 * Bot support for new features. (Bots will drop vehicles.)
 * New vehicle: Jupiter Assault Tank.
-* BFG10k. (Jupiter tank's main cannon.)
-* Alternate firing modes for Vampire and Violator.
+* New weapon: BFG10k. (Jupiter tank's main cannon.)
+* Alternate firing modes for some ETQW weapons that lacked them.
 * New vehicle: Abaddon Hovertank.
-* Plasma Beam. (Abaddon's main cannon.)
-* Flamethrower. (Abaddon's gunner weapon.)
-* Railgun fires through multiple targets like in other Quake games.
-* Alternate firing mode for Strogg Tactical Shield. Absorbs shields.
-* Crosshairs optionally removed.
-* Hitbeep notifications optionally removed.
-* Vehicles use depletable ammunition.
+* New weapon: Plasma Beam. (Abaddon's main cannon.)
+* New weapon: Flamethrower. (Abaddon's gunner weapon.)
+* Crosshairs and hitbeep notifications optionally removed.
+* Vehicles use depletable ammunition and depletable decoys.
 * Bot AI improvements.
 * BaseETQW bugfixes.
+* And much more!
 
 3. Installation
 ================================
+If the release of QWTA you have is a patch release, you can unzip it over
+top of your existing QWTA installation. Otherwise, it's preferred to do
+a clean installation of QWTA each time you upgrade. Delete your existing
+QWTA .pk4 files or the QWTA folder itself, and start from scratch
+each time.
+
 First off, you'll want to unzip the QWTA release zip file into your 
 ETQW folder. You should end up with a /qwta/ folder alongside your /base/ 
 folder, inside your ETQW folder. 
@@ -86,35 +88,36 @@ Next, simply start ETQW as normal, and use the Mod Menu to select QWTA.
 Alternatively, you can start ETQW with the commandline: +set fs_game qwta
 
 Finally, find yourself a server that's running QWTA, and give things a try. :)
-You can also simply start up ETQW, find a server running QWTA, and connect.
-The server will auto-download the mod and install it for you.
+
+You can also simply start up ETQW, find a server running the latest version of
+QWTA, and connect. The server will auto-download the mod and 
+install it for you.
 
 4. Known Issues
 ================================
-Lots, at present. QWTA v0.3.3 is a bit of a rush-job release as some of
-the more severe issues with QWTA v0.3.2 were discovered during the development
-of QWTA v0.4.0. So v0.4.0 was put on hold and v0.3.3 was released.
-To be honest, I probably should have released just a tiny patch, but some of
-the new v0.4.0 features seemed enjoyable to include.
-Without further ado, the complete list:
+* BaseETQW bug: Magogs are sometimes invisible, yet can still be crashed into.
 * Magog-carried GDF vehicle will fail to deploy if the vehicle is destroyed.
 * Bots don't wait for their vehicle drop to arrive before moving on.
 * 3rd Eye Camera updates its radar origin even when not moving.
 * Players killed by being smashed against walls don't attribute frags properly
 * Dark Matter Cannon's gravity won't pull players away from mounted guns.
 * Dark Matter Cannon will (very slightly) damage nearby objects when fired.
-* Bots vehicle charge bars don't reset when going from warmup to ingame.
+* Bots' vehicle charge bars don't reset when going from warmup to ingame.
 * Hyperblaster projectiles continue to home in on a freshly respawned player.
 * Blood effects' player wound decals are not copied to corpses.
 * Blood effects' splatter effects are not properly scaled or rate limited.
 * Blood effects' splatter decals disappear suddenly rather than fading.
 * Blood effects' decals don't get cleared until after a corpse is decomposed.
 * Blood effects' player wound decals are not applied for knife wounds.
-* Blood effects' player wound decals will spam console with warning messages.
+* Blood effects' player wound decals will spam console with warning messages:
+  "WARNING: idRenderModelOverlay::AddOverlaySurfacesToModel: overlay vertex
+  out of range. Model has probably changed since generating the overlay."
+  This only occurs when r_useThreadedRenderer is set to 1 or 2, and g_blood
+  is also set to 1. Setting either of those to 0 will prevent the errors.
+  This warning message can be avoided by setting g_blood to 0, client-side.
 * Hog, Desecrator, and Abaddon teleport-drop use a simplified effect.
 * Abaddon Flamethrower uses very simplified physics for now.
 * There's no cap on the number of vehicles dropped by different players.
-* g_blood 1 is incompatible with r_useThreadedRenderer 1 or 2.
 
 5. Credits
 ================================

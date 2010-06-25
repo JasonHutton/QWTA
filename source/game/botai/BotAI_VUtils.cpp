@@ -168,6 +168,7 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		if ( object != NULL ) {
 			vehicleDropDecls[i].creditRequired = object->GetCreditRequired();
 			vehicleDropDecls[i].forceEscalationRequired = object->GetForceEscalationRequired();
+			vehicleDropDecls[i].logisticsPointsRequired = object->GetLogisticsPointsRequired();
 		}
 	}
 
@@ -205,20 +206,29 @@ int idBotAI::CallForNewVehicle( int vehicleType ) {
 		gameLocal.Printf("DEBUG: %s: Can't afford: %s (%f/%f)\n", player->userInfo.name.c_str(), object->GetName(), object->GetCreditRequired(), vCredit);
 	}*/
 
+
+	// This is way too complex. Needs to be simplified. -- Azuvector
 	if ( !g_vehicleDropsUseFE.GetBool() || 
 		( gameLocal.GetForceEscalation() >= object->GetForceEscalationRequired() ||
 		( g_huskyIcarusDropsIgnoreFE.GetBool() && ( ( object->GetAVDBit() & AVDBIT_HUSKY ) || ( object->GetAVDBit() & AVDBIT_ICARUS ) ) ) ) ) {
-		float vCredit = player->GetVehicleCredit();
-		//gameLocal.Printf("%s trying to get a %s with %f credit. %f required.\n", player->GetName(), object->GetTitle(), player->GetVehicleCredit(), object->GetCreditRequired() );
-		if( vCredit >= object->GetCreditRequired() ) {
-			if( gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 ) ) {
-				//gameLocal.Printf("%s succeeded.\n", player->GetName() );
-				player->UseVehicleCredit( object->GetCreditRequired() );
-				//gameLocal.Printf("%s has %i credit remaining.\n", player->GetName(), player->GetVehicleCredit() );
-				
-				return 1;
+			if ( !g_vehicleDropsUseLP.GetBool() ||
+				( player->GetProficiencyTable().GetLP() >= object->GetLogisticsPointsRequired() ||
+				g_huskyIcarusDropsIgnoreLP.GetBool() && ( ( object->GetAVDBit() & AVDBIT_HUSKY ) || ( object->GetAVDBit() & AVDBIT_ICARUS ) ) ) ) {
+					float vCredit = player->GetVehicleCredit();
+					//gameLocal.Printf("%s trying to get a %s with %f credit. %f required.\n", player->GetName(), object->GetTitle(), player->GetVehicleCredit(), object->GetCreditRequired() );
+					if( vCredit >= object->GetCreditRequired() ) {
+						if( gameLocal.RequestDeployment( player, object, player->GetPhysics()->GetOrigin(), player->GetPhysics()->GetOrigin().ToAngles()[ YAW ], 0 ) ) {
+							//gameLocal.Printf("%s succeeded.\n", player->GetName() );
+							player->UseVehicleCredit( object->GetCreditRequired() );
+							//gameLocal.Printf("%s has %i credit remaining.\n", player->GetName(), player->GetVehicleCredit() );
+							if ( g_vehicleDropsUseLP.GetBool() && !( g_huskyIcarusDropsIgnoreLP.GetBool() && ( ( object->GetAVDBit() & AVDBIT_HUSKY ) || ( object->GetAVDBit() & AVDBIT_ICARUS ) ) ) ) {
+								player->GetProficiencyTable().ConsumeLP( object->GetLogisticsPointsRequired() );
+							}
+							
+							return 1;
+						}
+					}
 			}
-		}
 	}
 
 	return -1;

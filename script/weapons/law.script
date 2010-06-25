@@ -62,11 +62,11 @@ void weapon_law::DoFire() {
 
 	float index = 0;
 	if ( myPlayer.getEnemy() == $null_entity ) {
-		if ( /*isRocketLauncher &&*/ g_useStraightRockets.getBoolValue() ) {
-			index = 2;
-		} else {
+//		if ( /*isRocketLauncher &&*/ g_useStraightRockets.getBoolValue() ) {
+//			index = 2;
+//		} else {
 			index = 1;
-		}
+//		}
 		startSound( "snd_charge", SND_WEAPON_SIG );
 
 		if ( warmupEffect ) {

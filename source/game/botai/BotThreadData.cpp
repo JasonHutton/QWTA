@@ -4517,6 +4517,15 @@ vDeployType_t idBotThreadData::GuessMostUsefulVDeploy(int clientNum, const playe
 				continue;
 			}
 		}
+
+		if ( g_vehicleDropsUseLP.GetBool() ) {
+			if ( vehicleDropDecls[i].logisticsPointsRequired > player->GetProficiencyTable().GetLP() &&
+				!( g_huskyIcarusDropsIgnoreLP.GetBool() && (i == VD_HUSKY || i == VD_ICARUS ) ) ) {
+					vPref[i] = -1;
+					continue;
+			}
+		}
+
 		if ( vehicleDropDecls[i].creditRequired > player->GetVehicleCredit() ) {
 			vPref[i] = -1;
 			continue;
