@@ -668,4 +668,5 @@ stringMap vehicle_badger_weapon2 {
 	
 	"ammo_max"					"800"
 	"ammo_per_use"				"1"
+	"low_ammo"					"5"
 }

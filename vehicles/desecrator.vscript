@@ -625,6 +625,8 @@ stringMap vehicle_desecrator_weapon1 {
 	"q4hyper_ammo_max"			"400"
 	"ammo_max"					"800"
 	"ammo_per_use"				"1"
+	"low_ammo"					"10"
+	"q4hyper_low_ammo"			"2"
 }
 
 stringMap vehicle_desecrator_weapon2 {

@@ -906,6 +906,7 @@ stringMap vehicle_trojan_weapon1 {
 	
 	"ammo_max"					"800"
 	"ammo_per_use"				"1"
+	"low_ammo"					"5"
 }
 
 stringMap vehicle_trojan_weapon2 {

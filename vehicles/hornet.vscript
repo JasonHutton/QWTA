@@ -584,6 +584,7 @@ stringMap vehicle_hornet_weapon1 {
 
 	"ammo_max"					"40"
 	"ammo_per_use"				"1"
+	"low_ammo"					"2"
 }
 
 
@@ -636,6 +637,7 @@ stringMap vehicle_hornet_weapon2 {
 	
 	"ammo_max"					"12"
 	"ammo_per_use"				"1"
+	"low_ammo"					"2"
 }
 
 stringMap vehicle_hornet_weapon3 {
@@ -687,4 +689,6 @@ stringMap vehicle_hornet_weapon3 {
 	"q4hyper_ammo_max"			"400"
 	"ammo_max"					"800"
 	"ammo_per_use"				"1"
+	"low_ammo"					"10"
+	"q4hyper_low_ammo"			"2"
 }

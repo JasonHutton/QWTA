@@ -24,8 +24,11 @@ object vehicle_weapon_base {
 	float				chargeTime;
 	float				chargeMax;
 	float				chargePerUse;
+	float				siegeChargePerUse;
 	float				baseChargePerUse;
+	float				baseSiegeChargePerUse;
 	float				userChargePerUse;
+	float				siegeUserChargePerUse;
 	float				userChargeScale;
 
 	void				AddReFireDelay( float delay );
@@ -54,6 +57,7 @@ object vehicle_weapon_base {
 	float				ammoMax;
 	float				ammoPerUse;
 	float				ammo;
+	float				lowAmmoWarn;
 }
 
 void vehicle_weapon_base::preinit() {
@@ -61,12 +65,24 @@ void vehicle_weapon_base::preinit() {
 	weaponBar.SetDisplayName( sys.localizeString( getKey( "gunName" ) ) );
 
 	chargeMax = getFloatKey( "charge_max" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		chargeMax = getFloatKeyWithDefault( "realistic_charge_max", chargeMax );
+	}
 	baseChargePerUse = getFloatKey( "charge_per_use" );
+	baseSiegeChargePerUse = getFloatKeyWithDefault( "siege_charge_per_use", baseChargePerUse );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		baseChargePerUse = getFloatKeyWithDefault( "realistic_charge_per_use", baseChargePerUse );
+		baseSiegeChargePerUse = getFloatKeyWithDefault( "realistic_siege_charge_per_use", baseSiegeChargePerUse );
+	}
 	baseChargePerUse = ( baseChargePerUse / 100 ) * chargeMax;
+	baseSiegeChargePerUse = ( baseSiegeChargePerUse / 100 ) * chargeMax;
 	
 	vCheckProficiency();
 	
 	overheatPenalty = getFloatKey( "overheat_penalty" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		overheatPenalty = getFloatKeyWithDefault( "realistic_overheat_penalty", overheatPenalty );
+	}
 
 	OnSetPlayer( getPlayer() );
 	
@@ -81,6 +97,11 @@ void vehicle_weapon_base::preinit() {
 		ammoPerUse = getFloatKeyWithDefault( "q4hyper_ammo_per_use", ammoPerUse );
 	}
 	ammo		= ammoMax;
+	
+	lowAmmoWarn = getFloatKeyWithDefault( "low_ammo", 1.f );
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		lowAmmoWarn = getFloatKeyWithDefault( "q4hyper_low_ammo", lowAmmoWarn );
+	}
 }
 
 void vehicle_weapon_base::init() {
@@ -91,6 +112,7 @@ void vehicle_weapon_base::init() {
 void vehicle_weapon_base::destroy() {
 	if ( user == sys.getLocalViewPlayer() && user != $null_entity ) {	
 		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 0 );
 	}
 
 	delete weaponBar;
@@ -110,7 +132,8 @@ void vehicle_weapon_base::OnSetPlayer_Base( entity p ) {
 	}
 	
 	if( user == sys.getLocalViewPlayer() && user != $null_entity ) {
-		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );	
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 0 );
 	}
 
 	user = p;
@@ -132,10 +155,16 @@ void vehicle_weapon_base::OnBecomeViewWeapon() {
 	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
 	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
 	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 1 );
+	if ( g_useVehicleAmmo.getBoolValue() && ammoMax > 0 && ammo <= lowAmmoWarn ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 1 );
+	} else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 0 );
+	}
 }
 
 void vehicle_weapon_base::OnFinishViewWeapon() {
 	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 0 );
 }
 
 void vehicle_weapon_base::IdleEmpty() {
@@ -190,7 +219,11 @@ float vehicle_weapon_base::CalcChargeUsed() {
 }
 
 void vehicle_weapon_base::RemoveCharge() {
-	chargeTime = CalcChargeUsed() + sys.getTime() + chargePerUse;
+	if ( myVehicle.inSiegeMode() ) {
+		chargeTime = CalcChargeUsed() + sys.getTime() + siegeChargePerUse;
+	} else {
+		chargeTime = CalcChargeUsed() + sys.getTime() + chargePerUse;
+	}
 	
 	// don't use more charge than we have
 	float used = chargeTime - sys.getTime();
@@ -200,13 +233,24 @@ void vehicle_weapon_base::RemoveCharge() {
 }
 
 boolean vehicle_weapon_base::CanRemoveCharge() {
+	if ( myVehicle.inSiegeMode() ) {
+		return ( ( CalcChargeUsed() + siegeChargePerUse ) <= chargeMax );
+	}
+	
 	return ( ( CalcChargeUsed() + chargePerUse ) <= chargeMax );
 }
 
 void vehicle_weapon_base::RemoveAmmo() {
+	float ammoBefore = ammo;
 	if ( ammoMax > 0 && g_useVehicleAmmo.getBoolValue() ) {
 		ammo = ammo - ammoPerUse;
 		UpdateAmmo();
+		if ( ammo == lowAmmoWarn && ammoBefore >= lowAmmoWarn ) {
+			if( user == sys.getLocalPlayer() ) {
+				myVehicle.startSound( "snd_lowAmmo", SND_WEAPON_SIG );
+			}
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 1 );
+		}
 	}
 }
 
@@ -235,8 +279,11 @@ void vehicle_weapon_base::vCheckProficiency() {
 		}
 	}
 	
+	siegeUserChargePerUse = baseSiegeChargePerUse * userChargeScale;
 	userChargePerUse = baseChargePerUse * userChargeScale;
+
 	chargePerUse = userChargePerUse;
+	siegeChargePerUse = siegeUserChargePerUse;
 }
 
 void vehicle_weapon_base::SetCrosshair() {

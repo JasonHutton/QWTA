@@ -22,9 +22,19 @@ damageDef damage_plasmabeam {
 		tt_obituary_unknown					"tooltips/killmsgs/weapons/plasmabeam/unknown"
 }
 
+damageDef damage_siege_plasmabeam {
+		inherit								"damage_plasmabeam"
+		damage								"damage_siege_plasmabeam"
+}
+
 damageDef realistic_damage_plasmabeam {
 		inherit								"damage_plasmabeam"
 		damage								"realistic_damage_plasmabeam"
+}
+
+damageDef realistic_damage_siege_plasmabeam {
+		inherit								"damage_siege_plasmabeam"
+		damage								"realistic_damage_siege_plasmabeam"
 }
 
 damageFilter damage_plasmabeam {
@@ -45,6 +55,24 @@ damageFilter damage_plasmabeam {
 	}
 }
 
+damageFilter damage_siege_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							8
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
 damageFilter realistic_damage_plasmabeam {
 
 	type {
@@ -60,5 +88,23 @@ damageFilter realistic_damage_plasmabeam {
 	type {
 		target							"target_deployables_all"
 		damage							70
+	}
+}
+
+damageFilter realistic_damage_siege_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							15
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							100
 	}
 }

@@ -585,6 +585,7 @@ stringMap vehicle_titan_weapon3 {
 	
 	"ammo_max"					"1200"
 	"ammo_per_use"				"1"
+	"low_ammo"					"10"
 }
 
 entityDef vehicle_titan_cockpit {

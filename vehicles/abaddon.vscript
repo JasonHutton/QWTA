@@ -585,7 +585,7 @@ stringMap vehicle_abaddon_weapon1 {
 
 	"charge_max"				"10"
 	"charge_per_use"			"2"
-	"overheat_penalty"			"1"
+	"overheat_penalty"			"2"
 	"use_heat_bar"				"1"
 
 	"weapon1_muzzle"			"blaster_muzzle"
@@ -620,6 +620,7 @@ stringMap vehicle_abaddon_weapon1 {
 	
 	"ammo_max"					"1500"
 	"ammo_per_use"				"1"
+	"low_ammo"					"10"
 }
 
 /*stringMap vehicle_abaddon_weapon1 {
@@ -661,8 +662,9 @@ stringMap vehicle_abaddon_weapon2 {
 	"weapon_name"				"plasmabeam"
 
 	"charge_max"				"10"
-	"charge_per_use"			"2"
-	"overheat_penalty"			"1"
+	"charge_per_use"			"3"
+	"siege_charge_per_use"		"1.5"
+	"overheat_penalty"			"3"
 	"use_heat_bar"				"1"
 
 	"weapon1_muzzle"			"turret_muzzle"
@@ -677,6 +679,7 @@ stringMap vehicle_abaddon_weapon2 {
 	"scriptobject"				"vehicle_weapon_plasmabeam"
 
 	"dmg_stream"				"damage_plasmabeam"
+	//"dmg_siege_stream"			"damage_siege_plasmabeam" // This doesn't feel right...
 
 	"range"						"8192"
 
@@ -691,4 +694,5 @@ stringMap vehicle_abaddon_weapon2 {
 	
 	"ammo_max"					"1500"
 	"ammo_per_use"				"1"
+	"low_ammo"					"10"
 }

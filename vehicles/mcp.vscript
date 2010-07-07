@@ -463,6 +463,7 @@ stringMap vehicle_mcp_weapon1 {
 	
 	"ammo_max"					"800"
 	"ammo_per_use"				"1"
+	"low_ammo"					"5"
 }
 
 stringMap vehicle_mcp_weapon2 {
@@ -508,6 +509,7 @@ stringMap vehicle_mcp_weapon2 {
 	
 	"ammo_max"					"1200"
 	"ammo_per_use"				"1"
+	"low_ammo"					"10"
 }
 
 entityDef vehicle_mcp_cockpit {

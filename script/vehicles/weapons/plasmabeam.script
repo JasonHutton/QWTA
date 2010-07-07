@@ -67,7 +67,11 @@ void vehicle_weapon_plasmabeam::DoStream( boolean doDamage ) {
 				scale = 1.f - scale;
 			}
 			
-			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
+			if ( myVehicle.inSiegeMode() && siegeStreamDamageIndex != -1 ) {
+				ent.applyDamage( self, getPlayer(), traceDir, siegeStreamDamageIndex, scale, $null_entity );
+			} else {
+				ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
+			}
 		}
 	}
 

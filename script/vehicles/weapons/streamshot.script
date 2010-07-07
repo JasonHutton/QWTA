@@ -43,6 +43,7 @@ object vehicle_weapon_streamshot : vehicle_weapon_base {
 	
 	float				nextFiringSound;
 	float				streamDamageIndex;
+	float				siegeStreamDamageIndex;
 	
 	float				streamRadius;
 	float				streamArc;
@@ -88,6 +89,7 @@ void vehicle_weapon_streamshot::preinit() {
 	nextFiringSound			= 0;
 	
 	streamDamageIndex		= GetDamage( getKey( "dmg_stream" ) );
+	siegeStreamDamageIndex  = GetDamage( getKey( "dmg_siege_stream" ) );
 	
 	streamRadius			= getFloatKey( "stream_radius" );
 	streamArc				= getFloatKey( "stream_arc" );
@@ -303,7 +305,11 @@ void vehicle_weapon_streamshot::DoStream( boolean doDamage ) {
 		}
 
 		if ( doDamage ) {
-			ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
+			if ( myVehicle.inSiegeMode() && siegeStreamDamageIndex != -1 ) {
+				ent.applyDamage( self, getPlayer(), traceDir, siegeStreamDamageIndex, scale, $null_entity );
+			} else {
+				ent.applyDamage( self, getPlayer(), traceDir, streamDamageIndex, scale, $null_entity );
+			}
 		}
 	}
 
