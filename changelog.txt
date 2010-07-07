@@ -63,8 +63,8 @@ CHANGES:
     have an infinite supply of flares.
 * Vehicles now warn when low on ammo.
 * Abaddon Plasma Beam tweaked.
-  + Hover mode uses more power and cannot fire as long without cooling.
-  + Siege mode uses less power and can fire much longer without cooling.
+  + Hover mode uses more weapon charge and can't fire as long without cooling.
+  + Siege mode uses less charge and can fire much longer without cooling.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
