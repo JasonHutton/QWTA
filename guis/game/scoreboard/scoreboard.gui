@@ -1,0 +1,1085 @@
+
+#include <guis/common/colors.include>
+#include <guis/common/utility.include>
+#include <guis/common/materials.include>
+
+#include <guis/mainmenu/materials.include>
+#include <guis/mainmenu/components/dialog.include>
+#include <guis/mainmenu/components/edit.include>
+#include <guis/mainmenu/components/group.include>
+#include <guis/mainmenu/components/list.include>
+#include <guis/mainmenu/components/button.include>
+#include <guis/mainmenu/components/window.include>
+#include <guis/mainmenu/components/tab_page.include>
+#include <guis/mainmenu/components/tooltip.include>
+
+#include <guis/loadscreen/colors.include>
+#include <guis/loadscreen/loadscreen.include>
+
+#include <guis/game/game_materials.include>
+#include <guis/game/hud/materials.include>
+#include <guis/game/hud/text.include>
+
+#include <guis/game/scoreboard/scoreboard.include>
+#include <guis/game/scoreboard/colors.include>
+#include <guis/game/chat.include>
+
+#define SP_SUMMARY 	1
+#define SP_SCORES 	2
+
+#ifdef PADDING
+#undef PADDING
+#endif
+
+#define PADDING 4
+
+gui scoreboard {
+	properties {
+		float	flags 			= immediate( flags ) | GUI_FULLSCREEN | GUI_TOOLTIPS;
+		handle 	voiceSendIcon 	= cacheMaterial( "chatsendicon", "_st voip" );
+		handle	profBackMaterial	= cacheMaterial( "profBack", 		"_st prof_starback" );
+		handle	profIconMaterial	= cacheMaterial( "profStar", 		"_st prof_star" );
+	}
+
+	_hud_materials
+	__loadscreen_materials
+	_monitor_music_volume
+	_player_upgrade_icons
+
+	// init window classes
+	_btn_init
+	_dlg_init
+	_wnd_init
+	_lst_init
+	_tabs_init
+
+	materials {
+		"highest_xp"			"guis/assets/icons/icons_sheet1, rect( 0, 32, 32, 32 )"
+		"most_accurate"			"guis/assets/icons/icons_sheet1, rect( 160, 64, 32, 32 )"
+		"most_objectives"		"guis/assets/icons/icons_sheet1, rect( 160, 96, 32, 32 )"
+		"best_battlesense"		"guis/assets/icons/icons_sheet1, rect( 64, 32, 32, 32 )"
+		"best_weapons"			"guis/assets/icons/icons_sheet1, rect( 96, 32, 32, 32 )"
+		"best_vehicles"			"guis/assets/icons/icons_sheet1, rect( 128, 32, 32, 32 )"
+		"most_kills"			"guis/assets/icons/icons_sheet1, rect( 160, 32, 32, 32 )"
+		"newbie"				"guis/assets/icons/icons_sheet1, rect( 192, 32, 32, 32 )"
+		"most_damage"			"guis/assets/icons/icons_sheet1, rect( 128, 96, 32, 32 )"
+		"most_teamkills"		"guis/assets/icons/icons_sheet1, rect( 96, 96, 32, 32 )"
+		"most_upgrades"			"guis/assets/icons/icons_sheet1, rect( 32, 32, 32, 32 )"
+
+		"best_fieldops"			"guis/assets/icons/icons_sheet1, rect( 0, 64, 32, 32 )"
+		"best_soldier"			"guis/assets/icons/icons_sheet1, rect( 32, 64, 32, 32 )"
+		"best_engineer"			"guis/assets/icons/icons_sheet1, rect( 64, 64, 32, 32 )"
+		"best_medic"			"guis/assets/icons/icons_sheet1, rect( 96, 64, 32, 32 )"
+		"best_covertops"		"guis/assets/icons/icons_sheet1, rect( 128, 64, 32, 32 )"
+
+		"gdf_filter"			"guis/assets/limbo/endscr_2_gdf"
+		"strogg_filter"			"guis/assets/limbo/endscr_2_strogg"
+		"teamGlow"				"guis/assets/limbo/endscr_3"
+		"teamGlowFlip"			"guis/assets/limbo/endscr_3, flipX"
+
+		"documents"				"hud/icons/missionsystem/obj_document"
+		"bot"					"guis/assets/icons/icons_sheet1, rect( 80, 0, 16, 16 )"
+
+		"improved"				"guis/assets/icons/icons_sheet2, rect( 0, 17, 16, 16 )"
+		"unchanged"				"guis/assets/icons/icons_sheet2, rect( 16, 17, 16, 16 )"
+
+		"prof_star"				"guis/assets/icons/icons_sheet1, rect( 64, 96, 16, 16 )"
+		"prof_starback"			"guis/assets/icons/icons_sheet1, rect( 80, 96, 16, 16 )"
+
+		"prof_fieldops"			"guis/assets/icons/stats, rect( 0, 0, 32, 32 )"
+		"prof_soldier"			"guis/assets/icons/stats, rect( 32, 0, 32, 32 )"
+		"prof_engineer"			"guis/assets/icons/stats, rect( 64, 0, 32, 32 )"
+		"prof_medic"			"guis/assets/icons/stats, rect( 96, 0, 32, 32 )"
+		"prof_covertops"		"guis/assets/icons/stats, rect( 128, 0, 32, 32 )"
+
+		"prof_battlesense"		"guis/assets/icons/stats, rect( 224, 0, 32, 32 )"
+		"prof_weapon_handling"	"guis/assets/icons/stats, rect( 160, 0, 32, 32 )"
+		"prof_vehicle"			"guis/assets/icons/stats, rect( 192, 0, 32, 32 )"
+	}
+
+	properties {
+		handle filterMaterial;
+		handle currentMaterial 	= cacheMaterial( "curicon", "_st current" );
+		handle unplayedMaterial = cacheMaterial( "unicon", "_st unplayed" );
+		handle glowMaterial 	= cacheMaterial( "glow", "_st team_glow" );
+		handle stroggMaterial 	= cacheMaterial( "stricon", "_st strogg" );
+		handle gdfMaterial 		= cacheMaterial( "gdficon", "_st gdf" );
+
+		handle teamIcon 		= cacheMaterial( "teamicon", "_st gdf" );
+	}
+
+	events {
+		onActivate {
+			postNamedEvent( "updateEndGame" );
+			if( player.endGame ) {
+				if( compare( player.winningMusic, "" ) == false ) {
+					gui.playMusic( "::" + player.winningMusic );
+					gui.fadeSoundClass( 1, gui.getCVarFloat( "s_volumeMusic_dB" ), 0 );
+				}
+				flags = immediate( flags ) | GUI_INHIBIT_GAME_WORLD;
+				bindContext = "menu";
+				_set_tab_page( MatchResults, SP_SUMMARY )
+			}
+			edtChat.allowDeactivate = false;
+		}
+		onDeactivate {
+			flags = immediate( flags ) & ~GUI_INHIBIT_GAME_WORLD;
+			bindContext = "";
+			if( player.endGame ) {
+				gui.fadeSoundClass( 1, -60, 1000 );
+				gui.voiceChat( VOIPC_DISABLE );
+			}
+		}
+
+		onPropertyChanged "player.endGame" {
+			postNamedEvent( "updateEndGame" );
+			if( player.endGame ) {
+				flags = immediate( flags ) | GUI_INHIBIT_GAME_WORLD;
+				bindContext = "menu";
+			} else {
+				flags = immediate( flags ) & ~GUI_INHIBIT_GAME_WORLD;
+				bindContext = "";
+			}
+		}
+
+		onNamedEvent "updateEndGame" {
+			if( player.endGame ) {
+				flags = immediate( flags ) | GUI_SHOWCURSOR | GUI_CATCH_ALL_EVENTS;
+				focusedWindow = "edtChat";
+			} else {
+				flags = immediate( flags ) & ~( GUI_SHOWCURSOR | GUI_CATCH_ALL_EVENTS );
+				focusedWindow = "";
+			}
+		}
+	}
+	windowDef desktop {
+		properties {
+			rect rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+	}
+
+	windowDef backFill {
+		properties {
+			float visible = player.endGame == true;
+			rect rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+
+		events {
+			onActivate {
+				if( compare( player.winningTeam, "" ) != true ) {
+					gui.filterMaterial = gui.cacheMaterial( "filter", player.winningTeam + "_filter" );
+				}
+			}
+			onPropertyChanged "player.winningTeam" {
+				if ( compare( player.winningTeam, "" ) ) {
+					return;
+				}
+				gui.filterMaterial = gui.cacheMaterial( "filter", player.winningTeam + "_filter" );
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.whiteMaterial, absoluteRect, "0.25, 0.25, 0.25, 1" );
+				drawCachedMaterial( gui.filterMaterial, absoluteRect, COLOR_WHITE );
+				gui.scriptPushFloat( true );
+			}
+		}
+
+	windowDef MapWinner {
+		properties {
+			rect 	rect 			= 0, 2, VIRTUAL_WIDTH, 28;
+			handle 	iconMaterial 	= gui.cacheMaterial( "winicon", "_st " + player.winningTeam );
+			handle 	glowMaterial 	= gui.cacheMaterial( "glowFlip", "teamGlowFlip" );
+			rect 	iconRect 		= absoluteRect.x + 4, absoluteRect.y + 2, 42, 22;
+			rect 	textRect 		= iconRect.x + iconRect.w + 4, absoluteRect.y, VIRTUAL_WIDTH, 28;
+			rect	glowRect		= 0, absoluteRect.y - 20, VIRTUAL_WIDTH * 0.35, 64;
+			color	glowColor		= COLOR_STROGG_GLOW;
+			color	flashColor		= 1,1,1,0;
+		}
+		events {
+			onActivate {
+				if( player.endGame == false ) {
+					return;
+				}
+				postNamedEvent( "updateWinner" );
+			}
+			onPropertyChanged "player.winningTeam" {
+				postNamedEvent( "updateWinner" );
+			}
+			onNamedEvent "updateWinner" {
+				iconMaterial = gui.cacheMaterial( "winicon", "_st " + player.winningTeam );
+				if( icompare( player.winningTeam, "strogg" ) ) {
+					iconRect.w = 42;
+					iconRect.h = 21;
+					glowColor = COLOR_STROGG_GLOW;
+				} else {
+					iconRect.w = 18;
+					iconRect.h = 18;
+					glowColor = COLOR_GDF_GLOW;
+				}
+				flashColor = transition( COLOR_WHITE, COLOR_BLACK, 1000 );
+			}
+			onPostDraw {
+				drawCachedMaterial( glowMaterial, glowRect, glowColor );
+				drawCachedMaterial( iconMaterial, iconRect, COLOR_WHITE );
+				drawCachedMaterial( glowMaterial, glowRect, flashColor );
+				drawLocalizedText( player.winningTeamString, textRect, COLOR_WHITE, 16, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+			}
+		}
+	}
+
+	windowDef campaignWins {
+		properties {
+			rect rect = _center( desktop, width ), 8, 120, 16;
+		}
+		events {
+
+			onPreDraw  {
+				if( isValidHandle( player.winningTeamReason ) ) {
+					drawLocalizedText( player.winningTeamReason, absoluteRect, COLOR_TEXT, 14, DTF_CENTER | DTF_SINGLELINE | DTF_VCENTER );
+				} else {
+					drawText( globals.campaignInfo.ruleStatus, absoluteRect, COLOR_TEXT, 14, DTF_CENTER | DTF_SINGLELINE | DTF_VCENTER );
+				}
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+
+	windowDef timeToNextMap {
+		properties {
+			rect rect = _right( desktop ), 8, 120, 16;
+			wstring text = localizeArgs( "guis/game/scoreboard/time_next_map", toWString( ( player.nextGameStateTime - player.gameTime ) / 1000, 0 ) );
+			float fontSize = 14;
+			vec2 textAlignment = TA_RIGHT, TA_VCENTER;
+			float visible = player.nextGameStateTime > player.gameTime;
+		}
+	}
+
+	_tab_container( MatchResults, SP_SUMMARY, PADDING, 28, _fill_to_right_of( desktop ), _fill_to_bottom_of( desktop ) )
+		_tab_page( Summary, localize( "guis/game/scoreboard/summary" ), MatchResults, SP_SUMMARY, 2, 0 )
+
+			windowDef campaignInfo {
+				properties {
+					rect rect = 4, 4, 220, 320;
+					float visible			= player.serverIsRepeater == false;
+				}
+				__draw_dialog_frame( drawText, gui.blankWStr, "nogradient", COLOR_DIALOG_FILL, COLOR_DIALOG_LINES, COLOR_INVISIBLE )
+#if 0
+				windowDef MapShotClip {
+					properties {
+						rect rect 	= PADDING, PADDING, _fill_to_right_of( campaignInfo ), rect.w * 1.3333;
+						float flags = immediate( flags ) | WF_CLIP_TO_RECT;
+						vec2 scale 	= gui.MapShot.rect.w / VIRTUAL_WIDTH, rect.h / VIRTUAL_HEIGHT;
+					}
+					windowDef MapShot {
+						properties {
+							rect rect = rect.w * -0.435, 0, rect.h * 1.3333, gui.MapShotClip.rect.h;
+							color backColor = 1,1,1,1;
+							string material = "::" + globals.campaignInfo.backdrop;
+						}
+						_map_icon( 1, position1, title1, status1, 0.0f, gui.MapShotClip.scale.x, gui.MapShotClip.scale.y, ( gui.MapShot.absoluteRect.x + gui.MapShot.absoluteRect.w ) )
+						_map_icon( 2, position2, title2, status2, 0.0f, gui.MapShotClip.scale.x, gui.MapShotClip.scale.y, ( gui.MapShot.absoluteRect.x + gui.MapShot.absoluteRect.w ) )
+						_map_icon( 3, position3, title3, status3, 0.0f, gui.MapShotClip.scale.x, gui.MapShotClip.scale.y, ( gui.MapShot.absoluteRect.x + gui.MapShot.absoluteRect.w ) )
+					}
+				}
+#endif
+				windowDef statsInfo {
+					properties {						
+						rect rect 				= PADDING, PADDING, gui.campaignInfo.rect.w - $evalfloat( 2 * PADDING ), gui.campaignInfo.rect.h - $evalfloat( 2 * PADDING );
+
+						rect	rankBackRect	= absoluteRect.x + 2, absoluteRect.y + 2, absoluteRect.w - 4, 56;
+						rect	rankIconRect	= rankBackRect.x + 2, rankBackRect.y + 2, 48, 48;
+						rect	rankRect		= rankBackRect.x + 52, rankBackRect.y, rankBackRect.w - 52, 20;
+						rect	nameRect		= rankBackRect.x + 52, rankBackRect.y + 20, rankBackRect.w - 52, 20;
+
+						rect	achieveBackRect	= absoluteRect.x + 2, rankBackRect.y + rankBackRect.h + 4, absoluteRect.w - 4, 80;
+
+						rect	achieveIconRect	= achieveBackRect.x + 2, achieveBackRect.y + 4, 36, 72;
+
+						rect	achieveRect		= achieveBackRect.x + 52, achieveBackRect.y, rankBackRect.w - 52, 16;
+						handle 	achieveLabel	= localize( "guis/mainmenu/predictedachievement" );
+
+						rect	achieveTitleRect	= achieveBackRect.x + 52, achieveBackRect.y + 22, rankBackRect.w - 52, 16;
+						handle 	achieveTitleLabel;
+
+						rect	achieveTasksRect	= achieveBackRect.x + 52, achieveBackRect.y + 36, rankBackRect.w - 52, 16;
+						wstring	achieveTasksLabel;
+						wstring taskComplete;
+						wstring taskTotal;
+
+						rect	achievePercentRect	= achieveBackRect.x + 52, achieveBackRect.y + 50, achieveTasksRect.w, 16;
+						wstring	achievePercentLabel;
+
+						handle 	allCompleteText		= localize( "guis/mainmenu/allachievements" );
+						handle 	rewardsText			= localize( "guis/mainmenu/predictedrewards" );
+						handle 	personalBestsText	= localize( "guis/mainmenu/personalbests" );
+
+						handle	rankText			= floatToHandle( -1 );
+
+						handle	rankMaterial 		= floatToHandle( -1 );
+						handle 	achieveMaterial 	= floatToHandle( -1 );
+
+						float	allComplete			= false;
+
+						color	fillColor = COLOR_AWARD_FILL;
+						color	lineColor = COLOR_AWARD_LINE;
+						color	gradColor = COLOR_AWARD_GRAD;
+
+						rect	rewardsBackRect	= absoluteRect.x + 2, achieveBackRect.y + achieveBackRect.h + 4, absoluteRect.w - 4, 80;
+						rect	rewardsTitleRect = rewardsBackRect.x + 4, rewardsBackRect.y, rewardsBackRect.w, 16;
+
+						rect	bestsBackRect	= absoluteRect.x + 2, rewardsBackRect.y + rewardsBackRect.h + 4, absoluteRect.w - 4, 80;
+						rect	bestsTitleRect = bestsBackRect.x + 4, bestsBackRect.y, bestsBackRect.w, 16;
+
+						handle  signinText = localize( "guis/mainmenu/signin_to_view_stats" );
+						handle  playRanked = localize( "guis/mainmenu/playonranked" );
+
+						rect	rankedTextRect = achieveBackRect.x + 40, achieveBackRect.y + 12, achieveBackRect.w - 44, achieveBackRect.h;
+						rect	rankedIconRect = achieveBackRect.x + 4, achieveBackRect.y + 4, 12, 12;
+
+						handle	sampleRank1 = gui.cacheMaterial( "previewRank1", "guis/assets/icons/achieve_battlesense_rank3" );
+
+						float ranked = false;
+						
+						handle trainingText = localize( "guis/mainmenu/disabled_for_training" );
+						float isTraining = false;
+
+					}
+					events {
+						onActivate {
+							ranked = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "_ranked", "0" ) );
+							isTraining = gui.getCVarBool( "g_trainingMode" );
+#if !defined( SD_DEMO_BUILD )
+							if( ranked && sdnet.statsRequestState == SR_COMPLETED ) {
+								gui.broadcastEventToDescendants( name, "statsUpdated" );
+								postNamedEvent( "statsUpdated" );
+							} else {
+								rankText = limbo.rank;
+								rankMaterial = gui.cacheMaterial( "statRank", limbo.rankMaterial );
+							}
+#else
+							rankText = limbo.rank;
+							rankMaterial = gui.cacheMaterial( "statRank", limbo.rankMaterial );
+#endif
+							postNamedEvent( "updateTitles" );
+						}
+#if !defined( SD_DEMO_BUILD )
+						onPropertyChanged "sdnet.statsRequestState" {
+							if( ranked && sdnet.statsRequestState == SR_COMPLETED ) {
+								gui.broadcastEventToDescendants( name, "statsUpdated" );
+								postNamedEvent( "statsUpdated" );
+							} else {
+								rankText = limbo.rank;
+								rankMaterial = gui.cacheMaterial( "statRank", limbo.rankMaterial );
+							}
+						}
+						onNamedEvent "statsUpdated" {
+							allComplete = compare( gui.getPersistentRankInfo( "nextAchievementAvailable" ), "0" );
+
+							rankMaterial = gui.cacheMaterial( "statRank", gui.getPersistentRankInfo( "material" ) );
+							rankText = localize( gui.getPersistentRankInfo( "title" ) );
+
+							if( allComplete == false ) {
+								achieveMaterial = gui.cacheMaterial( "nextAchieve", gui.getPersistentRankInfo( "nextAchievementMaterial" ) );
+
+								achieveTitleLabel = localize( gui.getPersistentRankInfo( "nextAchievementTitle" ) );
+
+								taskComplete = toWStr( gui.getPersistentRankInfo( "nextAchievementTasks" ) );
+								taskTotal = toWStr( gui.getPersistentRankInfo( "nextAchievementTasksTotal" ) );
+								achieveTasksLabel = localizeArgs( "guis/mainmenu/taskssatisfied", taskComplete, taskTotal );
+								achievePercentLabel = localizeArgs( "guis/mainmenu/percentcompleted", toWString( 100 * toFloat( gui.getPersistentRankInfo( "nextAchievementPercent" ) ), 0 ) );
+							}
+						}
+#endif
+						onNamedEvent "updateTitles" {
+							if( globals.campaignInfo.currentMap == globals.campaignInfo.numMaps ) {
+								rewardsText			= localize( "guis/mainmenu/reviewrewards" );
+							} else {
+								rewardsText			= localize( "guis/mainmenu/predictedrewards" );
+							}
+						}
+
+						onPreDraw {
+							drawCachedMaterial( gui.wndFillMaterial, rankBackRect, fillColor );
+							drawCachedMaterial( gui.btnGradMaterial, rankBackRect, gradColor );
+							drawCachedMaterial( gui.wndLineMaterial, rankBackRect, lineColor );
+
+							drawCachedMaterial( rankMaterial, rankIconRect, COLOR_WHITE );
+							drawLocalizedText( rankText, rankRect, COLOR_WHITE, 18, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+							drawText( toWStr( player.name ), nameRect, COLOR_WHITE, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+
+							drawCachedMaterial( gui.wndFillMaterial, achieveBackRect, fillColor );
+							drawCachedMaterial( gui.btnGradMaterial, achieveBackRect, gradColor );
+							drawCachedMaterial( gui.wndLineMaterial, achieveBackRect, lineColor );
+
+							if( ranked ) {
+								if( allComplete == false ) {
+									drawCachedMaterial( achieveMaterial, achieveIconRect, COLOR_WHITE );
+									drawLocalizedText( achieveLabel, achieveRect, COLOR_WHITE, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+									drawLocalizedText( achieveTitleLabel, achieveTitleRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+									drawText( achieveTasksLabel, achieveTasksRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+									drawText( achievePercentLabel, achievePercentRect, COLOR_TEXT, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+								} else {
+									drawLocalizedText( allCompleteText, achieveRect, COLOR_WHITE, 12, DTF_LEFT | DTF_TOP | DTF_WORDWRAP );
+								}
+							} else {
+								drawLocalizedText( playRanked, rankedTextRect, "1,1,1,0.5", 12, DTF_LEFT | DTF_VCENTER | DTF_WORDWRAP );
+
+								drawCachedMaterial( sampleRank1, achieveIconRect, "1,1,1,0.35" );
+							}
+
+							drawCachedMaterial( gui.wndFillMaterial, rewardsBackRect, fillColor );
+							drawCachedMaterial( gui.btnGradMaterial, rewardsBackRect, gradColor );
+							drawCachedMaterial( gui.wndLineMaterial, rewardsBackRect, lineColor );
+							drawLocalizedText( rewardsText, rewardsTitleRect, COLOR_WHITE, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+
+							drawCachedMaterial( gui.wndFillMaterial, bestsBackRect, fillColor );
+							drawCachedMaterial( gui.btnGradMaterial, bestsBackRect, gradColor );
+							drawCachedMaterial( gui.wndLineMaterial, bestsBackRect, lineColor );
+							drawLocalizedText( personalBestsText, bestsTitleRect, COLOR_WHITE, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE | DTF_TRUNCATE );
+
+							gui.scriptPushFloat( false );
+						}
+					}
+					windowDef lstBests {
+						type list;
+						properties {
+							rect rect = gui.statsInfo.bestsBackRect.x - ( gui.statsInfo.absoluteRect.x ), gui.statsInfo.bestsBackRect.y - ( gui.statsInfo.absoluteRect.y - 16 ), gui.statsInfo.bestsBackRect.w, gui.statsInfo.bestsBackRect.h - 16;
+							color foreColor = COLOR_TEXT;
+							float fontSize = 12;
+							float flags =  immediate( flags ) | LF_VARIABLE_HEIGHT_ROWS;
+							float internalBorderWidth = 2;
+						}
+
+						_list_scrollbar( Bests )
+
+						events {
+							onCreate {
+								insertColumn( gui.blankWStr, 12, 0 );				// icon
+								insertColumn( toWStr( "<width = 65%>" ), 0, 1 );	// description
+								insertColumn( toWStr( "<width = 35%>" ), 0, 2 );	// values
+																						
+#if !defined( SD_DEMO_BUILD )
+								if( player.endGame && sdnet.statsRequestState == SR_COMPLETED ) {
+#else
+								if( player.endGame ) {
+#endif
+									fillFromEnumerator( "lifeStatsList" );
+									setItemMaterialSize( "12,12", -1, 0 );
+									setItemTextFlags( DTF_LEFT | DTF_SINGLELINE | DTF_TOP, -1, 0 );
+									setItemTextFlags( DTF_VCENTER | DTF_SINGLELINE | DTF_RIGHT, -1, 2 );
+								}
+							}
+#if !defined( SD_DEMO_BUILD )
+							onPropertyChanged "sdnet.statsRequestState" {
+								if( sdnet.statsRequestState == SR_COMPLETED && gui.statsInfo.isTraining == false  ) {
+									fillFromEnumerator( "lifeStatsList" );
+									setItemMaterialSize( "12,12", -1, 0 );
+									setItemTextFlags( DTF_LEFT | DTF_SINGLELINE | DTF_TOP, -1, 0 );
+									setItemTextFlags( DTF_VCENTER | DTF_SINGLELINE | DTF_RIGHT, -1, 2 );
+								} else {
+									clearItems();
+								}
+							}
+#else
+							onPropertyChanged "player.endGame" {
+								if( player.endGame && gui.statsInfo.isTraining == false ) {
+									fillFromEnumerator( "lifeStatsList" );
+									setItemMaterialSize( "12,12", -1, 0 );
+									setItemTextFlags( DTF_LEFT | DTF_SINGLELINE | DTF_TOP, -1, 0 );
+									setItemTextFlags( DTF_VCENTER | DTF_SINGLELINE | DTF_RIGHT, -1, 2 );
+								} else {
+									clearItems();
+								}
+							}							
+#endif
+							onPostDraw {
+								if( gui.statsInfo.isTraining ) {
+									drawLocalizedText( gui.statsInfo.trainingText, absoluteRect, "1,1,1,0.5", fontSize, DTF_WORDWRAP | DTF_CENTER | DTF_VCENTER );
+								}
+							}
+							onPropertyChanged "gui.statsInfo.isTraining" {
+								if( gui.statsInfo.isTraining ) {
+									clearItems();
+								}
+							}
+						}
+					}
+					windowDef lstUpgrades {
+						type list;
+						properties {
+							rect rect = gui.statsInfo.rewardsBackRect.x - ( gui.statsInfo.absoluteRect.x ), gui.statsInfo.rewardsBackRect.y - ( gui.statsInfo.absoluteRect.y - 12 ), gui.statsInfo.rewardsBackRect.w, gui.statsInfo.rewardsBackRect.h - 12;
+							color foreColor = COLOR_TEXT;
+							float fontSize = 12;
+							float flags =  immediate( flags ) | WF_TRUNCATE_TEXT;
+							float internalBorderWidth = 2;
+							float fixedRowHeight = 31;
+							float itemRow;
+							float itemCol;
+							rect itemRect;
+							color itemColor;
+							float value;
+
+							handle category;
+
+							rect barRect;
+							string categoryStr;
+							float visible = globals.campaignInfo.currentMap < globals.campaignInfo.numMaps;
+						}
+						events {
+							onCreate {
+								insertColumn( gui.blankWStr, 32, 0 );				// icon
+								insertColumn( toWStr( "<width = 100%>" ), 0, 1 );	// text
+								insertColumn( gui.blankWStr, 1, 2 );				// category
+							}
+							onActivate {
+								if( player.endGame ) {
+									fillFromEnumerator( "predictedUpgradesList" );
+									setItemMaterialSize( "32, 32", -1, 0 );
+									setItemTextFlags( DTF_SINGLELINE | DTF_TOP | DTF_LEFT, -1, 1 );
+								}
+							}
+							onDrawItem {
+								itemRow = gui.scriptGetFloatResult();
+								itemCol = gui.scriptGetFloatResult();
+								itemRect = getItemRect( itemRow, 1, GIR_COLUMN );
+								itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, COLOR_WHITE, itemRow, itemCol );
+
+								value = getItemDataInt( itemRow, 0, 0 );
+
+								barRect.x = itemRect.x + itemRect.w - ( 62 );
+								barRect.y = itemRect.y + itemRect.h - 6;
+								barRect.h = 6;
+								barRect.w = 60;
+
+								drawCachedMaterial( gui.whiteMaterial, barRect, "0.1484, 0.1484, 0.1484,1" );
+								drawCachedMaterial( gui.whiteMaterial, "barRect.x, barRect.y, barRect.w * value / 100, barRect.h", "0.3047, 0.2578, 0.2109, 1" );
+
+								value = getItemDataInt( itemRow, 1, 0 );
+
+								barRect.x = itemRect.x + itemRect.w - ( 64 );
+								barRect.w = 12;
+								barRect.h = 12;
+								barRect.y = itemRect.y + barRect.h + 2;
+								drawTiledMaterial( gui.profBackMaterial, barRect, COLOR_WHITE, "4, 1" );
+								drawTiledMaterial( gui.profIconMaterial, barRect, COLOR_WHITE, "value, 1" );
+
+								barRect.x = itemRect.x + itemRect.w - ( 80 );
+								barRect.w = 16;
+								barRect.h = 16;
+								barRect.y = itemRect.y + barRect.h + 2;
+
+								categoryStr = toStr( getItemText( itemRow, 2 ) );
+								category = gui.cacheMaterial( "category" + categoryStr, "prof_" + categoryStr );
+								drawCachedMaterial( category, barRect, COLOR_WHITE );
+
+								gui.scriptPushFloat( false );
+							}
+						}
+					}
+
+					windowDef lstUpgradesReview {
+						type list;
+						properties {
+							rect rect = gui.statsInfo.rewardsBackRect.x - ( gui.statsInfo.absoluteRect.x ), gui.statsInfo.rewardsBackRect.y - ( gui.statsInfo.absoluteRect.y - 12 ), gui.statsInfo.rewardsBackRect.w, gui.statsInfo.rewardsBackRect.h - 12;
+							color foreColor = COLOR_TEXT;
+							float fontSize = 12;
+							float flags =  immediate( flags ) | WF_TRUNCATE_TEXT;
+							float internalBorderWidth = 2;
+							float fixedRowHeight = 31;
+
+							handle category;
+
+							rect barRect;
+							string categoryStr;
+							float visible = globals.campaignInfo.currentMap == globals.campaignInfo.numMaps;
+						}
+
+						_list_scrollbar( UpgradesReview )
+
+						events {
+							onCreate {
+								insertColumn( gui.blankWStr, 32, 0 );				// icon
+								insertColumn( toWStr( "<width = 100%>" ), 0, 1 );	// text
+							}
+							onActivate {
+								if( player.endGame ) {
+									fillFromEnumerator( "reviewUpgradesList" );
+									setItemMaterialSize( "32, 32", -1, 0 );
+									setItemTextFlags( DTF_SINGLELINE | DTF_TOP | DTF_LEFT, -1, 1 );
+								}
+							}
+						}
+					}
+				}
+			}
+			windowDef overallStats {
+				properties {
+					rect rect				 = _to_right_of( campaignInfo ), 22, _fill_to_right_of( tabpSummaryContent ), 32;
+
+					float offset			= absoluteRect.w - mapRect.w;
+					rect mapRect 			= absoluteRect.x + absoluteRect.w - mapRect.w, absoluteRect.y, 286, absoluteRect.h * 0.5f;
+					rect totalRect 			= absoluteRect.x + absoluteRect.w - totalRect.w, absoluteRect.y + mapRect.h + 1, 286, absoluteRect.h * 0.5f;
+
+					rect yourRect 			= absoluteRect.x + 2, mapRect.y - 12, offset - 4, 12;
+					rect mapIconRect 		= absoluteRect.x + 2, mapRect.y + 3, offset - 4, 12;
+					rect totalIconRect 		= absoluteRect.x + 2, totalRect.y + 3, offset - 4, 12;
+
+					rect mapTotalRect		= mapRect.x + ( mapRect.w - mapTotalRect.w ), mapRect.y + 3, 60, 12;
+					rect totalTotalRect		= totalRect.x + ( totalRect.w - totalTotalRect.w ), totalRect.y + 3, 60, 12;
+					rect totalTextRect		= mapRect.x + ( mapRect.w - mapTotalRect.w ), mapRect.y - 16, 60, 12;
+
+					wstring xpTotal			= toWStr( "0" );
+					wstring xpMap			= toWStr( "0" );
+
+					handle	totalsText		= localize( "guis/mainmenu/totals" );
+					handle	totalText		= localize( "guis/mainmenu/campaigntotal" );
+					handle	matchTotalsText	= localize( "guis/mainmenu/matchtotal" );
+					handle	yourText		= localize( "guis/mainmenu/your" );
+					float visible			= player.serverIsRepeater == false;
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.btnFillMaterial, mapRect, COLOR_MISSION_STATS_FILL );
+
+						drawLocalizedText( yourText, yourRect, COLOR_WHITE, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER | DTF_TRUNCATE );
+						drawLocalizedText( matchTotalsText, mapIconRect, "1,1,1,0.5", 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER | DTF_TRUNCATE );
+
+						drawLocalizedText( totalsText, 	totalTextRect, COLOR_WHITE, 12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+						drawText( xpMap, 		mapTotalRect, COLOR_WHITE, 12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+
+						if( globals.campaignInfo.numMaps > 1 ) {
+							drawCachedMaterial( gui.btnFillMaterial, totalRect, COLOR_MISSION_STATS_FILL );
+							drawLocalizedText( totalText, 	totalIconRect, "1,1,1,0.5", 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+							drawText( xptotal, 	totalTotalRect, COLOR_WHITE, 12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+						}
+
+						gui.scriptPushFloat( true );
+					}
+					onActivate {
+						xpTotal 	= toWStr( sdnet.queryXPTotals( true ) );
+						xpMap 		= toWStr( sdnet.queryXPTotals( false ) );
+					}
+				}
+
+				_map_stat( Soldier, 		"soldier", 				"soldier", 			gui.overallStats.offset, 	-15 )
+				_map_stat( Medic, 			"medic", 				"medic", 			gui.overallStats.offset + 30, 	-15 )
+				_map_stat( Engineer, 		"engineer",				"engineer", 		gui.overallStats.offset + 60, 	-15 )
+				_map_stat( FieldOps, 		"fieldops", 			"fieldops", 		gui.overallStats.offset + 90, 	-15 )
+				_map_stat( CovertOps, 		"covertops", 			"covertops", 		gui.overallStats.offset + 120, 	-15 )
+
+				_map_stat( BattleSense, 	"prof_battlesense", 	"battlesense", 		gui.overallStats.offset + 150, 	-15 )
+				_map_stat( LightWeapons, 	"prof_weapon_handling", "weapon_handling", 	gui.overallStats.offset + 180, 	-15 )
+				_map_stat( Vehicles, 		"prof_vehicle", 		"vehicle", 			gui.overallStats.offset + 210, 	-15 )
+			}
+			windowDef awards {
+				properties {
+					rect rect = _to_right_of( campaignInfo ) + 4, 56, _fill_to_right_of( tabpSummaryContent ), 268;
+				}
+				events {
+					onActivate {
+						postNamedEvent( "updatePosition" );
+					}
+					onPropertyChanged "player.serverIsRepeater" {
+						postNamedEvent( "updatePosition" );
+					}					
+					onNamedEvent "updatePosition" {
+						if( player.serverIsRepeater ) {
+							rect = PADDING, PADDING, _fill_to_right_of( tabpSummaryContent ), 268;
+						} else {
+							rect = _to_right_of( campaignInfo ) + 4, 56, _fill_to_right_of( tabpSummaryContent ), 268;
+						}
+					}
+				}
+				__draw_dialog_frame( drawText, gui.blankWStr, "nogradient", COLOR_DIALOG_FILL, COLOR_DIALOG_LINES, COLOR_INVISIBLE )
+				events {
+					onPostDraw {
+						drawLocalizedText( localize( "guis/mainmenu/globalclassawards" ), "absoluteRect.x + 4, absoluteRect.y + 4, absoluteRect.w, 22", COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					}
+				}
+
+				windowDef lytLeft {
+					type layoutVertical;
+					properties {
+						rect rect = PADDING, _top( awards ), _client_dimension( awards, width ) * 0.5f, _fill_to_bottom_of( awards );
+						vec4 margins = 0, 0, 0, 0;
+					}
+					_rating_button( Soldier, 		"best_soldier", 	localize( "guis/mainmenu/bestsoldier" ), 	PR_BEST_SOLDIER, 		0, 0 )
+					_rating_button( Medic, 			"best_medic", 		localize( "guis/mainmenu/bestmedic" ), 		PR_BEST_MEDIC,			0, 0 )
+					_rating_button( Engineer, 		"best_engineer", 	localize( "guis/mainmenu/bestengineer" ), 	PR_BEST_ENGINEER, 		0, 0 )
+					_rating_button( FieldOps, 		"best_fieldops", 	localize( "guis/mainmenu/bestfieldops" ), 	PR_BEST_FIELDOPS, 		0, 0 )
+					_rating_button( CovertOps, 		"best_covertops", 	localize( "guis/mainmenu/bestcovertops" ), 	PR_BEST_COVERTOPS, 		0, 0 )
+					_rating_button( BattleSense, 	"best_battlesense", localize( "guis/mainmenu/bestbattlesense" ),PR_BEST_BATTLESENSE, 	0, 0 )
+					_rating_button( Weapons, 		"best_weapons", 	localize( "guis/mainmenu/bestweapons" ), 	PR_BEST_LIGHTWEAPONS, 	0, 0 )
+					_rating_button( Vehicles, 		"best_vehicles", 	localize( "guis/mainmenu/bestvehicles" ), 	PR_BEST_VEHICLE, 		0, 0 )
+				}
+
+				windowDef lytRight {
+					type layoutVertical;
+					properties {
+						rect rect = _to_right_of( lytLeft ) + 4, _top( awards ), _fill_to_right_of( awards ), _fill_to_bottom_of( awards );
+						vec4 margins = 0, 0, 0, 0;
+					}
+					_rating_button( HighestXP, 		"highest_xp", 		localize( "guis/mainmenu/highestxp" ), 		PR_MOST_XP, 		0, 0 )
+					_rating_button( MostAccurate, 	"most_accurate", 	localize( "guis/mainmenu/mostaccurate" ), 	PR_ACCURACY_HIGH, 	0, 0 )
+					_rating_button( MostObjectives, "most_objectives", 	localize( "guis/mainmenu/mostobjectives" ), PR_MOST_OBJECTIVES, 0, 0 )
+
+					_rating_button( MostKills, 		"most_kills", 		localize( "guis/mainmenu/mostkills" ), 		PR_MOST_KILLS, 		0, 0 )
+					_rating_button( Newbie, 		"newbie", 			localize( "guis/mainmenu/newbieofbattle" ), PR_LEAST_XP, 		0, 0 )
+					_rating_button( MostDamage, 	"most_damage", 		localize( "guis/mainmenu/mostdamage" ), 	PR_MOST_DAMAGE, 	0, 0 )
+					_rating_button( MostTeamKills, 	"most_teamkills", 	localize( "guis/mainmenu/mostteamkills" ), 	PR_MOST_TEAMKILLS, 	0, 0 )
+					_rating_button( MostUpgrades, 	"most_upgrades", 	localize( "guis/mainmenu/mostupgrades" ), 	PR_PROFICIENCY, 	0, 0 )
+				}
+			}
+		_end_tab_page
+		_tab_page( Scores, localize( "guis/game/scoreboard/scores" ), MatchResults, SP_SCORES, _to_right_of( tabpSummary ), 0 )
+			windowDef gdfInfo_EndGame {
+				properties {
+					rect rect = PADDING, PADDING + 4, _client_dimension( tabpScoresContent, width ) * 0.5, 16;
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.gdfMaterial, "absoluteRect.x, absoluteRect.y, 12, 12", COLOR_ICON_DIM );
+						drawText( localizeArgs( "guis/game/scoreboard/team_label", localizeArgs( "game/gdf" ), toWString( gui.lstGDF_EndGame.numActualPlayers, 0 ) ), "absoluteRect.x + 14, absoluteRect.y, 60, 16", COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+						drawText( localizeArgs( "guis/game/scoreboard/averageping", toWString( gui.lstGDF_EndGame.averagePing, 0 ) ), "absoluteRect.x + gui.lstGDF_EndGame.rect.w - 120, absoluteRect.y - 6, 100, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+						drawText( localizeArgs( "guis/game/scoreboard/averagexp", toWString( gui.lstGDF_EndGame.averageXP, 0 ) ), "absoluteRect.x + gui.lstGDF_EndGame.rect.w - 80, absoluteRect.y + 6, 60, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+						gui.scriptPushFloat( false );
+					}
+				}
+			}
+			windowDef lstGDF_EndGame {
+				type list;
+				properties {
+					rect rect = PADDING, 24, ( ( _client_dimension( tabpScoresContent, width ) * 0.5 ) - 1 ) + widthFactor, 298;
+				}
+
+				__team_list_properties( "gdf" )
+			}
+
+			windowDef lstStrogg_EndGame {
+				type list;
+				properties {
+					rect rect = _to_right_of( lstGDF_EndGame ) + 1, 24, ( ( _client_dimension( tabpScoresContent, width ) * 0.5 ) - 1 ) + widthFactor, 298;
+				}
+				__team_list_properties( "strogg" )
+			}
+			windowDef stroggInfo_EndGame {
+				properties {
+					rect rect = gui.lstStrogg_EndGame.rect.x, PADDING + 4, _client_dimension( tabpScoresContent, width ) * 0.5, 16;
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.stroggMaterial, "absoluteRect.x, absoluteRect.y, 22, 12", COLOR_ICON_DIM );
+						drawText( localizeArgs( "guis/game/scoreboard/team_label", localizeArgs( "game/strogg" ), toWString( gui.lstStrogg_EndGame.numActualPlayers, 0 ) ), "absoluteRect.x + 24, absoluteRect.y, 60, 16", COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+						drawText( localizeArgs( "guis/game/scoreboard/averageping", toWString( gui.lstStrogg_EndGame.averagePing, 0 ) ), "absoluteRect.x + gui.lstStrogg_EndGame.rect.w - 100, absoluteRect.y - 6, 100, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+						drawText( localizeArgs( "guis/game/scoreboard/averagexp", toWString( gui.lstStrogg_EndGame.averageXP, 0 ) ), "absoluteRect.x + gui.lstStrogg_EndGame.rect.w - 60, absoluteRect.y + 6, 60, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+
+						gui.scriptPushFloat( false );
+					}
+				}
+			}
+
+		_end_tab_page
+	_end_tab_container
+
+	_group_box_vertical( Scoreboard_Buttons, $evalfloat( PADDING + 4 ), _bottom( backFill ) - 2, _fill_to_left_of( chatParent ), 104 )
+		properties {
+			vec4 margins = PADDING, PADDING, PADDING, PADDING;
+		}
+$template __voice_button( Mode, Icon )
+	properties {
+		float iconAlpha = 0;
+		float baseIconAlpha = 0.5;
+		handle icon = gui.cacheMaterial( Icon, "_st " + Icon );
+		float visible = player.serverIsRepeater == false;
+	}
+	events {
+		onPostDraw {
+			callSuper();
+			drawCachedMaterial( icon, "absoluteRect.x + 3, absoluteRect.y + 2, 12, 12", "1,1,1,baseIconAlpha" );
+			drawCachedMaterial( gui.voiceSendIcon, "absoluteRect.x + ( absoluteRect.w - 15 ), absoluteRect.y + 2, 12, 12", "1,1,1,iconAlpha" );
+		}
+		onMouseEnter {
+			callSuper();
+			baseIconAlpha = transition( baseIconAlpha, 1.0f, 250 );
+		}
+
+		onMouseExit {
+			callSuper();
+			baseIconAlpha = transition( baseIconAlpha, 0.5f, 250 );
+		}
+
+		onKeyDown "mouse1" {
+			flags = immediate( flags ) | WF_CAPTURE_MOUSE;
+			gui.voiceChat( Mode );
+			timeline.flash.active = true;
+			timeline.flash.resetTime( 0 );
+			foreColor = 0.1,0.8,0.1,1;
+		}
+		onKeyUp "mouse1" {
+			flags = immediate( flags ) & ~WF_CAPTURE_MOUSE;
+			gui.voiceChat( VOIPC_DISABLE );
+			timeline.flash.resetTime( 999 );
+			foreColor = COLOR_TEXT;
+		}
+		onQueryTooltip {
+			if( allowEvents ) {
+				toolTipText = localizeArgs( "guis/mainmenu/chat/tip" );
+			}
+		}
+	}
+	timeline flash {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			iconAlpha = transition( iconAlpha, 1.0, 250 );
+		}
+		onTime 300 {
+			iconAlpha = transition( iconAlpha, 0.5, 250 );
+		}
+		onTime 600 {
+			resetTime( 0 );
+		}
+		onTime 999 {
+			iconAlpha = transition( iconAlpha, 0, 250 );
+		}
+	}
+
+$endtemplate
+		_button( GlobalChat, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/chat/global" );
+				float allowInput = true;
+			}
+			events {
+				onActivate {
+					allowInput = gui.getCVarBool( "g_disableGlobalAudio" ) == false;
+				}
+				onCVarChanged "g_disableGlobalAudio" {
+					allowInput = gui.getCVarBool( "g_disableGlobalAudio" ) == false;
+				}
+			}
+
+			_button_disable_if( "allowInput", allowInput == false )
+			__voice_button( VOIPC_GLOBAL, "voip_global" )
+
+		_end_button
+
+		_button( TeamChat, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/chat/team" );
+			}
+			__voice_button( VOIPC_TEAM, "voip_team" )
+		_end_button
+
+		_button( FireteamChat, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/chat/fireteam" );
+			}
+			__voice_button( VOIPC_FIRETEAM, "voip_fireteam" )
+		_end_button
+
+		_button( ReadyUp, 0, 8, BUTTON_WIDTH, BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/game/scoreboard/ready" );
+				handle notReady = gui.cacheMaterial( "notready", "notready" );
+				rect flashRectBase = absoluteRect.x - 2, absoluteRect.y - 2, absoluteRect.w + 4, absoluteRect.h + 4;
+				rect flashRect = flashRectBase;
+				float flash = true;
+			}
+			events {
+				onPropertyChanged "player.nextGameStateTime" "player.serverInfoChanged" {
+					visible = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_gameReviewReadyWait", "0" ) ) && player.nextGameStateTime <= gui.time;
+				}
+				onActivate {
+					visible = toFloat( sdnet.queryServerInfo( FS_CURRENT, -1, "si_gameReviewReadyWait", "0" ) ) && player.nextGameStateTime <= gui.time;
+				}
+				onPostDraw {
+					callSuper();
+					if( player.isReady == false ) {
+						flash = true;
+						drawCachedMaterial( notReady, "absoluteRect.x, absoluteRect.y, 16, 16", "1,1,1,0.5" );
+						drawCachedMaterial( gui.wndLineMaterial, flashRect, COLOR_BUTTON_HI_LINES );
+					} else {
+						flash = false;
+					}
+				}
+				onQueryTooltip {
+					if( player.isReady == false ) {
+						toolTipText = localizeArgs( "guis/mainmenu/tooltips/readyup" );
+					} else {
+						toolTipText = gui.blankWStr;
+					}
+				}
+			}
+			_button_action(
+				gui.toggleReady();
+			)
+			timeline flash {
+				onTime 0 {
+					flashRect = transition( flashRect, absoluteRect, 1000 );
+					fillColor = transition( fillColor, COLOR_BUTTON_HI_LINES, 500 );
+				}
+				onTime 500 {
+					fillColor = transition( fillColor, COLOR_BUTTON_FILL, 500 );
+				}
+				onTime 1000 {
+					flashRect = transition( flashRect, flashRectBase, 1000 );
+					fillColor = transition( fillColor, COLOR_BUTTON_HI_LINES, 500 );
+				}
+				onTime 1500 {
+					fillColor = transition( fillColor, COLOR_BUTTON_FILL, 500 );
+				}
+				onTime 2000 {
+					if ( flash ) {
+						resetTime( 0 );
+					}
+				}
+			}
+		_end_button
+
+		_button( Disconnect, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/disconnect" );
+			}
+			_button_action(
+				gui.consoleCommand( "disconnect" + _newline );
+			)
+		_end_button
+
+	_end_group_box_vertical
+
+	windowDef chatParent {
+			properties {
+				rect rect = $evalfloat( PADDING + 4 + ( BUTTON_WIDTH * 1.5 ) ), _bottom( backFill ) - 2, gui.tabpSummaryContent.rect.w - rect.x, 104;
+				float numButtons = 2;
+			}
+			__draw_dialog_frame( drawText, gui.blankWStr, "nogradient", COLOR_DIALOG_FILL, COLOR_DIALOG_LINES, COLOR_INVISIBLE )
+			__chat( chatParent )
+		}
+	}
+
+	windowDef scorePanel {
+		properties {
+			rect rect = CENTER_X - ( rect.w * 0.5f ), 2, 590, 424;
+			float visible = player.endGame == false;
+		}
+		__draw_dialog_frame( drawText, gui.blankWStr, "nogradient", COLOR_DIALOG_FILL, COLOR_DIALOG_LINES, COLOR_INVISIBLE )
+
+		windowDef gdfInfo {
+			properties {
+				rect rect = PADDING, PADDING + 24, _client_dimension( scorePanel, width ) * 0.5, 16;
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( gui.gdfMaterial, "absoluteRect.x, absoluteRect.y, 12, 12", COLOR_ICON_DIM );
+					drawText( localizeArgs( "guis/game/scoreboard/team_label", localizeArgs( "game/gdf" ), toWString( gui.lstGDF.numActualPlayers, 0 ) ), "absoluteRect.x + 14, absoluteRect.y, 60, 16", COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawText( localizeArgs( "guis/game/scoreboard/averageping", toWString( gui.lstGDF.averagePing, 0 ) ), "absoluteRect.x + gui.lstGDF.rect.w - 120, absoluteRect.y - 6, 100, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+					drawText( localizeArgs( "guis/game/scoreboard/averagexp", toWString( gui.lstGDF.averageXP, 0 ) ), "absoluteRect.x + gui.lstGDF.rect.w - 80, absoluteRect.y + 6, 60, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+		windowDef lstGDF {
+			type list;
+			properties {
+				rect rect = PADDING, 48, ( ( _client_dimension( scorePanel, width ) * 0.5 ) - 1 ) + widthFactor, _fill_to_top_of( spectators );
+			}
+
+			__team_list_properties( "gdf" )
+		}
+
+		windowDef lstStrogg {
+			type list;
+			properties {
+				rect rect = _to_right_of( lstGDF ) + 1, 48, ( ( _client_dimension( scorePanel, width ) * 0.5 ) - 1 ) + widthFactor, _fill_to_top_of( spectators );
+			}
+			__team_list_properties( "strogg" )
+		}
+		windowDef stroggInfo {
+			properties {
+				rect rect = gui.lstStrogg.rect.x, PADDING + 24, _client_dimension( scorePanel, width ) * 0.5, 16;
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( gui.stroggMaterial, "absoluteRect.x, absoluteRect.y, 22, 12", COLOR_ICON_DIM );
+					drawText( localizeArgs( "guis/game/scoreboard/team_label", localizeArgs( "game/strogg" ), toWString( gui.lstStrogg.numActualPlayers, 0 ) ), "absoluteRect.x + 24, absoluteRect.y, 60, 16", COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+					drawText( localizeArgs( "guis/game/scoreboard/averageping", toWString( gui.lstStrogg.averagePing, 0 ) ), "absoluteRect.x + gui.lstStrogg.rect.w - 100, absoluteRect.y - 6, 100, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+					drawText( localizeArgs( "guis/game/scoreboard/averagexp", toWString( gui.lstStrogg.averageXP, 0 ) ), "absoluteRect.x + gui.lstStrogg.rect.w - 60, absoluteRect.y + 6, 60, 16", COLOR_ICON_DIM, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+		windowDef serverInfo {
+			properties {
+				rect rect = PADDING, _to_bottom_of( spectators ), _fill_to_right_of( scorePanel ), 24;
+				float fontSize = 14;
+				wstring serverName;
+				rect nameRect = absoluteRect.x, absoluteRect.y, absoluteRect.w * 0.45, absoluteRect.h;
+				rect typeRect = absoluteRect.x + absoluteRect.w - typeRect.w, absoluteRect.y, absoluteRect.w * 0.45, absoluteRect.h;
+			}
+			events {
+				onPreDraw {
+					drawText( serverName, nameRect, COLOR_WHITE, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+					drawText( player.matchType, typeRect, COLOR_WHITE, fontSize, DTF_RIGHT | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+					gui.scriptPushFloat( false );
+				}
+				onActivate {
+					serverName = toWStr( sdnet.queryServerInfo( FS_CURRENT, -1, "si_name", "" ) );
+				}
+			}
+		}
+		windowDef matchInfo {
+			properties {
+				rect rect = PADDING, PADDING, _fill_to_right_of( scorePanel ), 24;
+				float fontSize = 14;
+			}
+			events {
+				onPreDraw {
+					drawText( player.matchStatus, absoluteRect, COLOR_WHITE, fontSize, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE );
+					if( player.warmup == false ) {
+						drawText( toWStr( msToHMS( player.matchTime ) ), absoluteRect, COLOR_WHITE, fontSize, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+					}
+					drawText( globals.campaignInfo.ruleStatus, absoluteRect, COLOR_WHITE, fontSize, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+		windowDef spectatorsIcon {
+			properties {
+				rect rect = _to_left_of( spectators ) - 2, gui.spectators.rect.y, 16, 16;
+				handle teamIcon = gui.cacheMaterial( "specIcon", "_st spectating" );
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( teamIcon, absoluteRect, COLOR_ICON_DIM );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+
+		windowDef spectators {
+			type marquee;
+			properties {
+				rect	rect = 24, _bottom( scorePanel ) - 16, _fill_to_right_of( scorePanel ), 16;
+				float	fontSize 		= 12;
+				float	speed			= 14;
+				vec2	textAlignment	= TA_LEFT, TA_VCENTER;
+			}
+			timeLine {
+				onTime 500 {
+					text = toWStr( gui.getSpectatorList() );
+					resetTime( 0 );
+				}
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_SPEC_FILL );
+					drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_SPEC_LINE );
+					gui.scriptPushFloat( true );
+				}
+			}
+		}
+	}
+	_tooltip
+}
