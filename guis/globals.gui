@@ -123,8 +123,6 @@ stringMap gameHud {
 	
 	"ammoParentBoxTime"				"float"
 	"healthParentBoxTime"				"float"
-	
-	"decoyAmmo"					"float"
 }
 
 stringMap mcpObjective {
@@ -251,6 +249,8 @@ stringMap vehicles {
 	"vehicle_charge"		"float"
 	"siegeMode"				"handle"
 	"drivingMCP"			"float"
+	
+	"decoyAmmo"			"float"
 }
 
 stringMap mapinfo {

@@ -146,17 +146,28 @@ $template _base_icon
 		}
 
 		events {
+			onPropertyChanged "globals.vehicles.decoyAmmo" {
+				if ( gui.getCVarBool( "g_useVehicleDecoyAmmo" ) && globals.vehicles.decoyAmmo > -1 ) {
+					if ( globals.vehicles.decoyAmmo > 0 ) {
+						drawLocalizedText( localize( "guis/hud/decoyammo" ), "absoluteRect.x + ( absoluteRect.w * 0.25f ) + 55, absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 4, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_LEFT | DTF_TOP );
+						drawText( toWStr( toString( max( 0, globals.vehicles.decoyAmmo ), 0 ) ), "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 8, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
+					} else {
+						drawLocalizedText( localize( "guis/hud/decoyammo" ), "absoluteRect.x + ( absoluteRect.w * 0.25f ) + 55, absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 4, absoluteRect.h", COLOR_RED, 12, DTF_SINGLELINE | DTF_LEFT | DTF_TOP );
+						drawText( toWStr( toString( max( 0, globals.vehicles.decoyAmmo ), 0 ) ), "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 8, absoluteRect.h", COLOR_RED, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
+					}
+				}
+			}
 			onPreDraw {
 				drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
 				drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
 				drawLocalizedText( player.vehiclePosition, "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y, ( absoluteRect.w * 0.75 ) - 4, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
-				if ( gui.getCVarBool( "g_useVehicleDecoyAmmo" ) && globals.gameHud.decoyAmmo > -1 ) {
-					if ( globals.gameHud.decoyAmmo > 0 ) {
+				if ( gui.getCVarBool( "g_useVehicleDecoyAmmo" ) && globals.vehicles.decoyAmmo > -1 ) {
+					if ( globals.vehicles.decoyAmmo > 0 ) {
 						drawLocalizedText( localize( "guis/hud/decoyammo" ), "absoluteRect.x + ( absoluteRect.w * 0.25f ) + 55, absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 4, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_LEFT | DTF_TOP );
-						drawText( toWStr( toString( max( 0, globals.gameHud.decoyAmmo ), 0 ) ), "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 8, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
+						drawText( toWStr( toString( max( 0, globals.vehicles.decoyAmmo ), 0 ) ), "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 8, absoluteRect.h", foreColor, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
 					} else {
 						drawLocalizedText( localize( "guis/hud/decoyammo" ), "absoluteRect.x + ( absoluteRect.w * 0.25f ) + 55, absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 4, absoluteRect.h", COLOR_RED, 12, DTF_SINGLELINE | DTF_LEFT | DTF_TOP );
-						drawText( toWStr( toString( max( 0, globals.gameHud.decoyAmmo ), 0 ) ), "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 8, absoluteRect.h", COLOR_RED, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
+						drawText( toWStr( toString( max( 0, globals.vehicles.decoyAmmo ), 0 ) ), "absoluteRect.x + ( absoluteRect.w * 0.25f ), absoluteRect.y + 36, ( absoluteRect.w * 0.75 ) - 8, absoluteRect.h", COLOR_RED, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_TOP );
 					}
 				}
 				gui.scriptPushFloat( false );
