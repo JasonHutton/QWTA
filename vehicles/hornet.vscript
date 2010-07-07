@@ -648,6 +648,7 @@ stringMap vehicle_hornet_weapon3 {
 
 	"charge_max"				"10"
 	"charge_per_use"			"2"
+	"q4hyper_charge_per_use"	"4"
 	"overheat_penalty"			"1"
 	"use_heat_bar"				"1"
 

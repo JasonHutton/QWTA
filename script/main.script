@@ -248,6 +248,7 @@ This is the main script that is loaded before any level scripts load.
 
 // Vehicles
 #include "script/vehicles/weapons/vrof.script"
+#include "script/vehicles/weapons/siegeweapon.script"
 #include "script/vehicles/weapons/hyperblaster.script"
 #include "script/projectiles/homingnail.script"
 #include "script/projectiles/flamethrower.script"

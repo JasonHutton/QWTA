@@ -1,5 +1,5 @@
 
-object vehicle_weapon_streamshot : vehicle_weapon_base {
+object vehicle_weapon_streamshot : vehicle_weapon_siegeweapon {
 	void				preinit();
 	void				init();
 	void				destroy();

@@ -1,0 +1,61 @@
+object vehicle_weapon_siegeweapon : vehicle_weapon_base {
+	void			preinit();
+	void			RemoveCharge();
+	boolean			CanRemoveCharge();
+	void			vCheckProficiency();
+	
+	
+	float			siegeChargePerUse;
+	float			baseSiegeChargePerUse;
+	float			siegeUserChargePerUse;
+	float			originalBaseSiegeChargePerUse;
+}
+
+void vehicle_weapon_siegeweapon::preinit() {
+	baseSiegeChargePerUse = getFloatKeyWithDefault( "siege_charge_per_use", originalBaseChargePerUse );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		baseSiegeChargePerUse = getFloatKeyWithDefault( "realistic_siege_charge_per_use", baseSiegeChargePerUse );
+	}
+	originalBaseSiegeChargePerUse = baseSiegeChargePerUse; // Save it.
+	baseSiegeChargePerUse = ( baseSiegeChargePerUse / 100 ) * chargeMax;
+	
+	vCheckProficiency();
+}	
+
+void vehicle_weapon_siegeweapon::RemoveCharge() {
+	if ( myVehicle.inSiegeMode() ) {
+		chargeTime = CalcChargeUsed() + sys.getTime() + siegeChargePerUse;
+	} else {
+		chargeTime = CalcChargeUsed() + sys.getTime() + chargePerUse;
+	}
+	
+	// don't use more charge than we have
+	float used = chargeTime - sys.getTime();
+	if ( used > chargeMax ) {
+		chargeTime = sys.getTime() + chargeMax;
+	}
+}
+
+boolean vehicle_weapon_siegeweapon::CanRemoveCharge() {
+	if ( myVehicle.inSiegeMode() ) {
+		return ( ( CalcChargeUsed() + siegeChargePerUse ) <= chargeMax );
+	}
+	
+	return ( ( CalcChargeUsed() + chargePerUse ) <= chargeMax );
+}
+
+void vehicle_weapon_siegeweapon::vCheckProficiency() {
+	userChargeScale = 1.f;
+
+	if ( user != $null_entity ) {
+		if ( user.getProficiency( g_proficiencyVehicle ) >= 3 ) {
+			userChargeScale = 0.9f;
+		}
+	}
+	
+	siegeUserChargePerUse = baseSiegeChargePerUse * userChargeScale;
+	userChargePerUse = baseChargePerUse * userChargeScale;
+
+	chargePerUse = userChargePerUse;
+	siegeChargePerUse = siegeUserChargePerUse;
+}

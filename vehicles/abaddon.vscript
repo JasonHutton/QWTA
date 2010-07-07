@@ -610,8 +610,8 @@ stringMap vehicle_abaddon_weapon1 {
 	
 	"def_projectile"			"projectile_flamethrower_napalm"
 
-	"crosshair"					"explosive"
-	"disabled_crosshair"		"explosive"
+	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
 	
 	"burn_time"					"0.5"
 	"damageRate"				"0.05"
@@ -664,7 +664,7 @@ stringMap vehicle_abaddon_weapon2 {
 	"charge_max"				"10"
 	"charge_per_use"			"3"
 	"siege_charge_per_use"		"1.5"
-	"overheat_penalty"			"3"
+	"overheat_penalty"			"2"
 	"use_heat_bar"				"1"
 
 	"weapon1_muzzle"			"turret_muzzle"

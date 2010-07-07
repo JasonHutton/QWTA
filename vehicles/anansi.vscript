@@ -592,6 +592,7 @@ stringMap vehicle_anansi_weapon3 {
 
 	"charge_max"				"15"
 	"charge_per_use"			"2.5"
+	"realistic_charge_per_use"	"1"
 	"overheat_penalty"			"1"
 	"use_heat_bar"				"1"
 

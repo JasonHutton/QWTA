@@ -24,11 +24,9 @@ object vehicle_weapon_base {
 	float				chargeTime;
 	float				chargeMax;
 	float				chargePerUse;
-	float				siegeChargePerUse;
 	float				baseChargePerUse;
-	float				baseSiegeChargePerUse;
+	float				originalBaseChargePerUse;
 	float				userChargePerUse;
-	float				siegeUserChargePerUse;
 	float				userChargeScale;
 
 	void				AddReFireDelay( float delay );
@@ -69,13 +67,11 @@ void vehicle_weapon_base::preinit() {
 		chargeMax = getFloatKeyWithDefault( "realistic_charge_max", chargeMax );
 	}
 	baseChargePerUse = getFloatKey( "charge_per_use" );
-	baseSiegeChargePerUse = getFloatKeyWithDefault( "siege_charge_per_use", baseChargePerUse );
 	if ( g_useRealisticWeapons.getBoolValue() ) {
 		baseChargePerUse = getFloatKeyWithDefault( "realistic_charge_per_use", baseChargePerUse );
-		baseSiegeChargePerUse = getFloatKeyWithDefault( "realistic_siege_charge_per_use", baseSiegeChargePerUse );
 	}
+	originalBaseChargePerUse = baseChargePerUse; // Save it for inherited classes!
 	baseChargePerUse = ( baseChargePerUse / 100 ) * chargeMax;
-	baseSiegeChargePerUse = ( baseSiegeChargePerUse / 100 ) * chargeMax;
 	
 	vCheckProficiency();
 	
@@ -219,11 +215,7 @@ float vehicle_weapon_base::CalcChargeUsed() {
 }
 
 void vehicle_weapon_base::RemoveCharge() {
-	if ( myVehicle.inSiegeMode() ) {
-		chargeTime = CalcChargeUsed() + sys.getTime() + siegeChargePerUse;
-	} else {
-		chargeTime = CalcChargeUsed() + sys.getTime() + chargePerUse;
-	}
+	chargeTime = CalcChargeUsed() + sys.getTime() + chargePerUse;
 	
 	// don't use more charge than we have
 	float used = chargeTime - sys.getTime();
@@ -233,10 +225,6 @@ void vehicle_weapon_base::RemoveCharge() {
 }
 
 boolean vehicle_weapon_base::CanRemoveCharge() {
-	if ( myVehicle.inSiegeMode() ) {
-		return ( ( CalcChargeUsed() + siegeChargePerUse ) <= chargeMax );
-	}
-	
 	return ( ( CalcChargeUsed() + chargePerUse ) <= chargeMax );
 }
 
@@ -279,11 +267,8 @@ void vehicle_weapon_base::vCheckProficiency() {
 		}
 	}
 	
-	siegeUserChargePerUse = baseSiegeChargePerUse * userChargeScale;
 	userChargePerUse = baseChargePerUse * userChargeScale;
-
 	chargePerUse = userChargePerUse;
-	siegeChargePerUse = siegeUserChargePerUse;
 }
 
 void vehicle_weapon_base::SetCrosshair() {

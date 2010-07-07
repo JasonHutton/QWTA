@@ -266,6 +266,7 @@ stringMap vehicle_platypus_weapon1 {
 
 	"charge_max"			"10"
 	"charge_per_use"		"2"
+	"realistic_charge_per_use"	"1.5"
 	"overheat_penalty"		"1"
 	"use_heat_bar"			"1"
 
