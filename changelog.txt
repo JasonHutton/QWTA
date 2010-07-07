@@ -68,7 +68,7 @@ CHANGES:
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
-* Fixed Abaddon's Flamethrower using improper crosshair when using standard 
+* Fixed Abaddon's Flamethrower using improper crosshair when using concealed 
   crosshair settings.
 * Fixed BaseETQW oversight: Frags made by vehicle explosions are now properly
   attributed to the player who caused the explosion.
