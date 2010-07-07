@@ -65,6 +65,17 @@ CHANGES:
 * Abaddon Plasma Beam tweaked.
   + Hover mode uses more weapon charge and can't fire as long without cooling.
   + Siege mode uses less charge and can fire much longer without cooling.
+* Cvar g_useAwardJackOfAllTrades implemented.
+  + Default 1.
+  + Controls whether the new "Jack of All Trades" after-round award replaces
+    the near-pointless "Newbie of the Battle" award.
+  + The Jack of All Trades award is given to the player who has accumulated
+    an average or better amount of XP with at least two classes.
+    If more than one player meets this qualification, the player with the most
+    XP accumulated in the applicable player class proficiencies wins out.
+    This award is intended to highlight those players who are constantly
+    switching classes throughout the round, in order to serve their team's
+    needs best, moment to moment.
 
 BUG FIXES:
 * Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
