@@ -12,6 +12,8 @@ object rules {
 	void			CalcAccuracy();
 	void			CalcMostObjectives();
 	void			CalcHighestLevel();
+	entity			GetCombinedClassXP( boolean fromBase );
+	float			GetAvgXPInCategory( float category, boolean fromBase );
 
 	void			WriteStats();
 
@@ -37,6 +39,7 @@ object rules {
 	handle			medalKillsStat;
 	handle			medalDamageStat;
 	handle			medalTeamKillsStat;
+	handle			medalMulticlassStat;
 	
 	float			cachedIndex;
 }
@@ -60,6 +63,7 @@ void rules::preinit() {
 	medalKillsStat			= sys.allocStatInt( "medal_kills" );
 	medalDamageStat			= sys.allocStatInt( "medal_damage" );
 	medalTeamKillsStat		= sys.allocStatInt( "medal_teamkills" );
+	medalMulticlassStat		= sys.allocStatInt( "medal_low_xp" );
 }
 
 void rules::OnConnect( entity p ) {
@@ -247,6 +251,91 @@ void rules::CalcAccuracy() {
 	PushStat( medalHighAccuracyStat, best );
 }
 
+entity rules::GetCombinedClassXP( boolean fromBase ) {
+	entity best;
+	float bestValue = -1;
+
+	cachedIndex = sys.allocEndGameStat();
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		float currentValue = 0.f;
+		float temp = 0.f;
+		float iFoundStats = 0;
+		
+		temp = p.getXP( g_proficiencySoldier, fromBase );
+		if ( temp != 0.f && temp >= GetAvgXPInCategory( g_proficiencySoldier, fromBase ) ) {
+			iFoundStats++;
+			currentValue += temp;
+		}
+		temp = p.getXP( g_proficiencyMedic, fromBase );
+		if ( temp != 0.f && temp >= GetAvgXPInCategory( g_proficiencyMedic, fromBase ) ) {
+			iFoundStats++;
+			currentValue += temp;
+		}
+		temp = p.getXP( g_proficiencyEngineer, fromBase );
+		if ( temp != 0.f && temp >= GetAvgXPInCategory( g_proficiencyEngineer, fromBase ) ) {
+			iFoundStats++;
+			currentValue += temp;
+		}
+		temp = p.getXP( g_proficiencyFieldOps, fromBase );
+		if ( temp != 0.f && temp >= GetAvgXPInCategory( g_proficiencyFieldOps, fromBase ) ) {
+			iFoundStats++;
+			currentValue += temp;
+		}
+		temp = p.getXP( g_proficiencyCovertOps, fromBase );
+		if ( temp != 0.f && temp >= GetAvgXPInCategory( g_proficiencyCovertOps, fromBase ) ) {
+			iFoundStats++;
+			currentValue += temp;
+		}
+		
+		if ( iFoundStats < 2 ) {
+			currentValue = 0.f; // This effectively aborts.
+		}
+		
+		sys.setEndGameStatValue( cachedIndex, p, currentValue );
+		if ( currentValue == 0.f ) {
+			continue;
+		}
+
+		if ( currentValue > bestValue ) {
+			bestValue = currentValue;
+			best = p;
+		}
+	}
+
+	return best;
+}
+
+float rules::GetAvgXPInCategory( float category, boolean fromBase ) {
+
+	float index;
+	float maxClients = sys.getMaxClients();
+	float numClients = 0;
+	float currentValue = 0.f;
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		numClients++;
+
+		currentValue += p.getXP( category, fromBase );
+	}
+	
+	if ( numClients == 0 )
+		return 0;
+		
+	return currentValue / numClients;
+}
+
 // these must be kept in the same order as the playerReward_e enum in sdNetManager.h
 void rules::WriteStats() {
 	PushStat( medalHighXPStat, GetMaxXPInCategory( -1, false ) );
@@ -268,6 +357,8 @@ void rules::WriteStats() {
 	PushStat( medalKillsStat, GetBestStatEntry( sys.allocStatInt( "total_kills" ) ) );
 	PushStat( medalDamageStat, GetBestStatEntry( sys.allocStatInt( "total_damage" ) ) );
 	PushStat( medalTeamKillsStat, GetBestStatEntry( sys.allocStatInt( "total_team_kills" ) ) );
+	
+	PushStat( medalMulticlassStat, GetCombinedClassXP( true ) );
 
 	sys.sendEndGameStats();
 }

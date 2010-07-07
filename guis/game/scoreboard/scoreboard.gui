@@ -62,6 +62,7 @@ gui scoreboard {
 		"best_vehicles"			"guis/assets/icons/icons_sheet1, rect( 128, 32, 32, 32 )"
 		"most_kills"			"guis/assets/icons/icons_sheet1, rect( 160, 32, 32, 32 )"
 		"newbie"				"guis/assets/icons/icons_sheet1, rect( 192, 32, 32, 32 )"
+		"best_multiclass"			"guis/assets/icons/icons_sheet1, rect( 192, 32, 32, 32 )"
 		"most_damage"			"guis/assets/icons/icons_sheet1, rect( 128, 96, 32, 32 )"
 		"most_teamkills"		"guis/assets/icons/icons_sheet1, rect( 96, 96, 32, 32 )"
 		"most_upgrades"			"guis/assets/icons/icons_sheet1, rect( 32, 32, 32, 32 )"
@@ -723,7 +724,7 @@ gui scoreboard {
 					_rating_button( MostObjectives, "most_objectives", 	localize( "guis/mainmenu/mostobjectives" ), PR_MOST_OBJECTIVES, 0, 0 )
 
 					_rating_button( MostKills, 		"most_kills", 		localize( "guis/mainmenu/mostkills" ), 		PR_MOST_KILLS, 		0, 0 )
-					_rating_button( Newbie, 		"newbie", 			localize( "guis/mainmenu/newbieofbattle" ), PR_LEAST_XP, 		0, 0 )
+					_swap_rating_button( SwapMulticlassNewbie, "best_multiclass", localize( "guis/mainmenu/bestmulticlass" ), PR_BEST_MULTICLASS, g_useAwardJackOfAllTrades, "newbie", localize( "guis/mainmenu/newbieofbattle" ), PR_LEAST_XP, 0, 0 )
 					_rating_button( MostDamage, 	"most_damage", 		localize( "guis/mainmenu/mostdamage" ), 	PR_MOST_DAMAGE, 	0, 0 )
 					_rating_button( MostTeamKills, 	"most_teamkills", 	localize( "guis/mainmenu/mostteamkills" ), 	PR_MOST_TEAMKILLS, 	0, 0 )
 					_rating_button( MostUpgrades, 	"most_upgrades", 	localize( "guis/mainmenu/mostupgrades" ), 	PR_PROFICIENCY, 	0, 0 )

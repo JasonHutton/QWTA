@@ -1,4 +1,4 @@
-// str_qwta_menus_00000105
+// str_qwta_menus_00000108
 
 /*
 =================
@@ -242,6 +242,14 @@ locString guis/limbo/qwta/settings/useVehicleDecoyAmmo {
 	text "#str_qwta_menus_00000104"
 }
 
+locString guis/mainmenu/bestmulticlass {
+	text "#str_qwta_menus_00000106"
+}
+
+locString guis/limbo/qwta/settings/useAwardJackOfAllTrades {
+	text "#str_qwta_menus_00000107"
+}
+
 /*
 =================
  ToolTips
@@ -430,4 +438,8 @@ locString guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP/tooltip {
 
 locString guis/limbo/qwta/settings/useVehicleDecoyAmmo/tooltip {
 	text "#str_qwta_menus_00000105"
+}
+
+locString guis/limbo/qwta/settings/useAwardJackOfAllTrades/tooltip {
+	text "#str_qwta_menus_00000108"
 }

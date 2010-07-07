@@ -237,6 +237,118 @@ $template _rating_button( NameParm, IconParm, TextParm, StatParm, XPos, YPos )
 	}
 $endtemplate
 
+$template _swap_rating_button( NameParm, IconParm, TextParm, StatParm, CVar, IconParm2, TextParm2, StatParm2, XPos, YPos )
+	windowDef rat##NameParm {
+		properties {
+			rect rect 				= XPos, YPos, 154, 28;
+			handle 	iconMaterial	= gui.cacheMaterial( "icon" ## #NameParm ## "Rat", "_st " # IconParm );
+			handle 	iconMaterial2	= gui.cacheMaterial( "icon" ## #NameParm ## "Rat", "_st " # IconParm2 );
+			handle 	rankMaterial	= gui.cacheMaterial( "rank" ## #NameParm ## "RatMat", "nodraw" );
+
+			handle	playerHandle;
+			wstring	playerName;
+			wstring playerXP;
+			string	scratchText;
+			wstring	localValue;
+			
+			float isSelf 		= iwcompare( playerName, toWStr( player.name ) );
+			
+			color	fillColor = COLOR_AWARD_FILL;
+			color	lineColor = COLOR_AWARD_LINE;
+			color	gradColor = COLOR_AWARD_GRAD;
+			
+			rect nameRect	= absoluteRect.x + 36, absoluteRect.y + 14, 102, 12;
+			rect xpRect 	= absoluteRect.x + 38, absoluteRect.y + 14, absoluteRect.w - 40, 12;
+			rect selfRect 	= absoluteRect.x + 38, absoluteRect.y + 2, absoluteRect.w - 40, 12;
+			rect iconRect 	= absoluteRect.x, absoluteRect.y + 2, 24, 24;
+			rect rankRect	= absoluteRect.x + 22, absoluteRect.y + 12, 14, 14;
+			rect textRect	= absoluteRect.x + 22, absoluteRect.y + 2, 154, 12;
+			rect gradRect	= absoluteRect.x, absoluteRect.y, absoluteRect.w, absoluteRect.h;
+			
+			float awardCVar = gui.getCVarBool( #CVar );
+		}
+
+		events {
+			onActivate {
+				postNamedEvent( "update" );
+			}
+			onNamedEvent "update" {
+				if( globals.mapInfo.statsReady ) {
+					if ( awardCVar ) {
+						playerName 		= sdnet.getPlayerAward( StatParm, PS_NAME, false );
+						playerXP		= sdnet.getPlayerAward( StatParm, PS_XP, false );
+
+						localValue		= sdnet.getPlayerAward( StatParm, PS_XP, true );
+
+						scratchText		= toStr( sdnet.getPlayerAward( StatParm, PS_RANK, false ) );
+						
+					} else {
+						playerName 		= sdnet.getPlayerAward( StatParm2, PS_NAME, false );
+						playerXP		= sdnet.getPlayerAward( StatParm2, PS_XP, false );
+
+						localValue		= sdnet.getPlayerAward( StatParm2, PS_XP, true );
+
+						scratchText		= toStr( sdnet.getPlayerAward( StatParm2, PS_RANK, false ) );
+					}
+					if( compare( scratchText, "" ) ) {
+						rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "nodraw" );						
+					} else {
+						rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "_st " + scratchText );
+					}
+				} else {
+					playerName = gui.blankWStr;
+					playerXP = gui.blankWStr;
+					localValue = gui.blankWStr;
+					rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "nodraw" );					
+				}				
+								
+				if( isSelf ) {
+					fillColor = COLOR_AWARD_FILL_SELF;
+				} else {
+					fillColor = COLOR_AWARD_FILL;
+				}	
+				
+				if( isSelf || wcompare( localValue, gui.blankWStr ) ) {
+					toolTipText = gui.blankWStr;
+				} else {
+					toolTipText = localizeArgs( "guis/mainmenu/yourvalue", localValue );
+				}						
+			}
+			onCVarChanged #CVar {
+				awardCVar = gui.getCVarBool( #CVar );
+				postNamedEvent( "update" );
+			}
+			onPropertyChanged "globals.mapInfo.statsReady" {			
+				postNamedEvent( "update" );
+			}
+			onPreDraw {
+			
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.btnGradMaterial, gradRect, gradColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+				
+				if ( awardCVar ) {
+					drawCachedMaterial( iconMaterial, iconRect, COLOR_WHITE );
+					drawCachedMaterial( rankMaterial, rankRect, COLOR_WHITE );
+
+					drawLocalizedText( TextParm, textRect, COLOR_TEXT, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+
+					
+				} else {
+					drawCachedMaterial( iconMaterial2, iconRect, COLOR_WHITE );
+					drawCachedMaterial( rankMaterial, rankRect, COLOR_WHITE );
+
+					drawLocalizedText( TextParm2, textRect, COLOR_TEXT, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+				}
+				drawText( playerName, 	nameRect, 	COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+				drawText( playerXP, 	xpRect, 	COLOR_WHITE, 14, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );			
+				gui.scriptPushFloat( true );
+			}
+		}
+	}
+$endtemplate
+
+
 $template _map_stat( NameParm, IconParm, StatParm, XPos, YPos )
 	windowDef stat##NameParm {
 		properties {

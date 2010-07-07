@@ -395,6 +395,9 @@ void sdNetProperties::Init() {
 	SD_UI_ENUM_TAG( PR_MOST_TEAMKILLS, "Most teamkills reward." )
 	SDNET_DEFINE( PR_MOST_TEAMKILLS,	sdNetManager::PR_MOST_TEAMKILLS )
 
+	SD_UI_ENUM_TAG( PR_BEST_MULTICLASS, "Best multiclass reward." )
+	SDNET_DEFINE( PR_BEST_MULTICLASS,	sdNetManager::PR_BEST_MULTICLASS )
+
 	SD_UI_POP_GROUP_TAG
 	SD_UI_PUSH_GROUP_TAG( "Find Server Mode" )
 

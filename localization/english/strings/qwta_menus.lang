@@ -66,6 +66,8 @@
 	"#str_qwta_menus_00000100" "Vehicle Drops use Logistics Points (LP)"
 	"#str_qwta_menus_00000102" "Husky & Icarus Vehicle Drops Ignore LP"
 	"#str_qwta_menus_00000104" "Use Vehicle Decoy Ammo"
+	"#str_qwta_menus_00000106" "Jack of All Trades"
+	"#str_qwta_menus_00000107" "Jack of All Trades Award"
 
 	// Tooltips
 	"#str_qwta_menus_00000006" "More pellets, slower Rate Of Fire, more damage."
@@ -114,4 +116,5 @@
 	"#str_qwta_menus_00000101" "Vehicle drops only become active after sufficient Logistics Points (LP) have accrued through the course of play."
 	"#str_qwta_menus_00000103" "The Husky and Icarus ignore LP Requirements for vehicle drops."
 	"#str_qwta_menus_00000105" "Vehicle decoys use depletable ammunition."
+	"#str_qwta_menus_00000108" "Use the Jack of All Trades Award on the after-round scoreboard instead of the Newbie of the Battle Award."
 }

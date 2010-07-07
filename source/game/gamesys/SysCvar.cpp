@@ -606,6 +606,8 @@ idCVar	g_useClassLimits(			"g_useClassLimits",				"1",		CVAR_GAME | CVAR_BOOL | 
 
 idCVar	g_useGibKills(				"g_useGibKills",				"1",		CVAR_GAME | CVAR_BOOL | CVAR_ARCHIVE,						"Enables or disables certain attacks that don't normally gib, to do so." );
 
+idCVar	g_useAwardJackOfAllTrades(	"g_useAwardJackOfAllTrades",	"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Enables or disables the new Jack of All Trades after-mission award." );
+
 idCVar	g_advancedVehicleDrops(		"g_advancedVehicleDrops",		"-1",		CVAR_GAME | CVAR_INTEGER | CVAR_NETWORKSYNC,				"Bitfield that specifies which vehicles may be dropped in via quickchat commands." );
 idCVar	g_useSpecificRadar(			"g_useSpecificRadar",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should players(but not vehicles) be invisible to radar? (3rd eye and MCP exempt.)" );
 idCVar	g_vehicleDropsUseFE(		"g_vehicleDropsUseFE",			"1",		CVAR_GAME | CVAR_BOOL | CVAR_NETWORKSYNC,					"Should vehicle drops have Force Escalation requirements for their use?" );

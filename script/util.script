@@ -156,6 +156,7 @@ cvar	g_aptWarning;
 cvar	g_useRealisticWeapons;
 cvar	g_useBaseETQW12Shotguns;
 cvar	g_useQuake4DarkMatter;
+cvar	g_useAwardJackOfAllTrades;
 cvar	g_artilleryWarning;
 cvar	g_useReverseAirstrikes;
 cvar	g_useShieldAbsorber;
