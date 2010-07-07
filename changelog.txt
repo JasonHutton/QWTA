@@ -72,6 +72,8 @@ BUG FIXES:
   crosshair settings.
 * Fixed BaseETQW oversight: Frags made by vehicle explosions are now properly
   attributed to the player who caused the explosion.
+* Corrected the charge usage of GDF vehicle machineguns and miniguns using 
+  realism settings, so that they're no longer prone to rapidly overheating.
 
 
 QWTA v0.3.4:
