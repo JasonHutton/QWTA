@@ -85,6 +85,7 @@ public:
 		idList< int >				spawnLevels;
 		bool						fixedRank;
 		int							fixedRankIndex;
+		float						lp;
 	};
 
 						sdProficiencyTable( void );

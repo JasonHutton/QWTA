@@ -55,6 +55,7 @@ void sdProficiencyTable::sdNetworkData::MakeDefault( void ) {
 	}
 	fixedRank = false;
 	fixedRankIndex = 0;
+	lp = 0;
 }
 
 /*
@@ -70,6 +71,7 @@ void sdProficiencyTable::sdNetworkData::Write( idFile* file ) const {
 	}
 	file->WriteBool( fixedRank );
 	file->WriteInt( fixedRankIndex );
+	file->WriteFloat( lp );
 }
 
 /*
@@ -85,6 +87,7 @@ void sdProficiencyTable::sdNetworkData::Read( idFile* file ) {
 	}
 	file->ReadBool( fixedRank );
 	file->ReadInt( fixedRankIndex );
+	file->ReadFloat( lp );
 }
 
 /*
@@ -351,6 +354,10 @@ void sdProficiencyTable::ApplyNetworkState( const sdNetworkData& newData ) {
 		spawnLevels[ i ] = newData.spawnLevels[ i ];
 	}
 
+	if ( newData.lp != lp ) {
+		SetLP( newData.lp );
+	}
+
 	if ( newData.fixedRank ) {
 		SetFixedRank( gameLocal.declRankType.SafeIndex( newData.fixedRankIndex ) );
 	} else {
@@ -408,6 +415,12 @@ void sdProficiencyTable::ReadNetworkState( const sdNetworkData& baseData, sdNetw
 		newData.fixedRank = true;
 		newData.fixedRankIndex = baseData.fixedRankIndex;
 	}
+
+	if ( msg.ReadBool() ) {
+		newData.lp = msg.ReadFloat();
+	} else {
+		newData.lp = baseData.lp;
+	}
 }
 
 /*
@@ -462,6 +475,14 @@ void sdProficiencyTable::WriteNetworkState( const sdNetworkData& baseData, sdNet
 		newData.fixedRank = true;
 		newData.fixedRankIndex = baseData.fixedRankIndex;
 	}
+
+	newData.lp = lp;
+	if ( newData.lp != baseData.lp ) {
+		msg.WriteBool( true );
+		msg.WriteFloat( lp );
+	} else {
+		msg.WriteBool( false );
+	}
 }
 
 /*
@@ -477,6 +498,7 @@ bool sdProficiencyTable::CheckNetworkStateChanges( const sdNetworkData& baseData
 	}
 
 	NET_CHECK_FIELD( fixedRank, fixedRank );
+	NET_CHECK_FIELD( lp, lp );
 
 	return false;
 }
