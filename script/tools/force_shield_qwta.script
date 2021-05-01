@@ -1,0 +1,525 @@
+/***********************************************************************
+
+tool_force_shield.script
+
+***********************************************************************/
+
+object force_shield_qwta : force_shield {
+	void		preinit();
+
+	void		DoAbsorbEffect( vector direction );
+}
+
+object tool_force_shield_qwta : tool_force_shield {
+	void		preinit();
+	void		init();
+	void		destroy();
+
+	void		Raise();
+	void		Lower();
+	void		Idle();
+
+	void		Fire();
+	void		AltFire();
+
+	boolean		CanFire();
+	boolean		CanAltFire();
+	
+	void		ToolTipThread_Raise();
+	
+	void		StartIdleEffect();
+	void		StopIdleEffect();
+
+	void		StartIdleEffect_Local();
+	void		StopIdleEffect_Local();
+	void		StartIdleEffect_World();
+	void		StopIdleEffect_World();
+	
+	void		StartRechargeEffect();
+	void		StopRechargeEffect();
+
+	boolean		recharge;
+	float		nextChargeMessageTime;
+	
+	boolean		rechargeEffectOn;
+	boolean		idleEffectOn;
+	boolean		worldIdleEffectOn;
+	
+	float		shieldAbsorb;
+	float		absorbRange;
+}
+
+void tool_force_shield_qwta::preinit() {
+	rechargeEffectOn = false;
+	idleEffectOn = false;
+	worldIdleEffectOn = false;
+	
+	shieldAbsorb = GetDamage( getKey( "dmg_shieldabsorb" ) );
+	absorbRange = getFloatKey( "absorb_range" );
+}
+
+void tool_force_shield_qwta::init() {
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+
+	weaponState( "Raise", 0 );
+}
+
+void tool_force_shield_qwta::destroy() {
+	StopIdleEffect();
+	StopRechargeEffect();
+}
+
+void tool_force_shield_qwta::Raise() {
+	UpdateCharge();
+
+	Base_Raise();
+}
+
+void tool_force_shield_qwta::Lower() {
+	StopIdleEffect();
+	StopRechargeEffect();
+
+	Base_Lower();
+}
+
+void tool_force_shield_qwta::Idle() {
+	weaponReady();
+	boolean playingRecharge;
+	if ( recharge ) {
+		playingRecharge = true;
+		recharge = false;
+		playAnim( ANIMCHANNEL_ALL, "recharge" );
+
+		StopIdleEffect();
+		StartRechargeEffect();
+	} else {
+		playCycle( ANIMCHANNEL_ALL, "idle" );
+		
+		StopRechargeEffect();
+		StartIdleEffect();
+	}
+
+	while ( true ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", 4 );
+		}
+
+		if ( WEAPON_ATTACK ) {
+			if ( !mainFireDown ) {
+				mainFireDown = true;
+
+				if ( CanFire() ) {
+					weaponState( "Fire", 0 );
+				} else {
+					if ( myPlayer.isLocalPlayer() ) {
+						myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+						sys.startSoundDirect( getKey( "snd_need_charge" ), SND_ANY );
+						G_NotifyNoCharge( myPlayer );
+					}
+				}
+			}
+		} else if ( g_useShieldAbsorber.getBoolValue() && WEAPON_ALTFIRE ) {
+			if ( !altFireDown ) {
+				altFireDown = true;
+				
+				if ( CanAltFire() ) {
+					weaponState( "AltFire", 0 );
+				} else {
+					if ( myPlayer.isLocalPlayer() ) {
+						myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+						sys.startSoundDirect( getKey( "snd_need_charge" ), SND_ANY );
+						G_NotifyNoCharge( myPlayer );
+					}
+				}
+			}
+		} else {
+			mainFireDown = false;
+			altFireDown = false;
+		}
+
+		UpdateCharge();
+
+		if ( playingRecharge ) {
+			if ( animDone( ANIMCHANNEL_ALL, 4 ) ) {
+				playingRecharge = false;
+
+				setBlendFrames( ANIMCHANNEL_ALL, 4 );
+				playCycle( ANIMCHANNEL_ALL, "idle" );
+
+				StopRechargeEffect();
+				StartIdleEffect();
+			}
+		} else {
+			// this won't restart the effect if its already playing, but will 
+			// fix the effect if the wrong one is playing
+			StartIdleEffect();		
+		}
+
+		sys.waitFrame();
+	}
+}
+
+boolean tool_force_shield_qwta::CanFire() {
+	return myPlayer.EnergyBar_CanRemove( chargePerUse );
+}
+
+boolean tool_force_shield_qwta::CanAltFire() {
+	vector origin = myPlayer.getViewOrigin();
+	vector forward = sys.angToForward( myPlayer.getViewAngles() );
+	vector endPos = origin + forward * absorbRange;
+	float traceFraction = sys.tracePoint( origin, endPos, MASK_PROJECTILE, $null_entity );
+	if ( traceFraction < 1.f ) {
+		force_shield ent = sys.getTraceEntity();
+		if ( ent != $null_entity ) {
+			return true;
+		}
+	}
+	return false;
+}
+
+void tool_force_shield_qwta::Fire() {
+	playAnim( ANIMCHANNEL_ALL, "fire" );
+	fired();
+	sys.wait( 0.1 );
+
+	if ( !sys.isClient() ) {
+		myPlayer.EnergyBar_Remove( chargePerUse );
+		
+		string defName = "def_forcefield";
+		if ( g_useShieldAbsorber.getBoolValue() ) {
+			defName = "def_forcefield_qwta";
+		}
+		if ( myPlayer.getProficiency( g_proficiencyOppressor ) >= 2 ) {
+			defName = "def_forcefield_mega";
+			if ( g_useShieldAbsorber.getBoolValue() ) {
+				defName = "def_forcefield_mega_qwta";
+			}
+		}
+
+		entity shieldProj = sys.spawn( getKey( defName ) );
+		
+		vector origin = myPlayer.getViewOrigin();
+		vector forward = sys.angToForward( myPlayer.getViewAngles() );
+		float throwDistance = 32.0f;
+		vector throwPos = origin + forward * throwDistance;
+		float meleeDistance = 64.0f;
+		
+		if( melee( MASK_SHOT_BOUNDINGBOX | MASK_PROJECTILE, meleeDistance, true, false ) ) {
+			float traceDistance = getMeleeFraction() * meleeDistance;
+
+			vector size = shieldProj.getSize();
+			float pullOut = sys.vecLength( size ) * 0.6f;
+
+			if ( traceDistance < meleeDistance + pullOut ) {
+				throwPos = origin + forward * ( traceDistance - pullOut );
+			}
+		}
+
+		myPlayer.setForceShieldState( false, shieldProj ); //mal: let the bots know theres a shield out there in the world.
+		
+		shieldProj.setOrigin( throwPos );
+		vector velocity = shieldProj.getVectorKeyWithDefault( "velocity", '400 0 0' );
+		velocity = forward * velocity_x;
+		shieldProj.setLinearVelocity( velocity );
+		shieldProj.vSetOwner( myPlayer );
+	}
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+	recharge = true;
+	
+	nextChargeMessageTime = sys.getTime() + 2.f;
+	
+	weaponState( "Idle", 1 );
+}
+
+void tool_force_shield_qwta::AltFire() {
+	playAnim( ANIMCHANNEL_ALL, "altfire" );
+	fired();
+	//sys.wait( 0.1 );
+
+	if ( !sys.isClient() ) {
+		vector origin = myPlayer.getViewOrigin();
+		vector forward = sys.angToForward( myPlayer.getViewAngles() );
+		vector endPos = origin + forward * absorbRange;
+		float traceFraction = sys.tracePoint( origin, endPos, MASK_PROJECTILE, $null_entity );
+		if ( traceFraction < 1.f ) {
+			force_shield ent = sys.getTraceEntity();
+			if ( ent != $null_entity ) {
+				float health = ent.getHealth();
+				float maxHealth = ent.getMaxHealth();
+				force_shield_qwta ent_qwta = ent;
+				if ( ent_qwta != $null_entity ) {
+					ent_qwta.DoAbsorbEffect( forward );
+				}
+				sys.waitFrame();
+				ent.OnKilled( self, myPlayer, shieldAbsorb, forward, 0.f );
+				myPlayer.EnergyBar_Add( chargePerUse * ( health / maxHealth ) / 2.f );
+			}
+		}
+	}
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+	recharge = true;
+	
+	nextChargeMessageTime = sys.getTime() + 2.f;
+	
+	weaponState( "Idle", 1 );
+}
+
+void tool_force_shield_qwta::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+}
+
+void tool_force_shield_qwta::StartIdleEffect_Local() {
+	if ( idleEffectOn == false ) {
+		playEffect( "fx_loop", "joint7", 1 );
+		idleEffectOn = true;
+	}
+}
+
+void tool_force_shield_qwta::StopIdleEffect_Local() {
+	if ( idleEffectOn == true ) {
+		stopEffect( "fx_loop" );
+		idleEffectOn = false;
+	}
+}
+
+void tool_force_shield_qwta::StartIdleEffect_World() {
+	if ( worldIdleEffectOn == false ) {
+		entity worldModel = getWorldModel( 0 ); // FIXME
+		handle effectHandle = worldModel.playEffect( "fx_loop_world", "origin", 1 );
+		if ( effectHandle ) {
+			worldIdleEffectOn = true;
+		}
+	}
+}
+
+void tool_force_shield_qwta::StopIdleEffect_World() {
+	if ( worldIdleEffectOn == true ) {
+		entity worldModel = getWorldModel( 0 ); // FIXME
+		worldModel.stopEffect( "fx_loop_world" );
+		worldIdleEffectOn = false;
+	}
+}
+
+void tool_force_shield_qwta::StartIdleEffect() {
+	if ( myPlayer == sys.getLocalPlayer() && !pm_thirdperson.getBoolValue() ) {
+		StartIdleEffect_Local();
+		StopIdleEffect_World();
+	} else {
+		StopIdleEffect_Local();
+		StartIdleEffect_World();
+	}
+}
+
+void tool_force_shield_qwta::StopIdleEffect() {
+	StopIdleEffect_Local();
+	StopIdleEffect_World();
+}
+	
+void tool_force_shield_qwta::StartRechargeEffect() {
+	if ( rechargeEffectOn == false ) {
+		playEffect( "fx_recharge", "joint7", 0 );
+		playEffect( "fx_recharge2", "joint4", 0 );
+		playEffect( "fx_recharge3", "joint1", 0 );
+		rechargeEffectOn = true;
+	}
+}
+
+void tool_force_shield_qwta::StopRechargeEffect() {
+	if ( rechargeEffectOn == true ) {
+		stopEffect( "fx_recharge" );
+		stopEffect( "fx_recharge2" );
+		stopEffect( "fx_recharge3" );
+		rechargeEffectOn = false;
+	}
+}
+
+/***********************************************************************
+
+The force_shield itself
+
+***********************************************************************/
+
+void force_shield_qwta::preinit() {
+}
+
+void force_shield_qwta::DoAbsorbEffect( vector direction ) {
+	playEffect( "fx_absorb", "", 0 );
+	
+}
+
+
+/***********************************************************************
+
+The projectile that spawns the force_shield itself
+
+***********************************************************************/
+
+object projectile_forceshield_qwta {
+	void			preinit();
+	void			init();
+	void			destroy();
+	void			syncFields();
+	
+	void			Idle();
+
+	void			OnTouch( entity other, object traceObject );
+	float			OnCollide( object traceObject, vector velocity, float bodyId );
+	void			OnShieldProjSync();
+	void			OnUnbind();
+	void			OnPostThink();
+
+	entity			owner;
+	force_shield	shieldProj;
+	boolean			placedShield;
+	vector			launchAngles;
+	
+	void			vSetOwner( entity o );
+};
+
+void projectile_forceshield_qwta::preinit() {
+}
+
+void projectile_forceshield_qwta::init() {
+	placedShield = false;
+	
+	setContents( 0 );
+	setClipmask( MASK_SHOT_RENDERMODEL | MASK_PROJECTILE );
+
+	setState( "Idle" );
+}
+
+void projectile_forceshield_qwta::vSetOwner( entity o ) {
+	owner = o;
+	
+	launchAngles = owner.getViewAngles();
+}
+
+void projectile_forceshield_qwta::destroy() {
+}
+
+void projectile_forceshield_qwta::syncFields() {
+	syncBroadcast( "shieldProj" );
+	syncCallback( "shieldProj", "OnShieldProjSync" );
+}
+
+void projectile_forceshield_qwta::OnShieldProjSync() {
+	shieldProj.bind( self );
+	placedShield = true;
+}
+
+void projectile_forceshield_qwta::Idle() {
+	if ( !sys.isClient() ) {
+		float dieTime = sys.getTime() + 5.0f;
+
+		while ( true ) {
+			if ( shieldProj == $null_entity && placedShield ) {
+				remove();
+			}
+			if ( !placedShield && sys.getTime() > dieTime ) {
+				remove();
+			}
+			
+			sys.waitFrame();
+		}
+	}
+}
+
+void projectile_forceshield_qwta::OnUnbind() {
+	if ( !sys.isClient() ) {
+		if ( shieldProj != $null_entity ) {
+			shieldProj.remove();
+		}
+	}
+}
+
+void projectile_forceshield_qwta::OnTouch( entity other, object traceObject ) {
+}
+
+// NOTE: If this returns true, all momentum on the object will be cleared, otherwise, it will bounce
+float projectile_forceshield_qwta::OnCollide( object traceObject, vector velocity, float bodyId ) {
+	float shaderFlags;
+	entity collisionEnt;
+
+	shaderFlags = traceObject.getTraceSurfaceFlags();
+	if ( shaderFlags & SURF_NOIMPACT || shaderFlags & SURF_NOPLANT ) {
+		return false;
+	}
+
+	collisionEnt = traceObject.getTraceEntity();
+	
+	// don't let it stick to a player or a vehicle
+	player collisionPlayer = collisionEnt;
+	if ( collisionPlayer != $null_entity ) {
+		return false;
+	}
+	
+	if ( collisionEnt.vDisablePlantCharge() ) {
+		return false;
+	}
+
+	// push the view out of the surface a bit
+	vector normal = traceObject.getTraceNormal();
+	
+	// align to the surface normal
+	alignToAxis( normal, Z_AXIS );
+	
+	if ( !sys.isClient() ) {
+		freeze( 1.f );
+		clearContacts();
+		putToRest();
+		if ( collisionEnt != $null_entity ) {
+			string joint = traceObject.getTraceJoint();
+			float jointHandle = collisionEnt.getJointHandle( joint );
+			if ( jointHandle != INVALID_JOINT ) {
+				bindToJoint( collisionEnt, joint, 1 );
+			} else {
+				bind( collisionEnt );
+			}
+		}
+		
+		// create the fancy shield
+		shieldProj = sys.spawn( getKey( "def_shield" ) );
+		shieldProj.setWorldOrigin( getWorldOrigin() );
+		
+		launchAngles_x = 0;
+		launchAngles_z = 0;
+		vector forward = sys.angToForward( launchAngles );	
+		vector newAngles = launchAngles;
+		
+		vector origin = getWorldOrigin();
+		
+		float dot = forward * normal; 
+		if ( forward * normal < -0.707 ) {
+			// the forward that the player wanted is kind of embedded into the surface
+			// so align it with the normal of the surface
+			newAngles = sys.vecToAngles( normal );
+		}
+
+		shieldProj.setAngles( newAngles );
+		shieldProj.owner = owner;
+		shieldProj.setGameTeam( owner.getGameTeam() );
+		OnShieldProjSync();
+	}
+	
+	return true;
+}
+
+void projectile_forceshield_qwta::OnPostThink() {
+	if ( isBound() ) {
+		forceRunPhysics();
+	}
+}

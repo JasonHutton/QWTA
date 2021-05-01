@@ -1,0 +1,29 @@
+
+#ifndef __loading_colors__
+#define __loading_colors__
+
+#ifdef COLOR_PROGRESS_LINES
+#undef COLOR_PROGRESS_LINES
+#endif
+
+#ifdef COLOR_PROGRESS_FILL
+#undef COLOR_PROGRESS_FILL
+#endif
+
+#ifdef COLOR_PROGRESS_GRADIENT
+#undef COLOR_PROGRESS_GRADIENT
+#endif
+
+#define COLOR_PROGRESS_LINES 		"0.3008, 0.3398, 0.2109, 1"
+#define COLOR_PROGRESS_FILL			"0.3008, 0.3398, 0.2109, 0.1"
+#define COLOR_PROGRESS_GRADIENT		"0.5156, 0.5938, 0.1484, 1"
+
+#define COLOR_LOADING_TEXT 			"0.7812, 0.8008, 0.375, 1"
+#define COLOR_GREY_TEXT 			"0.75, 0.75, 0.75, 1"
+
+#define COLOR_PIN_NEUTRAL			"0.75, 0.75, 0.75, 1"
+#define COLOR_GLOW_STROGG			"0.7578, 0.3203, 0.0547, 1"
+#define COLOR_GLOW_GDF				"0.6328, 0.6758, 0.1953, 1"
+#define COLOR_GLOW_CURRENT			"0.9805, 0.6563, 0.0664, 1"
+
+#endif // !__loading_colors__

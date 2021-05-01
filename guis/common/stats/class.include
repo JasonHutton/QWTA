@@ -1,0 +1,80 @@
+
+#ifndef __stats_class__
+#define __stats_class__
+
+$template _class_stats_table( TeamParm )
+	properties {
+		float totalTapped;
+		float totalRevived;
+		float totalSuicide;
+		float totalDeaths;
+		
+		float index;		
+		float lookup;
+		
+		float flags 			= immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents 		= false;
+		float fixedRowHeight	= STATS_ROW_HEIGHT;
+	}
+	events {
+		onCreate {
+			callSuper();
+			insertColumn( toWStr( "<loc = 'game/team/" ## #TeamParm ## "'><width = 25%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/tapped'><width = 18.75%>" ), 0, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/revived'><width = 18.75%>" ), 0, 2 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/suicides'><width = 18.75%>" ), 0, 3 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/deaths'><width = 18.75%>" ), 0, 4 );
+			
+			postNamedEvent( "statsUpdated" );
+		}
+		onNamedEvent "statsUpdated" {
+			clearItems();
+			totalTapped = 0;
+			totalRevived = 0;
+			totalSuicide = 0;
+			totalDeaths = 0;
+$endtemplate
+
+$template _end_class_stats_table
+		}
+	}
+$endtemplate
+
+$template _class_totals
+	index = insertItem( toWStr( "<material = 'stats_separator'>" ), -1, 0 );
+	setItemMaterialSize( "rect.w - 4, 16", index, 0 );
+	
+	index = insertItem( toWStr( "<loc ='guis/mainmenu/totals'>" ), -1, 0 );
+	setItemText( toWString( totalTapped, 0 ), index, 1 );
+	setItemText( toWString( totalRevived, 0 ), index, 2 );
+	setItemText( toWString( totalSuicide, 0 ), index, 3 );
+	setItemText( toWString( totalDeaths, 0 ), index, 4 );
+$endtemplate
+
+
+$template _add_class_stat( ClassParm )
+	index = insertItem( toWStr( "<loc ='game/classes/" ## #ClassParm ## "'>" ), -1, 0 );
+	
+	// Tapouts
+	lookup = sdnet.getStat( #ClassParm ## "_tapouts" );
+	totalTapped = immediate( totalTapped + lookup );
+	setItemText( toWString( lookup, 0 ), index, 1 );
+	
+	// Revived
+	lookup = sdnet.getStat( #ClassParm ## "_revived" );
+	totalRevived = immediate( totalRevived + lookup );
+	setItemText( toWString( lookup, 0 ), index, 2 );
+	
+	// Revived
+	lookup = sdnet.getStat( #ClassParm ## "_suicides" );
+	totalSuicide = immediate( totalSuicide + lookup );
+	setItemText( toWString( lookup, 0 ), index, 3 );
+	
+	// Killed As
+	lookup = sdnet.getStat( #ClassParm ## "_deaths" );
+	totalDeaths = immediate( totalDeaths + lookup );
+	setItemText( toWString( lookup, 0 ), index, 4 );	
+	
+$endtemplate
+
+#endif // !__stats_class__

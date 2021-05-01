@@ -1,0 +1,460 @@
+
+#ifndef __component_list__
+#define __component_list__
+
+#define SCROLLBAR_WIDTH ( 11 )
+
+$template _lst_init
+	properties {
+		handle	lstFillMaterial				= cacheMaterial( "_lstFill", "_frame window" );
+		handle	lstLineMaterial				= cacheMaterial( "_lstLine", "_frame window_line" );
+		handle	lstSelectedItemMaterial		= cacheMaterial( "_lstSelItem", "_3h button_fill" );
+		handle	lstSelectedItemGradMaterial	= cacheMaterial( "_lstSelItemGrad", "_3h button_grad" );
+		handle	lstSortIndicatorUp			= cacheMaterial( "_lstSelSortUp", "_st list_sort_up" );
+		handle	lstSortIndicatorDown		= cacheMaterial( "_lstSelSortDown", "_st list_sort_dn" );
+	}
+$endtemplate
+
+// ----------------------
+// Lists
+// ----------------------
+
+$template __listMouseOver( ButtonType, PropertyName, HighlightColor, RegularColor )
+	onMouseEnter##ButtonType 	{ PropertyName = transition( PropertyName, HighlightColor, 150 ); }
+	onMouseExit##ButtonType 	{ PropertyName = transition( PropertyName, RegularColor, 150 ); }
+$endtemplate
+
+$template __listMouseClick( ButtonType, PropertyName, HighlightColor, RegularColor )
+	onMouseDown##ButtonType 	{ PropertyName = transition( PropertyName, HighlightColor, 50 ); gui.playSound( "click" ); }
+	onMouseUp##ButtonType 		{ PropertyName = transition( PropertyName, RegularColor, 50 ); }
+$endtemplate
+
+$template _scrollable_list
+	properties {
+		color	upArrowColor 		= COLOR_SLIDER_LINES;
+		color	downArrowColor 		= COLOR_SLIDER_LINES;
+		color 	thumbColor 			= COLOR_SLIDER_THUMB;
+		color 	thumbOverlayColor 	= COLOR_SLIDER_LINES;
+		color 	borderColor			= COLOR_SLIDER_LINES;
+	}
+	events {
+		__listMouseOver( Thumb, thumbOverlayColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+		__listMouseOver( UpArrow, upArrowColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+		__listMouseOver( DownArrow, downArrowColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+		__listMouseOver( Gutter, borderColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+		onMouseEnterGutter 	{ 
+			callSuper();
+			gui.playSound( "boop" );
+		}
+
+		__listMouseClick( Thumb, thumbColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+		__listMouseClick( UpArrow, upArrowColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+		__listMouseClick( DownArrow, downArrowColor, COLOR_SLIDER_HI_LINES, COLOR_SLIDER_LINES )
+
+		onMouseDownGutter { gui.playSound( "click" ); }
+	}
+$endtemplate
+
+$template _get_current_list_text( NameParm, Column )
+	gui.lst##NameParm.getItemText( gui.lst##NameParm.currentSelection, Column )
+$endtemplate
+
+$template _list_scrollbar( NameParm )
+	windowDef lst##NameParm##Scrollbar {
+		type slider;
+		properties {
+			rect 	rect 			= gui.lst##NameParm.rect.width - ( rect.width + 3 ), gui.lst##NameParm.columnHeight + 3, SCROLLBAR_WIDTH, gui.lst##NameParm.absoluteRect.h - ( 6 + gui.lst##NameParm.columnHeight );
+			string 	material 		= "_3v scroll";
+			float 	orientation 	= SO_VERTICAL;
+			vec2 	range 			= 0.0, gui.lst##NameParm.scrollAmountMax;
+			float   visible         = gui.lst##NameParm.scrollAmountMax > 0;
+			float 	pageStep 		= gui.lst##NameParm.pageSize;
+		}
+		events {
+			onPropertyChanged "gui.lst" ## #NameParm ## ".scrollAmount" {
+				position = immediate( gui.lst##NameParm.scrollAmount );
+			}
+			onPropertyChanged "position" {
+				gui.lst##NameParm.scrollAmount = position;
+			}
+			
+			onNamedEvent "onShow" {
+				if( visible ) {
+					gui.lst##NameParm.sizeLastColumn( SCROLLBAR_WIDTH + 2 );
+				} else {
+					gui.lst##NameParm.sizeLastColumn( 0 );
+				}
+			}
+			onActivate {
+				if( visible ) {
+					gui.lst##NameParm.sizeLastColumn( SCROLLBAR_WIDTH + 2 );
+				} else {
+					gui.lst##NameParm.sizeLastColumn( 0 );
+				}
+			}
+			onPropertyChanged "visible" "gui.lst" ## #NameParm ## ".rect" {
+				if( visible ) {
+					gui.lst##NameParm.sizeLastColumn( SCROLLBAR_WIDTH + 2 );
+				} else {
+					gui.lst##NameParm.sizeLastColumn( 0 );
+				}
+			}
+		}
+		_scrollable_list
+	}
+$endtemplate
+
+$template _list_draw_column_sort( UseDefaultDrawing )
+	properties {
+		float		drawColumn;
+		vec4		scratchVec4;
+	}
+	
+	events {
+		onNamedEvent "drawColumnSortIndicator" {
+
+			if( drawColumn == activeColumn ) {
+				scratchVec4.x = immediate( scratchVec4.x + ( scratchVec4.w - 12 ) );
+				scratchVec4.y = immediate( scratchVec4.y + 2 );
+				scratchVec4.w = 8;
+				scratchVec4.h = 8;
+				if( activeColumnSort < 0 ) {
+					drawCachedMaterial( gui.lstSortIndicatorDown, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, drawColumn ) );				
+				} else {
+					drawCachedMaterial( gui.lstSortIndicatorUp, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, drawColumn ) );	
+				}				
+				
+			}
+		}
+$if( UseDefaultDrawing == "default" )		
+		onDrawColumn {
+			scratchVec4 = gui.scriptGetVec4Result();
+			drawColumn = gui.scriptGetFloatResult();
+			
+			postNamedEvent( "drawColumnSortIndicator" );
+			
+			gui.scriptPushFloat( true );
+		}
+$endif
+	}
+$endtemplate
+
+$template _list_highlight_items
+	properties {		
+		vec4	scratchColumnColor;
+	}
+	events {
+		onEnterItem {
+			clickItem.x = gui.scriptGetFloatResult();
+			clickItem.y = gui.scriptGetFloatResult();
+			scratchColumnColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, clickItem.x, clickItem.y );
+			transitionItemVec4( LTP_FORECOLOR, scratchColumnColor, "1,1,1,1", ACTIVATE_TRANSITION_TIME, "", clickItem.x, clickItem.y );
+		}
+		onExitItem {
+			clickItem.x = gui.scriptGetFloatResult();
+			clickItem.y = gui.scriptGetFloatResult();
+			scratchColumnColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, clickItem.x, clickItem.y );
+			transitionItemVec4( LTP_FORECOLOR, scratchColumnColor, foreColor, ACTIVATE_TRANSITION_TIME, "", clickItem.x, clickItem.y );
+		}
+	}
+$endtemplate
+
+$template _list_highlight_full_items
+	properties {
+		vec4	scratchColumnColor;	
+	}
+	
+	events {
+		onEnterItem {
+			clickItem.x = gui.scriptGetFloatResult();
+			clickItem.y = gui.scriptGetFloatResult();
+			
+			scratchColumnColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, clickItem.x, 0 );
+			transitionItemVec4( LTP_FORECOLOR, scratchColumnColor, "1,1,1,1", ACTIVATE_TRANSITION_TIME, "", clickItem.x, -1 );
+		}
+		onExitItem {
+			clickItem.x = gui.scriptGetFloatResult();
+			clickItem.y = gui.scriptGetFloatResult();
+			
+			scratchColumnColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, clickItem.x, 0 );
+			transitionItemVec4( LTP_FORECOLOR, scratchColumnColor, foreColor, ACTIVATE_TRANSITION_TIME, "", clickItem.x, -1 );
+		}
+	}
+$endtemplate
+
+$template _list_properties 
+	properties {
+		float	fontSize 					= 12;
+		float	internalBorderWidth			= 2.0f;
+		float 	columnFontSize				= 12;
+		color	foreColor					= 0.5, 0.5, 0.5, 1.0f;		
+		color	selectedItemForeColor		= COLOR_WHITE;
+		vec2	clickItem;
+	}
+$endtemplate
+
+$template _list_highlight_header
+	properties {
+		float	column;	
+		vec4	scratchColumnColor;	
+	}
+	events {
+		onEnterColumnHeader {
+			column = gui.scriptGetFloatResult();
+			scratchColumnColor = getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, column );
+			transitionColumnVec4( LTP_FORECOLOR, scratchColumnColor, COLOR_WHITE, ACTIVATE_TRANSITION_TIME, "", column );
+			gui.playSound( "boop" );
+		}
+		onExitColumnHeader {
+			column = gui.scriptGetFloatResult();
+			scratchColumnColor = getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, column );
+			transitionColumnVec4( LTP_FORECOLOR, scratchColumnColor, foreColor, ACTIVATE_TRANSITION_TIME, "", column );
+		}
+	
+		onClickColumnHeader {
+			gui.playSound( "accept" );
+		}
+	}
+$endtemplate
+
+$template _list_draw_selected_item
+	properties {
+		rect	itemRect;
+		float	itemIndex					= -1;
+	}
+	events {
+		onDrawSelectedBackground {
+			itemIndex = gui.scriptGetFloatResult();
+			itemRect = gui.scriptGetVec4Result();
+
+			drawCachedMaterial( gui.lstSelectedItemMaterial, itemRect, COLOR_LIST_HIGHLIGHT );
+			drawCachedMaterial( gui.lstSelectedItemGradMaterial, itemRect, COLOR_LIST_GRADIENT );
+		}	
+	}
+$endtemplate
+
+$template _list_draw_background
+	properties {
+		color	fillColor					= COLOR_LIST_FILL;
+		color	borderColor					= COLOR_LIST_LINES;
+	}
+	events {
+		onGainFocus {
+			callSuper();
+			borderColor = transition( borderColor, COLOR_LIST_HI_LINES, ACTIVATE_TRANSITION_TIME );
+		}
+		onLoseFocus {
+			callSuper();
+			borderColor = transition( borderColor, COLOR_LIST_LINES, ACTIVATE_TRANSITION_TIME );
+		}
+		onPreDraw {
+			drawCachedMaterial( gui.lstFillMaterial, absoluteRect, fillColor );
+			pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1.0f, false );
+			drawCachedMaterial( gui.lstLineMaterial, absoluteRect, borderColor );
+			popColor();
+			gui.scriptPushFloat( true );	// continue normal windowDef drawing
+		}
+	}
+$endtemplate
+
+$template _list( NameParm, xPos, yPos, widthParm, heightParm )
+	windowDef lst##NameParm {
+		type list;
+		properties {
+			rect 	rect 						= xPos, yPos, widthParm, heightParm;			
+			color	itemColor;					
+		}
+		_tab_stop
+		_list_highlight_items
+		_list_highlight_header
+		_list_draw_selected_item
+		_list_draw_background
+		_list_properties		
+		
+		events {
+			onKeyDown "mouse1" {
+				callSuper();
+				clickItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( clickItem.x >= 0 && clickItem.x != currentSelection ) {
+					gui.playSound( "click" );
+				}
+			}
+			
+			onDrawItemBackground {
+				itemIndex = gui.scriptGetFloatResult();
+				itemColor = gui.scriptGetVec4Result();
+				itemRect = gui.scriptGetVec4Result();
+
+				drawCachedMaterial( gui.whiteMaterial, itemRect, itemColor );
+			}
+			onPropertyChanged "text" "localizedText" {
+				gui.lst##NameParm##Scrollbar.position = 0;
+			}
+		}
+		_list_scrollbar( NameParm )
+$endtemplate
+
+$template _end_list
+	}
+$endtemplate
+
+$template __scrollable_text( NameParm, TextProperty, TextDrawer, TextMeasurer, TextParm, XPos, YPos, WidthParm, HeightParm, BorderParm )
+	windowDef lst##NameParm {
+    	properties {
+    		rect 	rect 			= XPos, YPos, WidthParm, HeightParm;
+    		rect	textRect		= absoluteRect.x + 3, absoluteRect.y + ( gui.lst##NameParm##Scrollbar.position * -1 ), absoluteRect.w - 18, measure.y;
+    		rect 	measureRect		= absoluteRect.x + 3, absoluteRect.y, absoluteRect.w - 18, absoluteRect.h - 2;
+
+    		float 	fontSize 		= 12;
+
+			vec2 measure 			= 0, 0;
+			float textFlags 		= DTF_WORDWRAP | DTF_LEFT | DTF_TOP;
+			float needMeasure 		= true;
+    	}
+    	events {
+    		onCreate {
+    			TextProperty = TextParm;
+    			postNamedEvent( "updateMeasure" );
+    		}
+    		onNamedEvent "onShow" {
+    			callSuper();
+    			postNamedEvent( "updateMeasure" );
+    		}
+    		onPropertyChanged "localizedText" "text" "rect" {
+    		 	gui.lst##NameParm##Scrollbar.position = 0;
+    			postNamedEvent( "updateMeasure" );
+    		}
+    		onNamedEvent "updateMeasure" {
+    			needMeasure = true;    			
+    		}
+    		onPreDraw {
+    			if( needMeasure ) {
+    				measure = TextMeasurer( TextProperty, measureRect, fontSize, textFlags );
+    				needMeasure = false;
+    			}
+    			$if( BorderParm == "border" )
+
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_LIST_FILL );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_LIST_LINES );
+
+				$endif
+
+    			clipToRect( measureRect );
+    			TextDrawer( TextProperty, textRect, foreColor, fontSize, textFlags );
+    			unclipRect();
+
+				//drawRect( textRect, COLOR_WHITE, 1 );
+				//drawRect( measureRect, "1,0,0,1", 1 );
+
+    			gui.scriptPushFloat( false );
+    		}
+    	}
+		windowDef lst##NameParm##Scrollbar {
+			type slider;
+			properties {
+				rect 	rect 			= ( gui.lst##NameParm.rect.w - rect.w ) - 2, 2, SCROLLBAR_WIDTH, gui.lst##NameParm.absoluteRect.h - 4;
+				string 	material 		= "_3v scroll";
+				float 	orientation 	= SO_VERTICAL;
+				vec2 	range 			= 0, gui.lst##NameParm.textRect.h - gui.lst##NameParm.measureRect.h;
+				float   visible         = gui.lst##NameParm.visible && range.y > 0;
+			}
+			_scrollable_list
+		}
+$endtemplate
+
+$template _scrollable_localized_text( NameParm, TextParm, XPos, YPos, WidthParm, HeightParm, BorderParm )
+	__scrollable_text( NameParm, localizedText, drawLocalizedText, measureLocalizedText, TextParm, XPos, YPos, WidthParm, HeightParm, BorderParm )
+$endtemplate
+
+$template _scrollable_literal_text( NameParm, TextParm, XPos, YPos, WidthParm, HeightParm, BorderParm )
+	__scrollable_text( NameParm, text, drawText, measureText, TextParm, XPos, YPos, WidthParm, HeightParm, BorderParm )
+$endtemplate
+
+
+$template _end_scrollable_text
+	}
+$endtemplate
+
+$template _scrollable_container( NameParm, XPos, YPos, WidthParm, HeightParm )
+	windowDef lst##NameParm##Static {
+		properties {
+			rect rect = XPos, YPos, WidthParm, HeightParm;			
+		}
+		_list_draw_background
+		
+		events {
+			onKeyDown "mwheelup" {
+				gui.gui.lst##NameParm##ElementsScrollBar.position = max( 0.0f, immediate( gui.gui.lst##NameParm##ElementsScrollBar.position - BUTTON_HEIGHT ) );
+			}
+			onKeyDown "mwheeldown" {
+				gui.gui.lst##NameParm##ElementsScrollBar.position = min( gui.lst##NameParm##ElementsScrollBar.range.y, immediate( gui.gui.lst##NameParm##ElementsScrollBar.position + BUTTON_HEIGHT ) );						
+			}
+		}
+
+		windowDef lst##NameParm##ElementsScrollBar {
+			type slider;
+			properties {
+				rect 	rect 			= _to_right_of( lst##NameParm##Elements ) - 2, 2, SCROLLBAR_WIDTH, gui.lst##NameParm##Elements.absoluteRect.h - 2;
+				string 	material 		= "_3v scroll";
+				float 	orientation 	= SO_VERTICAL;
+				vec2 	range 			= 0.0, abs( gui.lst##NameParm##Static.rect.h - gui.lyt##NameParm##Elements.verticalSize ) + PADDING;
+				float 	pageStep 		= BUTTON_HEIGHT;
+			}
+			events {
+				onPropertyChanged "position" {
+					gui.lyt##NameParm##Elements.rect.y = position * -1;
+				}
+			}
+			_scrollable_list
+		}
+		windowDef lst##NameParm##Elements {
+			properties {
+				rect 	rect = 4, 4, gui.lst##NameParm##Static.rect.w - ( SCROLLBAR_WIDTH + 4 ), gui.lst##NameParm##Static.rect.h - 8;
+				float	flags = immediate( flags ) | WF_CLIP_TO_RECT;
+				rect 	windowRect;
+				float	heightDiff;
+			}
+			events {
+				onPropertyChanged "gui.focusedWindow" {
+					if( compare( gui.focusedWindow, "" ) ) {
+						return;
+					}
+					if( isChild( gui.focusedWindow ) == false ) {
+						return;
+					}
+					windowRect = stringToVec4( gui.getStringForProperty( "gui." + gui.focusedWindow + ".absoluteRect", "0 0 0 0" ) );
+					
+					heightDiff = 0;
+					
+					// the +/- 2 is to account for the interior border of the window
+					if( windowRect.y < absoluteRect.y ) {
+						heightDiff = ( immediate( windowRect.y ) - immediate( absoluteRect.y ) ) - 2;
+						if( heightDiff > 0 ) {
+							heightDiff = 0;
+						}
+					} else {
+						heightDiff = ( immediate( windowRect.y + windowRect.h ) - immediate( absoluteRect.y + absoluteRect.h ) ) + 2;
+						if( heightDiff < 0 ) {
+							heightDiff = 0;
+						}
+					}
+					
+					gui.lst##NameParm##ElementsScrollBar.position = immediate( gui.lst##NameParm##ElementsScrollBar.position + heightDiff );
+				}			
+			}
+			windowDef lyt##NameParm##Elements {
+				type layoutVertical;
+				properties {
+					vec4 	margins = 0, 0, 0, 0;
+					rect	rect = 0, 0, 150, $evalfloat( ( BUTTON_HEIGHT * 6 ) + ( PADDING * 2 ) );
+					float flags = VLF_DRAW_REVERSED;
+				}
+$endtemplate
+
+$template _end_scrollable_container
+			}
+		}
+	}
+$endtemplate
+
+#endif // !__component_list__

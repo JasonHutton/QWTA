@@ -1,0 +1,314 @@
+
+#include <guis/game/vehicles/gdf/cockpits.include>
+
+gui guis/vehicles/edf_platypus {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+	materials {
+		"icon"		"guis/assets/hud/gdf/vehicles/platypus"
+	}
+	_class_icons
+
+	_base_icon
+	_hud_materials
+	_position( 0, 2, 32 )
+	_position( 1, 2, 6 )
+}
+
+gui guis/models/vehicles/platypus/cockpit {
+
+	materials {
+		"guis/assets/vehicles/display/health" "guis/assets/vehicles/display/health"
+		"guis/assets/vehicles/display/speed"	"guis/assets/vehicles/display/speed"
+		"guis/assets/vehicles/display/left"	"guis/assets/vehicles/display/left"
+		"guis/assets/vehicles/display/warning"	"guis/assets/vehicles/display/warning"
+		"guis/assets/vehicles/display/wire"	"guis/assets/vehicles/display/wire"
+		
+		"bg"		"guis/assets/vehicles/platypus/background"
+		"guis/assets/badger/tach"	"guis/assets/badger/tach"
+		"guis/assets/badger/gpmg"	"guis/assets/badger/gpmg"
+		"guis/assets/vehicles/anansi/hitbox"	"guis/assets/vehicles/anansi/hitbox"
+		
+		"textures/sfx/scanlines"			"textures/sfx/scanlines"
+		"guis/assets/common/bglow"			"guis/assets/common/bglow"
+		"guis/assets/common/addhighlight"		"guis/assets/common/addhighlight"
+		"guis/assets/ethud/strogg/nesw"		"guis/assets/ethud/strogg/add_nesw"
+		"guis/assets/ethud/strogg/add_mapticks"		"guis/assets/ethud/strogg/add_mapticks"
+		"guis/assets/badger/radial"		"guis/assets/badger/radial"
+		"guis/assets/badger/radial2"		"guis/assets/badger/radial2"
+		"guis/assets/badger/tach_add"		"guis/assets/badger/tach_add"
+		
+		"guis/assets/ethud/bar_add_fillborderedge"		"guis/assets/ethud/bar_add_fillborderedge"
+		"guis/assets/ethud/bar_add_fillbordermid"		"guis/assets/ethud/bar_add_fillbordermid"
+		"guis/assets/ethud/bar_add_filledge"			"guis/assets/ethud/bar_add_filledge"
+		"guis/assets/ethud/bar_add_fillmid"				"guis/assets/ethud/bar_add_fillmid"
+	}
+	properties {
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+	}
+	
+	windowDef desktop {
+		properties {
+			color backColor	= 0.052,0.075,0.142,1;		
+		}
+	}
+
+	windowDef BackgroundImage {
+		properties {
+			color backColor = 1,0.9,0.8,1;
+			string material = "bg";
+		}
+	}	
+
+
+	windowDef vehicleHealthBG {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add";
+			rect	rect		= 135, 10, 300, 60;
+		}
+		timeLine {
+			onTime 0 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0,0.67,1,1;
+				}
+			}
+			onTime 250 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "0.1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0,0.67,1,1;
+				}
+			}
+			onTime 500 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+	windowDef vehicleHealthClip {
+		properties {
+			rect	rect		= gui.vehicleHealthBG.rect.x, gui.vehicleHealthBG.rect.y, (player.vehicleHealth * 300), 60;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef vehicleHealth {
+			properties {
+				color backColor = 1,1,1,0.6;
+				string material = "guis/assets/badger/tach_add";
+				rect	rect		= 0, 0, 300, 60;//0, 0, 600, 50;
+			}
+		}
+	}
+
+	windowDef Icon1 {
+		properties {
+			rect	rect = 62, 6, 70, 55;
+			string material = "guis/assets/vehicles/display/health" ;
+			color backColor = 0.73,1,1,1;
+		}
+	}
+
+	windowDef Icon2 {
+		properties {
+			rect	rect = 70, 60, 52, 48;
+			string material = "guis/assets/vehicles/display/speed" ;
+			color backColor = 0.73,1,1,1;
+		}
+	}
+
+	windowDef Icon3 {
+		properties {
+			rect	rect = 3, 120, 40, 40;
+			string material = "guis/assets/vehicles/display/left" ;
+			color backColor = 0.16,0.3,0.3,1;
+		}
+	}
+	windowDef Icon4 {
+		properties {
+			rect	rect = 3,3,65,65;//240, 225, 40, 40;
+			string material = "guis/assets/vehicles/display/warning" ;
+			color backColor = 0.16,0.3,0.3,1;
+		}
+		timeLine {
+			onTime 0 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0.16,0.3,0.3,1;
+				}
+			}
+			onTime 250 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "0.1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0.16,0.3,0.3,1;
+				}
+			}
+			onTime 500 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+	windowDef Icon5 {
+		properties {
+			rect	rect = 42, 120, 40, 40;
+			string material = "guis/assets/vehicles/display/wire" ;
+			color backColor = 0.06,0.15,0.15,1;
+		}
+	}
+	windowDef Icon6 {
+		properties {
+			rect	rect = 80, 120, -40, 40;
+			string material = "guis/assets/vehicles/display/left" ;
+			color backColor = 0.16,0.3,0.3,1;
+		}
+	}
+
+	windowDef vehicleRadialFade {
+		properties {
+			color backColor = 0.1,0.1,0.1,1;
+			string material = "guis/assets/badger/radial";
+			rect	rect		= 430,18,200,200;
+		}
+	}
+
+	windowDef vehicleRadial {
+		properties {
+			color backColor 	= 1,1,1,1;
+			rect	rect		= 430,18,200,200;
+		}
+		_speed_arc( "guis/assets/badger/radial", "player.speed / 100" )
+	}
+	windowDef vehicleRadialBGClip {
+		properties {
+			rect	rect		= 430,118,200,100;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef vehicleRadialBG {
+			properties {
+				color backColor = (player.speed * 0.5),(player.speed * 0.5),(player.speed * 0.5),0.2;
+				string material = "guis/assets/badger/radial";
+				rect	rect		= 0,-100,200,200;
+			}
+		}
+	}
+	windowDef vehicleRadial1Fade {
+		properties {
+			color backColor = 0.1,0.1,0.1,1;
+			string material = "guis/assets/badger/radial";
+			rect	rect		= 467,60,120,120;
+		}
+	}	
+	windowDef vehicleRadial1 {
+		properties {
+			color backColor = (player.speed * 0.04),(player.speed * 0.04),(player.speed * 0.04),0.2;
+			rect	rect		= 467,60,120,120;
+		}
+		_speed_arc( "guis/assets/badger/radial", "player.speed / 20" )
+	}
+	windowDef vehicleRadial2 {
+		properties {
+			color backColor = 0.9,0.9,0.95,0.2;
+			string material = "guis/assets/badger/radial2";
+			rect	rect		= 467,60,120,120;
+			float	visible	= globals.vehicles.overDriveFraction != 0.5;
+		}
+	}
+	windowDef vehicleSpeedBack {
+		properties {
+			rect rect = 200, 120, 199, 100;
+			wstring text = toWStr( "000" );
+			float fontSize = 120;
+			string font = "digital";
+			vec2 	textAlignment = 2, 1;
+			color   foreColor = 0.25, 0.25, 0.25, 1.0;
+		}
+		windowDef vehicleSpeed {
+			properties {
+				rect rect = 0, 0, 199, 100;
+				wstring text = toWString( player.speed, 0 );
+				float fontSize = 120;
+				string font = "digital";
+				vec2 	textAlignment = 2, 1;
+			}
+		}
+	}
+
+
+	windowDef GPMG {
+		properties {
+			rect	rect = 110, 165, 200, 100;
+			string	material = "guis/assets/badger/gpmg";
+			color	backColor = 0.75, 0.75, 0.75, 1;
+		}
+	}	
+	windowDef vehicleWeapBG {
+		properties {
+			color backColor = 0,0.25,0.4,1;
+			string material = "guis/assets/badger/tach_add";
+			rect	rect		= gui.GPMG.rect.x+120, gui.GPMG.rect.y+65, 180, 45;
+		}
+	}
+	windowDef vehicleWeapClip {
+	type progress;
+		properties {
+			rect	rect			= gui.vehicleWeapBG.rect.x, gui.vehicleWeapBG.rect.y, 180 * globals.weapons.energyBarCharge, 45;			
+			float 	position 		= player.weaponClip / player.weaponShotsPerClip;
+			float	flags			= immediate( flags | PF_DRAW_FROM_LOWER_END | WF_CLIP_TO_RECT );
+			color	foreColor		= 1,1,1,0;
+		}
+		windowDef vehicleWeap {
+			properties {
+				color backColor = 0.5,0.6,0.6,0.6;
+				string material = "guis/assets/badger/tach_add";
+				rect	rect		= 0, 0, 180, 45;
+			}
+		}
+	}
+
+	windowDef vehicleSpeedUnits {
+		properties {
+			rect rect = ( gui.vehicleSpeed.rect.x + gui.vehicleSpeed.rect.w ) -3, ( gui.vehicleSpeed.rect.y + gui.vehicleSpeed.rect.h ) - 33, 40, 0;
+			handle	localizedText = localize( "guis/vehicles/mph" ); // "MPH";
+			float fontSize = 16;
+			color foreColor = 1,1,1,1;
+			vec2 textAlignment = 0, 2;
+		}
+	}
+
+	windowDef Compass2 {
+		properties {
+			rect	rect = 432, 267, 200, 200;
+			string	material = "guis/assets/ethud/strogg/nesw";
+			color	backColor = 1, 1, 1, 1;
+			float	rotation = ( player.vehicleYaw ) +270;
+		}
+	}
+	windowDef Compass2a {
+		properties {
+			rect	rect = 472, 307, 120, 120;
+			string	material = "guis/assets/ethud/strogg/nesw";
+			color	backColor = 0.25, 0.25, 0.25, 1;
+			float	rotation = ( player.vehicleYaw ) +270;
+		}
+	}	
+
+}
+
+gui guis/models/vehicles/platypus/cockpit_center {
+	materials {
+		"guis/assets/badger/background"		"guis/assets/badger/background"
+	}
+	properties {
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+	}
+	
+	windowDef desktop {
+		properties {
+			color backColor	= 0.072,0.075,0.142,1;
+		}
+	}
+	
+}

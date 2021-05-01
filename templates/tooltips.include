@@ -1,0 +1,13 @@
+
+#ifndef __tooltips__
+#define __tooltips__
+
+#define TOOLTIP_POSITION_TOP -1
+#define TOOLTIP_POSITION_CHARGE 0
+#define TOOLTIP_POSITION_WEAPON_CHANGE 1
+#define TOOLTIP_POSITION_DEPLOYABLE 2
+#define TOOLTIP_POSITION_AMMO_BAR 3
+#define TOOLTIP_POSITION_HEALTH 4
+#define TOOLTIP_POSITION_VEHICLE 5
+
+#endif // __tooltips__

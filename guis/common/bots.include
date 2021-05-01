@@ -1,0 +1,441 @@
+
+#ifdef IN_GAME_BOTS
+$template _cvar_slider_synced_int( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();	    	
+			position = gui.getCVarInt( #CVarParm );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+	}
+$endtemplate
+
+$template _cvar_synced_bool( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != false;
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != false;
+		}
+	}
+$endtemplate
+#else
+$template _cvar_slider_synced_int( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			position = gui.getCVarInt( #CVarParm );
+		}
+		onNamedEvent "onApply" {
+			gui.setCVarInt( #CVarParm, position );
+		}
+	}
+$endtemplate
+
+$template _cvar_synced_bool( CVarParm )
+	events {
+	    onCreate {
+	    	callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != false;
+		}
+		onNamedEvent "onApply" {
+			gui.setCVarBool( #CVarParm, checked );
+		}
+		onCVarChanged #CVarParm {
+			callSuper();
+			checked = gui.getCVarBool( #CVarParm ) != false;
+		}		
+	}
+$endtemplate
+#endif
+
+
+_label_localized( PlayCompDifficulty, localize( "guis/mainmenu/difficulty" ), 0, 0, 100, 16, COLOR_WHITE )
+	properties {
+		vec2 textAlignment = TA_LEFT, TA_VCENTER;
+	}
+_end_label
+
+_dropdown( PlayCompBotSkills, localize( "guis/mainmenu/skillsettings" ), 8, 0, 150, _fill_to_right_of( lytPlayComp ), $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+	properties {
+		float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+		float showAdvanced = false;
+		float updating = false;
+		float aimSkill;
+		float skill;
+		float tutorialMode = false;
+		float index;
+	}
+	events {
+		onCreate {
+			insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+			index = insertItem( toWStr( "<loc = 'guis/mainmenu/training'>" ), -1, 0 );
+			setItemDataInt( 5, index, 0 );
+			
+			index = insertItem( toWStr( "<loc = 'guis/mainmenu/easy'>" ), -1, 0 );
+			setItemDataInt( 0, index, 0 );
+
+			index = insertItem( toWStr( "<loc = 'guis/mainmenu/medium'>" ), -1, 0 );
+			setItemDataInt( 1, index, 0 );
+			
+			index = insertItem( toWStr( "<loc = 'guis/mainmenu/hard'>" ), -1, 0 );
+			setItemDataInt( 2, index, 0 );
+			
+			index = insertItem( toWStr( "<loc = 'guis/mainmenu/expert'>" ), -1, 0 );
+			setItemDataInt( 3, index, 0 );
+			
+			index = insertItem( toWStr( "<loc = 'guis/mainmenu/custom'>" ), -1, 0 );
+			setItemDataInt( 4, index, 0 );
+			
+			currentSelection = findItemDataInt( gui.getCVarInt( "bot_uiSkill" ), 0 );
+		}
+
+		onCVarChanged "bot_uiSkill" {
+			if( updating == false ) {
+				currentSelection = findItemDataInt( gui.getCVarInt( "bot_uiSkill" ), 0 );
+				postNamedEvent( "onSelected" );
+			}
+		}
+
+		onNamedEvent "onShow" {
+			showAdvanced = immediate( getItemDataInt( currentSelection, 0, 0 ) == 4 );
+			tutorialMode = immediate( getItemDataInt( currentSelection, 0, 0 ) == 5 );
+		}
+
+		onNamedEvent "onSelected" {
+			callSuper();
+			showAdvanced = immediate( getItemDataInt( currentSelection, 0, 0 ) == 4 );
+			tutorialMode = immediate( getItemDataInt( currentSelection, 0, 0 ) == 5 );
+			
+			if( showAdvanced ) {
+				if( globals.game.isRunning ) {
+					if( admin.canAdjustBots ) {
+						gui.consoleCommand( "admin adjustBots uiSkill " + toString( getItemDataInt( currentSelection, 0, 0 ), 0 ) + _newline );
+					}
+				} else {
+					gui.setCVarInt( "bot_uiSkill", getItemDataInt( currentSelection, 0, 0 ) );
+				}
+				return;
+			}
+			
+			if( getItemDataInt( currentSelection, 0, 0 ) == 3 ) {
+				aimSkill = 3;
+				skill = 2;
+			} else {
+				aimSkill = immediate( getItemDataInt( currentSelection, 0, 0 ) );				
+				skill = immediate( getItemDataInt( currentSelection, 0, 0 ) );
+			}
+
+			updating = true;			
+			if( getItemDataInt( currentSelection, 0, 0 ) < 4 ) {
+				gui.lstPlayCompBotWeaponSkill.currentSelection = immediate( aimSkill );
+				gui.lstPlayCompBotTacticalSkill.currentSelection = immediate( skill );
+			}
+			
+			if( tutorialMode ) {
+				skill = 3;
+			}
+			
+			if( globals.game.isRunning ) {
+				if( admin.canAdjustBots ) {
+					gui.consoleCommand( "admin adjustBots uiSkill " + toString( getItemDataInt( currentSelection, 0, 0 ), 0 ) + _newline );
+					gui.consoleCommand( "admin adjustBots skill " + toString( skill, 0 ) + _newline );
+					gui.consoleCommand( "admin adjustBots aimSkill " + toString( aimSkill, 0 ) + _newline );
+				}
+			} else {
+				gui.setCVarInt( "bot_uiSkill", getItemDataInt( currentSelection, 0, 0 ) );
+				gui.setCVarInt( "bot_skill", skill );
+				gui.setCVarInt( "bot_aimSkill", aimSkill );
+			}
+			updating = false;
+		}
+	}
+_end_dropdown
+
+_dropdown( PlayCompBotWeaponSkill, localize( "guis/mainmenu/botweaponskill" ), 8, 0, 150, _fill_to_right_of( lytPlayComp ), $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+	properties {
+		float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+	}
+	events {
+		onCreate {
+			insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+			insertItem( toWStr( "<loc = 'guis/mainmenu/easy'>" ), -1, 0 );
+			insertItem( toWStr( "<loc = 'guis/mainmenu/medium'>" ), -1, 0 );
+			insertItem( toWStr( "<loc = 'guis/mainmenu/hard'>" ), -1, 0 );
+			insertItem( toWStr( "<loc = 'guis/mainmenu/expert'>" ), -1, 0 );
+			currentSelection = gui.getCVarInt( "bot_aimSkill" );
+		}
+		onCVarChanged "bot_aimSkill" {
+			currentSelection = gui.getCVarInt( "bot_aimSkill" );
+		}
+		onNamedEvent "onSelected" {
+		    callSuper();
+		    if( currentSelection >= 0 ) {
+		    	if( globals.game.isRunning ) {
+		    		if( admin.canAdjustBots ) {
+		    			gui.consoleCommand( "admin adjustBots aimSkill " + toString( currentSelection, 0 ) + _newline );
+		    		}
+		    	} else {
+		    	   	gui.setCVarInt( "bot_aimSkill", currentSelection );
+		    	}
+			}
+		}
+	}
+_end_dropdown_list
+	properties {
+		float visible = gui.lstPlayCompBotSkills.showAdvanced && gui.lstPlayCompBotTacticalSkill.tutorial == false;
+	}
+_end_dropdown_layout
+
+_dropdown( PlayCompBotTacticalSkill, localize( "guis/mainmenu/bottacticalskill" ), 8, 0, 150, _fill_to_right_of( lytPlayComp ), $evalfloat( BUTTON_HEIGHT * 7 ), "right" )
+	properties {
+		float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT;
+		
+		float tutorial = false;
+	}
+	events {
+		onCreate {
+			insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Name
+			insertItem( toWStr( "<loc = 'guis/mainmenu/easy'>" ), -1, 0 );
+			insertItem( toWStr( "<loc = 'guis/mainmenu/normal'>" ), -1, 0 );
+			insertItem( toWStr( "<loc = 'guis/mainmenu/expert'>" ), -1, 0 );
+			insertItem( toWStr( "<loc = 'guis/mainmenu/training'>" ), -1, 0 );
+			currentSelection = gui.getCVarInt( "bot_skill" );
+		}
+		onCVarChanged "bot_skill" {
+			currentSelection = gui.getCVarInt( "bot_skill" );
+			tutorial = immediate( currentSelection == 3 );
+		}
+		onNamedEvent "onShow" {
+			tutorial = immediate( currentSelection == 3 );
+		}
+		
+		onNamedEvent "onSelected" {
+		    callSuper();
+		    
+		    tutorial = immediate( currentSelection == 3 );
+		    if( currentSelection >= 0 ) {
+		    	if( globals.game.isRunning ) {
+		    		if( admin.canAdjustBots ) {
+		    			gui.consoleCommand( "admin adjustBots skill " + toString( currentSelection, 0 ) + _newline );
+		    		}
+		    	} else {
+		    		gui.setCVarInt( "bot_skill", currentSelection );
+		    	}
+			}			
+		}
+	}
+_end_dropdown_list
+	properties {
+		float visible = gui.lstPlayCompBotSkills.showAdvanced;
+	}
+_end_dropdown_layout
+
+_check( PlayComp_CompleteObjectives, localize( "guis/mainmenu/botscompleteobjectives" ), 8, 0, 120 )
+	_cvar_synced_bool( bot_doObjectives )
+	
+#ifndef IN_GAME_BOTS
+	properties {
+		float visible = gui.lstPlayCompBotSkills.showAdvanced;
+	}
+#endif	
+	events {
+		onNamedEvent "onAction" {
+			callSuper();
+			if( globals.game.isRunning ) {
+				if( admin.canAdjustBots ) {
+					gui.consoleCommand( "admin adjustBots doObjectives " + toString( checked, 0 ) + _newline );
+				}
+			} else {
+				gui.setCVarBool( "bot_doObjectives", checked );
+			}
+		}
+	}
+_end_check
+
+
+#ifdef IN_GAME_BOTS
+_label_localized( PlayCompNumBots, localize( "guis/mainmenu/numberofplayers" ), 0, 0, 100, 16, COLOR_WHITE )
+#else
+_label_localized( PlayCompNumBots, localize( "guis/admin/players" ), 0, 0, 100, 16, COLOR_WHITE )
+#endif
+	properties {
+		vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		
+#ifndef IN_GAME_BOTS
+		float visible = gui.lstPlayCompBotSkills.showAdvanced;
+#endif		
+	}
+_end_label
+
+_slider( PlayComp_TotalNumBots, localize( "guis/mainmenu/total" ), 8, 0, -1, maxBots, 150, 100 )
+	properties {
+		float flags = immediate( flags ) | SF_INTEGER_SNAP;
+		float maxBots = gui.getCVarInt( "bot_minClientsMax" );
+#ifndef IN_GAME_BOTS
+		float visible = false;
+		vec2 range = 16, 16;
+		float position = 16;
+		rect rect = 0, 0, 0, 0;
+		float allowEvents = false;
+#endif
+	}
+	
+#ifdef IN_GAME_BOTS
+	_cvar_slider_synced_int( bot_minClients )	
+	events {
+		onPostDraw {
+			callSuper();
+			if( position == -1 ) {
+				drawLocalizedText( gui.disabledText, "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", "1,1,1,0.5", 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				return;
+			}
+			drawText( toWStr( toString( position, 0 )  + "/" + toString( range.y, 0 ) ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );	
+		}
+		onCVarChanged "bot_minClientsMax" {
+			maxBots = gui.getCVarInt( "bot_minClientsMax" );
+		}
+		onEndScroll {
+			if( globals.game.isRunning && admin.canAdjustBots ) {
+				gui.consoleCommand( "admin adjustBots minClients " + toString( position, 0 ) + _newline );
+			}
+			gui.sldPlayComp_NumStroggBots.postNamedEvent( "applyAdmin" );
+			gui.sldPlayComp_NumGDFBots.postNamedEvent( "applyAdmin" );			
+		}
+		onMouseUpGutter {
+			if( globals.game.isRunning && admin.canAdjustBots ) {
+				gui.consoleCommand( "admin adjustBots minClients " + toString( position, 0 ) + _newline );
+			}
+			// ensure that the cvars are synced after any changes
+			gui.sldPlayComp_NumStroggBots.postNamedEvent( "applyAdmin" );
+			gui.sldPlayComp_NumGDFBots.postNamedEvent( "applyAdmin" );
+		}
+		onQueryTooltip {
+			tooltipText = localizeArgs( "guis/mainmenu/tooltips/botminclients" );
+		}
+	}
+#endif	
+_end_slider
+
+_slider( PlayComp_NumStroggBots, localize( "game/strogg" ), 8, 0, -1, gui.sldPlayComp_TotalNumBots.position, 150, 100 )
+	properties {
+		float flags = immediate( flags ) | SF_INTEGER_SNAP;
+		
+#ifndef IN_GAME_BOTS
+		float visible = gui.lstPlayCompBotSkills.showAdvanced;
+#endif		
+	}
+	_cvar_slider_synced_int( bot_uiNumStrogg )
+	events {
+		onPostDraw {
+			callSuper();
+			if( position == -1 ) {
+				drawLocalizedText( gui.noLimitText, "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", "1,1,1,0.5", 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				return;
+			}
+#ifdef IN_GAME_BOTS				
+			drawText( toWStr( toString( position, 0 ) + "/" + toString( range.y, 0 ) ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+#else
+			drawText( toWStr( toString( position, 0 ) ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+#endif			
+		}
+		onPropertyChanged "range.y" {
+			position = min( position, range.y );
+			if( position < -1 ) {
+				position = -1;
+			}
+		}
+		onPropertyChanged "gui.sldPlayComp_TotalNumBots.position" {
+			range.y = gui.sldPlayComp_TotalNumBots.position;
+		}
+		onPropertyChanged "gui.sldPlayComp_NumGDFBots.position" "range.y" {
+			position = immediate( min( position, min( gui.sldPlayComp_TotalNumBots.position, gui.sldPlayComp_TotalNumBots.position - gui.sldPlayComp_NumGDFBots.position ) ) );
+			if( position < -1 ) {
+				position = -1;
+			}			
+		}
+		onEndScroll {
+			postNamedEvent( "applyAdmin" );
+		}
+		onMouseUpGutter {
+			postNamedEvent( "applyAdmin" );
+		}
+		onNamedEvent "applyAdmin" {
+			if( globals.game.isRunning && admin.canAdjustBots ) {
+				gui.consoleCommand( "admin adjustBots numStrogg " + toString( position, 0 ) + _newline );
+			}		
+		}
+#ifdef IN_GAME_BOTS		
+		onQueryTooltip {
+			tooltipText = localizeArgs( "guis/mainmenu/tooltips/teamminclients" );
+		}
+#endif		
+	}
+_end_slider
+
+_slider( PlayComp_NumGDFBots, localize( "game/gdf" ), 8, 0, -1, gui.sldPlayComp_TotalNumBots.position, 150, 100 )
+	properties {
+		float flags = immediate( flags ) | SF_INTEGER_SNAP;
+		
+#ifndef IN_GAME_BOTS
+		float visible = gui.lstPlayCompBotSkills.showAdvanced;
+#endif			
+	}
+	_cvar_slider_synced_int( bot_uiNumGDF )
+	events {		
+		onPostDraw {
+			callSuper();
+			if( position == -1 ) {
+				drawLocalizedText( gui.noLimitText, "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", "1,1,1,0.5", 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+				return;
+			}
+#ifdef IN_GAME_BOTS				
+			drawText( toWStr( toString( position, 0 ) + "/" + toString( range.y, 0 ) ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+#else
+			drawText( toWStr( toString( position, 0 ) ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+#endif			
+		}
+		onPropertyChanged "range.y" {
+			position = min( position, range.y );
+			if( position < -1 ) {
+				position = -1;
+			}
+			
+		}
+		onPropertyChanged "gui.sldPlayComp_TotalNumBots.position" {
+			range.y = gui.sldPlayComp_TotalNumBots.position;
+		}
+		onPropertyChanged "gui.sldPlayComp_NumStroggBots.position" {
+			position = immediate( min( position, min( gui.sldPlayComp_TotalNumBots.position, gui.sldPlayComp_TotalNumBots.position - gui.sldPlayComp_NumStroggBots.position ) ) );
+			if( position < -1 ) {
+				position = -1;
+			}
+		}
+		onEndScroll {
+			postNamedEvent( "applyAdmin" );
+		}
+		onMouseUpGutter {
+			postNamedEvent( "applyAdmin" );
+		}
+		onNamedEvent "applyAdmin" {
+			if( globals.game.isRunning && admin.canAdjustBots ) {
+				gui.consoleCommand( "admin adjustBots numGDF " + toString( position, 0 ) + _newline );
+			}		
+		}
+#ifdef IN_GAME_BOTS				
+		onQueryTooltip {
+			tooltipText = localizeArgs( "guis/mainmenu/tooltips/teamminclients" );
+		}
+#endif		
+	}
+_end_slider

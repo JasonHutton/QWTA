@@ -1,0 +1,118 @@
+/***********************************************************************
+
+projectile_ssm_qwta.script
+
+***********************************************************************/
+
+object projectile_ssm_qwta : projectile_ssm {
+	void		DoExplodeEffect_ssm( entity collisionEnt );
+	void		DoExplodeEffect( entity collisionEnt ) {
+		DoExplodeEffect_ssm( collisionEnt );
+	}
+
+	void			preinit();
+	
+	void			BlindFlash();
+	void			EMPPulse();
+	void			Irradiate();
+
+	float			empRadius;
+	float			empTime;
+	float			weaponEmpTime;
+	
+	float			blindRadius;
+	float			blindTime;
+	
+	float			entityDeclIndex;
+	
+	float			radiationIndex;
+}
+
+void projectile_ssm_qwta::preinit() {
+	entityDeclIndex	= sys.getDeclType( "entityDef" );
+	
+	empRadius		= getFloatKey( "emp_radius" );
+	empTime			= getFloatKey( "emp_time" );
+	weaponEmpTime	= getFloatKey( "emp_weapon_time" );
+	
+	blindRadius		= getFloatKey( "blind_radius" );
+	blindTime		= getFloatKey( "blind_time" );
+	
+	radiationIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_radiation" ) );
+}
+
+void projectile_ssm_qwta::DoExplodeEffect_ssm( entity collisionEnt ) {
+	float removeDelay;
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+	
+	BlindFlash();
+	
+	EMPPulse();
+
+	DoRadiusDamage();
+
+	Irradiate();
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+	ScheduleRemoval( removeDelay );
+}
+
+void projectile_ssm_qwta::BlindFlash() {
+	
+	vector explodeOrigin = getWorldOrigin();
+	
+	float i;
+	for ( i = 0; i < 2; i++ ) {
+		explodeOrigin_z = explodeOrigin_z + (1024 * i); // Check from halfway up the blast too, since it's pretty big.
+		
+		entitiesOfCollection( "players" );
+		filterEntitiesByRadius( explodeOrigin, blindRadius, true );
+		//filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+
+		// First, nail anyone nearby, wall between or not, with some weak blinding..
+		float count = getBoundsCacheCount();
+		float j;
+		for ( j = 0; j < count; j++ ) {
+			player plyr = getBoundsCacheEntity( j );
+			if ( plyr != $null_entity ) {
+				plyr.vBlind( explodeOrigin, blindRadius / 20.f, blindTime, false );
+			}
+		}
+
+		// Next, nail the people who aren't behind cover, harder.
+		filterEntitiesByBoundsTrace( explodeOrigin, CONTENTS_OPAQUE, $null_entity, true );
+		
+		float count2 = getBoundsCacheCount();
+		float k;
+		for ( k = 0; k < count2; k++ ) {
+			player plyr2 = getBoundsCacheEntity( k );
+			if ( plyr2 != $null_entity ) {
+				plyr2.vBlind( explodeOrigin, blindRadius, blindTime, true );
+			}
+		}
+	}
+}
+
+void projectile_ssm_qwta::EMPPulse() {
+	entitiesOfCollection( "emp" );
+	filterEntitiesByRadius( getWorldOrigin(), empRadius, true );
+	if ( !g_allowEMPFriendlyFire.getBoolValue() ) {
+		filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	}
+
+	entity owner = getOwner();
+
+	float count = getBoundsCacheCount();
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		ent.vApplyEmpDamage( owner, empTime, weaponEmpTime );
+	}
+}
+
+void projectile_ssm_qwta::Irradiate() {
+	radiation_point radiationPoint = sys.spawnType( radiationIndex );
+	radiationPoint.setWorldOrigin( getWorldOrigin() );
+	radiationPoint.setAngles( g_vectorUp );
+	radiationPoint.Activate( getOwner() );
+}

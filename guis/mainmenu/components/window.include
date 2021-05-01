@@ -1,0 +1,13 @@
+
+#ifndef __component_window__
+#define __component_window__
+
+$template _wnd_init
+	properties {                                                               
+		handle 	whiteMaterial 	= cacheMaterial( "white", "white" );
+		handle 	wndFillMaterial = cacheMaterial( "_wndFill", "_frame window" );
+		handle 	wndLineMaterial = cacheMaterial( "_wndLine", "_frame window_line" );
+	}
+$endtemplate
+
+#endif // !window

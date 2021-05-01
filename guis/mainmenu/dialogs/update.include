@@ -1,0 +1,281 @@
+// ================================================================================
+// Update status dialog spawned from the game
+// ================================================================================
+_dialog( Update, titleText, _center( desktop, width ), _center( desktop, height ), 230, 220, "noMove", "dim" )
+	_input_dialog( Update )
+	properties {
+		float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+
+		//float action  = UPDATE_GUI_NONE;
+		float updateButtonsVisible = gui.btnUpdate_Download.visible && gui.btnUpdate_Website.visible && gui.btnUpdate_Later.visible;
+		
+		handle titleTextUpdate = localize( "guis/mainmenu/update/updateetqw" );
+		handle titleTextServerDownload = localize( "guis/mainmenu/update/fromserver" );
+		handle titleText = titleTextUpdate;
+	}
+	_on_default( UpdateOk, UpdateCancel )
+	
+	events {
+		onCreate {
+			postNamedEvent( "updateAvailability" );
+		}
+		onPropertyChanged "gui.activeDialog" {
+			if( visible ) {
+				postNamedEvent( "moveToFront" );
+			}
+		}
+		onPropertyChanged "updates.availability" {
+			postNamedEvent( "updateAvailability" );
+		}
+		onPropertyChanged "updates.fromServer" {
+			if ( updates.fromServer == 0.f ) {
+				titleText = titleTextUpdate;
+			} else {
+				titleText = titleTextServerDownload;
+			}
+		}
+		onNamedEvent "updateAvailability" {
+			if( updates.availability > UPDATE_AVAIL_NONE ) {
+				if( updates.availability == UPDATE_AVAIL_WEB ) {
+					//action = UPDATE_GUI_WEBSITE;
+				} else {				
+					//action = UPDATE_GUI_DOWNLOAD;
+				}
+			}		
+		}
+		onPropertyChanged "updateButtonsVisible" {
+			if( updateButtonsVisible ) {
+				//rect.h = 220;
+			} else {
+				//rect.h = $evalfloat( 220 - ( 3* BUTTON_HEIGHT ) - PADDING );
+			}
+		}		
+	}	
+
+	_group_box( UpdateBackground, _center( dlgUpdate, width ), _top( dlgUpdate ), _client_dimension( dlgUpdate, width ), _fill_to_top_of( btnUpdateCancel ) )
+		// fill the space available
+		events {
+			onPropertyChanged "gui.btnUpdateOk.visible" "gui.btnUpdateCancel.visible" {			
+				if( gui.btnUpdateOk.visible == false && gui.btnUpdateCancel.visible == false ) {
+					rect.h = _fill_to_bottom_of( dlgUpdate );
+				} else {
+					rect.h = _fill_to_top_of( btnUpdateCancel );
+				}
+			}
+		}
+		
+		_scrollable_literal_text( UpdatePopup, updates.message, _center( grpUpdateBackground, width ), PADDING, _client_dimension( grpUpdateBackground, width ) - 13, _fill_to_top_of( btnUpdate_Download ), "border" )
+			events {
+				onPostDraw {
+					drawCachedMaterial( gui.infoIcon, "absoluteRect.x - 12, absoluteRect.y + 2, 12, 12", COLOR_WHITE );
+				}
+				onPropertyChanged "gui.dlgUpdate.updateButtonsVisible" {
+					if( gui.dlgUpdate.updateButtonsVisible ) {						
+						rect.h = _fill_to_top_of( btnUpdate_Download );
+					} else {
+						rect.h = _fill_to_top_of( prgUpdateProgress );
+					}
+				}
+				onPropertyChanged "updates.state" {
+					if( updates.state == UPDATE_DOWNLOADING ) {
+						rect.h = _fill_to_top_of( prgUpdateProgress );
+					} else {
+						rect.h = _fill_to_top_of( btnUpdate_Download );
+					}
+				}
+			}
+		_end_scrollable_text
+
+		_button( Update_Download, gui.lstUpdatePopup.rect.x, _above( btnUpdate_Website ) - 3, gui.lstUpdatePopup.rect.w, BUTTON_HEIGHT )	
+			properties {
+				float visible 			= updates.availability > UPDATE_AVAIL_NONE && ( updates.state == UPDATE_PROMPTING );
+				handle localizedText 	= localize( "guis/mainmenu/update/downloadnow" );
+			}
+			
+			_button_disable_if( "updates.availability", updates.availability == UPDATE_AVAIL_WEB || updates.availability == UPDATE_AVAIL_WEB_REQUIRED )
+			
+			_button_action(
+				updates.setResponse( UPDATE_GUI_DOWNLOAD );
+			)
+		_end_button
+
+		_button( Update_Website, gui.lstUpdatePopup.rect.x, _above( btnUpdate_Later ) - 3, gui.lstUpdatePopup.rect.w, BUTTON_HEIGHT )					
+			properties {
+				float visible 			= updates.availability > UPDATE_AVAIL_NONE && ( updates.state == UPDATE_PROMPTING );
+				handle localizedText 	= localize( "guis/mainmenu/update/gotowebsite" );
+			}
+									
+			_button_action(
+				updates.setResponse( UPDATE_GUI_WEBSITE );
+			)			
+		_end_button
+
+		_button( Update_Later, gui.lstUpdatePopup.rect.x, _above( prgUpdateProgress ) - 3, gui.lstUpdatePopup.rect.w, BUTTON_HEIGHT )
+			
+			properties {
+				float visible 			= updates.availability > UPDATE_AVAIL_NONE && ( updates.state == UPDATE_PROMPTING );
+				handle localizedText 	= localize( "guis/mainmenu/update/later" );
+			}
+			
+			_button_disable_if( "updates.availability", updates.availability == UPDATE_AVAIL_WEB_REQUIRED || updates.availability == UPDATE_AVAIL_REQUIRED )
+						
+			_button_action(
+				updates.setResponse( UPDATE_GUI_LATER );
+			)		
+		_end_button
+
+
+		windowDef prgUpdateProgress {
+			properties {
+				rect rect = gui.lstUpdatePopup.rect.x, _bottom( grpUpdateBackground ), gui.lstUpdatePopup.rect.w - 26, 12;
+				rect fillRect = absoluteRect.x + 2, absoluteRect.y + 2, absoluteRect.w - 4, absoluteRect.h - 4;
+				rect clipRect = absoluteRect.x + 2, absoluteRect.y + 2, ( absoluteRect.w * min( updates.progress, 1.0f ) ) - 4, absoluteRect.h - 4;
+				rect textRect = absoluteRect.x + absoluteRect.w + 4, absoluteRect.y + 2, absoluteRect.w, absoluteRect.h;
+
+				handle 	gradMaterial 			= gui.cacheMaterial( "grad", "_st button_grad_c" );
+
+				color	fillColor				= COLOR_PROGRESS_FILL;
+				color	lineColor				= COLOR_PROGRESS_LINES;
+				color	miniColor				= COLOR_PROGRESS_MINI_FILL;
+				color	gradColor				= COLOR_PROGRESS_MINI_FILL;
+				float 	visible 				= ( updates.state == UPDATE_DOWNLOADING );
+			}
+			events {
+				onPreDraw {					
+					drawCachedMaterial( gui.btnFillMaterial, absoluteRect, fillColor );
+					drawCachedMaterial( gui.btnLineMaterial, absoluteRect, lineColor );
+
+					clipToRect( clipRect );
+					drawCachedMaterial( gui.btnFillMaterial, fillRect, miniColor );
+					drawCachedMaterial( gradMaterial, fillRect, gradColor );
+
+					unclipRect();
+
+					drawText( toWStr( toString( min( updates.progress, 1.0f ) * 100, 0 ) + "%" ), textRect, COLOR_WHITE, 14, DTF_LEFT | DTF_BOTTOM | DTF_SINGLELINE );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+	_end_group_box
+
+	_button( UpdateOk, _to_left_of( btnUpdateCancel ) - 3, _bottom( dlgUpdate, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		
+		_button_action(
+			updates.setResponse( action );
+		)
+		properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/ok" );
+			float	visible			= ( updates.state == UPDATE_PROMPT_DL_FAILED ) || ( updates.state == UPDATE_PROMPT_READY );
+			float 	action			= UPDATE_GUI_NONE;
+		}
+		events {
+			onCreate {
+				postNamedEvent( "updateState" );
+			}
+			onPropertyChanged "updates.state" {
+				postNamedEvent( "updateState" );
+			}			
+			onNamedEvent "updateState" {
+				if( updates.state == UPDATE_PROMPTING ) {
+					localizedText = localize( "guis/mainmenu/ok" );
+					//action = gui.dlgUpdate.action;	
+					return;
+				}
+				if( updates.state == UPDATE_PROMPT_DL_FAILED || updates.state == UPDATE_PROMPT_READY ) {
+					localizedText = localize( "guis/mainmenu/yes" );
+					action = UPDATE_GUI_YES;
+					return;
+				}				
+			}
+			
+			onNamedEvent "onShow" {
+				postNamedEvent( "updatePosition" );
+			}
+			onNamedEvent "updatePosition" {
+				if( gui.btnUpdateCancel.visible ) {
+					rect.x = _to_left_of( btnUpdateCancel ) - 3;
+				} else {
+					rect.x = _center( dlgUpdate, width );
+				}
+			}
+			onPropertyChanged "gui.btnUpdateCancel.visible"  {
+				postNamedEvent( "updatePosition" );
+			}
+		}
+	_end_button
+
+	_button( UpdateCancel, _right( dlgUpdate ), _bottom( dlgUpdate, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		
+		_button_action(
+			updates.setResponse( action );
+		)
+		properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/cancel" );
+			float	visible			= ( updates.state == UPDATE_DOWNLOADING ) || ( updates.state == UPDATE_PROMPT_DL_FAILED ) || ( updates.state == UPDATE_PROMPT_READY );
+			float 	action 			= UPDATE_GUI_NONE;
+		}
+		events {
+			onCreate {
+				postNamedEvent( "updateState" );
+			}
+			onPropertyChanged "updates.state" {
+				postNamedEvent( "updateState" );
+			}			
+			onNamedEvent "updateState" {
+				if( updates.state == UPDATE_DOWNLOADING ) {
+					localizedText = localize( "guis/mainmenu/cancel" );
+					action = UPDATE_GUI_CANCEL;
+					return;
+				}
+				if( updates.state == UPDATE_PROMPT_DL_FAILED ) {
+					localizedText = localize( "guis/mainmenu/no" );
+					action = UPDATE_GUI_NO;
+					return;
+				}
+				if( updates.state == UPDATE_PROMPT_READY ) {
+					localizedText = localize( "guis/mainmenu/update/later" );
+					action = UPDATE_GUI_LATER;
+					return;
+				}				
+			}		
+		}
+	_end_button
+_end_dialog
+
+// ================================================================================
+// Update Progress Popup
+// Displayed when the user manually checks for an update
+// ================================================================================
+_dialog( UpdateProgress, localize( "blank" ), _center( desktop, width ), _center( desktop, height ), 200, 110, "noMove", "dim" )
+	properties {
+		float 	visible = gui.dlgUpdate.visible == false && gui.tabOptions_Updates.manualUpdate && updates.state != UPDATE_IDLE;
+	}
+	events {
+		onPropertyChanged "visible" {
+			callSuper();
+			gui.desktop.allowChildEvents = visible == false;
+		}
+		onPropertyChanged "updates.state" {
+			if ( updates.state == UPDATE_IDLE && icompare( gui.activePopup, "UpdateProgress" ) ) {
+				_close_popup
+			}
+		}
+	}
+	
+	_group_box( UpdateProgressBackground, _center( dlgUpdateProgress, width ), PADDING, _client_dimension( dlgUpdateProgress, width ), _fill_to_bottom_of( dlgUpdateProgress ) )	
+		_label_localized( UpdateProgressBoxPopup, localize( "guis/mainmenu/pleasewait" ), _center( grpUpdateProgressBackground, width ), 2, _client_dimension( grpUpdateProgressBackground, width ) - 26, _fill_to_top_of( prgUpdateProgressProgress ), COLOR_WHITE )
+			properties {
+				float	fontSize = 16;
+			}
+			events {
+				onPostDraw {
+					drawCachedMaterial( gui.infoIcon, "absoluteRect.x - 11, absoluteRect.y + 4, 12, 12", COLOR_WHITE );
+				}	
+			}
+		_end_label
+	
+		_progress_indefinite(  UpdateProgressProgress, _left( grpUpdateProgressBackground ), _bottom( grpUpdateProgressBackground ), _fill_to_right_of( grpUpdateProgressBackground ) )
+		_end_progress_indefinite		
+	_end_group_box	
+
+_end_dialog

@@ -1,0 +1,579 @@
+/***********************************************************************
+
+	N80 Assault Rifle
+	exportmodels weapons/assaultrifle.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+		options -prefix ASSAULT_ -sourcedir models/weapons/gdf_assault_rifle/dev_sd -destdir models/weapons/gdf_assault_rifle/ -keep muzzle grenade_barrel_joint grenade_joint grenade_sight_joint -keepmesh left_arm_mesh gui_holder_mesh gui_mesh left_hand_mesh right_arm_mesh right_hand_mesh assault_rifle reflex_site charge_handle crosshair glass backup_site arch
+
+/*
+	mesh	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_rework.md5mesh
+
+	anim	assault_rifle_rework_idle.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_idle.md5anim
+	anim	assault_rifle_rework_raise.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_riase.md5anim 		-range 1 15
+	anim	assault_rifle_rework_lower.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_lower.md5anim
+
+	anim	assault_rifle_rework_firenew.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_fire.md5anim
+	anim	assault_rifle_rework_firenew2.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_fire2.md5anim
+	anim	assault_rifle_rework_firenew3.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_fire3.md5anim
+*/
+	anim	assault_rifle_rework_reload.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_reload.md5anim
+
+/*
+
+	anim	assault_rifle_rework_sprint.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_sprint.md5anim
+
+*/
+	anim	assault_rifle_rework_zoom.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_zoom_in.md5anim 		-range 1 6
+	anim	assault_rifle_rework_zoom.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_zoom_out.md5anim 		-range 6 12
+	anim	assault_rifle_rework_zoom.mb				-dest models/weapons/gdf_assault_rifle/assault_rework_zoom_idle.md5anim 		-range 6 6
+/*
+	anim	assault_rifle_rework_sprint_start.mb		-dest models/weapons/gdf_assault_rifle/assault_rework_start_sprint.md5anim 	-range 1 6
+	anim	assault_rifle_rework_sprint_leave.mb		-dest models/weapons/gdf_assault_rifle/assault_rework_leave_sprint.md5anim 	-range 6 11
+*/
+	anim	assault_rifle_rework_zoom_fire.mb			-dest models/weapons/gdf_assault_rifle/assault_rework_zoom_fire.md5anim -xyzprecision 0.001
+/*
+	anim	assault_rifle_rework_switch_to_grenade.mb	-dest models/weapons/gdf_assault_rifle/assault_rework_switch_to_grenade.md5anim -range 0 20
+	anim	assault_rifle_rework_switch_to_grenade.mb	-dest models/weapons/gdf_assault_rifle/assault_rework_switch_from_grenade.md5anim -range 20 40
+*/
+	}
+
+export hauser {
+	options -prefix ASSAULT_ -sourcedir models/weapons/gdf_assault_rifle/dev_sd -destdir models/weapons/gdf_assault_rifle/ -keep muzzle grenade_barrel_joint grenade_joint grenade_sight_joint -keepmesh grenade_shell left_arm_mesh gui_holder_mesh gui_mesh left_hand_mesh right_arm_mesh right_hand_mesh assault_rifle reflex_site grenade_launcher grenade_launcher_barrel charge_handle grenade_launcher_sight_2 crosshair glass backup_site arch
+/*
+	mesh	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_grenade_rework.md5mesh
+
+
+	anim	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_rework.md5anim
+	anim	assault_rifle_rework_grenade_idle.mb		-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_idle.md5anim
+
+	anim	assault_rifle_rework_grenade_raise.mb		-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_raise.md5anim			-range 1 10
+	anim	assault_rifle_rework_grenade_lower.mb		-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_lower.md5anim			-range 12 19
+	anim	assault_rifle_rework_grenade_fire.mb		-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_fire.md5anim		-range 0 4
+	anim	assault_rifle_rework_grenade_fire.mb		-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_reload.md5anim		-range 5 85
+	anim	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_zoom_in.md5anim 			-range 1 10
+	anim	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_zoom_out.md5anim 		-range 10 20
+
+	anim	assault_rifle_rework_grenade_sprint.mb			-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_start_sprint.md5anim 	-range 0 6
+
+	anim	assault_rifle_rework_grenade_sprint.mb			-dest models/weapons/gdf_assault_rifle/assault_grenadelauncher_leave_sprint.md5anim 	-range 6 12
+	//anim	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_rework_zoom_fire.md5anim 				-range 7 7
+
+*/
+	}
+/*
+export hauser {
+	options -prefix ASSAULT_ -sourcedir models/weapons/gdf_assault_rifle/dev_sd -destdir models/weapons/gdf_assault_rifle/ -keep muzzle grenade_barrel_joint grenade_joint grenade_sight_joint -keepmesh left_arm_mesh gui_holder_mesh gui_mesh left_hand_mesh right_arm_mesh right_hand_mesh assault_rifle scope charge_handle scope_lens backup_site crosshair
+
+	mesh	assault_rifle_rework_base_file.mb			-dest models/weapons/gdf_assault_rifle/assault_scope_rework.md5mesh
+
+}
+*/
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_assaultrifle_rework {
+	mesh							models/weapons/gdf_assault_rifle/assault_rework.md5mesh
+
+	anim idle						models/weapons/gdf_assault_rifle/assault_rework_idle.md5anim
+	anim raise						models/weapons/gdf_assault_rifle/assault_rework_riase.md5anim 	{
+		frame begin						sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim putaway					models/weapons/gdf_assault_rifle/assault_rework_lower.md5anim {
+	}
+
+	anim fire						models/weapons/gdf_assault_rifle/assault_rework_fire.md5anim {
+	}
+
+	anim fire2						models/weapons/gdf_assault_rifle/assault_rework_fire2.md5anim {
+	}
+
+	anim fire3						models/weapons/gdf_assault_rifle/assault_rework_fire3.md5anim {
+	}
+
+	anim reload						models/weapons/gdf_assault_rifle/assault_rework_reload.md5anim {
+		frame 5							sound_channel snd_weapon_reload snd_reload
+		frame 49						sound_channel snd_weapon_cock snd_cock
+	}
+	anim zoomin						models/weapons/gdf_assault_rifle/assault_rework_zoom_in.md5anim {
+		frame 1						sound_channel snd_weapon_foley snd_sights_up
+	}
+	anim zoomout					models/weapons/gdf_assault_rifle/assault_rework_zoom_out.md5anim {
+		frame 1						sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim start_sprint				models/weapons/gdf_assault_rifle/assault_rework_start_sprint.md5anim
+	anim leave_sprint				models/weapons/gdf_assault_rifle/assault_rework_leave_sprint.md5anim
+	anim fire_zoom					models/weapons/gdf_assault_rifle/assault_rework_zoom_fire.md5anim
+	anim idle_zoom					models/weapons/gdf_assault_rifle/assault_rework_zoom_idle.md5anim
+
+}
+
+model viewmodel_assaultrifle_grenade_rework {
+	mesh							models/weapons/gdf_assault_rifle/assault_grenade_rework.md5mesh
+
+	// Normal Mode
+
+	anim idle						models/weapons/gdf_assault_rifle/assault_rework_idle.md5anim {
+	}
+
+	anim raise						models/weapons/gdf_assault_rifle/assault_rework_riase.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim putaway					models/weapons/gdf_assault_rifle/assault_rework_lower.md5anim {
+	}
+
+	anim fire						models/weapons/gdf_assault_rifle/assault_rework_fire.md5anim {
+	}
+	anim fire2						models/weapons/gdf_assault_rifle/assault_rework_fire2.md5anim {
+	}
+	anim fire3						models/weapons/gdf_assault_rifle/assault_rework_fire3.md5anim {
+	}
+
+	anim reload						models/weapons/gdf_assault_rifle/assault_rework_reload.md5anim {
+		frame 5							sound_channel snd_weapon_reload snd_reload
+		frame 49						sound_channel snd_weapon_cock snd_cock
+	}
+
+	anim start_sprint				models/weapons/gdf_assault_rifle/assault_rework_start_sprint.md5anim {
+	}
+
+	anim leave_sprint				models/weapons/gdf_assault_rifle/assault_rework_leave_sprint.md5anim {
+	}
+
+	// **********GRENADE MODE***********
+
+	anim alt_idle					models/weapons/gdf_assault_rifle/assault_grenadelauncher_idle.md5anim {
+	}
+
+	anim alt_raise					models/weapons/gdf_assault_rifle/assault_grenadelauncher_raise.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim alt_putaway				models/weapons/gdf_assault_rifle/assault_grenadelauncher_lower.md5anim {
+	}
+
+	anim alt_fire					models/weapons/gdf_assault_rifle/assault_grenadelauncher_fire.md5anim {
+	}
+
+	anim alt_reload					models/weapons/gdf_assault_rifle/assault_grenadelauncher_reload.md5anim {
+		frame 11						sound_channel snd_weapon_reload snd_gren_reload
+		frame 35						sound_channel snd_weapon_brass snd_gren_eject
+	}
+
+	anim alt_start_sprint			models/weapons/gdf_assault_rifle/assault_grenadelauncher_start_sprint.md5anim {
+	}
+
+	anim alt_leave_sprint			models/weapons/gdf_assault_rifle/assault_grenadelauncher_leave_sprint.md5anim {
+	}
+
+	anim switch_to_grenade					models/weapons/gdf_assault_rifle/assault_rework_switch_to_grenade.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+		frame 7							sound_channel snd_weapon_raise snd_sights_up
+	}
+
+	anim switch_from_grenade					models/weapons/gdf_assault_rifle/assault_rework_switch_from_grenade.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+		frame 6							sound_channel snd_weapon_raise snd_sights_down
+	}
+}
+
+model viewmodel_assaultrifle_grenadelauncher_rework {
+
+	mesh							models/weapons/gdf_assault_rifle/assault_grenade_rework.md5mesh
+
+	anim idle						models/weapons/gdf_assault_rifle/assault_grenadelauncher_rework.md5anim
+	anim raise						models/weapons/gdf_assault_rifle/assault_grenadelauncher_raise.md5anim 	{
+		frame begin						sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway					models/weapons/gdf_assault_rifle/assault_grenadelauncher_lower.md5anim
+	anim fire						models/weapons/gdf_assault_rifle/assault_grenadelauncher_fire.md5anim
+	anim reload						models/weapons/gdf_assault_rifle/assault_grenadelauncher_reload.md5anim {
+		// Inserting next grenade cartridge
+		//frame	5						sound_channel snd_weapon_reload snd_greneject
+		//frame	7						sound_channel snd_weapon_reload snd_grenload
+		//frame	7						sound_channel snd_weapon_reload snd_greneject_02
+
+	}
+	anim zoomin						models/weapons/gdf_assault_rifle/assault_grenadelauncher_zoom_in.md5anim {
+		frame begin						sound_channel snd_weapon_foley snd_sights_up
+	}
+	anim zoomout					models/weapons/gdf_assault_rifle/assault_grenadelauncher_zoom_out.md5anim {
+		frame begin						sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim start_sprint				models/weapons/gdf_assault_rifle/assault_grenadelauncher_start_sprint.md5anim
+	anim leave_sprint				models/weapons/gdf_assault_rifle/assault_grenadelauncher_leave_sprint.md5anim
+}
+
+model viewmodel_assaultrifle_scope_rework {
+	mesh							models/weapons/gdf_assault_rifle/assault_scope_rework.md5mesh
+
+	anim idle						models/weapons/gdf_assault_rifle/assault_rework_idle.md5anim
+	anim raise						models/weapons/gdf_assault_rifle/assault_rework_riase.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway					models/weapons/gdf_assault_rifle/assault_rework_lower.md5anim
+	anim fire						models/weapons/gdf_assault_rifle/assault_rework_fire.md5anim {
+	}
+	anim fire2						models/weapons/gdf_assault_rifle/assault_rework_fire2.md5anim {
+	}
+	anim fire3						models/weapons/gdf_assault_rifle/assault_rework_fire3.md5anim {
+	}
+	anim reload						models/weapons/gdf_assault_rifle/assault_rework_reload.md5anim {
+		frame 5							sound_channel snd_weapon_reload snd_reload
+		frame 49						sound_channel snd_weapon_cock snd_cock
+	}
+	anim zoomin						models/weapons/gdf_assault_rifle/assault_rework_zoom_in.md5anim {
+		frame begin						sound_channel snd_weapon_foley snd_sights_up
+	}
+	anim zoomout					models/weapons/gdf_assault_rifle/assault_rework_zoom_out.md5anim {
+		frame begin						sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim start_sprint				models/weapons/gdf_assault_rifle/assault_rework_start_sprint.md5anim
+	anim leave_sprint				models/weapons/gdf_assault_rifle/assault_rework_leave_sprint.md5anim
+}
+
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_assaultrifle {
+	mesh		 						models/weapons/gdf_assault_rifle/assault_world.md5mesh
+
+	anim raise							models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+	anim idle 							models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+	anim aim							models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+	anim fire1 							models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+	anim reload							models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+	anim noammo							models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+ 	anim putaway						models/weapons/gdf_assault_rifle/assault_world.md5anim {
+	}
+}
+
+model worldmodel_assaultrifle_scope {
+	mesh		 						models/weapons/gdf_assault_rifle/assault_scope_world.md5mesh
+
+	anim raise							models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+	anim idle 							models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+	anim aim							models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+	anim fire1 							models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+	anim reload							models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+	anim noammo							models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+ 	anim putaway						models/weapons/gdf_assault_rifle/assault_scope_world.md5anim {
+	}
+}
+
+model worldmodel_assaultrifle_grenade {
+	mesh		 						models/weapons/gdf_assault_rifle/assault_grenade_world.md5mesh
+
+	anim raise							models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+	anim idle 							models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+	anim aim							models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+	anim fire1 							models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+	anim reload							models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+	anim noammo							models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+ 	anim putaway						models/weapons/gdf_assault_rifle/assault_grenade_world.md5anim {
+	}
+}
+
+
+
+
+
+invItemDef inventory/weapons/assaultrifle_dummy {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/assaultrifle"
+	model								"models/weapons/gdf_assault_rifle/assault_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"inherit"						"inventory/weapons/assaultrifle"
+		"weapon_scriptobject"			"weapon_dummy"
+	}
+}
+
+invItemDef inventory/weapons/assaultrifle {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/assaultrifle"
+	model								"models/weapons/gdf_assault_rifle/assault_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_assaultrifle_rework"
+		"model_world" 					"worldmodel_assaultrifle"
+
+		"anim_limbomenu"				"menu_assault"
+
+		"view_offset"					"-2 0.5 0.79"
+		"view_foreshorten"				"0.8"
+
+		"joint_attach"					"weapon"
+		"anim_prefix"					"machinegun"
+		"anim_prefix_class"				"twohanded"
+
+		"weapon_scriptobject"			"weapon_assaultrifle"
+
+		"muzzle_kick_time"				"0.1"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"-1 0 0"
+		"muzzle_kick_offset"			"0.15 0 0.1"
+
+		"recoilTime"					"120"
+		"recoilAngles"					"-0.25 0 0"
+		"kickback"						"0.25"
+		"kickback_prone"				"0.13"
+
+		"stat_name"						"assaultrifle"
+
+		"fx_muzzle_flash"				"effects/weapons/assaultrifle_muzzleflash_view"
+		"fx_muzzle_flash_world"			"effects/weapons/assaultrifle_muzzleflash_world"
+
+		"fx_tracer"						"effects/base/tracers_small"
+		"effectchance fx_tracer"		"0.1"
+
+		"snd_fire"						"sounds/weapons/assaultrifle/fire"
+		"snd_fire_far"					"sounds/weapons/assaultrifle/fire/far"
+		"snd_fire_local"				"sounds/weapons/assaultrifle/fire/local"
+		"snd_safe"						"sounds/weapons/assaultrifle/safe"
+		"snd_cock"						"sounds/weapons/assaultrifle/cock"
+		"snd_reload"					"sounds/weapons/assaultrifle/reload"
+		"snd_mech"						"sounds/weapons/assaultrifle/mech"
+		"snd_modeswitch"				"sounds/weapons/misc/mode_switch"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_raise"						"sounds/weapons/assaultrifle/raise"
+		"snd_sights_up"					"sounds/weapons/assaultrifle/sights/up"
+		"snd_sights_down"				"sounds/weapons/assaultrifle/sights/down"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+
+		"fov_zoom"						"60"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.5"
+		"realistic_fov_spread"			"0.125"
+
+		"fire_rate"						"0.12" // 8.3 RPS // 498 RPM
+		"realistic_fire_rate"			"0.08" // 12.5 RPS // 750 RPM
+		"num_projectiles"				"1"
+
+		"low_ammo"						"8"
+
+		"gui_sight"						"game/sights/assaultrifle_scope"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/assaultrifle"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"crosshair"						"large"
+
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"4"
+		"crosshair_spread_scale"		"2"
+
+		"spread_min"					"1"
+		"spread_max"					"3.5"
+		"spread_inc"					"1"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"3.5"
+		"spread_viewrate_inc"			"2.5"
+
+		"spread_max_settle_time"		"600"
+
+		"spread_crouch_min"				"0.75"
+		"spread_crouch_max"				"2.8"
+		"spread_crouch_inc"				"1"
+
+		"spread_crouch_viewrate_min"	"0.75"
+		"spread_crouch_viewrate_max"	"2.8"
+		"spread_crouch_viewrate_inc"	"2.5"
+
+		"spread_crouch_max_settle_time"	"550"
+
+		"spread_prone_min"				"0.5"
+		"spread_prone_max"				"2"
+		"spread_prone_inc"				"1"
+
+		"spread_prone_viewrate_min"		"0.5"
+		"spread_prone_viewrate_max"		"2"
+		"spread_prone_viewrate_inc"		"2.5"
+
+		"spread_prone_max_settle_time"	"500"
+
+		"spread_jump_min"					"4"
+		"spread_jump_max"					"4"
+		"spread_jump_inc"					"4"
+
+		"spread_jump_max_settle_time"		"600"
+
+		"tt_intro_1"					"assaultrifle_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"assaultrifle_ironsights"
+		"tt_intro_ironsights_2"			"generic_weapon_ironsights"
+		"tt_intro_reload"				"generic_weapon_reload"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"2"
+	}
+
+	clip {
+		"projectile"					"projectile_assaultrifle"
+		"client_projectile"				"projectile_bullet"
+		"type"							"assaultrifle"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"40"
+	}
+}
+
+toolTip assaultrifle_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/assaultrifle_1"
+}
+
+toolTip assaultrifle_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}
+
+entityDef projectile_assaultrifle {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"8192"
+
+	"min_damage_percent"				"10"
+
+	"dmg_damage"						"damage_assaultrifle"
+	"dmg_realistic_damage"					"realistic_damage_assaultrifle"
+}
+
+// Needs to be exactly like the projectile_assaultrifle,
+// but with the grenade launcher obituary text
+entityDef projectile_assaultrifle_gren_bullet {
+	"inherit"							"projectile_assaultrifle"
+	"dmg_damage"						"damage_assaultrifle_gren_bullet"
+	"dmg_realistic_damage"					"realistic_damage_assaultrifle_gren_bullet"
+}
+
+damageDef damage_assaultrifle {
+	damage								"damage_assaultrifle"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	knockback							1
+	push								5000
+
+	record_hit_stats
+
+	stat_name							"assaultrifle"
+
+	tt_obituary							"tooltips/killmsgs/weapons/assaultrifle"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/assaultrifle/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_assaultrifle {
+	inherit								"damage_assaultrifle"
+	damage								"realistic_damage_assaultrifle"
+}
+
+// Needs to be exactly like the damage_assaultrifle,
+// but with the grenade launcher obituary text
+damageDef damage_assaultrifle_gren_bullet {
+	damage								"damage_assaultrifle"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	knockback							1
+	push								5000
+
+	record_hit_stats
+
+	stat_name							"assaultrifle"
+
+	tt_obituary							"tooltips/killmsgs/weapons/grenadelauncher"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/grenadelauncher/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_assaultrifle_gren_bullet {
+	inherit								"damage_assaultrifle_gren_bullet"
+	damage								"realistic_damage_assaultrifle"
+}
+
+damageFilter damage_assaultrifle {
+	type {
+		target							"target_player_all"
+		damage							13
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							15
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							8
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							15
+	}
+}
+
+damageFilter realistic_damage_assaultrifle {
+	type {
+		target							"target_player_all"
+		damage							20
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							7
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							7
+	}
+}

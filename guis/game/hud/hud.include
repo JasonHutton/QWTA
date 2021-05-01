@@ -1,0 +1,730 @@
+
+#include <guis/game/hud/colors.include>
+#include <guis/game/hud/text.include>
+#include <guis/game/hud/utility.include>
+#include <guis/game/hud/materials.include>
+#include <guis/mainmenu/materials.include>
+#include <guis/mainmenu/components/button.include>
+#include <guis/mainmenu/components/dialog.include>
+#include <guis/mainmenu/components/list.include>
+#include <guis/mainmenu/components/window.include>
+
+#ifndef __hud__
+#define __hud__
+
+$template __cvar_fadable( CVarName )
+	properties {
+		float cvarFade	= 1;
+	}
+	events {
+		onCreate {
+			callSuper();
+			cvarFade = gui.getCVarFloat( #CVarName );
+		}
+		onCVarChanged #CVarName {
+			callSuper();
+			cvarFade = gui.getCVarFloat( #CVarName );
+		}
+	}
+$endtemplate
+
+$template __cvar_property( CVarName, PropertyName )
+	properties {
+		float PropertyName	= 0;
+	}
+	events {
+		onActivate {
+			callSuper();
+			PropertyName = gui.getCVarFloat( #CVarName );
+		}
+		onCVarChanged #CVarName {
+			callSuper();
+			PropertyName = gui.getCVarFloat( #CVarName );
+		}
+	}
+$endtemplate
+
+
+$template __target_lock_indicator
+	windowDef targetingBg {
+		properties {
+			float visible = player.targetingPercent > 0;
+			float halfWidth = 40 * ( 0.4 + player.targetingPercent * 0.25);
+			rect rect = player.targetingCenter.x - halfWidth, player.targetingCenter.y - halfWidth, halfWidth * 2.0f, halfWidth * 2.0f;
+			string material = "guis/assets/hud/ethud/targetbg";
+		}
+		events {
+			onCreate {
+				backColor.r = player.targetingColor.r;
+				backColor.g = player.targetingColor.g;
+				backColor.b = player.targetingColor.b + 0.4;
+				backColor.a = 0.05 + ( player.targetingPercent / 10);
+			}
+		}
+	}
+	windowDef targetingCenter {
+		properties {
+			float visible = player.targetingPercent == 1;
+			rect rect = player.targetingCenter.x - 20, player.targetingCenter.y - 20, 40, 40;
+			string material = "guis/assets/hud/ethud/targetcenter";
+		}
+		events {
+			onCreate {
+				backColor.r = player.targetingColor.r;
+				backColor.g = player.targetingColor.g;
+				backColor.b = player.targetingColor.b;
+				backColor.a = 0.75;
+			}
+		}
+	}
+	windowDef targetingTL {
+		properties {
+			float halfWidth = 40 * ( 1.01f - player.targetingPercent * 0.5);
+			rect rect = player.targetingCenter.x - halfWidth, player.targetingCenter.y - halfWidth, halfWidth * 2.0f, halfWidth * 2.0f;
+			float visible = player.targetingPercent > 0;
+			string material = "guis/assets/hud/ethud/targettop";
+		}		
+		events {
+			onCreate {
+				backColor.r = player.targetingColor.r;
+				backColor.g = player.targetingColor.g;
+				backColor.b = player.targetingColor.b;
+				backColor.a = 0.05 + ( player.targetingPercent / 2);
+			}
+		}
+	}
+	windowDef targetingTR {
+		properties {
+			float halfWidth = 40 * ( 1.01f - player.targetingPercent * 0.5);
+			rect rect = player.targetingCenter.x - halfWidth, player.targetingCenter.y - halfWidth, halfWidth * 2.0f, halfWidth * 2.0f;
+			float visible = player.targetingPercent > 0;
+			string material = "guis/assets/hud/ethud/targettop";
+			vec2 materialScale = -1, 1;
+		}
+		events {
+			onCreate {
+				backColor.r = player.targetingColor.r;
+				backColor.g = player.targetingColor.g;
+				backColor.b = player.targetingColor.b;
+				backColor.a = 0.05 + ( player.targetingPercent / 2);
+			}
+		}
+	}
+	windowDef targetingBL {
+		properties {
+			float halfWidth = 40 * ( 1.01f - player.targetingPercent * 0.5);
+			rect rect = player.targetingCenter.x - halfWidth, player.targetingCenter.y - halfWidth, halfWidth * 2.0f, halfWidth * 2.0f;
+			float visible = player.targetingPercent > 0;
+			string material = "guis/assets/hud/ethud/targetbtm";
+			color backColor = 0,1,0,1;
+			vec2 materialScale = -1, 1;
+		}
+		events {
+			onCreate {
+				backColor.r = player.targetingColor.r;
+				backColor.g = player.targetingColor.g;
+				backColor.b = player.targetingColor.b;
+				backColor.a = 0.05 + ( player.targetingPercent / 2);
+			}
+		}
+	}
+	windowDef targetingBR {
+		properties {
+			float halfWidth = 40 * ( 1.01f - player.targetingPercent * 0.5);
+			rect rect = player.targetingCenter.x - halfWidth, player.targetingCenter.y - halfWidth, halfWidth * 2.0f, halfWidth * 2.0f;
+			float visible = player.targetingPercent > 0;
+			string material = "guis/assets/hud/ethud/targetbtm";
+			color backColor = 0,1,0,1;
+		}
+		events {
+			onCreate {
+				backColor.r = player.targetingColor.r;
+				backColor.g = player.targetingColor.g;
+				backColor.b = player.targetingColor.b;
+				backColor.a = 0.05 + ( player.targetingPercent / 2);
+			}
+		}
+	}
+$endtemplate
+
+$template __center_print_info
+	windowDef centerPrint {
+		type layoutVertical;
+		properties {
+			rect	rect	= 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			vec4 	margins = 0, 0, 0, 0;
+			float	visible = player.scoreboardActive == false && player.commandmapstate == 0;
+		}
+
+		windowDef mcpDestructionTime {
+			properties {
+				wstring text = localizeArgs( "guis/vehicles/mcp_destruction", toWString( player.vehicleDestructTime, 0 ) );
+				rect rect = 0, 45, SCREEN_WIDTH, 15;
+				float visible = player.vehicleDestructTime != 0.0f && player.vehicleDestructTime < 29.0f && ( gui.tip.absoluteRect.y + gui.tip.absoluteRect.h ) <= absoluteRect.y;
+				color textColor = COLOR_WHITE;//gui.getCVarColor( "g_enemyColor" );
+			}
+			events {
+				onPreDraw {
+					drawText( text, absoluteRect, textColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+
+		windowDef mcpWarning {
+			properties {
+				rect rect = 0, -3, SCREEN_WIDTH, 15;
+				float visible = player.vehicleWrongDirection == 1.0f && ( gui.tip.absoluteRect.y + gui.tip.absoluteRect.h ) <= absoluteRect.y;
+				color textColor = COLOR_WHITE;
+			}
+			events {
+				onPreDraw {
+					if ( player.vehicleKickDistance > 1 ) {
+						timeline.default.active = false;
+						drawLocalizedText( localize( "guis/vehicles/mcp_direction_warning" ), absoluteRect, COLOR_WHITE, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					} else {
+						timeline.default.active = true;
+						drawLocalizedText( localize( "guis/vehicles/mcp_direction_warning_kick" ), absoluteRect, textColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );						
+					}
+					gui.scriptPushFloat( false );
+				}
+			}
+			timeline {
+				properties {
+					float active = false;
+				}
+				onTime 0 {
+					textColor = transition( textColor, "1, 0.3, 0.3, 1", 500 );
+				}
+				onTime 500 {
+					textColor = transition( textColor, COLOR_WHITE, 500 );
+				}
+				onTime 1000 {
+					resetTime( 0 );
+				}
+			}
+		}
+		
+		windowDef killMsg {
+			properties {
+				rect rect				= 0,0,SCREEN_WIDTH,16;
+				float shouldShow		= gui.proficiencyUpgradeText.shouldShow == false && ( gui.time - ( 1000 * lastKillTime ) ) < 3900 && ( gui.tip.absoluteRect.y + gui.tip.absoluteRect.h ) <= absoluteRect.y;
+				wstring killMsg			= gui.blankWStr;
+				float lastKillTime		= 0;
+				color	foreColor		= 1,1,1,0;
+			}
+			events {
+				onPreDraw {
+					drawText( killMsg, absoluteRect, forecolor, 18, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					gui.scriptPushFloat( false );	
+				}
+				onPropertyChanged "player.lastKillMessageTime" {
+					lastKillTime = player.lastKillMessageTime;
+					killMsg = player.lastKillMessage;
+				}
+				onPropertyChanged  "shouldShow" {
+					if( shouldShow ) {
+						foreColor.a = transition( foreColor.a, 1, 300 );
+					} else {
+						foreColor.a = transition( foreColor.a, 0, 300 );
+					}
+				}				
+			}
+		}
+
+		windowDef proficiencyUpgradeText {
+			properties {
+				rect rect				= 0,-18,SCREEN_WIDTH,16;
+				float shouldShow		= ( gui.time - ( 1000 * globals.gameHud.proficiencyCategoryTime ) ) < 4000 && ( gui.tip.absoluteRect.y + gui.tip.absoluteRect.h ) <= absoluteRect.y;
+				wstring upgradeText		= localizeArgs( "game/proficiency/proficiency_upgrade", globals.gameHud.proficiencyCategoryText );
+				color	foreColor		= 1,1,1,0;
+			}
+			events {
+				onPropertyChanged  "shouldShow" {
+					if( shouldShow ) {
+						foreColor.a = transition( foreColor.a, 1, 300 );
+					} else {
+						foreColor.a = transition( foreColor.a, 0, 300 );
+					}
+				}
+				onPreDraw {
+					drawText( upgradeText, absoluteRect, forecolor, 16, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					gui.scriptPushFloat( false );	
+				}
+			}
+		}
+		
+		windowDef taskLabel {
+			_big_text_props
+			properties {
+				rect    	rect					= 0, 2, SCREEN_WIDTH, 20;
+				wstring   	text					= player.taskInfo;
+				float 		flags					= immediate( flags ) | WF_DROPSHADOW;
+				float 		visible 				= gui.drawHudMessages != 0 && gui.taskNotifier.foreColor.a < 0.01  && player.endGameCamera == false && ( gui.tip.absoluteRect.y + gui.tip.absoluteRect.h ) <= absoluteRect.y;
+			}
+
+			events {
+				onCreate {
+					foreColor.a = 0;
+				}
+				onPropertyChanged "player.taskSelectedTime" {
+					if( player.taskSelectedTime > 0 ) {
+						timeline.default.active = true;
+						timeline.default.resetTime( 0 );				
+						gui.playGameSound( "accept" );
+					}
+				}
+			}
+			timeline {
+				properties {
+					float active = false;
+				}
+				onTime 0 {
+					forecolor.a = 1;					
+				}
+				onTime 2000 {
+					foreColor.a = transition( 1, 0, 300 );
+					active = false;
+				}
+			}
+		}
+		
+
+		windowDef taskNotifier {
+			_big_text_props
+			properties {
+				rect    	rect					= 0, 2, SCREEN_WIDTH, 20;
+				wstring    	text					= player.taskStatus;
+				float 		flags					= immediate( flags ) | WF_DROPSHADOW;
+				float 		visible 				= gui.drawHudMessages != 0 && gui.successText.foreColor.a < 0.01 && player.endGameCamera == false && gui.movingObjective == false && ( gui.tip.absoluteRect.y + gui.tip.absoluteRect.h ) <= absoluteRect.y;
+			}
+
+			events {
+				onCreate {
+					foreColor.a = 0;
+				}
+				onPropertyChanged "player.taskStatus" "player.taskCompletedTime" "player.taskExpiredTime" "player.taskAddedTime" {
+					timeline.default.active = true;
+					timeline.default.resetTime( 0 );
+				}
+			}
+			timeline {
+				properties {
+					float active = false;
+				}
+				onTime 0 {
+					forecolor.a = 1;
+				}
+				onTime 2000 {
+					foreColor.a = transition( 1, 0, 300 );
+					active = false;
+				}
+			}
+		}
+		
+		windowDef successText {
+			_big_text_props
+			properties {
+				rect    	rect			= 0, 2, SCREEN_WIDTH, 20;
+				wstring    	text			= globals.gameHud.successText;
+				float		shouldShow		= gui.movingObjective == false && gui.time < globals.gameHud.successTextTime;
+				float 		flags			= immediate( flags ) | WF_DROPSHADOW;
+				float		visible			= gui.drawHudMessages != 0;
+			}
+			events {
+				onCreate {
+					foreColor.a = 0;
+				}
+				onPropertyChanged "shouldShow" {
+					if( shouldShow ) {
+						foreColor.a = transition( foreColor.a, 1, 150 );
+					} else {
+						foreColor.a = transition( foreColor.a, 0, 300 );						
+					}
+				}
+			}
+		}
+		
+
+		windowDef vehicleEMPInfo {
+			properties {
+				wstring text = localizeArgs( "game/disabled_info", toWString( player.vehicleEMPed + 1, 0 ) );
+				rect rect = 0, 0, SCREEN_WIDTH, 16;
+				float visible = player.vehicleEMPed;
+				color textColor = gui.getCVarColor( "g_enemyColor" );
+			}
+			events {
+				onPreDraw {
+					drawText( text, rect, textColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+		windowDef vehicleWeaponEMPInfo {
+			properties {
+				wstring text = localizeArgs( "game/weapon_disabled_info", toWString( player.vehicleWeaponEMPed + 1, 0 ) );
+				rect rect = 0, 2, SCREEN_WIDTH, 16;
+				float visible = player.vehicleWeaponEMPed;
+				color textColor = gui.getCVarColor( "g_enemyColor" );
+			}
+			events {
+				onPreDraw {
+					drawText( text, rect, textColor, 14, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+					gui.scriptPushFloat( false );
+				}
+			}
+		}
+		windowDef flyerhiveDeactivate {
+			_huge_text_props
+			properties {
+				handle localizedText= localize( "game/flyerhive/deactivated" );
+				rect rect 			= 0, -16, SCREEN_WIDTH, 16;
+				float timeExpired	= player.scoreboardActive == true || player.commandmapstate != 0 || player.endGame == true || player.endGameCamera == true || gui.vehicleWeaponEMPInfo.visible == true || gui.time >= ( 1000 * globals.gameHud.flyerhiveEndTime );
+			}
+			events {
+				onCreate {
+					foreColor.a = 0;
+				}
+				onPropertyChanged "timeExpired" {
+					if( timeExpired ) {
+						foreColor.a = transition( foreColor.a, 0, 300 );
+					} else {
+						foreColor.a = 1;
+					}
+				}
+			}
+		}
+	}
+	
+	windowDef warmupLabel {
+		_big_text_props
+		properties {
+			rect rect				= 0, CENTER_Y - 28, SCREEN_WIDTH, 16;
+			wstring text			= player.matchStatus;
+			float visible			= gui.respawnLabel.visible == false && player.warmup && player.commandmapstate == 0 && player.commandmapstate == 0 && player.scoreboardActive == false && globals.gameHud.hideCrosshairCounter == 0;
+			float flags				= immediate( flags ) | WF_DROPSHADOW;
+		}
+	}
+	windowDef respawnLabel {
+		_big_text_props
+		properties {
+			rect rect				= 0, CENTER_Y - 66, SCREEN_WIDTH, 16;
+			float visible			= player.limbo | player.dead | player.spawning && ( player.endGameCamera == false && player.endGame == false && player.commandmapstate == 0 && player.scoreboardActive == false && gui.fightLabel.foreColor.a < 0.001 && gui.isSpectatorClass == false );
+			float flags				= immediate( flags ) | WF_WRAP_TEXT | WF_DROPSHADOW;
+			handle	medicIcon		= gui.cacheMaterial( "medicIcon", 	"_st icon_medic" );
+			handle	respawnIcon		= gui.cacheMaterial( "respawnIcon", "_st icon_respawning" );
+			color	iconColor		= COLOR_WHITE;
+			handle	drawIcon		= respawnIcon;
+			rect	iconRect		= CENTER_X - 12, CENTER_Y - 11, 24, 24;
+			rect 	textRect		= iconRect.x - 24, iconRect.y, 24, 24;
+		}
+		events {
+			onCreate {
+				postNamedEvent( "updateText" );
+			}
+			onPostDraw {
+				drawCachedMaterial( drawIcon, iconRect, iconColor );
+				if( player.warmup == false ) {
+					drawText( toWStr( globals.gameHud.respawnTimerText ), textRect, "1,1,0,1", 16, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_DROPSHADOW );
+				}
+			}
+			onPropertyChanged 		"player.limbo"
+									"player.spectator"
+									"player.spectating"
+									"player.dead"
+									"player.spawning"
+									"gui.isSpectatorClass"
+									"player.endGame" {
+					
+				postNamedEvent( "updateText" );
+			}
+			onCVarChanged "gui_showRespawnText" "g_disablePlayerRespawns" {
+				postNamedEvent( "updateText" );
+			}
+			onNamedEvent "updateText" {
+				if ( !gui.getCVarBool( "g_disablePlayerRespawns" ) ) {
+					if( player.limbo && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							text 				= localizeArgs( "guis/hud/reenforce" );
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon 			= respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
+					}
+
+					if( player.dead && player.spawning && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "gdf" ) ) {
+								text			= localizeArgs( "guis/hud/respawnLabel_spawn", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								text			= localizeArgs( "guis/hud/respawnLabel_spawn_strogg", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon = respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
+					}
+					if( player.dead && player.spawning == false && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "gdf" ) ) {
+								text			= localizeArgs( "guis/hud/respawnLabel_nospawn", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								text			= localizeArgs( "guis/hud/respawnLabel_nospawn_strogg", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon = medicIcon;
+						timeline.flashMedic.active = true;
+						return;
+					}
+				} else {
+					if( player.limbo && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "strogg" ) && globals.gameHud.spawnHostActive ) {
+								text 				= localizeArgs( "guis/hud/dead_spawnhost", gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								text 				= localizeArgs( "guis/hud/dead", gui.getKeyBind( "_limbomenu", "" ) );
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon 			= respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
+					}
+
+					if( player.dead && player.spectator == false ) {
+						if( gui.getCVarBool( "gui_showRespawnText" ) ) {
+							if ( icompare( player.teamName, "gdf" ) ) {
+								text			= localizeArgs( "guis/hud/unconscious", gui.getKeyBind( "_limbomenu", "" ) );
+							} else {
+								if ( globals.gameHud.spawnHostActive ) {
+									if ( player.spawning ) {
+										text		=	localizeArgs( "guis/hud/unconscious_strogg_spawnhost", gui.getKeyBind( "_movedown", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+									} else {
+										text		=	localizeArgs( "guis/hud/unconscious_strogg_spawnhost_nospawn", gui.getKeyBind( "_moveup", "" ), gui.getKeyBind( "_limbomenu", "" ) );
+									}
+								} else {
+									text			= localizeArgs( "guis/hud/unconscious_strogg", gui.getKeyBind( "_limbomenu", "" ) );
+								}
+							}
+						} else {
+							text = gui.blankWStr;
+						}
+						drawIcon = respawnIcon;
+						timeline.flashMedic.active = false;
+						return;
+					}
+				}
+				text = gui.blankWStr;		
+			}			
+		}	
+		timeline flashMedic {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				iconColor = transition( "0,1,0,1", "1,1,1,1", 300, "0.2,0.8" );
+			}
+			onTime 300 {
+				iconColor = transition( "1,1,1,1", "1,1,1,1", 300 );
+			}
+			onTime 600 {
+				resetTime( 0 );
+			}
+		}			
+	}
+	windowDef freecamLabel {
+		_big_text_props
+		properties {
+			rect rect				= 0, CENTER_Y - 45, SCREEN_WIDTH, 16;
+			handle localizedText	= localize( "guis/hud/freecam" );
+			float flags				= immediate( flags ) | WF_DROPSHADOW;
+			color foreColor			= 1,1,1,0;
+			float visible 			= player.scoreboardActive == false && player.commandmapstate == 0 && player.endGame == false && player.endGameCamera == false && gui.fightLabel.foreColor.a < 0.001;
+		}			
+		events {
+			onActivate {
+				if( gui.viewingOthers == false && gui.isSpectatorClass ) {
+					foreColor.a = transition( 0.0f, 1.0f, 500, "0.7, 1" );
+				}
+			}
+			onPropertyChanged "gui.viewingOthers" "gui.isSpectatorClass" {
+				if( gui.viewingOthers == false && gui.isSpectatorClass ) {
+					foreColor.a = transition( 0.0f, 1.0f, 500, "0.7, 1" );
+				} else {
+					foreColor.a = transition( 1.0f, 0.0f, 500, "0.7, 1" );
+				}
+			}
+		}
+	}
+	windowDef fightLabel {
+		_big_text_props
+		properties {
+			rect 	rect			= 0, CENTER_Y - 56, SCREEN_WIDTH, 16;
+			handle 	localizedText	= localize( "guis/mainmenu/fight" );
+			float 	fontSize 		= 32;
+			float 	flags			= immediate( flags ) | WF_DROPSHADOW;
+			color 	foreColor		= 1,1,1,0;
+			float	visible			= player.scoreboardActive == false && player.commandmapstate == 0;
+		}
+		events {
+			onPropertyChanged "player.warmup" {
+				if( player.warmup == false ) {
+					foreColor.a = transition( 1.0f, 0.0f, 2500, "0.7, 1" );
+				}
+			}
+		}
+	}
+	windowDef beingRevivedText {
+		_big_text_props
+		properties {
+			rect 	rect			= CENTER_X + 30, CENTER_Y - 7, SCREEN_WIDTH, 16;
+			wstring	text			= globals.gameHud.reviveText;
+			float 	fontSize 		= 16;
+			float 	flags			= immediate( flags ) | WF_DROPSHADOW;
+			color 	foreColor		= 1,1,1,0;
+			float	visible			= true;
+			float	show			= false;
+			float	timedOut		= ( ( gui.time - lastReviveCountIncrease ) >= 1000 );
+			vec2	textAlignment	= TA_LEFT, TA_VCENTER;
+			float	lastReviveCountIncrease	= 0;
+		}
+		events {
+			onCreate {
+				show = false;
+				lastReviveCountIncrease = 0;
+			}
+			onPropertyChanged "globals.gameHud.reviveText"
+								"timedOut" {			
+				
+				if ( timedOut || wcompare( globals.gameHud.reviveText, gui.blankWStr ) == true ) {
+					show = false;					
+				} else {
+					show = true;
+				}
+			}
+			onPropertyChanged "show" {
+				if ( show ) {
+					foreColor.a = transition( foreColor.a, 1.0f, 1000, "0.7, 1" );
+				} else {
+					foreColor.a = transition( foreColor.a, 0.0f, 200, "0.7, 1" );
+				}
+			}
+			onPropertyChanged "globals.progressBar.percent" {
+				if ( player.dead ) {
+					lastReviveCountIncrease = immediate( gui.time );
+				}
+			}
+		}
+	}
+	
+	windowDef locationInfo {
+		_huge_text_props
+		properties {
+			wstring text = player.location;
+			rect rect = _center( desktop, width ), _bottom( desktop ), SCREEN_WIDTH/2, 32;
+			float flags	= immediate( flags ) | WF_DROPSHADOW;
+			float visible = gui.isSpectatorClass == false;
+		}
+		timeline {
+			onTime 0 {
+				if( gui.getCVarBool( "g_showLocation" ) ) {
+					foreColor.a = 1;
+				} else {
+					foreColor.a = 0;
+				}
+			}
+			onTime 1000 {
+				resetTime( 0 );
+			}
+		}
+	}
+	windowDef siegeModeInfo {
+		_huge_text_props
+		properties {
+			rect rect				= _center( desktop, width ), 420, 150, 18;
+			color forecolor			= 1,0.9,0.8,1;
+			color colorMultiplier	= 1, 1, 1, 0;
+		}
+		events {
+			onCreate {
+				colorMultiplier.a = 0;
+			}
+			onPreDraw {
+				drawLocalizedText( globals.vehicles.siegeMode, "absoluteRect", foreColor, fontSize, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "globals.vehicles.siegeMode" "player.vehicleThirdPerson" "player.vehicleValid" {
+				if ( player.vehicleValid == false ) {
+					colorMultiplier.a = 0;
+					return;
+				}
+
+				if ( isValidHandle( globals.vehicles.siegeMode ) && !player.vehicleThirdPerson ) {
+					colorMultiplier.a = transition( colorMultiplier.a, 1, 500 );
+				} else {
+					colorMultiplier.a = transition( colorMultiplier.a, 0, 500 );
+				}
+			}
+		}
+		timeline {
+			ontime 0 {
+				foreColor = transition( "1, 1, 1, 1", "0.9,0.8,0.7,0.8", 500 );
+			}
+			ontime 500 {
+				foreColor = transition( "0.9,0.8,0.7,0.8", "1, 1, 1, 1", 500 );
+			}
+			ontime 1000 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+	windowDef mcpDeployLabel {
+		_huge_text_props
+		properties {
+			rect 	rect			= _center( desktop, width ), 420, 150, 18;
+			color	colorMultiplier	= 1, 1, 1, 0;
+			float	flags			= immediate( flags ) | WF_DROPSHADOW;
+			wstring text;
+			float	visible			= false;
+		}
+		events {
+			onActivate {
+				colorMultiplier.a = 0;
+				text = localizeArgs( "guis/vehicles/deploy_keys", gui.getKeyBind( "_usevehicle", "" ), gui.getKeyBind( "_activate", "" ) );
+				
+			}
+			onPropertyChanged "globals.vehicles.drivingMCP" "globals.mcpObjective.canDeploy" {
+				if ( globals.vehicles.drivingMCP && globals.mcpObjective.canDeploy ) {
+					colorMultiplier.a = transition( colorMultiplier.a, 1, 500 );
+					gui.playGameSound( "deploy_confirm" );
+				} else {
+					colorMultiplier.a = transition( colorMultiplier.a, 0, 500 );
+				}
+			}
+			onPreDraw {
+				drawText( text, "absoluteRect", foreColor, fontSize, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+				gui.scriptPushFloat( false );
+			}
+		}
+		timeline {
+			ontime 0 {
+				foreColor = transition( "1, 1, 1, 1", "0.9,0.8,0.7,0.8", 500 );
+			}
+			ontime 500 {
+				foreColor = transition( "0.9,0.8,0.7,0.8", "1, 1, 1, 1", 500 );
+			}
+			ontime 1000 {
+				timeline.default.resetTime( 0 );
+			}
+		}		
+	}
+$endtemplate
+
+#endif // !__hud__

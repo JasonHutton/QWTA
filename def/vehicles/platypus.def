@@ -1,0 +1,337 @@
+//
+// Platypus
+//
+//================================================================================================================
+/*
+
+export frankie {
+		options -prefix PLATYPUS_  -rotate 90 -nomerge 		-sourcedir models/vehicles/gdf_platypus/dev_sd -destdir models/vehicles/gdf_platypus/ -keep left_hand_ik right_hand_ik gunner_left_hand_ik gunner_right_hand_ik carrier_driver carrier_gunner1 player_exit_front player_exit_rear player_pos_front player_pos_rear player_rear_camera player_front_gunner_camera muzzle buoyancy_joint -noanimate right_rail left_rail right_hand_rail left_hand_rail right_side_rail left_side_rail right_shortwave left_shortwave gun_shield right_antenae left_antenae platypus shad_left_shortwave shad_right_shortwave shad_left_antenae shad_right_antenae shad_gun_shield shad_gun_pivot shad_platypus block_water2
+
+		mesh platypus_lod0.mb 		-dest platypus.md5mesh
+
+		anim platypus_lod0.mb 		-dest platypus.md5anim -range 0 0
+
+}
+*/
+
+#include <quickchat/avdbits.include>
+
+export hauser {
+		options -prefix PLATYPUS_  -rotate 90 -nomerge 		-sourcedir models/vehicles/gdf_platypus/dev_sd -destdir models/vehicles/gdf_platypus/ -keep left_hand_ik right_hand_ik gunner_left_hand_ik gunner_right_hand_ik carrier_driver carrier_gunner1 player_exit_front player_exit_rear player_pos_front player_pos_rear player_rear_camera player_front_gunner_camera muzzle buoyancy_joint -noanimate right_rail left_rail right_hand_rail left_hand_rail right_side_rail left_side_rail right_shortwave left_shortwave	 right_antenae left_antenae platypus shad_left_shortwave shad_right_shortwave shad_left_antenae shad_right_antenae shad_platypus block_water2
+
+		mesh platypus_lod0.mb		-dest platypus.md5mesh -range 0 0
+
+		anim platypus_lod0.mb		-dest platypus.md5anim -range 0 0
+
+		anim platypus.mb 	-dest platypus_center.md5anim 	  -range 0 0
+ 		anim platypus.mb 	-dest platypus_turn_left.md5anim  -range 0 0
+ 		anim platypus.mb 	-dest platypus_turn_right.md5anim -range 0 0
+ 		anim platypus.mb 	-dest platypus_accelerate.md5anim -range 0 0
+ 		anim platypus.mb 	-dest platypus_decelerate.md5anim -range 0 0
+
+		options -prefix PLATYPUS_ -rotate 90  -nomerge -noJoints  	-sourcedir models/vehicles/gdf_platypus/dev_sd -destdir models/vehicles/gdf_platypus/ -keep left_hand_ik right_hand_ik gunner_left_hand_ik gunner_right_hand_ik carrier_driver carrier_gunner1 player_exit_front player_exit_rear player_pos_front player_pos_rear player_rear_camera player_front_gunner_camera muzzle buoyancy_joint -noanimate block_water2 shad_gun_shield shad_right_antenae shad_left_antenae shad_right_shortwave shad_left_shortwave gun_shield left_antenae right_antenae left_shortwave right_shortwave right_side_rail left_side_rail right_rail left_rail right_hand_rail left_hand_rail platypus
+
+		mesh platypus_lod3.mb 	-dest platypus_lod1.md5mesh -range 0 0
+		mesh platypus_lod3.mb 	-dest platypus_lod2.md5mesh -range 0 0
+		mesh platypus_lod3.mb 	-dest platypus_lod3.md5mesh -range 0 0
+
+}
+
+
+
+
+//=====================================================================================================
+model vehicle_platypus {
+	mesh							models/vehicles/gdf_platypus/platypus.md5mesh
+
+	anim base						models/vehicles/gdf_platypus/platypus.md5anim
+	anim center						models/vehicles/gdf_platypus/platypus_center.md5anim
+	anim turn_left					models/vehicles/gdf_platypus/platypus_turn_left.md5anim
+	anim turn_right					models/vehicles/gdf_platypus/platypus_turn_right.md5anim
+	anim accelerate					models/vehicles/gdf_platypus/platypus_accelerate.md5anim
+	anim decelerate					models/vehicles/gdf_platypus/platypus_decelerate.md5anim
+	}
+
+// Entity Def
+// ========================================================================
+//
+
+deployObject deployobject_platypus {
+	"name"							"platypus"
+	"title"							"platypus"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_platypus"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"0.5"
+	"rank_required"					"lance_corporal"
+	"force_escalation_required"		"15"
+	"logistics_points_required"		"5"
+	"avdbit"						AVDBIT_PLATYPUS
+	"terrain_disallowed"			"1"
+}
+
+entityDef vehicle_platypus {
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Vehicle."
+
+	"inherit"						"vehicle_base_gdf"
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptobject"					"vehicle_platypus"
+
+	"model"							"vehicle_platypus"
+	"disableIK"						"1"
+
+	"vs_vehicleScript"				"platypus"
+
+	"control_context"				"g_bind_context_platypus"
+
+	"angular_friction"				"0.2"
+	"linear_friction"				"0.3"
+	"angular_friction_water"		"0.99"
+	"linear_friction_water"			"0.99"
+	"bouncyness"					"0.2"
+	"water_rest_threshold"			"0.05"
+
+	"info_name"						"game/vec/platypus"
+
+	"health"						"900"
+
+	"decay_time"					"40"
+
+	"option_combat_model"				"1"
+	"option_selection_combat_model"		"1"
+	"option_task_interface"				"1"
+	"option_radar_interface"			"1"
+
+	"tt_enter"					"vehicle_platypus_enter"
+
+	"table_gears"					"trojan_gear_speedchangetable"
+	"table_gearforces"				"trojan_gear_forcetable"
+	"table_gearspeeds"				"trojan_gear_speedtable"
+
+	"snd_engine_start"				"sounds/vehicles/trojan/engine/start"
+	"snd_engine_stop"				"sounds/vehicles/trojan/engine/stop"
+	"snd_engine_water_idle"			"sounds/vehicles/trojan/engine/water_idle"
+	"snd_engine_water_drive"		"sounds/vehicles/trojan/engine/water_drive"
+	"snd_engine_water_hardaccel"	"sounds/vehicles/badger/engine/hardaccel"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/gdf"
+
+	"engine_pitch_low"				"0.8"
+	"engine_pitch_high"				"1.1"
+	"engine_speed_low"				"0"
+	"engine_speed_high"				"80"
+
+	//----------------------------------------------------------
+	// Engine sound crossfade settings
+
+	"engine_accel_spool_time"		"0.033"
+	"engine_decel_spool_time"		"0.033"
+
+	"engine_idle_min_speed"			"5.0"
+	"engine_idle_max_speed"			"88.0"
+	"engine_idle_min_vol"			"0.0"
+	"engine_idle_max_vol"			"-50.0"
+	"engine_idle_power"				"1.0"
+	"engine_idle_fade_time"			"0.066"
+
+	"engine_drive_min_speed"		"5.0"
+	"engine_drive_max_speed"		"88.0"
+	"engine_drive_min_vol"			"-30.0"
+	"engine_drive_max_vol"			"0.0"
+	"engine_drive_power"			"0.3"
+	"engine_drive_fade_time"		"0.066"
+
+	"engine_accel_pitch_mult"		"1"
+	"engine_accel_pitch_offset"		"1"
+
+	"engine_accel_min_speed"		"0.5"
+	"engine_accel_mid_speed"		"15.0"
+	"engine_accel_max_speed"		"88.0"
+	"engine_accel_min_vol"			"-30.0"
+	"engine_accel_mid_vol"			"10.0"
+	"engine_accel_max_vol"			"-5.0"
+	"engine_accel_power_low"		"0.1"
+	"engine_accel_power_high"		"5.0"
+	"engine_accel_fade_time"		"0.0"
+
+	"engine_accel_yaw_vol"			"30.0"
+	"engine_accel_yaw_vol_mult"		"0.0"
+	"engine_accel_yaw_pitch"		"60.0"
+	"engine_accel_yaw_pitch_mult"	"0.0"
+
+	//----------------------------------------------------------
+
+	"sound_control"					"speedboat"
+
+	"steering_angle"				"40"
+	"steering_speed_scale"			"100"
+	"steering_speed_max"			"180"	// upper limit of steering scale
+	"steering_speed_min"			"60"	// lower limit of steering scale
+	"steering_return_factor"		"0.85"	// percentage of the max speed used to return the wheels to a straight position
+	"steering_ramp_power"			"4"
+	"steering_ramp_offset"			"0.7"
+
+
+	"crash_threshold_0"				"20"
+	"crash_threshold_1"				"500"
+	"crash_threshold_2"				"1000"
+	"jump_threshold_0"				"5"
+	"jump_threshold_1"				"10"
+	"jump_threshold_2"				"20"
+
+	"icon_size_cm"					"15"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"manualgear_next"				"0.5"
+	"manualgear_length"				"10"
+
+	"fx_explode"					"effects/base/explosion"
+	"fx_gpmg_fire"					"effects/weapons/gpmg_fire"
+	"fx_gpmg_fire_local"			"effects/weapons/gpmg_fire_local"
+
+//	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash"
+	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash_vehicle"
+
+	"fx_gpmg_tracer"				"effects/base/tracers_small"
+	"effectchance fx_gpmg_tracer"	"0.1"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_platypus"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_platypus"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_platypus"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_platypus"
+
+	"fx_emped"						"effects/generic_smoke/emp_small"
+
+	"emp_effect_joint"				"throttle_joint"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"joint_damage_smoke"			"player_pos_rear"
+	"joint_damage_fire"				"player_pos_rear"
+
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"1.5"
+
+	"dmg_collide"					"damage_platypus_collide"
+
+	"amphibious"					"1"
+
+	"gravity"						"1066"
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"gui_vehicle"					"guis/vehicles/edf_platypus"
+
+	"repair_range"					"5"
+	"repair_count"					"10"
+
+	"task_name"						"game/vec/platypus"
+	"waypoint_offset"				"0 0 192"
+
+	"jammer_range"					"5000"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_vehicles_gdf"		"vehicles_gdf"
+
+	"give_consent"					"1"
+
+	"thrust_scale"					"1.5"
+
+	"input_mode"					"car"
+	"vehicle_control"				"platypus"
+
+	"water_offset"					"0 0 -50"	//Make wake check somewhat below the boat and at the back
+
+	"parachute_offset"				"0 0 32"
+
+	"drown_height"					"2"			// impossible drown height, so it never becomes immobilized
+
+	"joint_steer"					"steering_wheel_joint"
+	"joint_throttle"				"throttle_joint"
+
+//DECOY STUFF
+
+	"def_projectile_decoy"			"projectile_decoy_platypus"
+	"projectile_decoy_joint"		"origin"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+	"projectile_decoy_velocity"		"0 0 500"
+	
+	"projectile_decoy_ammo_max"		"5"
+	"projectile_decoy_ammo_per_use"	"1"
+
+ 	"fx_decoy_extra"				"effects/weapons/flare_titan"
+	"extra_decoy_count"				"1"
+//	"extra_decoy_delay"				"0.3"		// in seconds1
+//	"fx_decoy"						"effects/weapons/flare_titan"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"platypus"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"16"
+
+	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
+
+	"always_drop"					"1"
+	
+	"validate_drop"					"1"
+}
+
+toolTip vehicle_platypus_enter {
+	length	5
+	text	"game/tt/platypus"
+}
+
+damageDef damage_platypus_collide {
+	damage								"damage_platypus_collide"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	stat_name							"platypus_weapons"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/platypus"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/platypus/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/platypus/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_platypus_collide {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_veh_all"
+		damage	200
+	}
+	type {
+		target	"target_supply_crate"
+		damage	350
+	}
+	type {
+		target	"target_deployables_all"
+		damage	200
+	}
+}

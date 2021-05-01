@@ -1,0 +1,78 @@
+
+#ifndef __stats_vehicles__
+#define __stats_vehicles__
+
+$template _vehicle_stats_table
+	properties {
+		float totalXP;
+		float totalFired;
+		float totalHit;
+		float totalRatio;
+		float totalKills;
+		
+		float index;
+		float hit;
+		
+		float lookup;
+		
+		float flags = immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents = false;
+		float fixedRowHeight	= STATS_ROW_HEIGHT;
+	}
+	events {
+		onCreate {
+			callSuper();
+			
+			insertColumn( toWStr( "<loc = 'guis/limbo/vehicles'><width = 35%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'>" ), 32, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/hit'><width = 32.5%>" ), 0, 2 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/kills'><width = 32.5%>" ), 0, 3 );
+						
+			postNamedEvent( "statsUpdated" );
+		}
+		onNamedEvent "statsUpdated" {
+			clearItems();
+			totalXP = 0;
+			totalKills = 0;
+			totalHit = 0;
+			
+$endtemplate
+
+$template _end_vehicle_stats_table
+		}
+	}
+$endtemplate
+
+$template _vehicle_totals
+	index = insertItem( toWStr( "<material = 'stats_separator'>" ), -1, 0 );
+	setItemMaterialSize( "rect.w - 4, 16", index, 0 );
+	
+	index = insertItem( toWStr( "<loc = 'guis/mainmenu/totals'>" ), -1, 0 );
+	setItemText( toWString( totalXP, 0 ), index, 1 );
+	setItemText( toWString( totalHit, 0 ), index, 2 );
+	setItemText( toWString( totalKills, 0 ), index, 3 );
+$endtemplate
+
+
+$template _add_vehicle_stat( vehicleParm )
+	hit = sdnet.getStat( #vehicleParm ## "_weapons_shots_hit" );
+	
+	index = insertItem( toWStr( "<loc = 'game/vec/" ## #vehicleParm ## "'>" ), -1, 0 );
+	
+	// XP
+	lookup = sdnet.getStat( #vehicleParm ## "_weapons_xp" );
+	totalXP = immediate( totalXP + floor( lookup ) );	
+	setItemText( toWString( lookup, 0 ), index, 1 );
+	
+	// Hit
+	setItemText( toWString( hit, 0 ), index, 2 );
+	totalHit = immediate( totalHit + hit );	
+	
+	// Kills
+	lookup = sdnet.getStat( #vehicleParm ## "_weapons_kills" );
+	totalKills = immediate( totalKills + lookup );
+	setItemText( toWString( lookup, 0 ), index, 3 );
+	
+$endtemplate
+
+#endif // !__stats_vehicles__

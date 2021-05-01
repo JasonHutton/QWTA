@@ -1,0 +1,188 @@
+/***********************************************************************
+
+	reexportModels items/stroyentcells.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix STROYCELLS_ -sourcedir models/items/stroyentcells/dev_sd -destdir  models/items/stroyentcells -keep l_upper_arm l_elbow l_elbow_2 l_wrist l_finger_1_1 l_finger_1_2 l_finger_1_3 l_finger_2_1 l_finger_2_2 l_finger_2_3 l_finger_3_1 l_finger_3_2 l_finger_3_3 l_finger_4_1 l_finger_4_2 l_finger_4_3 l_thumb_1 l_thumb_2 l_thumb_3 r_upper_arm r_elbow r_elbow_2 r_wrist r_finger_1_1 r_finger_1_2 r_finger_2_1 r_finger_2_2 r_finger_3_1 r_finger_3_2
+
+
+	mesh	stroyent_cells_base_file.mb	-dest models/items/stroyentcells/stroyentcells_view.md5mesh
+	anim	stroyent_cells_idle.mb		-dest models/items/stroyentcells/stroyentcells_idle.md5anim
+ 	anim	stroyent_cells_raise.mb		-dest models/items/stroyentcells/stroyentcells_raise.md5anim
+ 	anim	stroyent_cells_lower.mb		-dest models/items/stroyentcells/stroyentcells_lower.md5anim
+ 	anim	stroyent_cells_fire.mb		-dest models/items/stroyentcells/stroyentcells_fire.md5anim
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_stroyentcells {
+	mesh						models/items/stroyentcells/stroyentcells_view.md5mesh
+
+	anim raise					models/items/stroyentcells/stroyentcells_raise.md5anim {
+		frame 1						sound_channel snd_weapon snd_raise
+	}
+
+	anim idle 					models/items/stroyentcells/stroyentcells_idle.md5anim {
+	}
+
+	anim fire 					models/items/stroyentcells/stroyentcells_fire.md5anim {
+		frame 1						sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim putaway 				models/items/stroyentcells/stroyentcells_lower.md5anim {
+	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+
+invItemDef inventory/items/stroyentcells {
+	type						"item"
+	slot						"item"
+	name						"game/weapons/stroyent_cells"
+
+	data {
+		"model_view" 			"viewmodel_stroyentcells"
+		"model_world" 			"models/items/stroyentcells/stroyentcells.lwo"
+		"joint_attach"			"LeftHand"
+ 		"view_offset"			"-6 0 -2"
+
+		"anim_prefix"			"hands_grenades"
+		"anim_prefix_class"		"hands"
+
+		"weapon_scriptobject"	"item_supplypack_meditech"
+
+		"snd_fire"				"sounds/tools/stroyent/throw"
+		"snd_raise"				"sounds/tools/stroyent/raise"
+		"snd_need_charge"		"sounds/ui/main/cannot"
+
+		"stat_name"				"stroyentcells"
+
+		"num_projectiles"		"1"
+		"hide_clip"				"1"
+		"show_charge"			"1"
+
+		"finish_fire_anim"		"1"
+
+		"fire_rate"				"1.25"
+		"trigger_delay"			"0.3"
+
+		"timer_charge"			"energy_supply"
+		"charge_per_use"		"25"
+
+		"mtr_weaponmenu"		"guis/assets/icons/weapons/stroyentcells"
+
+		"tt_intro_1"			"stroyentcells_intro_1"
+		"tt_intro_2"			"stroyentcells_intro_2"
+		"tt_need_charge"		"stroyentcells_need_charge"
+
+		"crosshair"						"none"
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"player_weapon_num"				"7"
+
+// For effekted!
+//		"fx_idle"						"effects/vehicles/vehicle_flames_small"
+		"idle_effect_joint"				"joint1"
+	}
+
+	clip {
+		"projectile"			"projectile_stroyentcells"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectile_stroyentcells {
+	"spawnclass"				"idMoveableItem"
+
+	"model"						"models/items/stroyentcells/stroyentcells_world.lwo"
+	
+	"mins"						"-2 -2 0"
+	"maxs"						"2 2 8"
+
+	"snd_acquire"				"sounds/tools/stroyent/aquire"
+
+	"scriptobject"				"stroyentcells_qwta"
+	"ability_ignore"			"technician"
+
+	"maxVistDist"				"2048"
+
+	"pck_items"					"weapons/misc/stroyentcells"
+	"life_time"					"15000"
+	"wait_time"					"0.2"
+
+	"health"					"0"
+	"angular_velocity"			"0 0 0"
+	"speed"						"400"
+	"linear_friction"			"1"
+	"angular_friction"			"1"
+	"contact_friction"			"1"
+	"bouncyness"				"0.1"
+	"density"					"0.1"
+	"buoyancy"					"0.05"
+
+	"is_health"					"1"
+	"is_ammo"					"1"
+
+	"require_pickup"			"same_team == true"
+
+	"prof_pickup"				"pro_technician_heal"
+
+	"text_pickup"				"game/items/pickup/stroyent"
+	
+	"fx_splash"					"effects/player/splash"	
+}
+
+itemPackageDef weapons/misc/stroyentcells {
+	consumable					health					18
+	consumable					ammo stroyent			200
+	consumable					ammo stroyent_packet	2
+	//consumable				ammo grenade			1
+}
+
+#include "templates/tooltips.include"
+
+toolTip stroyentcells_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/stroyentcells_1"
+}
+
+toolTip stroyentcells_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_drop_item"
+}
+
+toolTip stroyentcells_need_charge {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}

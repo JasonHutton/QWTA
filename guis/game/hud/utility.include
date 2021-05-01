@@ -1,0 +1,14 @@
+
+#ifndef __hud_utility__
+#define __hud_utility__
+
+
+$template _increment( property, amount ) 
+	property 	= immediate( property + amount );
+$endtemplate
+
+$template _decrement( property, amount ) 
+	property 	= immediate( property - amount );
+$endtemplate
+
+#endif // !__hud_utility__

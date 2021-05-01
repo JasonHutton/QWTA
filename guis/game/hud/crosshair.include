@@ -1,0 +1,427 @@
+
+#ifndef __hud_crosshair__
+#define __hud_crosshair__
+
+$template __cvar_crosshair_fadable( ColorName, InitialValue, CVarName )
+	properties {
+		color ColorName 		= InitialValue;
+		color ColorName##Alpha	= COLOR_WHITE;
+	}
+	events {
+		onCreate {
+			callSuper();
+			ColorName##Alpha.a = gui.getCVarFloat( CVarName );
+		}
+		onCVarChanged CVarName {
+			callSuper();
+			ColorName##Alpha.a = gui.getCVarFloat( CVarName );
+		}
+	}
+$endtemplate
+
+$template __crosshair( ShowSpread )
+	windowDef localPlayerInfo {
+		type crosshairInfo;
+		properties {
+			float 	visible 				= globals.gameHud.mapZoomLevel < 1.0 && globals.gameHud.hideCrosshairInfo < 1 && player.endGameCamera == false;
+			string 	damageMaterial 			= "damage";
+			string 	barMaterial 			= "small_progress";
+			string 	barFillMaterial 		= "bar";
+			string 	barLineMaterial 		= "bar_line";
+			string	bracketLeftMaterial 	= "bracket_l";
+			string	bracketRightMaterial 	= "bracket_r";
+			color	borderColor 			= COLOR_HUD_DARK_NOALPHA;
+			color	foreColor 				= COLOR_HUD_PROGRESS;
+			color	barLineColor 			= COLOR_HUD_LIGHT_NOALPHA;
+			float	crosshairInfoFlags		= globals.gameHud.activeCrosshairInfoFlags;	
+			
+			float	showCrosshairInfo		= gui.selectedTaskNotifier.foreColor.a < 0.001;
+		}
+		events {
+			onPropertyChanged "showCrosshairInfo" {
+				if( showCrosshairInfo ) {
+					globals.gameHud.activeCrosshairInfoFlags = immediate( globals.gameHud.activeCrosshairInfoFlags ) | CF_CROSSHAIR;
+				} else {
+					globals.gameHud.activeCrosshairInfoFlags = immediate( globals.gameHud.activeCrosshairInfoFlags ) & ~CF_CROSSHAIR;
+				}
+			}
+		}
+		
+	}
+
+	windowDef crosshair {
+		properties {
+			rect 	rect 					= gui.screenCenter.x - 16, gui.screenCenter.y - 16, 32, 32;
+			float 	shouldShow 				= globals.gameHud.hideCrosshairCounter == 0 && globals.gameHud.mapZoomLevel < 1 && player.showCrosshair == 1;
+			float	isSpectatorClass		= icompare( player.teamName, "spectating" );
+			float	viewingOthers			= ( player.localView == false && ( isSpectatorClass == true || player.spectating == true ) );
+			float 	shouldShowNormalHud 	= player.viewDead == false && ( viewingOthers || ( player.localView == true && isSpectatorClass == false && player.limbo == false && player.spawning == false && player.endGameCamera == false ) );
+			float	waitingForRevive		= player.dead == true;
+
+			float	offset					= ( 16 * player.spreadFraction * spreadScale ) * ShowSpread;
+			float	spreadScale				= gui.getCVarFloat( "gui_crosshairSpreadScale" );
+
+			handle	dot						= gui.cacheMaterial( "dot", "_st dot" );
+
+			handle	crosshairCenter			= gui.cacheMaterial( "center", "nodraw" );
+			rect	crosshairCenterRect		= gui.screenCenter.x - ( crosshairCenterRect.w * 0.5 ),
+											  gui.screenCenter.y - ( crosshairCenterRect.h * 0.5 ),
+											  20, 20;
+
+			vec2	clipOrigin 				= gui.screenCenter.x + $evalfloat( 1 * 33 ), gui.screenCenter.y + 14;
+			vec2	healthOrigin 			= gui.screenCenter.x - $evalfloat( 24 + 28 ), gui.screenCenter.y + 14;
+
+			handle	sideRightFill			= gui.cacheMaterial( "rightFill", "_st indicator_bar_right" );
+			handle	sideLeftFill			= gui.cacheMaterial( "leftFill", "_st indicator_bar_left" );
+
+			handle	progress				= gui.cacheMaterial( "progress", "_st grenade_status_ring" );
+
+			float	clipPercent				= ( player.weaponClip / player.weaponShotsPerClip );
+
+			float	startTime				= -1.0f;
+			float	targetTime				= -1.0f;
+
+			float	grenadeStartTime		= -1.0f;
+			float	grenadeTargetTime		= -1.0f;
+			float	grenadePercent			= 0.0f;
+
+			float	healthPercent			= player.health / player.maxHealth;
+
+			//color	clipColor;
+
+			vec4	leftCrosshairRect;
+			vec4	rightCrosshairRect;
+
+			vec4	topCrosshairRect;
+			vec4	bottomCrosshairRect;
+
+			vec4	scratchRect;
+
+			handle	leftSegment;
+			handle 	topSegment;
+			handle	rightSegment;
+			handle 	bottomSegment;
+
+			float	grenadeChunkPercent;
+			float	centerRingAlpha 		= 0;
+			float	progressAlpha 			= 0;
+			float	centerRingCVarAlpha		= gui.getCVarFloat( "gui_crosshairGrenadeAlpha" );
+			
+			color progressColor = COLOR_BAR_FILL;
+			color	colorTint				= gui.getCVarColor( "gui_crosshairColor" );
+		}
+		
+		__cvar_crosshair_fadable( fillColor, 			COLOR_CROSSHAIR_FILL, 	"gui_crosshairStatsAlpha" )
+		__cvar_crosshair_fadable( barColor, 			COLOR_BAR_FILL, 		"gui_crosshairStatsAlpha" )
+		__cvar_crosshair_fadable( crosshairColor, 		COLOR_WHITE, 			"gui_crosshairAlpha" )
+		__cvar_crosshair_fadable( backColor, 			COLOR_WHITE, 			"gui_crosshairSpreadAlpha" )
+		__cvar_crosshair_fadable( grenadeColor, 		COLOR_BAR_FILL, 		"gui_crosshairGrenadeAlpha" )
+
+		events {
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {
+					colorMultiplier.a = transition( colorMultiplier.a, 1, 100 );
+				} else {
+					colorMultiplier.a = transition( colorMultiplier.a, 0, 100 );
+				}
+			}
+
+			onCreate {
+				callSuper();
+				postNamedEvent( "updateCrosshair" );
+				postNamedEvent( "updateClipSource" );
+				progressColor.a = 0.5;
+			}			
+			onPropertyChanged "globals.gameHud.weaponCrosshair" {
+				postNamedEvent( "updateCrosshair" );
+			}
+			onCVarChanged "gui_crosshairDef" "gui_crosshairKey" {
+				postNamedEvent( "updateCrosshair" );
+			}
+			onCVarChanged "gui_crosshairSpreadScale" {
+				spreadScale	= gui.getCVarFloat( "gui_crosshairSpreadScale" );
+			}
+			onCVarChanged "gui_crosshairColor" {
+				colorTint = gui.getCVarColor( "gui_crosshairColor" );
+			}
+
+			onNamedEvent "updateCrosshair" {
+				crosshairCenter = gui.cacheMaterial( "center", "literal: " + gui.getStringMapValue( gui.getCVar( "gui_crosshairDef" ), gui.getCVar( "gui_crosshairKey" ), "" ) );
+
+				if( compare( globals.gameHud.weaponCrosshair, "small" ) ) {
+					leftSegment 			= gui.cacheMaterial( "left", 	"small_calibre_horizontal" );
+					rightSegment 			= gui.cacheMaterial( "right", 	"small_calibre_horizontal" );
+					topSegment 				= gui.cacheMaterial( "top", 	"small_calibre_vertical" );
+					bottomSegment 			= gui.cacheMaterial( "bottom", 	"small_calibre_vertical" );
+
+					leftCrosshairRect 		= gui.screenCenter.x - ( $evalfloat( 15 + 11.5 ) + offset ), gui.screenCenter.y - 5, 15, 11;
+					rightCrosshairRect		= gui.screenCenter.x + 14.5 + offset, gui.screenCenter.y - 5, 15, 11;
+
+					topCrosshairRect		= gui.screenCenter.x - 5, ( gui.screenCenter.y - $evalfloat( 15 + 11.5 ) ) - offset, 11, 15;
+					bottomCrosshairRect		= gui.screenCenter.x - 5, ( gui.screenCenter.y + 11.5 ) + offset, 11, 15;
+
+					return;
+				}
+
+				if( compare( globals.gameHud.weaponCrosshair, "large" ) ) {
+					leftSegment 			= gui.cacheMaterial( "left", 	"large_calibre_horizontal" );
+					rightSegment 			= gui.cacheMaterial( "right", 	"large_calibre_horizontal" );
+					topSegment 				= gui.cacheMaterial( "top", 	"large_calibre_vertical" );
+					bottomSegment 			= gui.cacheMaterial( "bottom", 	"large_calibre_vertical" );
+
+					leftCrosshairRect 		= gui.screenCenter.x - ( $evalfloat( 21 + 11.5 ) + offset ), gui.screenCenter.y - 5, 21, 11;
+					rightCrosshairRect		= gui.screenCenter.x + 14.5 + offset, gui.screenCenter.y - 5, 21, 11;
+
+					topCrosshairRect		= gui.screenCenter.x - 5, ( gui.screenCenter.y - $evalfloat( 21 + 11.5 ) ) - offset, 11, 21;
+					bottomCrosshairRect		= gui.screenCenter.x - 5, ( gui.screenCenter.y + 11.5 ) + offset, 11, 21;
+
+					return;
+				}
+
+				if( compare( globals.gameHud.weaponCrosshair, "explosive" ) ||
+					compare( globals.gameHud.weaponCrosshair, "shell" ) ||
+					compare( globals.gameHud.weaponCrosshair, "grenade_launcher" ) ) {
+
+					leftCrosshairRect 	= ( gui.screenCenter.x - ( 20 + offset ) ), ( gui.screenCenter.y - ( 20 + offset ) ), 20, 20;
+					rightCrosshairRect	= ( gui.screenCenter.x + 1 + offset ), ( gui.screenCenter.y - ( 20 + offset ) ), 20, 20;
+
+					topCrosshairRect	= ( gui.screenCenter.x - ( 20 + offset ) ), ( gui.screenCenter.y + 1 + offset ), 20, 20;
+					bottomCrosshairRect	= ( gui.screenCenter.x + 1 +offset ), ( gui.screenCenter.y + 1 +offset ), 20, 20;
+
+					if( compare( globals.gameHud.weaponCrosshair, "explosive" ) ||
+						compare( globals.gameHud.weaponCrosshair, "grenade_launcher" ) ) {
+						leftSegment 			= gui.cacheMaterial( "left", 	"explosive_topleft" );
+						rightSegment 			= gui.cacheMaterial( "right", 	"explosive_topright" );
+						topSegment 				= gui.cacheMaterial( "top", 	"explosive_bottomleft" );
+						bottomSegment 			= gui.cacheMaterial( "bottom", 	"explosive_bottomright" );
+						return;
+					}
+					if( compare( globals.gameHud.weaponCrosshair, "shell" ) ) {
+						leftSegment 			= gui.cacheMaterial( "left", 	"shell_topleft" );
+						rightSegment 			= gui.cacheMaterial( "right", 	"shell_topright" );
+						topSegment 				= gui.cacheMaterial( "top", 	"shell_bottomleft" );
+						bottomSegment 			= gui.cacheMaterial( "bottom", 	"shell_bottomright" );
+						return;
+					}
+				}
+			}
+
+			onPreDraw {
+				pushColor( colorTint, true );
+
+				// ===================
+				// progress indicator
+				// ===================
+				if( ( waitingForRevive || shouldShowNormalHud ) && progressAlpha > 0 ) {
+					drawTimer( progress, "gui.screenCenter.x - 16.5, gui.screenCenter.y - 16.5, 33, 33", progressColor, 1.0f - globals.progressBar.percent, false );
+				}
+
+				if( gui.respawnLabel.visible || player.scoreboardActive ) {
+					popColor();
+					gui.scriptPushFloat( false );
+					return;
+				}
+
+				// ===================
+				// center dot
+				// ===================
+				if( compare( globals.gameHud.weaponCrosshair, "blank" ) == false ) {
+					if( compare( globals.gameHud.weaponCrosshair, "none" ) == true && player.endGameCamera == false ) {
+						pushColor( crosshairColorAlpha, true );
+						drawCachedMaterial( dot, crosshairCenterRect, crosshairColor );
+						popColor();
+					} else {
+						if( player.endGameCamera == false ) {
+							pushColor( crosshairColorAlpha, true );
+							drawCachedMaterial( crosshairCenter, crosshairCenterRect, crosshairColor );
+							popColor();
+						}						
+						// ===================
+						// Spread
+						// ===================
+						if( shouldShowNormalHud && compare( globals.gameHud.weaponCrosshair, "nospread" ) == false ) {
+							pushColor( backColorAlpha, true );
+
+							drawCachedMaterial( leftSegment, leftCrosshairRect, backColor );
+							drawCachedMaterial( rightSegment, rightCrosshairRect, backColor);
+							drawCachedMaterial( bottomSegment, bottomCrosshairRect, backColor );
+							drawCachedMaterial( topSegment, topCrosshairRect, backColor );
+
+							popColor();
+						}
+					}					
+				}
+
+				// ===================
+				// grenade indicator
+				// ===================
+				if( shouldShowNormalHud && centerRingAlpha > 0.0 ) {
+					grenadeChunkPercent = 1.0f - grenadePercent;
+					
+					pushColor( grenadeColorAlpha, true );
+					drawTimer( progress, "gui.screenCenter.x - 16.5, gui.screenCenter.y - 16.5, 33, 33", grenadeColor, grenadeChunkPercent, false );
+					popColor();
+				}
+				
+				if( shouldShowNormalHud ) {
+					// ===================
+					// clip indicator
+					// ===================
+					pushColor( fillColorAlpha, true );
+					
+					// background					
+					drawCachedMaterial( sideRightFill, "clipOrigin.x, clipOrigin.y, 20, 20", fillColor );
+
+					// fill
+					if( globals.gameHud.weaponShowClip || globals.weapons.showHeat || globals.gameHud.weaponShowAllAmmo || globals.gameHud.weaponShowCharge ) {
+						// ao: 0.9375 * image height is where it looks full to the player
+						scratchRect.x = clipOrigin.x;
+						scratchRect.y = clipOrigin.y + ( 20 * ( 1.0 - ( 0.9375 * clipPercent ) ) );
+						scratchRect.w = 20;
+						scratchRect.h = ( 20 * ( 0.9375 * clipPercent ) );
+
+						clipToRect( scratchRect );
+						drawCachedMaterial( sideRightFill, "clipOrigin.x, clipOrigin.y, 20, 20", barColor ); 						
+						unclipRect();
+					}
+					// ===================
+					// health indicator
+					// ===================
+					drawCachedMaterial( sideLeftFill, "healthOrigin.x, healthOrigin.y, 20, 20", fillColor );
+
+					// fill
+					if( healthPercent > 0.0 ) {
+						scratchRect.x = healthOrigin.x;
+						scratchRect.y = healthOrigin.y + ( 20 * ( 1.0 - healthPercent ) );
+						scratchRect.w = 20;
+						scratchRect.h = ( 20 * healthPercent );
+
+						clipToRect( scratchRect );
+						drawCachedMaterial( sideLeftFill, "healthOrigin.x, healthOrigin.y, 20, 20", barColor );
+						unclipRect();
+					}
+					popColor();
+				}
+				
+				popColor();
+
+
+				gui.scriptPushFloat( false );	// don't continue normal windowDef drawing
+			}
+
+			onPropertyChanged "globals.progressBar.visible" {
+				if( globals.progressBar.visible == false ) {
+					progressAlpha = transition( progressAlpha, 0, 300, "0,0.4" );
+				} else {
+					progressAlpha = 1.0f;
+				}
+			}
+
+			onPropertyChanged "globals.gameHud.weaponReloadTime" {
+				if( globals.gameHud.weaponReloadTime > 0 ) {
+					startTime			= immediate( player.gameTime );
+					targetTime			= immediate( player.gameTime + ( globals.gameHud.weaponReloadTime * 1000 ) );
+					clipPercent			= ( ( player.gameTime - startTime ) / ( targetTime - startTime ) );
+				} else {
+					clipPercent			= ( player.weaponClip / player.weaponShotsPerClip );
+					startTime			= -1.0f;
+					targetTime 			= -1.0f;
+				}
+			}
+
+			onPropertyChanged "globals.gameHud.weaponGrenadeExpireTime" {
+				if( globals.gameHud.weaponGrenadeExpireTime > 0 ) {
+					grenadeStartTime  	= immediate( player.gameTime );
+					grenadeTargetTime	= immediate( player.gameTime + ( globals.gameHud.weaponGrenadeExpireTime * 1000 ) );
+					grenadePercent		= ( player.gameTime - grenadeStartTime ) / ( grenadeTargetTime - grenadeStartTime );
+					centerRingAlpha 	= gui.getCVarFloat( "gui_crosshairGrenadeAlpha" );
+				} else {
+					grenadePercent		= 0.0f;
+					grenadeStartTime	= -1.0f;
+					grenadeTargetTime 	= -1.0f;
+					centerRingAlpha 	= transition( centerRingAlpha, 0, 300, "0,0.4" );
+				}
+			}
+			onPropertyChanged "grenadePercent" {
+				if( grenadePercent >= 1.0f ) {
+					globals.gameHud.weaponGrenadeExpireTime = 0;
+				}
+			}
+
+			onNamedEvent "updateClipSource" {
+
+				if( globals.gameHud.weaponShowCharge ) {
+					clipPercent			= globals.weapons.energyBarCharge;
+				} else {
+					if( globals.weapons.showHeat == 1 && globals.weapons.heat != 1.0f ) {
+						clipPercent = globals.weapons.heat;
+					} else {
+						if ( globals.weapons.showPowerup == 1 && globals.weapons.powerup != 1.0f ) {
+							clipPercent = globals.weapons.powerup;
+						} else {
+							clipPercent = ( player.weaponClip / player.weaponShotsPerClip );
+						}
+					}
+				}
+				/*
+				if ( globals.weapons.cooling != 0 ) {
+					clipColor = 1, 0, 0, alpha;
+				} else {
+					clipColor = 1 - clipPercent, clipPercent, 0, alpha;
+				}
+				*/
+			}
+			onPropertyChanged "player.weaponName" "globals.gameHud.weaponShowCharge" {
+				postNamedEvent( "updateClipSource" );
+			}
+			onPropertyChanged "globals.weapons.heat" {
+				postNamedEvent( "updateClipSource" );
+			}
+		}
+	}
+	windowDef hitFeedback {
+		properties {
+			rect 	rect 					= gui.screenCenter.x - 16, gui.screenCenter.y - 16, 31, 31;
+			float 	shouldShow 				= globals.gameHud.mapZoomLevel < 1;
+			color	hitColor				= 1,0,0, hitAlpha;
+			float	hitAlpha 				= 0;
+			handle  hitIcon					= gui.cacheMaterial( "xhairHit", "hit" );
+			rect	drawRect				= gui.screenCenter.x - 16, gui.screenCenter.y - 16, 32, 32;
+		}
+		events {
+			onPropertyChanged "shouldShow" {
+				if( shouldShow ) {
+					colorMultiplier.a = transition( colorMultiplier.a, 1, 100 );
+				} else {
+					colorMultiplier.a = transition( colorMultiplier.a, 0, 100 );
+				}
+			}
+			onPropertyChanged "player.hitFeedback" {
+				if( player.hitFeedback ) {
+					hitAlpha = transition( 1, 0, 900, "0,0.4" );
+				}
+				postNamedEvent( "updateColor" );
+			}
+			onNamedEvent "updateColor" {
+				if( player.lastHitFeedbackType == TA_ENEMY ) {
+					hitColor.r = 1;
+					hitColor.g = 0;
+					hitColor.b = 0;
+				} else {
+					hitColor.r = 0;
+					hitColor.g = 1;
+					hitColor.b = 0;
+				}			
+			}
+			onPropertyChanged "player.lastHitFeedbackType" {
+				postNamedEvent( "updateColor" );
+			}
+			onPreDraw {
+				drawCachedMaterial( hitIcon, drawRect, hitColor);
+				gui.scriptPushFloat( false );	// don't continue normal windowDef drawing
+			}
+		}
+	}
+$endtemplate
+
+$endif // !__hud_crosshair__

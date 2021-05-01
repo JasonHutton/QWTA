@@ -1,0 +1,100 @@
+// ================================================================================
+// SDNet Progress Popup
+// ================================================================================
+
+#define DEFAULT_PROGRESS_Y _bottom( grpNetProgressBackground )
+#define CANCEL_PROGRESS_Y _bottom( grpNetProgressBackground ) - $evalfloat( 3 + BUTTON_HEIGHT )
+
+_dialog( sdNetProgress, localize( "blank" ), _center( desktop, width ), _center( desktop, height ), 200, 110, "noMove", "dim" )
+	properties {
+		float 	visible = icompare( gui.activePopup, "sdNetProgress" );
+		float	showCancel = false;
+	}
+	events {
+		onPropertyChanged "visible" {
+			callSuper();
+			if( visible ) {
+				gui.focusedWindow = name;
+				flags = immediate( flags ) | WF_CAPTURE_KEYS;
+				timeline.default.active = true;
+				timeline.default.resetTime( 0 );
+			} else {			
+				flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+			}
+		}
+		onPropertyChanged "sdnet.taskActive" {
+			if ( sdnet.taskActive == 0 && icompare( gui.activePopup, "sdNetProgress" ) ) {
+				_close_popup
+			}
+		}
+		onCancel {
+			if( gui.btnNetProgressCancel.allowEvents ) {
+				gui.btnNetProgressCancel.postNamedEvent( "onAction" );
+			}	
+		}
+	}
+	timeline {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			showCancel = false;
+			gui.btnNetProgressCancel.colorMultiplier.a = 0;
+			
+		}
+		onTime 15000 {			
+			if( isVisible() ) {
+				showCancel = true;
+			}
+		}
+	}
+	
+	_group_box( NetProgressBackground, _center( dlgsdNetProgress, width ), PADDING, _client_dimension( dlgsdNetProgress, width ), _fill_to_bottom_of( dlgsdNetProgress ) )	
+		_label_localized( NetProgressBoxPopup, localize( "guis/mainmenu/pleasewait" ), _center( grpNetProgressBackground, width ), 2, _client_dimension( grpNetProgressBackground, width ) - 26, _fill_to_top_of( prgNetProgressProgress ), COLOR_WHITE )
+			properties {
+				float	fontSize 	= 16;
+			}
+			events {
+				onPostDraw {
+					drawCachedMaterial( gui.infoIcon, "absoluteRect.x - 16, absoluteRect.y + 2, 16, 16", COLOR_WHITE );
+				}	
+			}
+		_end_label
+	
+		_progress_indefinite( NetProgressProgress, _left( grpNetProgressBackground ), _bottom( grpNetProgressBackground ), _fill_to_right_of( grpNetProgressBackground ) )
+			events {
+				onPropertyChanged "gui.dlgsdNetProgress.showCancel" {
+					if( gui.dlgsdNetProgress.showCancel ) {
+						rect.y = transition( DEFAULT_PROGRESS_Y, CANCEL_PROGRESS_Y, ACTIVATE_TRANSITION_TIME );
+					} else {
+						rect.y = DEFAULT_PROGRESS_Y;
+					}
+				}			
+			}
+		_end_progress_indefinite
+		
+		_button( NetProgressCancel, _right( grpNetProgressBackground ), _bottom( grpNetProgressBackground ), BUTTON_WIDTH, BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/cancel" );
+			}
+			_button_action(
+				sdnet.cancelActiveTask();
+			)
+			events {
+				onCreate {
+					colorMultiplier.r = colorMultiplier.a;
+					colorMultiplier.g = colorMultiplier.a;
+					colorMultiplier.b = colorMultiplier.a;
+				}
+				onPropertyChanged "gui.dlgsdNetProgress.showCancel" {
+					if( gui.dlgsdNetProgress.showCancel ) {
+						_fadein
+					} else {
+						colorMultiplier.a = 0;
+					}
+				}
+			}
+		_end_button
+	_end_group_box
+
+_end_dialog

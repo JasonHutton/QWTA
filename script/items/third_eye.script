@@ -1,0 +1,1021 @@
+/***********************************************************************
+
+item_third_eye.script
+
+***********************************************************************/
+
+// blend times
+#define THIRD_EYE_IDLE_TO_LOWER		4
+#define THIRD_EYE_IDLE_TO_PUNCH		0
+#define THIRD_EYE_RAISE_TO_IDLE		4
+#define THIRD_EYE_PUNCH_TO_IDLE		1
+
+object item_third_eye : weapon_base {
+	void			preinit();
+	void			init();
+	void			destroy();
+
+	void			Raise();
+	void			Idle();
+	void			DeployedIdle();
+	void			DeployedRaise();
+	void			DeployedLower();
+	void			Throw();
+
+	void			Cleanup();
+
+	boolean			InRemoteView();
+	void			ToggleCamera();
+	void			ClearCamera();
+	entity			FindCamera();
+
+	boolean			OnWeapNext();
+	boolean			OnWeapPrev();
+	void			OnZoomChanged();
+
+	void			vCheckProficiency();
+
+	float			throwTime;
+	float			maxRange;
+	float			meleeDistance;
+	float			baseChargePerUse;
+
+	void			CycleZoom();
+
+	void			ToolTipThread_Raise();
+	void			ToolTipThread_Deployed();
+
+	zoomWidget		zoomer;
+
+	boolean			deployedTipThreadActive;
+
+	float			toolTipOutOfRange;
+	boolean			replaceCamera;
+}
+
+object projectile_camera {
+	void			init();
+	void			preinit();
+	void			destroy();
+	void			syncFields();
+
+	void			Idle();
+
+	void			FreeGui();
+
+	void			Fizzle();
+
+	float			OnCollide( object traceObject, vector velocity, float bodyId );
+	float			OnCollide_Private( entity collisionEnt, vector normal, float surfaceFlags, string joint );
+	void			OnKilled( entity inflictor, entity attacker, float damage, vector dir, float location );
+	void			OnTouch( entity other, object traceObject );
+	void			OnPostThink();
+	float			OnUpdateCrosshairInfo( entity p );
+	void			OnOwnerChanged();
+
+	void			OnBecomeRemoteCamera();
+	void			OnFinishRemoteCamera();
+
+	void			vOnBindMasterDestroyed() { remove(); }
+
+	void			vGiveSpotProficiency();
+
+	void			vRemoveObject() { remove(); }
+
+	boolean			PendingRemoval();
+	void			ScheduleRemoval( float delay );
+	void			MakeInactive();
+	void			SetupContents();
+	void			RemoveThread( float delay );
+
+	void			OnTriggered();
+	void			SelfDestructThread();
+	void			vSetOwner( entity o );
+
+	void			ClearCamera();
+
+	void			UpdateCameraAngles();
+
+	void			DoWaterExplosion( vector position, string surfaceType, vector normal );
+	void			OnExploded();
+	void			OnRadarStarted();
+	void			OnUnbind();
+
+	void			ShowIcon();
+	void			FreeIcon();
+
+	void			CancelMonitorTrailUnderWater();
+	void			MonitorTrailUnderWater();
+
+	float			removeThread;
+
+	boolean			stuck;
+
+	float			commandMapRadarHandle;
+	float			commandMapIcon;
+
+	float			splashDamageIndex;
+
+	float			radarRange;
+	float			radarMask;
+
+	boolean			radarStarted;
+
+	float			cameraGUIHandle;
+
+	vector			endAngles;
+
+	entity			owner;
+
+	float			cameraJoint;
+
+	boolean			triggered;
+	float			detonateDelay;
+	boolean			trailUnderWater;
+
+}
+
+
+/***********************************************************************
+
+item_third_eye Implementation
+
+***********************************************************************/
+
+void item_third_eye::preinit() {
+	baseChargePerUse = chargePerUse;
+
+	throwTime			= getFloatKeyWithDefault( "throw_time", 0.2 );
+	maxRange			= MetresToInches( getFloatKeyWithDefault( "max_range", 160 ) );
+	meleeDistance		= getFloatKey( "melee_distance" );
+
+	zoomer = new zoomWidget;
+	zoomer.Init( self );
+
+	toolTipOutOfRange	= GetToolTip( getKey( "tt_outofrange" ) );
+}
+
+void item_third_eye::init() {
+	projectile_camera camera = FindCamera();
+
+	if ( camera == $null_entity ) {
+		if ( myPlayer.isLocalPlayer() ) {
+			thread ToolTipThread_Raise();
+		}
+		weaponState( "Raise", 0 );
+	} else {
+		weaponState( "DeployedRaise", 0 );
+	}
+}
+
+void item_third_eye::vCheckProficiency() {
+	WeaponBase_CheckProficiency();
+
+	UpdateCrosshair();
+}
+
+void item_third_eye::destroy() {
+	ClearCamera();
+
+	delete zoomer;
+}
+
+void item_third_eye::Cleanup() {
+	ClearCamera();
+
+	// NB: we don't delete the zoomer as the weapon isn't actually destroyed
+}
+
+void item_third_eye::ClearCamera() {
+	entity camera = FindCamera();
+	if ( myPlayer != $null_entity && camera != $null_entity ) {
+		if ( myPlayer.getRemoteCamera() == camera ) {
+			myPlayer.setRemoteCamera( $null_entity );
+		}
+	}
+}
+
+void item_third_eye::ToggleCamera() {
+	entity camera = FindCamera();
+	if ( myPlayer != $null_entity && camera != $null_entity ) {
+		if ( myPlayer.getRemoteCamera() == camera ) {
+			myPlayer.setRemoteCamera( $null_entity );
+		} else {
+			myPlayer.setRemoteCamera( camera );
+		}
+	}
+}
+
+boolean item_third_eye::InRemoteView() {
+	entity camera = FindCamera();
+	if ( camera == $null_entity ) {
+		return false;
+	}
+	return myPlayer.getRemoteCamera() == camera;
+}
+
+entity item_third_eye::FindCamera() {
+	if ( myPlayer == $null_entity ) {
+		return $null_entity;
+	}
+
+	float i;
+	float num = myPlayer.binGetSize();
+
+	for ( i = 0; i < num; i++ ) {
+		projectile_camera other = myPlayer.binGet( i );
+		if ( other != $null_entity ) {
+			return other;
+		}
+	}
+
+	return $null_entity;
+}
+
+void item_third_eye::Raise() {
+	setupAnimClass( "anim_prefix" );
+
+	UpdateCharge();
+
+	Base_Raise();
+}
+
+void item_third_eye::Idle() {
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+
+	projectile_camera camera;
+
+	while ( true ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", THIRD_EYE_IDLE_TO_LOWER );
+		}
+		if ( WEAPON_ATTACK ) {
+			if ( !mainFireDown ) {
+				mainFireDown = true;
+
+				camera = FindCamera();
+				if ( camera == $null_entity ) {
+					if ( CanRemove( chargePerUse ) ) {
+						weaponState( "Throw", THIRD_EYE_IDLE_TO_PUNCH );
+					} else {
+						if ( myPlayer.isLocalPlayer() ) {
+							myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+							sys.startSoundDirect( getKey( "snd_need_charge" ), SND_WEAPON_FIRE_LOCAL );
+							G_NotifyNoCharge( myPlayer );
+						}
+					}
+				} else {
+					// Gordon: panic?
+					// not so mysterious guy: ya!
+				}
+			}
+		} else {
+			mainFireDown = false;
+		}
+
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void item_third_eye::Throw() {
+	playAnim( ANIMCHANNEL_ALL, "fire" );
+	sys.wait( throwTime );
+
+	if ( !sys.isClient() ) {
+		projectile_camera camera = sys.spawn( getKey( "def_camera" ) );
+
+		boolean placedOnWall = false;
+		vector origin = myPlayer.getViewOrigin();
+		vector forward = sys.angToForward( myPlayer.getViewAngles() );
+		float throwDistance = 32.0f;
+		vector throwPos = origin + forward * throwDistance;
+
+		if( melee( MASK_SHOT_BOUNDINGBOX | MASK_PROJECTILE, meleeDistance, true, false ) ) {
+			float traceFraction = getMeleeFraction();
+			float traceDistance = traceFraction * meleeDistance;
+			vector normal = getMeleeNormal();
+			float surfaceFlags = getMeleeSurfaceFlags();
+			entity meleeEntity = getMeleeEntity();
+			string meleeJoint = getMeleeJoint();
+
+			if ( !( surfaceFlags & SURF_NOPLANT ) ) {
+				placedOnWall = true;
+				if ( meleeEntity != $null_entity ) {
+					player meleePlayer = meleeEntity;
+					vehicle_base meleeVehicle = meleeEntity;
+					if ( meleeVehicle != $null_entity || meleePlayer != $null_entity ) {
+						placedOnWall = false;
+					}
+				}
+
+				if ( placedOnWall ) {
+					camera.setOrigin( getMeleeEndPos() );
+					camera.OnCollide_Private( meleeEntity, normal, surfaceFlags, meleeJoint );
+				}
+			}
+
+			if ( !placedOnWall ) {
+				vector size = camera.getSize();
+				float pullOut = sys.vecLength( size ) * 0.6f;
+				if ( traceDistance < throwDistance + pullOut ) {
+					throwPos = origin + forward * ( traceDistance - pullOut );
+				}
+			}
+		}
+
+		if ( !placedOnWall ) {
+			camera.setOrigin( throwPos );
+			vector velocity = camera.getVectorKeyWithDefault( "velocity", '400 0 0' );
+			velocity = forward * velocity_x;
+			camera.setLinearVelocity( velocity );
+		}
+
+		camera.vSetOwner( myPlayer );
+		myPlayer.binAdd( camera );
+
+		myPlayer.setPlayerCovertToolState( camera, false ); //mal: let the bots know theres a 3rd eye in the world.
+	}
+
+	Remove( chargePerUse );
+	UpdateCharge();
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+
+	// raise the deployed model
+	weaponState( "DeployedRaise", 0 );
+}
+
+void item_third_eye::DeployedRaise() {
+	setupAnimClass( "anim_prefix_alt" );
+
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Deployed();
+	}
+
+	weaponRising();
+	playAnim( ANIMCHANNEL_ALL, "pda_raise" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, THIRD_EYE_RAISE_TO_IDLE ) );
+	weaponState( "DeployedIdle", THIRD_EYE_RAISE_TO_IDLE );
+}
+
+void item_third_eye::DeployedLower() {
+	ClearCamera();
+
+	weaponLowering();
+	playAnim( ANIMCHANNEL_ALL, "pda_lower" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+	weaponHolstered();
+	waitUntil( WEAPON_RAISEWEAPON );
+	weaponState( "DeployedRaise", 0 );
+}
+
+void item_third_eye::DeployedIdle() {
+	boolean mainFireDown = false;
+	boolean playingViewerSound = false;
+	boolean zoomKeyDown = false;
+
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "pda_idle" );
+	float gui = getGUI( "0" );
+
+	projectile_camera camera = FindCamera();
+	while ( true ) {
+		boolean cameraEnabled = true;
+		boolean inRemoteView = InRemoteView();
+
+		if ( camera == $null_entity ) {
+			// put away the deployed model and raise the normal model
+			playAnim( ANIMCHANNEL_ALL, "pda_lower" );
+			waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+			weaponState( "Raise", 0 );
+		} else {
+			if ( inRemoteView ) {
+				myPlayer.setRemoteCameraViewOffset( camera.getWorldAxis( Z_AXIS ) * 8 );
+			}
+
+			// update the range value
+			float range = sys.vecLength( myPlayer.getWorldOrigin() - camera.getWorldOrigin() );
+
+			float currentMaxRange = maxRange;
+
+			if ( camera.getMaskedEntityContents( CONTENTS_EXPLOSIONSOLID ) != 0 ) {
+				currentMaxRange = 0;
+			}
+
+			float signalStrength = 0;
+			if ( range >= currentMaxRange ) {
+				cameraEnabled = false;
+
+				if ( inRemoteView ) {
+					ClearCamera();
+					startSound( "snd_stop", SND_WEAPON_IDLE );
+				}
+			} else {
+				signalStrength = ( currentMaxRange - range ) / currentMaxRange;
+			}
+
+			if ( sys.getLocalViewPlayer() == myPlayer ) {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.signalStrength", signalStrength );
+			}
+
+			if ( inRemoteView ) {
+				camera.endAngles = camera.getRemoteViewAngles( myPlayer );
+				camera.UpdateCameraAngles();
+			}
+		}
+
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "DeployedLower", THIRD_EYE_IDLE_TO_LOWER );
+		}
+
+		if ( WEAPON_ALTFIRE ) {
+			if ( !mainFireDown ) {
+				mainFireDown = true;
+				if ( cameraEnabled ) {
+					replaceCamera = false;
+
+					playAnim( ANIMCHANNEL_ALL, "pda_select1" );
+
+					if ( !inRemoteView ) {
+						sys.wait( 0.4 );
+					}
+
+					ToggleCamera();
+					inRemoteView = InRemoteView();
+
+					if ( inRemoteView ) {
+						// set up the camera's delta view axes properly
+						camera.setRemoteViewAngles( camera.endAngles, myPlayer );
+					}
+				} else {
+					if ( replaceCamera ) {
+						replaceCamera = false;
+						if ( !sys.isClient() ) {
+							camera.vRemoveObject();
+						}
+					} else {
+						replaceCamera = true;
+						if ( myPlayer.isLocalPlayer() ) {
+							sys.startSoundDirect( getKey( "snd_invalid" ), SND_WEAPON_FIRE_LOCAL );
+							sys.wait( 0.1 );
+							myPlayer.cancelToolTips();
+							myPlayer.sendToolTip( toolTipOutOfRange );
+						}
+					}
+				}
+			}
+		} else if ( WEAPON_ATTACK ) {
+			if ( !mainFireDown ) {
+				mainFireDown = true;
+				if( cameraEnabled ) {
+					playAnim( ANIMCHANNEL_ALL, "pda_select2" );
+					sys.wait( 0.4 );
+
+					if ( !sys.isClient() ) {
+						if ( camera != $null_entity ) {
+							camera.OnTriggered();
+						}
+					}
+				} else {
+					replaceCamera = true;
+					if ( myPlayer == sys.getLocalViewPlayer() ) {
+						sys.startSoundDirect( getKey( "snd_invalid" ), SND_WEAPON_FIRE_LOCAL );
+						sys.wait( 0.1 );
+						myPlayer.cancelToolTips();
+						myPlayer.sendToolTip( toolTipOutOfRange );
+					}
+				}
+			}
+		} else {
+			mainFireDown = false;
+		}
+
+		if ( inRemoteView ) {
+			if ( myPlayer.getButton( PK_ACTIVATE ) ) {
+				if ( !zoomKeyDown ) {
+					zoomKeyDown = true;
+					CycleZoom();
+				}
+			} else {
+				zoomKeyDown = false;
+			}
+		} else {
+			zoomKeyDown = false;
+		}
+
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void item_third_eye::CycleZoom() {
+	if ( !InRemoteView() || !zoomer.IsEnabled() ) {
+		return;
+	}
+
+	zoomer.Cycle();
+	OnZoomChanged();
+}
+
+void item_third_eye::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	if ( FindCamera() == $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	}
+
+	WAIT_FOR_TOOLTIP;
+	if ( FindCamera() == $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+	}
+}
+
+void item_third_eye::ToolTipThread_Deployed() {
+	if ( deployedTipThreadActive ) {
+		return;
+	}
+	deployedTipThreadActive = true;
+
+	WAIT_FOR_TOOLTIP;
+	if ( FindCamera() != $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_deployed_intro_1" ) ) );
+	}
+
+	WAIT_FOR_TOOLTIP;
+	if ( FindCamera() != $null_entity ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_deployed_intro_2" ) ) );
+	}
+
+	deployedTipThreadActive = false;
+}
+
+boolean item_third_eye::OnWeapNext() {
+	if ( InRemoteView() && zoomer.IsEnabled() ) {
+		if ( !zoomer.IsFullyZoomedOut() ) {
+			zoomer.ZoomOut();
+			OnZoomChanged();
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+boolean item_third_eye::OnWeapPrev() {
+	if ( InRemoteView() && zoomer.IsEnabled() ) {
+		if ( !zoomer.IsFullyZoomedIn() ) {
+			zoomer.ZoomIn();
+			OnZoomChanged();
+		}
+		return true;
+	}
+
+	return false;
+}
+
+void item_third_eye::OnZoomChanged() {
+	startSound( "snd_zoom", SND_WEAPON_SIG );
+
+	projectile_camera camera = FindCamera();
+	if ( camera != $null_entity ) {
+		if ( camera.cameraGUIHandle != -1 ) {
+			sys.guiPostNamedEvent( camera.cameraGUIHandle, "", "onZoomCycle" );
+		}
+	}
+}
+
+/***********************************************************************
+
+projectile_camera Implementation
+
+***********************************************************************/
+
+void projectile_camera::preinit() {
+	radarRange = getFloatKey( "range" );
+	radarMask = getFloatKey( "mask" );
+
+	detonateDelay = getFloatKey( "detonate_delay" );
+	trailUnderWater		= getIntKey( "trailUnderWater" );
+
+	commandMapRadarHandle		= sys.allocCMIcon( self, 100 );
+
+	sys.setCMIconSizeMode( commandMapRadarHandle, SM_WORLD );
+	sys.setCMIconMaterial( commandMapRadarHandle, GetMaterial( getKey( "mtr_radar" ) ) );
+	sys.setCMIconUnknownMaterial( commandMapRadarHandle, GetMaterial( getKey( "mtr_radar" ) ) );
+	sys.setCMIconSize( commandMapRadarHandle, radarRange * 2.f );
+	sys.setCMIconUnknownSize( commandMapRadarHandle, radarRange * 2.f );
+	sys.setCMIconFlag( commandMapRadarHandle, CMF_TEAMONLY );
+	sys.hideCMIcon( commandMapRadarHandle );
+
+
+	commandMapIcon = -1;
+
+	ShowIcon();
+
+	removeThread = -1;
+	radarStarted = false;
+
+	SetupContents();
+}
+
+void projectile_camera::SetupContents() {
+	setContents( CONTENTS_PROJECTILE );
+	setClipmask( MASK_SHOT_BOUNDINGBOX | MASK_PROJECTILE );
+}
+
+void projectile_camera::init() {
+
+	float damageDeclIndex = sys.getDeclType( "damageDef" );
+	splashDamageIndex	= sys.getDeclIndex( damageDeclIndex, getKey( "dmg_self_destruct" ) );
+
+	string cameraJointName = getKey( "joint_camera" );
+	if ( cameraJointName == "" ) {
+		sys.error( "projectile_camera: No camera joint name" );
+	}
+	cameraJoint = getJointHandle( cameraJointName );
+
+	setNetworkSynced( true );
+
+	endAngles = owner.getViewAngles();
+
+	setState( "Idle" );
+}
+
+void projectile_camera::syncFields() {
+	syncBroadcast( "owner" );
+	syncBroadcast( "radarStarted" );
+	syncBroadcast( "triggered" );
+
+	syncCallback( "triggered", "OnTriggered" );
+	syncCallback( "radarStarted", "OnRadarStarted" );
+	syncCallback( "owner", "OnOwnerChanged" );
+
+	syncBroadcast( "endAngles" );
+}
+
+void projectile_camera::CancelMonitorTrailUnderWater() {
+	sys.killThread( "MonitorTrailUnderWater_" + getName() );
+}
+
+void projectile_camera::MonitorTrailUnderWater() {
+	while ( true ) {
+		if ( isInWater() > 0.5f ) {
+			stopEffect( "fx_trail" );
+		}
+		sys.waitFrame();
+	}
+}
+
+
+void projectile_camera::Idle() {
+	startSound( "snd_start", SND_WEAPON_IDLE );
+	if ( trailUnderWater || isInWater() < 0.5f ) {
+		playEffect( "fx_trail", "", 1 );
+		if ( !trailUnderWater ) {
+			CancelMonitorTrailUnderWater();
+			thread MonitorTrailUnderWater();
+		}
+	}
+
+	if ( !sys.isClient() ) {
+		sys.wait( 2.f );
+		radarStarted = true;
+		OnRadarStarted();
+	}
+}
+
+void projectile_camera::destroy() {
+	sys.freeCMIcon( self, commandMapRadarHandle );
+	FreeIcon();
+	stopEffect( "fx_trail" );
+
+	CancelMonitorTrailUnderWater();
+
+	sys.killThread( "SelfDestructThread_" + getName() );
+
+	FreeGui();
+
+	if ( owner == sys.getLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.thirdEyeActive", 0.0f );
+	}
+}
+
+// NOTE: If this returns true, all momentum on the object will be cleared, otherwise, it will bounce
+float projectile_camera::OnCollide( object traceObject, vector velocity, float bodyId ) {
+	return OnCollide_Private( traceObject.getTraceEntity(), traceObject.getTraceNormal(), traceObject.getTraceSurfaceFlags(), traceObject.getTraceJoint() );
+}
+
+float projectile_camera::OnCollide_Private( entity collisionEnt, vector normal, float surfaceFlags, string joint ) {
+	float shaderFlags;
+	vector dir;
+
+	if ( stuck ) {
+		return true;
+	}
+
+	if ( surfaceFlags & SURF_NOIMPACT ) {
+		ScheduleRemoval( 0 );
+		return true;
+	}
+	if ( surfaceFlags & SURF_NOPLANT ) {
+		return false;
+	}
+
+	if ( PendingRemoval() ) {
+		return true;
+	}
+
+	player pEnt = collisionEnt;
+	if ( pEnt != $null_entity ) {
+		return false;
+	}
+
+	if ( collisionEnt.vDisablePlantCharge() ) {
+		return false;
+	}
+
+	// push the view out of the surface a bit
+	vector origin = getWorldOrigin();
+	origin += normal * getFloatKey( "push_out_scale" );
+	setWorldOrigin( origin );
+
+	// align to the surface normal
+	alignToAxis( normal, Z_AXIS );
+
+	if ( !sys.isClient() ) {
+		stuck = true;
+		freeze( 1.f );
+		clearContacts();
+		putToRest();
+		if ( collisionEnt != $null_entity ) {
+			float jointHandle = collisionEnt.getJointHandle( joint );
+			if ( jointHandle != INVALID_JOINT ) {
+				bindToJoint( collisionEnt, joint, 1 );
+			} else {
+				bind( collisionEnt );
+			}
+		}
+	}
+
+	return true;
+}
+
+void projectile_camera::MakeInactive() {
+	unbind();
+	hide();
+	clearContacts();
+	putToRest();
+	forceDisableClip();
+	setTakesDamage( false );
+	stuck = true;
+	freeze( 1.f );
+}
+
+boolean projectile_camera::PendingRemoval() {
+	return removeThread != -1;
+}
+
+void projectile_camera::RemoveThread( float delay ) {
+	if ( delay <= 0 ) {
+		delay = sys.getFrameTime();
+	}
+	sys.wait( delay );
+	if ( !sys.isClient() ) {
+		remove();
+	}
+}
+
+void projectile_camera::ScheduleRemoval( float delay ) {
+	removeThread = thread RemoveThread( delay );
+}
+
+void projectile_camera::ClearCamera() {
+	if ( owner != $null_entity ) {
+		if ( owner.getRemoteCamera() == self ) {
+			owner.setRemoteCamera( $null_entity );
+		}
+	}
+}
+
+void projectile_camera::UpdateCameraAngles() {
+	setJointAngle( cameraJoint, JOINTMOD_LOCAL, endAngles );
+}
+void projectile_camera::OnKilled( entity inflictor, entity attacker, float damage, vector dir, float location ) {
+	if ( PendingRemoval() ) {
+		return;
+	}
+
+	ScheduleRemoval( 0 );
+	ClearCamera();
+}
+
+void projectile_camera::OnTouch( entity other, object traceObject ) {
+}
+
+void projectile_camera::OnTriggered() {
+	if ( PendingRemoval() ) {
+		return;
+	}
+
+	triggered = true;
+	thread SelfDestructThread();
+}
+
+void projectile_camera::SelfDestructThread() {
+	startSound( "snd_trigger", SND_WEAPON_ARM );
+	sys.wait( detonateDelay );
+
+	if ( !sys.isClient() ) {
+		if ( splashDamageIndex != -1 ) {
+			sys.applyRadiusDamage( getWorldOrigin(), self, owner, self, self, splashDamageIndex, 1.f, 1.f );
+		}
+	}
+
+	OnExploded();
+	ClearCamera();
+}
+
+void projectile_camera::Fizzle() {
+	if ( PendingRemoval() ) {
+		return;
+	}
+	ScheduleRemoval( 0 );
+}
+
+void projectile_camera::vSetOwner( entity o ) {
+	owner = o;
+	setGameTeam( owner.getGameTeam() );
+
+	if ( !sys.isClient() ) {
+		OnOwnerChanged();
+	}
+}
+
+void projectile_camera::OnExploded() {
+	if ( !sys.isClient() ) {
+		player p = owner;
+		if ( p != $null_entity ) {
+			p.setPlayerCovertToolState( self, true );
+		}
+	}
+
+	if ( isInWater() > 0.5f ) {
+		vector newOrg = getWorldOrigin();
+		DoWaterExplosion( newOrg, "", '0 0 1' );
+	} else {
+		playMaterialEffect( "fx_explode", g_colorWhite, "", "", 0 );
+	}
+	ScheduleRemoval( 0 );
+}
+
+void projectile_camera::DoWaterExplosion( vector position, string surfaceType, vector normal ) {
+	entitiesOfClass( sys.getTypeHandle( "sdLiquid" ), 0 );
+	float count = filterEntitiesByTouching( 1 );
+
+	if ( count > 0 ) {
+		entity other = getBoundsCacheEntity( 0 );
+		vector top = other.getAbsMaxs();
+
+		position_z = top_z;
+	}
+
+	playOriginEffect( "fx_explode_water", surfaceType, position, normal, 0 );
+}
+
+
+void projectile_camera::OnRadarStarted() {
+	freeLayers();
+
+	if ( radarStarted ) {
+		// start the radar
+		sys.showCMIcon( commandMapRadarHandle );
+
+		float radarLayer = allocRadarLayer();
+		radarSetLayerRange( radarLayer, radarRange );
+		radarSetLayerMask( radarLayer, radarMask );
+	}
+}
+
+void projectile_camera::FreeGui() {
+	if ( cameraGUIHandle != -1 ) {
+		sys.freeHudModule( cameraGUIHandle );
+		cameraGUIHandle = -1;
+	}
+}
+
+void projectile_camera::OnBecomeRemoteCamera() {
+	FreeGui();
+
+	cameraGUIHandle = sys.allocHudModule( getKey( "gui_camera_view" ), getFloatKeyWithDefault( "hud_sort", 0 ), false );
+
+	hide();
+
+	item_third_eye controller = owner.getWeaponEntity();
+	if ( controller != $null_entity ) {
+		controller.startSound( "snd_start", SND_WEAPON_IDLE );
+		controller.myPlayer.inhibitGuis( true );
+		controller.zoomer.Enable();
+	}
+}
+
+void projectile_camera::OnFinishRemoteCamera() {
+	FreeGui();
+
+	show();
+
+	item_third_eye controller = owner.getWeaponEntity();
+	if ( controller != $null_entity ) {
+		controller.myPlayer.inhibitGuis( false );
+		controller.startSound( "snd_stop", SND_WEAPON_IDLE );
+		controller.zoomer.Disable();
+	}
+}
+
+void projectile_camera::vGiveSpotProficiency() {
+	if ( owner == $null_entity ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		team.GiveRadarSpottingProficiency( owner );
+	}
+}
+
+void projectile_camera::OnUnbind() {
+	Fizzle();
+}
+
+void projectile_camera::OnPostThink() {
+	vector velocity = getLinearVelocity();
+	float velSqr = sys.vecLengthSquared( velocity );
+
+	if ( velSqr < 10.f ) {
+		stopEffect( "fx_trail" );
+	}
+	if ( isBound() ) {
+		forceRunPhysics();
+	}
+
+	OnRadarStarted();
+}
+
+float projectile_camera::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	chSetNumLines( 0 );
+
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float index;
+
+	if ( range < 25 ) {
+		index = chAddLine();
+		chSetLineText( index, sys.localizeStringArgs( "game/weapons/third_eye_camera" ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;
+}
+
+void projectile_camera::OnOwnerChanged() {
+	if ( owner != sys.getLocalPlayer() || owner == $null_entity ) {
+		return;
+	}
+
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.thirdEyeActive", 1.0f );
+}
+
+void projectile_camera::ShowIcon() {
+	if ( commandMapIcon == -1 ) {
+		commandMapIcon = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
+		sys.setCMIconUnknownMaterial( commandMapIcon, GetMaterial( getKey( "mtr_commandmapicon" ) ) );
+		sys.setCMIconMaterial( commandMapIcon, GetMaterial( getKey( "mtr_commandmapicon" ) ) );
+		sys.setCMIconDrawMode( commandMapIcon, DM_MATERIAL );
+		sys.setCMIconSize( commandMapIcon, 8.0f );
+		sys.setCMIconFlag( commandMapIcon, CMF_TEAMONLY );
+	}
+}
+
+void projectile_camera::FreeIcon() {
+	if( commandMapIcon != -1 ) {
+		sys.freeCMIcon( self, commandMapIcon );
+		commandMapIcon = -1;
+	}
+}

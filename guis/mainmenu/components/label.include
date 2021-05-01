@@ -1,0 +1,31 @@
+
+#ifndef __component_label__
+#define __component_label__
+
+$template _label_localized( NameParm, TextParm, XPos, YPos, Width, Height, ColorParm )
+	windowDef lbl##NameParm {
+		properties {
+			rect 	rect 			= XPos, YPos, Width, Height;
+			color 	foreColor		= ColorParm;
+			handle	localizedText	= TextParm;
+			float	fontSize		= 12;
+		}
+
+$endtemplate
+
+$template _label_literal( NameParm, TextParm, XPos, YPos, Width, Height, ColorParm )
+	windowDef lbl##NameParm {
+		properties {
+			rect 	rect 		= XPos, YPos, Width, Height;
+			color 	foreColor	= ColorParm;
+			wstring	text		= TextParm;
+			float	fontSize	= 12;
+		}
+
+$endtemplate
+
+$template _end_label
+	}
+$endtemplate
+
+#endif // !__component_label__

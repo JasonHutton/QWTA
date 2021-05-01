@@ -1,0 +1,430 @@
+
+#ifndef __qwta_info_settings__
+#define __qwta_info_settings__
+
+$template _qwtacheck( NameParm, CVarParm, TextParm, ToolTipParm, xPos, yPos, WidthParm )
+	_check( NameParm, TextParm, xPos, yPos, WidthParm )
+		_admin_check_synced( CVarParm, "", "" )
+		_button_disable_if( "", true )
+		events {
+			onQueryTooltip {
+				toolTipText = ToolTipParm;
+			}
+		}
+	_end_check
+$endtemplate
+
+$template _qwta_check_synced_bit( cvar, bit, CheckedCommand, UncheckedCommand )
+	properties {
+		float activating = false;
+	}
+	events {
+		onActivate {
+			activating = true;
+			checked = gui.getCVarInt( #cvar ) & bit;
+			activating = false;
+		}
+		onCVarChanged #cvar {
+			activating = true;
+			checked = gui.getCVarInt( #cvar ) & bit;
+			activating = false;			
+		}			
+		onNamedEvent "checkChanged" {
+			if ( activating ) {
+				return;
+			}
+
+			activating = true;
+			if ( checked ) {
+				gui.consoleCommand( CheckedCommand + _newline );
+			} else {
+				gui.consoleCommand( UncheckedCommand + _newline );
+			}
+			activating = false;
+		}
+	}
+$endtemplate
+
+$template _qwtacheckbit( NameParm, CVarParm, BitParm, TextParm, ToolTipParm, xPos, yPos, WidthParm )
+	_check( NameParm, TextParm, xPos, yPos, WidthParm )
+		_qwta_check_synced_bit( CVarParm, BitParm, "", "" )
+		_button_disable_if( "", true )
+		events {
+			onQueryTooltip {
+				toolTipText = ToolTipParm;
+			}
+		}
+	_end_check
+$endtemplate
+
+$template _qwta_group_box( NameParm, xPos, yPos, WidthParm, HeightParm, BorderParm )
+	windowDef grp##NameParm {
+		properties {
+			rect	rect 		= xPos, yPos, WidthParm, HeightParm;
+			color	fillColor 	= COLOR_BOX_FILL;
+			color	lineColor	= COLOR_BOX_LINES;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				if ( BorderParm != false ) {
+					drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+				}
+				
+				gui.scriptPushFloat( false );
+			}
+		}
+$endtemplate
+
+$template _end_qwta_group_box
+	}
+$endtemplate
+
+$template _qwta_group_box_vertical( NameParm, xPos, yPos, WidthParm, HeightParm, BorderParm )	
+	_qwta_group_box( NameParm, xPos, yPos, WidthParm, HeightParm, BorderParm )
+		windowDef lyt##NameParm {
+			type layoutVertical;
+			properties {
+				vec4 	margins = PADDING, PADDING, PADDING, PADDING;
+				rect	rect = 0, 0, gui.grp##NameParm.rect.w, gui.grp##NameParm.rect.h;
+			}
+$endtemplate
+
+$template _end_qwta_group_box_vertical
+		}
+	_end_qwta_group_box
+$endtemplate
+
+$template _qwtatextbox( NameParm, CVarParm, TextParm, xPos, yPos, WidthParm )
+	_edit( NameParm, xPos+WidthParm, yPos, 0, BUTTON_HEIGHT )
+		_draw_left_edit_label( TextParm, COLOR_TEXT, WidthParm )
+		_button_disable_if( "", true )
+
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				editText = gui.getCVar( #CVarParm );
+			}
+			
+			onCVarChanged #CVarParm	{ 
+				clearText();
+				editText = gui.getCVar( #CVarParm );
+			}
+		}
+	_end_edit
+$endtemplate
+
+_tab_page( QWTA_Settings, localize( "guis/limbo/qwta/settings" ), QWTAInfo, QWTA_SETTINGS, _to_right_of( tabpQWTA_Docs ), 0 )
+	_scrollable_container( QWTA_SettingsCont, PADDING, PADDING, _fill_to_right_of( tabpQWTA_SettingsContent ), _fill_to_bottom_of( tabpQWTA_SettingsContent ) )
+		_qwtacheck( Setting_UseBaseETQW12Shotguns, 
+			g_useBaseETQW12Shotguns, 
+			localize( "guis/limbo/qwta/settings/useBaseETQW12Shotguns" ),
+			localizeArgs( "guis/limbo/qwta/settings/useBaseETQW12Shotguns/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_DisableVehicleSpawns, 
+			g_disableVehicleSpawns, 
+			localize( "guis/limbo/qwta/settings/disableVehicleSpawns" ),
+			localizeArgs( "guis/limbo/qwta/settings/disableVehicleSpawns/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_ArtilleryWarning, 
+			g_artilleryWarning, 
+			localize( "guis/limbo/qwta/settings/artilleryWarning" ),
+			localizeArgs( "guis/limbo/qwta/settings/artilleryWarning/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseQuake4DarkMatter, 
+			g_useQuake4DarkMatter, 
+			localize( "guis/limbo/qwta/settings/useQuake4DarkMatter" ),
+			localizeArgs( "guis/limbo/qwta/settings/useQuake4DarkMatter/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseDeathFading, 
+			g_useDeathFading, 
+			localize( "guis/limbo/qwta/settings/useDeathFading" ),
+			localizeArgs( "guis/limbo/qwta/settings/useDeathFading/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseReverseAirstrikes, 
+			g_useReverseAirstrikes, 
+			localize( "guis/limbo/qwta/settings/useReverseAirstrikes" ),
+			localizeArgs( "guis/limbo/qwta/settings/useReverseAirstrikes/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseNuclearHammer, 
+			g_useNuclearHammer, 
+			localize( "guis/limbo/qwta/settings/useNuclearHammer" ),
+			localizeArgs( "guis/limbo/qwta/settings/useNuclearHammer/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseQuake4Hyperblaster, 
+			g_useQuake4Hyperblaster, 
+			localize( "guis/limbo/qwta/settings/useQuake4Hyperblaster" ),
+			localizeArgs( "guis/limbo/qwta/settings/useQuake4Hyperblaster/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_group_box_vertical( Setting_SPAGroup, PADDING, PADDING, BUTTON_WIDTH, $evalfloat( ( BUTTON_HEIGHT ) * 4 + PADDING ) )
+			_label_localized( Setting_ShowPlayerArrows, localize( "guis/limbo/qwta/settings/showPlayerArrows" ), 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, "1,1,1,0.35" )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_BOTTOM;
+				}
+			_end_label
+			_radio( ShowPlayerArrows_0, localize( "guis/limbo/qwta/settings/showPlayerArrows_0" ), 0, 0, BUTTON_HEIGHT )
+				_cvar_set_int( g_showPlayerArrows, 0 )
+				_button_disable_if( "", true )
+			_end_radio
+			_radio( ShowPlayerArrows_1, localize( "guis/limbo/qwta/settings/showPlayerArrows_1" ), 0, 0, BUTTON_HEIGHT )
+				_cvar_set_int( g_showPlayerArrows, 1 )
+				_button_disable_if( "", true )
+			_end_radio
+			_radio( ShowPlayerArrows_2, localize( "guis/limbo/qwta/settings/showPlayerArrows_2" ), 0, 0, BUTTON_HEIGHT )
+				_cvar_set_int( g_showPlayerArrows, 2 )
+				_button_disable_if( "", true )
+			_end_radio
+		_end_group_box_vertical
+		_qwtacheck( Setting_UseGibKills, 
+			g_useGibKills, 
+			localize( "guis/limbo/qwta/settings/useGibKills" ),
+			localizeArgs( "guis/limbo/qwta/settings/useGibKills/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_BotUseVehicleDrops, 
+			bot_useVehicleDrops, 
+			localize( "guis/limbo/qwta/settings/botUseVehicleDrops" ),
+			localizeArgs( "guis/limbo/qwta/settings/botUseVehicleDrops/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseClassLimits, 
+			g_useClassLimits, 
+			localize( "guis/limbo/qwta/settings/useClassLimits" ),
+			localizeArgs( "guis/limbo/qwta/settings/useClassLimits/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_group_box_vertical( Setting_RMGroup, PADDING, PADDING,  BUTTON_WIDTH, $evalfloat( ( BUTTON_HEIGHT ) * 4 + PADDING ) )
+			_label_localized( Setting_RealisticMovement, localize( "guis/limbo/qwta/settings/realisticMovement" ), 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT, "1,1,1,0.35" )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_BOTTOM;
+				}
+			_end_label
+			_radio( RealisticMovement_0, localize( "guis/limbo/qwta/settings/realisticMovement_0" ), 0, 0, BUTTON_HEIGHT )
+				_cvar_set_int( pm_realisticMovement, 0 )
+				_button_disable_if( "", true )
+			_end_radio
+			_radio( RealisticMovement_1, localize( "guis/limbo/qwta/settings/realisticMovement_1" ), 0, 0, BUTTON_HEIGHT )
+				_cvar_set_int( pm_realisticMovement, 1 )
+				_button_disable_if( "", true )
+			_end_radio
+			_radio( RealisticMovement_2, localize( "guis/limbo/qwta/settings/realisticMovement_2" ), 0, 0, BUTTON_HEIGHT )
+				_cvar_set_int( pm_realisticMovement, 2 )
+				_button_disable_if( "", true )
+			_end_radio
+		_end_group_box_vertical
+		_qwtacheck( Setting_UseRealisticWeapons, 
+			g_useRealisticWeapons, 
+			localize( "guis/limbo/qwta/settings/useRealisticWeapons" ),
+			localizeArgs( "guis/limbo/qwta/settings/useRealisticWeapons/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_BotUseStrafeJump, 
+			bot_useStrafeJump, 
+			localize( "guis/limbo/qwta/settings/botUseStrafeJump" ),
+			localizeArgs( "guis/limbo/qwta/settings/botUseStrafeJump/tooltip" ),
+			0, 0, BUTTON_WIDTH )			
+		_qwtacheck( Setting_AllowMineIcons, 
+			g_allowMineIcons, 
+			localize( "guis/limbo/qwta/settings/allowMineIcons" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowMineIcons/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowMineTriggerWarning, 
+			g_allowMineTriggerWarning, 
+			localize( "guis/limbo/qwta/settings/allowMineTriggerWarning" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowMineTriggerWarning/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowAPTWarning, 
+			g_allowAPTWarning, 
+			localize( "guis/limbo/qwta/settings/allowAPTWarning" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowAPTWarning/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_IgnorePersistentRanks, 
+			g_ignorePersistentRanks, 
+			localize( "guis/limbo/qwta/settings/ignorePersistentRanks" ),
+			localizeArgs( "guis/limbo/qwta/settings/ignorePersistentRanks/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_group_box( Setting_AVDGroup, PADDING, PADDING, _fill_to_right_of( lstQWTA_SettingsContElements ), $evalfloat( ( BUTTON_HEIGHT ) * 7 + 12 ) )
+			_label_localized( SAVDGroupL, localize( "guis/limbo/qwta/settings/advancedVehicleDrops" ), PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, "1,1,1,0.35" )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+				}
+			_end_label
+			_qwta_group_box_vertical( Setting_AVD1, PADDING, _to_bottom_of( lblSAVDGroupL ), BUTTON_WIDTH, $evalfloat( ( BUTTON_HEIGHT ) * 6 + PADDING ), false )
+				_qwtacheckbit( S_AVD_Icarus, g_advancedVehicleDrops, 128, localize( "game/vec/icarus" ), localizeArgs( "game/vec/icarus" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Hog, g_advancedVehicleDrops, 256, localize( "game/vec/hog" ), localizeArgs( "game/vec/hog" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Desecrator, g_advancedVehicleDrops, 512, localize( "game/vec/desecrator" ), localizeArgs( "game/vec/desecrator" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Cyclops, g_advancedVehicleDrops, 1024, localize( "game/vec/goliath" ), localizeArgs( "game/vec/goliath" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Abaddon, g_advancedVehicleDrops, 8192, localize( "game/vec/abaddon" ), localizeArgs( "game/vec/abaddon" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Tormentor, g_advancedVehicleDrops, 2048, localize( "game/vec/hornet" ), localizeArgs( "game/vec/hornet" ), 0, 0, BUTTON_WIDTH )
+			_end_qwta_group_box_vertical
+			_qwta_group_box_vertical( Setting_AVD2, _to_right_of( grpSetting_AVD1 ) + PADDING, PADDING, BUTTON_WIDTH, $evalfloat( ( BUTTON_HEIGHT ) * 7 + PADDING ), false )
+				_qwtacheckbit( S_AVD_Husky, g_advancedVehicleDrops, 1, localize( "game/vec/husky" ), localizeArgs( "game/vec/husky" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Armadillo, g_advancedVehicleDrops, 4, localize( "game/vec/badger" ), localizeArgs( "game/vec/badger" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Trojan, g_advancedVehicleDrops, 8, localize( "game/vec/trojan" ), localizeArgs( "game/vec/trojan" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Titan, g_advancedVehicleDrops, 32, localize( "game/vec/titan" ), localizeArgs( "game/vec/titan" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Jupiter, g_advancedVehicleDrops, 4096, localize( "game/vec/jupiter" ), localizeArgs( "game/vec/jupiter" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Anansi, g_advancedVehicleDrops, 64, localize( "game/vec/anansi" ), localizeArgs( "game/vec/anansi" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Bumblebee, g_advancedVehicleDrops, 16, localize( "game/vec/bumblebee" ), localizeArgs( "game/vec/bumblebee" ), 0, 0, BUTTON_WIDTH )
+				_qwtacheckbit( S_AVD_Platypus, g_advancedVehicleDrops, 2, localize( "game/vec/platypus" ), localizeArgs( "game/vec/platypus" ), 0, 0, BUTTON_WIDTH )
+			_end_qwta_group_box_vertical
+		_end_group_box
+		_qwtacheck( Setting_UseSpecificRadar, 
+			g_useSpecificRadar, 
+			localize( "guis/limbo/qwta/settings/useSpecificRadar" ),
+			localizeArgs( "guis/limbo/qwta/settings/useSpecificRadar/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_VDropsUseFE, 
+			g_vehicleDropsUseFE, 
+			localize( "guis/limbo/qwta/settings/vDropsUseFE" ),
+			localizeArgs( "guis/limbo/qwta/settings/vDropsUseFE/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_HuskyIcarusDropsIgnoreFE,
+			g_huskyIcarusDropsIgnoreFE, 
+			localize( "guis/limbo/qwta/settings/huskyIcarusDropsIgnoreFE" ),
+			localizeArgs( "guis/limbo/qwta/settings/huskyIcarusDropsIgnoreFE/tooltip" ),
+			0, 0, BUTTON_WIDTH )			
+		_qwtacheck( Setting_UseBaseVehicleCredits, 
+			g_useBaseETQWVehicleCredits, 
+			localize( "guis/limbo/qwta/settings/useBaseVehicleCredits" ),
+			localizeArgs( "guis/limbo/qwta/settings/useBaseVehicleCredits/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseBaseProficiencies, 
+			g_useBaseETQWProficiencies, 
+			localize( "guis/limbo/qwta/settings/useBaseProficiencies" ),
+			localizeArgs( "guis/limbo/qwta/settings/useBaseProficiencies/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseBaseVehicleCharge, 
+			g_useBaseETQWVehicleCharge, 
+			localize( "guis/limbo/qwta/settings/useBaseVehicleCharge" ),
+			localizeArgs( "guis/limbo/qwta/settings/useBaseVehicleCharge/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_VehicleSpawnsUseFE, 
+			g_vehicleSpawnsUseFE, 
+			localize( "guis/limbo/qwta/settings/vSpawnsUseFE" ),
+			localizeArgs( "guis/limbo/qwta/settings/vSpawnsUseFE/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseQuake4Railgun, 
+			g_useQuake4Railgun, 
+			localize( "guis/limbo/qwta/settings/useQuake4Railgun" ),
+			localizeArgs( "guis/limbo/qwta/settings/useQuake4Railgun/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseShieldAbsorber, 
+			g_useShieldAbsorber, 
+			localize( "guis/limbo/qwta/settings/useShieldAbsorber" ),
+			localizeArgs( "guis/limbo/qwta/settings/useShieldAbsorber/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_DisableVehicleRespawns, 
+			g_disableVehicleRespawns, 
+			localize( "guis/limbo/qwta/settings/disableVehicleRespawns" ),
+			localizeArgs( "guis/limbo/qwta/settings/disableVehicleRespawns/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_DisablePlayerRespawns, 
+			g_disablePlayerRespawns, 
+			localize( "guis/limbo/qwta/settings/disablePlayerRespawns" ),
+			localizeArgs( "guis/limbo/qwta/settings/disablePlayerRespawns/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowCrosshairs, 
+			g_allowCrosshairs, 
+			localize( "guis/limbo/qwta/settings/allowCrosshairs" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowCrosshairs/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowHitBeep, 
+			g_allowHitBeep, 
+			localize( "guis/limbo/qwta/settings/allowHitBeep" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowHitBeep/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseBaseETQW12SniperTrail, 
+			g_useBaseETQW12SniperTrail, 
+			localize( "guis/limbo/qwta/settings/useBaseETQW12SniperTrail" ),
+			localizeArgs( "guis/limbo/qwta/settings/useBaseETQW12SniperTrail/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+/*		_qwtacheck( Setting_AllowTimerCircles, 
+			g_allowTimerCircles, 
+			localize( "guis/limbo/qwta/settings/allowTimerCircles" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowTimerCircles/tooltip" ),
+			0, 0, BUTTON_WIDTH )*/
+/*		_qwtacheck( Setting_HideHUD, 
+			g_hideHUD, 
+			localize( "guis/limbo/qwta/settings/hideHUD" ),
+			localizeArgs( "guis/limbo/qwta/settings/hideHUD/tooltip" ),
+			0, 0, BUTTON_WIDTH )*/
+		_qwtacheck( Setting_UseVehicleAmmo, 
+			g_useVehicleAmmo, 
+			localize( "guis/limbo/qwta/settings/useVehicleAmmo" ),
+			localizeArgs( "guis/limbo/qwta/settings/useVehicleAmmo/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_UseVehicleDecoyAmmo, 
+			g_useVehicleDecoyAmmo, 
+			localize( "guis/limbo/qwta/settings/useVehicleDecoyAmmo" ),
+			localizeArgs( "guis/limbo/qwta/settings/useVehicleDecoyAmmo/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowEMPFriendlyFire, 
+			g_allowEMPFriendlyFire, 
+			localize( "guis/limbo/qwta/settings/allowEMPFriendlyFire" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowEMPFriendlyFire/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_AllowRadFriendlyFire, 
+			g_allowRadFriendlyFire, 
+			localize( "guis/limbo/qwta/settings/allowRadFriendlyFire" ),
+			localizeArgs( "guis/limbo/qwta/settings/allowRadFriendlyFire/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_check( Setting_Blood, 
+			localize( "guis/limbo/qwta/settings/blood" ), 
+			0, 0, BUTTON_WIDTH )
+			_cvar_bool( g_blood )
+			events {
+				onQueryTooltip {
+					toolTipText = localizeArgs( "guis/limbo/qwta/settings/blood/tooltip" );
+				}
+			}
+		_end_check
+/*		_qwtacheck( Setting_UseStraightRockets,
+			g_useStraightRockets,
+			localize( "guis/limbo/qwta/settings/useStraightRockets" ),
+			localizeArgs( "guis/limbo/qwta/settings/useStraightRockets/tooltip" ),
+			0, 0, BUTTON_WIDTH )*/
+		_qwtacheck( Setting_ForgivingBotMatch,
+			g_forgivingBotMatch,
+			localize( "guis/limbo/qwta/settings/forgivingBotMatch" ),
+			localizeArgs( "guis/limbo/qwta/settings/forgivingBotMatch/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_group_box( Setting_MinPlayersForVehicle, PADDING, PADDING, _fill_to_right_of( lstQWTA_SettingsContElements ), $evalfloat( ( 20 ) * 7 + 12 ) )
+			_label_localized( MPFVL, localize( "guis/limbo/qwta/settings/vehicleSpawnMinPlayers" ), PADDING, PADDING, BUTTON_WIDTH, BUTTON_HEIGHT, "1,1,1,0.35" )
+				properties {
+					vec2 textAlignment = TA_LEFT, TA_VCENTER;
+				}
+			_end_label
+			_qwta_group_box_vertical( Setting_MPFV1, PADDING, _to_bottom_of( lblMPFVL ), BUTTON_WIDTH, $evalfloat( ( 20 ) * 6 + PADDING ), false )
+				_qwtatextbox( S_MPFV_Icarus, g_vehicleSpawnMinPlayersIcarus, localize( "game/vec/icarus" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Hog, g_vehicleSpawnMinPlayersHog, localize( "game/vec/hog" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Desecrator, g_vehicleSpawnMinPlayersDesecrator, localize( "game/vec/desecrator" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Cyclops, g_vehicleSpawnMinPlayersCyclops, localize( "game/vec/goliath" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Abaddon, g_vehicleSpawnMinPlayersAbaddon, localize( "game/vec/abaddon" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Tormentor, g_vehicleSpawnMinPlayersTormentor, localize( "game/vec/hornet" ), 0, 0, 60 )
+			_end_qwta_group_box_vertical
+			_qwta_group_box_vertical( Setting_MPFV2, _to_right_of( grpSetting_MPFV1 ) + PADDING + 40, PADDING, BUTTON_WIDTH, $evalfloat( ( 20 ) * 7 + PADDING ), false )
+			_qwtatextbox( S_MPFV_Husky, g_vehicleSpawnMinPlayersHusky, localize( "game/vec/husky" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Armadillo, g_vehicleSpawnMinPlayersArmadillo, localize( "game/vec/badger" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Trojan, g_vehicleSpawnMinPlayersTrojan, localize( "game/vec/trojan" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Titan, g_vehicleSpawnMinPlayersTitan, localize( "game/vec/titan" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Jupiter, g_vehicleSpawnMinPlayersJupiter, localize( "game/vec/jupiter" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Anansi, g_vehicleSpawnMinPlayersAnansi, localize( "game/vec/anansi" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Bumblebee, g_vehicleSpawnMinPlayersBumblebee, localize( "game/vec/bumblebee" ), 0, 0, 60 )
+				_qwtatextbox( S_MPFV_Platypus, g_vehicleSpawnMinPlayersPlatypus, localize( "game/vec/platypus" ), 0, 0, 60 )
+			_end_qwta_group_box_vertical
+		_end_group_box
+		_qwtacheck( Setting_VDropsUseLP, 
+			g_vehicleDropsUseLP, 
+			localize( "guis/limbo/qwta/settings/vDropsUseLP" ),
+			localizeArgs( "guis/limbo/qwta/settings/vDropsUseLP/tooltip" ),
+			0, 0, BUTTON_WIDTH )
+		_qwtacheck( Setting_HuskyIcarusDropsIgnoreLP,
+			g_huskyIcarusDropsIgnoreLP, 
+			localize( "guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP" ),
+			localizeArgs( "guis/limbo/qwta/settings/huskyIcarusDropsIgnoreLP/tooltip" ),
+			0, 0, BUTTON_WIDTH )			
+		_qwtacheck( Setting_UseAwardJackOfAllTrades,
+			g_useAwardJackOfAllTrades, 
+			localize( "guis/limbo/qwta/settings/useAwardJackOfAllTrades" ),
+			localizeArgs( "guis/limbo/qwta/settings/useAwardJackOfAllTrades/tooltip" ),
+			0, 0, BUTTON_WIDTH )			
+	_end_scrollable_container
+_end_tab_page
+
+#endif

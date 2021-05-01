@@ -1,0 +1,133 @@
+/***********************************************************************
+
+projectile_ssg.script
+
+***********************************************************************/
+
+#define DMG_GRAVITY_ACTIVATION_DELAY 5.0f
+
+object projectile_ssg : projectile_ssm {
+	void		DoDelayedExplosion();
+
+	void		DoExplodeEffect_ssg( entity collisionEnt );
+	void		DoExplodeEffect( entity collisionEnt ) {
+		DoExplodeEffect_ssg( collisionEnt );
+	}
+	void		DoRadiusPush();
+	void		DoRadiusPull();
+	void		DoProxBurn();
+
+	void		Idle();
+
+	void			preinit();
+
+	void			SetupContents();
+
+	void			OnPostThink();
+
+	float			splashDamagePushIndex;
+	float			splashDamagePullIndex;
+	float			splashDamageProxBurnIndex;
+
+	boolean			gravitySucks;
+	boolean			delayingExplosion;
+	boolean			completelyDone;
+	float			launchTime;
+
+	float			damageRate;
+	float			nextDamageTime;
+	float			delaySplash;
+	float			splashTime;
+}
+
+void projectile_ssg::preinit() {
+	gravitySucks = false;
+	delayingExplosion = false;
+	completelyDone = false;
+	launchTime = -1;
+	nextDamageTime = 0.0;
+	splashTime = 0.0;
+
+	splashDamagePushIndex	= GetDamage( getKey( "dmg_splash_damage_push" ) );
+	splashDamagePullIndex	= GetDamage( getKey( "dmg_splash_damage_pull" ) );
+	splashDamageProxBurnIndex	= GetDamage( getKey( "dmg_splash_damage_prox_burn" ) );
+
+	damageRate = getFloatKey( "damageRate" );
+	delaySplash = getFloatKey( "delay_splash" );
+}
+
+void projectile_ssg::SetupContents() {
+	SetupContents_Base();
+
+	setClipmask( CONTENTS_SOLID | CONTENTS_FORCEFIELD );
+}
+
+void projectile_ssg::Idle() {
+	startSound( "snd_launch", SND_ANY );
+	playEffect( "fx_trail", "", 1 );
+
+	launchTime			= sys.getTime();
+}
+
+void projectile_ssg::OnPostThink() {
+	if ( !completelyDone ) {
+		gravitySucks = true;
+
+		if( gravitySucks && sys.getTime() > nextDamageTime ) {
+			nextDamageTime = sys.getTime() + damageRate;
+			DoRadiusPull();
+			DoProxBurn();
+		}
+
+		if( delayingExplosion && sys.getTime() > splashTime ) {
+			completelyDone = true;
+			DoDelayedExplosion();
+		}
+	}
+}
+
+void projectile_ssg::DoDelayedExplosion() {
+	//sys.print("Doing delayed explosion " + sys.getTime() + "\n");
+	DoRadiusPush();
+	DoRadiusDamage();
+}
+
+void projectile_ssg::DoExplodeEffect_ssg( entity collisionEnt ) {
+	float removeDelay;
+	SetRadiusDamageIgnoreEntity( collisionEnt );
+
+	gravitySucks = false;
+	delayingExplosion = true;
+	splashTime = sys.getTime() + delaySplash;
+	//sys.print("Timing delayed explosion from " + sys.getTime() + "(" + delaySplash + ")\n");
+
+	removeDelay = getFloatKeyWithDefault( "removedelay", 0.5 );
+	ScheduleRemoval( removeDelay );
+}
+
+void projectile_ssg::DoRadiusPush() {
+	float damageIndex = splashDamagePushIndex;
+	//if ( state == MS_AIRBURST ) {
+	//	damageIndex = airBurstDamageIndex;
+	//}
+
+	if ( damageIndex != -1 ) {
+		sys.applyRadiusPush( getWorldOrigin(), self, getOwner(), $null_entity, self, damageIndex, GetDamagePower(), 1.f );
+	}
+}
+
+void projectile_ssg::DoRadiusPull() {
+	float damageIndex = splashDamagePullIndex;
+	//if ( state == MS_AIRBURST ) {
+	//	damageIndex = airBurstDamageIndex;
+	//}
+
+	if ( damageIndex != -1 ) {
+		sys.applyRadiusPush( getWorldOrigin(), self, getOwner(), $null_entity, self, damageIndex, GetDamagePower(), 1.f );
+	}
+}
+
+void projectile_ssg::DoProxBurn() {
+	sys.applyRadiusDamage( getWorldOrigin(), self, getOwner(), radiusDamageIgnoreEntity, self, splashDamageProxBurnIndex, GetDamagePower(), 1.f );
+
+}

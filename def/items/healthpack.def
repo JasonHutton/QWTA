@@ -1,0 +1,189 @@
+/***********************************************************************
+
+	healthpack.def
+
+***********************************************************************/
+
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix SUPPLY_ -sourcedir models/techkits/supply_pack/dev_sd -destdir models/items/healthpack/
+
+	mesh	supply_pack_base_file.mb	-dest models/items/healthpack/healthpack_view.md5mesh
+	anim	supply_pack_idle.mb			-dest models/items/healthpack/healthpack_idle.md5anim
+	anim	supply_pack_raise.mb		-dest models/items/healthpack/healthpack_raise.md5anim
+ 	anim	supply_pack_lower.mb		-dest models/items/healthpack/healthpack_lower.md5anim
+ 	anim	supply_pack_fire.mb			-dest models/items/healthpack/healthpack_fire.md5anim
+ 	anim	supply_pack_lower.mb		-dest models/items/healthpack/healthpack_reload.md5anim
+}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_healthpack {
+	mesh						models/items/healthpack/healthpack_view.md5mesh
+
+	anim idle					models/items/healthpack/healthpack_idle.md5anim {
+	}
+
+	anim fire					models/items/healthpack/healthpack_fire.md5anim {
+		frame 2						sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim putaway 				models/items/healthpack/healthpack_lower.md5anim {
+	}
+
+	anim raise 					models/items/healthpack/healthpack_raise.md5anim {
+		frame 1						sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim reload 				models/items/healthpack/healthpack_reload.md5anim {
+	}
+}
+
+invItemDef inventory/items/healthpack {
+	type						"item"
+	slot						"item"
+	name						"game/weapons/health"
+	model						"models/items/healthpack/healthpack_player.lwo"
+	joint						"Spine"
+
+	data {
+		"model_view" 				"viewmodel_healthpack"
+		"model_world" 				"models/items/healthpack/healthpack_thirdperson.lwo"
+		"joint_attach"				"RightHand"
+		"view_offset"				"-2 0 -3.5"
+
+		"anim_prefix"				"healthpack"
+		"anim_prefix_class"			"tool"
+
+		"weapon_scriptobject"		"item_supplypack_medic"
+
+		"snd_raise"					"sounds/tools/healthpack/raise"
+		"snd_fire"					"sounds/tools/healthpack/fire"
+		"snd_need_charge"			"sounds/ui/main/cannot"
+
+		"num_projectiles"			"1"
+		"hide_clip"					"1"
+		"fire_rate"					"1"
+		"trigger_delay"				"0.2"
+		
+		"finish_fire_anim"			"1"
+
+		"timer_charge"				"energy_supply"
+		"charge_per_use"			"25"
+		"show_charge"				"1"
+
+		"stat_name"					"healthpack"
+
+		"climate_skin_key"			"weapon_gdf"
+
+		"crosshair"					"none"
+
+		"tt_intro_1"				"healthpack_intro_1"
+		"tt_intro_2"				"healthpack_intro_2"
+		"tt_need_charge"			"healthpack_need_charge"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"15"
+		"spread_inc"				"15"
+		"spread_max_settle_time"	"5000"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"10"
+		"spread_crouch_inc"			"10"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"10"
+		"spread_prone_inc"			"10"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"10"
+		"spread_jump_inc"			"10"
+
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/healthpack"
+
+		"player_weapon_num"			"7"
+		
+	}
+
+	clip {
+		"projectile"			"projectile_healthpack"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectile_healthpack {
+	"spawnclass"				"idMoveableItem"
+
+
+	"model"						"models/items/healthpack/healthpack_world.lwo"
+
+	"mins"						"-2 -2 -3.5"
+	"maxs"						"2 2 3.5"
+
+	"snd_acquire"				"sounds/tools/healthpack/pickup"
+
+	"maxVisDist"				"2048"
+
+	"pck_items"					"weapons/misc/healthpack"
+	"life_time"					"30000"
+	"wait_time"					"0.2"
+
+	"scriptobject"				"healthpack_qwta"
+	"health"					"0"
+	"angular_velocity"			"0 0 0"
+	"speed"						"400"
+	"linear_friction"			"1"
+	"angular_friction"			"1"
+	"contact_friction"			"1"
+	"bouncyness"				"0.1"
+	"density"					"0.1"
+	"buoyancy"					"0.05"
+
+	"ability_ignore"			"medic"
+	
+	"is_health"					"1"
+
+	"require_pickup"			"same_team == true"
+
+	"prof_pickup"				"pro_medic_heal"
+
+	"text_pickup"				"game/items/pickup/health"
+
+	"fx_splash"					"effects/player/splash"	
+}
+
+itemPackageDef weapons/misc/healthpack {
+	consumable					health					25
+}
+
+#include "templates/tooltips.include"
+
+toolTip healthpack_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/healthpack_1"
+}
+
+toolTip healthpack_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_drop_item"
+}
+
+toolTip healthpack_need_charge {
+	alwaysPlay
+	length 2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}

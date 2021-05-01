@@ -1,0 +1,11 @@
+// str_qwta_docs_00000001
+
+/*
+=================
+ Documentation
+=================
+*/
+
+locString guis/limbo/qwtainfo/documentation {
+	text "#str_qwta_docs_00000001"
+}

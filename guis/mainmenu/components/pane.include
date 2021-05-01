@@ -1,0 +1,43 @@
+
+#ifndef __component_pane__
+#define __component_pane__
+
+
+$template _pane_is_active( NameParm ) 
+	icompare( gui.activePane, #NameParm ) == true
+$endtemplate
+
+$template _pane( NameParm )
+	windowDef pane##NameParm {	
+		//_tabstop_container
+		_fadable
+		
+		properties {
+			rect 	rect = PADDING, ( rect.h * -1 ) + offset, BAR_WIDTH, $evalint( BUTTON_HEIGHT * 2 );
+			color 	colorMultiplier = 1,1,1,0;	
+			float	offset = 0;
+			float	fadeOutTime = 300;
+			float	fadeInTime = 300;
+		}		
+		events {
+			onPropertyChanged "gui.activePane" {
+				if( _pane_is_active( NameParm ) ) {
+					_fadein
+					allowEvents = gui.modalDialogActive == false;
+					allowChildEvents = gui.modalDialogActive == false;
+					offset = transition( 0, $evalfloat( PADDING * 2 ) + rect.h, 300, "0,0.5" );
+				} else {
+					_fadeout
+					allowEvents = false;
+					allowChildEvents = false;
+					offset = transition( offset, 0, 300, "0.2,1" );
+				}
+			}
+		}
+$endtemplate
+
+$template _end_pane
+	}
+$endtemplate
+
+#endif // !__component_pane__

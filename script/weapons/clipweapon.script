@@ -1,0 +1,1125 @@
+/*
+===============================================================================
+
+weapon_clip
+
+ This is a base class for weapons that use ammo from clips with a finite number
+ of bullets
+
+===============================================================================
+*/
+
+object weapon_clip : weapon_base {
+
+	void		preinit();
+	void		init();
+	void		destroy();
+	void		Raise();
+	void		Lower();
+
+	//
+	// General stuff
+	//
+	void		Idle();
+	void		IdleInit();
+	void		IdleClipWeapon();
+
+	boolean		DisableSpread();
+
+	boolean		hasIronSights;
+	boolean		hasIronSightsLock;
+	boolean		hasTargetLock;
+	boolean		hasScope;
+	boolean		hasScopeSway;
+	boolean		hasScopeZoom;
+	boolean		hasScopeLock;
+	boolean		hasEndFireAnim;
+	boolean		usesStroyent;
+	boolean		hasHeat;
+	boolean		infiniteAmmo;
+
+	boolean		localScopeEffectsActive;	// Effects should be active, if this is the local view
+	boolean		localScopeEffectsEnabled;	// Effects are actually active
+
+	float		burstCount;
+
+	//
+	// Firing stuff
+	//
+	boolean		CanFire() { return true; }
+	void		DoFire();
+	void		FireBurst( float maxBurst );
+	void		FireCommon();
+	void		FireAuto();
+	void		FireSingle();
+	void		EndFire();
+	void		PlayBrassSound();
+	void		StopBrassSound();
+	void		PlayFireAnim();
+
+	boolean		AllowSprint();
+	void		PlayLeaveSprintAnim( string newState, float blend );
+
+	float		refireTime;
+	float		fireRateSingle;
+	float		fireRateAuto;
+	boolean		playingBrassSound;
+	boolean		playingFireAnim;
+
+	//
+	// Reloading stuff
+	//
+	boolean		CanReload();
+	boolean		NeedsReload();
+	void		Reload();
+	float		DoReload( boolean wasScoped );
+
+	void		BeginFireSingleReloadTime();
+	void		EndFireSingleReloadTime();
+
+	boolean		dryfireAttack;
+
+	//
+	// Heat
+	//
+	void		Overheat();
+
+	//
+	// Callbacks
+	//
+	boolean		IsScopeZoomed();
+	float		OnActivate( entity p, float distance );
+	float		OnActivateHeld( entity p, float distance );
+	float		OnUsed( entity p, float distance );
+	boolean		OnWeapNext();
+	boolean		OnWeapPrev();
+	void		Cleanup();
+
+	void		OnIronSightsEnabled();
+	void		OnIronSightsDisabled();
+
+	//
+	// Scope stuff
+	//
+	boolean		CheckScope( boolean upOnly );
+	void		CycleZoom();
+	void		ScopeUp();
+	void		ScopeDown( boolean allowBlocking );
+	void		LoadScopeGUI();
+	void		FreeScopeGUI();
+	void		UpdateScopeScale();
+	void		OnScopeZoomCycle();
+	void		vSetScopeState( boolean up );
+
+	void		RemoveLocalScopeEffects();
+	void		AddLocalScopeEffects();
+
+	void		OnBecomeViewWeapon();
+	void		OnFinishViewWeapon();
+
+	void		ToolTipThread_Raise();
+	void		ToolTipThread_Scope();
+
+	boolean		sniperScopeUp;
+	boolean		zoomKeyDown;
+	boolean		changingScopeStatus;
+	zoomWidget	zoomer;
+	float		scopeGUIHandle;
+	
+	float		maxScopeUpFrames;
+	float		maxScopeDownFrames;
+
+	boolean		scopeThreadDone;
+
+	boolean		showSingleReloadTime;
+	boolean		fireSingleReloadTimeActive;
+}
+
+void weapon_clip::preinit() {
+	showSingleReloadTime = getFloatKeyWithDefault( "show_single_reload_time", 0 ) != 0;
+
+	hasIronSights	= true;
+	hasTargetLock	= false;
+	hasScope		= false;
+	hasScopeSway	= true;
+	hasScopeZoom	= false;
+	hasScopeLock	= false;
+	hasEndFireAnim	= false;
+	usesStroyent	= false;
+	infiniteAmmo	= false;
+
+	maxScopeUpFrames = 999999;
+	maxScopeDownFrames = 999999;
+
+	zoomer			= new zoomWidget;
+	zoomer.Init( self );
+
+	scopeGUIHandle	= -1;
+
+	fireRateAuto	= getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRateAuto	= getFloatKeyWithDefault( "realistic_fire_rate", fireRateAuto );
+	}
+	if ( g_useBaseETQW12Shotguns.getBoolValue() ) {
+		fireRateAuto	= getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRateAuto );
+		if ( g_useRealisticWeapons.getBoolValue() ) {
+			fireRateAuto	= getFloatKeyWithDefault( "realistic_baseETQW12_fire_rate", fireRateAuto );
+		}
+	}
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		fireRateAuto = getFloatKeyWithDefault( "q4hyper_fire_rate", fireRateAuto );
+		if ( g_useRealisticWeapons.getBoolValue() ) {
+			fireRateAuto	= getFloatKeyWithDefault( "realistic_q4hyper_fire_rate", fireRateAuto );
+		}
+	}
+	
+	fireRateSingle	= 0.15f;
+
+	refireTime		= -1.0f;
+}
+
+boolean weapon_clip::DisableSpread() {
+	if ( hasScopeSway ) {
+		if ( myPlayer != $null_entity ) {
+			return myPlayer.IsSniperScopeUp();
+		}
+	}
+	return false;
+}
+
+void weapon_clip::init() {
+	myPlayer.SetSniperScopeUp( false );
+	setBlendFrames( ANIMCHANNEL_ALL, 4 );
+
+	if ( hasTargetLock ) {
+		enableTargetLock( 1.0f );
+	}
+
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+
+	weaponState( "Raise", 0 );
+}
+
+void weapon_clip::destroy() {
+	if ( hasScope ) {
+		ScopeDown( false );
+	}
+
+	RemoveLocalScopeEffects();
+
+	if ( ShouldRunGuis() ) {
+		KillUpdateHeat();
+	}
+
+	delete zoomer;
+
+	StopBrassSound();
+}
+
+void weapon_clip::Raise() {
+	if ( hasHeat && ShouldRunGuis() ) {
+		CreateUpdateHeat();
+	}
+
+	Base_Raise();
+}
+
+void weapon_clip::Lower() {
+	if ( ShouldRunGuis() ) {
+		KillUpdateHeat();
+	}
+
+	Cleanup();
+	Base_Lower();
+}
+
+/*
+=====================================================================
+
+General stuff
+
+=====================================================================
+*/
+void weapon_clip::Idle() {
+	IdleInit();
+	while ( true ) {
+		IdleClipWeapon();
+		sys.waitFrame();
+	}
+}
+
+void weapon_clip::IdleInit() {
+	weaponReady();
+	
+	PlayIdleAnim();
+
+	playingFireAnim = false;
+	altFireDown = WEAPON_ALTFIRE;
+}
+
+void weapon_clip::IdleClipWeapon() {
+	if ( !myPlayer.IsSniperScopeUp() ) {
+		// if its not already playing the idle effect it'll start playing it
+		StartIdleEffect();
+	}
+	
+	boolean bComingUp = false;
+
+	float time = sys.getTime();
+
+	if ( hasIronSights ) {
+		CheckIronSights();
+	} else if ( hasScope ) {
+		bComingUp = CheckScope( false );
+	}
+
+	if ( WEAPON_LOWERWEAPON && !playingFireAnim ) { // Don't believe !playingFireAnim is necessary, but just in case, for the sniper-reload-skip bug. Doesn't seem to hurt anything. -- Azuvector
+		StopIdleEffect();
+		weaponState( "Lower", 4 );
+	}
+	if ( WEAPON_RELOAD && CanReload() ) {
+		StopIdleEffect();
+		weaponState( "Reload", 4 );
+	}
+
+	if ( WEAPON_ATTACK ) {
+		myPlayer.disableSprint( 1.f );
+
+		if ( CanFire() && !NeedsReload() ) {
+			dryfireAttack = false;
+			if ( time >= refireTime && !changingScopeStatus && !bComingUp ) { // !bComingUp is the fix for the sniper-reload-skip bug. -- Azuvector
+				DoFire();
+				mainFireDown = true;
+			}
+		} else {
+			if ( !dryfireAttack ) {
+				startSound( "snd_dryfire", SND_WEAPON_DRYFIRE );
+				dryfireAttack = true;
+			}
+			if ( CanReload() ) {
+				StopIdleEffect();
+				weaponState( "Reload", 4 );
+			}
+		}
+	} else {
+		if ( myPlayer.getButton( PK_ATTACK ) ) {
+			if ( !dryfireAttack ) {
+				startSound( "snd_dryfire", SND_WEAPON_DRYFIRE );
+				dryfireAttack = true;
+			}
+		} else {
+			dryfireAttack = false;
+		}
+		burstCount = 0;
+		mainFireDown = false;
+
+		if ( AllowSprint() ) {
+			myPlayer.disableSprint( 0.f );
+
+			if ( myPlayer.AI_SPRINT ) {
+				if ( hasScope ) {
+					ScopeDown( true );
+				}
+				StopIdleEffect();
+				weaponState( "Sprint", 4 );
+			}
+		} else {
+			myPlayer.disableSprint( 1.f );
+		}
+	}
+
+	if ( hasScope && hasScopeZoom ) {
+		if ( myPlayer.getButton( PK_ACTIVATE ) ) {
+			if ( !zoomKeyDown ) {
+				zoomKeyDown = true;
+				CycleZoom();
+			}
+		} else {
+			zoomKeyDown = false;
+		}
+	}
+
+	if ( !sys.isClient() ) {
+		if ( IsOverheated() ) {
+			StopIdleEffect();
+			weaponState( "Overheat", 4 );
+		}
+	}
+
+
+	if ( time > refireTime && refireTime != -1.0f ) {
+		EndFire();
+		refireTime = -1.0f;
+	}
+
+	if ( playingFireAnim && refireTime == -1.0f ) {
+		if ( animDone( ANIMCHANNEL_ALL, 0 ) ) {
+			PlayIdleAnim();
+			playingFireAnim = false;
+		}
+	}
+	
+	UpdateCharge();
+}
+
+/*
+=====================================================================
+
+Firing functions
+
+=====================================================================
+*/
+
+void weapon_clip::DoFire() {
+	if ( myPlayer.IsSniperScopeUp() ) {
+		if ( !mainFireDown ) {
+			FireSingle();
+		}
+	} else {
+		FireAuto();
+	}
+}
+
+void weapon_clip::PlayFireAnim() {
+	if ( ironSightsEnabled || myPlayer.IsSniperScopeUp() ) {
+		playAnim( ANIMCHANNEL_ALL, "fire_zoom" );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "fire" );
+	}
+}
+
+void weapon_clip::FireBurst( float maxBurst ) {
+	if ( burstCount >= maxBurst ) {
+		return;
+	}
+
+	FireAuto();
+}
+
+void weapon_clip::FireCommon() {
+	PlayFireEffect();
+	PlayFireSound();
+	PlayBrassSound();
+	PlayFireAnim();
+
+	burstCount++;
+	playingFireAnim = true;
+	launchProjectiles( numProjectiles, 0, getCurrentSpread(), 0, 1, 1 );
+	increaseSpread();
+
+	if ( !infiniteAmmo ) {
+		if ( !usesStroyent ) {
+			UseAmmo( 0 );
+			AmmoCheckClip( 0 );
+		} else {
+			UseAmmo_Stroyent( 0 );
+			AmmoCheck( 0 );
+		}
+	}
+
+	if ( hasHeat ) {
+		AddHeat();
+	}
+}
+
+void weapon_clip::FireAuto() {
+	FireCommon();
+
+	refireTime = sys.getTime() + fireRateAuto;
+}
+
+void weapon_clip::FireSingle() {
+	FireCommon();
+
+	playEffect( "fx_tracer", "muzzle", 0 );
+
+	refireTime = sys.getTime() + fireRateSingle;
+	
+	if ( showSingleReloadTime ) {
+		BeginFireSingleReloadTime();
+	}
+}
+
+void weapon_clip::EndFire() {
+	StopBrassSound();
+	resetTracerCounter();
+	
+	if ( fireSingleReloadTimeActive ) {
+		EndFireSingleReloadTime();
+	}
+
+	if ( hasEndFireAnim ) {
+		if ( !ironSightsEnabled ) {
+			playAnim( ANIMCHANNEL_ALL, "fire_end" );
+			waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+			playingFireAnim = true;
+		}
+	}
+}
+
+void weapon_clip::PlayBrassSound() {
+	if ( !playingBrassSound ) {
+		if ( sys.getLocalPlayer() == myPlayer ) {
+			playingBrassSound = true;
+			startSound( "snd_brass_loop", SND_WEAPON_BRASS );
+		}
+	}
+}
+
+void weapon_clip::StopBrassSound() {
+	if ( playingBrassSound ) {
+		playingBrassSound = false;
+		startSound( "snd_brass_stop", SND_WEAPON_BRASS );
+	}
+}
+
+/*
+=====================================================================
+
+Reloading functions
+
+=====================================================================
+*/
+
+boolean weapon_clip::CanReload() {
+	if ( !usesStroyent && !infiniteAmmo ) {
+		if ( ( ammoAvailable( 0 ) > ammoInClip( 0 ) ) && ( ammoInClip( 0 ) < clipSize( 0 ) ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+boolean weapon_clip::NeedsReload() {
+	if ( !infiniteAmmo ) {
+		if ( !usesStroyent ) {
+			if ( ammoInClip( 0 ) <= 0 ) {
+				return true;
+			}
+		} else {
+			if ( ammoAvailable( 0 ) <= 0 ) {
+				return true;
+			}
+		}
+	}
+
+	return false;
+}
+
+void weapon_clip::Reload() {
+	myPlayer.disableSprint( 1.f );
+
+	StopBrassSound();
+
+	Base_BeginReload();
+
+	boolean wasEnabled = false;
+	float lastZoomState;
+	if ( hasIronSights ) {
+		wasEnabled = wantsIronSights;
+		if ( wasEnabled ) {
+			DisableIronSights();
+			waitUntil( !ironSightsThreadActive );
+		}
+	} else if ( hasScope ) {
+		wasEnabled = sniperScopeUp;
+		if ( wasEnabled ) {
+			lastZoomState = zoomer.GetZoomState();
+			ScopeDown( true );
+		}
+	}
+
+	float stayEnabled = DoReload( wasEnabled );
+
+	if ( stayEnabled != 0.0f ) {
+		if ( hasIronSights ) {
+			EnableIronSights();
+			waitUntil( !ironSightsThreadActive );
+		} else if ( hasScope ) {
+			ScopeUp();
+			zoomer.Zoom( lastZoomState );
+			UpdateScopeScale();
+		}
+	}
+
+	Base_EndReload();
+	weaponState( "Idle", 4 );
+}
+
+float weapon_clip::DoReload( boolean wasScoped ) {
+	weaponReloading();
+	playAnim( ANIMCHANNEL_ALL, "reload" );
+
+	wasScoped = false; // disabled for now
+
+	boolean altKeyDown;
+	float stayEnabled = wasScoped;
+	while ( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+		sys.waitFrame();
+		
+		if ( WEAPON_HIDE ) {
+			Base_EndReload();
+			weaponState( "Idle", 4 );			
+		}
+
+		if ( WEAPON_LOWERWEAPON ) {
+			Base_EndReload();
+			weaponState( "Lower", 4 );
+		}
+
+		if ( WEAPON_ALTFIRE ) {
+			if ( !altKeyDown ) {
+				altKeyDown = true;
+				stayEnabled = 1 - stayEnabled;
+			}
+		} else {
+			altKeyDown = false;
+		}
+	}
+
+	addToClip( 0, clipSize( 0 ) );
+
+	return stayEnabled;
+}
+
+void weapon_clip::BeginFireSingleReloadTime() {
+	if ( ShouldRunGuis() ) {
+		if ( fireSingleReloadTimeActive ) {
+			EndFireSingleReloadTime();
+		}
+
+		fireSingleReloadTimeActive = true;
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", fireRateSingle );
+	}
+}
+
+void weapon_clip::EndFireSingleReloadTime() {
+	if ( ShouldRunGuis() ) {
+		fireSingleReloadTimeActive = false;
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
+	}
+}
+
+/*
+=====================================================================
+
+Heat
+
+=====================================================================
+*/
+
+void weapon_clip::Overheat() {
+	resetTracerCounter();
+
+	boolean wasEnabled = false;
+	float lastZoomState;
+	if ( hasIronSights ) {
+		wasEnabled = wantsIronSights;
+		if ( wasEnabled ) {
+			DisableIronSights();
+			waitUntil( !ironSightsThreadActive );
+		}
+	} else if ( hasScope ) {
+		wasEnabled = sniperScopeUp;
+		if ( wasEnabled ) {
+			lastZoomState = zoomer.GetZoomState();
+			ScopeDown( true );
+		}
+	}
+
+	weaponReloading();
+	StartCooling();
+
+	if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+		entity worldModel = getWorldModel( 0 ); // FIXME
+		worldModel.playEffect( "fx_overheat_world", "muzzle", 0.0f );
+	}
+
+	playAnim( ANIMCHANNEL_ALL, "overheat" );
+	boolean altKeyDown;
+	float stayEnabled = false;//wasEnabled;
+	while ( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+		if ( WEAPON_ALTFIRE ) {
+			if ( !altKeyDown ) {
+				altKeyDown = true;
+				stayEnabled = 1 - stayEnabled;
+			}
+		} else {
+			altKeyDown = false;
+		}
+
+		sys.waitFrame();
+	}
+
+	FinishCooling();
+
+	if ( stayEnabled != 0.0f ) {
+		if ( hasIronSights ) {
+			EnableIronSights();
+			waitUntil( !ironSightsThreadActive );
+		} else if ( hasScope ) {
+			ScopeUp();
+			zoomer.Zoom( lastZoomState );
+			UpdateScopeScale();
+		}
+	}
+
+	weaponState( "Idle", 4 );
+}
+
+
+/*
+=====================================================================
+
+Callbacks
+
+=====================================================================
+*/
+boolean weapon_clip::IsScopeZoomed() {
+	if ( hasScope && hasScopeZoom && ( myPlayer.IsSniperScopeUp() ) && zoomer.IsEnabled() ) {
+		return true;
+	}
+	return false;
+}
+
+float weapon_clip::OnActivate( entity p, float distance ) {
+	return IsScopeZoomed();
+}
+
+float weapon_clip::OnActivateHeld( entity p, float distance ) {
+	return IsScopeZoomed();
+}
+
+float weapon_clip::OnUsed( entity p, float distance ) {
+	return IsScopeZoomed();
+}
+
+boolean weapon_clip::OnWeapNext() {
+	if ( IsScopeZoomed() ) {
+		if ( !zoomer.IsFullyZoomedOut() ) {
+			startSound( "snd_zoomout", SND_WEAPON_MODE );
+		}
+
+		zoomer.ZoomOut();
+		UpdateScopeScale();
+		return true;
+	}
+
+	return false;
+}
+
+boolean weapon_clip::OnWeapPrev() {
+	if ( IsScopeZoomed() ) {
+		if ( !zoomer.IsFullyZoomedIn() ) {
+			startSound( "snd_zoomin", SND_WEAPON_MODE );
+		}
+		
+		zoomer.ZoomIn();
+		UpdateScopeScale();
+		return true;
+	}
+
+	return false;
+}
+
+void weapon_clip::Cleanup() {
+	if ( hasIronSights ) {
+		if ( ironSightsThreadActive || ironSightsEnabled ) {
+			DisableIronSights_Private( false );
+		}
+		StopIronSightsThread();
+		ironSightsThreadActive = false;
+	} else if ( hasScope ) {
+		ScopeDown( false );
+	}
+
+	StopBrassSound();
+}
+
+
+/*
+=====================================================================
+
+Zoom functions
+
+=====================================================================
+*/
+
+void weapon_clip::vSetScopeState( boolean up ) {
+	if ( up ) {
+		thread ScopeUp();
+	} else {
+		thread ScopeDown( true );
+	}
+	
+	UpdateCrosshair();
+}
+
+boolean weapon_clip::CheckScope( boolean upOnly ) {
+	boolean comingup = false;
+	
+	boolean isSprinting = false;
+	vector move = myPlayer.getMove();
+	if ( move_x > 0.01f ) {
+		if ( myPlayer.getButton( PK_SPRINT ) ) {
+			isSprinting = true;
+		}
+	}	
+	
+	if ( WEAPON_ALTFIRE ) {
+		if ( !altFireDown  ) {
+
+			// toggle the scope
+			if ( !sys.isClient() ) {
+				if ( !upOnly && myPlayer.IsSniperScopeUp() && !isSprinting ) {
+					thread ScopeDown( true );
+				} else {
+					thread ScopeUp();
+					comingup = true;
+				}
+			}
+
+			altFireDown = true;
+		}
+	} else {
+		altFireDown = false;
+	}
+	
+	// scope can be toggled off by sprinting
+	if ( !upOnly ) {
+		if ( isSprinting ) {
+			thread ScopeDown( true );
+		}
+	}
+		
+	return comingup;
+}
+
+void weapon_clip::CycleZoom() {
+	if ( !myPlayer.IsSniperScopeUp() || !zoomer.IsEnabled() ) {
+		return;
+	}
+
+	sys.assert( zoomer.enabled );
+
+	startSound( "snd_zoomin", SND_WEAPON_MODE );
+
+	zoomer.Cycle();
+
+	UpdateScopeScale();
+
+	OnScopeZoomCycle();
+}
+
+void weapon_clip::LoadScopeGUI() {
+	FreeScopeGUI();
+	
+	string key = getKey( "gui_sniper_scope" );
+	if( sys.strLength( key ) > 0 ) {
+		scopeGUIHandle = sys.allocHudModule( getKey( "gui_sniper_scope" ), getFloatKeyWithDefault( "hud_sort", 0 ), false );
+	}
+}
+
+void weapon_clip::FreeScopeGUI() {
+	if ( scopeGUIHandle != -1 ) {
+		sys.freeHudModule( scopeGUIHandle );
+		scopeGUIHandle = -1;
+	}
+}
+
+void weapon_clip::UpdateScopeScale() {
+	if ( scopeGUIHandle == -1 ) {
+		return;
+	}
+
+	float state = zoomer.GetZoomState();
+
+	sys.setGUIFloat( scopeGUIHandle, "zoomState", state );
+
+	if ( state == 0 ) {
+		sys.setGUIFloat( scopeGUIHandle, "zoomCycleTransition", -( zoomer.GetNumZoomStates() - 1 ) );
+	} else {
+		sys.setGUIFloat( scopeGUIHandle, "zoomCycleTransition", 1 );
+	}
+}
+
+void weapon_clip::OnScopeZoomCycle() {
+	if ( scopeGUIHandle == -1 ) {
+		return;
+	}
+
+	sys.guiPostNamedEvent( scopeGUIHandle, "", "onZoomCycle" );
+}
+
+void weapon_clip::OnBecomeViewWeapon() {
+	if ( localScopeEffectsActive ) {
+		AddLocalScopeEffects();
+	}
+	if ( localIronSightsEffectsActive ) {
+		AddLocalIronSightsEffects();
+	}
+	if ( hasHeat && ShouldRunGuis() ) {
+		CreateUpdateHeat();
+	}
+	UpdateCrosshair();
+}
+
+void weapon_clip::OnFinishViewWeapon() {
+	KillUpdateHeat();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+
+	RemoveLocalScopeEffects();
+	RemoveLocalIronSightsEffects();
+}
+
+void weapon_clip::AddLocalScopeEffects() {
+	if ( localScopeEffectsEnabled ) {
+		return;
+	}
+	
+	if ( myPlayer == $null_entity ) {
+		return;
+	}
+
+	if ( myPlayer == sys.getLocalViewPlayer() ) {
+		localScopeEffectsEnabled = true;
+	
+		HideSights();
+		string modelKey = getKey( "def_scopemodel" );
+		if ( modelKey != "" ) {
+			myPlayer.enableClientModelSights( modelKey );
+		}
+		LoadScopeGUI();
+	}
+}
+
+void weapon_clip::ScopeUp() {
+	while ( changingScopeStatus ) {
+		sys.waitFrame();
+	}
+
+	if ( sniperScopeUp ) {
+		UpdateCrosshair();
+		UpdateSpreadModifiers();
+		return;
+	}
+
+	changingScopeStatus = true;
+	sniperScopeUp = true;
+	myPlayer.SetSniperScopeUp( true );
+
+	StopIdleEffect();
+	playAnim( ANIMCHANNEL_ALL, "zoomin" );
+	sys.waitFrame();
+	
+	float scopeUpFrames = 0;
+	while ( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+		sys.waitFrame();
+		scopeUpFrames++;
+		if ( scopeUpFrames == maxScopeUpFrames - 1 ) {
+			break;
+		}
+
+		// there is an off chance that during this wait, a non-blocking ScopeDown gets called,
+		// which will have hijacked the purpose of this since it was called AFTER ScopeUp
+		// the end result desired is for the scope to be down anyway, so we might as well abort out of here
+		if ( !sniperScopeUp ) {
+			return;
+		}		
+	}
+
+	setBlendFrames( ANIMCHANNEL_ALL, 4 );
+	playCycle( ANIMCHANNEL_ALL, "idle_zoom" );
+	myPlayer.setSpeedModifier( speedMod * fovSpeed );
+
+	hide();
+
+	localScopeEffectsActive = true;
+	AddLocalScopeEffects();
+
+	UpdateScopeScale();
+
+	zoomer.Enable();
+	startSound( "snd_scopeup", SND_WEAPON_SIG );
+	myPlayer.setSniperAOR( 1.f );
+
+	if ( hasScopeSway ) {
+		enableSway( 1.f );
+	}
+
+	UpdateSpreadModifiers();
+
+	changingScopeStatus = false;
+
+	if ( hasScopeLock ) {
+		enableTargetLock( 1 );
+	}
+
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Scope();
+	}
+	
+	UpdateCrosshair();
+}
+
+void weapon_clip::RemoveLocalScopeEffects() {
+	if ( !localScopeEffectsEnabled ) {
+		return;
+	}
+	localScopeEffectsEnabled = false;
+
+	ShowSights();
+	myPlayer.disableClientModelSights();
+	FreeScopeGUI();
+}
+
+void weapon_clip::ScopeDown( boolean allowBlocking ) {
+	if ( allowBlocking ) {
+		while ( changingScopeStatus ) {
+			sys.waitFrame();
+		}
+	}
+
+	if ( !sniperScopeUp ) {
+		UpdateCrosshair();
+		UpdateSpreadModifiers();
+		return;
+	}
+
+	if ( !hasTargetLock ) {
+		enableTargetLock( 0 );
+	}
+
+	changingScopeStatus = true;
+
+	sniperScopeUp = false;
+	if ( myPlayer != $null_entity ) {
+		myPlayer.SetSniperScopeUp( false );
+		myPlayer.setSpeedModifier( speedMod );
+	}
+
+	localScopeEffectsActive = false;
+	RemoveLocalScopeEffects();
+
+	show();
+
+	zoomer.Disable();
+	startSound( "snd_scopedown", SND_WEAPON_SIG );
+
+	if ( allowBlocking ) {
+		playAnim( ANIMCHANNEL_ALL, "zoomout" );
+		
+		float scopeDownFrames = 0;
+		while ( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+			sys.waitFrame();
+			scopeDownFrames++;
+			if ( scopeDownFrames == maxScopeDownFrames - 1 ) {
+				break;
+			}
+		}
+	}
+
+	setBlendFrames( ANIMCHANNEL_ALL, 4 );
+	PlayIdleAnim();
+
+	if ( myPlayer != $null_entity ) {
+		myPlayer.setSniperAOR( 0.f );
+	}
+
+	if ( hasScopeSway ) {
+		enableSway( 0.f );
+	}
+
+	UpdateSpreadModifiers();
+
+	changingScopeStatus = false;
+	
+	UpdateCrosshair();
+}
+
+void weapon_clip::OnIronSightsDisabled() {
+	if ( !hasTargetLock ) {
+		enableTargetLock( 0 );
+	}
+	UpdateCrosshair();
+}
+
+void weapon_clip::OnIronSightsEnabled() {
+	if ( hasIronSightsLock ) {
+		enableTargetLock( 1 );
+	}
+	UpdateCrosshair();
+}
+
+void weapon_clip::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() + 0.2f );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 0.5f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+
+	if ( hasIronSights ) {
+		WAIT_FOR_TOOLTIP;
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_ironsights_1" ) ) );
+
+		WAIT_FOR_TOOLTIP;
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_ironsights_2" ) ) );
+	}
+
+	if ( hasScope ) {
+		WAIT_FOR_TOOLTIP;
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_scope" ) ) );
+	}
+
+	if ( hasHeat ) {
+		WAIT_FOR_TOOLTIP;
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_heat" ) ) );
+	} else {
+		WAIT_FOR_TOOLTIP;
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_reload" ) ) );
+	}
+}
+
+void weapon_clip::ToolTipThread_Scope() {
+	if ( scopeThreadDone ) {
+		return;
+	}
+	scopeThreadDone = true;
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_scope_up_1" ) ) );
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_scope_up_2" ) ) );
+}
+
+boolean weapon_clip::AllowSprint() {
+	return !myPlayer.IsSniperScopeUp() && sys.getTime() > refireTime;
+}
+
+void weapon_clip::PlayLeaveSprintAnim( string newState, float blend ) {
+	if ( hasWeaponAnim( "leave_sprint" ) ) {
+		playAnim( ANIMCHANNEL_ALL, "leave_sprint" );
+		while( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+			sys.waitFrame();
+			if ( hasScope ) {
+				if ( newState == "Idle" ) {
+					// scoped weapons may early exit the leave sprint animation by using scope
+					if ( CheckScope( true ) ) {
+						weaponState( newState, blend );
+					}
+				}
+			}
+		}
+	}
+}

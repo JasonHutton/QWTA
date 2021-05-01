@@ -1,0 +1,285 @@
+
+object vehicle_weapon_gatling : vehicle_weapon_base {
+	void			preinit();
+	void			init();
+	void			Fire();
+	void			SpinBarrels();
+	void			IdleEmpty();
+	void			OnSetPlayer( entity p );
+
+	float			projectileIndex;
+	float			clientProjectileIndex;
+
+	float			jointHandle;
+	float			spinHandle;
+
+	float			fireRate;
+	float			triggerDelay;
+	float			spread;
+	float			nextFireTime;
+
+	float			spinSpeed;
+	float			spinStop;
+	float			spinFire;
+
+	entity			vehicle;
+
+	float			localSurface;
+	
+	boolean			playingFireSound;
+	boolean			spinBarrelsActive;
+	boolean			brassSoundActive;
+	boolean			wantsFire;
+
+	string			muzzleFlashFX;
+	string			fireStartSound;
+	string			fireStopSound;
+	string			barrelLoopSound;
+	string			barrelLoopLowSound;
+	string			brassStartSound;
+	string			brassStopSound;
+	
+	float			barrelSoundChannel;
+	float			barrelLowSoundChannel;
+	float			fireSoundChannel;
+	float			brassSoundChannel;
+
+	float			showTracer;
+}
+
+void vehicle_weapon_gatling::preinit() {
+	projectileIndex			= GetEntityDef( getKey( "def_projectile" ) );
+	clientProjectileIndex	= GetEntityDef( getKey( "client_projectile" ) );
+
+	vehicle					= getVehicle();
+
+	jointHandle				= vehicle.getJointHandle( getKey( "muzzle" ) );
+	spinHandle				= vehicle.getJointHandle( getKey( "spin_joint" ) );
+
+	muzzleFlashFX			= getKey( "muzzle_flash" );
+	fireStartSound			= getKey( "fire_start_sound" );
+	fireStopSound			= getKey( "fire_stop_sound" );
+	barrelLoopSound			= getKey( "barrel_loop_sound" );
+	barrelLoopLowSound		= getKey( "barrel_loop_low_sound" );
+	brassStartSound			= getKey( "brass_start_sound" );
+	brassStopSound			= getKey( "brass_stop_sound" );
+
+	barrelSoundChannel		= getFloatKey( "sound_channel_barrel" );
+	if ( barrelSoundChannel == 0 ) {
+		barrelSoundChannel = SND_WEAPON_MECH;
+	}
+	barrelLowSoundChannel	= getFloatKey( "sound_channel_barrel_low" );
+	if ( barrelLowSoundChannel == 0 ) {
+		barrelLowSoundChannel = SND_WEAPON_MOVE;
+	}
+	fireSoundChannel		= getFloatKey( "sound_channel_fire" );
+	if ( fireSoundChannel == 0 ) {
+		fireSoundChannel = SND_WEAPON_FIRE;
+	}
+	brassSoundChannel		= getFloatKey( "sound_channel_brass" );
+	if ( brassSoundChannel == 0 ) {
+		brassSoundChannel = SND_WEAPON_BRASS;
+	}
+	
+	fireRate				= getFloatKey( "fire_rate" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate			= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	triggerDelay			= getFloatKey( "trigger_delay" );
+	spread					= getFloatKey( "spread" );
+
+	spinStop 				= getFloatKey( "spin_stop" );
+	spinFire 				= getFloatKey( "spin_fire" );
+
+	localSurface			= -1;
+	
+	string localSurfaceName	= getKey( "surface_name" );
+	if ( localSurfaceName != "" ) {
+		localSurface = vehicle.getSurfaceId( localSurfaceName );
+	}
+
+	showTracer				= TRACER_CHANCE;
+}
+
+void vehicle_weapon_gatling::init() {
+}
+
+void vehicle_weapon_gatling::IdleEmpty() {
+	if ( playingFireSound ) {
+		playingFireSound = false;
+		vehicle.startSound( fireStopSound, fireSoundChannel );
+	}
+	if ( brassSoundActive ) {
+		brassSoundActive = false;
+		vehicle.startSound( brassStopSound, brassSoundChannel );
+	}
+}
+
+void vehicle_weapon_gatling::Fire() {
+	boolean showMuzzle;
+
+	playingFireSound = false;
+
+	if ( !spinBarrelsActive ) {
+		thread SpinBarrels();
+	}
+	
+	float startFiringTime = sys.getTime() + triggerDelay;
+	
+	wantsFire = true;
+	while ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && CanRemoveCharge() && CanRemoveAmmo() ) {
+
+		if ( spinSpeed < spinFire ) {
+			sys.waitFrame();
+			continue;
+		}
+		
+		user.proxyFiringWeapon = true;
+	
+		showMuzzle = true;
+		if ( localSurface != -1 ) {
+			if ( vehicle.isSurfaceHidden( localSurface ) ) {
+				showMuzzle = false;
+				showTracer = TRACER_OFF;
+			} else {
+				showTracer = TRACER_CHANCE;
+			}
+		}
+
+		UpdateCharge();
+		UpdateAmmo();
+
+		if ( !playingFireSound ) {
+			playingFireSound = true;
+			vehicle.startSound( fireStartSound, fireSoundChannel );
+			if ( user == sys.getLocalViewPlayer() ) {
+				vehicle.startSound( brassStartSound, brassSoundChannel );
+				brassSoundActive = true;
+			}
+		}
+
+		if ( sys.getTime() >= nextFireTime ) {
+			vehicle.launchBullet( user, vehicle, projectileIndex, spread, vehicle.getJointPos( jointHandle ), vehicle.getJointAxis( jointHandle, 0 ), showTracer, true );
+
+			nextFireTime = sys.getTime() + fireRate;
+
+			RemoveCharge();
+			RemoveAmmo();
+		}
+
+		if ( showMuzzle ) {
+			vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+		}
+
+		sys.waitFrame();
+	}
+
+	wantsFire = false;
+	
+	if ( user != $null_entity ) {
+		user.proxyFiringWeapon = false;
+	}
+
+	if ( playingFireSound ) {
+		playingFireSound = false;
+		vehicle.startSound( fireStopSound, fireSoundChannel );
+	}
+	if ( brassSoundActive ) {
+		brassSoundActive = false;
+		vehicle.startSound( brassStopSound, brassSoundChannel );
+	}
+
+	GoToIdle();
+}
+
+void vehicle_weapon_gatling::OnSetPlayer( entity p ) { 
+	if ( p != user ) {
+		if ( user != $null_entity ) {
+			user.gatlingSpeed = 0.0f;
+		}
+
+		wantsFire = false;
+	}
+	
+	OnSetPlayer_Base( p );
+}
+
+void vehicle_weapon_gatling::SpinBarrels() {
+	spinBarrelsActive = true;
+
+	vector ang;
+	
+	vehicle.startSound( barrelLoopLowSound, barrelLowSoundChannel );
+	vehicle.fadeSound( barrelLowSoundChannel, -20.0f, 0.0f );
+	
+	vehicle.startSound( barrelLoopSound, barrelSoundChannel );
+	vehicle.fadeSound( barrelSoundChannel, -20.0f, 0.0f );
+
+	// start & end pitch for the main loop sound
+	float basePitch		= 0.4f;
+	float maxPitch		= 0.8f;
+	
+	// start & end pitch for the low loop sound
+	float basePitchLow	= 1.0f;
+	float maxPitchLow	= 1.5f;
+	
+	float pitchRange	= maxPitch - basePitch;
+	float pitchRangeLow	= maxPitchLow - basePitchLow;
+
+	while ( true ) {
+		sys.waitFrame();
+
+		if ( wantsFire ) {
+			if ( spinSpeed < spinFire ) {
+				if ( spinSpeed < spinStop ) {
+					spinSpeed = spinStop;
+				}
+				spinSpeed = spinSpeed + 90.f;
+			} else {
+				spinSpeed = spinFire;
+			}
+		} else {
+			if ( spinSpeed > spinStop ) {
+				spinSpeed = spinSpeed - 30.f;
+			}
+
+			if ( spinSpeed <= spinStop ) {
+				spinSpeed = 0.f;
+			}
+		}
+		
+		if ( user != $null_entity ) {
+			user.gatlingSpeed = spinSpeed;
+		}
+		
+		ang_z += spinSpeed * sys.getFrameTime();
+		vehicle.setJointAngle( spinHandle, JOINTMOD_LOCAL, ang );
+		
+		float fraction = ( spinSpeed - spinStop ) / ( spinFire - spinStop );
+		if ( fraction < 0.0f ) {
+			fraction = 0.0f;
+		}
+		
+		float pitch = fraction * pitchRange + basePitch;
+		vehicle.setChannelPitchShift( barrelSoundChannel, pitch );
+		
+		float pitchLow = fraction * pitchRangeLow + basePitchLow;
+		vehicle.setChannelPitchShift( barrelLowSoundChannel, pitchLow );
+		
+		float volume = sys.sqrt( sys.sin( fraction * 90 ) ) * 20.0f - 20.0f;
+		vehicle.fadeSound( barrelSoundChannel, volume, 0.0f );
+		
+		float volumeLow = sys.sqrt( sys.sin( ( 1.0f - fraction ) * 90 ) ) * 5.0f - 5.0f;
+		vehicle.fadeSound( barrelLowSoundChannel, volumeLow, 0.0f );
+
+		if ( spinSpeed == 0.0f ) {
+			break;
+		}
+	}
+	
+	// fade the sounds out
+	vehicle.fadeSound( barrelSoundChannel, -60.0f, 0.25f );
+	vehicle.fadeSound( barrelLowSoundChannel, -60.0f, 0.25f );
+
+	spinBarrelsActive = false;
+}

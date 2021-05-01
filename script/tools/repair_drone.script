@@ -1,0 +1,1194 @@
+/***********************************************************************
+
+repair_drone.script
+
+***********************************************************************/
+
+// blend times
+#define TOOL_REPAIR_DRONE_IDLE_TO_IDLE		0
+#define TOOL_REPAIR_DRONE_IDLE_TO_LOWER		4
+#define TOOL_REPAIR_DRONE_IDLE_TO_FIRE		1
+#define	TOOL_REPAIR_DRONE_IDLE_TO_RELOAD	4
+#define TOOL_REPAIR_DRONE_RAISE_TO_IDLE		1
+#define TOOL_REPAIR_DRONE_FIRE_TO_IDLE		4
+#define TOOL_REPAIR_DRONE_RELOAD_TO_IDLE	4
+#define	TOOL_REPAIR_DRONE_RELOAD_TO_FIRE	4
+
+#define STATE_SEEK		0
+#define STATE_REPAIR	1
+#define STATE_RETURN	2
+
+/***********************************************************************
+
+class declarations
+
+***********************************************************************/
+
+object repair_drone {
+	void		init();
+	void		destroy();
+
+	void		LookTowards( vector targetOrigin );
+	void		SeekTarget();
+	void		RepairTarget();
+	void		Return();
+
+	void		DoMove( vector end );
+
+	void		OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+	void		OnPostDamage( entity attacker, float oldHealth, float newHealth );
+
+	void		SetEntities( entity target, entity owner );
+	void		SetAction( float action );
+	void		ChangeState( float val );
+
+	void		DoAction();
+
+	void		SoundThread();
+	void		CheckOwner( entity ownerEntity );
+	void		CheckTarget( entity repairTarget );
+	void		SelfDestruct();
+
+	float		OnUpdateCrosshairInfo( entity p );
+	
+	void		syncFields();
+
+	vector		targetSize;
+	float		orbitRadius;
+
+	float		state;
+	boolean		forceState;
+	float		cachedAction;
+
+	float		repairCount;
+	float		repairInterval;
+	float		armInterval;
+	float		constructInterval;
+	float		nextActionTime;
+	float		returnTimeout;
+}
+
+object tool_repair_drone : weapon_base {
+
+	void			preinit();
+	void			init();
+	void			destroy();
+
+	void			Lower();
+	void			Raise();
+	void			Idle();
+	void			IdleEmpty();
+
+	void			ClearDrone();
+	entity			FindDrone();
+
+	void			Attack();
+	boolean			WantsAttack();
+	boolean			AttackValid();
+	boolean			CheckAttack( float mask );
+	boolean			CheckAltAttack();
+
+	void			AltAttack();
+	void			DoAttack( string droneType );
+
+	boolean			ShowTargetLock();
+
+	void			Repair();
+	void			Arm();
+	void			Disarm();
+	void			Construct();
+
+	void			ToolTipThread_Raise();
+	void			ToolTipThread_Deployed();
+
+	void			OwnerDied();
+	
+	float			fireRate;
+	float			repairCount;
+	float			count;
+	float			chargePerDrone;
+	float			meleeDistance;
+
+	entity			cachedEntity;
+	float			cachedAction;
+
+	float			droneClass;
+
+	boolean			disarmCharge;
+	boolean			armCharge;
+	boolean			armNormal;
+	boolean			canRepair;
+	boolean			canConstruct;
+
+	boolean			playingFireSound;
+	boolean			lastAltAttack;
+	
+	float			nextActionFailMessageTime;
+
+	boolean			deployedTipThreadActive;
+
+	float			returnDelay;
+	float			activateDroneTime;
+}
+
+
+/***********************************************************************
+
+repair_drone implementation
+
+***********************************************************************/
+
+void repair_drone::syncFields() {
+	syncBroadcast( "cachedAction" );
+}
+
+void repair_drone::init() {
+	repairCount = getFloatKey( "repair_count" );
+	repairInterval = getFloatKey( "repair_interval" );
+	armInterval = getFloatKey( "arm_interval" );
+	constructInterval = getFloatKey( "construct_interval" );
+	returnTimeout = -1;
+	nextActionTime = 0;
+
+	if ( !sys.isClient() ) {
+		player p = getOwnerEntity();
+		if ( p != $null_entity ) {
+			p.setRepairDroneState( false );
+		}
+	}
+
+	// idle until the target has been sent by the server
+	entity repairTarget = $null_entity;
+	while ( repairTarget == $null_entity ) {
+		repairTarget = getRepairTarget();
+		sys.waitFrame();
+	}
+
+	targetSize = repairTarget.getMaxs() - repairTarget.getMins();
+	if ( repairTarget.vCustomOrbitRadius() ) {
+		orbitRadius = repairTarget.vGetOrbitRadius();
+	} else {
+		vector size = repairTarget.getAbsMaxs() - repairTarget.getAbsMins();
+		orbitRadius = 0.7 * sys.sqrt( size_x * size_x + size_y * size_y );
+	}
+
+	thread SoundThread();
+
+	state = STATE_SEEK;
+	while ( true ) {
+		forceState = false;
+		if ( state == STATE_SEEK ) {
+			SeekTarget();
+		} else if ( state == STATE_REPAIR ) {
+			RepairTarget();
+		} else if ( state == STATE_RETURN ) {
+			Return();
+		}
+	}
+}
+
+void repair_drone::destroy() {
+}
+
+void repair_drone::ChangeState( float val ) {
+	if ( state != val ) {
+		state = val;
+		forceState = true;
+	}
+}
+
+void repair_drone::SelfDestruct() {
+	// TODO: make it explode or something
+	if ( !sys.isClient() ) {
+		player p = getOwnerEntity();
+		if ( p != $null_entity ) {
+			p.setRepairDroneState( true );
+		}
+
+		remove();
+	}
+}
+
+void repair_drone::CheckOwner( entity ownerEntity ) {
+	// die if the owner is dead
+	if ( ownerEntity.getHealth() <= 0 ) {
+		SelfDestruct();
+	}
+
+	float distance = sys.vecLength( getWorldOrigin() - ownerEntity.getWorldOrigin() );
+	if ( distance > getFloatKey( "max_player_die_distance" ) ) {
+		// die if the owner gets REALLY far away
+		SelfDestruct();
+	} else if ( returnTimeout != -1 && sys.getTime() - returnTimeout > 0 ) {
+		// die if we haven't returned to the owner by now
+		SelfDestruct();
+	} else if ( distance > getFloatKey( "max_player_return_distance" ) ) {
+		// return to the owner if its getting too far away
+		ChangeState( STATE_RETURN );
+	}
+}
+
+void repair_drone::CheckTarget( entity repairTarget ) {
+	// return if the target no longer exists
+	if ( repairTarget == $null_entity ) {
+		ChangeState( STATE_RETURN );
+		return;
+	}
+
+	// return if the target is hidden
+	if ( repairTarget.isHidden() && !repairTarget.vRepairDroneIgnoreHidden() ) {
+		ChangeState( STATE_RETURN );
+	}
+}
+
+void repair_drone::LookTowards( vector targetOrigin ) {
+	vector myOrigin = getWorldOrigin();
+
+	// set the angles to look towards the target
+	vector desiredForward = targetOrigin - myOrigin;
+	desiredForward = sys.vecNormalize( desiredForward );
+	vector myForward = getWorldAxis( 0 );
+	vector newForward = myForward * 0.8 + desiredForward * 0.2;
+	newForward = sys.vecNormalize( newForward );
+	vector newAngles = sys.vecToAngles( newForward );
+
+	vector myAngles = getAngles();
+	myAngles_y = newAngles_y;
+	setAngles( myAngles );
+}
+
+void repair_drone::DoMove( vector end ) {
+	setTargetPosition( end, sys.getFrameTime() );
+
+	// calculate how fast it needs to go to be perfect noclip style movement
+	vector desiredVelocity = ( end - getWorldOrigin() ) * ( 1.0f / sys.getFrameTime() );
+	float velLength = sys.vecLength( desiredVelocity );
+	if ( velLength > 400.0f ) {
+		vector direction = desiredVelocity * ( 1 / velLength );
+		desiredVelocity = direction * 400.0f;
+	}
+	
+	// blend that with the current velocity (repair drone motion stuff) 
+	// to get a slightly bobby noclip type movement :)
+	vector myVelocity = getLinearVelocity();
+	setLinearVelocity( desiredVelocity * 0.05f + myVelocity * 0.95f );
+}
+
+
+void repair_drone::SeekTarget() {
+	float timeToTarget = sys.getTime() + 2;
+	float maxMoveSpeed = 320 * sys.getFrameTime();
+	entity repairTarget = getRepairTarget();
+	entity ownerEntity = getOwnerEntity();
+
+	while ( true ) {
+		if ( forceState ) {
+			return;
+		}
+		
+		if ( sys.getFrameTime() > 0 ) {
+
+			CheckOwner( ownerEntity );
+			CheckTarget( repairTarget );
+
+			float now = sys.getTime();
+
+			vector targetOrigin = repairTarget.getWorldOrigin();
+			targetOrigin_z += targetSize_z * 0.5;
+
+			vector myOrigin = getWorldOrigin();
+
+			// find the nearest tangent to the target's sphere
+			vector delta = targetOrigin - myOrigin;
+
+			float deltaLength = sys.vecLength( delta );
+			vector direction;
+			float directionLength;
+
+			// head for a point above the object
+			vector destination = targetOrigin;
+			destination_z += orbitRadius;
+			direction = destination - myOrigin;
+			directionLength = sys.vecLength( direction );
+			if ( directionLength > 1 ) {
+				direction /= directionLength;
+			}
+			if ( deltaLength < orbitRadius * 1.5 ) {
+				ChangeState( STATE_REPAIR );
+			}
+			
+			float moveSpeed = maxMoveSpeed;
+			if ( directionLength < 800.0f ) {
+				float fraction = directionLength / 800.0f;
+				moveSpeed = moveSpeed * fraction;
+			}
+			
+			float timeLeft = timeToTarget - now;
+
+			vector desiredOrigin = myOrigin;
+			if ( deltaLength < orbitRadius * 1.02 && deltaLength > orbitRadius * 0.98 ) {
+				// reached the hemisphere, follow it around to the point above the car
+				// fit the new position onto the hemisphere
+				vector newOrigin = myOrigin + direction * moveSpeed;
+				vector newDelta = targetOrigin - newOrigin;
+				float deltaScale = orbitRadius / sys.vecLength( newDelta );
+				newDelta_x *= deltaScale;
+				newOrigin = targetOrigin - newDelta;
+
+				desiredOrigin = newOrigin;
+			} else if ( deltaLength > orbitRadius ) {
+				desiredOrigin = myOrigin + direction * moveSpeed;
+			} else {
+				// inside the hemisphere! move towards the outside
+				vector awayDirection = sys.vecNormalize( -delta );
+				direction += awayDirection;
+				direction = sys.vecNormalize( direction );
+
+				desiredOrigin = myOrigin + direction * moveSpeed;
+			}
+
+			LookTowards( targetOrigin );
+			
+			DoMove( desiredOrigin );
+		}
+		
+		sys.waitFrame();
+	}
+}
+
+void repair_drone::DoAction() {
+	float now = sys.getTime();
+	if ( nextActionTime > now ) {
+		return;
+	}
+
+	entity repairTarget = getRepairTarget();
+	entity ownerEntity = getOwnerEntity();
+
+	if ( cachedAction == AC_REPAIR ) {
+		repairTarget.vRepair( repairCount, ownerEntity );
+		nextActionTime = now + repairInterval;
+	}
+
+	if ( cachedAction == AC_CONSTRUCT ) {
+		repairTarget.vConstruct( ownerEntity );
+		nextActionTime = now + constructInterval;
+	}
+
+	if ( cachedAction == AC_ARM || cachedAction == AC_DISARM ) {
+		repairTarget.vArm( ownerEntity );
+		nextActionTime = now + armInterval;
+	}
+}
+
+void repair_drone::RepairTarget() {
+	// it has reached its position above the target, ready to start repairing
+	float targetElevation = 30;
+	float targetRotation = 57;
+	float targetTime = 0;
+
+	float elevationSpeed = 0.5;
+	float rotationSpeed = 0.5;
+	entity repairTarget = getRepairTarget();
+	entity ownerEntity = getOwnerEntity();
+	boolean orbitUnderneath = repairTarget.vOrbitUnderneath();
+
+	while( true ) {
+		if ( forceState ) {
+			return;
+		}
+
+		if ( sys.getFrameTime() > 0 ) {
+			CheckOwner( ownerEntity );
+			CheckTarget( repairTarget );
+
+			float now = sys.getTime();
+
+			vector targetOrigin = repairTarget.getWorldOrigin();
+			targetOrigin_z += targetSize_z * 0.5;
+			vector myOrigin = getWorldOrigin();
+			vector delta = myOrigin - targetOrigin;
+			float deltaLength = sys.vecLength( delta );
+			if ( deltaLength > orbitRadius * getFloatKey( "max_repair_scale" ) ) {
+				ChangeState( STATE_SEEK );
+				setEffectOrigins( myOrigin, myOrigin, 0 );
+				return;
+			}
+			delta = sys.vecNormalize( delta );
+
+			// calculate the current elevation and rotation
+			float elevation = sys.asin( delta_z );
+			float rotation = sys.asin( delta_y / sys.cos( elevation ) );
+
+			// find a new place to go to
+			if ( now > targetTime + 2 ) {
+				// find an initial random point to head to
+				targetRotation += sys.random( 20 );
+				targetTime = now + 0.5;
+
+				if ( orbitUnderneath ) {
+					targetElevation = -85;
+				} else {
+					targetElevation = sys.random( 60 ) + 25;
+				}
+
+				// modify the angles so that they'll interpolate better
+				if ( targetElevation > elevation + 180 ) {
+					targetElevation -= 360;
+				} else if ( targetElevation < elevation - 180 ) {
+					elevation -= 360;
+				}
+				if ( targetRotation > rotation + 180 ) {
+					targetRotation -= 360;
+				} else if ( targetRotation < rotation - 180 ) {
+					rotation -= 360;
+				}
+			}
+
+			if ( !orbitUnderneath && elevation < 60 ) {
+				elevation = 60;
+			}
+
+			// move towards the target
+			if ( targetElevation - elevation < 0 ) {
+				elevation -= elevationSpeed;
+			} else {
+				elevation += elevationSpeed;
+			}
+			if ( targetRotation - rotation < 0 ) {
+				rotation -= rotationSpeed;
+			} else {
+				rotation += rotationSpeed;
+			}
+
+			// calculate the new position
+			vector destination;
+			float cosElevation = sys.cos( elevation );
+			destination_x = sys.cos( rotation ) * cosElevation;
+			destination_y = sys.sin( rotation ) * cosElevation;
+			destination_z = sys.sin( elevation );
+			destination *= orbitRadius;
+			destination += targetOrigin;
+
+			// pull it towards the player so it doesn't hide on the other side all the time
+			vector playerDelta = ownerEntity.getWorldOrigin() - myOrigin;
+			playerDelta = sys.vecNormalize( playerDelta );
+			destination += playerDelta * 5;
+
+			LookTowards( targetOrigin );
+
+			DoMove( destination );
+
+			DoAction();
+
+			// check if it still needs to repair this target
+			if ( !repairTarget.vCheckActionCode( ownerEntity, cachedAction ) ) {
+				ChangeState( STATE_RETURN );
+			}
+
+			if ( cachedAction == AC_REPAIR ) {
+				setEffectOrigins( myOrigin, repairTarget.vGetLastRepairOrigin(), 1 );
+			} else {
+				setEffectOrigins( myOrigin, targetOrigin, 1 );
+			}
+		}
+		
+		sys.waitFrame();
+	}
+}
+
+void repair_drone::Return() {
+	// clear effect
+	setEffectOrigins( getOrigin(), getOrigin(), 0 );
+
+	entity repairTarget = getRepairTarget();
+	entity ownerEntity = getOwnerEntity();
+
+	// head back to the player
+	vector ownerSize = ownerEntity.getMaxs() - ownerEntity.getMins();
+	float maxReturnSpeed = 400 * sys.getFrameTime();
+	float returnSpeedScale = 0.0f;
+
+	returnTimeout = sys.getTime() + getFloatKey( "return_timeout" );
+
+	while ( true ) {
+		if ( forceState ) {
+			return;
+		}
+
+		if ( sys.getFrameTime() > 0 ) {
+			CheckOwner( ownerEntity );
+
+			vector ownerOrigin = ownerEntity.getWorldOrigin();
+			ownerOrigin_z += ownerSize_z * 1;
+
+			vector targetOrigin = repairTarget.getWorldOrigin();
+			targetOrigin_z += targetSize_z * 0.5;
+
+			vector myOrigin = getWorldOrigin();
+			vector delta = ownerOrigin - myOrigin;
+			float deltaLength = sys.vecLength( delta );
+			if ( !sys.isClient() ) {
+				player p = ownerEntity;
+				if ( deltaLength < 128 ) {
+					if ( p != $null_entity ) {
+						p.setRepairDroneState( true );
+					}
+					remove();
+				} else {
+					if ( p != $null_entity ) {
+						if ( p.getVehicle() != $null_entity ) {
+							if ( deltaLength < 384 ) {
+								p.setRepairDroneState( true );						
+								remove();
+							}
+						}
+					}
+				}
+			}
+			vector direction = sys.vecNormalize( delta );
+			
+			float returnSpeed = maxReturnSpeed * returnSpeedScale;
+			returnSpeedScale = returnSpeedScale + 1.0f * sys.getFrameTime();
+			if ( returnSpeedScale > 1.0f ) {
+				returnSpeedScale = 1.0f;
+			}
+
+
+			vector newOrigin = myOrigin + direction * returnSpeed;
+
+			// make sure it stays on the hemisphere
+			vector targetDelta = targetOrigin - newOrigin;
+			float targetDeltaLength = sys.vecLength( targetDelta );
+			float deltaScale = orbitRadius / targetDeltaLength;
+			if ( deltaScale > 1 ) {
+				targetDelta *= deltaScale;
+				newOrigin = targetOrigin - targetDelta;
+			}
+
+			// look towards the owner
+			LookTowards( ownerOrigin );
+
+			DoMove( newOrigin );
+		}
+		
+		sys.waitFrame();
+	}
+}
+
+void repair_drone::OnPostDamage( entity attacker, float oldHealth, float newHealth ) {
+}
+
+void repair_drone::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	SelfDestruct();
+}
+
+void repair_drone::SetEntities( entity target, entity owner ) {
+	setEntities( target, owner );
+}
+
+void repair_drone::SetAction( float action ) {
+	cachedAction = action;
+}
+
+void repair_drone::SoundThread() {
+	float oldState;
+	float waitTime;
+
+	float droneSpeed;
+	float newPitch;
+
+	boolean playingBeamSound;
+
+	startSound( "snd_idle", SND_WEAPON_IDLE );
+
+	while( true ) {
+		sys.waitFrame();
+
+		droneSpeed = sys.fabs( getLinearVelocity() * getWorldAxis( 0 ) );
+		newPitch = ( droneSpeed * 0.004f ) + 2.f;
+		setChannelPitchShift( SND_WEAPON_IDLE, newPitch );
+
+		if ( state != oldState || sys.getTime() > waitTime ) {
+			waitTime = sys.getTime() + 10.f;
+			oldState = state;
+
+			if ( state == STATE_SEEK ) {
+				startSound( "snd_seek", SND_WEAPON_SIG );
+				if ( playingBeamSound ) {
+					playingBeamSound = false;
+					stopSound( SND_WEAPON_MECH );
+				}
+			} else if ( state == STATE_REPAIR ) {
+				startSound( "snd_repair", SND_WEAPON_SIG );
+				if ( !playingBeamSound ) {
+					playingBeamSound = true;
+					startSound( "snd_beam", SND_WEAPON_MECH );
+				}
+			} else if ( state == STATE_RETURN ) {
+				startSound( "snd_return", SND_WEAPON_SIG );
+				if ( playingBeamSound ) {
+					playingBeamSound = false;
+					stopSound( SND_WEAPON_MECH );
+				}
+			}
+		}
+	}
+}
+
+float repair_drone::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float health = getHealth();
+
+	chSetNumLines( 0 );
+	float index;
+
+	index = chAddLine();
+	chSetLineTextIndex( index, g_locStr_Drone );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	if ( health <= 0 ) {
+		index = chAddLine();
+		chSetLineTextIndex( index, g_locStr_Destroyed );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	} else {
+		index = chAddLine();
+		chSetLineColor( index, color, 0.5f );
+		chSetLineType( index, CI_BAR );
+		chSetLineFraction( index, health / getMaxHealth() );
+		chSetLineSize( index, 150, CROSSHAIR_INFO_BAR_HEIGHT );
+
+		if ( range <= 100 ) {
+			index = chAddLine();
+			chSetLineText( index, G_BuildRangeStr( range ) );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	}
+
+	return 1.f;
+}
+
+
+void tool_repair_drone::preinit() {
+	meleeDistance	= getFloatKey( "melee_distance" );
+
+	armNormal		= getIntKey( "can_arm_normal" );
+	disarmCharge	= getIntKey( "can_disarm_charge" );
+	armCharge		= getIntKey( "can_arm_charge" );
+	canRepair		= getIntKey( "can_repair" );
+	canConstruct	= getIntKey( "can_construct" );
+
+	fireRate 		= getFloatKeyWithDefault( "fire_rate", 0.1f );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	repairCount 	= getFloatKeyWithDefault( "repair_count", 5.f );
+
+	chargePerDrone	= getFloatKeyWithDefault( "charge_per_drone", 200.f );
+	droneClass 		= sys.getTypeHandle( "sdRepairDrone" );
+
+	returnDelay		= getFloatKey( "return_delay" );
+}
+
+void tool_repair_drone::init() {
+	weaponState( "Raise", 0 );
+}
+
+void tool_repair_drone::destroy() {
+	sys.killThread( "ToolTipThread_Deployed_" + getName() );
+	sys.killThread( "ToolTipThread_Raise_" + getName() );
+	sys.killThread( "SoundThread_" + getName() );
+
+	stopAllEffects();
+	DestroySound();
+	entity worldModel = getWorldModel( 0 );
+	if ( worldModel != $null_entity ) {
+		worldModel.killEffect( "fx_loop_world" );
+	}
+}
+
+void tool_repair_drone::Raise() {
+	weaponRising();
+
+	repair_drone activeDrone = FindDrone();
+	if ( activeDrone != $null ) {
+		if ( myPlayer.isLocalPlayer() ) {
+			thread ToolTipThread_Deployed();
+		}
+		playAnim( ANIMCHANNEL_ALL, "raise_empty" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, PLIERS_RAISE_TO_IDLE ) );
+		weaponState( "IdleEmpty", PLIERS_RAISE_TO_IDLE );
+	} else {
+		if ( myPlayer.isLocalPlayer() ) {
+			thread ToolTipThread_Raise();
+		}
+		playAnim( ANIMCHANNEL_ALL, "raise" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, PLIERS_RAISE_TO_IDLE ) );
+		weaponState( "Idle", PLIERS_RAISE_TO_IDLE );
+	}
+}
+
+void tool_repair_drone::Lower() {
+	if ( playingFireSound ) {
+		playingFireSound = false;
+		startSound( "snd_stop", SND_WEAPON_FIRE );
+	}
+		
+	weaponLowering();
+
+	repair_drone activeDrone = FindDrone();
+	if ( activeDrone != $null ) {
+		playAnim( ANIMCHANNEL_ALL, "putaway_empty" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "putaway" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+	}
+
+	stopEffect( "fx_loop" );
+	weaponHolstered();
+	waitUntil( WEAPON_RAISEWEAPON );
+	weaponState( "Raise", 0 );
+}
+
+boolean tool_repair_drone::WantsAttack() {
+	return WEAPON_ATTACK || myPlayer.getButton( PK_ACTIVATE );
+}
+
+boolean tool_repair_drone::AttackValid() {
+	boolean performAction = CheckAttack( MASK_VEHICLESOLID | CONTENTS_PLAYERCLIP );
+
+	if ( !performAction ) {
+		performAction = CheckAttack( CONTENTS_TRIGGER );
+	}
+
+	if ( !performAction ) {
+		performAction = CheckAttack( CONTENTS_RENDERMODEL | CONTENTS_FORCEFIELD );
+	}
+
+	return performAction;
+}
+
+void tool_repair_drone::Idle() {
+	repair_drone activeDrone;
+
+	weaponReady();
+
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+
+	lastAltAttack = WEAPON_ALTFIRE;
+
+	while ( true ) {
+		activeDrone = FindDrone();
+
+		if ( sys.isClient() ) {
+			//  if client lags it might have to jump to IdleEmpty from here
+			if ( activeDrone != $null ) {
+				weaponState( "IdleEmpty", TOOL_REPAIR_DRONE_IDLE_TO_IDLE );
+			}
+		}
+
+		if ( WEAPON_LOWERWEAPON ) {
+			SetProgressBarVisible( false );
+			weaponState( "Lower", 4 );
+		}
+
+		if ( WantsAttack() ) {
+			if ( AttackValid() ) {
+				if ( !playingFireSound ) {
+					playingFireSound = true;
+					startSound( "snd_start", SND_WEAPON_FIRE );
+				}
+
+				nextActionFailMessageTime = sys.getTime() + 2.f;
+
+				weaponState( "Attack", 4 );
+			} else {
+				if ( !myPlayer.isToolTipPlaying() ) {
+					if ( sys.getTime() > nextActionFailMessageTime ) {
+						nextActionFailMessageTime = sys.getTime() + 5.f;
+						if ( cachedAction == AC_NONE ) {
+							myPlayer.sendToolTip( GetToolTip( getKey( "tt_action_failed" ) ) );
+						} else if ( cachedAction == AC_ENEMY_REPAIR ) {
+							myPlayer.sendToolTip( GetToolTip( getKey( "tt_enemy_repair" ) ) );
+						}
+					}
+				}
+			}
+		}
+		
+		if ( playingFireSound ) {
+			playingFireSound = false;
+			startSound( "snd_stop", SND_WEAPON_FIRE );
+		}
+
+		// check proficiency level ->
+		if ( activeDrone != $null_entity ) {
+			enableTargetLock( 0 );
+		} else {
+			// only enable target lock when the player can actually perform the action
+			enableTargetLock( ShowTargetLock() );
+		}
+
+		if ( WEAPON_ALTFIRE && !lastAltAttack ) {
+			if ( activeDrone != $null_entity ) {
+				if ( sys.getTime() - activateDroneTime > returnDelay ) {
+					activeDrone.ChangeState( STATE_RETURN );
+				}
+			} else {
+				if ( CheckAltAttack() ) {
+					if ( myPlayer.getAmmo( g_ammoStroyent ) >= chargePerDrone ) {
+						activateDroneTime = sys.getTime();
+						weaponState( "AltAttack", 4 );
+					} else {
+						if ( myPlayer.isLocalPlayer() ) {
+							sys.startSoundDirect( getKey( "snd_no_stroyent" ), SND_WEAPON_FIRE_LOCAL );
+						}
+					}
+				}
+			}
+		}
+		// <- check proficiency level
+
+		lastAltAttack = WEAPON_ALTFIRE;
+
+		sys.waitFrame();
+	}
+}
+
+void tool_repair_drone::IdleEmpty() {
+	weaponReady();
+
+	if ( myPlayer.isLocalPlayer() ) {
+		deployedTipThreadActive = false;
+		sys.killThread( "ToolTipThread_Deployed_" + getName() );
+		thread ToolTipThread_Deployed();
+	}
+
+	playCycle( ANIMCHANNEL_ALL, "idle_empty" );
+
+	repair_drone activeDrone = FindDrone();
+
+	while ( activeDrone != $null_entity ) {
+		activeDrone = FindDrone();
+
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", 4 );
+		}
+
+		if ( WEAPON_ALTFIRE && !lastAltAttack ) {
+			if ( activeDrone != $null_entity ) {
+				if ( sys.getTime() - activateDroneTime > returnDelay ) {
+					activeDrone.ChangeState( STATE_RETURN );
+				}
+			}
+		}
+
+		lastAltAttack = WEAPON_ALTFIRE;
+		sys.waitFrame();
+	}
+
+	playAnim( ANIMCHANNEL_ALL, "catch" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	deployedTipThreadActive = false;
+	sys.killThread( "ToolTipThread_Deployed_" + getName() );
+
+	weaponState( "Idle", 4 );
+}
+
+void tool_repair_drone::ClearDrone() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	entity other = FindDrone();
+	if ( other != $null_entity ) {
+		myPlayer.binRemove( other );
+	}
+}
+
+entity tool_repair_drone::FindDrone() {
+	float i;
+	float num = myPlayer.binGetSize();
+
+	for ( i = 0; i < num; i++ ) {
+		entity other = myPlayer.binGet( i );
+		if ( other == $null_entity ) {
+			continue;
+		}
+
+		repair_drone drone = other;
+		if ( drone != $null_entity ) {
+			return other;
+		}
+	}
+	
+	return $null_entity;
+}
+
+void tool_repair_drone::Attack() {
+	myPlayer.AI_HOLD_WEAPON = true;
+	
+	float currentCachedAction = cachedAction;
+
+	playAnim( ANIMCHANNEL_ALL, "fire_start" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	entity worldModel = getWorldModel( 0 );
+	if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+		worldModel.playEffect( "fx_loop_world", "RingIndex3", 1 );
+	} else {
+		playEffect( "fx_loop", "repair_drone_joint15", 1 );
+	}
+
+	while ( true ) {
+		if ( cachedAction == AC_REPAIR ) {
+			Repair();
+		} else if ( cachedAction == AC_ARM || cachedAction == AC_ARM_CHARGE ) {
+			Arm();
+		} else if ( cachedAction == AC_DISARM || cachedAction == AC_DISARM_CHARGE ) {
+			Disarm();
+		} else if ( cachedAction == AC_CONSTRUCT ) {
+			Construct();
+		}
+
+		float finishTime = sys.getTime() + fireRate;
+
+		while ( sys.getTime() < finishTime ) {
+			if ( animDone( ANIMCHANNEL_ALL, 4 ) ) {
+				playAnim( ANIMCHANNEL_ALL, "fire_loop" );
+			}
+
+			sys.waitFrame();
+		}
+		
+		if ( WEAPON_LOWERWEAPON ) {
+			break;
+		}
+
+		if ( !WantsAttack() ) {
+			break;
+		}
+
+		if ( !AttackValid() ) {
+			break;
+		}
+	}
+	
+	myPlayer.AI_HOLD_WEAPON = false;
+
+	stopEffect( "fx_loop" );
+	worldModel.killEffect( "fx_loop_world" );
+	
+	playAnim( ANIMCHANNEL_ALL, "fire_stop" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	nextActionFailMessageTime = sys.getTime() + 2.f;
+
+	weaponState( "Idle", 4 );
+}
+
+void tool_repair_drone::AltAttack() {
+	playAnim( ANIMCHANNEL_ALL, "release" );
+
+	DoAttack( "def_drone" );
+}
+
+void tool_repair_drone::DoAttack( string droneType ) {
+	fired();
+
+	enableTargetLock( 0 );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	myPlayer.setAmmo( g_ammoStroyent, myPlayer.getAmmo( g_ammoStroyent ) - ( chargePerDrone ) );
+
+	// spawn a drone
+
+	if ( !sys.isClient() ) {	
+		float droneIndex = GetEntityDef( getKey( droneType ) );
+		repair_drone activeDrone = sys.spawnType( droneIndex );
+
+		vector droneOrigin = myPlayer.getViewOrigin();
+		vector playerAngles = myPlayer.getViewAngles();
+		droneOrigin += sys.angToForward( playerAngles ) * 32;
+		activeDrone.setOrigin( droneOrigin );
+		activeDrone.setAngles( playerAngles );
+
+		activeDrone.SetEntities( cachedEntity, myPlayer );
+		activeDrone.SetAction( cachedAction );
+		activeDrone.setGameTeam( myPlayer.getGameTeam() );
+		
+		myPlayer.binAdd( activeDrone );
+	}
+
+	weaponState( "IdleEmpty", TOOL_REPAIR_DRONE_FIRE_TO_IDLE );
+}
+
+boolean tool_repair_drone::CheckAttack( float mask ) {
+	cachedEntity = myPlayer.getCrosshairEntity();
+	cachedAction = AC_NONE;
+
+	if ( myPlayer.getCrosshairDistance( true ) > meleeDistance ) {
+		cachedEntity = $null_entity;
+		return false;
+	}
+
+	if ( cachedEntity == $null_entity ) {
+		// there is no crosshair entity to take priority
+		// try doing a melee trace
+		melee( mask, meleeDistance, false, false );
+		cachedEntity = getMeleeEntity();
+
+		if ( cachedEntity == $null_entity ) {
+			return false;
+		}
+	}
+
+	if ( armCharge ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_ARM_CHARGE ) ) {
+			cachedAction = AC_ARM_CHARGE;
+			return true;
+		}
+	}
+
+	if ( disarmCharge ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_DISARM_CHARGE ) ) {
+			cachedAction = AC_DISARM_CHARGE;
+			return true;
+		}
+	}
+
+	if ( canRepair ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_REPAIR ) ) {
+			cachedAction = AC_REPAIR;
+			return true;
+		} else if ( cachedEntity.vCheckActionCode( myPlayer, AC_ENEMY_REPAIR ) ) {
+			cachedAction = AC_ENEMY_REPAIR;
+			return false;
+		}
+	}
+
+	if ( armNormal ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_ARM ) ) {
+			cachedAction = AC_ARM;
+			return true;
+		}
+
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_DISARM ) ) {
+			cachedAction = AC_DISARM;
+			return true;
+		}
+	}
+
+	if ( canConstruct ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_CONSTRUCT ) ) {
+			cachedAction = AC_CONSTRUCT;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+boolean tool_repair_drone::CheckAltAttack() {
+	if ( myPlayer.getProficiency( g_proficiencyConstructor ) < 2 ) {
+		return false;
+	}
+
+	repair_drone activeDrone = FindDrone();
+	if ( activeDrone != $null_entity ) {
+		return false;
+	}
+
+	cachedEntity = myPlayer.getEnemy();
+	enableTargetLock( 1 );
+	if ( cachedEntity == $null_entity ) {
+		cachedAction = AC_NONE;
+		return false;
+	}
+
+	if ( cachedEntity.vCheckActionCode( myPlayer, AC_REPAIR ) ) {
+		cachedAction = AC_REPAIR;
+		return true;
+	}
+
+	return false;
+}
+
+boolean tool_repair_drone::ShowTargetLock() {
+	return myPlayer.getProficiency( g_proficiencyConstructor ) >= 2;
+}
+
+void tool_repair_drone::Construct() {
+	cachedEntity.vConstruct( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_CONSTRUCT );
+}
+
+void tool_repair_drone::Repair() {
+	cachedEntity.vRepair( repairCount * 0.5f, myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_REPAIR );
+}
+
+void tool_repair_drone::Disarm() {
+	cachedEntity.vArm( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_DISARM );
+}
+
+void tool_repair_drone::Arm() {
+	cachedEntity.vArm( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_ARM );
+}
+
+void tool_repair_drone::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	
+	WAIT_FOR_TOOLTIP;
+	if ( myPlayer.getProficiency( g_proficiencyConstructor ) < 2 ) {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+	} else {
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_advanced_2" ) ) );
+	}
+}
+
+void tool_repair_drone::ToolTipThread_Deployed() {
+	if ( deployedTipThreadActive ) {
+		return;
+	}
+	deployedTipThreadActive = true;
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_deployed_intro_1" ) ) );
+	
+	//WAIT_FOR_TOOLTIP;
+	//myPlayer.sendToolTip( GetToolTip( getKey( "tt_deployed_intro_2" ) ) );
+	
+	deployedTipThreadActive = false;
+}
+
+void tool_repair_drone::OwnerDied() {
+	repair_drone activeDrone = FindDrone();
+	if ( activeDrone != $null_entity ) {
+		ClearDrone();
+	}
+}

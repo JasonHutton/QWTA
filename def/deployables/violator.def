@@ -1,0 +1,213 @@
+
+
+//
+// Violator/OrbitalStrikeRelay
+//
+
+
+export frankie {
+	options -prefix OSR_ -rotate 90 -sourcedir models/structures/strogg/deployables/intel/orbital_strike_relay/dev_sd -destdir models/structures/strogg/deployables/intel/orbital_strike_relay
+
+	//mesh	base.mb			-dest osr.md5mesh		    	-range 1 1
+
+
+	anim	base.mb			-dest undeployed.md5anim		-range 0 0
+	anim	base.mb 		-dest idle.md5anim		   	-range 0 80
+
+
+	anim 	damaged.mb 	  	-dest damaged.md5anim 			-range 0 25
+	anim 	damaged.mb 	  	-dest damaged_idle.md5anim 		-range 25 200
+
+
+	anim 	disabled.mb 	  	-dest disabled.md5anim 			-range 40 80
+
+	anim	damaged.mb 		-dest disabled_to_damaged.md5anim	-range 25 25
+	anim	base.mb 		-dest damaged_to_idle.md5anim		-range 0 0
+}
+
+
+//======================================================
+//==================models====================================
+//======================================================
+
+model deployable_violator {
+	mesh							models/structures/strogg/deployables/intel/orbital_strike_relay/osr.md5mesh
+
+	anim base						models/structures/strogg/deployables/intel/orbital_strike_relay/damaged_to_idle.md5anim {
+	}
+
+	anim undeployed					models/structures/strogg/deployables/intel/orbital_strike_relay/damaged_to_idle.md5anim {
+	}
+
+	anim deploy						models/structures/strogg/deployables/intel/orbital_strike_relay/damaged_to_idle.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim damaged					models/structures/strogg/deployables/intel/orbital_strike_relay/damaged.md5anim {
+	}
+
+	anim damaged_idle				models/structures/strogg/deployables/intel/orbital_strike_relay/damaged_idle.md5anim {
+	}
+
+	anim destroyed					models/structures/strogg/deployables/intel/orbital_strike_relay/disabled.md5anim {
+	}
+
+	anim disabled_to_damaged		models/structures/strogg/deployables/intel/orbital_strike_relay/disabled_to_damaged.md5anim {
+	}
+
+	anim damaged_to_idle			models/structures/strogg/deployables/intel/orbital_strike_relay/damaged_to_idle.md5anim {
+	}
+}
+
+model vehicle_violator {
+
+	mesh		models/md5/vehicles/violator/violator.md5mesh
+
+	anim base	models/md5/vehicles/violator/violator.md5anim
+}
+
+
+
+entityDef vehicle_violator {
+	"spawnclass"					"sdScriptEntity"
+	"scriptobject"					"vehicle_violator"
+
+	"arrivaldelay"					"0"
+	"arrivaldelay_random"			"0"
+
+	"beam_startup_duration"			"2"
+	"beam_core_startup_duration"	"0.25"
+	"beam_duration"					"8"
+	"beam_area_length"				"2600"
+	"beam_fizzle_duration"			"3"
+	"beam_effect_fizzle_duration"	"1.5"
+
+	"beam_rotation_speed"			"200"
+
+	"def_directionmarker"			"targetdirection_marker"
+
+	"def_firesupport_marker"			"firesupport_marker_violator"
+
+	"snd_beam_start"				"sounds/deployables/violator/beam/start"
+	"snd_beam_stop"					"sounds/deployables/violator/beam/stop"
+	"fx_beam_start"					"effects/violator_beam_startup"
+	"fx_beam"					"effects/violator_beam"
+
+	//"fx_groundeffect_none"				"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_grass"				"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_stone"				"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_sand"				"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_pavement"			"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_dirt"				"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_dusty_road"			"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_gravel"			"effects/violator_groundeffect_dirt"
+	//"fx_groundeffect_default"			"effects/violator_groundeffect_dirt"
+	"fx_groundeffect_water"				"effects/violator_groundeffect_water"
+	//"fx_groundeffect_snow"				"effects/violator_groundeffect_dirt"
+
+
+
+
+
+}
+
+damageDef damage_violator {
+	damage							"damage_violator"
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"violator"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/violator"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/violator/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/violator/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/violator/unknown"
+}
+
+damageDef realistic_damage_violator {
+	inherit							"damage_violator"
+	damage							"realistic_damage_violator"
+}
+
+damageDef damage_violator_splash {
+	damage							"damage_violator_splash"
+	radius							768
+
+	knockback						10
+	push							5000000
+
+	prof_damage						"pro_oppressor_damage"
+
+	stat_name						"violator"
+
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/violator"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/violator/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/violator/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/violator/unknown"
+}
+
+damageDef realistic_damage_violator_splash {
+	inherit							"damage_violator_splash"
+	damage							"realistic_damage_violator_splash"
+}
+
+damageFilter damage_violator {
+	type {
+		target	"target_all"
+		damage	50
+	}
+}
+
+damageFilter realistic_damage_violator {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_all"
+		damage	50
+	}
+}
+
+damageFilter damage_violator_splash {
+	type {
+		target	"target_all"
+		damage	40
+	}
+}
+
+damageFilter realistic_damage_violator_splash {
+	type {
+		target	"target_player_all"
+		damage	80
+	}
+	type {
+		target	"target_all"
+		damage	40
+	}
+}
+
+entityDef deployable_osr_strogg_arm {
+	"model"							"models/structures/strogg/deployables/intel/orbital_strike_relay/parts/arm.lwo"
+	"cm_model"						"models/structures/strogg/deployables/intel/orbital_strike_relay/parts/arm.lwo"
+
+	"snd_bounce"					"vehicles/misc/debris/metal_med"
+}
+
+entityDef deployable_osr_strogg_top {
+	"model"							"models/structures/strogg/deployables/intel/orbital_strike_relay/parts/top.lwo"
+	"cm_model"						"models/structures/strogg/deployables/intel/orbital_strike_relay/parts/top.lwo"
+
+	"snd_bounce"					"vehicles/misc/debris/metal_large"
+}
+
+entityDef deployable_osr_strogg_base {
+	"model"							"models/structures/strogg/deployables/intel/orbital_strike_relay/parts/bottom.lwo"
+	"cm_model"						"models/structures/strogg/deployables/intel/orbital_strike_relay/parts/bottom.lwo"
+
+	"snd_bounce"					"vehicles/misc/debris/hollow_large"
+}

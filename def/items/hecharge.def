@@ -1,0 +1,285 @@
+/***********************************************************************
+
+	reexportModels items/hecharge.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix HECHARGE_ -sourcedir models/items/hecharge/dev_sd -destdir models/items/hecharge/
+
+	mesh	gdf_heavy_explosive_rework_idle.mb		-dest models/items/hecharge/hecharge_view.md5mesh -range 7 7
+	anim	gdf_heavy_explosive_rework_idle.mb		-dest models/items/hecharge/hecharge_idle.md5anim
+	anim	gdf_heavy_explosive_rework_raise.mb		-dest models/items/hecharge/hecharge_raise.md5anim
+ 	anim	gdf_heavy_explosive_rework_lower.mb		-dest models/items/hecharge/hecharge_lower.md5anim
+   	anim	gdf_heavy_explosive_rework_quickthrow.mb		-dest models/items/hecharge/hecharge_fire.md5anim
+ 	anim	gdf_heavy_explosive_rework_lower.mb		-dest models/items/hecharge/hecharge_reload.md5anim
+
+
+// 	mesh	gdf_heavy_explosive_world.mb		-dest models/weapons/heavy_explosive/hecharge_world.md5mesh
+}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_hecharge {
+	mesh					models/items/hecharge/hecharge_view.md5mesh
+
+	anim idle				models/items/hecharge/hecharge_idle.md5anim {
+		frame 1					sound_channel snd_weapon_idle snd_idle
+	}
+
+	anim fire				models/items/hecharge/hecharge_fire.md5anim {
+		frame 3					sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim putaway 			models/items/hecharge/hecharge_lower.md5anim {
+	}
+
+	anim raise 				models/items/hecharge/hecharge_raise.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim reload 			models/items/hecharge/hecharge_reload.md5anim {
+	}
+}
+
+model worldmodel_gdf_charge_explosive {
+	mesh					models/items/hecharge/hecharge_world.md5mesh
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/items/he_charge {
+	type						"item"
+	slot						"item"
+	name						"game/weapons/he"
+
+	data {
+		"model_view" 				"viewmodel_hecharge"
+		"model_world" 				"models/items/hecharge/hecharge.lwo"
+		"joint_attach"				"RightHand"
+
+		"view_offset"				"-4 -2 -2.5"
+
+		"anim_prefix"				"hecharge"
+		"anim_prefix_class"			"tool"
+
+		"weapon_scriptobject"		"item_he_charge"
+
+		"snd_raise"					"sounds/tools/hecharge/raise"
+		"snd_idle"					"sounds/tools/hecharge/idle"
+		"snd_fire"					"sounds/tools/hecharge/fire"
+		"snd_need_charge"			"sounds/ui/main/cannot"
+		
+
+		"stat_name"					"he_charge"
+
+		"melee_distance"			"76"
+
+		"num_projectiles"			"1"
+		"hide_clip"					"1"
+		"show_charge"				"1"
+
+		"def_charge"				"projectiles/he_charge"
+
+		"finish_fire_anim"			"1"
+
+		"timer_charge"				"energy_charge"
+		"charge_per_use"			"100"
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/hecharge"
+
+		"climate_skin_key"			"weapon_gdf"
+
+		"crosshair"					"none"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"tt_intro_1"				"he_charge_intro_1"
+		"tt_intro_2"				"he_charge_intro_2"
+		"tt_action_failed"			"he_charge_action_failed"
+		"tt_need_charge"			"he_charge_need_charge"
+		"player_weapon_num"			"16"
+	}
+
+	clip {
+		"projectile"			"projectiles/he_charge"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectiles/he_charge {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"projectile_charge"
+
+	"mins"							"0 -10 -6"
+	"maxs"							"8 10 2"
+
+	"model" 						"models/items/hecharge/hecharge_world.lwo"
+
+	"dmg_damage"					""
+	"dmg_splash_damage"				"damage/charge_explosive_splash"
+
+	"gui"							"guis/items/charge"
+
+	"health"						"0"
+
+	"maxVisDist"					"2048"
+
+	"is_charge"						"1"
+	"arm_count"						"24"
+	"disarm_count"					"40"
+
+	"snd_armed"						"sounds/tools/hecharge/armed"
+	"snd_beep"						"sounds/tools/hecharge/beep"
+
+	"fx_glow"						"effects/items/hecharge_glow"
+	"fx_unarmed_glow"				"effects/items/hecharge_unarmed_glow"
+
+	"collection_charges"			"charges"
+	"collection_gamereviewwatch"	"gamereviewwatch"
+
+	"option_crosshair_interface"	"1"
+	"option_interactive_interface"	"1"
+	"option_write_bind"				"1"
+
+	"detonate_on_trigger"			"1"
+
+	"task_name"						"game/weapons/he"
+
+	"task_defuse"					"constructor_defuse_charge"
+
+	"tt_intro_arm_me_1"				"he_charge_crosshair_info_1"
+	"tt_intro_arm_me_2"				"he_charge_crosshair_info_2"
+	"tt_intro_disarm_me_1"			""
+	"tt_intro_disarm_me_2"			""
+
+	"item_armed"					"best"
+
+	"fx_explode"				"effects/impacts/hecharge/explosion_default"
+	"fx_explode_pavement"		"effects/impacts/hecharge/explosion_pavement"
+ 	"fx_explode_stone"			"effects/impacts/hecharge/explosion_pavement"
+  	"fx_explode_concrete"		"effects/impacts/hecharge/explosion_pavement"
+	"fx_explode_dirt"			"effects/impacts/hecharge/explosion_dirt"
+	"fx_explode_mud"			"effects/impacts/hecharge/explosion_dirt"
+	"fx_explode_glass"			"effects/impacts/hecharge/explosion_metal"
+	"fx_explode_ice"			"effects/impacts/hecharge/explosion_metal"
+ 	"fx_explode_gravel"			"effects/impacts/hecharge/explosion_pavement"
+	"fx_explode_metal"			"effects/impacts/hecharge/explosion_metal"
+	"fx_explode_metal_thick"	"effects/impacts/hecharge/explosion_metal"
+	"fx_explode_dusty_road"		"effects/impacts/hecharge/explosion_sand"
+	"fx_explode_sand"			"effects/impacts/hecharge/explosion_sand"
+	"fx_explode_snow"			"effects/impacts/hecharge/explosion_snow"
+ 	"fx_explode_liquid"			"effects/impacts/frag/explosion_water"
+  	"fx_explode_water"			"effects/impacts/frag/explosion_water"
+  	"fx_explode_water_interior"	"effects/impacts/frag/explosion_water_interior"
+	"fx_explode_grass"			"effects/impacts/hecharge/explosion_dirt"
+	
+	"prof_disarm"				"pro_constructor_disarm_charge"
+	
+	"mtr_icon_flash"				"hud/icons/missionsystem/tsk_engineer"
+	"icon_sort_cm_flash_icon"		"-102"
+}
+
+damageDef damage/charge_explosive_splash {
+	damage						"damage/charge_explosive"
+	radius						512
+	push						10000000
+
+	stat_name					"he_charge"
+
+	prof_damage					"pro_soldier_damage"
+
+	team_kill_cvar				"g_allowcomplaint_charge"
+
+	tt_obituary					"tooltips/killmsgs/weapons/charges/he"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/charges/he/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/charges/he/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/charges/he/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageFilter damage/charge_explosive {
+	type {
+		target	"target_all"
+		damage	4000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	5000
+	}
+
+	type {
+		target	"target_objectives_he"
+		damage 	5000
+	}
+
+	type {
+		target	"target_explodable"
+		damage	5000
+	}
+}
+
+#include "templates/tooltips.include"
+
+toolTip he_charge_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/he_charge_1"
+}
+
+toolTip he_charge_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_deploy_item"
+}
+
+toolTip he_charge_action_failed {
+	sound "sounds/ui/main/cannot"
+	text "game/tt/intro/he_charge_action_failed"
+	length 5
+}
+
+toolTip he_charge_need_charge {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+toolTip he_charge_crosshair_info_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/arm_me_hecharge_1"
+	locationIndex TOOLTIP_POSITION_WEAPON_CHANGE
+}
+
+toolTip he_charge_crosshair_info_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/arm_me_2"
+	nextShowDelay 30
+}

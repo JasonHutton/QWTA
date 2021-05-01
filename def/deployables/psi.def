@@ -1,0 +1,142 @@
+// Export
+// ========================================================================
+/*
+reexportmodels deployables/psi.def
+testmodel deployable_psi
+*/
+
+export hauser {
+options -prefix STPSI_ -rotate 90 -scale 2.0 -sourcedir models/structures/strogg/deployables/intel/psi_radar/dev_sd -destdir models/structures/strogg/deployables/intel/psi_radar
+
+	//mesh		psi_radar_setup.ma		-dest psi_radar_setup.md5mesh
+	//anim		psi_radar_setup.ma		-dest psi_radar_setup.md5anim -range 0 1
+
+	anim		damage_states.mb		-dest psi_radar_idle.md5anim -range 1 1
+	anim		damage_states.mb		-dest psi_radar_damaged.md5anim -range 1 15
+	anim		damage_states.mb		-dest psi_radar_disabled.md5anim -range 15 34
+
+	anim		damage_states.mb		-dest psi_radar_disabled_to_damaged.md5anim -range 15 15
+	anim		damage_states.mb		-dest psi_radar_damaged_to_idle.md5anim -range 1 1
+}
+
+// Models
+// ========================================================================
+
+model deployable_psi {
+
+	mesh				models/structures/strogg/deployables/intel/psi_radar/psi_radar_setup.md5mesh
+
+	anim base			models/structures/strogg/deployables/intel/psi_radar/psi_radar_idle.md5anim
+	anim undeployed			models/structures/strogg/deployables/intel/psi_radar/psi_radar_idle.md5anim
+	anim deploy			models/structures/strogg/deployables/intel/psi_radar/psi_radar_idle.md5anim
+	anim damaged			models/structures/strogg/deployables/intel/psi_radar/psi_radar_damaged.md5anim
+	anim destroyed			models/structures/strogg/deployables/intel/psi_radar/psi_radar_disabled.md5anim
+	anim disabled_to_damaged	models/structures/strogg/deployables/intel/psi_radar/psi_radar_disabled_to_damaged.md5anim
+	anim damaged_to_idle		models/structures/strogg/deployables/intel/psi_radar/psi_radar_damaged_to_idle.md5anim
+}
+
+
+// Entity Def
+// ========================================================================
+
+deployObject deployobject_psi {
+	"name"							"psi"
+	"title"							"game/deploy/psi_radar"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_psi"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					"deployitem_psi_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"intelligence"
+	"mdl_scale_factor"				"0.6"
+	"allow_rotation"				"0"
+}
+
+stringMap deployitem_psi_placement_model {
+	"model"							"models/structures/strogg/deployables/intel/orbital_strike_relay/orbital_strike_relay.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+entityDef deployable_psi {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_strogg"
+	
+	"title"							"game/deploy/psi_radar"
+
+	"collection_gui_count"			"deployable_psi"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The Strogg Psi Radar"
+	"editor_mins"					"-128 -144 0"
+	"editor_maxs"					"168 144 512"
+
+	"spawnclass"					"sdScriptEntity"
+	"scriptobject"					"deployable_intelligence"
+	
+	"mtr_color"						"guis/assets/deploy/icons/strogg_radar"
+	"mtr_desat"						"guis/assets/deploy/icons/strogg_radar_desat"
+	"mtr_half_desat"				"guis/assets/deploy/icons/strogg_radar_half_desat"
+	"mtr_full_desat"				"guis/assets/deploy/icons/strogg_radar_bright_desat"		
+
+	"model"							"deployable_violator"
+	"cm_model"						"models/structures/strogg/deployables/intel/orbital_strike_relay/clip.lwo"
+
+	"task_name"						"game/deploy/psi_radar"
+	
+	"stat_name"						"psi"
+
+	"ch_name"						"game/deploy/psi_radar"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_radar_interface"		"1"
+	"option_crosshair_offset"		"0 0 128"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"radar"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_radar"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_radar"
+	"icon_size_cm"					"10"
+
+	"health"						"3000"
+	"repair_multiplier"				"1.5"
+	
+	"fx_death"						"effects/deployables/psi_destroy"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"middle_section"
+
+	"action_time"					"10"
+
+	"range"							"8500" // "15000"
+	"mask"							"1"
+	"global"						"0"
+
+	"snd_idle"						"sounds/deployables/psi/idle"
+
+	"do_object"						"deployobject_psi"
+
+	"mtr_radar"						"hud/commandmap/radar"
+
+	"dish_joint1"					"middle_section"
+	"dish_joint2"					"top_section"
+	"dish_axis1"					"1"
+	"dish_axis2"					"2"
+	"dish_scale1"					"1"
+	"dish_scale2"					"-2"
+	
+	"deployable_type"				"32"
+	
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/radarspotted"
+	
+	"prof_deploybonus"				"pro_infiltrator_deploy_bonus"
+	"deploybonus_requireactive"		"1"
+	
+	"tt_deployed"					"psi_deployed"
+}

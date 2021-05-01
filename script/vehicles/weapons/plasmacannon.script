@@ -1,0 +1,98 @@
+
+
+object vehicle_weapon_plasmacannon : vehicle_weapon_base {
+	void			preinit();
+	void			init();
+	void			Fire();
+
+	void			UpdateCharge();
+
+	string			muzzleFlashFX;
+
+	float			spread;
+	float			projectileIndex;
+
+	float			spreadSiege;
+	float			chargePerUseSiegeScale;
+
+	float			jointHandle;
+	float			jointHandleParent;
+	float			feedback;
+	float			baseChargeMax;
+
+	vector			velocity;
+};
+
+void vehicle_weapon_plasmacannon::preinit() {
+	projectileIndex		= GetEntityDef( getKey( "def_projectile" ) );
+
+	entity vehicle		= getVehicle();
+	jointHandle			= vehicle.getJointHandle( getKey( "muzzle" ) );
+	jointHandleParent	= vehicle.getJointHandle( getKey( "muzzle_parent" ) );
+
+	muzzleFlashFX		= getKey( "muzzle_flash" );
+
+	spread				= getFloatKey( "spread" );
+	velocity			= getVectorKey( "velocity" );
+	feedback			= getFloatKey( "feedback" );
+	
+	spreadSiege			= getFloatKey( "spread_siege" );
+	chargePerUseSiegeScale	= getFloatKey( "charge_per_use_siege_scale" );
+	baseChargeMax		= getFloatKey( "charge_max" );
+
+}
+
+void vehicle_weapon_plasmacannon::init() {
+}
+
+void vehicle_weapon_plasmacannon::Fire() {
+
+	vector origin = myVehicle.getJointPos( jointHandle );
+	boolean allowFire = true;
+	
+	if ( jointHandleParent != INVALID_JOINT ) {
+		vector muzzleCheckOrigin = myVehicle.getJointPos( jointHandleParent );		
+		if ( sys.tracePoint( muzzleCheckOrigin, origin, MASK_PROJECTILE, myVehicle ) != 1.f ) {
+			allowFire = false;
+		}
+	}
+
+
+	if ( allowFire ) {
+		float spreadActual = spread;
+		if ( myVehicle.inSiegeMode() ) {
+			myVehicle.startSound ( "snd_recharge_2s", SND_VEHICLE_INTERIOR_POWERUP );
+			spreadActual = spreadSiege;
+		}
+		else { 
+			myVehicle.startSound ( "snd_recharge_4s", SND_VEHICLE_INTERIOR_POWERUP );
+		}
+		
+		RemoveCharge();
+		RemoveAmmo();
+
+		myVehicle.launchMissileSimple( user, myVehicle, $null_entity, projectileIndex, -1, spreadActual, origin, myVehicle.jointToWorldSpace( jointHandle, velocity ) );
+		myVehicle.applyImpulse( origin, -feedback * myVehicle.getJointAxis( jointHandle, 0 ) );
+		myVehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+	} else {
+		// Gordon: FIXME: Play error sound/tooltip
+	}
+		
+	GoToIdle();
+}
+
+void vehicle_weapon_plasmacannon::UpdateCharge() {
+	float percentChargeUsed = CalcChargeUsed() / chargeMax;
+
+	chargePerUse = userChargePerUse;
+	chargeMax = baseChargeMax;
+	if ( myVehicle.inSiegeMode() ) {
+		chargePerUse = chargePerUse * chargePerUseSiegeScale;
+		chargeMax = chargeMax * chargePerUseSiegeScale;
+	}
+
+	// recalculate the charge time to be the same %
+	chargeTime = sys.getTime() + chargeMax * percentChargeUsed;
+
+	UpdateCharge_Base();
+}

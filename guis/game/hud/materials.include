@@ -1,0 +1,179 @@
+
+#ifndef __hud_materials__
+#define __hud_materials__
+
+$template _hud_materials
+	materials {
+		"caption_l"							"guis/assets/hud/gdf/sheet_darken, rect( 42, 0, 16, 14 )"
+		"caption_c"							"guis/assets/hud/gdf/sheet_darken, rect( 62, 0, 16, 14 )"
+		"caption_r"							"guis/assets/hud/gdf/sheet_darken, rect( 42, 0, 16, 14 ) flipX"
+				
+		"caption_line_l"					"guis/assets/hud/gdf/sheet, rect( 2, 0, 16, 14 )"
+		"caption_line_c"					"guis/assets/hud/gdf/sheet, rect( 22, 0, 16, 14 )"
+		"caption_line_r"					"guis/assets/hud/gdf/sheet, rect( 2, 0, 16, 14 ) flipX"
+		
+		"guis/assets/hud/ethud/targetbg" 		"guis/assets/hud/ethud/targetbg"
+		"guis/assets/hud/ethud/targetcenter"	"guis/assets/hud/ethud/targetcenter"
+		"guis/assets/hud/ethud/targettop" 		"guis/assets/hud/ethud/targettop"
+		"guis/assets/hud/ethud/targetbtm" 		"guis/assets/hud/ethud/targetbtm"				
+				
+		"bar_l"								"guis/assets/hud/gdf/sheet, rect( 286, 6, 8, 10 )"		
+		"bar_c"								"guis/assets/hud/gdf/sheet, rect( 306, 6, 8, 10 )"
+		"bar_r"								"guis/assets/hud/gdf/sheet, rect( 286, 6, 8, 10 ) flipX"
+		"bar_line_l"						"guis/assets/hud/gdf/sheet, rect( 226, 6, 8, 10 )"		
+		"bar_line_c"						"guis/assets/hud/gdf/sheet, rect( 246, 6, 8, 10 )"		
+		"bar_line_r"						"guis/assets/hud/gdf/sheet, rect( 226, 6, 8, 10 ) flipX"
+				
+		"bar_flip_l"						"guis/assets/hud/gdf/sheet, rect( 286, 6, 8, 10 )"		
+		"bar_flip_c"						"guis/assets/hud/gdf/sheet, rect( 306, 6, 8, 10 ) flipX"
+		"bar_flip_r"						"guis/assets/hud/gdf/sheet, rect( 286, 6, 8, 10 ) flipX"
+		"bar_flip_line_l"					"guis/assets/hud/gdf/sheet, rect( 226, 6, 8, 10 )"		
+		"bar_flip_line_c"					"guis/assets/hud/gdf/sheet, rect( 246, 6, 8, 10 ) flipX"		
+		"bar_flip_line_r"					"guis/assets/hud/gdf/sheet, rect( 226, 6, 8, 10 ) flipX"		
+
+		"small_progress_b"					"guis/assets/hud/gdf/sheet, rect( 348, 8, 8, 10 )"
+		"small_progress_c"					"guis/assets/hud/gdf/sheet, rect( 368, 8, 8, 10 )"
+		"small_progress_e"					"guis/assets/hud/gdf/sheet, rect( 348, 8, 8, 10 ) flipX"
+		
+		"small_progress_flip_b"				"guis/assets/hud/gdf/sheet, rect( 348, 8, 8, 10 )"
+		"small_progress_flip_c"				"guis/assets/hud/gdf/sheet, rect( 368, 8, 8, 10 )"
+		"small_progress_flip_e"				"guis/assets/hud/gdf/sheet, rect( 348, 8, 8, 10 ) flipX"      
+		
+		"small_progress_flip_flash_b"		"guis/assets/hud/gdf/sheet_flash, rect( 348, 8, 8, 10 )"
+		"small_progress_flip_flash_c"		"guis/assets/hud/gdf/sheet_flash, rect( 368, 8, 8, 10 )"
+		"small_progress_flip_flash_e"		"guis/assets/hud/gdf/sheet_flash, rect( 348, 8, 8, 10 ) flipX"
+		
+		"small_progress_flash_b"			"guis/assets/hud/gdf/sheet_flash, rect( 348, 8, 8, 10 )"
+		"small_progress_flash_c"			"guis/assets/hud/gdf/sheet_flash, rect( 368, 8, 8, 10 )"
+		"small_progress_flash_e"			"guis/assets/hud/gdf/sheet_flash, rect( 348, 8, 8, 10 ) flipX"
+		
+		"small_health_flip_l"				"guis/assets/hud/gdf/sheet, rect( 348, 8, 2, 10 )"
+		"small_health_flip_c"				"guis/assets/hud/gdf/sheet, rect( 368, 8, 1, 10 )"
+		"small_health_flip_r"				"guis/assets/hud/gdf/sheet, rect( 348, 8, 2, 10 ) flipX"      
+		
+		
+		"bracket_l_t"						"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 ), flipX"		
+		"bracket_l_c"						"guis/nodraw"
+		"bracket_l_b"						"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 ), flipX, flipY"
+		                    				
+		"bracket_r_t"						"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 )"
+		"bracket_r_c"						"guis/nodraw"
+		"bracket_r_b"						"guis/quickchat/qchat_fill, rect( 79, 107, 28, 19 ), flipY"			
+	
+	// scrollbar
+		"scroll_t"							"guis/assets/mainmenu/sheet_add, rect( 149, 213, 11, 11 )"
+		"scroll_c"							"guis/assets/mainmenu/sheet_add, rect( 149, 224, 11, 11 )"
+		"scroll_b"							"guis/assets/mainmenu/sheet_add, rect( 149, 213, 11, 11 ) flipY"
+		"scroll_fill_t"						"guis/nodraw"
+		"scroll_fill_c"						"guis/nodraw"
+		"scroll_fill_b"						"guis/nodraw"
+		"scroll_arrow_up"					"guis/assets/mainmenu/sheet_add, rect( 149, 197, 11, 11 )"
+		"scroll_arrow_down"					"guis/assets/mainmenu/sheet_add, rect( 149, 197, 11, 11 ) flipY"
+		"scroll_thumb"						"guis/nodraw"
+		"scroll_thumb_overlay"				"guis/assets/mainmenu/sheet_add, rect( 164, 227, 11, 11 )"
+	}
+	
+	materials {
+        "button_fill_l"     "guis/assets/mainmenu/sheet_fill, rect( 167, 136, 8, 16 )"
+        "button_fill_c"     "guis/assets/mainmenu/sheet_fill, rect( 170, 136, 8, 16 )"
+        "button_fill_r"     "guis/assets/mainmenu/sheet_fill, rect( 167, 136, 8, 16 ) flipX"
+
+        "button_grad_l"     "guis/assets/mainmenu/sheet_fill, rect( 167, 168, 8, 16 )"
+        "button_grad_c"     "guis/assets/mainmenu/sheet_fill, rect( 170, 168, 8, 16 )"
+        "button_grad_r"     "guis/assets/mainmenu/sheet_fill, rect( 167, 168, 8, 16 ) flipX"
+
+        "button_line_l"     "guis/assets/mainmenu/sheet_fill, rect( 167, 200, 8, 16 )"
+        "button_line_c"     "guis/assets/mainmenu/sheet_fill, rect( 170, 200, 8, 16 )"
+        "button_line_r"     "guis/assets/mainmenu/sheet_fill, rect( 167, 200, 8, 16 ) flipX"
+    }	
+		
+	// dialog button gradient
+	materials {
+		"dialog_grad_l"		"guis/assets/mainmenu/sheet_fill, rect( 255, 155, 22, 1 )"
+		"dialog_grad_r"		"guis/assets/mainmenu/sheet_fill, rect( 255, 155, 23, 1 ) flipX"
+		"dialog_grad_t"		"guis/assets/mainmenu/sheet_fill, rect( 278, 130, 1, 18 )"
+		"dialog_grad_b"		"guis/assets/mainmenu/sheet_fill, rect( 278, 159, 1, 23 )"
+		"dialog_grad_tl"	"guis/assets/mainmenu/sheet_fill, rect( 255, 130, 23, 22 )"
+		"dialog_grad_tr"	"guis/assets/mainmenu/sheet_fill, rect( 255, 130, 23, 22 ) flipX"
+		"dialog_grad_bl"	"guis/assets/mainmenu/sheet_fill, rect( 255, 159, 23, 23 )"
+		"dialog_grad_br"	"guis/assets/mainmenu/sheet_fill, rect( 255, 159, 23, 23 ) flipX"
+		"dialog_grad_c"		"guis/nodraw"
+	}	
+	
+	// dialog fill
+	materials {
+		"dialog_l"			"guis/assets/mainmenu/sheet_fill, rect( 255, 187, 6, 1 )"
+		"dialog_r"			"guis/assets/mainmenu/sheet_fill, rect( 255, 187, 6, 1 ) flipX"
+		"dialog_t"			"guis/assets/mainmenu/sheet_fill, rect( 259, 182, 1, 6 )"
+		"dialog_b"			"guis/assets/mainmenu/sheet_fill, rect( 259, 182, 1, 6 ) flipY"
+		"dialog_tl"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 6, 6 )"
+		"dialog_tr"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 6, 6 ) flipX"
+		"dialog_bl"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 6, 6 ) flipY"
+		"dialog_br"			"guis/assets/mainmenu/sheet_fill, rect( 255, 182, 6, 6 ) flipX flipY"
+		"dialog_c"			"guis/assets/white"
+	}
+	// dialog lines
+	materials {
+		"dialog_line_l"		"guis/assets/mainmenu/sheet_fill, rect( 255, 203, 6, 1 )"
+		"dialog_line_r"		"guis/assets/mainmenu/sheet_fill, rect( 255, 203, 6, 1 ) flipX"
+		"dialog_line_t"		"guis/assets/mainmenu/sheet_fill, rect( 259, 198, 1, 6 )"
+		"dialog_line_b"		"guis/assets/mainmenu/sheet_fill, rect( 259, 198, 1, 6 ) flipY"
+		"dialog_line_tl"	"guis/assets/mainmenu/sheet_fill, rect( 255, 198, 6, 6 )"
+		"dialog_line_tr"	"guis/assets/mainmenu/sheet_fill, rect( 255, 198, 6, 6 ) flipX"
+		"dialog_line_bl"	"guis/assets/mainmenu/sheet_fill, rect( 255, 198, 6, 6 ) flipY"
+		"dialog_line_br"	"guis/assets/mainmenu/sheet_fill, rect( 255, 198, 6, 6 ) flipX flipY"
+		"dialog_line_c"		"guis/nodraw"
+	}
+	
+	// window frame, lines
+	materials {
+		"window_line_l"			"guis/assets/mainmenu/sheet_fill, rect( 131, 185, 8, 4 )"
+		"window_line_r"			"guis/assets/mainmenu/sheet_fill, rect( 131, 185, 8, 4 ) flipX"
+		"window_line_t"			"guis/assets/mainmenu/sheet_fill, rect( 145, 179, 4, 8 )"
+		"window_line_b"			"guis/assets/mainmenu/sheet_fill, rect( 145, 179, 4, 8 ) flipY"
+		"window_line_tl"		"guis/assets/mainmenu/sheet_fill, rect( 131, 179, 8, 8 )"
+		"window_line_tr"		"guis/assets/mainmenu/sheet_fill, rect( 131, 179, 8, 8 ) flipX"
+		"window_line_bl"		"guis/assets/mainmenu/sheet_fill, rect( 131, 179, 8, 8 ) flipY"
+		"window_line_br"		"guis/assets/mainmenu/sheet_fill, rect( 131, 179, 8, 8 ) flipX flipY"
+		"window_line_c"			"guis/nodraw"
+	}	
+	
+	// timer bar left fill
+	materials {
+		"timer_left_fill_l"		"guis/assets/mainmenu/sheet_fill, rect( 393, 194, 8, 20 )"
+		"timer_left_fill_c"		"guis/assets/mainmenu/sheet_fill, rect( 400, 194, 1, 20 )"
+		"timer_left_fill_r"		"guis/assets/mainmenu/sheet_fill, rect( 401, 194, 5, 20 )"
+		
+		"timer_left_line_l"		"guis/assets/mainmenu/sheet_fill, rect( 393, 216, 8, 20 )"
+		"timer_left_line_c"		"guis/assets/mainmenu/sheet_fill, rect( 400, 216, 1, 20 )"
+		"timer_left_line_r"		"guis/assets/mainmenu/sheet_fill, rect( 401, 216, 5, 20 )"
+			
+		"timer_fill_l"			"guis/assets/mainmenu/sheet_fill, rect( 406, 194, 8, 20 )"
+		"timer_fill_c"			"guis/assets/mainmenu/sheet_fill, rect( 406, 194, 1, 20 )"
+		"timer_fill_r"			"guis/assets/mainmenu/sheet_fill, rect( 417, 194, 5, 20 )"
+		
+		"timer_line_tl"			"guis/assets/mainmenu/sheet_fill, rect( 406, 216, 1, 20 )"
+		"timer_line_l"			"guis/assets/mainmenu/sheet_fill, rect( 406, 216, 1, 20 )"
+		"timer_line_c"			"guis/assets/mainmenu/sheet_fill, rect( 410, 216, 5, 20 )"
+		"timer_line_r"			"guis/assets/mainmenu/sheet_fill, rect( 417, 216, 1, 20 )"		
+		"timer_line_tr"			"guis/assets/mainmenu/sheet_fill, rect( 417, 216, 5, 20 )"
+		
+		"spawnwave"				"guis/assets/mainmenu/sheet_fill, rect( 270, 242, 32, 12 )"
+		"match"					"guis/assets/mainmenu/sheet_fill, rect( 306, 242, 12, 12 )"
+	}
+	
+	// highlight border
+	materials {
+		"highlight_line_l"			"guis/assets/mainmenu/sheet_fill, rect( 354, 247, 8, 4 )"
+		"highlight_line_r"			"guis/assets/mainmenu/sheet_fill, rect( 354, 247, 8, 4 ) flipX"
+		"highlight_line_t"			"guis/assets/mainmenu/sheet_fill, rect( 368, 241, 4, 8 )"
+		"highlight_line_b"			"guis/assets/mainmenu/sheet_fill, rect( 368, 241, 4, 8 ) flipY"
+		"highlight_line_tl"			"guis/assets/mainmenu/sheet_fill, rect( 354, 241, 8, 8 )"
+		"highlight_line_tr"			"guis/assets/mainmenu/sheet_fill, rect( 354, 241, 8, 8 ) flipX"
+		"highlight_line_bl"			"guis/assets/mainmenu/sheet_fill, rect( 354, 241, 8, 8 ) flipY"
+		"highlight_line_br"			"guis/assets/mainmenu/sheet_fill, rect( 354, 241, 8, 8 ) flipX flipY"
+		"highlight_line_c"			"guis/nodraw"
+	}
+$endtemplate
+
+#endif // !__hud_materials__

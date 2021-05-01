@@ -1,0 +1,3120 @@
+// SET YOUR TABS TO EQUAL FOUR SPACES OR YOU WON'T EDIT IN THE CORRECT FORMAT
+
+
+//////////////////////////
+// STROGG PLAYER MODELS //
+//////////////////////////
+
+
+model models/players/strogg {
+	mesh										models/characters/animations/strogg/oppressor.md5mesh
+
+	offset										( -4 0 0 )
+
+	channel torso								( *Spine )
+	channel legs								( *origin -*Spine)
+
+
+
+//////////////////////////////
+// STROGG PLAYER ANIMATIONS //**********************************************************************************************************************************
+//////////////////////////////
+
+///////////*********///////////*********///////////*********///////////	********///////////*********///////////*********///////////*********///////////*********
+// BASE  //*********// BASE  //*********// BASE  //*********// BASE  //	********// BASE  //*********// BASE  //*********// BASE  //*********// BASE  //*********
+///////////*********///////////*********///////////*********///////////	********///////////*********///////////*********///////////*********///////////*********
+
+	anim strogg_boxart_pose_feb					models/characters/animations/strogg/boxartfeb003.md5anim {
+	}
+
+	anim strogg_boxart_pose_febold				models/characters/animations/strogg/boxartfeb001.md5anim {
+	}
+
+	anim boxart_gdf_attacked_strogg				models/characters/animations/strogg/gdf_attacked_boxart_pose_strogg.md5anim {
+	}
+
+	anim af_pose								models/characters/animations/strogg/base.md5anim {
+	}
+
+	anim ik_pose								models/characters/animations/strogg/base.md5anim {
+	}
+
+	anim initial								models/characters/animations/strogg/base.md5anim {
+	}
+
+	anim teleport								models/characters/animations/strogg/base.md5anim {
+	}
+
+	anim exit									models/characters/animations/strogg/base.md5anim {
+	}
+
+	anim idle 									models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+	}
+
+	anim raise									models/characters/animations/strogg/strogg_hand_takeout_putaway_right_back_003.md5anim {
+		frame begin  								weaponState hide
+		frame 5		 								weaponState show
+		frame end	 								weaponState show
+	}
+
+	anim lower									models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+				frame begin  								weaponState hide
+
+	}
+
+	anim sprint_forward							models/characters/animations/strogg/strogg_hand_sprint_003.md5anim {
+
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 6										footstep _right
+		frame 11									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim down									models/characters/animations/strogg/strogg_hand_crouch_idle_001_into.md5anim {
+	}
+
+	anim torso_turn_right						models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+	}
+
+	anim legs_turn_right						models/characters/animations/strogg/strogg_spikes_walk_turnleft45_001.md5anim {
+	}
+
+	anim torso_turn_left						models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+	}
+
+	anim legs_turn_left							models/characters/animations/strogg/strogg_spikes_walk_turnright45_002.md5anim {
+	}
+
+	anim fire 									models/characters/animations/strogg/strogg_spikes_stand_shoot001.md5anim {
+	}
+
+	anim jump									models/characters/animations/strogg/strogg_blaster_jump_up6_loop.md5anim {
+		frame begin									sound_channel snd_player_jump snd_jump_strogg
+	}
+
+	anim fall									models/characters/animations/strogg/strogg_blaster_jump_up6_loop.md5anim {
+	}
+
+	anim soft_land								models/characters/animations/strogg/strogg_blaster_jump_up6_landing.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame begin									footstep _right
+		frame 3										footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim hard_land								models/characters/animations/strogg/strogg_blaster_jump_up6_landing.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame begin									footstep _right
+		frame 3										footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim strogg_boxart_pose						models/characters/animations/strogg/strogg_boxart_pose.md5anim {
+	}
+
+	anim strogg_boxart_pose2					models/characters/animations/strogg/strogg_boxart_pose_vers5.md5anim {
+	}
+
+	anim strogg_boxart_pose3					models/characters/animations/strogg/strogg_boxart_pose_vers3.md5anim {
+	}
+
+	anim strogg_boxart_pose4					models/characters/animations/strogg/strogg_boxart_pose_vers4.md5anim {
+	}
+
+	anim strogg_boxart_pose5					models/characters/animations/strogg/strogg_boxart_pose_vers5.md5anim {
+	}
+
+	anim strogg_boxart_pose6					models/characters/animations/strogg/strogg_boxart_pose_vers6.md5anim {
+	}
+
+	anim lean_left								models/characters/animations/initial_edf/edf_antipersonnel_control.md5anim {
+	}
+
+
+animGroup "walk" "walk_hold" {
+
+	anim forward								models/characters/animations/strogg/strogg_hand_walk_forward_006.md5anim {
+	}
+
+	anim backwards								models/characters/animations/strogg/strogg_hand_walk_forward_006_BACK.md5anim {
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_spikes_walk_strafe003_left.md5anim {
+		ai_fixed_forward
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_hand_walk_left_001_right.md5anim  {
+		ai_fixed_forward
+	}
+}
+
+
+animGroup "run" "run_hold" {
+	anim forward								models/characters/animations/strogg/strogg_spikes_jog_forward003_forward.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 5										footstep _right
+		frame 13									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+
+	}
+
+	anim backwards								models/characters/animations/strogg/strogg_spikes_jog_back002.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 7										footstep _right
+		frame 14									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_spikes_jog_strafe001_left.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		ai_fixed_forward
+		frame 2										footstep _right
+		frame 10									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_spikes_jog_strafe001_right.md5anim {
+			frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+			ai_fixed_forward
+			frame 6										footstep _right
+			frame 15									footstep
+			frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim jump									models/characters/animations/strogg/strogg_blaster_jump_up6_loop.md5anim {
+		frame begin									sound_channel snd_player_jump snd_jump_strogg
+	}
+}
+
+
+animGroup "crouch" "crouch_hold" {
+	anim idle									models/characters/animations/strogg/strogg_hand_crouch_idle_001_idle.md5anim {
+	}
+
+	anim up										models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+	}
+
+	anim lean_left_up										models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+	}
+
+	anim lean_right_up										models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+	}
+
+	anim from_prone								models/characters/animations/strogg/strogg_allweapons_crouch_prone002_prone2crouch.md5anim {
+	}
+
+	anim forward								models/characters/animations/strogg/strogg_spikes_crouchwalk_forward004.md5anim {
+	}
+
+	anim backwards								models/characters/animations/strogg/strogg_spikes_crouchwalk_back001.md5anim {
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_spikes_crouchwalk_strafe001_left.md5anim {
+		ai_fixed_forward
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_spikes_crouchwalk_strafe001_right.md5anim {
+		ai_fixed_forward
+	}
+
+	anim fire									models/characters/animations/strogg/strogg_blaster_stand_crouch001_shoot.md5anim {
+	}
+
+	anim legs_turn_right						models/characters/animations/strogg/strogg_hands_crouch_turn_right.md5anim {
+	}
+
+	anim legs_turn_left							models/characters/animations/strogg/strogg_hands_crouch_turn_left.md5anim {
+	}
+}
+
+
+animGroup "prone" "prone_hold" {
+	anim from_crouch							models/characters/animations/strogg/strogg_allweapons_crouch_prone002_crouch2prone.md5anim {
+	}
+
+	anim idle									models/characters/animations/strogg/strogg_upperbackweapons_prone_takeout001_weaponpronecyc.md5anim {
+	}
+
+	anim fire									models/characters/animations/strogg/strogg_allweapons_crouch_prone002_proneshoot.md5anim {
+	}
+
+	anim reload									models/characters/animations/strogg/strogg_blaster_prone_overheat_001.md5anim {
+	}
+
+	anim forward								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim backwards								models/characters/animations/strogg/strogg_prone_backward.md5anim {
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		ai_fixed_forward
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		ai_fixed_forward
+	}
+
+	anim down									models/characters/animations/initial_edf/edf_dive_to_prone.md5anim {
+	}
+
+	anim raise									models/characters/animations/strogg/strogg_upperbackweapons_prone_takeout001_proneputaway.md5anim {
+		frame										start weaponState hide
+		frame 20									weaponState show
+		frame end									weaponState show
+	}
+
+	anim lower									models/characters/animations/strogg/strogg_upperbackweapons_prone_takeout001_weaponpronecyc.md5anim {
+		frame begin									weaponState hide
+	}
+
+	anim turn_left								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim turn_right								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim up										models/characters/animations/strogg/strogg_spikes_stand_prone002_prone2stand.md5anim {
+	}
+}
+
+
+//nonweapon specific anims
+	anim death_backwards						models/characters/animations/initial_edf/gdf_die_front_strogg.md5anim {
+	}
+
+	anim dead_idle								models/characters/animations/initial_edf/gdf_dead_idle_strogg.md5anim {
+	}
+
+	anim unconscious							models/characters/animations/initial_edf/gdf_reviveme_cyc_strogg.md5anim {
+	}
+
+	anim revival								models/characters/animations/initial_edf/gdf_revive_strogg.md5anim {
+	}
+
+	anim prone_death_backwards					models/characters/animations/initial_edf/prone_death_strogg.md5anim {
+	}
+
+	anim icarus									models/characters/animations/strogg/icarus.md5anim {
+	}
+
+	anim icarus_fire							models/characters/animations/strogg/icarus_fire.md5anim {
+	}
+
+	anim icarus_boost							models/characters/animations/strogg/icarus_boost.md5anim {
+	}
+
+	anim icarus_boost_idle						models/characters/animations/strogg/icarus_boost_idle.md5anim {
+	}
+
+	anim icarus_boost_end						models/characters/animations/strogg/icarus_boost_end.md5anim {
+	}
+
+	anim cockpit 								models/characters/animations/initial_edf/badger.md5anim {
+	}
+
+	anim hornet_pilot							models/characters/animations/strogg/strogg_hornet_pilot.md5anim {
+	}
+
+	anim mounted_weapon							models/characters/animations/initial_edf/badger.md5anim {
+	}
+
+	anim strogg_antivehicle_gunner				models/characters/animations/strogg/strogg_antivehicle_gunner.md5anim {
+	}
+
+	anim strogg_antipersonnel_gunner			models/characters/animations/strogg/strogg_antipersonnel_gunner.md5anim {
+	}
+
+	anim legs_ladder_up							models/characters/animations/initial_edf/gdf_ladder_climb_up.md5anim {
+			frame begin								weaponState hide
+			frame end								weaponState show
+			frame 3									sound_channel snd_player_footstep snd_footstep_ladder
+			frame 11								sound_channel snd_player_footstep snd_footstep_ladder
+	}
+
+	anim legs_ladder_down 						models/characters/animations/initial_edf/gdf_ladder_climb_down.md5anim {
+			frame begin								weaponState hide
+			frame end								weaponState show
+			frame 3									sound_channel snd_player_footstep snd_footstep_ladder
+			frame 11								sound_channel snd_player_footstep snd_footstep_ladder
+	}
+
+	anim torso_ladder_up						models/characters/animations/initial_edf/gdf_ladder_climb_up.md5anim {
+			frame begin								weaponState hide
+			frame end								weaponState show
+	}
+
+	anim torso_ladder_down 						models/characters/animations/initial_edf/gdf_ladder_climb_down.md5anim {
+			frame begin								weaponState hide
+			frame end								weaponState show
+	}
+
+	anim ladder_idle							models/characters/animations/initial_edf/gdf_ladder_climb_idle_left.md5anim {
+			frame begin								weaponState hide
+			frame end								weaponState show
+	}
+
+	anim ladder_slide							models/characters/animations/initial_edf/gdf_ladder_slide_down.md5anim {
+			frame begin								weaponState hide
+			frame end								weaponState show
+
+	}
+
+	anim swim									models/characters/animations/initial_edf/edf_hands_treadwater_static.md5anim {
+		frame begin weaponState hide
+		frame begin									sound_channel snd_player_move snd_movement_water_idle
+	}
+
+	anim swim_forward							models/characters/animations/initial_edf/edf_hands_treadwater_forward.md5anim {
+		frame begin weaponState hide
+		frame begin									sound_channel snd_player_move snd_movement_water_swim
+	}
+
+	anim swim_backward							models/characters/animations/initial_edf/edf_hands_treadwater_back.md5anim {
+		frame begin weaponState hide
+		frame begin									sound_channel snd_player_move snd_movement_water_swim
+	}
+
+	anim swim_left								models/characters/animations/initial_edf/edf_hands_treadwater_strafe_left.md5anim {
+		frame begin weaponState hide
+		frame begin									sound_channel snd_player_move snd_movement_water_swim
+	}
+
+	anim swim_right								models/characters/animations/initial_edf/edf_hands_treadwater_strafe_right.md5anim {
+		frame begin weaponState hide
+		frame begin									sound_channel snd_player_move snd_movement_water_swim
+	}
+
+
+///////////*********///////////*********///////////*********///////////*********///////////*********///////////*********///////////*********///////////*********
+// HANDS //*********// HANDS //*********// HANDS//*********// HANDS //*********// HANDS //*********// HANDS //*********// HANDS //*********// HANDS //*********
+///////////*********///////////*********///////////*********///////////*********///////////*********///////////*********///////////*********///////////*********
+
+animGroup "hands" {
+	anim idle 									models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+	}
+
+	anim raise									models/characters/animations/strogg/strogg_hand_takeout_putaway_right_back_003.md5anim {
+		frame begin  								weaponState hide
+		frame 12	 								weaponState show
+		frame end	 								weaponState show
+	}
+
+	anim lower									models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+		frame begin									weaponState hide
+	}
+
+	anim jump									models/characters/animations/strogg/strogg_blaster_jump_up6_loop.md5anim {
+		frame begin									sound_channel snd_player_jump snd_jump_strogg
+	}
+
+	anim fall									models/characters/animations/strogg/strogg_blaster_jump_up6_loop.md5anim {
+	}
+
+	anim soft_land								models/characters/animations/strogg/strogg_blaster_jump_up6_landing.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 1										footstep _right
+		frame 3										footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim hard_land								models/characters/animations/strogg/strogg_blaster_jump_up6_landing.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 1										footstep _right
+		frame 3										footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim down									models/characters/animations/strogg/strogg_hand_crouch_idle_001_into.md5anim {
+	}
+
+	anim up										models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+	}
+
+	anim lean_left_up										models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+	}
+
+	anim lean_right_up										models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+	}
+
+	anim legs_strafe_left						models/characters/animations/strogg/strogg_spikes_walk_strafe003_left.md5anim {
+	}
+
+	anim torso_strafe_left						models/characters/animations/strogg/strogg_spikes_walk_strafe003_left.md5anim {
+	}
+
+	anim legs_strafe_right						models/characters/animations/strogg/strogg_spikes_walk_strafe003_right.md5anim {
+	}
+
+	anim torso_strafe_right						models/characters/animations/strogg/strogg_spikes_walk_strafe003_right.md5anim {
+	}
+
+	anim torso_turn_left						models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+	}
+
+	anim legs_turn_left							models/characters/animations/strogg/strogg_spikes_walk_turnright45_002.md5anim {
+	}
+
+	anim torso_turn_right						models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+	}
+
+	anim legs_turn_right						models/characters/animations/strogg/strogg_spikes_walk_turnleft45_001.md5anim {
+	}
+
+	anim lean_left_idle							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+	}
+
+	anim lean_right_idle						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+		anim lean_left_startfire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim lean_right_startfire						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+	anim lean_left_fire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+	}
+
+	anim lean_right_fire						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+
+	anim lean_left_raise						models/characters/animations/strogg/strogg_hands_lean_left_takeout_left.md5anim {
+	}
+
+	anim lean_right_raise						models/characters/animations/strogg/strogg_hands_lean_right_takeout_left.md5anim {
+	}
+
+	anim lean_left_lower						models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+				frame begin									weaponState hide
+	}
+
+	anim lean_right_lower						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+				frame begin									weaponState hide
+	}
+
+	anim shock_self								models/characters/animations/strogg/strogg_hands_shock_self.md5anim {
+	}
+
+
+	anim lean_right_run_hold_idle				models/characters/animations/strogg/strogg_hand_binoculars_lean_right_usecyc.md5anim {
+	}
+
+	anim lean_right_walk_hold_idle				models/characters/animations/strogg/strogg_hand_binoculars_lean_right_usecyc.md5anim {
+	}
+
+
+
+animGroup "walk" "walk_hold" {
+	anim forward	  							models/characters/animations/strogg/strogg_hand_walk_forward_006.md5anim {
+	}
+
+	anim backwards	  							models/characters/animations/strogg/strogg_hand_walk_forward_006_BACK.md5anim {
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_spikes_walk_strafe003_left.md5anim {
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_hand_walk_left_001_right.md5anim {
+	}
+}
+
+
+animGroup "run" "run_hold" {
+	anim forward								models/characters/animations/strogg/strogg_hand_run_forward_003.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 5										footstep _right
+		frame 13									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim backwards								models/characters/animations/strogg/strogg_hand_run_forward_003_BACK.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 4										footstep _right
+		frame 11									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_spikes_run_left.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 6										footstep _right
+		frame 13									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_spikes_run_right.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 5										footstep _right
+		frame 13									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+}
+
+
+animGroup "crouch" "crouch_hold" {
+	anim idle									models/characters/animations/strogg/strogg_hand_crouch_idle_001_idle.md5anim {
+	}
+
+	anim forward								models/characters/animations/strogg/strogg_spikes_crouchwalk_forward004.md5anim {
+	}
+
+	anim backwards								models/characters/animations/strogg/strogg_spikes_crouchwalk_back001.md5anim {
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_spikes_crouchwalk_strafe001_left.md5anim {
+		ai_fixed_forward
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_spikes_crouchwalk_strafe001_right.md5anim {
+		ai_fixed_forward
+	}
+
+	anim lean_left_idle							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+	}
+
+	anim lean_right_idle						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+	}
+
+			anim lean_left_startfire							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_startfire						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+		}
+
+
+		anim lean_left_fire							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+		}
+
+		anim lean_right_fire						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+	}
+
+	anim lean_left_raise						models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+	}
+
+	anim lean_right_raise						models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+	}
+
+	anim lean_left_lower						models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+				frame begin							weaponState hide
+	}
+
+	anim lean_right_lower						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+				frame begin							weaponState hide
+	}
+
+	anim torso_shock_self								models/characters/animations/strogg/strogg_hands_shock_self.md5anim {
+	}
+
+	anim legs_shock_self								models/characters/animations/strogg/strogg_hand_crouch_idle_001_idle.md5anim {
+	}
+
+	anim turn_right								models/characters/animations/strogg/strogg_hands_crouch_turn_left.md5anim {
+	}
+
+	anim turn_left								models/characters/animations/strogg/strogg_hands_crouch_turn_right.md5anim {
+	}
+
+	anim from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+	}
+
+	anim lean_left_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+	}
+
+	anim lean_right_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+	}
+}
+
+
+animGroup "prone" "prone_hold" {
+	anim up										models/characters/animations/strogg/strogg_hands_stand_to_prone_001_UP.md5anim {
+	}
+
+	anim down									models/characters/animations/strogg/strogg_hands_stand_to_prone_001_DOWN.md5anim {
+	}
+
+	anim from_crouch							models/characters/animations/strogg/strogg_hands_crouch_to_prone.md5anim {
+	}
+
+	anim idle									models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+	}
+
+	anim strafe_left							models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim strafe_right							models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim forward								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim backwards									models/characters/animations/strogg/strogg_prone_backward.md5anim {
+	}
+
+	anim raise 									models/characters/animations/strogg/strogg_tool_prone_take_out_right_back_004.md5anim {
+		frame begin  								weaponstate hide
+		frame 9 								weaponstate show
+		frame end	 								weaponstate show
+	}
+
+	anim lower									models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+	frame begin										weaponState hide
+	}
+
+	anim turn_left								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim turn_right								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+	}
+
+	anim shock_self								models/characters/animations/strogg/strogg_hands_shock_self_prone.md5anim {
+	}
+}
+
+
+animGroup "sprint" "sprint_hold" {
+	anim forward								models/characters/animations/strogg/strogg_hand_sprint_003.md5anim {
+		frame begin									sound_channel snd_player_move snd_movement_stroggshuffle
+		frame 4										footstep _right
+		frame 11									footstep
+		frame end									fade_channel snd_player_move "-60" 1
+	}
+}
+
+
+animGroup "construction_tool" {
+    anim raise									models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+	}
+
+	anim lower									models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+		frame begin									weaponState hide
+	}
+
+	anim lean_left_raise						models/characters/animations/strogg/strogg_hands_lean_left_takeout_left.md5anim {
+	}
+
+	anim lean_right_raise						models/characters/animations/strogg/strogg_hands_lean_right_takeout_left.md5anim {
+	}
+
+	anim lean_left_lower						models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+	}
+
+	anim lean_right_lower						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+	anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+	}
+
+	anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+	}
+
+	anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+	}
+
+	anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+	}
+
+	anim raise_held								models/characters/animations/strogg/strogg_hand_contruction_tool_use_003_into.md5anim  {
+	}
+
+	anim lower_held								models/characters/animations/strogg/strogg_hand_contruction_tool_use_003_out.md5anim {
+	}
+	anim crouch_torso_raise_held				models/characters/animations/strogg/strogg_hand_contruction_tool_use_003_into.md5anim  {
+	}
+
+	anim crouch_torso_lower_held				models/characters/animations/strogg/strogg_hand_contruction_tool_use_003_out.md5anim {
+	}
+
+
+	anim prone_torso_raise_held					models/characters/animations/strogg/strogg_medic_prone_revive_003.md5anim {
+	}
+
+	anim prone_torso_lower_held					models/characters/animations/strogg/strogg_medic_prone_revive_003.md5anim {
+	}
+
+
+
+animGroup "walk_hold" "run_hold" "sprint_hold" {
+	anim idle 									models/characters/animations/strogg/strogg_hand_contruction_tool_use_003_idle.md5anim {
+	}
+
+	anim lean_left_idle							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+	}
+
+	anim lean_right_idle						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+}
+
+
+animGroup "crouch_hold" {
+	anim idle 									models/characters/animations/strogg/strogg_hand_crouch_construction_tool_use_001_IDLE.md5anim {
+	}
+}
+
+
+			animGroup "prone" {
+				anim raise						models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+				}
+				anim lower						models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+					frame begin								weaponState hide
+				}
+
+			}
+
+			animGroup "prone_hold" {
+
+
+				anim idle 						models/characters/animations/strogg/strogg_medic_prone_revive_003.md5anim {
+				}
+					anim raise						models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+								}
+								anim lower						models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+									frame begin								weaponState hide
+				}
+
+			}
+
+
+
+		}
+
+		animGroup "drone" {
+			anim idle 							models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+			}
+
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_lean_left_takeout_right.md5anim {
+			}
+
+			anim lean_right_raise					models/characters/animations/strogg/strogg_hands_lean_right_takeout_right.md5anim {
+			}
+
+				anim lean_left_idle							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+				}
+
+				anim lean_right_idle						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+				}
+
+
+					anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+					}
+
+					anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+					}
+
+
+			anim raise_held 				models/characters/animations/strogg/strogg_hand_drone_repair_003_into.md5anim {
+				}
+
+			animGroup "torso" "torso_hold" {
+				anim idle 						models/characters/animations/strogg/strogg_hand_drone_repair_003_idle.md5anim {
+				}
+
+
+
+				anim raise_held 				models/characters/animations/strogg/strogg_hand_drone_repair_003_into.md5anim {
+				}
+
+				anim lower_held					models/characters/animations/strogg/strogg_hand_drone_repair_003_out.md5anim {
+				}
+			}
+
+			animGroup "run_hold" "walk_hold" {
+				animGroup "torso" {
+					anim idle 					models/characters/animations/strogg/strogg_hand_drone_repair_003_idle.md5anim {
+					}
+				}
+			}
+
+			animGroup "crouch" {
+			anim idle						models/characters/animations/strogg/strogg_hand_crouch_idle_001_idle.md5anim {
+			}
+
+			anim hold_legs_idle					models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_idle.md5anim {
+			}
+
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_right.md5anim {
+			}
+
+			anim lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_right.md5anim {
+			}
+
+			anim lean_left_idle							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_idle						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+			}
+
+			anim lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+			}
+
+
+				anim fire						models/characters/animations/strogg/strogg_hand_crouch_construction_tool_use_001_idle.md5anim {
+				}
+
+				anim alt_fire					models/characters/animations/strogg/strogg_hand_crouch_construction_tool_use_001_idle.md5anim {
+				}
+
+				animGroup "torso" {
+					anim raise_held				models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_into.md5anim {
+					}
+
+					anim lower_held 			models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_out.md5anim {
+					}
+				}
+			}
+
+			animgroup "crouch_hold" {
+				animGroup "torso" {
+					anim idle					models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_idle.md5anim {
+					}
+					anim strafe_left					models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_idle.md5anim {
+					}
+					anim strafe_right					models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_idle.md5anim {
+					}
+					anim forward					models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_idle.md5anim {
+					}
+					anim backwards					models/characters/animations/strogg/strogg_hand_crouch_drone_repair_002_idle.md5anim {
+					}
+
+
+
+
+				}
+			}
+
+			animGroup "prone" {
+				animGroup "torso" {
+					anim raise_held				models/characters/animations/strogg/strogg_drone_prone_repair_001_into.md5anim {
+					}
+
+					anim lower_held				models/characters/animations/strogg/strogg_drone_prone_repair_001_out.md5anim {
+					}
+				}
+
+				anim idle						models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+				}
+
+				anim alt_fire					models/characters/animations/strogg/strogg_drone_prone_use_002.md5anim {
+				}
+			}
+
+			animgroup "prone_hold" {
+				anim torso_idle				models/characters/animations/strogg/strogg_drone_prone_repair_001_cyc.md5anim {
+				}
+				anim legs_idle				models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+				}
+			}
+		}
+
+		animGroup "grenades" {
+
+			anim startfire							models/characters/animations/strogg/strogg_hands_stand_grenade_prime_long.md5anim {
+			}
+
+			anim fire 								models/characters/animations/strogg/strogg_hands_stand_grenade_throw_long.md5anim {
+				frame begin  							weaponState show
+				frame 5									weaponstate hide
+
+			}
+
+			anim quick_throw						models/characters/animations/strogg/strogg_hands_stand_grenade_throw_long.md5anim {
+			}
+
+			anim alt_startfire						models/characters/animations/strogg/strogg_hands_stand_grenade_prime_long.md5anim {
+			}
+
+			anim alt_fire 							models/characters/animations/strogg/strogg_hands_stand_grenade_throw_short.md5anim {
+				frame begin  							weaponState show
+				frame 5									weaponstate hide
+			}
+
+			anim alt_quick_throw					models/characters/animations/strogg/strogg_hands_stand_grenade_throw_short.md5anim {
+			}
+
+			anim lower								models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+			frame begin								weaponState hide
+			}
+
+			anim raise								models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+				frame begin  						weaponstate hide
+				frame 7	 						weaponstate show
+				frame end	 						weaponstate show
+			}
+
+			anim lean_left_startfire				models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_prime_long.md5anim {
+			}
+
+
+			anim reload								models/characters/animations/strogg/strogg_stroyentcell_nomore.md5anim {
+			}
+
+			anim prone_reload						models/characters/animations/strogg/strogg_stroyentcell_prone_nomore.md5anim {
+			}
+
+
+			anim lean_right_startfire				models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_prime_long.md5anim {
+			}
+
+			anim lean_left_fire 					models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_long.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_right_fire 					models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_long.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_left_quick_throw				models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_long.md5anim {
+			}
+
+			anim lean_right_quick_throw				models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_long.md5anim {
+			}
+
+			anim lean_left_alt_startfire			models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_prime_long.md5anim {
+			}
+
+			anim lean_right_alt_startfire			models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_prime_long.md5anim {
+			}
+
+			anim lean_left_alt_fire 				models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_short.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_right_alt_fire 				models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_short.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_left_alt_quick_throw			models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_short.md5anim {
+			}
+
+			anim lean_right_alt_quick_throw			models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_short.md5anim {
+			}
+
+
+
+				anim lean_left_raise				models/characters/animations/strogg/strogg_hands_lean_left_takeout_left.md5anim {
+				}
+
+				anim lean_right_raise				models/characters/animations/strogg/strogg_hands_lean_right_takeout_left.md5anim {
+		}
+
+		anim lean_left_lower						models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim lean_right_lower						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+		}
+
+
+
+
+			animGroup "crouch" {
+
+				anim startfire						models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+			}
+
+			anim lean_right_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+			}
+
+			anim lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+			}
+
+
+				anim lean_left_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim fire								models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim lean_left_fire						models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_fire					models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim quick_throw						models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim _lean_Left_quick_throw				models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_quick_throw				models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+
+				anim alt_startfire						models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim lean_left_alt_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_alt_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim alt_fire							models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_fire					models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_right_alt_fire				models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim alt_quick_throw					models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_quick_throw			models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_right_alt_quick_throw			models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+	anim lean_left_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+	}
+
+	anim lean_right_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+	}
+				anim raise						models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+					frame begin  					weaponState hide
+					frame 12	 					weaponState show
+					frame end	 					weaponState show
+				}
+
+				anim lower						models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+					frame begin						 weaponState hide
+				}
+			}
+
+			animgroup "prone" {
+				anim startfire					models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_left_startfire					models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_startfire					models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim fire 						models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_left_fire 						models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_fire 						models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim quick_throw 				models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_left_quick_throw 				models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_quick_throw 				models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim alt_startfire				models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_left_alt_startfire				models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_alt_startfire				models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+			}
+
+				anim alt_fire 					models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_fire 					models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+
+				}
+
+				anim lean_right_alt_fire 					models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim alt_quick_throw 			models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_quick_throw 			models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim lean_right_alt_quick_throw 			models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+
+
+				anim raise						models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+					frame begin  					weaponstate hide
+					frame 5	 						weaponstate show
+					frame end	 					weaponstate show
+				}
+
+				anim lower 						models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+					frame begin						 weaponstate hide
+				}
+			}
+		}
+
+
+
+	animGroup "flyercontrol" {
+
+			anim idle						models/characters/animations/strogg/strogg_hands_flyerhive_control.md5anim {
+				frame begin 					 	weaponstate hide
+
+			}
+
+			anim prone_idle				models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+				frame begin 					 	weaponstate hide
+			}
+
+		}
+
+
+	animGroup "beacon" {
+
+			anim startfire							models/characters/animations/strogg/strogg_hands_stand_grenade_prime_long.md5anim {
+			}
+
+			anim fire 								models/characters/animations/strogg/strogg_hands_stand_grenade_throw_long.md5anim {
+				frame begin  							weaponState show
+			}
+
+			anim quick_throw						models/characters/animations/strogg/strogg_hands_stand_grenade_throw_long.md5anim {
+			}
+
+			anim alt_startfire						models/characters/animations/strogg/strogg_hands_stand_grenade_prime_long.md5anim {
+			}
+
+			anim alt_fire 							models/characters/animations/strogg/strogg_hands_stand_grenade_throw_short.md5anim {
+				frame begin  							weaponState show
+			}
+
+			anim alt_quick_throw					models/characters/animations/strogg/strogg_hands_stand_grenade_throw_short.md5anim {
+			}
+
+			anim lower								models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+			frame begin								weaponState hide
+			}
+
+			anim raise								models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+				frame begin  						weaponstate hide
+				frame 7	 						weaponstate show
+				frame end	 						weaponstate show
+			}
+
+			anim lean_left_startfire				models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_prime_long.md5anim {
+			}
+
+
+			anim reload								models/characters/animations/strogg/strogg_stroyentcell_nomore.md5anim {
+			}
+
+			anim prone_reload						models/characters/animations/strogg/strogg_stroyentcell_prone_nomore.md5anim {
+			}
+
+
+			anim lean_right_startfire				models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_prime_long.md5anim {
+			}
+
+			anim lean_left_fire 					models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_long.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_right_fire 					models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_long.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_left_quick_throw				models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_long.md5anim {
+			}
+
+			anim lean_right_quick_throw				models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_long.md5anim {
+			}
+
+			anim lean_left_alt_startfire			models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_prime_long.md5anim {
+			}
+
+			anim lean_right_alt_startfire			models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_prime_long.md5anim {
+			}
+
+			anim lean_left_alt_fire 				models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_short.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_right_alt_fire 				models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_short.md5anim {
+				frame begin  						weaponState show
+				frame 5								weaponstate hide
+				frame 14	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lean_left_alt_quick_throw			models/characters/animations/strogg/strogg_hands_stand_lean_left_grenade_throw_short.md5anim {
+			}
+
+			anim lean_right_alt_quick_throw			models/characters/animations/strogg/strogg_hands_stand_lean_right_grenade_throw_short.md5anim {
+			}
+
+
+
+				anim lean_left_raise				models/characters/animations/strogg/strogg_hands_lean_left_takeout_left.md5anim {
+				}
+
+				anim lean_right_raise				models/characters/animations/strogg/strogg_hands_lean_right_takeout_left.md5anim {
+		}
+
+		anim lean_left_lower						models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim lean_right_lower						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+		}
+
+
+
+
+			animGroup "crouch" {
+
+				anim startfire						models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+			}
+
+			anim lean_right_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+			}
+
+			anim lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+			}
+
+
+				anim lean_left_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim fire								models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim lean_left_fire						models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_fire					models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim quick_throw						models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim _lean_Left_quick_throw				models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_quick_throw				models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_long.md5anim {
+				}
+
+
+				anim alt_startfire						models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim lean_left_alt_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_alt_startfire			models/characters/animations/strogg/strogg_hands_crouch_grenade_prime_long.md5anim {
+				}
+
+				anim alt_fire							models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_fire					models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_right_alt_fire				models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim alt_quick_throw					models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_quick_throw			models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+				anim lean_right_alt_quick_throw			models/characters/animations/strogg/strogg_hands_crouch_grenade_throw_short.md5anim {
+				}
+
+
+				anim raise						models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+					frame begin  					weaponState hide
+					frame 12	 					weaponState show
+					frame end	 					weaponState show
+				}
+
+				anim lower						models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+					frame begin						 weaponState hide
+				}
+			}
+
+			animgroup "prone" {
+				anim startfire					models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_left_startfire					models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_startfire					models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim fire 						models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_left_fire 						models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_fire 						models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim quick_throw 				models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_left_quick_throw 				models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim lean_right_quick_throw 				models/characters/animations/strogg/strogg_hands_prone_grenade_throw_long.md5anim {
+				}
+
+				anim alt_startfire				models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_left_alt_startfire				models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+				}
+
+				anim lean_right_alt_startfire				models/characters/animations/strogg/strogg_hands_prone_grenade_prime_long.md5anim {
+			}
+
+				anim alt_fire 					models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_fire 					models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+
+				}
+
+				anim lean_right_alt_fire 					models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim alt_quick_throw 			models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim lean_left_alt_quick_throw 			models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+				anim lean_right_alt_quick_throw 			models/characters/animations/strogg/strogg_hands_prone_grenade_throw_short.md5anim {
+				}
+
+
+
+				anim raise						models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+					frame begin  					weaponstate hide
+					frame 5	 						weaponstate show
+					frame end	 					weaponstate show
+				}
+
+				anim lower 						models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+					frame begin						 weaponstate hide
+				}
+			}
+		}
+
+
+		animGroup "landmine" {
+
+			anim idle							models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+			}
+
+			anim fire							models/characters/animations/strogg/strogg_hands_stand_grenade_throw_short.md5anim {
+
+				frame 5 					 	weaponstate hide
+
+			}
+
+			anim crouch_legs_fire							models/characters/animations/strogg/strogg_hand_crouch_idle_001_idle.md5anim {
+
+			frame 5 					 	weaponstate hide
+
+			}
+
+			anim crouch_torso_fire							models/characters/animations/strogg/strogg_hands_stand_grenade_throw_short.md5anim {
+
+			frame 5 					 	weaponstate hide
+
+			}
+				anim lean_left_idle							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+				}
+
+				anim lean_right_idle						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+				}
+
+								anim crouch_lean_left_idle							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+								}
+
+								anim crouch_lean_right_idle						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+				}
+
+
+			anim crouch_idle							models/characters/animations/strogg/strogg_hand_crouch_idle_001_idle.md5anim {
+			}
+
+			anim prone_fire						models/characters/animations/strogg/strogg_landmine_prone_plant_002.md5anim {
+			}
+
+			anim raise							models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+				frame begin  						weaponState hide
+				frame 12	 						weaponState show
+				frame end	 						weaponState show
+			}
+
+			anim lower							models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+				frame begin							weaponState hide
+			}
+					anim lean_left_raise					models/characters/animations/strogg/strogg_hands_lean_left_takeout_left.md5anim {
+					}
+
+					anim lean_right_raise				models/characters/animations/strogg/strogg_hands_lean_right_takeout_left.md5anim {
+		}
+
+		anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+		}
+
+
+			anim lean_left_fire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+			}
+
+			anim lean_right_fire						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+		anim prone_idle							models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+		}
+
+		anim prone_raise					models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+			frame begin 					 	weaponstate hide
+			frame 5	 							weaponstate show
+			frame end						 	weaponstate show
+		}
+
+		anim prone_lower 					models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+			frame end							weaponstate hide
+		}
+		anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+		}
+
+		anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+		}
+
+		anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+		}
+
+		anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+		}
+}
+
+
+animGroup "teleporter" {
+			anim torso_fire							models/characters/animations/strogg/strogg_hands_teleporter_fire.md5anim {
+			}
+
+			anim legs_fire							models/characters/animations/strogg/strogg_hands_teleporter_fire.md5anim {
+			}
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_lean_left_takeout_right.md5anim {
+			}
+
+			anim lean_right_raise					models/characters/animations/strogg/strogg_hands_lean_right_takeout_right.md5anim {
+			}
+		anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+		}
+
+		anim lean_left_startfire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim lean_right_startfire						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+	anim lean_left_fire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+	}
+
+	anim lean_right_fire						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+
+
+
+
+			anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_right.md5anim {
+			}
+
+			anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_right.md5anim {
+			}
+
+
+
+
+			anim crouch_fire						models/characters/animations/strogg/strogg_hands_crouch_teleporter_fire.md5anim {
+			}
+
+			anim prone_fire						models/characters/animations/strogg/strogg_hands_prone_teleporter_fire.md5anim {
+			}
+
+
+
+
+
+
+			anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+			}
+
+			anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+			}
+
+
+
+
+		anim crouch_lean_left_startfire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+		}
+
+		anim crouch_lean_right_startfire						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+	}
+
+	anim crouch_lean_left_fire							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+	}
+
+	anim crouch_lean_right_fire						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+	}
+
+
+		}
+
+animGroup "teleport" {
+			anim torso_fire							models/characters/animations/strogg/strogg_hands_teleporter_fire.md5anim {
+			}
+
+			anim legs_fire							models/characters/animations/strogg/strogg_hands_teleporter_fire.md5anim {
+			}
+
+			anim idle							models/characters/animations/strogg/strogg_hands_teleport_idle.md5anim {
+			}
+
+			anim crouch_idle						models/characters/animations/strogg/strogg_hands_crouch_teleport_idle.md5anim {
+			}
+
+			anim prone_idle						models/characters/animations/strogg/strogg_hands_prone_teleport_idle.md5anim {
+			}
+
+			anim prone_fire						models/characters/animations/strogg/strogg_hands_prone_teleporter_fire.md5anim {
+			}
+
+			anim prone_turn_left								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+			anim prone_turn_right								models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+			anim crouch_torso_down				models/characters/animations/strogg/strogg_hands_teleport_idle.md5anim {
+			}
+
+			anim crouch_torso_up				models/characters/animations/strogg/strogg_hands_crouch_teleport_idle.md5anim {
+			}
+
+			anim torso_turn_left					models/characters/animations/strogg/strogg_hands_teleport_idle.md5anim {
+			}
+
+			anim torso_turn_right					models/characters/animations/strogg/strogg_hands_teleport_idle.md5anim {
+			}
+
+			anim crouch_turn_right						models/characters/animations/strogg/strogg_hands_crouch_turn_left.md5anim {
+			}
+
+			anim crouch_turn_left						models/characters/animations/strogg/strogg_hands_crouch_turn_right.md5anim {
+			}
+
+					anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_right.md5anim {
+					}
+
+					anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_right.md5anim {
+					}
+
+					anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+					}
+
+					anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+					}
+
+
+
+		}
+
+
+		animGroup "medic" {
+			anim fire							models/characters/animations/strogg/strogg_hand_medic_tool_use_002.md5anim {
+			}
+
+			anim prone_fire 					models/characters/animations/strogg/strogg_medic_prone_revive_003.md5anim {
+			}
+
+					anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+					}
+
+					anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+					}
+
+
+
+
+										anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+										}
+
+										anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+										}
+
+										anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+										}
+
+										anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+										}
+
+
+
+
+		}
+
+		animGroup "pda" {
+			anim fire							models/characters/animations/strogg/strogg_hand_pda_use_008_IDLE.md5anim {
+			}
+
+			anim startfire 						models/characters/animations/strogg/strogg_hand_pda_use_008_INTO.md5anim {
+			}
+
+			anim endfire    					models/characters/animations/strogg/strogg_hand_pda_use_008_OUT.md5anim {
+			}
+
+			animGroup "crouch" {
+				anim fire						models/characters/animations/strogg/strogg_hand_crouch_pda_use_multiple_002_IDLE.md5anim {
+				}
+
+				anim startfire 					models/characters/animations/strogg/strogg_hand_crouch_pda_use_multiple_002_INTO.md5anim {
+				}
+
+				anim endfire    				models/characters/animations/strogg/strogg_hand_crouch_pda_use_multiple_002_OUT.md5anim {
+				}
+			}
+
+			animGroup "prone" {
+				anim fire						models/characters/animations/strogg/strogg_prone_pda_use_multi_001_CYC.md5anim {
+				}
+
+				anim startfire 					models/characters/animations/strogg/strogg_prone_pda_use_multi_001_INTO.md5anim {
+				}
+
+				anim endfire    				models/characters/animations/strogg/strogg_prone_pda_use_multi_001_OUT.md5anim {
+				}
+			}
+		}
+
+		animGroup "pda_multi" {
+			anim fire							models/characters/animations/strogg/strogg_hand_pda_use_008_IDLE.md5anim {
+			}
+
+			anim startfire 						models/characters/animations/strogg/strogg_hand_pda_use_008_INTO.md5anim {
+			}
+
+			anim endfire    					models/characters/animations/strogg/strogg_hand_pda_use_008_OUT.md5anim {
+			}
+
+			animGroup "crouch" {
+				anim fire						models/characters/animations/strogg/strogg_hand_crouch_pda_use_multiple_002_IDLE.md5anim {
+				}
+
+				anim startfire 					models/characters/animations/strogg/strogg_hand_crouch_pda_use_multiple_002_INTO.md5anim {
+				}
+
+				anim endfire    				models/characters/animations/strogg/strogg_hand_crouch_pda_use_multiple_002_OUT.md5anim {
+				}
+			}
+
+			animGroup "prone" {
+				anim fire						models/characters/animations/strogg/strogg_prone_pda_use_multi_001_CYC.md5anim {
+				}
+
+				anim startfire 					models/characters/animations/strogg/strogg_prone_pda_use_multi_001_INTO.md5anim {
+				}
+
+				anim endfire    				models/characters/animations/strogg/strogg_prone_pda_use_multi_001_OUT.md5anim {
+				}
+			}
+		}
+
+		animGroup "point" {
+			anim fire							models/characters/animations/strogg/strogg_hand_point_001_IDLE.md5anim {
+			}
+
+			anim startfire 						models/characters/animations/strogg/strogg_hand_point_001_INTO.md5anim {
+			}
+
+			anim endfire    					models/characters/animations/strogg/strogg_hand_point_001_OUT.md5anim {
+			}
+
+			animGroup "crouch" {
+				anim fire						models/characters/animations/strogg/strogg_hand_crouch_point_003_IDLE.md5anim {
+				}
+
+				anim startfire 					models/characters/animations/strogg/strogg_hand_crouch_point_003_INTO.md5anim {
+				}
+
+				anim endfire    				models/characters/animations/strogg/strogg_hand_crouch_point_003_OUT.md5anim {
+				}
+			}
+
+			animGroup "prone" {
+				anim fire						models/characters/animations/strogg/strogg_prone_point_001_CYC.md5anim {
+				}
+
+				anim startfire 					models/characters/animations/strogg/strogg_prone_point_001_INTO.md5anim {
+				}
+
+				anim endfire    				models/characters/animations/strogg/strogg_prone_point_001_OUT.md5anim {
+				}
+			}
+		}
+
+		animGroup "plasma" {
+
+			anim fire							models/characters/animations/strogg/strogg_hand_plasma_charge_plant_001.md5anim {
+			}
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_lean_left_takeout_right.md5anim {
+			}
+			anim lean_right_raise					models/characters/animations/strogg/strogg_hands_lean_right_takeout_right.md5anim {
+			}
+
+			anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_right.md5anim {
+			}
+
+			anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_right.md5anim {
+			}
+
+			anim crouch_fire 					models/characters/animations/strogg/strogg_hard_crouch_plasma_charage_plant_004.md5anim {
+			}
+
+			anim prone_fire						models/characters/animations/strogg/strogg_hands_prone_plasmacharge_plant.md5anim {
+			}
+
+
+
+	anim lean_left_fire							models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+	}
+
+	anim lean_right_fire						models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+	}
+					anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+					}
+
+					anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+					}
+
+
+
+								anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+								}
+
+								anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+								}
+
+
+
+	anim crouch_lean_left_fire							models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+	}
+
+	anim crouch_lean_right_fire						models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+	}
+
+
+		}
+
+		animGroup "spikes" {
+			anim raise							models/characters/animations/strogg/strogg_hand_spike_release_001.md5anim {
+				frame begin 						weaponState hide
+				frame 10							weaponState show
+				frame end							weaponState show
+			}
+
+			anim lean_left_raise					models/characters/animations/strogg/strogg_hands_lean_left_takeout_right.md5anim {
+			}
+
+			anim lean_right_raise					models/characters/animations/strogg/strogg_hands_lean_right_takeout_right.md5anim {
+			}
+
+
+
+
+					anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+					}
+
+					anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+		}
+
+			anim fire1							models/characters/animations/strogg/strogg_hand_spike_attack_001.md5anim {
+			}
+
+			anim fire2							models/characters/animations/strogg/strogg_hand_spike_attack_003.md5anim {
+			}
+
+			anim fire3							models/characters/animations/strogg/strogg_hand_spike_attack_005.md5anim {
+			}
+
+			anim lower							models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+				frame begin							weaponState hide
+			}
+
+			anim lean_right_fire1				models/characters/animations/strogg/strogg_hands_lean_right_spikes_attack.md5anim {
+			}
+
+			anim lean_left_fire1				models/characters/animations/strogg/strogg_hands_lean_left_spikes_attack.md5anim {
+			}
+
+			animGroup "crouch" {
+				anim fire1						models/characters/animations/strogg/strogg_hand_crouch_spike_002.md5anim {
+				}
+
+				anim fire2						models/characters/animations/strogg/strogg_hand_crouch_spike_004.md5anim {
+				}
+
+				anim raise						models/characters/animations/strogg/strogg_hand_crouch_spike_takeout_002.md5anim {
+					frame begin  					weaponState hide
+					frame 8	 						weaponState show
+					frame end	 					weaponState show
+				}
+
+				anim lower						models/characters/animations/strogg/strogg_hand_crouch_spike_putaway_002.md5anim {
+					frame begin						weaponState hide
+				}
+
+				anim lean_left_fire				models/characters/animations/strogg/strogg_hands_crouch_lean_left_spikes_attack.md5anim {
+				}
+
+				anim lean_right_fire			models/characters/animations/strogg/strogg_hands_crouch_lean_right_spikes_attack.md5anim {
+				}
+
+
+				anim lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_right.md5anim {
+				}
+
+				anim lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_right.md5anim {
+				}
+
+				anim lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+				}
+
+				anim lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+				}
+
+			}
+
+			animGroup "prone" {
+				anim idle 						models/characters/animations/strogg/strogg_blaster_stand_to_prone_002_cyc.md5anim {
+				}
+
+				anim fire1						models/characters/animations/strogg/strogg_prone_spike_stab_002.md5anim {
+				}
+
+				anim raise						models/characters/animations/strogg/strogg_prone_spike_take_out_003.md5anim {
+					frame begin  					weaponState hide
+					frame 8	 						weaponState show
+					frame end	 					weaponState show
+				}
+
+				anim lower						models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+					frame begin						weaponState hide
+				}
+			}
+
+			animGroup "walk" "walk_hold" {
+				anim forward	  				models/characters/animations/strogg/strogg_spikes_walk_forward002.md5anim {
+				}
+
+				anim backwards	  				models/characters/animations/strogg/strogg_spikes_walk_back003_back.md5anim {
+				}
+
+				anim strafe_left				models/characters/animations/strogg/strogg_spikes_walk_strafe003_left.md5anim {
+				}
+
+				anim strafe_right				models/characters/animations/strogg/strogg_spikes_walk_strafe003_right.md5anim {
+				}
+			}
+		}
+
+		animGroup "trinoculars" {
+			anim lower								models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+			frame begin								weaponState hide
+			}
+
+			anim raise								models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+				frame begin  						weaponstate hide
+				frame 7	 						weaponstate show
+				frame end	 						weaponstate show
+			}
+
+
+
+			anim crouch_torso_raise						models/characters/animations/strogg/strogg_hand_takeout_left_back_001.md5anim {
+				frame begin  					weaponState hide
+				frame 12	 					weaponState show
+				frame end	 					weaponState show
+			}
+
+			anim crouch_torso_lower						models/characters/animations/strogg/strogg_hands_idle_001.md5anim {
+				frame end						 weaponState hide
+			}
+
+			anim prone_lower							models/characters/animations/strogg/strogg_hands_stand_to_prone_001_CYC.md5anim {
+				frame end							weaponState hide
+			}
+
+			anim prone_raise						models/characters/animations/strogg/strogg_prone_left_hand_take_out_001.md5anim {
+				frame begin  					weaponstate hide
+				frame 5	 						weaponstate show
+				frame end	 					weaponstate show
+			}
+
+			anim raise_held						models/characters/animations/strogg/strogg_hand_binoculars_001_into.md5anim {
+			}
+
+			anim lower_held						models/characters/animations/strogg/strogg_hand_binoculars_001_out.md5anim {
+			}
+
+			anim crouch_raise_held						models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_INTO.md5anim {
+			}
+
+			anim crouch_lower_held						models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_OUT.md5anim {
+			}
+
+			anim prone_raise_held						models/characters/animations/strogg/strogg_prone_binoculars_use_001_into.md5anim {
+			}
+
+			anim prone_lower_held						models/characters/animations/strogg/strogg_prone_binoculars_use_001_out.md5anim {
+			}
+
+					anim lean_left_raise					models/characters/animations/strogg/strogg_hands_lean_left_takeout_left.md5anim {
+					}
+
+					anim lean_right_raise					models/characters/animations/strogg/strogg_hands_lean_right_takeout_left.md5anim {
+					}
+
+					anim lean_left_lower					models/characters/animations/strogg/strogg_hands_lean_left.md5anim {
+					}
+
+					anim lean_right_lower					models/characters/animations/strogg/strogg_hands_lean_right.md5anim {
+					}
+
+
+					anim crouch_lean_left_raise					models/characters/animations/strogg/strogg_hands_crouch_lean_left_takeout_left.md5anim {
+					}
+
+					anim crouch_lean_right_raise				models/characters/animations/strogg/strogg_hands_crouch_lean_right_takeout_left.md5anim {
+					}
+
+					anim crouch_lean_left_lower					models/characters/animations/strogg/strogg_hands_crouch_lean_left.md5anim {
+					}
+
+					anim crouch_lean_right_lower				models/characters/animations/strogg/strogg_hands_crouch_lean_right.md5anim {
+					}
+
+
+
+					anim lean_left_raise_held					models/characters/animations/strogg/strogg_hand_binoculars_lean_left_useinto.md5anim {
+					}
+
+					anim lean_right_raise_held					models/characters/animations/strogg/strogg_hand_binoculars_lean_right_useinto.md5anim {
+					}
+
+					anim lean_left_lower_held					models/characters/animations/strogg/strogg_hand_binoculars_lean_left_useout.md5anim {
+					}
+
+					anim lean_right_lower_held					models/characters/animations/strogg/strogg_hand_binoculars_lean_right_useout.md5anim {
+					}
+
+
+					anim crouch_lean_left_raise_held					models/characters/animations/strogg/strogg_hand_crouch_binoculars_lean_left_useinto.md5anim {
+					}
+
+					anim crouch_lean_right_raise_held				models/characters/animations/strogg/strogg_hand_crouch_binoculars_lean_right_useinto.md5anim {
+					}
+
+					anim crouch_lean_left_lower_held					models/characters/animations/strogg/strogg_hand_crouch_binoculars_lean_left_useout.md5anim {
+					}
+
+					anim crouch_lean_right_lower_held				models/characters/animations/strogg/strogg_hand_crouch_binoculars_lean_right_useout.md5anim {
+					}
+
+
+					anim run_hold_idle 						models/characters/animations/strogg/strogg_hand_binoculars_001_idle.md5anim {
+					}
+					anim walk_hold_idle 						models/characters/animations/strogg/strogg_hand_binoculars_001_idle.md5anim {
+					}
+					anim hold_idle 						models/characters/animations/strogg/strogg_hand_binoculars_001_idle.md5anim {
+					}
+					anim lean_left_hold_idle 			models/characters/animations/strogg/strogg_hand_binoculars_lean_left_usecyc.md5anim {
+					}
+					anim lean_right_hold_idle 			models/characters/animations/strogg/strogg_hand_binoculars_lean_right_usecyc.md5anim {
+					}
+
+
+					anim run_hold_torso_turn_left			models/characters/animations/strogg/strogg_hand_binoculars_001_idle.md5anim {
+					}
+					anim run_hold_torso_turn_right 			models/characters/animations/strogg/strogg_hand_binoculars_001_idle.md5anim {
+					}
+
+		animGroup"crouch" {
+
+				anim hold_idle 						models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_IDLE.md5anim {
+				}
+				anim lean_left_hold_idle 			models/characters/animations/strogg/strogg_hand_crouch_binoculars_lean_left_usecyc.md5anim {
+				}
+				anim lean_right_hold_idle 			models/characters/animations/strogg/strogg_hand_crouch_binoculars_lean_right_usecyc.md5anim {
+				}
+				anim hold_torso_turn_left 			models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_IDLE.md5anim {
+				}
+				anim hold_torso_turn_right 			models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_IDLE.md5anim {
+				}
+				anim hold_torso_up					models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_IDLE.md5anim {
+				}
+				anim hold_torso_down					models/characters/animations/strogg/strogg_hand_crouch_binoculars_001_IDLE.md5anim {
+				}
+
+
+			}
+
+			animGroup "prone_hold" {
+				anim idle 						models/characters/animations/strogg/strogg_prone_binoculars_use_001_CYC.md5anim {
+				}
+
+			}
+		}
+	}
+
+
+////////////////********////////////////*********////////////////*********////////////////*********////////////////*********////////////////*********////////////////*********
+// TWO HANDED //********// TWO HANDED //*********// TWO HANDED //*********// TWO HANDED //*********// TWO HANDED //*********// TWO HANDED //*********// TWO HANDED //*********
+////////////////********////////////////*********////////////////*********////////////////*********////////////////*********////////////////*********////////////////*********
+
+	animGroup "2h" {
+		anim raise								models/characters/animations/strogg/strogg_blaster_high_putaway_low_takeout_high_008_takeout_2HANDED.md5anim {
+			frame begin								weaponState show
+		//	frame 15								weaponState show
+			frame end								weaponState show
+		}
+
+		anim lower								models/characters/animations/strogg/strogg_2h_idle_002_idle.md5anim {
+			frame begin								weaponState hide
+		}
+
+		anim idle								models/characters/animations/strogg/strogg_2h_idle_002_idle.md5anim {
+			frame begin								weaponState show
+		}
+
+		anim fire				  				models/characters/animations/strogg/strogg_2h_lacerator_fire.md5anim {
+		}
+
+		anim reload								models/characters/animations/strogg/strogg_heavylacerator_stand_takeout001_overheat.md5anim {
+		}
+
+		anim lean_left_idle						models/characters/animations/strogg/strogg_2h_lean_left.md5anim {
+		}
+
+		anim lean_right_idle					models/characters/animations/strogg/strogg_2h_lean_right.md5anim {
+		}
+
+		anim lean_left_fire						models/characters/animations/strogg/strogg_2h_lean_left_lacerator_fire.md5anim {
+		}
+
+		anim lean_right_fire					models/characters/animations/strogg/strogg_2h_lean_right_lacerator_fire.md5anim {
+		}
+
+		anim lean_left_raise						models/characters/animations/strogg/strogg_2h_stand_lean_left_takeout.md5anim {
+		}
+
+		anim lean_right_raise					models/characters/animations/strogg/strogg_2h_stand_lean_right_takeout.md5anim {
+		}
+
+		anim lean_left_lower						models/characters/animations/strogg/strogg_2h_lean_left.md5anim {
+		}
+
+		anim lean_right_lower					models/characters/animations/strogg/strogg_2h_lean_right.md5anim {
+		}
+
+		anim lean_left_reload						models/characters/animations/strogg/strogg_2h_stand_lean_left_hyperblaster_reload.md5anim {
+		}
+
+		anim lean_right_reload					models/characters/animations/strogg/strogg_2h_stand_lean_right_hyperblaster_reload.md5anim {
+		}
+
+
+		animGroup "crouch" {
+			anim down							models/characters/animations/strogg/strogg_2h_stand_crouch_001_into.md5anim {
+			}
+
+			anim up								models/characters/animations/strogg/strogg_2h_stand_crouch_001_out.md5anim {
+			}
+
+			anim lean_left_up								models/characters/animations/strogg/strogg_2h_stand_crouch_001_out.md5anim {
+			}
+
+			anim lean_right_up								models/characters/animations/strogg/strogg_2h_stand_crouch_001_out.md5anim {
+			}
+
+			anim idle							models/characters/animations/strogg/strogg_2h_crouching_idle_001_idle.md5anim {
+			}
+
+			anim forward 						models/characters/animations/strogg/strogg_2h_crouch_walk_forward_002.md5anim {
+			}
+
+			anim backwards						models/characters/animations/strogg/strogg_2h_crouch_walk_forward_002_back.md5anim {
+			}
+
+			anim forward_fire					models/characters/animations/strogg/strogg_2h_crouch_walk_forward_fire.md5anim {
+			}
+
+			anim backwards_fire					models/characters/animations/strogg/strogg_2h_crouch_walk_forward_fire.md5anim {
+			}
+
+			anim strafe_left_fire				models/characters/animations/strogg/strogg_2h_crouch_walk_left_fire.md5anim {
+			}
+
+			anim strafe_right_fire				models/characters/animations/strogg/strogg_2h_crouch_walk_left_fire.md5anim {
+			}
+
+			anim fire							models/characters/animations/strogg/strogg_2h_crouch_lacerator_fire.md5anim {
+			}
+
+			anim strafe_left					models/characters/animations/strogg/strogg_2h_crouch_strafe_left.md5anim {
+				ai_fixed_forward
+			}
+
+			anim strafe_right					models/characters/animations/strogg/strogg_2h_crouch_strafe_right.md5anim {
+				ai_fixed_forward
+			}
+
+			anim lean_left_idle					models/characters/animations/strogg/strogg_2h_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_idle				models/characters/animations/strogg/strogg_2h_crouch_lean_right.md5anim {
+			}
+
+			anim lean_left_fire					models/characters/animations/strogg/strogg_2h_crouch_lean_left_lacerator_fire.md5anim {
+			}
+
+			anim lean_right_fire				models/characters/animations/strogg/strogg_2h_crouch_lean_right_lacerator_fire.md5anim {
+			}
+
+
+			anim lean_left_raise				models/characters/animations/strogg/strogg_2h_crouch_lean_left_takeout.md5anim {
+			}
+
+			anim lean_right_raise				models/characters/animations/strogg/strogg_2h_crouch_lean_right_takeout.md5anim {
+			}
+
+			anim lean_left_lower				models/characters/animations/strogg/strogg_2h_crouch_lean_left.md5anim {
+			}
+
+			anim lean_right_lower				models/characters/animations/strogg/strogg_2h_crouch_lean_right.md5anim {
+			}
+
+			anim lean_left_reload				models/characters/animations/strogg/strogg_2h_crouch_lean_left_hyperblaster_reload.md5anim {
+			}
+
+			anim lean_right_reload				models/characters/animations/strogg/strogg_2h_crouch_lean_right_hyperblaster_reload.md5anim {
+			}
+
+			anim lean_left_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+			}
+
+			anim lean_right_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+			}
+
+			anim legs_turn_right				models/characters/animations/strogg/strogg_2h_crouch_turn_left.md5anim {
+			}
+
+			anim legs_turn_left					models/characters/animations/strogg/strogg_2h_crouch_turn_right.md5anim {
+			}
+
+			anim torso_turn_right				models/characters/animations/strogg/strogg_2h_crouch_turn_left.md5anim {
+			}
+
+			anim torso_turn_left				models/characters/animations/strogg/strogg_2h_crouch_turn_right.md5anim {
+			}
+		}
+
+		anim prone_from_crouch					models/characters/animations/strogg/strogg_2h_crouch_to_prone_002_INTO.md5anim {
+		}
+
+		anim crouch_from_prone					models/characters/animations/strogg/strogg_2h_crouch_to_prone_002_OUT.md5anim {
+		}
+
+		anim walk_strafe_left					models/characters/animations/strogg/strogg_2h_walk_left_002.md5anim {
+		}
+
+		anim walk_strafe_left_fire				models/characters/animations/strogg/strogg_2h_walk_left_fire.md5anim {
+		}
+
+		anim walk_strafe_right					models/characters/animations/strogg/strogg_2h_walk_left_002_right.md5anim {
+		}
+
+		anim walk_strafe_right_fire				models/characters/animations/strogg/strogg_2h_walk_right_fire.md5anim {
+		}
+
+		anim walk_forward						models/characters/animations/strogg/strogg_2h_walk_forwards_003.md5anim {
+		}
+
+		anim walk_forward_fire					models/characters/animations/strogg/strogg_2h_walk_forwards_fire.md5anim {
+		}
+
+		anim walk_backwards						models/characters/animations/strogg/strogg_2h_walk_forwards_003_BACK.md5anim {
+		}
+
+		anim walk_backwards_fire				models/characters/animations/strogg/strogg_2h_walk_backwards_fire.md5anim {
+		}
+
+		anim sprint_forward						models/characters/animations/strogg/strogg_2h_sprint_001.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 6									footstep _right
+			frame 13								footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim prone_fire							models/characters/animations/strogg/strogg_2h_prone_fire_single_light_001.md5anim {
+		}
+
+		anim prone_idle							models/characters/animations/strogg/strogg_2h_stand_to_prone_003_IDLE.md5anim {
+		}
+
+		anim prone_up							models/characters/animations/strogg/strogg_2h_stand_to_prone_003_UP.md5anim {
+		}
+
+		anim prone_down							models/characters/animations/strogg/strogg_2h_stand_to_prone_003_DOWN.md5anim {
+		}
+
+		anim prone_reload						models/characters/animations/strogg/strogg_2h_prone_reload_lacerator.md5anim {
+		}
+
+		anim prone_strafe_left					models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		}
+
+		anim prone_strafe_right					models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		}
+
+		anim prone_forward						models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		}
+
+		anim backwards							models/characters/animations/strogg/strogg_prone_backward.md5anim {
+		}
+
+		anim prone_turn_right					models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		}
+
+		anim prone_turn_left					models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+		}
+
+		anim prone_lower						models/characters/animations/strogg/strogg_2h_stand_to_prone_003_IDLE.md5anim {
+			frame end								weaponState hide
+		}
+
+		anim prone_raise						models/characters/animations/strogg/strogg_2h_prone_take_out_001_TAKEOUT.md5anim {
+			frame begin								weaponState hide
+			frame 12								weaponState show
+			frame end								weaponState show
+		}
+
+		anim run_forward						models/characters/animations/strogg/strogg_2h_run_forwards_002.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 5									footstep _right
+			frame 14								footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim run_backwards						models/characters/animations/strogg/strogg_2h_run_backwards_004.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 3									footstep _right
+			frame 10								footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim run_strafe_left					models/characters/animations/strogg/strogg_2h_run_left_001.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 4									footstep _right
+			frame 11								footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim run_strafe_right					models/characters/animations/strogg/strogg_2h_run_right_002.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 4									footstep _right
+			frame 11								footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+
+		anim run_strafe_right_fire					models/characters/animations/strogg/strogg_2h_run_right_fire.md5anim {
+		}
+
+		anim run_jump							models/characters/animations/strogg/strogg_heavylacerator_jump_straightup001_cyc.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_strogg
+		}
+
+		anim jump								models/characters/animations/strogg/strogg_heavylacerator_jump_straightup001_cyc.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_strogg
+		}
+
+		anim fall								models/characters/animations/strogg/strogg_heavylacerator_jump_straightup001_cyc.md5anim {
+		}
+
+		anim soft_land							models/characters/animations/strogg/strogg_heavylacerator_jump_straightup001_land.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 1									footstep _right
+			frame 3									footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim hard_land							models/characters/animations/strogg/strogg_heavylacerator_jump_straightup001_land.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 1									footstep _right
+			frame 3									footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim legs_turn_right					models/characters/animations/strogg/strogg_spikes_walk_turnright45_002.md5anim {
+		}
+
+		anim torso_turn_right					models/characters/animations/strogg/strogg_2h_idle_002_idle.md5anim {
+			ai_fixed_forward
+		}
+
+		anim legs_turn_left						models/characters/animations/strogg/strogg_spikes_walk_turnright45_002.md5anim {
+		}
+
+		anim torso_turn_left					models/characters/animations/strogg/strogg_2h_idle_002_idle.md5anim {
+			ai_fixed_forward
+		}
+
+		animGroup "lacerator" {
+			anim torso_fire							models/characters/animations/strogg/strogg_2h_lacerator_fire.md5anim {
+			}
+
+			anim legs_fire							models/characters/animations/strogg/strogg_2h_lacerator_fire.md5anim {
+			}
+
+			anim lean_left_fire						models/characters/animations/strogg/strogg_2h_lean_left_lacerator_fire.md5anim {
+			}
+
+			anim lean_right_fire					models/characters/animations/strogg/strogg_2h_lean_right_lacerator_fire.md5anim {
+			}
+
+			anim crouch_fire					models/characters/animations/strogg/strogg_2h_crouch_lacerator_fire.md5anim {
+			}
+
+			anim crouch_forward_fire			models/characters/animations/strogg/strogg_2h_crouch_walk_forward_fire.md5anim {
+			}
+
+			anim crouch_backwards_fire			models/characters/animations/strogg/strogg_2h_crouch_walk_forward_fire.md5anim {
+			}
+
+			anim crouch_strafe_left_fire		models/characters/animations/strogg/strogg_2h_crouch_walk_left_fire.md5anim {
+			}
+
+			anim crouch_strafe_right_fire		models/characters/animations/strogg/strogg_2h_crouch_walk_left_fire.md5anim {
+			}
+
+			anim crouch_lean_left_fire					models/characters/animations/strogg/strogg_2h_crouch_lean_left_lacerator_fire.md5anim {
+			}
+
+			anim crouch_lean_right_fire				models/characters/animations/strogg/strogg_2h_crouch_lean_right_lacerator_fire.md5anim {
+			}
+
+			anim prone_fire							models/characters/animations/strogg/strogg_2h_prone_fire_single_light_001.md5anim {
+			}
+
+
+		animGroup "railchucker" {
+
+
+			anim torso_fire							models/characters/animations/strogg/strogg_2h_stand_obliterator_fire.md5anim {
+			}
+			anim legs_fire							models/characters/animations/strogg/strogg_2h_stand_obliterator_fire.md5anim {
+			}
+			anim torso_reload 					models/characters/animations/strogg/strogg_2h_stand_reload_railchucker.md5anim {
+			}
+			anim legs_reload 					models/characters/animations/strogg/strogg_2h_stand_reload_railchucker.md5anim {
+			}
+			anim prone_reload					models/characters/animations/strogg/strogg_2h_prone_reload_railchucker.md5anim {
+			}
+		}
+	}
+
+
+		animGroup "nailgun" {
+			anim crouch_fire					models/characters/animations/strogg/strogg_2h_crouch_lacerator_fire.md5anim {
+			}
+
+			anim prone_fire						models/characters/animations/strogg/strogg_2h_prone_fire_single_light_001.md5anim {
+			}
+
+			anim fire							models/characters/animations/strogg/strogg_2h_nailgun_fire.md5anim {
+			}
+
+			anim reload							models/characters/animations/strogg/strogg_2h_stand_reload_hyperblaster.md5anim {
+			}
+
+
+			anim lean_left_fire					models/characters/animations/strogg/strogg_2h_lean_left_lacerator_fire.md5anim {
+			}
+
+			anim lean_right_fire				models/characters/animations/strogg/strogg_2h_lean_right_lacerator_fire.md5anim {
+			}
+
+			anim crouch_lean_left_fire			models/characters/animations/strogg/strogg_2h_crouch_lean_left_lacerator_fire.md5anim {
+			}
+
+			anim crouch_lean_right_fire			models/characters/animations/strogg/strogg_2h_crouch_lean_right_lacerator_fire.md5anim {
+			}
+
+			anim prone_reload					models/characters/animations/strogg/strogg_2h_prone_reload_hyperblaster.md5anim {
+			}
+
+   		}
+
+   		animGroup "obliterator" {
+
+			anim fire							models/characters/animations/strogg/strogg_2h_stand_obliterator_fire.md5anim {
+			}
+
+			anim crouch_torso_fire							models/characters/animations/strogg/strogg_2h_stand_obliterator_fire.md5anim {
+			}
+
+			anim crouch_legs_fire					models/characters/animations/strogg/strogg_2h_crouch_lacerator_fire.md5anim {
+			}
+
+			anim crouch_forward					models/characters/animations/strogg/strogg_2h_obliterator_crouch_walk_forward.md5anim {
+			}
+
+			anim crouch_backwards				models/characters/animations/strogg/strogg_2h_obliterator_crouch_walk_back.md5anim {
+			}
+
+			anim crouch_strafe_left				models/characters/animations/strogg/strogg_2h_obliterator_crouch_strafe_left.md5anim {
+				ai_fixed_forward
+			}
+
+			anim crouch_strafe_right			models/characters/animations/strogg/strogg_2h_obliterator_crouch_strafe_right.md5anim {
+				ai_fixed_forward
+			}
+
+			anim reload							models/characters/animations/strogg/strogg_2h_stand_reload_hyperblaster.md5anim {
+			}
+
+			anim prone_reload					models/characters/animations/strogg/strogg_2h_prone_reload_hyperblaster.md5anim {
+			}
+		}
+
+
+		animGroup "hyperblaster" {
+			anim crouch_forward					models/characters/animations/strogg/strogg_2h_obliterator_crouch_walk_forward.md5anim {
+			}
+
+			anim crouch_backwards				models/characters/animations/strogg/strogg_2h_obliterator_crouch_walk_back.md5anim {
+			}
+
+			anim crouch_strafe_left				models/characters/animations/strogg/strogg_2h_obliterator_crouch_strafe_left.md5anim {
+				ai_fixed_forward
+			}
+
+			anim crouch_strafe_right			models/characters/animations/strogg/strogg_2h_obliterator_crouch_strafe_right.md5anim {
+				ai_fixed_forward
+			}
+			anim reload							models/characters/animations/strogg/strogg_2h_stand_reload_hyperblaster.md5anim {
+			}
+
+			anim prone_reload					models/characters/animations/strogg/strogg_2h_prone_reload_hyperblaster.md5anim {
+			}
+		}
+
+		animGroup "single" {
+			anim fire							models/characters/animations/strogg/strogg_hand_spike_attack_001.md5anim {
+			}
+		}
+
+		animGroup "multi" {
+			anim fire							models/characters/animations/strogg/strogg_hand_spike_attack_001.md5anim {
+			}
+		}
+	}
+
+
+//	====================================
+//	Blaster
+//	====================================
+	animGroup "blaster" {
+		anim raise								models/characters/animations/strogg/strogg_blaster_stand_takeout001.md5anim {
+			frame begin								weaponState hide
+			frame 14								weaponState show
+			frame end								weaponState show
+		}
+
+		anim idle								models/characters/animations/strogg/strogg_blaster_stand_idle001.md5anim {
+		}
+
+		//anim aim								models/characters/animations/initial_edf/edf_assault_stand_takeout002_idle.md5anim // missing {
+		//}
+
+		anim fire1								models/characters/animations/strogg/strogg_blaster_stand_takeout001_shoot1.md5anim {
+		}
+
+		anim fire2								models/characters/animations/strogg/strogg_blaster_stand_takeout001_shoot2.md5anim {
+		}
+
+		anim fire3								models/characters/animations/strogg/strogg_blaster_stand_takeout001_shoot3.md5anim {
+		}
+
+		anim torso_reload						models/characters/animations/strogg/strogg_blaster_stand_crouch001_overheat.md5anim {
+		}
+
+		anim legs_reload						models/characters/animations/strogg/strogg_blaster_stand_idle001.md5anim {
+		}
+
+		anim lower								models/characters/animations/strogg/strogg_blaster_high_putaway_low_takeout_high_008_takeout_2HANDED.md5anim {
+			frame begin								weaponState hide
+		}
+
+		anim torso_turn_left					models/characters/animations/strogg/strogg_blaster_stand_idle001.md5anim {
+		}
+
+		anim torso_turn_right					models/characters/animations/strogg/strogg_blaster_stand_idle001.md5anim {
+		}
+
+		anim legs_turn_left						models/characters/animations/strogg/strogg_spikes_walk_turnright45_002.md5anim {
+		}
+
+		anim legs_turn_right					models/characters/animations/strogg/strogg_spikes_walk_turnleft45_001.md5anim {
+		}
+
+		anim lean_left_idle						models/characters/animations/strogg/strogg_blaster_lean_left.md5anim {
+		}
+
+		anim lean_right_idle					models/characters/animations/strogg/strogg_blaster_lean_right.md5anim {
+		}
+
+		anim lean_left_fire						models/characters/animations/strogg/strogg_blaster_lean_left_fire.md5anim {
+		}
+
+		anim lean_right_fire					models/characters/animations/strogg/strogg_blaster_lean_right_fire.md5anim {
+		}
+
+		anim lean_left_raise					models/characters/animations/strogg/strogg_blaster_stand_lean_left_takeout.md5anim {
+				frame begin								weaponState hide
+			frame 14								weaponState show
+			frame end								weaponState show
+
+		}
+
+		anim lean_left_lower					models/characters/animations/strogg/strogg_blaster_lean_left.md5anim {
+		}
+
+		anim lean_left_reload					models/characters/animations/strogg/strogg_blaster_stand_lean_left_reload.md5anim {
+		}
+
+		anim lean_right_raise					models/characters/animations/strogg/strogg_blaster_stand_lean_right_takeout.md5anim {
+				frame begin								weaponState hide
+					frame 14								weaponState show
+			frame end								weaponState show
+
+		}
+
+		anim lean_right_lower					models/characters/animations/strogg/strogg_blaster_lean_right.md5anim {
+		}
+
+		anim lean_right_reload					models/characters/animations/strogg/strogg_blaster_stand_lean_right_reload.md5anim {
+		}
+
+
+		anim jump								models/characters/animations/strogg/strogg_blaster_jump_up005_loop.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_strogg
+		}
+
+		anim run_jump							models/characters/animations/strogg/strogg_blaster_jump_up005_loop.md5anim {
+			frame begin									sound_channel snd_player_jump snd_jump_strogg
+		}
+
+		anim soft_land							models/characters/animations/strogg/strogg_blaster_jump_up005_landing.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 1									footstep _right
+			frame 3									footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim hard_land							models/characters/animations/strogg/strogg_blaster_jump_up005_landing.md5anim {
+			frame begin								sound_channel snd_player_move snd_movement_stroggshuffle
+			frame 1									footstep _right
+			frame 3									footstep
+			frame end								fade_channel snd_player_move "-60" 1
+		}
+
+		anim fall								models/characters/animations/strogg/strogg_blaster_jump_up005_loop.md5anim {
+		}
+
+		animGroup "walk" {
+			anim forward						models/characters/animations/strogg/strogg_blaster_walk_forward001.md5anim {
+			}
+
+			anim backwards						models/characters/animations/strogg/strogg_blaster_walk_back002.md5anim {
+			}
+
+			anim strafe_left					models/characters/animations/strogg/strogg_blaster_walk_strafe002_left.md5anim {
+				ai_fixed_forward
+			}
+
+			anim strafe_right					models/characters/animations/strogg/strogg_blaster_walk_strafe002_right.md5anim {
+				ai_fixed_forward
+			}
+
+			anim forward_fire					models/characters/animations/strogg/strogg_blaster_walk_forward001.md5anim {
+			}
+
+			anim backwards_fire					models/characters/animations/strogg/strogg_blaster_walk_back002.md5anim {
+			}
+
+			anim strafe_left_fire				models/characters/animations/strogg/strogg_blaster_walk_strafe002_left.md5anim {
+				ai_fixed_forward
+			}
+
+			anim strafe_right_fire				models/characters/animations/strogg/strogg_blaster_walk_strafe002_right.md5anim {
+				ai_fixed_forward
+			}
+		}
+
+		animGroup "run" {
+			anim forward						models/characters/animations/strogg/strogg_blaster_jog_forward002.md5anim {
+				frame begin							sound_channel snd_player_move snd_movement_stroggshuffle
+				frame 7								footstep _right
+				frame 15							footstep
+				frame end							fade_channel snd_player_move "-60" 1
+			}
+
+			anim backwards						models/characters/animations/strogg/strogg_blaster_jog_back001.md5anim {
+				frame begin							sound_channel snd_player_move snd_movement_stroggshuffle
+				frame 8								footstep _right
+				frame 15							footstep
+				frame end							fade_channel snd_player_move "-60" 1
+			}
+
+			anim strafe_left					models/characters/animations/strogg/strogg_blaster_jog_strafe001_left.md5anim {
+				frame begin							sound_channel snd_player_move snd_movement_stroggshuffle
+				ai_fixed_forward
+				frame 7								footstep _right
+				frame 15							footstep
+				frame end							fade_channel snd_player_move "-60" 1
+			}
+
+			anim strafe_right					models/characters/animations/strogg/strogg_blaster_jog_strafe001_right.md5anim {
+				frame begin							sound_channel snd_player_move snd_movement_stroggshuffle
+				ai_fixed_forward
+				frame 7								footstep _right
+				frame 15							footstep
+				frame end							fade_channel snd_player_move "-60" 1
+			}
+
+			anim forward_fire					models/characters/animations/strogg/strogg_blaster_jog_forward002.md5anim {
+			}
+
+			anim backwards_fire					models/characters/animations/strogg/strogg_blaster_jog_back001.md5anim {
+			}
+
+			anim strafe_left_fire				models/characters/animations/strogg/strogg_blaster_jog_strafe001_left.md5anim {
+				ai_fixed_forward
+			}
+
+			anim strafe_right_fire				models/characters/animations/strogg/strogg_blaster_jog_strafe001_right.md5anim {
+				ai_fixed_forward
+			}
+		}
+
+		animGroup "crouch" {
+			anim torso_down						models/characters/animations/strogg/strogg_blaster_stand_idle001.md5anim {
+			}
+
+			anim torso_up						models/characters/animations/strogg/strogg_blaster_stand_idle001.md5anim {
+			}
+
+			anim lean_left_torso_up						models/characters/animations/strogg/strogg_blaster_lean_left.md5anim {
+			}
+
+			anim lean_right_torso_up						models/characters/animations/strogg/strogg_blaster_lean_right.md5anim {
+			}
+
+
+			anim torso_raise							models/characters/animations/strogg/strogg_blaster_stand_takeout001.md5anim {
+				frame								start weaponState hide
+				frame 14							weaponState show
+				frame end							weaponState show
+			}
+
+			anim lower							models/characters/animations/strogg/strogg_blaster_crouch_idle001.md5anim {
+				frame begin							weaponState hide
+			}
+
+			anim idle							models/characters/animations/strogg/strogg_blaster_crouch_idle001.md5anim {
+			}
+
+			anim reload							models/characters/animations/strogg/strogg_blaster_stand_crouch001_overheat.md5anim {
+			}
+
+			anim fire							models/characters/animations/strogg/strogg_blaster_stand_crouch001_shoot.md5anim {
+				ai_no_turn	// jrad - disable viewangles turning while we're running
+			}
+
+			anim forward_fire					models/characters/animations/strogg/strogg_blaster_crouch_fire.md5anim {
+				ai_no_turn	// jrad - disable viewangles turning while we're running
+			}
+			anim backwards_fire					models/characters/animations/strogg/strogg_blaster_crouch_fire.md5anim {
+				ai_no_turn	// jrad - disable viewangles turning while we're running
+			}
+			anim strafe_left_fire				models/characters/animations/strogg/strogg_blaster_crouch_fire.md5anim {
+				ai_no_turn	// jrad - disable viewangles turning while we're running
+			}
+			anim strafe_right_fire				models/characters/animations/strogg/strogg_blaster_crouch_fire.md5anim {
+				ai_no_turn	// jrad - disable viewangles turning while we're running
+			}
+
+ 			anim lean_left_idle					models/characters/animations/strogg/strogg_blaster_crouch_lean_left.md5anim {
+			}
+
+ 			anim lean_right_idle				models/characters/animations/strogg/strogg_blaster_crouch_lean_right.md5anim {
+			}
+
+ 			anim lean_left_fire					models/characters/animations/strogg/strogg_blaster_crouch_lean_left_fire.md5anim {
+			}
+
+ 			anim lean_right_fire				models/characters/animations/strogg/strogg_blaster_crouch_lean_right_fire.md5anim {
+			}
+
+			anim lean_left_raise				models/characters/animations/strogg/strogg_blaster_crouch_lean_left_takeout.md5anim {
+					frame begin						weaponState hide
+					frame 14						weaponState show
+					frame end						weaponState show
+
+			}
+
+
+			anim lean_left_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+			}
+
+			anim lean_right_from_prone								models/characters/animations/strogg/strogg_hands_crouch_to_prone_001_UP.md5anim {
+			}
+
+			anim lean_left_lower				models/characters/animations/strogg/strogg_blaster_crouch_lean_left.md5anim {
+			}
+
+			anim lean_left_reload				models/characters/animations/strogg/strogg_blaster_crouch_lean_left_reload.md5anim {
+			}
+
+			anim lean_right_raise				models/characters/animations/strogg/strogg_blaster_crouch_lean_right_takeout.md5anim {
+					frame begin						weaponState hide
+					frame 14						weaponState show
+					frame end						weaponState show
+
+			}
+
+			anim lean_right_lower				models/characters/animations/strogg/strogg_blaster_crouch_lean_right.md5anim {
+			}
+
+			anim lean_right_reload				models/characters/animations/strogg/strogg_blaster_crouch_lean_right_reload.md5anim {
+			}
+
+			anim turn_left						models/characters/animations/strogg/strogg_hands_crouch_turn_right.md5anim {
+			}
+
+			anim turn_right						models/characters/animations/strogg/strogg_hands_crouch_turn_left.md5anim {
+			}
+
+			anim down							models/characters/animations/strogg/strogg_hand_crouch_idle_001_into.md5anim {
+			}
+
+			anim up								models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+			}
+
+			anim lean_left_up								models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+			}
+
+			anim lean_right_up								models/characters/animations/strogg/strogg_hand_crouch_idle_001_out.md5anim {
+			}
+		}
+
+		animGroup "prone" {
+			anim turn_left						models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+ 			anim turn_right						models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+ 			anim down							models/characters/animations/strogg/strogg_blaster_stand_to_prone_002.md5anim {
+			}
+
+ 			anim from_crouch					models/characters/animations/strogg/strogg_blaster_crouch_to_prone_002_DOWN.md5anim {
+			}
+
+ 			anim up								models/characters/animations/strogg/strogg_blaster_prone_to_stand_002.md5anim {
+			}
+
+ 			anim idle							models/characters/animations/strogg/strogg_blaster_stand_to_prone_002_cyc.md5anim {
+			}
+
+ 			anim fire							models/characters/animations/strogg/strogg_blaster_prone_fire_single_001.md5anim {
+			}
+
+ 			anim reload							models/characters/animations/strogg/strogg_blaster_prone_overheat_001.md5anim {
+			}
+
+			anim raise							models/characters/animations/strogg/strogg_blaster_prone_takeout_001.md5anim {
+				frame begin							weaponState hide
+				frame 14							weaponState show
+				frame end							weaponState show
+			}
+
+			anim lower							models/characters/animations/strogg/strogg_blaster_stand_to_prone_002_cyc.md5anim {
+					frame begin  								weaponState hide
+
+			}
+
+			anim strafe_left					models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+			anim strafe_right					models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+			anim forward						models/characters/animations/strogg/strogg_prone_forward_004.md5anim {
+			}
+
+			anim backwards							models/characters/animations/strogg/strogg_prone_backward.md5anim {
+			}
+		}
+	}
+
+//
+//
+//
+//	====================================
+//	Misc
+//	====================================
+
+	animGroup "husky_rider" {
+		anim turn_left							models/characters/animations/initial_edf/edf_husky_rider_turn_left.md5anim {
+		}
+
+		anim turn_right							models/characters/animations/initial_edf/edf_husky_rider_turn_right.md5anim {
+		}
+
+		anim centre_idle						models/characters/animations/initial_edf/edf_husky_rider_centre_idle.md5anim {
+		}
+
+		animGroup "stand" {
+			anim turn_left						models/characters/animations/initial_edf/edf_husky_rider_stand_turn_left.md5anim {
+			}
+
+			anim turn_right						models/characters/animations/initial_edf/edf_husky_rider_stand_turn_right.md5anim {
+			}
+
+			anim centre_idle					models/characters/animations/initial_edf/edf_husky_rider_stand_centre_idle.md5anim {
+			}
+		}
+	}
+
+
+	anim gui_into								models/characters/animations/initial_edf/edf_gui_stand_use004_into.md5anim {
+		}
+
+		anim gui_use								models/characters/animations/initial_edf/edf_gui_stand_use004_cyc.md5anim {
+		}
+
+		anim gui_out								models/characters/animations/initial_edf/edf_gui_stand_use004_out.md5anim {
+	}
+
+
+
+	anim badger_gunner_pose						models/characters/animations/initial_edf/gdf_mounted_idle.md5anim {
+	}
+
+	anim badger_rear_left_passenger				models/characters/animations/initial_edf/edf_badger_rear_left_passenger.md5anim {
+	}
+
+	anim badger_rear_right_passenger			models/characters/animations/initial_edf/edf_badger_rear_right_passenger.md5anim {
+	}
+
+	anim badger_front_right_passenger			models/characters/animations/initial_edf/edf_badger_front_right_passenger.md5anim {
+	}
+
+	anim titan_passenger						models/characters/animations/initial_edf/edf_titan_passenger_pose.md5anim {
+	}
+
+	anim trojan_passenger1						models/characters/animations/initial_edf/gdf_trojan_passenger1.md5anim {
+	}
+
+	anim trojan_passenger2						models/characters/animations/initial_edf/gdf_trojan_passenger2.md5anim {
+	}
+
+	anim trojan_passenger3						models/characters/animations/initial_edf/gdf_trojan_passenger3.md5anim {
+	}
+
+	anim trojan_passenger4						models/characters/animations/initial_edf/gdf_trojan_passenger4.md5anim {
+	}
+
+	anim bumblebee_gunner						models/characters/animations/initial_edf/edf_bumblebee_gunner.md5anim {
+	}
+
+	anim edf_bumblebee_gunner_sit_centre		models/characters/animations/initial_edf/edf_bumblebee_gunner_sit_centre.md5anim {
+	}
+
+	anim bumblebee_left_passenger				models/characters/animations/initial_edf/edf_bumblebee_left_passenger.md5anim {
+	}
+
+	anim bumblebee_right_passenger				models/characters/animations/initial_edf/edf_bumblebee_right_passenger.md5anim {
+	}
+
+	anim gdf_antipersonnel_control				models/characters/animations/initial_edf/edf_antipersonnel_control.md5anim {
+	}
+
+	anim gdf_antivehicle_control				models/characters/animations/initial_edf/badger.md5anim {
+	}
+
+
+	anim mounted_gpmg_idle						models/characters/animations/initial_edf/gdf_mounted_idle.md5anim {
+	}
+
+	anim mounted_gpmg_anticlockwise				models/characters/animations/initial_edf/gdf_mounted_right.md5anim {
+	}
+
+	anim mounted_gpmg_clockwise					models/characters/animations/initial_edf/gdf_mounted_left.md5anim {
+	}
+
+	anim mounted_gpmg_aimupdown					models/characters/animations/initial_edf/gdf_mounted_aimupdown.md5anim {
+	}
+
+
+	anim emote004_lol									models/characters/animations/strogg/strogg_spikes_stand_emote004_lol.md5anim
+	anim emote005_blah									models/characters/animations/strogg/strogg_spikes_stand_emote005_blah.md5anim
+	anim emote008_grrrr									models/characters/animations/strogg/strogg_spikes_stand_emote008_grrrr.md5anim
+	anim welder_into										models/characters/animations/initial_edf/edf_welder_stand_use003_in.md5anim
+	anim welder_use											models/characters/animations/initial_edf/edf_welder_stand_use003_cyc.md5anim
+	anim menu												models/characters/animations/strogg/strogg_limbo_idle01.md5anim
+
+	anim anansi_enter										models/characters/animations/initial_edf/edf_vehicle_anansi_enter006.md5anim
+	anim badger_enter_driver								models/characters/animations/initial_edf/edf_vehicle_badger_enterdriver004.md5anim
+	anim badger_exit_gunner									models/characters/animations/initial_edf/edf_vehicle_badger_enterexitgun001.md5anim
+	anim badger_idle_gunner									models/characters/animations/initial_edf/edf_vehicle_badger_enterexitgun001_idle.md5anim
+	anim badger_enter_gunner								models/characters/animations/initial_edf/edf_vehicle_badger_enterexitgun001_in.md5anim
+	anim badger_enter_passenge								models/characters/animations/initial_edf/edf_vehicle_badger_enterpassenger001.md5anim
+	anim quadbike_enter_left								models/characters/animations/initial_edf/edf_vehicle_quadbike_enterleft003.md5anim
+	anim quadbike_exit_left									models/characters/animations/initial_edf/edf_vehicle_quadbike_exitleft005.md5anim
+	anim trojan_enter										models/characters/animations/initial_edf/edf_vehicle_trojan_enter004.md5anim
+	anim badger_gun											models/characters/animations/initial_edf/badger.md5anim
+    anim quad												models/characters/animations/initial_edf/quad.md5anim
+}
+
+
+
+
+
+model models/players/strogg/aggressor {
+	inherit													models/players/strogg
+  	mesh													models/characters/animations/strogg/tank.md5mesh
+}
+
+model models/players/strogg/technician {
+	inherit													models/players/strogg
+  	mesh													models/characters/animations/strogg/meditech.md5mesh
+}
+
+model models/players/strogg/constructor {
+	inherit													models/players/strogg
+  	mesh													models/characters/animations/strogg/constructor.md5mesh
+}
+
+model models/players/strogg/oppressor {
+	inherit													models/players/strogg
+  	mesh													models/characters/animations/strogg/oppressor.md5mesh
+}
+
+model models/players/strogg/infiltrator {
+	inherit													models/players/strogg
+  	mesh													models/characters/animations/strogg/infiltrator.md5mesh
+}
+
+entityDef player_strogg_aggressor {
+	"inherit"								"player_base"
+
+	"model"									"models/players/strogg/aggressor"
+	"snd_movement_stroggshuffle"					"sounds/players/footsteps/strogg/cloth"
+}
+
+entityDef player_strogg_technician {
+	"inherit"								"player_base"
+
+	"model"									"models/players/strogg/technician"
+	"snd_movement_stroggshuffle"					"sounds/players/footsteps/strogg/cloth"
+}
+
+entityDef player_strogg_constructor {
+	"inherit"								"player_base"
+
+	"model"									"models/players/strogg/constructor"
+	"snd_movement_stroggshuffle"					"sounds/players/footsteps/strogg/cloth"
+}
+
+entityDef player_strogg_oppressor {
+	"inherit"								"player_base"
+
+	"model"									"models/players/strogg/oppressor"
+	"snd_movement_stroggshuffle"					"sounds/players/footsteps/strogg/cloth"
+}
+
+entityDef player_strogg_infiltrator {
+	"inherit"								"player_base"
+
+	"model"									"models/players/strogg/infiltrator"
+	"snd_movement_stroggshuffle"						"sounds/players/footsteps/strogg/cloth"
+}

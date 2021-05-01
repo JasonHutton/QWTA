@@ -1,0 +1,120 @@
+
+#ifndef __component_tab__
+#define __component_tab__
+
+#define TAB_WIDTH       54
+
+$template _tab_init
+	properties {
+		handle 	tabGradMaterial 	= cacheMaterial( "_tabGrad", "_3h mm_tab_grad" );
+	}
+$endtemplate
+
+$template _tab_draw_active( TabName )
+	
+$endtemplate
+
+$template _tab( NameParm, xPos, yPos )
+	windowDef tab##NameParm {
+		properties {
+			rect	rect		= xPos, yPos, TAB_WIDTH, BUTTON_HEIGHT;
+			float	fontSize 	= 12;
+            float   flags		= immediate( flags ) | WF_AUTO_SIZE_WIDTH | WF_INHERIT_PARENT_COLORS;			
+            color	borderColor	= COLOR_BUTTON_GRADIENT;
+            color	foreColor	= COLOR_TEXT;
+            float	active		= icompare( gui.activeTab, name );
+            float	allowActive	= false;
+		}
+
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.tabGradMaterial, absoluteRect, borderColor );
+				gui.scriptPushFloat( true );
+			}
+			onPropertyChanged "allowEvents" {
+				if( allowEvents ) {
+					colorMultiplier.a = 1;
+				} else {
+					colorMultiplier.a = 0.25;
+				}
+			}
+			onNamedEvent "checkEnabled" {
+				allowEvents = true;
+			}
+			
+			onPropertyChanged "active" {
+				if( active ) {
+					postNamedEvent( "highlight" );
+				} else {
+					postNamedEvent( "unhighlight" );
+				}
+			}
+			onNamedEvent "highlight" {
+				postNamedEvent( "checkEnabled" );
+				if( allowEvents ) {
+					borderColor = transition( borderColor, COLOR_MMTAB_HI_GRADIENT, ACTIVATE_TRANSITION_TIME );
+					foreColor = transition( foreColor, COLOR_TEXT_HIGHLIGHT, ACTIVATE_TRANSITION_TIME );
+				} else {
+					borderColor = COLOR_MMTAB_GRADIENT;
+					forecolor = COLOR_TEXT;
+				}
+			}
+			onNamedEvent "unhighlight" {
+				postNamedEvent( "checkEnabled" );
+				if( allowEvents ) {
+					if( active ) {
+						return;
+					}
+					borderColor = transition( borderColor, COLOR_MMTAB_GRADIENT, ACTIVATE_TRANSITION_TIME );
+					foreColor = transition( foreColor, COLOR_TEXT, ACTIVATE_TRANSITION_TIME );
+				} else {
+					borderColor = COLOR_MMTAB_GRADIENT;
+					forecolor = COLOR_TEXT;
+				}
+			}			
+			onNamedEvent "onFadeIn" {
+				callSuper();
+
+				// catch when the cursor is over us and we're fading in
+				if( containsPoint( absoluteRect, gui.cursorPos.x, gui.cursorPos.y ) ) {
+                    postNamedEvent( "highlight" );
+	            } else {
+	            	postNamedEvent( "unhighlight" );
+	            }
+			}			
+			onNamedEvent "onFadeOut" {
+				callSuper();
+				allowEvents = false;
+				postNamedEvent( "unhighlight" );
+			}
+			onMouseEnter {
+				if( !active ) {
+					postNamedEvent( "highlight" );
+					gui.playSound( "boop" );
+				}
+			}
+			onMouseExit {
+				postNamedEvent( "unhighlight" );
+			}
+			onKeyUp "mouse1" {
+				if( allowActive ) {
+					gui.activeTab = name;
+				}
+				gui.playSound( "accept" );
+				postOptionalNamedEvent( "onAction" );			
+			}
+			onAccept {
+				if( allowActive ) {
+					gui.activeTab = name;
+				}
+				gui.playSound( "accept" );
+				postOptionalNamedEvent( "onAction" );
+			}
+		}
+$endtemplate
+
+$template _end_tab
+	}
+$endtemplate
+
+#endif // !__component_tab__

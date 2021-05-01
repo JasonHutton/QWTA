@@ -1,0 +1,254 @@
+
+
+// ================================================================================
+// Credits Dialog
+// ================================================================================
+_dialog( Credits, localize( "blank" ), PADDING, 44, _fill_to_right_of( desktop ), _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	_single_dialog( Credits )
+
+	properties {
+		float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+		string url = "";
+	}
+
+	events {
+	    onPropertyChanged "visible" {
+			callSuper();
+			fillColor.a = 0.75;
+			if( gui.clickOnCreditsToExit ) {
+				gui.activePane = "";
+				rect.y = PADDING;
+				rect.x = gui.desktop.rect.w - immediate( gui.desktop.rect.w * 0.45 );
+			} else {
+				rect.y = 44;
+				rect.x = PADDING;
+			}
+		}
+		onKeyDown "mouse1" "mouse2" {
+			if( gui.clickOnCreditsToExit ) {
+				postNamedEvent( "quit" );
+			}
+		}
+		onNamedEvent "quit" {
+			timeline.quit.active = true;
+			timeline.quit.resetTime( 0 );
+		}
+		onCancel {
+			if( gui.clickOnCreditsToExit ) {
+				postNamedEvent( "quit" );
+				return;
+			}
+			_close_top_dialog
+			_pop_page
+		}
+	}
+	timeline quit {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			gui.desktop.allowEvents = false;
+			gui.desktop.allowChildEvents = false;
+			gui.flags = immediate( gui.flags ) & ~GUI_SHOWCURSOR;
+			gui.fadeIn.changeZOrder( ZO_BACK );
+			gui.fadeIn.overlayColor.a = transition( 0, 1, 800 );
+			gui.fadeSoundClass( 1, -60, 700 );
+		}
+		onTime 1000 {
+			gui.stopMusic();
+			if( compare( url, "" ) ) {
+				gui.consoleCommand( "quit" + _newline );
+			} else {
+				gui.openURL( url );
+			}
+		}
+	}
+	windowDef credits {
+		type creditScroll;
+		properties {
+			rect rect = PADDING, PADDING, _fill_to_right_of( dlgCredits ), _fill_to_bottom_of( dlgCredits );
+			float fontSize = 12;
+			float speed = 12;
+		}
+		events {
+			onNamedEvent "onShow" {
+				loadFromFile( "guis/mainmenu/dialogs/credits/credits.dat" );
+			}
+		}
+	}
+_end_dialog
+
+#define URL_COLOR				"0.953, 0.765, 0.473, 1"
+#define URL_COLOR_HIGHLIGHT		"1, 0.965, 0.673, 1"
+
+
+_dialog( Credits_Community, localize( "guis/mainmenu/quitscreen/etqw_community" ), PADDING, PADDING, _fill_to_left_of( dlgCredits ), ( _client_dimension( desktop, height ) - BUTTON_HEIGHT ) * 0.5f, "noMove", "noDim" )
+	properties {
+		float visible = gui.clickOnCreditsToExit;
+		handle bullet = localize( "guis/mainmenu/bullet" );
+		handle shot = gui.cacheMaterial( "community", "community_site" );
+		rect shotRect = ( absoluteRect.x + absoluteRect.w ) - 102, ( absoluteRect.y + ( absoluteRect.h * 0.5 ) ) - $evalfloat( 75 * 0.5 ), 94, 75;
+	}
+	
+	events {
+		onCancel {
+			gui.dlgCredits.postNamedEvent( "quit" );
+		}	
+		onKeyDown "mouse1" "mouse2" {
+			if( gui.clickOnCreditsToExit ) {
+				gui.dlgCredits.postNamedEvent( "quit" );
+			}
+		}
+		onPostDraw {
+			callSuper();
+			drawCachedMaterial( shot, shotRect, COLOR_WHITE );
+			drawCachedMaterial( gui.wndLineMaterial, shotRect, COLOR_DIALOG_LINES );
+		}		
+	}	
+	
+	_label_localized( Credits_Community_Bullet1, localize( "guis/mainmenu/quitscreen/etqw_community/bullet1" ), $evalfloat( PADDING * 2 ), $evalfloat( PADDING * 3 ), 196, 16, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+		events {
+			onPostDraw {
+				drawLocalizedText( gui.dlgCredits_Community.bullet, "absoluteRect.x - 8, absoluteRect.y + 2, 16, 16", "1,1,1,0.75", fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+		}
+	_end_label
+	
+	_label_localized( Credits_Community_Bullet2, localize( "guis/mainmenu/quitscreen/etqw_community/bullet2" ), gui.lblCredits_Community_Bullet1.rect.x, _to_bottom_of( lblCredits_Community_Bullet1 ) + PADDING, gui.lblCredits_Community_Bullet1.rect.w, 16, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+		events {
+			onPostDraw {
+				drawLocalizedText( gui.dlgCredits_Community.bullet, "absoluteRect.x - 8, absoluteRect.y + 2, 16, 16", "1,1,1,0.75", fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+		}		
+	_end_label
+	
+	_label_localized( Credits_Community_Bullet3, localize( "guis/mainmenu/quitscreen/etqw_community/bullet3" ), gui.lblCredits_Community_Bullet1.rect.x, _to_bottom_of( lblCredits_Community_Bullet2 ) + PADDING, gui.lblCredits_Community_Bullet1.rect.w, 16, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+		events {
+			onPostDraw {
+				drawLocalizedText( gui.dlgCredits_Community.bullet, "absoluteRect.x - 8, absoluteRect.y + 2, 16, 16", "1,1,1,0.75", fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+		}		
+	_end_label
+	
+	windowDef Credits_Community_URL {
+		properties {
+			rect rect = _center( dlgCredits_Stats, width ), _bottom( dlgCredits_Community ), 100, 20;
+			float fontSize = 14;
+			color foreColor = URL_COLOR;
+			wstring text = toWStr( "community.enemyterritory.com" );
+			float flags = immediate( flags ) | WF_DROPSHADOW | WF_AUTO_SIZE_WIDTH;
+		}
+		events {
+			onKeyDown "mouse1" {
+				gui.playSound( "click" );
+				gui.dlgCredits.url = "http://community.enemyterritory.com";
+				gui.dlgCredits.postNamedEvent( "quit" );
+			}
+			onMouseEnter {
+				gui.playSound( "boop" );
+				foreColor = transition( foreColor, URL_COLOR_HIGHLIGHT, 100 );
+			}
+			onMouseExit {
+				foreColor = transition( foreColor, URL_COLOR, 100 );
+			}
+		}
+	}	
+_end_dialog
+
+_dialog( Credits_Stats, localize( "guis/mainmenu/quitscreen/etqw_stats" ), PADDING, _to_bottom_of( dlgCredits_Community ) + PADDING, _fill_to_left_of( dlgCredits ), _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	properties {
+		float visible = gui.clickOnCreditsToExit;
+		handle shot = gui.cacheMaterial( "stats", "stats_site" );
+		rect shotRect = ( absoluteRect.x + absoluteRect.w ) - 102, ( absoluteRect.y + ( absoluteRect.h * 0.5 ) ) - $evalfloat( 75 * 0.5 ), 94, 75;
+		
+	}
+	
+	events {
+		onCancel {
+			gui.dlgCredits.postNamedEvent( "quit" );
+		}	
+		onKeyDown "mouse1" "mouse2" {
+			if( gui.clickOnCreditsToExit ) {
+				gui.dlgCredits.postNamedEvent( "quit" );
+			}
+		}
+		onPostDraw {
+			callSuper();
+			drawCachedMaterial( shot, shotRect, COLOR_WHITE );
+			drawCachedMaterial( gui.wndLineMaterial, shotRect, COLOR_DIALOG_LINES );
+		}		
+	}
+	
+	_label_localized( Credits_Stats_Bullet1, localize( "guis/mainmenu/quitscreen/etqw_stats/bullet1" ), $evalfloat( PADDING * 2 ), $evalfloat( PADDING * 3 ), 196, 16, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+		events {
+			onPostDraw {
+				drawLocalizedText( gui.dlgCredits_Community.bullet, "absoluteRect.x - 8, absoluteRect.y + 2, 16, 16", "1,1,1,0.75", fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+		}		
+	_end_label
+	
+	_label_localized( Credits_Stats_Bullet2, localize( "guis/mainmenu/quitscreen/etqw_stats/bullet2" ), gui.lblCredits_Stats_Bullet1.rect.x, _to_bottom_of( lblCredits_Stats_Bullet1 ) + PADDING, gui.lblCredits_Stats_Bullet1.rect.w, 16, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+		events {
+			onPostDraw {
+				drawLocalizedText( gui.dlgCredits_Community.bullet, "absoluteRect.x - 8, absoluteRect.y + 2, 16, 16", "1,1,1,0.75", fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+		}		
+	_end_label
+	
+	_label_localized( Credits_Stats_Bullet3, localize( "guis/mainmenu/quitscreen/etqw_stats/bullet3" ), gui.lblCredits_Stats_Bullet1.rect.x, _to_bottom_of( lblCredits_Stats_Bullet2 ) + PADDING, gui.lblCredits_Stats_Bullet1.rect.w, 16, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+			vec2 textAlignment = TA_LEFT, TA_TOP;
+		}
+		events {
+			onPostDraw {
+				drawLocalizedText( gui.dlgCredits_Community.bullet, "absoluteRect.x - 8, absoluteRect.y + 2, 16, 16", "1,1,1,0.75", fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+		}		
+	_end_label	
+	
+	windowDef Credits_Stats_URL {
+		properties {
+			rect rect = _center( dlgCredits_Stats, width ), _bottom( dlgCredits_Stats ), 100, 20;
+			float fontSize = 14;
+			color foreColor = URL_COLOR;
+			wstring text = toWStr( "stats.enemyterritory.com" );
+			float flags = immediate( flags ) | WF_DROPSHADOW | WF_AUTO_SIZE_WIDTH;
+		}
+		events {
+			onKeyDown "mouse1" {
+				gui.playSound( "click" );
+				gui.dlgCredits.url = "http://stats.enemyterritory.com";
+				gui.dlgCredits.postNamedEvent( "quit" );
+			}
+			onMouseEnter {
+				gui.playSound( "boop" );
+				foreColor = transition( foreColor, URL_COLOR_HIGHLIGHT, 100 );
+			}
+			onMouseExit {
+				foreColor = transition( foreColor, URL_COLOR, 100 );
+			}
+		}
+	}	
+_end_dialog
+

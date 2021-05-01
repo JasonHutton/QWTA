@@ -1,0 +1,39 @@
+
+#ifndef __mainmenu_effects__
+#define __mainmenu_effects__
+
+#define ACTIVATE_TRANSITION_TIME 100
+
+// inline
+$template _fadein
+	postOptionalNamedEvent( "onFadeIn" );
+$endtemplate
+
+// inline
+$template _fadeout
+	postOptionalNamedEvent( "onFadeOut" );
+$endtemplate
+
+$template _fadable
+	properties {
+		float fadeInTime = ACTIVATE_TRANSITION_TIME;
+		float faceOutTime = ACTIVATE_TRANSITION_TIME;
+	}
+	events {
+		onNamedEvent "onFadeIn" {
+			callSuper();
+			colorMultiplier.a = transition( colorMultiplier.a, 1, fadeInTime );
+			gui.broadcastEventToChildren( name, "onFadeIn" );
+			postOptionalNamedEvent( "fadeBegin" );			
+		}
+		
+		onNamedEvent "onFadeOut" {
+			callSuper();
+			colorMultiplier.a = transition( colorMultiplier.a, 0, faceOutTime );
+			gui.broadcastEventToChildren( name, "onFadeOut" );
+		}
+	}
+$endtemplate
+
+
+#endif // !__mainmenu_effects__

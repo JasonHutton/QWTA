@@ -1,0 +1,46 @@
+
+object supply_crate_qwta : supply_crate {
+	void				Supply();
+}
+
+void supply_crate_qwta::Supply() {
+	vector mins, maxs;
+	
+	mins = getAbsMins() - '32 32 0';
+	maxs = getAbsMaxs() + '32 32 8';
+
+	entitiesInBounds( mins, maxs, CONTENTS_BODY | CONTENTS_SLIDEMOVER, 1.0f );
+	filterEntitiesByClass( "idPlayer", 1 );
+	float count = filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
+
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity p = getBoundsCacheEntity( i );
+		if ( p.getHealth() <= 0 ) {
+			continue;
+		}
+		
+		if ( p.givePackage( packageName ) ) {
+			supplyCount = supplyCount - 1;
+			OnSupplyCountChanged();
+			player testPlayer = p;
+			if ( testPlayer != $null_entity ) {
+				testPlayer.ShowAmmoParentBox( 2.f );
+				testPlayer.ShowHealthParentBox( 2.f );
+			}
+			
+			if ( owner != $null_entity ) {
+				if ( owner != p ) {
+					if ( usedProficiency != -1 ) {
+						owner.giveProficiency( usedProficiency, 1.f, $null, "supply crate used" );
+					}
+					sys.increaseStatInt( statUsed, owner.getEntityNumber(), 1 );
+				}
+			}
+
+			if ( supplyCount == 0 ) {
+				vRemoveObject();
+			}
+		}
+	}
+}

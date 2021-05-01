@@ -1,0 +1,204 @@
+object item_smoke_grenade_qwta : item_smoke_grenade {
+	void		Idle();
+	void		Fire();
+}
+
+void item_smoke_grenade_qwta::Idle() {
+	entity other;
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+
+	StartIdleEffect();
+
+	while ( true ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			StopIdleEffect();
+			weaponState( "Lower", 0 );
+		}
+
+		
+		if ( WEAPON_ATTACK ) {
+			if ( !mainFireDown ) {
+				myPlayer.disableSprint( 1.f );
+				mainFireDown = true;
+
+				if ( CanRemove( chargePerUse ) ) {
+					StopIdleEffect();
+					currentMode = 0;
+					weaponState( "Fire", 4 );
+				} else {
+					if ( myPlayer.isLocalPlayer() ) {
+						myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+						sys.startSoundDirect( getKey( "snd_need_charge" ), SND_ANY );
+						G_NotifyNoCharge( myPlayer );
+					}
+				}
+			}
+		} else if ( g_useReverseAirstrikes.getBoolValue() && allowAltFire && WEAPON_ALTFIRE ) {
+			if ( !altFireDown ) {
+				myPlayer.disableSprint( 1.f );
+				altFireDown = true;
+
+				if ( CanRemove( chargePerUse ) ) {
+					StopIdleEffect();
+					currentMode = 1;
+					weaponState( "Fire", 4 );
+				} else {
+					if ( myPlayer.isLocalPlayer() ) {
+						myPlayer.sendToolTip( GetToolTip( getKey( "tt_need_charge" ) ) );
+						sys.startSoundDirect( getKey( "snd_need_charge" ), SND_ANY );
+						G_NotifyNoCharge( myPlayer );
+					}
+				}
+			}
+		} else {
+			mainFireDown = false;
+			altFireDown = false;
+			if ( AllowSprint() ) {
+				myPlayer.disableSprint( 0.f );
+				if ( myPlayer.AI_SPRINT ) {
+					StopIdleEffect();
+					weaponState( "Sprint", 4 );
+				}
+			} else {
+				myPlayer.disableSprint( 1.f );
+			}
+		}
+
+		if ( AllowSprint() ) {
+			myPlayer.disableSprint( 0.f );
+			if ( myPlayer.AI_SPRINT ) {
+				StopIdleEffect();
+				weaponState( "Sprint", 4 );
+			}
+		} else {
+			myPlayer.disableSprint( 1.f );
+		}
+
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void item_smoke_grenade_qwta::Fire() {
+	float fuse;
+	float fuseEnd;
+	float currentTime;
+	float timeHeld;
+	float power;
+
+	cancelFire = false;
+
+	playAnim( ANIMCHANNEL_ALL, "throw_start" );
+
+	fuse = 4.f;
+
+	if ( myPlayer == sys.getLocalPlayer() ) {
+		//if ( g_allowTimerCircles.getBoolValue() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", fuse );
+		//}
+	}
+
+	currentTime = sys.getTime();
+	fuseStart = currentTime;
+	fuseEnd = currentTime + fuse;
+	
+	if ( currentMode == 0 ) {
+		while( currentTime < fuseEnd ) {
+			if ( ( currentTime > fuseStart + GRENADE_MINRELEASETIME ) && !WEAPON_ATTACK ) {
+				break;
+			}
+			sys.waitFrame();
+			currentTime = sys.getTime();
+		}
+	} else {
+		while( currentTime < fuseEnd ) {
+			if ( ( currentTime > fuseStart + GRENADE_MINRELEASETIME ) && !WEAPON_ALTFIRE ) {
+				break;
+			}
+			sys.waitFrame();
+			currentTime = sys.getTime();
+		}
+	}
+
+	timeHeld = sys.getTime() - fuseStart;
+	power = timeHeld + GRENADE_MINPOWER;
+
+	if ( power > GRENADE_MAXPOWER ) {
+		power = GRENADE_MAXPOWER;
+	}
+
+	if ( timeHeld < GRENADE_QUICKTHROWTIME ) {
+		playAnim( ANIMCHANNEL_ALL, "throw_quick" );
+		sys.wait( throwQuick );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, "throw" );
+		sys.wait( throwNormal );
+	}
+
+	if ( cancelFire ) {
+		if ( ShouldRunGuis() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", 0 );
+		}
+
+		if ( !ammoAvailable( 0 ) ) {
+			myPlayer.selectBestWeapon( false );
+		}
+
+		weaponState( "Idle", 4 );
+	}
+
+	if ( !sys.isClient() ) {
+		entity projectile = createProjectile( currentMode );
+		launchProjectiles( numProjectiles, currentMode, 0, sys.getTime() - fuseStart, power * powerMultiplier, 1.0 );
+		//projectile.setLinearVelocity( projectile.getLinearVelocity() + myPlayer.getLinearVelocity() );
+		if ( smokeNade ) {
+			myPlayer.setSmokeNadeState( projectile ); //mal: let bots know a smoke grenade exists.
+		}
+	} else {
+		fired();
+	}
+
+	fuseStart = -1;
+
+	Remove( chargePerUse );
+
+	myPlayer.selectBestWeapon( false );	
+	if ( WEAPON_LOWERWEAPON ) {
+		weaponState( "Lower", 0 );
+	}
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	weaponState( "Idle", 4 );
+}
+
+object item_smoke_grenade_firesupport_qwta : item_smoke_grenade_qwta {
+	void		vCheckProficiency();
+	void		preinit();
+	void		OwnerDied();
+}
+
+void item_smoke_grenade_firesupport_qwta::preinit() {
+	smokeNade = false;
+}
+
+void item_smoke_grenade_firesupport_qwta::vCheckProficiency() {
+	WeaponBase_CheckProficiency();
+	
+	chargePerUse = baseChargePerUse;
+	
+	team_base team = myPlayer.getGameTeam();
+	if ( team != $null ) {
+		if ( team.HasFastFireSupportRecharge( myPlayer ) ) {
+			chargePerUse = chargePerUse * 0.80f;
+		}
+	}
+
+	UpdateCrosshair();
+}
+
+void item_smoke_grenade_firesupport_qwta::OwnerDied() {
+	// don't drop it, as this will just cause teamkills and stuff, which isn't fun
+}

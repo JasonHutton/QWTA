@@ -1,0 +1,673 @@
+
+table badger_gear_speedtable {
+	clamp
+	{
+		20, 40, 60, 82
+	}
+}
+
+table badger_gear_forcetable {
+	clamp
+	{
+		1200000, 800000, 400000, 300000
+	}
+}
+
+table vehicle_default_zoom {
+	{
+		90
+	}
+}
+
+template templates/vehicles/badger/wheel_behavior {
+
+	parameters< FrontBackParm, LeftRightParm >
+	text {
+		"name"							"FrontBackParm LeftRightParm Wheel"
+		"surface1"						"m_FrontBackParm_LeftRightParm_wheel"
+		"surface2"						"s_FrontBackParm_LeftRightParm_wheel"
+		"def_brokenPart"				"part_vehicle_badger_FrontBackParm_LeftRightParm_wheel"
+		"joint"							"FrontBackParm_LeftRightParm_wheel"
+		"suspension"					"vehicle_badger_FrontBackParm_LeftRightParm_suspension"
+
+		"drive"							"1"
+		"health"						"100"
+		"slowonLeftRightParm"			"1"
+
+		"footprint"						"10"
+
+		"wheelSpinForceThreshhold"		"400000"
+
+		"slowScale"						"1"
+		"slowScaleSpeed"				"400"
+
+		"radius"						"20"
+
+		"suspensionUpTrace"				"18"
+		"suspensionDownTrace"			"29"
+		"suspensionKCompress"			"20000"
+		"suspensionDamping"				"0.1"
+		"suspensionVelocityScale"		"150"
+		"suspensionBase"				"250000"
+		"suspensionRange"				"15"
+		
+		"brakingForce"					"500000"
+		"maxSlip"						"400"
+
+		useTemplate templates/vehicles/badger/wheel_FrontBackParm< "LeftRightParm" >
+	}
+}
+
+template templates/vehicles/badger/wheel_front {
+	parameters< LeftRightParm >
+	text {
+		"turn"							"1"
+
+		"contactFriction"				"0 0.7 0"
+	}
+}
+
+template templates/vehicles/badger/wheel_rear {
+	parameters< LeftRightParm >
+	text {
+		"contactFriction"				"0 0.6 0"
+
+		"hasHandbrake"					"1"
+		"handBrakeSlipScale"			"10"
+	}
+}
+
+vehicleDef "badger" {
+	// main chassis
+	part {
+		"cm_model"						"models/vehicles/edf_badger/parts/collision.lwo"
+		"mass"							"1000"
+		"contactFriction"				"0.4 0.4 0.4"
+		"health"						"-1"
+		"collisionScale"				"0.5"
+		"buoyancy"						"0.14"
+	}
+
+	hurtZone {
+		"mins"							"-92 -50 0"
+		"maxs"							"104 50 36"
+	}
+
+	mass {
+		"origin"						"16 0 30"
+		"mass"							"4000"
+	}
+
+	// prevent the vehicle tipping over too easily
+	antiroll {
+		"angle_start"					"0.1"
+		"angle_end"						"15"
+		"strength"						"0.8"
+	}
+
+	// front left wheel
+	wheel {
+		useTemplate templates/vehicles/badger/wheel_behavior< "front", "left" >
+
+		"control_steering"				"1"
+
+		"base_org_offset"				"8 7 0"
+	}
+
+	// front right wheel
+	wheel {
+		useTemplate templates/vehicles/badger/wheel_behavior< "front", "right" >
+		
+ 		"base_org_offset"				"8 -7 0"
+	}
+
+	// back left wheel
+	wheel {
+		useTemplate templates/vehicles/badger/wheel_behavior< "rear", "left" >
+
+		"base_org_offset"				"0 7 0"
+	}
+
+	// back right wheel
+	wheel {
+		useTemplate templates/vehicles/badger/wheel_behavior< "rear", "right" >
+
+		"base_org_offset"				"0 -7 0"
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_badger_cockpit"
+		"scriptobject"		"vehicle_badger_cockpit"
+	}
+
+	cockpit main_noarms {
+		"def_cockpit"		"vehicle_badger_cockpit_noarms"
+		"scriptobject"		"vehicle_badger_cockpit"
+	}
+
+	cockpit gpmg {
+		"def_cockpit"		"vehicle_badger_gpmg_cockpit"
+		"scriptobject"		"vehicle_gpmg_cockpit"
+	}
+
+	positionDef {
+		name			"guis/vehicles/badger_driver"
+		hudname			"guis/vehicles/badger_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"joint_attach"			"gunner_position"
+			"player_anim"			"VehicleBadgerDriver"
+			"show_player"			"1"
+			"cockpit"				"main"
+			"stat_name"				"badger_driver"
+			"ability1"				"transport_player"
+			"joint_icon"			"carrier_driver"
+		}
+
+		// first-person + cockpit
+		view {
+			eyeJoint		"cam_7"
+			hideVehicle
+			autoCenter
+			showCockpit
+			interior
+			foliageDepthHack 150
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+
+			clamp pitch {
+				min		-20
+				max		12
+			}
+
+			clamp yaw {
+				min		-65
+				max		80
+			}
+		}
+
+		view {
+			eyeJoint		"driver_gun"
+			type			"smooth_locked"
+			cameraDistance	300
+			cameraHeight	75
+			dampSpeed		0.15
+			thirdPerson
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+		}
+	}
+
+	positionDef {
+		name			"guis/vehicles/badger_gunner"
+		hudname			"guis/vehicles/badger_gunner"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"gunner_position_2"
+			"player_anim"			"VehicleBadgerGunner"
+			"show_player"			"1"
+			"use_fallback"			"1"
+			"min_z_frac"			"0.1"
+			"damage_scale"			"0.5"
+			"take_damage"			"1"
+			"stat_name"				"badger_gunner"
+			"cockpit"				"gpmg"
+			"joint_icon"			"carrier_gunner1"
+		}
+
+		view {
+			eyeJoint		"gun_cam"
+			type			"freepivot"
+			showCockpit
+			followYaw
+			followPitch
+			hideDecoyInfo
+			zoomTable		"vehicle_default_zoom"
+
+			clamp pitch {
+				min	-50
+				max	17
+			}
+		}
+
+		view {
+			eyeJoint		"gun2"
+			type			"smooth_free"
+			cameraDistance	200
+			cameraHeight	50
+			thirdPerson
+			hideDecoyInfo
+
+			clamp pitch {
+				min	-50
+				max	17
+			}
+		}
+
+		weapon {
+			weapon		"vehicle_badger_weapon2"
+			type		"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min		-50
+				max		17
+			}
+		}
+	}
+
+	positionDef {
+		name			"guis/vehicles/badger_passenger"
+		hudname			"guis/vehicles/badger_passenger"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"driver_position"
+			"player_anim"			"VehicleBadgerFrontRightPassenger"
+			"show_player"			"1"
+			"cockpit"				"main_noarms"
+			"stat_name"				"badger_passenger"
+			"joint_icon"			"carrier_passenger1"
+		}
+
+		view {
+			eyeJoint		"cam_8"
+			hideVehicle
+			autoCenter
+			showCockpit
+			interior
+			hideDecoyInfo
+			foliageDepthHack 150
+
+			clamp pitch {
+				min		-50
+				max		20
+			}
+
+			clamp yaw {
+				min		-90
+				max		90
+			}
+		}
+
+		view {
+			eyeJoint		"gun_cam"
+			type			"pivot"
+			cameraDistance	200
+			followYaw
+			followPitch
+			thirdPerson
+			hideDecoyInfo
+
+			clamp pitch {
+				min	-50
+				max	20
+			}
+		}
+	}
+
+	positionDef {
+		name			"guis/vehicles/badger_rear_left"
+		hudname			"guis/vehicles/badger_rear_left"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"joint_attach"			"rear1_position"
+			"player_anim"			"VehicleBadgerRearLeftPassenger"
+			"show_player"			"1"
+			"use_fallback"			"1"
+			"min_z_frac"			"0.1"
+			"joint_icon"			"carrier_passenger2"
+			"stat_name"				"badger_passenger"
+			"allow_weapon"			"1"
+			"take_damage"			"1"
+			"adjust_body_angles"	"1"
+		}
+
+		view {
+			eyeJoint		"rear1_position_cam"
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-50
+				max		20
+			}
+
+			clamp yaw {
+				min		-60
+				max		60
+			}
+		}
+	}
+
+	positionDef {
+		name			"guis/vehicles/badger_rear_right"
+		hudname			"guis/vehicles/badger_rear_right"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"joint_attach"			"rear2_position"
+			"player_anim"			"VehicleBadgerRearRightPassenger"
+			"show_player"			"1"
+			"use_fallback"			"1"
+			"min_z_frac"			"0.1"
+			"stat_name"				"badger_passenger"
+			"joint_icon"			"carrier_passenger3"
+			"allow_weapon"			"1"
+			"take_damage"			"1"
+			"adjust_body_angles"	"1"
+		}
+
+		view {
+			eyeJoint		"rear2_position_cam"
+			hideDecoyInfo
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-50
+				max		20
+			}
+
+			clamp yaw {
+				min		-60
+				max		60
+			}
+		}
+	}
+
+	exitDef {
+		joint			"exit_left"
+	}
+
+	exitDef {
+		joint			"exit_rear"
+	}
+
+	exitDef {
+		joint			"exit_right"
+	}
+
+	exitDef {
+		joint			"exit_front"
+	}
+
+	simplePart {
+		"name"				"Left Door"
+		"surface1"			"m_right_door"	// left - right, someone teach these artists that we don t mean the OTHER one
+		"surface2"			"m_windows"
+		"surface3"			"s_right_door"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_left_door"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Right Door"
+		"surface1"			"m_left_door"	// left - right, someone teach these artists that we don t mean the OTHER one
+		"surface2"			"m_windows"
+		"surface3"			"s_left_door"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_right_door"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Left Mirror"
+		"surface1"			"m_left_mirror"
+		"surface2"			"s_left_mirror"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_left_mirror"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"Right Mirror"
+		"surface1"			"m_right_mirror"
+		"surface2"			"s_right_mirror"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_right_mirror"
+		"health" 			"10"
+	}
+
+	simplePart {
+		"name"				"Bullbars"
+		"surface1"			"m_bulls"
+		"surface2"			"s_bulls"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_bulls"
+		"health" 			"200"
+	}
+
+	simplePart {
+		"name"				"Main Body"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_main"
+		"health" 			"-1"
+		"flip_power"		"20"
+		"flip_master"		"1"
+	}
+
+	simplePart {
+		"name"				"Bonnet"
+		"surface1"			"m_bonnet"
+		"surface2"			"s_bonnet"
+		"joint"				"base"
+		"def_brokenPart"	"part_vehicle_badger_bonnet"
+		"health" 			"100"
+	}
+}
+
+entityDef part_vehicle_badger_front_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/wheel_left.lwo",
+			"0 1000 600",
+			"0 0 10",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"badger"
+	"priority"						"2"
+}
+
+entityDef part_vehicle_badger_front_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/wheel_right.lwo",
+			"0 -1000 600",
+			"0 0 12",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"badger"
+	"priority"						"1"
+}
+
+entityDef part_vehicle_badger_rear_left_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/wheel_left.lwo",
+			"0 1000 600",
+			"0 0 10",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"badger"
+	"priority"						"1"
+}
+
+entityDef part_vehicle_badger_rear_right_wheel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/wheel_right.lwo",
+			"0 -1000 600",
+			"0 0 12",
+			"vehicles/misc/debris/wheel",
+			".75",
+			".2",
+			"1"
+		>
+
+	"fx_explode"					"effects/vehicles/wheel_explode"
+	"climate_skin_key"				"badger"
+	"priority"						"2"
+}
+
+entityDef part_vehicle_badger_right_door {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/right_door.lwo",
+			"0 -900 300",
+			"0 0 2",
+			"vehicles/misc/debris/metal_med"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"0"
+}
+
+entityDef part_vehicle_badger_left_door {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/left_door.lwo",
+			"0 900 400",
+			"0 0 2",
+			"vehicles/misc/debris/metal_med"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"0"
+}
+
+entityDef part_vehicle_badger_left_mirror {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/left_mirror.lwo",
+			"0 200 700",
+			"0 0 2",
+			"vehicles/misc/debris/glass_small",
+			"0.1"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"0"
+}
+
+entityDef part_vehicle_badger_right_mirror {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/right_mirror.lwo",
+			"0 -200 700",
+			"0 0 2",
+			"vehicles/misc/debris/glass_small",
+			"0.1"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"0"
+}
+
+entityDef part_vehicle_badger_main {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/base.lwo",
+			"0 0 600",
+			"0 0 2",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"3"
+}
+
+entityDef part_vehicle_badger_bulls {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/bulls.lwo",
+			"800 0 700",
+			"0 0 2",
+			"vehicles/misc/debris/metal_med"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"1"
+}
+
+entityDef part_vehicle_badger_bonnet {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_badger/parts/bonnet.lwo",
+			"0 0 900",
+			"0 0 25",
+			"vehicles/misc/debris/metal_med"
+		>
+	"climate_skin_key"				"badger"
+	"priority"						"0"
+}
+
+stringMap vehicle_badger_front_right_suspension {
+	"type"			"double_wishbone"
+	"joint_upper"	"front_right_upper_wishbone"
+	"joint_lower"	"front_right_lower_wishbone"
+	"lerp_scale"		".2"
+}
+
+stringMap vehicle_badger_front_left_suspension {
+	"type"			"double_wishbone"
+	"joint_upper"	"front_left_upper_wishbone"
+	"joint_lower"	"front_left_lower_wishbone"
+	"lerp_scale"		".2"
+}
+
+stringMap vehicle_badger_rear_right_suspension {
+	"type"			"double_wishbone"
+	"joint_upper"	"rear_right_upper_wishbone"
+	"joint_lower"	"rear_right_lower_wishbone"
+	"lerp_scale"		".2"
+}
+
+stringMap vehicle_badger_rear_left_suspension {
+	"type"			"double_wishbone"
+	"joint_upper"	"rear_left_upper_wishbone"
+	"joint_lower"	"rear_left_lower_wishbone"
+	"lerp_scale"		".2"
+}
+
+stringMap vehicle_badger_weapon2 {
+	"gunName"					"game/weapons/mg"
+	"weapon_name"				"gpmg_2"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"realistic_charge_per_use"	"1.5"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"gun_muzzle"
+	"gunJointYaw"				"gun"
+	"gunJointPitch"				"gun2"
+
+	"surface_name"				"m_gpmg"
+
+	"muzzle"					"gun_muzzle"
+	"muzzle_tracer"				"fx_gpmg_tracer"
+	"muzzle_flash"				"fx_gpmg_muzzle"
+	"muzzle_sound"				"fx_gpmg_fire"
+	"muzzle_sound_local"		"fx_gpmg_fire"
+	"muzzle_overheat"			"fx_gpmg_overheat"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.10" // 10.0 RPS // 600 RPM
+	"realistic_fire_rate"		"0.063" // 15.8 RPS // 948 RPM
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_gpmg"
+	"def_projectile"			"projectile_gpmg_badger"
+	"client_projectile"			"projectile_gpmg_badger"
+
+	"crosshair"					"nospread"
+	
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
+	"low_ammo"					"5"
+}

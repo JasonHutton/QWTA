@@ -1,0 +1,1019 @@
+/************************************************************************************
+
+************************************************************************************/
+
+object weapon_base {
+	boolean		WEAPON_ATTACK;
+	boolean		WEAPON_ALTFIRE;
+	boolean		WEAPON_RELOAD;
+	boolean		WEAPON_RAISEWEAPON;
+	boolean		WEAPON_LOWERWEAPON;
+	boolean		WEAPON_MODESWITCH;
+	boolean		WEAPON_HIDE;
+
+	void		init();
+	void		preinit();
+	void		destroy();
+
+	boolean		CanRemove( float amount );
+	void		Remove( float amount );
+
+	void		WeaponBase_CheckProficiency();
+	void		UpdateSpreadModifiers();
+	float		GetFovSpread_Base();
+	float		GetFovSpread();
+	boolean		DisableSpread() { return false; }
+
+	void		RemoveLocalIronSightsEffects();
+	void		AddLocalIronSightsEffects();
+
+	void		PlayIdleAnim();
+	void		PlayZoomInAnim();
+	void		PlayZoomOutAnim();
+	void		PlayStartSprintAnim();
+	void		PlayLeaveSprintAnim( string newState, float blend );
+
+	void		OnBecomeViewWeapon();
+	void		OnFinishViewWeapon();
+
+	void		FreeScopeGUI() { ; }
+	void		LoadScopeGUI() { ; }
+
+	boolean		ShouldRunGuis();
+
+	void		vCheckProficiency();
+
+	void		UseAmmo_Stroyent( float modIndex );
+	void		UseAmmo( float modIndex );
+	boolean		CanReload() { return false; }
+	boolean		NeedsReload() { return false; }
+
+	void		DisableIronSights_Private( boolean allowWait );
+	void		EnableIronSights_Private( boolean allowWait );
+	void		DisableIronSights();
+	void		EnableIronSights();
+	void		ToggleIronSights();
+	void		CheckIronSights();
+	void		CreateIronSightsThread();
+	void		IronSightsThread();
+	void		StopIronSightsThread();
+
+	void		OnNetworkReload();
+
+	void		LaunchProjectile( float modIndex, float projectileIndex );
+	void		LaunchProjectile_Stroyent( float modIndex, float projectileIndex );
+	void		AmmoCheckClip( float modIndex );
+	void		AmmoCheck( float modIndex );
+	void		PlayFireSound();
+	void		StopFireSound();
+	void		DestroySound();
+	void		HideSights();
+	void		ShowSights();
+	void		ShowCrosshair();
+	void		HideCrosshair();
+	void		UpdateCharge();
+	void		StartCooling();
+	void		FinishCooling();
+	void		PlayFireEffect();
+
+	void		OnProxyEnter();
+	void		OnProxyExit();
+
+	void		OnIronSightsEnabled() { ; }
+	void		OnIronSightsDisabled() { ; }
+
+	void		KillUpdateHeat();
+	void		CreateUpdateHeat();
+	void		UpdateHeat();
+
+	void		HideUseCount();
+	void		ShowUseCount();
+
+	void		Base_OnProxyEnter();
+	void		Base_OnProxyExit();
+
+	void		Base_BeginReload();
+	void		Base_EndReload();
+	
+	boolean		HasNoAmmo();
+
+	void		Base_Raise();
+	void		Raise() { Base_Raise(); }
+	void		DoRaise( string newState, float blend );
+	void		Base_Lower();
+	void		Lower() { Base_Lower(); }
+	void		LeaveSprint( string newState, float blend );
+	void		Sprint();
+
+	void		Reload() {}
+
+	void		AddHeat();
+	boolean		IsOverheated();
+
+	void		UpdateCrosshair();
+	void		SetCrosshair();
+
+	boolean		AllowLocalMuzzleFlash();
+
+	float		chargePerUse;
+	float		fireRate;
+	float		fovSpeed;
+	float		fovSpread;
+	float		realisticFovSpread;
+	float		fovTime;
+	float		fovZoom;
+	float		lowAmmo;
+	float		lowAmmoWarn;
+	float		numModes;
+	float		numProjectiles;
+	float		range;
+	float		reFire;
+	float		reloadAmmo;
+	boolean		sightsHidden;
+	float		speedMod;
+	float		triggerDelay;
+	float		spreadModifier;
+
+	float		overheatLength;
+	float		overheatPerShot;
+	float		heatTimerHandle;
+
+	player		myPlayer;
+
+	boolean		altFireDown;
+	boolean		mainFireDown;
+	boolean		modeSwitchDown;
+	boolean		isCooling;
+	boolean		showAllAmmo;
+	boolean		showClip;
+	boolean		hideAmmo;
+	boolean		showCharge;
+	boolean		needsAmmoBox;
+
+	boolean		localIronSightsEffectsActive;
+	boolean		localIronSightsEffectsEnabled;
+
+	boolean		ironSightsEnabled;
+	float		ironSightsTimeout;
+	boolean		wantsIronSights;
+	boolean		ironSightsThreadActive;
+
+	boolean		hideCrosshair;
+	boolean		secondaryCrosshair;
+
+	boolean		noEnergySegments;
+
+	boolean		GetIronSightsStatus() { return ironSightsEnabled; }
+
+	void		StartIdleEffect();
+	void		StopIdleEffect();
+	boolean		idleEffectOn;
+	string		idleEffectJoint;
+
+	string		crosshairPrimary;
+	string		crosshairSecondary;
+	string		disabledCrosshairPrimary;
+	string		disabledCrosshairSecondary;
+
+	float		fireChannelUpto;
+};
+
+boolean weapon_base::ShouldRunGuis() {
+	return myPlayer == sys.getLocalViewPlayer() && myPlayer != $null_entity;
+}
+
+void weapon_base::preinit() {
+	fireRate = getFloatKeyWithDefault( "fire_rate", 0.2f );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	numProjectiles = getFloatKeyWithDefault( "num_projectiles", 1.f );
+	if ( g_useBaseETQW12Shotguns.getBoolValue() ) {
+			fireRate = getFloatKeyWithDefault( "baseETQW12_fire_rate", fireRate );
+			if ( g_useRealisticWeapons.getBoolValue() ) {
+				fireRate	= getFloatKeyWithDefault( "realistic_baseETQW12_fire_rate", fireRate );
+			}
+			numProjectiles = getFloatKeyWithDefault( "baseETQW12_num_projectiles", numProjectiles );
+	}
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		fireRate = getFloatKeyWithDefault( "q4hyper_fire_rate", fireRate );
+		if ( g_useRealisticWeapons.getBoolValue() ) {
+			fireRate	= getFloatKeyWithDefault( "realistic_q4hyper_fire_rate", fireRate );
+		}
+	}
+	range = getFloatKeyWithDefault( "range", 8192 );
+	triggerDelay = getFloatKeyWithDefault( "trigger_delay", 0.f );
+	reloadAmmo = getFloatKeyWithDefault( "reload_ammo", 1.f );
+	numModes = getFloatKeyWithDefault( "num_modes", 1.f );
+	lowAmmoWarn = getFloatKeyWithDefault( "low_ammo", 3.f );
+	speedMod = getFloatKeyWithDefault( "speed_mod", 1.f );
+	fovZoom = getFloatKeyWithDefault( "fov_zoom", 60.f );
+	fovTime = getFloatKeyWithDefault( "fov_time", 0.25f );
+	fovSpeed = getFloatKeyWithDefault( "fov_speed", 0.5f );
+	fovSpread = getFloatKeyWithDefault( "fov_spread", 0.5f );
+	realisticFovSpread = getFloatKeyWithDefault( "realistic_fov_spread", fovSpread );
+	spreadModifier = getFloatKeyWithDefault( "spread_bonus", 0.8f );
+	overheatLength = getFloatKeyWithDefault( "overheat_length", 5 );
+	overheatPerShot = getFloatKeyWithDefault( "overheat_per_shot", 0.5 );
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		overheatPerShot = getFloatKeyWithDefault( "q4hyper_overheat_per_shot", overheatPerShot );
+	}
+	heatTimerHandle = sys.allocTargetTimer( getKeyWithDefault( "timer_heat", "heat_default" ) );
+	chargePerUse = getFloatKeyWithDefault( "charge_per_use", 10.f ) / 100.f;
+	showAllAmmo	= getFloatKeyWithDefault( "show_all_ammo", 0 ) == 1;
+	showClip	= getFloatKeyWithDefault( "hide_clip", 0 ) != 1;
+	hideAmmo	= getFloatKeyWithDefault( "hide_ammo", 0 );
+	needsAmmoBox = getFloatKeyWithDefault( "needsAmmoBox", 1 );
+	showCharge	= getFloatKeyWithDefault( "show_charge", 0 );
+	hideCrosshair = getFloatKeyWithDefault( "hide_crosshair", 1 ) != 0.f;
+	noEnergySegments = getFloatKeyWithDefault( "no_energy_segments", 0 ) != 0.f;
+
+	idleEffectJoint = getKeyWithDefault( "idle_effect_joint", "muzzle" );
+
+	crosshairPrimary = getKeyWithDefault( "crosshair", "small" );
+	crosshairSecondary = getKeyWithDefault( "crosshair_secondary", crosshairPrimary );
+	
+	disabledCrosshairPrimary = getKeyWithDefault( "disabled_crosshair", "blank" );
+	disabledCrosshairSecondary = getKeyWithDefault( "disabled_crosshair_secondary", disabledCrosshairPrimary );
+
+	reFire = 0;
+
+	myPlayer = getOwner();
+	myPlayer.SetIronSightUp( false );
+
+
+	team_base team = myPlayer.getGameTeam();
+
+	float diff = 1.f - speedMod;
+	if ( diff > 0.f ) {
+		speedMod = speedMod + ( diff * team.GetWeaponSpeedBonus( myPlayer ) );
+	}
+}
+
+void weapon_base::init() {
+	vCheckProficiency();
+
+	show();
+	myPlayer.setSpeedModifier( speedMod );
+	UpdateCrosshair();
+}
+
+void weapon_base::StartIdleEffect() {
+	if ( !idleEffectOn ) {
+		playEffect( "fx_idle", idleEffectJoint, 1 );
+		idleEffectOn = true;
+	}
+}
+
+void weapon_base::StopIdleEffect() {
+	if ( idleEffectOn ) {
+		stopEffect( "fx_idle" );
+		idleEffectOn = false;
+	}
+}
+
+void weapon_base::UpdateCrosshair() {
+	entity proxy = myPlayer.getProxyEntity();
+	boolean allowInProxy = true;
+	if ( proxy != $null_entity ) {
+		allowInProxy = myPlayer.getProxyAllowWeapon();
+	}
+
+	if( ShouldRunGuis() && allowInProxy ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowAllAmmo", showAllAmmo );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowClip", showClip );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponHideAmmo", hideAmmo );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponNeedsAmmoBox", needsAmmoBox );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", showCharge );
+		if ( !noEnergySegments ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", chargePerUse * 100 );
+		}
+
+		SetCrosshair();
+	}
+}
+
+void weapon_base::SetCrosshair() {
+	if ( g_allowCrosshairs.getBoolValue() ) {
+		if ( myPlayer.IsSniperScopeUp() || ironSightsEnabled ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshairSecondary );
+		} else {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", crosshairPrimary );
+		}
+	} else {
+		if ( myPlayer.IsSniperScopeUp() || ironSightsEnabled ) {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshairSecondary );
+		} else {
+			sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", disabledCrosshairPrimary );
+		}
+	}
+}
+
+void weapon_base::UpdateCharge() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", myPlayer.EnergyBar_CanRemove( chargePerUse ) );
+	}
+}
+
+void weapon_base::destroy() {
+	if ( myPlayer != $null_entity ) {
+		myPlayer.disableSprint( 0.f );
+		myPlayer.disableRun( 0.f );
+		myPlayer.setSpeedModifier( 1.f );
+
+		if ( ShouldRunGuis() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowAllAmmo", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowClip", 1 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponHideAmmo", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponNeedsAmmoBox", 0 );
+
+			if ( g_allowCrosshairs.getBoolValue() ) {
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "small" );
+			} else {
+				sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", "none" );
+			}
+
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+			
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", 0.f );
+		}
+	}
+
+	stopSound( SND_WEAPON_IDLE );
+	stopSound( SND_WEAPON_RELOAD );
+
+	setFov( sys.getDefaultFov(), sys.getDefaultFov(), 0.f );
+	ShowSights();
+
+	RemoveLocalIronSightsEffects();
+
+	StopIdleEffect();
+}
+
+float weapon_base::GetFovSpread_Base() {
+	if ( ironSightsEnabled ) {
+			if ( g_useRealisticWeapons.getBoolValue() ) {
+				return realisticFovSpread;
+			}
+			else {
+				return fovSpread;
+			}
+		}
+	return 1.f;
+}
+
+float weapon_base::GetFovSpread() {
+	return GetFovSpread_Base();
+}
+
+void weapon_base::UpdateSpreadModifiers() {
+	float spread = 1.f;
+
+	if ( DisableSpread() ) { // scoped rifles have sway instead of spread
+		spread = 0.f;
+	} else {
+		spread = spread * GetFovSpread();
+
+		if ( myPlayer != $null_entity ) {
+			team_base team = myPlayer.getGameTeam();
+			if ( team != $null ) {
+				if ( team.HasSpreadBonus( myPlayer ) ) {
+					spread = spread * spreadModifier;
+				}
+			}
+		}
+	}
+
+	setSpreadModifier( spread );
+}
+
+void weapon_base::DisableIronSights() {
+	wantsIronSights = false;
+	CreateIronSightsThread();
+}
+
+void weapon_base::EnableIronSights() {
+	wantsIronSights = true;
+	CreateIronSightsThread();
+}
+
+void weapon_base::OnBecomeViewWeapon() {
+	if ( localIronSightsEffectsActive ) {
+		AddLocalIronSightsEffects();
+	}
+	UpdateCrosshair();
+}
+
+void weapon_base::OnFinishViewWeapon() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+	RemoveLocalIronSightsEffects();
+}
+
+void weapon_base::RemoveLocalIronSightsEffects() {
+	if ( !localIronSightsEffectsEnabled ) {
+		return;
+	}
+
+	localIronSightsEffectsEnabled = false;
+
+	ShowSights();
+	FreeScopeGUI();
+}
+
+void weapon_base::DisableIronSights_Private( boolean allowWait ) {
+	// just to make sure that anything calling this from elsewhere sets the state up correctly
+	wantsIronSights = false;
+
+	setDriftScale( 1.f );
+	setFov( fovZoom, sys.getDefaultFov(), fovTime * 0.46f );
+	if ( allowWait ) {
+		PlayZoomOutAnim();
+		waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	}
+
+	localIronSightsEffectsActive = false;
+	RemoveLocalIronSightsEffects();
+
+	myPlayer.setSpeedModifier( speedMod );
+
+	ironSightsEnabled = false;
+	myPlayer.SetIronSightUp( ironSightsEnabled );
+	ironSightsTimeout = sys.getTime() + 0.5f;
+
+	setBlendFrames( ANIMCHANNEL_ALL, 4 );
+	PlayIdleAnim();
+
+	OnIronSightsDisabled();
+
+	UpdateSpreadModifiers();
+}
+
+void weapon_base::AddLocalIronSightsEffects() {
+	if ( localIronSightsEffectsEnabled ) {
+		return;
+	}
+
+	if ( myPlayer == $null_entity ) {
+		return;
+	}
+
+	if ( myPlayer == sys.getLocalViewPlayer() ) {
+		localIronSightsEffectsEnabled = true;
+
+		HideSights();
+		LoadScopeGUI();
+	}
+}
+
+void weapon_base::EnableIronSights_Private( boolean allowWait ) {
+	// just to make sure that anything calling this from elsewhere sets the state up correctly
+	wantsIronSights = true;
+
+	setDriftScale( 0.f );
+	if ( allowWait ) {
+		PlayZoomInAnim();
+		sys.waitFrame();
+		setFovStart( sys.getDefaultFov(), fovZoom, fovTime * 0.0f, fovTime * 0.6f );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	} else {
+		setFovStart( sys.getDefaultFov(), fovZoom, fovTime * 0.0f, fovTime * 0.6f );
+	}
+
+	localIronSightsEffectsActive = true;
+	AddLocalIronSightsEffects();
+
+	myPlayer.setSpeedModifier( speedMod * fovSpeed );
+
+	ironSightsEnabled = true;
+	myPlayer.SetIronSightUp( ironSightsEnabled );
+	ironSightsTimeout = sys.getTime() + 0.5f;
+
+	setBlendFrames( ANIMCHANNEL_ALL, 4 );
+	PlayIdleAnim();
+
+	OnIronSightsEnabled();
+
+	UpdateSpreadModifiers();
+}
+
+void weapon_base::CheckIronSights() {
+	if ( sys.getTime() > ironSightsTimeout ) {
+		if ( myPlayer.IsIronSightUp() != ironSightsEnabled ) {
+			// the timeout period has elapsed but the server doesn't agree about the ironsights
+			// so need to force ourself into the other state
+			// this seems to be a very rare thing to happen.
+			if ( !ironSightsEnabled ) {
+				EnableIronSights_Private( false );
+			} else {
+				DisableIronSights_Private( false );
+			}
+
+			setBlendFrames( ANIMCHANNEL_ALL, 4 );
+			PlayIdleAnim();
+		}
+	}
+
+	if ( WEAPON_ALTFIRE ) {
+		if( !altFireDown  ) {
+			ToggleIronSights();
+			waitUntil( !ironSightsThreadActive );
+			altFireDown = true;
+		}
+	} else {
+		altFireDown = false;
+	}
+}
+
+void weapon_base::ToggleIronSights() {
+	if ( wantsIronSights ) {
+		wantsIronSights = false;
+	} else {
+		wantsIronSights = true;
+	}
+
+	CreateIronSightsThread();
+}
+
+void weapon_base::CreateIronSightsThread() {
+	if ( ironSightsThreadActive ) {
+		return;
+	}
+
+	ironSightsThreadActive = true;
+	thread IronSightsThread();
+}
+
+void weapon_base::StopIronSightsThread() {
+	sys.killThread( "IronSightsThread_" + getName() );
+}
+
+void weapon_base::IronSightsThread() {
+	while ( true ) {
+		if ( ironSightsEnabled == wantsIronSights ) {
+			break;
+		}
+
+		if ( wantsIronSights ) {
+			EnableIronSights_Private( true );
+		} else {
+			DisableIronSights_Private( true );
+		}
+
+		UpdateCrosshair();
+		sys.waitFrame();
+	}
+
+	ironSightsThreadActive = false;
+
+	StopIronSightsThread();
+}
+
+void weapon_base::HideSights() {
+	if ( !sightsHidden ) {
+		sightsHidden = true;
+		if ( !myPlayer.isGunHidden() ) {
+			HideCrosshair();
+		}
+	}
+}
+
+void weapon_base::ShowSights() {
+	if ( sightsHidden ) {
+		sightsHidden = false;
+		ShowCrosshair();
+	}
+}
+
+void weapon_base::ShowCrosshair() {
+	if ( hideCrosshair ) {
+		if ( ShouldRunGuis() ) {
+			float count = sys.getGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.hideCrosshairCounter" );
+			count = count - 1;
+			if ( count < 0 ) {
+				count = 0;
+			}
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.hideCrosshairCounter", count );
+		}
+	}
+}
+
+void weapon_base::HideCrosshair() {
+	if ( hideCrosshair ) {
+		if ( ShouldRunGuis() ) {
+			float count = sys.getGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.hideCrosshairCounter" );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.hideCrosshairCounter", count + 1 );
+		}
+	}
+}
+
+void weapon_base::UseAmmo( float modIndex ) {
+	if( ammoAvailable( modIndex ) == ( lowAmmoWarn * 2 ) ) {
+		if ( myPlayer != $null_entity && myPlayer == sys.getLocalPlayer() ) {
+			if ( !myPlayer.isToolTipPlaying() ) {
+				team_base team = myPlayer.getGameTeam();
+				if ( myPlayer.getPlayerClass() == g_playerClassFieldOps ) {
+					myPlayer.sendToolTip( team.lowAmmoSelfToolTip );
+				} else {
+					myPlayer.sendToolTip( team.lowAmmoToolTip );
+				}
+			}
+		}
+	}
+
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	float amount = ammoRequired( modIndex );
+	useAmmo( ammoType( modIndex ), amount );
+	addToClip( modIndex, -amount );
+}
+
+void weapon_base::UseAmmo_Stroyent( float modIndex ) {
+	if( ammoAvailable( modIndex ) == ( lowAmmoWarn * 2 ) ) {
+		if ( myPlayer != $null_entity && myPlayer == sys.getLocalPlayer() ) {
+			if ( !myPlayer.isSinglePlayerToolTipPlaying() ) {
+				myPlayer.cancelToolTips();
+				team_base team = myPlayer.getGameTeam();
+				if ( myPlayer.getPlayerClass() == g_playerClassTechnician ) {
+					myPlayer.sendToolTip( team.lowAmmoSelfToolTip );
+				} else {
+					myPlayer.sendToolTip( team.lowAmmoToolTip );
+				}
+			}
+		}
+	}
+
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	float amount = ammoRequired( modIndex );
+	useAmmo( ammoType( modIndex ), amount );
+}
+
+void weapon_base::LaunchProjectile( float modIndex, float projectileIndex ) {
+	launchProjectiles( numProjectiles, projectileIndex, getCurrentSpread(), 0, 1, 1 );
+
+	UseAmmo( modIndex );
+
+	increaseSpread();
+}
+
+void weapon_base::LaunchProjectile_Stroyent( float modIndex, float projectileIndex ) {
+	launchProjectiles( numProjectiles, projectileIndex, getCurrentSpread(), 0, 1, 1 );
+
+	UseAmmo_Stroyent( modIndex );
+	AddHeat();
+
+	increaseSpread();
+}
+
+void weapon_base::AmmoCheckClip( float modIndex ) {
+	if( ammoInClip( modIndex ) == lowAmmoWarn ) {
+		sys.waitFrame();
+		startSound( "snd_lowAmmo", SND_WEAPON_SIG );
+
+		if ( ShouldRunGuis() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 1 );
+		}
+	}
+}
+
+void weapon_base::AmmoCheck( float modIndex ) {
+	if( ammoAvailable( modIndex ) == lowAmmoWarn ) {
+		sys.waitFrame();
+		startSound( "snd_lowAmmo", SND_WEAPON_SIG );
+		if ( ShouldRunGuis() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponLowAmmo", 1 );
+		}
+	}
+}
+
+void weapon_base::PlayFireSound() {
+//	float diversePitch = 0.75f + sys.random( 0.5f );
+
+	fireChannelUpto = fireChannelUpto + 1;
+	if ( fireChannelUpto > SND_WEAPON_FIRE_NUM - 1 ) {
+		fireChannelUpto = 0;
+	}
+
+	startSound( "snd_fire_local", SND_WEAPON_FIRE_LOCAL_START + fireChannelUpto );
+//	setChannelPitchShift( SND_WEAPON_FIRE_LOCAL, diversePitch );
+	startSound( "snd_fire", SND_WEAPON_FIRE );
+	startSound( "snd_fire_far", SND_WEAPON_FIRE_FAR );
+}
+
+void weapon_base::StopFireSound() {
+	startSound( "snd_fire_local_trail", SND_WEAPON_FIRE_LOCAL );
+	startSound( "snd_fire_trail", SND_WEAPON_FIRE );
+	startSound( "snd_fire_far_trail", SND_WEAPON_FIRE_FAR );
+}
+
+void weapon_base::DestroySound() {
+}
+
+void weapon_base::Base_OnProxyEnter() {
+	vCancelFire();
+}
+
+void weapon_base::OnProxyEnter() {
+	Base_OnProxyEnter();
+}
+
+void weapon_base::Base_OnProxyExit() {
+	UpdateCrosshair();
+}
+
+void weapon_base::OnProxyExit() {
+	Base_OnProxyExit();
+}
+
+void weapon_base::AddHeat() {
+	float heatValue = sys.getTargetTimerValue( heatTimerHandle, myPlayer );
+
+	if ( heatValue < sys.getTime() ) {
+		heatValue = sys.getTime();
+	}
+
+	heatValue = heatValue + overheatPerShot;
+
+	sys.setTargetTimerValue( heatTimerHandle, myPlayer, heatValue );
+}
+
+boolean weapon_base::IsOverheated() {
+	if ( myPlayer == $null_entity ) {
+		return false;
+	}
+
+	float heatValue = sys.getTargetTimerValue( heatTimerHandle, myPlayer );
+	if ( ( heatValue - sys.getTime() ) >= overheatLength ) {
+		return true;
+	}
+
+	return false;
+}
+
+void weapon_base::KillUpdateHeat() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showHeat", 0.f );
+	sys.killThread( "UpdateHeat_" + getName() );
+}
+
+void weapon_base::CreateUpdateHeat() {
+	KillUpdateHeat();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showHeat", 1.f );
+	thread UpdateHeat();
+}
+
+void weapon_base::HideUseCount() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showUseCount", 0.f );
+	}
+}
+
+void weapon_base::ShowUseCount() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showUseCount", 1.f );
+	}
+}
+
+void weapon_base::UpdateHeat() {
+	float heatValue;
+	float fraction;
+
+	while ( true ) {
+		sys.waitFrame();
+
+		heatValue = sys.getTargetTimerValue( heatTimerHandle, myPlayer ) - sys.getTime();
+		if ( heatValue < 0 ) {
+			heatValue = 0;
+		} else if ( heatValue > overheatLength ) {
+			heatValue = overheatLength;
+		}
+
+		fraction = 1 - ( heatValue / overheatLength );
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.heat", fraction );
+	}
+}
+
+void weapon_base::StartCooling() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 1.f );
+	}
+}
+
+void weapon_base::FinishCooling() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+	}
+}
+
+void weapon_base::PlayFireEffect() {
+	if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+		entity worldModel = getWorldModel( 0 ); // FIXME
+		worldModel.playEffect( "fx_muzzle_flash_world", "muzzle", 0.0f );
+	} else {
+		if ( AllowLocalMuzzleFlash() ) {
+			playEffect( "fx_muzzle_flash", "muzzle", 0.f );
+		} else {
+			playEffect( "fx_muzzle_flash_novisuals", "muzzle", 0.f );
+		}
+	}
+}
+
+void weapon_base::Base_BeginReload() {
+	if ( ShouldRunGuis() ) {
+		float reloadTime = getAnimLength( "reload" );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", reloadTime );
+		
+		if ( myPlayer != $null_entity ) {
+			myPlayer.ShowAmmoParentBox( reloadTime + 1.f );
+		}
+	}
+	
+}
+
+void weapon_base::Base_EndReload() {
+	if ( ShouldRunGuis() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
+	}
+}
+
+void weapon_base::Base_Raise() {
+	UpdateCrosshair();
+	
+	if ( myPlayer != $null_entity ) {
+		myPlayer.ShowAmmoParentBox( 2.f );
+	}
+	
+	if ( myPlayer.AI_SPRINT ) {
+		DoRaise( "Sprint", 4 );
+	} else {
+		if ( NeedsReload() && CanReload() ) {
+			DoRaise( "Reload", 4 );
+		} else {
+			DoRaise( "Idle", 4 );
+		}
+	}
+}
+
+boolean weapon_base::HasNoAmmo() {
+	return ammoAvailable( 0 ) == 0;
+}
+
+void weapon_base::DoRaise( string newState, float blend ) {
+	if ( HasNoAmmo() ) {
+		weaponHolstered();
+		nextWeapon();
+		return;
+	}
+	weaponRising();
+
+	playAnim( ANIMCHANNEL_ALL, "raise" );
+	while ( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+		sys.waitFrame();
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", 4 );
+		}
+	}
+
+	if ( getKey( "snd_idle" ) != "" ) {
+		startSound( "snd_idle", SND_WEAPON_IDLE );
+	}
+
+	weaponState( newState, blend );
+}
+
+void weapon_base::Base_Lower() {
+	DisableIronSights();
+	waitUntil( !ironSightsThreadActive );
+
+	stopSound( SND_WEAPON_IDLE );
+	StopIdleEffect();
+
+	weaponLowering();
+	playAnim( ANIMCHANNEL_ALL, "putaway" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	weaponHolstered();
+	waitUntil( WEAPON_RAISEWEAPON );
+	weaponState( "Raise", 0 );
+}
+
+void weapon_base::LeaveSprint( string newState, float blend ) {
+	if ( WEAPON_ATTACK ) {
+		mainFireDown = false;
+	}
+
+	PlayLeaveSprintAnim( newState, blend );
+
+	weaponState( newState, blend );
+}
+
+void weapon_base::Sprint() {
+	DisableIronSights();
+	waitUntil( !ironSightsThreadActive );
+
+	weaponReady();
+
+	PlayStartSprintAnim();
+
+	StartIdleEffect();
+
+	while ( true ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			LeaveSprint( "Lower", 4 );
+		}
+
+		if ( !myPlayer.AI_SPRINT ) {
+			if ( NeedsReload() && CanReload() ) {
+				LeaveSprint( "Reload", 4 );
+			} else {
+				LeaveSprint( "Idle", 4 );
+			}
+		}
+
+		if ( WEAPON_ATTACK ) {
+			LeaveSprint( "Idle", 4 );
+		}
+
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void weapon_base::OnNetworkReload() {
+	string currentState = getWeaponState();
+
+	if ( currentState == "Idle" || currentState == "Fire" ) {
+		weaponState( "Reload", 4 );
+	}
+}
+
+void weapon_base::vCheckProficiency() {
+	WeaponBase_CheckProficiency();
+}
+
+void weapon_base::WeaponBase_CheckProficiency() {
+	UpdateSpreadModifiers();
+}
+
+boolean weapon_base::CanRemove( float amount ) {
+	return myPlayer.EnergyBar_CanRemove( amount );
+}
+
+void weapon_base::Remove( float amount ) {
+	myPlayer.EnergyBar_Remove( amount );
+}
+
+boolean weapon_base::AllowLocalMuzzleFlash() {
+	if ( myPlayer.IsSniperScopeUp() ) {
+		return false;
+	}
+
+	// Gordon: make it a property of the team, not a team check
+	if ( myPlayer.getGameTeam() == stroggTeam && ironSightsEnabled ) {
+		return false;
+	}
+
+	return true;
+}
+
+void weapon_base::PlayIdleAnim() {
+	if ( ironSightsEnabled ) {
+		playCycle( ANIMCHANNEL_ALL, "idle_zoom" );
+	} else {
+		playCycle( ANIMCHANNEL_ALL, "idle" );
+	}
+}
+
+void weapon_base::PlayZoomInAnim() {
+	playAnim( ANIMCHANNEL_ALL, "zoomin" );
+}
+
+void weapon_base::PlayZoomOutAnim() {
+	playAnim( ANIMCHANNEL_ALL, "zoomout" );
+}
+
+void weapon_base::PlayStartSprintAnim() {
+	if ( hasWeaponAnim( "start_sprint" ) ) {
+		playAnim( ANIMCHANNEL_ALL, "start_sprint" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	}
+}
+
+void weapon_base::PlayLeaveSprintAnim( string newState, float blend ) {
+	if ( hasWeaponAnim( "leave_sprint" ) ) {
+		playAnim( ANIMCHANNEL_ALL, "leave_sprint" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	}
+}

@@ -1,0 +1,73 @@
+// ================================================================================
+// Mods Dialog
+// ================================================================================
+_dialog( Mods, localize( "guis/mainmenu/mods" ), PADDING, 44, _client_dimension( desktop, width ) * 0.5f, _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( mods )
+	
+	_list( Mods, _left( dlgMods ), _top( dlgMods ), _fill_to_right_of( dlgMods ), _fill_to_top_of( btnChooseMod ) )
+		properties {
+			float flags = immediate( flags ) | LF_SHOW_HEADINGS | LF_COLUMN_SORT | WF_TRUNCATE_TEXT;
+			vec2 cursorItem;
+		}
+		_list_draw_column_sort( "default" )
+		
+		events {
+			onCreate {
+				self.insertColumn( toWStr( "<width = 100%><flags customdraw><loc = 'guis/mainmenu/mods'>" ), 0, 0 );
+				self.insertColumn( gui.blankWStr, 0, 1 );
+				activeColumn = 0;
+			}
+			onNamedEvent "update" {
+				fillFromEnumerator( "modList" );
+			}
+			onNamedEvent "onShow" {
+				callSuper();
+				postNamedEvent( "update" );
+			}
+			onDoubleClick "mouse1" {
+				cursorItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( cursorItem.x >= 0 ) {
+					postNamedEvent( "chooseMod" );
+				}
+			}
+			onNamedEvent "chooseMod" {
+				timeline.loadMod.active = true;
+				timeline.loadMod.resetTime( 0 );
+			}			
+		}
+		timeline loadMod {
+			properties {
+				float active = false;
+			}
+			onTime 0 {
+				gui.desktop.allowEvents = false;
+				gui.desktop.allowChildEvents = false;
+				gui.flags = immediate( gui.flags ) & ~GUI_SHOWCURSOR;
+				gui.fadeIn.changeZOrder( ZO_BACK );
+				gui.fadeIn.overlayColor.a = transition( 0, 1, 800 );
+				gui.fadeSoundClass( 1, -60, 700 );
+			}
+			onTime 1000 {
+				gui.stopMusic();
+				gui.setCVar( "fs_game", toStr( getItemText( currentSelection, 1 ) ) );
+				gui.consoleCommand( "reloadEngine menu" + _newline );
+			}
+		}		
+	_end_list
+
+	_button( ChooseMod, _right( dlgMods ), _bottom( dlgMods ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/play" );
+		}
+		_button_disable_if( "gui.lstMods.currentSelection", gui.lstMods.currentSelection == -1 )
+		events {
+			onNamedEvent "onAction" {
+				if( gui.lstMods.currentSelection == -1 ) {
+					return;
+				}
+				gui.lstMods.postNamedEvent( "chooseMod" );
+			}
+		}
+	_end_button		
+_end_dialog

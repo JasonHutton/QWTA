@@ -1,0 +1,665 @@
+
+object deployable_ssg : deployable_base {
+	void	preinit();
+	void	init();
+	void	destroy();
+	void	syncFields();
+
+	void	TurningThread();
+
+	void	ServerIdle();
+	void	ServerAiming();
+	void	ServerFiring();
+
+	void	ClientIdle();
+	void	ClientFiring();
+
+	boolean vTargetPlayerEligible( entity p );
+	boolean vTargetGetValid( vector pos );
+	void	vTargetSetTarget( vector targetPos, entity targetEnt );
+	void	vDoneDeploy();
+
+	float	vGetFireSupportMode();
+
+	void	InitTargetting( vector targetPos );
+
+	void	ClearFiringDecal();
+	void	CreateFiringDecal();
+
+	void	ReloadThread( float delay );
+
+	void	OnMissileChanged();
+	void	OnFireSupportStateChanged();
+
+	//
+	void	UpdateTurning();
+	boolean	UpdateYaw();
+	boolean UpdatePitch();
+	void	ResetAngles();
+	void	TurnToward( float yaw, float pitch );
+	boolean PitchValid( float pitch );
+	boolean	CalcTargetAngles( vector targetPos );
+
+	// utility funcs ( none of these should be blocking )
+	void	Launch();
+	void	FireMissile();
+
+	void	StopRotationSounds();
+	void	StopYawSound();
+	void	StopPitchSound();
+	void	PlayYawSound();
+	void	PlayPitchSound();
+
+	void	MissileCheck();
+
+	float	recycle;
+	float	fireCount;
+	float	reloadWait;
+	float	fireSyncDelay;
+	float	nextFire;
+
+	float	jointYaw;
+	float	idealYaw;
+	float	currentYaw;
+	float	oldIdealYaw;
+	float	minYawRate;
+	float	maxYawRate;
+
+	float	jointPitch;
+	float	idealPitch;
+	float	currentPitch;
+	float	oldIdealPitch;
+	float	minPitchRate;
+	float	maxPitchRate;
+
+	float	jointBarrel;
+
+	float	minPitch;
+	float	maxPitch;
+
+	float	minRange;
+	float	maxRange;
+
+	float	missileSpeed;
+
+	float	spread;
+
+	float	clientState;
+
+	float	targetYaw;
+	float	targetPitch;
+	vector	targetDiff;
+
+	float	baseYaw;
+	float	barrelPitch;
+	float	barrelLength;
+	vector	firingOffset;
+	vector	firingVelocity;
+	boolean	hasTarget;
+	float	projectileIndex;
+	float	dmgProjectileIndex;
+
+	entity	targetCapturer;
+
+	boolean	playingPitchSound;
+	boolean	playingYawSound;
+	boolean anglesLocked;
+
+	entity	missile;
+	boolean	missileActive;
+
+	vector	target;
+
+	generic_target_marker	firingDecal;
+	entity					firingMarker;
+	
+	string	fireAnim;
+	string	q4FireAnim;
+}
+
+void deployable_ssg::syncFields() {
+	syncBroadcast( "target" );
+	syncBroadcast( "nextFire" );
+	syncBroadcast( "fireSupportState" );
+	syncBroadcast( "idealYaw" );
+	syncBroadcast( "idealPitch" );
+	syncBroadcast( "oldIdealYaw" );
+	syncBroadcast( "oldIdealPitch" );
+	syncBroadcast( "missile" );
+
+	sync( "currentYaw" );
+	sync( "currentPitch" );
+
+	syncCallback( "missile", "OnMissileChanged" );
+	syncCallback( "fireSupportState", "OnFireSupportStateChanged" );
+}
+
+void deployable_ssg::MissileCheck() {
+	while ( true ) {
+		if ( missile != $null_entity ) {
+			missileActive = true;
+		} else {
+			if ( missileActive ) {
+				missileActive = false;
+				ClearFiringDecal();
+			}
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void deployable_ssg::destroy() {
+	delete fsStatus;
+	ClearFiringDecal();
+}
+
+void deployable_ssg::ReloadThread( float delay ) {
+	fireSupportState = MPS_RELOADING;
+
+	sys.wait( delay );
+
+	fireSupportState = MPS_READY;
+}
+
+void deployable_ssg::OnMissileChanged() {
+	if ( missile != $null_entity ) {
+		CreateFiringDecal();
+	} else {
+		ClearFiringDecal();
+	}
+}
+
+void deployable_ssg::OnFireSupportStateChanged() {
+	if ( fireSupportState == MPS_FIRING ) {
+		if ( clientState != ART_CS_FIRING ) {
+			setState( "ClientFiring" );
+		}
+	} else {
+		if ( clientState != ART_CS_IDLE ) {
+			setState( "ClientIdle" );
+		}
+	}
+}
+
+float deployable_ssg::vGetFireSupportMode() {
+	return TARGET_SSM;
+}
+
+void deployable_ssg::preinit() {
+	vector barrel;
+	float entityDeclIndex;
+	float i;
+	float muzzleHandle;
+
+	recycle			= getFloatKey( "missile_recycle" );
+	fireCount		= getFloatKey( "missile_firecount" );
+	reloadWait		= getFloatKey( "missile_reload" );
+	fireSyncDelay	= getFloatKey( "sync_delay" );
+	spread			= getFloatKey( "spread" );
+
+	if ( fireCount <= 0 ) {
+		fireCount = 6;
+	}
+	if ( reloadWait <= 0 ) {
+		reloadWait = 30;
+	}
+	if ( fireSyncDelay <= 0 ) {
+		fireSyncDelay = 0.5;
+	}
+
+	jointYaw		= getJointHandle( getKey( "joint_yaw" ) );
+	jointPitch		= getJointHandle( getKey( "joint_pitch" ) );
+	jointBarrel		= getJointHandle( getKey( "joint_barrel" ) );
+
+	entityDeclIndex	= sys.getDeclType( "entityDef" );
+	
+	dmgProjectileIndex = sys.getDeclIndex( entityDeclIndex, getKey( "def_dmg_projectile" ) );
+	projectileIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_projectile" ) );
+
+	barrel			= getLocalJointPos( jointBarrel ) - getLocalJointPos( jointPitch );
+	barrelPitch		= sys.atan2( barrel_z, barrel_x );
+	barrelLength	= sys.vecLength( barrel );
+
+	currentYaw		= 0;
+	idealYaw		= 0;
+	oldIdealYaw		= 0;
+	maxYawRate		= getFloatKey( "max_yaw_turn" );
+	minYawRate		= getFloatKey( "min_yaw_turn" );
+
+	currentPitch	= 0;
+	idealPitch		= 0;
+	oldIdealPitch	= 0;
+	maxPitchRate	= getFloatKey( "max_pitch_turn" );
+	minPitchRate	= getFloatKey( "min_pitch_turn" );
+
+	minPitch		= getFloatKey( "min_pitch" );
+	maxPitch		= getFloatKey( "max_pitch" );
+
+	minRange		= getFloatKey( "range_min" );
+	maxRange		= getFloatKey( "range_max" );
+
+	missileSpeed	= getFloatKey( "missile_speed" );
+
+	hasTarget		= false;
+
+	nextFire		= 0;
+	
+	fireAnim		= getKey( "missile_anim" );
+	q4FireAnim		= getKey( "dmg_missile_anim" );
+
+	fsStatus = new fireSupportStatus;
+
+	thread TurningThread();
+	thread MissileCheck();
+}
+
+void deployable_ssg::init() {
+	if ( sys.isClient() ) {
+		setState( "ClientIdle" );
+	} else {
+		setState( "ServerIdle" );
+	}
+}
+
+// ==========================================
+// States
+// ==========================================
+
+void deployable_ssg::TurningThread() {
+	while( true ) {
+		sys.waitFrame();
+
+		if ( disabledState ) {
+			StopRotationSounds();
+		} else {
+			UpdateTurning();
+		}
+	}
+}
+
+void deployable_ssg::ClientIdle() {
+	clientState = ART_CS_IDLE;
+}
+
+void deployable_ssg::ServerIdle() {
+	hasTarget = false;
+
+	ResetAngles();
+}
+
+void deployable_ssg::UpdateTurning() {
+	boolean yawDone;
+	boolean pitchDone;
+	vector angles;
+
+	yawDone = UpdateYaw();
+	pitchDone = UpdatePitch();
+
+	if ( !yawDone ) {
+		angles_x = 0;
+		angles_y = currentYaw;
+		angles_z = 0;
+		setJointAngle( jointYaw, JOINTMOD_LOCAL, angles );
+
+		PlayYawSound();
+	} else {
+		StopYawSound();
+	}
+
+	if ( !pitchDone ) {
+		angles_x = currentPitch;
+		angles_y = 0;
+		angles_z = 0;
+		setJointAngle( jointPitch, JOINTMOD_LOCAL, angles );
+
+		PlayPitchSound();
+	} else {
+		StopPitchSound();
+	}
+
+	if ( yawDone && pitchDone ) {
+		anglesLocked = true;
+	} else {
+		anglesLocked = false;
+	}
+}
+
+void deployable_ssg::ServerAiming() {
+	fireSupportState = MPS_FIRING_PREPARE;
+
+	while ( !anglesLocked ) {
+		sys.waitFrame();
+
+		if ( disabledState ) {
+			setState( "ServerIdle" );
+		}
+	}
+
+	setState( "ServerFiring" );
+}
+
+void deployable_ssg::ClientFiring() {
+	clientState = ART_CS_FIRING;
+
+	while( true ) {
+		if ( sys.getTime() > nextFire ) {
+			Launch();
+			break;
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void deployable_ssg::ServerFiring() {
+	fireSupportState = MPS_FIRING;
+
+	nextFire = sys.getTime() + 2.f;
+
+	while( true ) {
+		if ( disabledState ) {
+			ClearFiringDecal();
+			break;
+		}
+
+		if ( sys.getTime() > nextFire ) {
+			Launch();
+			break;
+		}
+
+		sys.waitFrame();
+	}
+
+	sys.wait( 2.f );
+
+	nextFire = 0;
+
+	thread ReloadThread( reloadWait );
+
+	setState( "ServerIdle" );
+}
+
+// ==========================================
+// Utility Funcs
+// ==========================================
+
+void deployable_ssg::FireMissile() {
+	vector org = getJointPos( jointPitch ) + firingOffset;
+
+	if ( g_useQuake4DarkMatter.getBoolValue() ) {
+		missile = launchMissileSimple( owner, self, $null_entity, dmgProjectileIndex, -1, 0.f, org, firingVelocity );
+	} else {
+		missile = launchMissileSimple( owner, self, $null_entity, projectileIndex, -1, 0.f, org, firingVelocity );
+	}
+}
+
+void deployable_ssg::Launch() {
+	FireMissile();
+
+	if ( g_useQuake4DarkMatter.getBoolValue() && q4FireAnim != "" ) {
+		playAnim( getIntKey( "missile_channel" ), q4FireAnim );
+	} else if ( fireAnim != "" ) {
+		playAnim( getIntKey( "missile_channel" ), fireAnim );
+	}
+	
+	if ( g_artilleryWarning.getBoolValue() ) {
+		objManager.CPrintEvent( sys.localizeString( "game/ssg_fired" ), $null );
+	}
+
+	team_base team = getGameTeam();
+	objManager.PlaySound( team.getKey( "snd_ssg_fired" ), team );
+}
+
+void deployable_ssg::StopYawSound() {
+	if ( playingYawSound ) {
+		playingYawSound = false;
+		startSound( "snd_turret_stop", SND_DEPLOYABLE_YAW );
+	}
+}
+
+void deployable_ssg::StopPitchSound() {
+	if ( playingPitchSound ) {
+		playingPitchSound = false;
+		startSound( "snd_barrel_stop", SND_DEPLOYABLE_PITCH );
+	}
+}
+
+void deployable_ssg::PlayYawSound() {
+	if ( !playingYawSound ) {
+		playingYawSound = true;
+		startSound( "snd_turret_start", SND_DEPLOYABLE_YAW );
+	}
+}
+
+void deployable_ssg::PlayPitchSound() {
+	if ( !playingPitchSound ) {
+		playingPitchSound = true;
+		startSound( "snd_barrel_start", SND_DEPLOYABLE_PITCH );
+	}
+}
+
+// ==========================================
+// ==========================================
+
+boolean deployable_ssg::UpdateYaw() {
+	float ang;
+	float maxTurn;
+	float frac;
+
+	if ( idealYaw == currentYaw ) {
+		return true;
+	}
+
+	ang = sys.angleNormalize180( idealYaw - currentYaw );
+	frac = sys.sin( sys.fabs( ang / sys.angleNormalize180( idealYaw - oldIdealYaw ) ) * MATH_PI );
+
+	maxTurn = ( minYawRate + ( maxYawRate - minYawRate ) * frac ) * sys.getFrameTime();
+
+	if ( ang < -maxTurn ) {
+		currentYaw = currentYaw - maxTurn;
+	} else if ( ang > maxTurn ) {
+		currentYaw = currentYaw + maxTurn;
+	} else {
+		currentYaw = idealYaw;
+	}
+
+	return false;
+}
+
+boolean deployable_ssg::UpdatePitch() {
+	float ang;
+	float maxTurn;
+	float frac;
+
+	if ( idealPitch == currentPitch ) {
+		return true;
+	}
+
+	ang = sys.angleNormalize180( idealPitch - currentPitch );
+	frac = sys.sin( sys.fabs( ang / sys.angleNormalize180( idealPitch - oldIdealPitch ) ) * MATH_PI );
+
+	maxTurn = ( minPitchRate + ( maxPitchRate - minPitchRate ) * frac ) * sys.getFrameTime();
+
+	if ( ang < -maxTurn ) {
+		currentPitch = currentPitch - maxTurn;
+	} else if ( ang > maxTurn ) {
+		currentPitch = currentPitch + maxTurn;
+	} else {
+		currentPitch = idealPitch;
+	}
+
+	return false;
+}
+
+void deployable_ssg::TurnToward( float yaw, float pitch ) {
+	oldIdealYaw		= currentYaw;
+	oldIdealPitch	= currentPitch;
+	idealYaw		= sys.angleNormalize180( yaw );
+	idealPitch		= sys.angleNormalize180( pitch );
+	anglesLocked	= false;
+}
+
+void deployable_ssg::ResetAngles() {
+	TurnToward( 0, 0 );
+}
+
+void deployable_ssg::InitTargetting( vector targetPos ) {
+	float firingPitch;
+	float t;
+	vector gravity = '0 0 -1066';
+	vector velocity;
+	vector temp;
+	float i;
+
+	if ( !CalcTargetAngles( targetPos ) ) {
+		hasTarget = false;
+		return;
+	}
+
+	if ( sys.doClientSideStuff() ) {
+		CreateFiringDecal();
+	}
+
+	firingPitch = targetPitch - barrelPitch;
+
+	firingVelocity = targetDiff * ( sys.cos( targetPitch ) * missileSpeed );
+	firingVelocity_z = sys.sin( targetPitch ) * missileSpeed;
+
+	t = barrelLength / missileSpeed;
+
+	gravity = gravity * t * t * 0.5f;
+
+	temp = firingVelocity * t;
+
+	firingOffset = temp + gravity;
+	firingVelocity = firingVelocity + ( gravity * t );
+
+	TurnToward( targetYaw - baseYaw, -firingPitch );
+}
+
+boolean deployable_ssg::CalcTargetAngles( vector targetPos ) {
+	vector barrelOrg;
+	vector temp;
+	float diffY;
+	float diffX;
+	float rootA;
+	float count;
+	float root1;
+	float root2;
+
+	barrelOrg = getJointPos( jointPitch );
+
+	targetDiff = targetPos - barrelOrg;
+
+	targetYaw = sys.angleNormalize180( sys.atan2( targetDiff_y, targetDiff_x ) );
+
+	temp = targetDiff;
+
+	diffY = temp_z;
+	temp_z = 0.f;
+	targetDiff = sys.vecNormalize( temp );
+	diffX = sys.vecLength( temp );
+
+	// FIXME: Expose default gravity
+	rootA = ( 400 * diffX * diffX ) / ( 2 * missileSpeed * missileSpeed );
+
+	count = sys.solveRoots( rootA, -diffX, rootA + diffY );
+	if ( count == 0 ) {
+		return false;
+	}
+
+	if ( count == 1 ) {
+		targetPitch = sys.atan( sys.getRoot( 0 ) );
+		return PitchValid( targetPitch );
+	}
+
+	targetPitch = sys.atan( sys.getRoot( 0 ) );
+	if ( PitchValid( targetPitch ) ) {
+		return true;
+	}
+
+	targetPitch = sys.atan( sys.getRoot( 1 ) );
+	return PitchValid( targetPitch );
+}
+
+boolean deployable_ssg::PitchValid( float pitch ) {
+	return pitch < maxPitch && pitch > minPitch;
+}
+
+void deployable_ssg::StopRotationSounds() {
+	StopYawSound();
+	StopPitchSound();
+}
+
+boolean deployable_ssg::vTargetPlayerEligible( entity p ) {
+	if ( disabledState || !finishedDeploying ) {
+		return 0.f;
+	}
+
+	return 1.f;
+}
+
+boolean deployable_ssg::vTargetGetValid( vector pos ) {
+	return CalcTargetAngles( pos );
+}
+
+void deployable_ssg::vTargetSetTarget( vector targetPos, entity targetEnt ) {
+	hasTarget		= true;
+	target			= targetPos;
+
+	InitTargetting( targetPos );
+	Base_TargetSetTarget( targetPos, targetEnt );
+
+	setState( "ServerAiming" );
+}
+
+void deployable_ssg::vDoneDeploy() {
+	vector angles = getAngles();
+	baseYaw = angles_y;
+	SetDeployingFinished();
+}
+
+target_marker deployable_ssg::vCreateTargetMarker() {
+	string entityDef = getKey( "def_marker" );
+	if ( entityDef == "" ) {
+		return $null;
+	}
+
+	generic_target_marker marker = new generic_target_marker;
+	marker.Init( self, entityDef, getKey( "mtr_marker_cm" ), getFloatKey( "cm_marker_sort" ) );
+	return marker;
+}
+
+void deployable_ssg::ClearFiringDecal() {
+	if ( firingDecal != $null_entity ) {
+		delete firingDecal;
+	}
+
+	if ( !sys.isClient() ) {
+		if ( firingMarker != $null_entity ) {
+			thread G_DelayRemoveEntity( firingMarker, 5.f );
+			firingMarker = $null_entity;
+		}
+	}
+}
+
+void deployable_ssg::CreateFiringDecal() {
+	if ( !sys.isClient() ) {
+		firingMarker = G_CreateFiringMarker( self, firingMarker, target );
+	}
+
+	entity p = sys.getLocalPlayer();
+	if ( p == $null_entity ) {
+		return;
+	}
+
+	if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+		return;
+	}
+
+	if ( firingDecal == $null_entity ) {
+		firingDecal = vCreateTargetMarker();
+	}
+	firingDecal.SetTargetPosition( target );
+}

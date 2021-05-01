@@ -1,0 +1,86 @@
+
+#ifndef _QC_COMMON_INCLUDE
+#define _QC_COMMON_INCLUDE
+
+//mal: these are synced with the values in bot_common.h. If you change them, make sure they match!
+#define BOT_TYPE_NONE				0
+#define BOT_TYPE_HEAL_ME			1
+#define BOT_TYPE_REVIVE_ME			2
+#define BOT_TYPE_COVER_ME			3
+#define BOT_TYPE_FOLLOW_ME			4
+#define BOT_TYPE_ENEMY_DISGUISED		5
+#define BOT_TYPE_NEEDBACKUP			6
+#define BOT_TYPE_YES				7
+#define BOT_TYPE_NO				8
+#define BOT_TYPE_HOLD_FIRE			9
+#define BOT_TYPE_ON_OFFENSE			10
+#define BOT_TYPE_ON DEFENSE			11
+#define BOT_TYPE_THANKS				12
+#define BOT_TYPE_MY_CLASS			13
+#define BOT_TYPE_YOUR_WELCOME			14
+#define BOT_TYPE_IM_MEDIC			15
+#define BOT_TYPE_MOVE				16
+#define BOT_TYPE_REARM_ME			17
+#define BOT_TYPE_KILLED_TAUNT			18
+#define BOT_TYPE_WARMUP_TAUNT			19
+#define BOT_TYPE_GENERAL_TAUNT		20 
+#define BOT_TYPE_SUPLLIES_DROPPED		21
+#define BOT_TYPE_MEDPACK_DROPPED		22
+#define BOT_TYPE_AMMO_ACK			23  
+#define BOT_TYPE_IM_DISGUISED			24
+#define BOT_TYPE_ENEMY_DISGUISED_AS_ME 	25
+#define BOT_TYPE_REPLY_TAUNT			26
+#define BOT_TYPE_ACKNOWLEDGE_YES		27
+#define BOT_TYPE_ACKNOWLEDGE_NO		28
+#define BOT_TYPE_MEDIC_ACK			29
+#define BOT_TYPE_LETS_GO			30
+#define BOT_TYPE_GENERIC_PLANT		31
+#define BOT_TYPE_GENERIC_BUILD		32
+#define BOT_TYPE_GENERIC_HACK			33
+#define BOT_TYPE_INCOMING_INFANTRY		34
+#define BOT_TYPE_INCOMING_VEHICLE		35
+#define BOT_TYPE_INCOMING_AIRCRAFT		36
+#define BOT_TYPE_MINES_SPOTTED		37
+#define BOT_TYPE_HOLD_VEHICLE			38
+#define BOT_TYPE_NEED_LIFT			39
+#define BOT_TYPE_HELLO				40
+#define BOT_TYPE_ENDGAME_WIN			41
+#define BOT_TYPE_ENDGAME_LOSE			42
+#define BOT_TYPE_SORRY				43
+#define BOT_TYPE_NEED_ESCORT			44
+#define BOT_TYPE_CMD_DECLINED			45
+#define BOT_TYPE_NEED_REPAIR			46
+#define BOT_TYPE_TAKE_SPAWN			47
+#define BOT_TYPE_CONTEXT_NEED_RIDE		48
+#define BOT_TYPE_CONTEXT_KILL_TARGET	49
+#define BOT_TYPE_CONTEXT_REPAIR_TARGET	50
+#define BOT_TYPE_CONTEXT_DO_OBJECTIVE	51
+#define BOT_TYPE_TK_REVIVE			52
+#define BOT_TYPE_WILL_FIX_RIDE		53
+#define BOT_TYPE_STOP_WILL_FIX_RIDE		54
+#define BOT_TYPE_MOVE_OUT			55
+#define BOT_TYPE_GOT_YOUR_BACK		56
+
+$template _chat( dataParm, callbackParm, teamParm, botTypeParm, requirementParm )
+	text			dataParm
+	audio			"sounds/players/" ## dataParm
+	requirements	requirementParm
+
+	$if ( callbackParm != "" )
+		callback	callbackParm
+	$endif
+	
+	$if ( teamParm == "team" )
+		team
+	$endif
+
+	$if ( teamParm == "fireteam" )
+		fireteam
+	$endif
+
+	$if ( botTypeParm != -1 ) 
+		type botTypeParm
+	$endif
+$endtemplate
+
+#endif // !_QC_COMMON_INCLUDE

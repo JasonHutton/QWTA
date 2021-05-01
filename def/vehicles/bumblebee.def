@@ -1,0 +1,323 @@
+//
+// bumblebee
+//
+
+#include <quickchat/avdbits.include>
+
+export karateka {
+		options -prefix BUMBLEBEE_  -rotate -90 -nomerge  -sourcedir models/vehicles/gdf_bumblebee/dev_sd -destdir models/vehicles/gdf_bumblebee/ -keep carrier_driver carrier_gunner1 carrier_gunner2 carrier_passenger1 carrier_passenger2 bumblebee_joint centre_thruster_effect front_gun_mount_joint front_gun_joint muzzle gun_left_joint03 gun_left_joint muzzle_left gun_right_joint03 gun_right_joint muzzle_right gunner_left_camera gunner_right_camera left_thrust_joint left_thruster_effect left_wheel_arm_joint left_wheel_shock_joint front_left_wheel_joint pilot_camera player_pos01 player_pos02 player_pos03 player_pos04 rear_thruster_effect rear_wheel_arm1 rear_wheel_arm2 joint2 right_thrust_joint right_thruster_effect right_wheel_arm_joint right_wheel_shock_joint front_right_wheel_joint windows_joint front_rotor_controller_joint front_rotor_joint front_rotor_shaft_joint left_passenger_camera player_exit_left player_exit_right player_exit_front player_exit_rear player_pos00 rear_left_fin_joint rear_right_fin_joint rear_rotor_controller_joint rear_rotor_joint rearrotor_shaft_joint right_passenger_camera right_gunner_lefthand_ik right_gunner_righthand_ik left_gunner_lefthand_ik left_gunner_righthand_ik seat01_joint seat02_joint seat03_joint seat04_joint -parent rear_thruster_effect dummyjoint
+
+
+		mesh bumblebee_lod0.mb	-dest bumblebee.md5mesh
+ 		anim bumblebee_lod0.mb 	-dest bumblebee.md5anim -range 0 0
+
+ 		anim bumblebee_lod0.mb	-dest bumblebee_sideguns_righttoleft_aimup.md5anim		-range 50 90
+ 		anim bumblebee_lod0.mb	-dest bumblebee_sideguns_righttoleft_aimcenter.md5anim	-range 0 40
+ 		anim bumblebee_lod0.mb	-dest bumblebee_sideguns_righttoleft_aimdown.md5anim	-range 100 140
+
+
+		addoptions -noJoints
+
+		mesh bumblebee_lod3.mb 	-dest bumblebee_lod1.md5mesh
+		mesh bumblebee_lod3.mb 	-dest bumblebee_lod2.md5mesh
+		mesh bumblebee_lod3.mb 	-dest bumblebee_lod3.md5mesh
+
+}
+
+//=================================================================================================================================
+
+model vehicle_bumblebee {
+	mesh								models/vehicles/gdf_bumblebee/bumblebee.md5mesh
+
+	anim base							models/vehicles/gdf_bumblebee/bumblebee.md5anim {
+	}
+	anim ik_pose						models/vehicles/gdf_bumblebee/bumblebee.md5anim {
+	}
+	anim initial						models/vehicles/gdf_bumblebee/bumblebee.md5anim {
+	}
+	anim idle							models/vehicles/gdf_bumblebee/bumblebee.md5anim {
+	}
+	anim sideguns_righttoleft_aimup		models/vehicles/gdf_bumblebee/bumblebee_sideguns_righttoleft_aimup.md5anim {
+	}
+	anim sideguns_righttoleft_aimcenter	models/vehicles/gdf_bumblebee/bumblebee_sideguns_righttoleft_aimcenter.md5anim {
+	}
+	anim sideguns_righttoleft_aimdown	models/vehicles/gdf_bumblebee/bumblebee_sideguns_righttoleft_aimdown.md5anim {
+	}
+}
+
+deployObject deployobject_bumblebee {
+	"name"							"bumblebee"
+	"title"							"Bumblebee"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_bumblebee"
+	"def_deployable_carrier"		"vehicle_magog_npc"
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+	"rank_required"					"gunnery_sergeant"
+	"force_escalation_required"		"50"
+	"logistics_points_required"		"40"
+	"avdbit"						AVDBIT_BUMBLEBEE
+	"terrain_disallowed"			"2"
+}
+
+entityDef vehicle_bumblebee {
+	"inherit"						"vehicle_base_gdf"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+
+	"editor_usage"					"Helicopter."
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_bumblebee"
+
+	"model"							"vehicle_bumblebee"
+	"vs_vehicleScript"				"bumblebee"
+
+	"control_context"				"g_bind_context_bumblebee"
+
+	"health"						"2200"
+
+	"info_name"						"game/vec/bumblebee"
+	"mass"							"100000"
+
+	"snd_rotor_start"				"sounds/vehicles/bumblebee/rotor_start"
+	"snd_rotor_stop"				"sounds/vehicles/bumblebee/rotor_stop"
+	"snd_turbine_start"				"sounds/vehicles/bumblebee/turbine_start"
+	"snd_turbine_stop"				"sounds/vehicles/bumblebee/turbine_stop"
+	"snd_overdrive"					"sounds/vehicles/bumblebee/turbo/start"
+
+	"snd_cockpit"					"sounds/vehicles/bumblebee/interior/cockpit"
+	"snd_rotor_start_interior"		"sounds/vehicles/bumblebee/interior/rotor_start"
+	"snd_rotor_stop_interior"		"sounds/vehicles/bumblebee/interior/rotor_stop"
+	"snd_turbine_start_interior"	"sounds/vehicles/bumblebee/interior/turbine_start"
+	"snd_turbine_stop_interior"		"sounds/vehicles/bumblebee/interior/turbine_stop"
+	"snd_health_warn"				"sounds/vehicles/misc/warning/air/gdf"
+
+	"sound_control"					"helicopter"
+
+	"climate_skin_key"				"bumblebee"
+
+	"engine_pitch_low"				"1"
+	"engine_pitch_high"				"1.5"
+	"engine_speed_low"				"10"
+	"engine_speed_high"				"120"
+
+	"decay_time"					"40"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"icon_size_cm"					"21"
+
+	"tt_enter"						"vehicle_buffalo_enter"
+
+	"landing_threshold_distance"	"5"
+	"landing_threshold_speed"		"5"
+	"landing_gear_threshold_speed"	"0"
+
+	"dmg_collide"					"damage_buffalo_collide"
+	"collide_dot_limit"				"-2"
+
+	"mtr_attitude_pitch"			"guis/assets/qet/hud_attitude_pitch"
+
+	"def_weapon1"					"weapons/misc/gpmg"
+	"def_weapon2"					"weapons/misc/haw"
+	"def_weapon3"					"weapons/misc/fafff"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"angular_friction"				"1" // turning
+	"linear_friction"				"1" // moving
+	"bouncyness"					"0.5"
+
+	"collective_min"				"-0.4"
+	"collective_max"				"0.2"
+	"collective_rate"				"1"
+
+	"overdrive_time"				"10"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"5"
+
+	"fx_downdraft"					"effects/vehicles/anansi/downdraft"
+//	"fx_thruster_left"				"effects/vehicles/anansi/thruster_left"
+//	"fx_thruster_right"				"effects/vehicles/anansi/thruster_right"
+//	"fx_thruster_reverse_left"		"effects/vehicles/anansi/thruster_left"
+//	"fx_thruster_reverse_right"		"effects/vehicles/anansi/thruster_right"
+//	"fx_thruster_base_left"			"effects/vehicles/anansi/thruster_base_left"
+//	"fx_thruster_base_right"		"effects/vehicles/anansi/thruster_base_right"
+	"left_thrust_effect_joint"		"left_thruster"
+	"right_thrust_effect_joint"		"right_thruster"
+
+	"fx_fafff_flash"				"effects/weapons/fafff_muzzleflash"
+	"fx_gpmg_fire"					"effects/weapons/anansi_gpmg_fire"
+	"fx_gpmg_fire_local"			"effects/weapons/anansi_gpmg_fire_local"
+
+//	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash"
+	"fx_gpmg_muzzle"				"effects/weapons/gpmg_muzzleflash_vehicle"
+	"fx_gatling_tracer"				"effects/base/bullets/tracer"
+	"effectchance fx_gatling_tracer" "0.1"
+
+	"fx_groundeffect_none"			"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_grass"			"effects/vehicles/anansi/groundeffect_grass"
+	"fx_groundeffect_stone"			"effects/vehicles/anansi/groundeffect_stone"
+	"fx_groundeffect_sand"			"effects/vehicles/anansi/groundeffect_sand"
+	"fx_groundeffect_pavement"		"effects/vehicles/anansi/groundeffect_pavement"
+	"fx_groundeffect_dirt"			"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_dusty_road"	"effects/vehicles/anansi/groundeffect_pavement"
+	"fx_groundeffect_gravel"		"effects/vehicles/anansi/groundeffect_stone"
+	"fx_groundeffect_default"		"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_water"			"effects/vehicles/anansi/groundeffect_water"
+	"fx_groundeffect_snow"			"effects/vehicles/anansi/groundeffect_snow"
+
+	"fx_gpmg_tracer"				"effects/base/tracers_small"
+	"effectchance fx_tracer"		"0.1"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_bumblebee"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_bumblebee"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_bumblebee"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_bumblebee"
+
+	"fx_gatling_muzzle"				"effects/weapons/gatling_muzzleflash"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"bumblebee_joint"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"snd_gatling_fire_start"		"sounds/weapons/gatling/fire/start"
+	"snd_gatling_fire_stop"			"sounds/weapons/gatling/fire/stop"
+	"snd_gatling_barrel_loop"		"sounds/weapons/gatling/barrel/loop"
+	"snd_gatling_brass_start"		"sounds/weapons/gatling/brass/start"
+	"snd_gatling_brass_stop"		"sounds/weapons/gatling/brass/stop"
+
+	"joint_damage_smoke"			"front_rotor_shaft_joint"
+	"joint_damage_fire"				"front_rotor_shaft_joint"
+
+	"groundeffects_threshhold"		"300"
+
+	"gui_vehicle"					"guis/vehicles/edf_bumblebee"
+
+	"collision_dot_falloff"			"-0.85"
+
+	"task_name"						"game/vec/bumblebee"
+	"waypoint_offset"				"0 0 192"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_heavy"		"vehicles_heavy"
+	"collection_vehicles_gdf"		"vehicles_gdf"
+
+	"give_consent"					"0"
+	"try_keep_driver"				"1"
+
+	"input_mode"					"helicopter"
+	"vehicle_control"				"hovercopter"
+
+	"wake_center_width"				"0 0"
+	"wake_edge_width"				"0 0"
+
+	"spiral_health"					"200"
+
+// DECOY STUFF
+
+ 	"fx_decoy_extra"				"effects/weapons/flare_extra"
+	"extra_decoy_count"				"3"
+	"extra_decoy_delay"				"0.3"		// in seconds1
+//	"fx_decoy"						"effects/weapons/flare_extra"
+	"def_projectile_decoy"			"projectile_decoy_bumblebee"
+	"projectile_decoy_rate"			"2"
+	"projectile_decoy_velocity"		"0 0 -300"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"2"
+	
+	"projectile_decoy_ammo_max"		"30"
+	"projectile_decoy_ammo_per_use"	"1"
+
+	"cycle_all_positions"			"1"
+
+	"careen_lift_extreme"			"1"
+	"careen_collective"				"0.2"
+	"careen_cruise_time"			"1.5"
+	"careen_speed"					"700"
+	"careen_height"					"1024"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"buffalo"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"40" //mal: air vehicle
+
+	// hack the inertia tensor to be symmetric, so that there is no cross-linking between pitch yaw and roll controls
+	"do_not_modify_ito"				"0 0 0"
+
+	"qc_spotted"					"quickchat/context/attack/aircraftspotted"
+	
+	"validate_drop"					"1"
+}
+
+damageDef damage_buffalo_collide {
+	damage							"damage_buffalo_collide"
+
+	prof_damage						"pro_vehicle_damage"
+
+	stat_name						"bumblebee_weapons"
+
+	team_kill_cvar					"g_allowComplaint_vehicles"
+
+	tt_obituary						"tooltips/killmsgs/vehicles/bumblebee"
+	tt_obituary_unknown				"tooltips/killmsgs/vehicles/bumblebee/empty"
+	tt_obituary_team_kill			"tooltips/killmsgs/vehicles/bumblebee/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/vehicles/driving"
+}
+
+damageDef damage_buffalo_rotor {
+	damage		"damage_buffalo_rotor"
+
+	stat_name						"bumblebee_weapons"
+
+	tt_obituary						"tooltips/killmsgs/vehicles/bumblebee"
+	tt_obituary_unknown				"tooltips/killmsgs/vehicles/bumblebee/empty"
+	tt_obituary_team_kill			"tooltips/killmsgs/vehicles/bumblebee/teamkill"
+}
+
+damageFilter damage_buffalo_collide {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	500
+	}
+	type {
+		target	"target_deployables_all"
+		damage	500
+	}	
+}
+
+damageFilter damage_buffalo_rotor {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	800
+	}
+	type {
+		target	"target_deployables_all"
+		damage	800
+	}	
+}
+
+toolTip vehicle_buffalo_enter {
+	length	5
+	text	"game/tt/buffalo" // "Press %k(_vehiclecamera) to change view and %k(_activate) to switch seats. The driver controls the weapon, unless consent is given to passengers."
+}

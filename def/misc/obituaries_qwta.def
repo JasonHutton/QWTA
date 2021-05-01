@@ -1,0 +1,161 @@
+/*
+==================
+GDF Weapons
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/bfg10k {
+	text "game/obit/bfg10k"
+}
+
+/*
+==================
+GDF Weapons Suicides
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/bfg10k/self {
+	text "game/obit/bfg10k_self"
+}
+
+tooltip tooltips/killmsgs/weapons/bfg10k/unknown {
+	text "game/obit/bfg10k_unknown"
+}
+
+/*
+==================
+GDF Weapons Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/bfg10k/teamkill {
+	text "game/obit/bfg10k_team"
+}
+
+/*
+==================
+Strogg Weapons
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/flamethrower {
+	text "game/obit/flamethrower"
+}
+
+tooltip tooltips/killmsgs/weapons/plasmabeam {
+	text "game/obit/plasmabeam"
+}
+
+/*
+==================
+Strogg Weapons Suicides
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/hyperblaster/self {
+	text "game/obit/hyper_self"
+}
+
+tooltip tooltips/killmsgs/weapons/hyperblaster/unknown {
+	text "game/obit/hyper_unknown"
+}
+
+tooltip tooltips/killmsgs/weapons/flamethrower/self {
+	text "game/obit/flamethrower_self"
+}
+
+tooltip tooltips/killmsgs/weapons/flamethrower/unknown {
+	text "game/obit/flamethrower_unknown"
+}
+
+tooltip tooltips/killmsgs/weapons/plasmabeam/self {
+	text "game/obit/plasmabeam_self"
+}
+
+tooltip tooltips/killmsgs/weapons/plasmabeam/unknown {
+	text "game/obit/plasmabeam_unknown"
+}
+
+/*
+==================
+Strogg Weapons Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/weapons/flamethrower/teamkill {
+	text "game/obit/flamethrower_team"
+}
+
+tooltip tooltips/killmsgs/weapons/plasmabeam/teamkill {
+	text "game/obit/plasmabeam_team"
+}
+
+/*
+==================
+GDF Vehicles
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/jupiter {
+	text "game/obit/jupiter"
+}
+
+tooltip tooltips/killmsgs/vehicles/jupiter/empty {
+	text "game/obit/jupiter_empty"
+}
+
+/*
+==================
+GDF Vehicles Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/jupiter/teamkill {
+	text "game/obit/jupiter_team"
+}
+
+/*
+==================
+Strogg Vehicles
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/abaddon {
+	text "game/obit/abaddon"
+}
+
+tooltip tooltips/killmsgs/vehicles/abaddon/empty {
+	text "game/obit/abaddon_empty"
+}
+
+/*
+==================
+Strogg Vehicles Teamkills
+==================
+*/
+
+tooltip tooltips/killmsgs/vehicles/abaddon/teamkill {
+	text "game/obit/abaddon_team"
+}
+
+
+/*
+==================
+Vehicle Explosions
+==================
+*/
+tooltip tooltips/killmsgs/vehicles/explode {
+	text "game/obit/veh_exp"
+}
+
+tooltip tooltips/killmsgs/vehicles/explode/self {
+	text "game/obit/veh_exp_self"
+}
+
+tooltip tooltips/killmsgs/vehicles/explode/unknown {
+	text "game/obit/veh_exp_unknown"
+}
+
+tooltip tooltips/killmsgs/vehicles/explode/teamkill {
+	text "game/obit/veh_exp_team"
+}

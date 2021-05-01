@@ -1,0 +1,66 @@
+
+//===============================================================
+//	CreateTeam Popup
+//===============================================================
+_dialog( CreateTeam, localize( "guis/mainmenu/createclan" ), _center( desktop, width ), _center( desktop, height ), 220, 100, "noMove", "dim" )
+    _input_dialog( createTeam )
+    _on_default( createTeamOk, createTeamCancel )
+
+    events {
+    	onNamedEvent "onShow" {
+    		callSuper();
+    		setTabStop( 0 );
+    	}
+    }
+
+	_edit( createTeam, _right( dlgCreateTeam ), _top( dlgCreateTeam ), 100, BUTTON_HEIGHT )
+		_draw_left_edit_label( localize( "guis/mainmenu/createclan" ), COLOR_TEXT, 80 )
+		_clear_on_show
+		properties {
+			float	maxTextLength = 32;
+		}		
+    _end_edit
+	_button( createTeamOk, _to_left_of( btnCreateTeamCancel ) - 3, _bottom( dlgCreateTeam ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/ok" );
+		}
+		_button_disable_if( "gui.edtCreateTeam.editText", compare( gui.edtCreateTeam.editText, "" ) )
+
+		_button_action(
+			taskActive = 1;
+			sdnet.createTeam( gui.edtCreateTeam.editText );
+			_show_popup( sdNetProgress )
+        )
+        events {
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == 1 ) {
+						_close_input;
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							taskActive = 0;
+							gui.lstTeam.postNamedEvent( "requestUpdate" );
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage );
+						_show_popup( confirmation )
+						return;
+					}
+				}
+			}
+        }
+    _end_button
+	_button( createTeamCancel, _right( dlgCreateTeam ), _bottom( dlgCreateTeam ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/cancel" );
+		}
+        _button_action(
+			_close_input;
+        )
+	_end_button
+_end_dialog	

@@ -1,0 +1,193 @@
+/***********************************************************************
+
+	vehicles_weapons_gatling.def
+
+***********************************************************************/
+
+entityDef projectile_gatling {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base_big"
+
+	"min_damage_percent"				"10"
+
+	"dmg_damage"						"damage_gatling"
+	"dmg_realistic_damage"					"realistic_damage_gatling"
+}
+
+entityDef projectile_gatling_bumblebee {
+	"inherit"							"projectile_gatling"
+	"dmg_damage"						"damage_gatling_bumblebee"
+	"dmg_realistic_damage"					"realistic_damage_gatling_bumblebee"
+}
+
+entityDef projectile_gatling_anansi {
+	"inherit"							"projectile_gatling"
+	"dmg_damage"						"damage_gatling_anansi"
+	"dmg_realistic_damage"					"realistic_damage_gatling_anansi"
+}
+
+entityDef projectile_gatling_titan {
+	"inherit"							"projectile_gatling"
+	"dmg_damage"						"damage_gatling_titan"
+	"dmg_realistic_damage"					"realistic_damage_gatling_titan"
+}
+
+damageDef damage_gatling {
+	damage								"damage_gatling_mcp"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.25
+
+	knockback							5
+	push								10000
+	
+	stat_name							"mcp_weapons"
+	
+	prof_damage							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/gatling"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_gatling {
+	inherit								"damage_gatling"
+	damage								"realistic_damage_gatling_mcp"
+}
+
+damageDef damage_gatling_bumblebee {
+	damage								"damage_gatling"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.25
+
+	knockback							5
+	push								10000
+	
+	stat_name							"bumblebee_weapons"
+	
+	prof_damage							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/gatling"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_gatling_bumblebee {
+	inherit								"damage_gatling_bumblebee"
+	damage								"realistic_damage_gatling"
+}
+
+damageDef damage_gatling_anansi {
+	damage								"damage_gatling"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.25
+
+	knockback							5
+	push								10000
+	
+	stat_name							"anansi_weapons"
+	
+	prof_damage							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/gatling"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_gatling_anansi {
+	inherit								"damage_gatling_anansi"
+	damage								"realistic_damage_gatling"
+}
+
+damageDef damage_gatling_titan {
+	damage								"damage_gatling"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.25
+
+	knockback							5
+	push								10000
+	
+	stat_name							"titan_weapons"
+	
+	prof_damage							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/gatling"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gatling/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_gatling_titan {
+	inherit								"damage_gatling_titan"
+	damage								"realistic_damage_gatling"
+}
+
+damageFilter damage_gatling {
+	type {
+		target	"target_player_all"
+		damage	25
+	}
+	type {
+		target	"target_veh_all"
+		damage	25
+	}
+	type {
+		target	"target_deployables_all"
+		damage	25
+	}
+}
+
+damageFilter realistic_damage_gatling {
+	type {
+		target	"target_player_all"
+		damage	38
+	}
+	type {
+		target	"target_veh_all"
+		damage	12
+	}
+	type {
+		target	"target_deployables_all"
+		damage	12
+	}
+}
+
+damageFilter damage_gatling_mcp {
+	type {
+		target	"target_player_all"
+		damage	25
+	}
+	type {
+		target	"target_veh_all"
+		damage	40
+	}
+	type {
+		target	"target_deployables_all"
+		damage	40
+	}
+}
+
+damageFilter realistic_damage_gatling_mcp {
+	type {
+		target	"target_player_all"
+		damage	38
+	}
+	type {
+		target	"target_veh_all"
+		damage	20
+	}
+	type {
+		target	"target_deployables_all"
+		damage	20
+	}
+}

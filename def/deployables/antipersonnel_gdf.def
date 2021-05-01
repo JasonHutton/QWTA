@@ -1,0 +1,401 @@
+// ========================================================================
+// Export
+
+
+export hauser {
+	options -prefix AP_ -rotate 90 -sourcedir models/structures/edf/deployables/weapons/anti_personnel_turret/dev_sd -destdir models/structures/edf/deployables/weapons/anti_personnel_turret 		-keep origin turret_muzzle turret_cam turret_pilot -keepmesh lod0_01 lod0_02 lod0_03 lod0_04 lod0_05 lod0_06 lod0_07 lod0_08 lod0_09 lod0_10 lod0_12 lod0_13 lod0_14 lod0_15 lod0_16 lod0_17 lod0_19 lod0_20 lod0_22 lod0_25 lod0_18 lod0_23 lod0_24 lod0_shadow_01 lod0_shadow_02 lod0_shadow_03 lod0_shadow_04 lod0_shadow_05 lod0_shadow_06 lod0_shadow_07 lod0_shadow_08 lod0_shadow_09 lod0_shadow_10 lod0_shadow_11 lod0_shadow_12 lod0_shadow_13 lod0_shadow_14 lod0_shadow_15 lod0_shadow_16 lod0_shadow_17 lod0_shadow_18 lod0_shadow_19 																		-parent joint1 joint2 -parent joint2 joint3 -parent joint3 joint16 -parent joint4 joint5 -parent joint5 joint6 -parent joint6 joint12
+
+	mesh	ap_turret_anims_rework.mb		-dest ap_turret.md5mesh -range 77 77
+
+
+	anim	ap_turret_anims_rework.mb		-dest ap_undeployed.md5anim -range 1 1
+	anim	ap_turret_anims_rework.mb		-dest ap_deploy.md5anim -range 1 77
+
+	anim	ap_turret_anims_rework.mb		-dest ap_preik.md5anim -range 1 37
+	anim	ap_turret_anims_rework.mb		-dest ap_postik.md5anim -range 38 77
+
+
+	anim	ap_turret_anims_rework.mb		-dest ap_idle.md5anim -range 77 77
+	anim	ap_turret_anims_rework.mb		-dest ap_fire.md5anim -range 77 84
+	anim	ap_turret_anims_rework.mb		-dest ap_reload.md5anim -range 90 140
+
+	anim	ap_turret_anims_rework.mb		-dest ap_damaged.md5anim -range 140 170
+	anim	ap_turret_anims_rework.mb		-dest ap_disabled.md5anim -range 180 220
+	anim	ap_turret_anims_rework.mb		-dest ap_disabled_to_damaged.md5anim -range 170 170
+	anim	ap_turret_anims_rework.mb		-dest ap_damaged_to_idle.md5anim -range 77 77
+
+	anim	ap_turret_anims_nerve.mb		-dest ap_fire.md5anim -range 77 85
+
+}
+
+export hauser {
+	options -prefix AP_ -rotate 90 -sourcedir models/structures/edf/deployables/weapons/anti_personnel_turret/dev_sd -destdir  models/structures/edf/deployables/weapons/anti_personnel_turret 		-keep origin turret_muzzle turret_cam turret_pilot -keepmesh polySurface2 polySurface3 polySurface5 polySurface8 polySurface10 polySurface14 polySurface26 polySurface28 polySurface30 polySurface37 polySurface42 polySurface49 polySurface52 polySurface56 polySurface57 polySurface58 polySurface59 polySurface60 polySurface61 polySurface62 polySurface63 polySurface64 lod2_shadow_01 lod2_shadow_02 lod2_shadow_03 lod2_shadow_04 lod2_shadow_05 lod2_shadow_06 lod2_shadow_07 lod2_shadow_08 lod2_shadow_09 lod2_shadow_10 lod2_shadow_11 lod2_shadow_12 lod2_shadow_13 										-parent joint1 joint2 -parent joint2 joint3 -parent joint3 joint16 -parent joint4 joint5 -parent joint5 joint6 -parent joint6 joint12
+	addoptions -nojoints
+
+	mesh	ap_turret_anims_rework.mb	-dest ap_turret_lod1.md5mesh -range 77 77
+	mesh	ap_turret_anims_rework.mb	-dest ap_turret_lod2.md5mesh -range 77 77
+	mesh	ap_turret_anims_rework.mb	-dest ap_turret_lod3.md5mesh -range 77 77
+}
+
+
+// Models
+// ========================================================================
+
+model deployable_antipersonnel_gdf {
+	mesh							models/structures/edf/deployables/weapons/anti_personnel_turret/ap_turret.md5mesh
+
+	anim undeployed					models/structures/edf/deployables/weapons/anti_personnel_turret/ap_undeployed.md5anim {
+	}
+
+	anim deploy						models/structures/edf/deployables/weapons/anti_personnel_turret/ap_deploy.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim pre_ik						models/structures/edf/deployables/weapons/anti_personnel_turret/ap_preik.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim post_ik						models/structures/edf/deployables/weapons/anti_personnel_turret/ap_postik.md5anim {
+	}
+
+	anim base						models/structures/edf/deployables/weapons/anti_personnel_turret/ap_idle.md5anim {
+	}
+
+	anim fire						models/structures/edf/deployables/weapons/anti_personnel_turret/ap_fire.md5anim {
+	}
+
+	anim reload						models/structures/edf/deployables/weapons/anti_personnel_turret/ap_reload.md5anim {
+	}
+
+	anim damaged					models/structures/edf/deployables/weapons/anti_personnel_turret/ap_damaged.md5anim {
+	}
+
+	anim destroyed					models/structures/edf/deployables/weapons/anti_personnel_turret/ap_disabled.md5anim  //to delete
+
+	anim disabled_to_damaged		models/structures/edf/deployables/weapons/anti_personnel_turret/ap_disabled_to_damaged.md5anim {
+	}
+
+	anim damaged_to_idle			models/structures/edf/deployables/weapons/anti_personnel_turret/ap_damaged_to_idle.md5anim {
+	}
+}
+
+// Entity Def
+// ========================================================================
+
+deployObject deployobject_antipersonnel_gdf {
+	"name"							"antipersonnel_turret"
+	"title"							"game/deploy/apt_long"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_antipersonnel_gdf"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"str_placement"					"deployitem_antipersonnel_gdf_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"defences"
+}
+
+stringMap deployitem_antipersonnel_gdf_placement_model {
+	"model"							"models/structures/edf/deployables/weapons/anti_personnel_turret/anti_personnel_turret.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+stringMap deployable_antipersonnel_gdf_aimer {
+	"joint_yaw"						"turret_base"
+	"joint_pitch"					"turret_top"
+	"joint_barrel"					"turret_muzzle"
+
+	"min_yaw_turn"					"120"
+	"max_yaw_turn"					"180"
+
+	"min_pitch_turn"				"120"
+	"max_pitch_turn"				"180"
+
+	"min_pitch"						"-30"
+	"max_pitch"						"20"
+
+	"snd_yaw_turn"					"sounds/movement/move_02"
+	"snd_pitch_turn"				"sounds/movement/move_02"
+
+	"deployed_anim"					"base"
+}
+
+entityDef deployable_antipersonnel_gdf {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_gdf"
+
+	"title"							"game/deploy/apt_long"
+
+	"climate_skin_key"				"deployable_aa"
+
+	"collection_gui_count"			"deployable_antipersonnel_gdf"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The GDF Anti Personnel Turret."
+	"editor_mins"					"-32 -64 0"
+	"editor_maxs"					"32 64 64"
+
+	"stat_name"						"antipersonnel_gdf"
+
+	"spawnclass"					"sdDefenceTurret"
+	"scriptobject"					"deployable_antipersonnel"
+
+	"model"							"deployable_antipersonnel_gdf"
+	"cm_model"						"models/structures/edf/deployables/weapons/anti_personnel_turret/clipmodel.lwo"
+
+	"task_name"						"game/deploy/apt"
+
+	"ch_name"						"game/deploy/apt_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 128"
+//	"option_usable_interface"		"1"
+	"option_no_inhibit_physics"		"1"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"defense_turret"
+
+	// jotun parachuting stuff
+	"option_simple_physics"			"1"
+	"drop_snap"						"1"
+	"freeze_on_spawn"				"1"
+	"parachute_offset"				"0 0 128"
+	"gravity"						"800"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_def_deploy"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_def_deploy"
+
+	"mtr_color"						"guis/assets/deploy/icons/gdf_ap"
+	"mtr_desat"						"guis/assets/deploy/icons/gdf_ap_desat"
+	"mtr_half_desat"				"guis/assets/deploy/icons/gdf_ap_half_desat"
+	"mtr_full_desat"				"guis/assets/deploy/icons/gdf_ap_brigh_desat"
+
+	"icon_size_cm"					"8"
+
+	"health"						"4000"
+	"repair_multiplier"				"1.5"
+
+	"action_time"					"10"
+
+	"fireRate"						"0.15"
+	"realisticFireRate"				"0.075"
+
+	"upgrade_bonus"					"0.75"
+
+	"charge_time"					"10"
+	"charge_per_shot"				"0.03"
+	"overheat_penalty"				"5"
+
+	"spread"						"1"
+	"numProjectiles"				"1"
+	"missile_velocity"				"1"
+
+	"use_brass"						"1"
+
+	"str_aim_data"					"deployable_antipersonnel_gdf_aimer"
+
+	"range_min"						"5"
+	"range_firing"					"75"
+	"range_max"						"85"
+
+	"joint_yaw"						"turret_base"
+	"joint_pitch"					"turret_top"
+	"joint_barrel"					"turret_muzzle"
+	"joint_brass"					"turret_muzzle"
+
+	"joint_spin_barrel"				"barrel"
+
+	"def_projectile"				"projectile_deployable_antipersonnel_gdf"
+
+//	"fx_fire"						"effects/deployables/antipersonnel_fire"
+	"fx_muzzle"						"effects/deployables/antipersonnel_muzzleflash"
+	"fx_tracer"						"effects/base/tracers_small"
+	"fx_death"						"effects/deployables/gdf_antipersonnel_destroy"
+	"fx_hitground"					"effects/deployables/landfall_hitground_small"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"turret_base"
+
+	"snd_deploy"					"sounds/deployables/gdf/apt/deploy"
+	"snd_fire_start"				"sounds/deployables/gdf/apt/fire"
+	"snd_fire_stop"					"sounds/deployables/gdf/apt/fire/stop"
+	"snd_fire_far"					"sounds/deployables/gdf/apt/fire/far"
+	"snd_fire_far_stop"				"sounds/deployables/gdf/apt/fire/far/stop"
+
+	"play_hitground_effect"			"1"
+
+	"num_tracerjoints"				"1"
+	"joint_tracer1"					"turret_muzzle"
+	"effectchance fx_tracer"		"0.6"
+
+	"ti_target_info"				"target_player_all"
+	"target_delta"					"0.95"
+
+	"tt_turret_enter"				"apt_intro_enter"
+
+	"do_object"						"deployobject_antipersonnel_gdf"
+
+	"num_ik"						"2"
+	"str_ik0"						"sounds/deployables/apt_gdf/leg_1_ik"
+	"str_ik1"						"sounds/deployables/apt_gdf/leg_2_ik"
+
+//	"num_positions"					"1"
+//	"str_position0"					"deployable_antipersonnel_gdf_position_0"
+//	"crosshair"						"blank"
+//	"gui_usable_overlay"			"guis/game/deployables/gdf/antipersonnel"
+
+	"deployable_type"				"8"
+
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/aptspotted"
+
+	"deploybonus_requireactive"		"1"
+	"prof_deploybonus"				"pro_engineer_deploy_bonus"
+
+	"prof_hack"						"pro_infiltrator_hack_deployable_big"
+
+	"no_damage_feedback"			"1"
+
+	"trace_offset_pct"				"50"
+	
+	"retribution_delay"				"1.5"
+}
+
+
+stringMap sounds/deployables/apt_gdf/leg_1_ik {
+	"joint_upper"					"joint3"
+	"joint_middle"					"joint2"
+	"joint_lower"					"joint1"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"1.4"
+}
+
+stringMap sounds/deployables/apt_gdf/leg_2_ik {
+	"joint_upper"					"joint6"
+	"joint_middle"					"joint5"
+	"joint_lower"					"joint4"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"1.4"
+}
+
+toolTip apt_intro_enter {
+	maxPlayCount 	5
+	nextShowDelay	5
+
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/apt/enter"
+}
+
+stringMap deployable_antipersonnel_gdf_position_0 {
+	"thirdperson"					"0"
+	"thirdperson_distance"			"32"
+	"thirdperson_height"			"32"
+
+	"surface"					"lod0_14, lod0_15, lod0_16, lod0_02, lod0_03, lod0_13, lod0_06, lod0_08, lod0_11, lod0_12, lod0_10, lod0_04, lod0_05, lod0_09, lod0_07, lod0_23, lod0_19, lod0_24, lod0_01, lod0_22, lod0_20, lod0_18, lod0_21, lod0_17"
+
+
+	"joint_view"					"turret_cam"
+	"fov"							"90"
+	"show_player"					"1"
+	"player_anim"					"DeployableGDFAntipersonnel"
+	"attach_joint"					"turret_pilot"
+	"weapon_name"					"game/deploy/apt_long"
+	"take_damage"					"1"
+	"hide_decoy_info"				"1"
+	"show_targeting_info"			"1"
+
+
+	"clamp_pitch"					"-30 20"
+}
+
+// Projectile
+// ========================================================================
+
+entityDef projectile_deployable_antipersonnel {
+	"spawnclass"					"idProjectile"
+	"inherit"						"projectile_bullet_base_big"
+
+	"range"							"4096"
+
+	"dmg_damage"					"damage_deployable_antipersonnel"
+	"dmg_realistic_damage"				"realistic_damage_deployable_antipersonnel"
+}
+
+entityDef projectile_deployable_antipersonnel_gdf {
+	"inherit"						"projectile_deployable_antipersonnel"
+
+	"dmg_realistic_damage"			"realistic_damage_deployable_antipersonnel_gdf"
+}
+
+damageFilter damage_deployable_antipersonnel {
+
+	type {
+		target	"target_all"
+		damage	7
+	}
+}
+
+damageFilter realistic_damage_deployable_antipersonnel {
+
+	type {
+		target	"target_all"
+		damage	18
+	}
+}
+
+damageFilter realistic_damage_deployable_antipersonnel_gdf {
+
+	type {
+		target	"target_all"
+		damage	14
+	}
+}
+
+damageDef damage_deployable_antipersonnel {
+	damage							"damage_deployable_antipersonnel"
+
+	prof_damage						"pro_engineer_turret_damage"
+
+	stat_name						"antipersonnel_gdf"
+
+	knockback						10
+	kick_time						100
+	kick_amplitude					0
+	kickDir							( 1 0 0 )
+	no_complaint
+
+	tt_obituary						"tooltips/killmsgs/turrets/apt"
+	tt_obituary_self				"tooltips/killmsgs/turrets/apt/self"
+	tt_obituary_team_kill			"tooltips/killmsgs/turrets/apt/teamkill"
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/apt/self"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_deployable_antipersonnel {
+	inherit							"damage_deployable_antipersonnel"
+	damage							"realistic_damage_deployable_antipersonnel"
+}
+
+damageDef realistic_damage_deployable_antipersonnel_gdf {
+	inherit							"realistic_damage_deployable_antipersonnel"
+	damage							"realistic_damage_deployable_antipersonnel_gdf"
+}

@@ -1,0 +1,1055 @@
+/***********************************************************************
+
+util.script
+
+This defines utility functions for scripts
+
+***********************************************************************/
+
+object rules {
+	boolean			IsStopwatch();
+	boolean			IsTactical();
+	float			GetFloatKeyWithSuffix( entity ent, string key, float defaultValue );
+}
+
+rules	gameRules;
+
+vector	g_colorGreen;
+vector	g_colorRed;
+vector	g_colorLtGray;
+vector	g_colorWhite;
+vector	g_colorYellow;
+vector	g_colorBlue;
+
+vector	g_vectorDown;
+vector	g_vectorUp;
+vector	g_vectorZero;
+
+float	g_radarMaterial;
+
+vector	vec3_origin;
+vector	vec3_up;
+vector	vec3_down;
+
+wstring	wstr_empty;
+handle	invalid_handle;
+
+float	g_ammoStroyent;
+float	g_ammoStroyentPacket;
+float	g_ammoMachinePistol;
+float	g_ammoGrenade;
+float	g_ammoAssaultRifle;
+float	g_ammoShotgun;
+float	g_ammoSniperRifle;
+float	g_ammoPistol;
+float	g_ammoRocketLauncher;
+float	g_ammoGPMG;
+
+float	g_proficiencyLightWeapons;
+
+float	g_proficiencyFieldOps;
+float	g_proficiencyMedic;
+float	g_proficiencyEngineer;
+float	g_proficiencyCovertOps;
+float	g_proficiencySoldier;
+
+float	g_proficiencyTechnician;
+float	g_proficiencyOppressor;
+float	g_proficiencyConstructor;
+float	g_proficiencyInfiltrator;
+float	g_proficiencyAggressor;
+
+float	g_proficiencyBattleSense;
+float	g_proficiencyVehicle;
+
+float	g_playerClassSoldier;
+float	g_playerClassMedic;
+float	g_playerClassCovertOps;
+float	g_playerClassEngineer;
+float	g_playerClassFieldOps;
+
+float	g_playerClassAggressor;
+float	g_playerClassTechnician;
+float	g_playerClassConstructor;
+float	g_playerClassOppressor;
+float	g_playerClassInfiltrator;
+
+handle	g_locStr_Destroyed;
+handle	g_locStr_Disabled;
+handle 	g_locStr_Range;
+handle 	g_locStr_Meters;
+handle 	g_locStr_Capture;
+handle 	g_locStr_SpawnHost;
+handle 	g_locStr_Supplies;
+handle	g_locStr_SupplyCrate;
+handle 	g_locStr_Unconscious;
+handle 	g_locStr_Dead;
+handle 	g_locStr_Hacking;
+handle 	g_locStr_Arming;
+handle 	g_locStr_Disarming;
+handle 	g_locStr_Repairing;
+handle 	g_locStr_Constructing;
+handle 	g_locStr_Capturing;
+handle 	g_locStr_Liberating;
+handle 	g_locStr_Implanting;
+handle 	g_locStr_Disguising;
+handle 	g_locStr_Charge;
+handle 	g_locStr_Landmine;
+handle 	g_locStr_Tripmine;
+handle 	g_locStr_Proxmine;
+handle 	g_locStr_Scrambler;
+handle 	g_locStr_DoNotOwnTerritory;
+handle 	g_locStr_NoCharge;
+handle 	g_locStr_Dismantle;
+handle 	g_locStr_Drone;
+handle 	g_locStr_Scud;
+handle 	g_locStr_Airstrike;
+handle 	g_locStr_Completed;
+handle 	g_locStr_Objective;
+handle	g_locStr_UnarmedMine;
+handle	g_locStr_SelfArmingTripmine;
+handle	g_locStr_SelfArmingProxymine;
+handle	g_locStr_UnarmedTripmine;
+handle	g_locStr_UnarmedProxymine;
+handle	g_locStr_Spotting;
+handle	g_locStr_Reviving;
+handle	g_locStr_BadObjective;
+handle	g_locStr_Someone;
+handle	g_locStr_TeleportBeacon;
+
+float 	g_primaryObjectiveIndex;
+
+object task {
+}
+
+object team_base {
+	float	GetFireSupportDelayScale() { return 1.f; }
+}
+
+object cvar {
+}
+
+team_base stroggTeam;
+team_base gdfTeam;
+
+cvar	g_disableVehicleSpawns;
+cvar	pm_thirdperson;
+cvar	bse_projectileEffect;
+cvar	g_friendlyColor;
+cvar	g_neutralColor;
+cvar	g_enemyColor;
+cvar	g_maxProficiency;
+cvar	g_fasterSpawn;
+cvar	si_rules;
+cvar	g_noVehicleSpawnInvulnerability;
+cvar	g_objectiveDecayTime;
+
+cvar	g_drawMineIcons;
+cvar	g_allowMineIcons;
+cvar	g_mineIconSize;
+cvar	g_mineIconAlphaScale;
+
+cvar	g_allowMineTriggerWarning;
+cvar	g_allowAPTWarning;
+cvar	g_aptWarning;
+
+cvar	g_useRealisticWeapons;
+cvar	g_useBaseETQW12Shotguns;
+cvar	g_useQuake4DarkMatter;
+cvar	g_useAwardJackOfAllTrades;
+cvar	g_artilleryWarning;
+cvar	g_useReverseAirstrikes;
+cvar	g_useShieldAbsorber;
+cvar	g_useNuclearHammer;
+cvar	g_useQuake4Hyperblaster;
+cvar	g_advancedVehicleDrops;
+cvar	g_vehicleDropsUseFE;
+cvar	g_vehicleDropsUseLP;
+cvar	g_huskyIcarusDropsIgnoreFE;
+cvar	g_huskyIcarusDropsIgnoreLP;
+cvar	g_useBaseETQWVehicleCredits;
+cvar	g_vehicleSpawnsUseFE;
+
+cvar	g_disableVehicleRespawns;
+cvar	g_disablePlayerRespawns;
+cvar	g_allowCrosshairs;
+cvar	g_useBaseETQW12SniperTrail;
+//cvar	g_useStraightRockets;
+//cvar	g_allowTimerCircles;
+//cvar	g_hideHud;
+cvar	g_useVehicleAmmo;
+cvar	g_useVehicleDecoyAmmo;
+cvar	g_allowEMPFriendlyFire;
+cvar	g_allowRadFriendlyFire;
+cvar	g_blood;
+
+cvar	g_vehicleSpawnMinPlayersHusky;
+cvar	g_vehicleSpawnMinPlayersPlatypus;
+cvar	g_vehicleSpawnMinPlayersArmadillo;
+cvar	g_vehicleSpawnMinPlayersTrojan;
+cvar	g_vehicleSpawnMinPlayersBumblebee;
+cvar	g_vehicleSpawnMinPlayersTitan;
+cvar	g_vehicleSpawnMinPlayersAnansi;
+
+cvar	g_vehicleSpawnMinPlayersIcarus;
+cvar	g_vehicleSpawnMinPlayersHog;
+cvar	g_vehicleSpawnMinPlayersDesecrator;
+cvar	g_vehicleSpawnMinPlayersCyclops;
+cvar	g_vehicleSpawnMinPlayersTormentor;
+
+cvar	g_vehicleSpawnMinPlayersJupiter;
+cvar	g_vehicleSpawnMinPlayersAbaddon;
+
+object gameplay_base;
+gameplay_base gameplayManager;
+
+/*
+==================
+abs
+
+Returns the absolute value of a number
+==================
+*/
+float abs( float value ) {
+	if ( value < 0 ) {
+		return value * -1;
+	}
+
+	return value;
+}
+
+/*
+==================
+rint
+
+Returns the nearest integer value of a number
+==================
+*/
+float rint( float value ) {
+	return sys.floor( value + 0.5f );
+}
+
+/*
+==================
+min
+
+Returns the lowest of two numbers
+==================
+*/
+float min( float value1, float value2 ) {
+	if ( value1 < value2 ) {
+		return value1;
+	}
+	return value2;
+}
+
+/*
+==================
+max
+
+Returns the highest of two numbers
+==================
+*/
+float max( float value1, float value2 ) {
+	if ( value1 > value2 ) {
+		return value1;
+	}
+	return value2;
+}
+
+/*
+==================
+dotproduct
+
+Performs a dot product on two vectors
+==================
+*/
+float dotproduct( vector v1, vector v2 ) {
+
+	return ( v1_x * v2_x ) + ( v1_y * v2_y ) + ( v1_z * v2_z );
+}
+
+/*
+==================
+delayRemoveThread
+
+Service thread for delayRemove.
+==================
+*/
+void delayRemoveThread( entity ent, float mytime ) {
+	sys.wait( mytime );
+	ent.remove();
+}
+
+/*
+==================
+delayRemove
+
+Causes an entity to be removed after a specified amount of time.
+==================
+*/
+void delayRemove( entity ent, float mytime ) {
+	thread delayRemoveThread( ent, mytime );
+}
+
+#define InchesToMetres( value ) ( ( value ) * 0.0254f )
+#define MetresToInches( value ) ( ( value ) * 39.37f )
+#define UPStoKPH( value ) ( InchesToMetres( value ) * 3.6f )
+#define KPHtoUPS( value ) ( MetresToInches( value ) / 3.6f )
+
+/*
+==================
+GetQuickChat
+==================
+*/
+float GetQuickChat( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "quickChatDef" ), value );
+}
+
+/*
+==================
+GetStringMap
+==================
+*/
+float GetStringMap( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "stringMap" ), value );
+}
+
+/*
+==================
+GetTargetFilter
+==================
+*/
+float GetTargetFilter( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "targetInfo" ), value );
+}
+
+/*
+==================
+GetEntityDef
+==================
+*/
+float GetEntityDef( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "entityDef" ), value );
+}
+
+/*
+==================
+GetToolTip
+==================
+*/
+float GetToolTip( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "toolTip" ), value );
+}
+
+/*
+==================
+GetMaterial
+==================
+*/
+float GetMaterial( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "material" ), value );
+}
+
+/*
+==================
+GetTable
+==================
+*/
+float GetTable( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "table" ), value );
+}
+
+
+/*
+==================
+GetProficiency
+==================
+*/
+float GetProficiency( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "proficiencyItem" ), value );
+}
+
+/*
+==================
+GetProficiencyType
+==================
+*/
+float GetProficiencyType( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "proficiencyType" ), value );
+}
+
+/*
+==================
+GetPlayerClass
+==================
+*/
+float GetPlayerClass( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "playerClass" ), value );
+}
+
+/*
+==================
+GetAmmoType
+==================
+*/
+float GetAmmoType( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "ammoDef" ), value );
+}
+
+/*
+==================
+GetDamage
+==================
+*/
+float GetDamage( string value ) {
+	float index = -1;
+
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		index = sys.getDeclIndex( sys.getDeclType( "damageDef" ), "realistic_" + value );
+	}
+
+	if ( index == -1 ) {
+		index = sys.getDeclIndex( sys.getDeclType( "damageDef" ), value );
+	}
+
+	return index;
+}
+
+/*
+==================
+GetDeployObject
+==================
+*/
+float GetDeployObject( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "deployObject" ), value );
+}
+
+/*
+==================
+GetPlayerTask
+==================
+*/
+float GetPlayerTask( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "task" ), value );
+}
+
+/*
+==================
+GetNumDeployObjects
+==================
+*/
+float GetNumDeployObjects() {
+	return sys.getDeclCount( sys.getDeclType( "deployObject" ) );
+}
+
+/*
+==================
+GetSoundShader
+==================
+*/
+float GetSoundShader( string value ) {
+	return sys.getDeclIndex( sys.getDeclType( "sound" ), value );
+}
+
+/*
+==================
+GetSoundShaderName
+==================
+*/
+string GetSoundShaderName( float index ) {
+	return sys.getDeclName( sys.getDeclType( "sound" ), index );
+}
+
+
+/*
+==================
+SetupColors
+==================
+*/
+void SetupColors() {
+	g_colorGreen = '0 1 0';
+	g_colorRed = '1 0 0';
+	g_colorLtGray = '0.75 0.75 0.75';
+	g_colorWhite = '1 1 1';
+	g_colorYellow = '1 1 0';
+	g_colorBlue = '0 0 1';
+	g_radarMaterial = GetMaterial( "_white_depth" );
+	g_vectorUp = '0 0 1';
+	g_vectorDown = '0 0 -1';
+	g_vectorZero = g_vectorZero;
+}
+
+
+/*
+==================
+GetAllegianceColor
+==================
+*/
+
+vector GetAllegianceColor( float allegiance ) {
+	if ( allegiance == TA_FRIEND ) {
+		return g_friendlyColor.getVectorValue();
+	}
+
+	if ( allegiance == TA_ENEMY ) {
+		return g_enemyColor.getVectorValue();
+	}
+
+	return g_neutralColor.getVectorValue();
+}
+
+#define AngleDiff( a1, a2 ) sys.angleNormalize180( a1 - a2 )
+
+string GetGlobalString( string key ) {
+	float def = GetEntityDef( "globalConstants" );
+	return sys.getEntityDefKey( def, key );
+}
+
+float GetGlobalInt( string key ) {
+	float def = GetEntityDef( "globalConstants" );
+	return sys.getEntityDefIntKey( def, key );
+}
+
+float GetGlobalFloat( string key ) {
+	float def = GetEntityDef( "globalConstants" );
+	return sys.getEntityDefFloatKey( def, key );
+}
+
+vector GetGlobalVector( string key ) {
+	float def = GetEntityDef( "globalConstants" );
+	return sys.getEntityDefVectorKey( def, key );
+}
+
+float MakeTerritoryIcon( entity ent ) {
+	float materialHandle = GetMaterial( ent.getKey( "mtr_territory" ) );
+	if ( materialHandle == -1 ) {
+		return -1;
+	}
+
+	vector worldMins;
+	vector worldMaxs;
+
+	entity other = ent.getEntityKey( "target_playzone" );
+	if ( other == $null_entity ) {
+		worldMins	= sys.getWorldMins();
+		worldMaxs	= sys.getWorldMaxs();
+	} else {
+		worldMins	= other.getMins();
+		worldMaxs	= other.getMaxs();
+		worldMins	= sys.toWorldSpace( worldMins, other );
+		worldMaxs	= sys.toWorldSpace( worldMaxs, other );
+	}
+
+	float territoryIconHandle	= sys.allocCMIcon( ent, 100 );
+
+	vector worldSize = worldMaxs - worldMins;
+
+	vector temp;
+
+	temp = ent.getVectorKey( "territory_start" );
+
+	vector objectStart;
+	objectStart_x = worldMins_x + ( temp_x * worldSize_x );
+	objectStart_y = worldMins_y + ( temp_y * worldSize_y );
+
+	temp = ent.getVectorKey( "territory_end" );
+
+	vector objectEnd;
+	objectEnd_x = worldMins_x + ( temp_x * worldSize_x );
+	objectEnd_y = worldMins_y + ( temp_y * worldSize_y );
+
+//	sys.println( objectStart );
+//	sys.println( objectEnd );
+
+	vector objectSize = objectEnd - objectStart;
+
+	sys.setCMIconSize2d( territoryIconHandle, objectSize_x, objectSize_y );
+	sys.setCMIconSizeMode( territoryIconHandle, SM_WORLD );
+	sys.setCMIconFlag( territoryIconHandle, CMF_ALWAYSKNOWN );
+	sys.setCMIconFlag( territoryIconHandle, CMF_NOADJUST );
+	sys.setCMIconColorMode( territoryIconHandle, CM_ALLEGIANCE );
+	sys.setCMIconPositionMode( territoryIconHandle, PM_FIXED );
+	sys.setCMIconOrigin( territoryIconHandle, ( objectStart + objectEnd ) * 0.5f );
+	sys.setCMIconMaterial( territoryIconHandle, materialHandle );
+
+	return territoryIconHandle;
+}
+
+void FreeTerritoryIcon( entity territory, float territoryIconHandle ) {
+	if ( territoryIconHandle != -1 ) {
+		sys.freeCMIcon( territory, territoryIconHandle );
+		territoryIconHandle = -1;
+	}
+}
+
+void G_ProjectCircleDecal( float decalHandle, vector size, float depth, vector position, vector color ) {
+	vector startPos	= position + ( g_vectorUp * depth * 0.5f );
+
+	vector forward;
+	forward_x		= size_x * 0.5f;
+
+	vector side;
+	side_y			= size_y * 0.5f;
+
+	sys.resetDecal( decalHandle );
+	sys.projectDecal( decalHandle, startPos + ( forward + side ), g_vectorDown, depth, 1, size, 0.f, color );
+	sys.projectDecal( decalHandle, startPos + ( forward - side ), g_vectorDown, depth, 1, size, 90.f, color );
+	sys.projectDecal( decalHandle, startPos + ( -forward + side ), g_vectorDown, depth, 1, size, 180.f, color );
+	sys.projectDecal( decalHandle, startPos + ( -forward + -side ), g_vectorDown, depth, 1, size, 270.f, color );
+}
+
+handle g_fireSupportStateStr;
+void G_StringForFireSupportState( float state ) {
+	// todo: move the calls to localizeString to (even more!) globals?
+	// (yes)
+	if ( state == MPS_OUT_OF_RANGE ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/out_of_range" );
+		return;
+	}
+	if ( state == MPS_READY || state == MPS_NOT_LOCKED ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/ready" );
+		return;
+	}
+	if ( state == MPS_RELOADING ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/reloading" );
+		return;
+	}
+	if ( state == MPS_WAITING ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/waiting" );
+		return;
+	}
+	if ( state == MPS_DISABLED ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/disabled" );
+		return;
+	}
+	if ( state == MPS_NONE_ACTIVE ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/not_deployed" );
+		return;
+	}
+	if ( state == MPS_FIRING_PREPARE || state == MPS_FIRING ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/firing" );
+		return;
+	}
+	if ( state == MPS_LOCKING ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/locking" );
+		return;
+	}
+	if ( state == MPS_LOCKED ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/acquired" );
+		return;
+	}
+
+	if ( state == MPS_INVALID ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/invalid" );
+		return;
+	}
+
+	if ( state == MPS_LOCKED_ROCKETS ) {
+		g_fireSupportStateStr		= sys.localizeString( "game/fire_sup/acquired/rockets" );
+		return;
+	}
+
+	g_fireSupportStateStr = sys.localizeString( "game/misc/unknown" );
+}
+
+void G_DelayRemoveEntity( entity ent, float delay ) {
+	sys.wait( delay );
+	ent.remove();
+}
+
+void G_DelayFireSupport( entity p, entity other, float delay ) {
+	team_base team = other.getGameTeam();
+	sys.setTargetTimerValue( sys.allocTargetTimer( FIRESUPPORT_TIMER_NAME ), p, sys.getTime() + ( delay * team.GetFireSupportDelayScale() ) );
+	sys.setTargetTimerValue( sys.allocTargetTimer( FIRESUPPORT_TIMER_START_NAME ), p, sys.getTime() );
+}
+
+/*
+============
+Localization
+============
+*/
+
+// build the localized range string, e.g. "Range: 42m"
+wstring G_BuildRangeStr( float range ) {
+	sys.pushLocString( int( range ) );
+	sys.pushLocStringIndex( g_locStr_Meters );
+	return sys.localizeStringArgs( "game/range" );
+}
+
+#define CLAMP( value, min, max ) \
+if ( value < ( min ) ) value = ( min ); \
+else if ( value > ( max ) ) value = ( max );
+
+/*
+==================
+
+CallManualDeploy
+
+bypasses the code, directly calls in a deployable
+
+==================
+*/
+entity CallManualDeploy( string deployObject, string deployItem, object deployTeam, vector location, float angle ) {
+	if ( sys.isClient() ) {
+		return $null_entity;
+	}
+
+	float itemDef = GetEntityDef( deployItem );
+
+	entity obj = sys.spawn( deployObject );
+	obj.setGameTeam( deployTeam );
+	obj.vSetDeploymentParms( itemDef, -1, location, angle );
+
+	return obj.vGetItem();
+}
+
+/*
+==================
+
+G_TryFireScud
+
+finds a scud launcher and attempts to fire at an entity
+
+==================
+*/
+boolean G_TryFireScud( entity firer, entity targetEnt ) {
+
+	// TODO: Make it so that you can use sys to do entitiesOfCollection type stuff
+	entity worldspawn = sys.getEntity( "worldspawn" );
+
+	// set any MCP up to fire
+	float count = worldspawn.entitiesOfCollection( "mcp" );
+
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = worldspawn.getBoundsCacheEntity( i );
+
+		if ( ent.vFireScud( firer, targetEnt ) ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+float G_CountMinesOwnedByEntity( entity p ) {
+	p.entitiesOfCollection( "mine" );
+	float count = p.filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
+
+	float number;
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity mine = p.getBoundsCacheEntity( index );
+
+		if ( mine.vGetOwner() == p ) {
+			number++;
+		}
+	}
+	return number;
+}
+
+
+
+object firesupport_marker {
+	void		preinit();
+	void		DoWarning();
+
+	float		range;
+	float		endTime;
+	float		nextPlayTime;
+	float		warningRange;
+	string		warningSound;
+	string		warningSoundEnemy;
+}
+
+void firesupport_marker::preinit() {
+	range = getFloatKey( "range" );
+	endTime = sys.getTime() + getFloatKey( "warning_time" );
+	nextPlayTime = getFloatKey( "next_play_time" );
+	warningRange = getFloatKey( "warning_range" );
+	warningSound = getKey( "snd_ff_warning" );
+	warningSoundEnemy = getKey( "snd_ff_warning_enemy" );
+
+	thread DoWarning();
+}
+
+void firesupport_marker::DoWarning() {
+	while ( true ) {
+		entitiesOfCollection( "players" );
+		float playerCount = filterEntitiesByRadius( getWorldOrigin(), warningRange, 1 );
+
+		float i = 0;
+		for( i = 0; i < playerCount; i++ ) {
+			entity p = getBoundsCacheEntity( i );
+			if ( getEntityAllegiance( p ) == TA_FRIEND ) {
+				p.vPlayFFWarning( warningSound, nextPlayTime );
+			}/* else {
+				p.vPlayFFWarning( warningSoundEnemy, nextPlayTime );
+			}*/
+		}
+
+		if ( sys.getTime() > endTime ) {
+			break;
+		}
+
+		sys.wait( 1.f );
+	}
+}
+
+
+
+boolean G_CheckFireSupportBlock( vector location, entity myPlayer ) {
+	myPlayer.entitiesOfCollection( "fs_block" );
+	float count = myPlayer.filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
+
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		firesupport_marker marker = myPlayer.getBoundsCacheEntity( index );
+		if ( marker == $null_entity ) {
+			continue;
+		}
+
+		float range = marker.range * marker.range;
+
+		if ( sys.vecLengthSquared( location - marker.getWorldOrigin() ) < range ) {
+			return false;
+		}
+	}
+
+	return true;
+}
+
+entity G_CreateFiringMarker( entity ent, entity current, vector location ) {
+	if ( current == $null_entity ) {
+		string marker = ent.getKey( "def_firesupport_marker" );
+		if ( marker != "" ) {
+			current = sys.spawn( marker );
+		}
+	}
+	if ( current != $null_entity ) {
+		current.setOrigin( location );
+		current.setGameTeam( ent.getGameTeam() );
+	}
+	return current;
+}
+
+void G_NotifyNoCharge( entity p ) {
+	if( p == sys.getLocalViewPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.needsCharge", 1 );
+	}
+}
+
+/*
+==================
+BoundsDamage
+==================
+*/
+void BoundsDamage( entity self, float dmgIndex ) {
+	vector mins = self.getAbsMins();
+	vector maxs = self.getAbsMaxs();
+	mins_z = mins_z - 64;
+
+	//sys.debugBounds( g_colorRed, mins, maxs, 0 );
+
+	float count = self.entitiesInBounds( mins, maxs, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, 1 );
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity other = self.getBoundsCacheEntity( index );
+		if ( other == self ) {
+			continue;
+		}
+		if ( other != $null_entity ) {
+			if ( self.touchesBounds( other ) ) {
+				other.applyDamage( $null_entity, self, vec3_down, dmgIndex, 1.f, $null_entity );
+			}
+		}
+	}
+}
+
+/*
+==================
+LocalBoundsDamage
+==================
+*/
+void LocalBoundsDamage( vector mins, vector maxs, entity self, entity inflictor, float dmgIndex ) {
+	float count = self.entitiesInLocalBounds( mins, maxs, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX );
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity other = self.getBoundsCacheEntity( index );
+		if ( other == self ) {
+			continue;
+		}
+		if ( other == inflictor ) {
+			continue;
+		}
+		if ( other != $null_entity ) {
+			other.applyDamage( $null_entity, inflictor, vec3_down, dmgIndex, 1.f, $null_entity );
+		}
+	}
+}
+
+// more util files
+#include "script/misc/zoomwidget.script"
+
+void G_GiveSpottingProficiency( entity spotter ) {
+	spotter.vGiveSpotProficiency();
+}
+
+// Gordon: FIXME: These wont work, as many places they are being called from map scripts, which aren't run on the client, I also don't like the way this is set up anyway
+void G_PlayObjectiveCompletedRoll( float team ) {
+	sys.assert( team == GDF || team == STROGG );
+	if ( team == GDF ) {
+		sys.startSoundDirect( gdfTeam.getKey( "snd_objective_complete_roll" ), SND_ANY );
+	} else {
+		sys.startSoundDirect( stroggTeam.getKey( "snd_objective_complete_roll" ), SND_ANY );
+	}
+}
+
+void G_PlayObjectiveCompletedRollEnt( entity ent ) {
+	sys.assert( ent != $null_entity && ent.getGameTeam() != $null_entity );
+	if ( ent.getGameTeam() == stroggTeam ) {
+		G_PlayObjectiveCompletedRoll( GDF );
+	} else {
+		G_PlayObjectiveCompletedRoll( STROGG );
+	}
+}
+
+void G_GiveDeployBonus( entity owner, entity item ) {
+	entity territory = sys.getTerritoryForPoint( item.getWorldOrigin(), $null_entity, 0.f, item.getIntKey( "deploybonus_requireactive" ) );
+	if ( territory != $null_entity ) {
+		owner.giveProficiency( GetProficiency( item.getKey( "prof_deploybonus" ) ), 1.f, $null, "item deployed" );
+	}
+}
+
+void G_SetPrimaryObjectiveIndex( float objIndex ) {
+	entity worldspawn = sys.getEntity( "worldspawn" );
+
+	g_primaryObjectiveIndex = objIndex;
+
+	float count = worldspawn.entitiesOfCollection( "objective_markers" );
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity other = worldspawn.getBoundsCacheEntity( index );
+		other.vOnDeploy();
+	}
+}
+
+/*
+==================
+RangeUpdateThread
+low frequency updates if crosshair distance is larger than CROSSHAIR_TRACE_DIST.
+==================
+*/
+void RangeUpdateThread( player p, float maxDist ) {
+	vector forward;
+	vector tStart;
+	vector tEnd;
+	float dist;
+
+	if ( maxDist <= 0 || maxDist < CROSSHAIR_TRACE_DIST ) {
+		sys.warning( "Unexpected maxDist value: " + maxDist );
+		return;
+	}
+
+	while ( true ) {
+		sys.wait( 1.0f );
+		if ( !p.IsSniperScopeUp() ) {
+			continue;
+		}
+
+		dist = p.getCrosshairDistance( false );
+		if ( dist >= CROSSHAIR_TRACE_DIST ) {
+			forward = sys.angToForward( p.getViewAngles() );
+			tStart = ( forward * ( CROSSHAIR_TRACE_DIST - 128 ) ) + p.getViewOrigin();
+			tEnd = forward * maxDist + p.getViewOrigin();
+			sys.tracePoint( tStart, tEnd, MASK_SHOT_RENDERMODEL | CONTENTS_SHADOWCOLLISION | CONTENTS_SLIDEMOVER | CONTENTS_BODY | CONTENTS_PROJECTILE | CONTENTS_CROSSHAIRSOLID, p );
+			dist = CROSSHAIR_TRACE_DIST + sys.getTraceFraction() * ( maxDist - ( CROSSHAIR_TRACE_DIST - 128 ) );
+			if ( sys.getTraceFraction() == 1.0f || ( sys.getTraceSurfaceFlags() & SURF_NOIMPACT ) ) {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.distance", -1 );
+			} else {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.distance", dist );
+			}
+		} else {
+			// reset distance value
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.distance", -2 );
+		}
+	}
+}
+
+/*
+==================
+G_ContainsBounds
+Check if one set of bounds is completely inside another set of bounds
+==================
+*/
+boolean G_ContainsBounds( vector aMins, vector aMaxs, vector bMins, vector bMaxs, float epsilon ) {
+	// check mins
+	if ( aMins_x > bMins_x + epsilon ) {
+		return false;
+	}
+
+	if ( aMins_y > bMins_y + epsilon ) {
+		return false;
+	}
+
+	if ( aMins_z > bMins_z + epsilon ) {
+		return false;
+	}
+
+	// check maxs
+	if ( aMaxs_x < bMaxs_x - epsilon ) {
+		return false;
+	}
+
+	if ( aMaxs_y < bMaxs_y - epsilon ) {
+		return false;
+	}
+
+	if ( aMaxs_z < bMaxs_z - epsilon ) {
+		return false;
+	}
+
+	return true;
+}
+
+entity G_FindDeployedMCP() {
+	// TODO: Make it so that you can use sys to do entitiesOfCollection type stuff
+	entity worldspawn = sys.getEntity( "worldspawn" );
+
+	float count = worldspawn.entitiesOfCollection( "mcp" );
+
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = worldspawn.getBoundsCacheEntity( i );
+
+		if ( ent.vIsDeployed() ) {
+			return ent;
+		}
+	}
+
+	return $null_entity;
+}
+
+entity G_FindMiningLaserMaterials() {
+	entity worldspawn = sys.getEntity( "worldspawn" );
+
+	// this is a nasty hack
+	float entityDef = GetEntityDef( "gameplay/construction/mining_laser/objective" );
+	if ( entityDef == -1 ) {
+		sys.error( "G_FindMiningLaserMaterials - No entityDef called 'gameplay/construction/mining_laser/objective'" );
+		return $null_entity;
+	}
+
+	float count = worldspawn.entitiesOfType( entityDef );
+	if ( count > 1 ) {
+		sys.error( "G_FindMiningLaserMaterials - More than one 'gameplay/construction/mining_laser/objective' spawned" );
+		return $null_entity;
+	}
+
+	if ( count < 1 ) {
+		return $null_entity;
+	}
+
+	return worldspawn.getBoundsCacheEntity( 0 );
+}

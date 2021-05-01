@@ -1,0 +1,311 @@
+
+object airstrike_marker : projectile_missile {
+	void				preinit();
+	void				syncFields();
+	
+	boolean				CallForStrike();
+	void				CallForStrikeThread();
+
+	float				GetDamagePower() { return 1.f; }
+
+	float				OnActivate( entity p, float distance );
+	float				GetActivateCode( entity p, float distance );
+	float				OnUpdateCrosshairInfo( entity p );
+	
+	float				vGetPliersProgressBarValue( float action );
+	boolean				vCheckActionCode( entity p, float actionCode );
+	void				vArm( entity p );
+	void				vApplyEmpDamage( entity attacker, float time, float weaponTime );
+
+	void				OnTargetUnknown();
+	void				ReinstanteEnergy( float amount );
+	
+	handle				objectName;
+
+	float				disarmCurrent;
+	float				disarmMaxCount;
+
+	float				toolTipUnknownTarget;
+
+	float				waitTime;
+	
+	float				reverse;
+}
+
+void airstrike_marker::preinit() {	
+	if ( !sys.isClient() ) {
+		thread CallForStrikeThread();
+	}
+	
+	disableKnockback();
+
+	objectName = sys.localizeString( getKey( "object_name" ) );
+
+	disarmMaxCount = getFloatKeyWithDefault( "disarm_count", 20 );
+
+	toolTipUnknownTarget = GetToolTip( getKey( "tt_unknown_target" ) );
+
+	waitTime = getFloatKeyWithDefault( "airstrike_wait_time", 3.f );
+	
+	reverse = getFloatKeyWithDefault( "reverse", 0.f );
+}
+
+void airstrike_marker::syncFields() {
+	sync( "disarmCurrent" );
+}
+
+void airstrike_marker::CallForStrikeThread() {
+	boolean willStrike;
+	player p = getOwner();
+
+	if ( !sys.isClient() ) {
+		if ( p != $null_entity ) {
+			p.setPlayerAirstrikeState( self, false, false );
+		}
+	}
+
+	sys.wait( waitTime );
+	
+	willStrike = CallForStrike();
+	if ( !willStrike ) {
+		stopEffect( "fx_trail" );
+	}
+
+	if ( !sys.isClient() ) {
+		if ( p != $null_entity ) {
+			p.setPlayerAirstrikeState( self, !willStrike, willStrike );
+		}		
+	}
+
+	Explode( $null, $null_entity );
+}
+
+boolean airstrike_marker::CallForStrike() {
+	entity owner = getOwner();
+	vector pos = getWorldOrigin();
+	vector end;
+	float height;
+	vector dir;
+
+	entity bomber;
+
+	end = pos;
+	end_z = end_z + 65536.f;
+	
+	if ( owner == $null_entity ) {
+		return false;
+	}
+
+	team_base team = owner.getGameTeam();
+
+	if ( team != getGameTeam() ) {
+		return false;
+	}
+
+	forceDisableClip();
+	float contents = sys.checkContents( getWorldOrigin(), getMins(), getMaxs(), MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, $null_entity );
+	if ( contents != 0 ) {
+		OnTargetUnknown();
+		forceEnableClip();
+		return false;
+	}
+	
+	sys.tracePoint( pos, end, MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL, $null_entity );
+	forceEnableClip();
+	
+	if ( sys.getTraceFraction() == 1.f ) {
+		OnTargetUnknown();
+		return false;
+	}
+	
+	if ( !( sys.getTraceSurfaceFlags() & SURF_NOIMPACT ) ) {
+		OnTargetUnknown();
+		return false;
+	}
+	
+	objManager.PlaySoundForPlayer( getKey( "snd_approved" ), owner );
+
+	float timerLength = getFloatKey( "timer_delay" );
+
+	G_DelayFireSupport( owner, self, timerLength );
+
+	dir = sys.vecNormalize( pos - owner.getWorldOrigin() );
+	vector attackDir = sys.crossProduct( dir, vec3_up );
+
+	if ( reverse ) {
+		attackDir = -attackDir;
+	}
+/*	jrad - disabled randomness for now...
+	if ( sys.random( 1.f ) > .5f ) {
+		attackDir = -attackDir;
+	}
+*/
+	end = sys.getTraceEndPos();
+
+	bomber = sys.spawn( getKey( "def_bomber" ) );
+	bomber.setGameTeam( getGameTeam() );
+	bomber.vBomberAttack( end, attackDir, pos_z, owner );
+	return true;
+}
+
+float airstrike_marker::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+
+	chSetNumLines( 0 );
+	float index;
+	
+	if ( p != $null_entity ) {
+		// see if theres a valid action to perform
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE && p.vHasActionItem( code ) ) {
+			index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+		}
+	}
+	
+	index = chAddLine();
+	chSetLineTextIndex( index, objectName );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	if ( range <= 100 ) {
+		index = chAddLine();
+
+		chSetLineText( index, G_BuildRangeStr( range ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;	
+}
+
+float airstrike_marker::OnActivate( entity p, float distance ) {
+	float code = GetActivateCode( p, distance );
+	if ( code == AK_NONE ) {
+		return 0.f;
+	}
+	
+	p.vSelectActionItem( code );
+	return 1.f;
+}
+
+float airstrike_marker::GetActivateCode( entity p, float distance ) {
+	if ( p.getViewingEntity() != p || distance > DISTANCE_FOR_ACTION ) {
+		return AK_NONE;
+	}
+
+	if ( p.getHealth() <= 0 ) {
+		return AK_NONE;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+
+	if ( allegiance == TA_ENEMY ) {	
+		return AK_ARM;
+	}
+
+	return AK_NONE;
+}
+
+float airstrike_marker::vGetPliersProgressBarValue( float action ) {
+	if ( action == AC_DISARM ) {
+		return disarmCurrent / disarmMaxCount;
+	}
+
+	return 0.f;
+}
+
+boolean airstrike_marker::vCheckActionCode( entity p, float actionCode ) {
+	if ( actionCode == AC_DISARM ) {
+		if ( getEntityAllegiance( p ) != TA_ENEMY ) {
+			return false;
+		}
+		return disarmCurrent < disarmMaxCount;
+	}
+	
+	return false;	
+}
+
+void airstrike_marker::vArm( entity p ) {
+	float count = 1;
+
+	team_base team = p.getGameTeam();		
+	if ( team.HasDisarmBonus( p ) ) {
+		count = count * 1.25f;
+	}
+
+	disarmCurrent = disarmCurrent + count;
+
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( disarmCurrent >= disarmMaxCount ) {
+		remove();
+	}
+}
+
+void airstrike_marker::vApplyEmpDamage( entity attacker, float time, float weaponTime ) {
+	Fizzle();
+}
+
+void airstrike_marker::OnTargetUnknown() {
+	sys.assert( !sys.isClient() );
+
+	// give back some of the charge for failed violator/vampire attempts
+	float chargePerUse = getFloatKey( "charge_reinstated" );
+	chargePerUse = chargePerUse / 100.0f;
+	ReinstanteEnergy( chargePerUse );
+
+	if ( toolTipUnknownTarget != -1 ) {
+		entity owner = getOwner();
+		if ( owner != $null_entity ) {
+			objManager.PlaySoundForPlayer( getKey( "snd_unknown_target" ), owner );
+			sys.broadcastToolTip( toolTipUnknownTarget, owner, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+		}
+	}
+}
+
+/*
+================
+airstrike_marker::ReinstanteEnergy
+================
+*/
+void airstrike_marker::ReinstanteEnergy( float amount ) {
+	player p = getOwner();
+	if ( p == $null_entity ) {
+		sys.assert( !sys.isServer() );
+		p = sys.getLocalPlayer();
+	}
+
+	string energyKey = getKey( "energy_timer" );
+	float chargeTimer = sys.allocTargetTimer( energyKey );
+
+	float energyChargeTime = GetGlobalFloat( energyKey + "_time" );
+	float chargeUsed = sys.getTargetTimerValue( chargeTimer, p ) - sys.getTime();
+	if ( chargeUsed < 0 ) {
+		chargeUsed = 0;
+	} else {
+		chargeUsed = chargeUsed / energyChargeTime;
+	}
+
+	chargeUsed = chargeUsed - amount;
+	if ( chargeUsed < 0.f ) {
+		chargeUsed = 0.f;
+	}
+
+	sys.setTargetTimerValue( chargeTimer, p, sys.getTime() + ( chargeUsed * energyChargeTime ) );
+}

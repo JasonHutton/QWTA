@@ -1,0 +1,270 @@
+
+entityDef projectile_flamethrower_blob {
+	"spawnclass"				"idProjectile_RigidBody"
+	//"scriptObject"				"projectile_missile"
+	"scriptObject"				"projectile_fluidic_blob"
+	"aor_layout"				"missile"
+	"mins"					"-5 -5 -5"
+	"maxs"					"5 5 5"
+	"cone"					"3"
+	"scale"					"1"
+	"noshadows"				"1"
+	"model" 				""
+	"launchFromBarrel"			"1"
+	"health"				"0"
+	"velocity"				"1200 0 0"
+	"face_velocity"				"1"
+	"angular_velocity"			"0 0 0"
+	"bounce"				"0.5"
+	//"bounce"				"0.0"
+	"linear_friction"			"0.5"
+	"contact_friction"			"0.3"
+	"mass"					"1"
+	"gravity"				"0"
+	"fuse"					"4.0"
+	"detonate_on_fuse"			"0"
+	"detonate_on_death"			"0"
+	"detonate_on_world"			"0"
+	"detonate_on_actor"			"0"
+	
+	"fx_splash"				"effects/base/impact_water_large"
+	"fx_trail"				"effects/weapons/flamethrower/blob"
+	//"fx_trail1"				"effects/weapons/flamethrower/blobs/blob1_yellow1"
+	//"fx_trail2"				"effects/weapons/flamethrower/blobs/blob2_yellow1"
+	//"fx_trail3"				"effects/weapons/flamethrower/blobs/blob3_yellow1"
+	//"fx_trail4"				"effects/weapons/flamethrower/blobs/blob4_yellow1"
+	//"fx_trail5"				"effects/weapons/flamethrower/blobs/blob5_yellow1"
+	//"fx_trail6"				"effects/weapons/flamethrower/blobs/blob6_yellow1"
+	//"fx_trail7"				"effects/weapons/flamethrower/blobs/blob7_yellow1"
+	//"fx_trail8"				"effects/weapons/flamethrower/blobs/blob8_yellow1"
+	//"fx_trail"				"effects/weapons/hyperblaster/bolt"
+	//"mtr_trail"				"particles/karateka/simple_smoke_alpha"
+	//"mtr_trail"					"textures/effects/weapons/darkmatter"
+	//"fx_explode"				"effects/weapons/plasmacannon/explode_small"
+	//"fx_explode_sand"			"effects/weapons/plasmacannon/explode"
+	//"fx_explode_water"			"effects/water/explosion"
+	
+	"fx_ricochet"				"effects/base/bullets/ricochet"
+	"fx_ricochet_flesh"			"effects/base/bullets/ricochet_blank"
+	"fx_ricochet_water"			"effects/base/bullets/ricochet_blank"
+	
+	"fx_explode"				"effects/impacts/hyperblaster_qwta/impact_default"
+	
+	"dmg_damage"				"damage_flamethrower_stream"
+	"dmg_realistic_damage"		"realistic_damage_flamethrower_stream"
+	"dmg_splash_damage"			"damage_flamethrower_stream"
+	"dmg_realistic_splash_damage"		"realistic_damage_flamethrower_stream"
+	
+	"collection_mdfExport"				"mdfExport"
+	
+	//"has_postthink"					"1"
+	
+}
+
+entityDef projectile_flamethrower_napalm {
+	"inherit"							"projectile_grenade"
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_flamethrower_napalm"
+
+	"aor_layout"						"missile"
+	"model"								""
+
+	"mins"								"-1 -1 -1"
+	"maxs"								"1 1 1"
+	
+	"dmg_splash_damage"					"damage_flamethrower_napalm"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"linear_friction"					"0"
+	"angular_friction"					"0"
+	"contact_friction"					"0"
+	"bounce"							"0"
+	"mass"								"10"
+	"gravity"							"600"
+	"fuse"								"4"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_death"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+	
+	"collection_mdfExport"				"mdfExport"
+	
+	"stick_on_contact"			"1"
+	"buoyancy"					"0"
+	"trailUnderWater"			"1"
+	"forcefield_weakbounce"			"1"
+	
+	"has_postthink"					"1"
+	
+	"fx_burn"					"effects/weapons/flamethrower/burn"
+
+	"fx_trail"					"effects/weapons/flamethrower/napalm"
+	"fx_splash"					"effects/base/impact_water_large"
+
+	"snd_bounce"				""
+	"snd_stick"					""
+	
+	"removedelay"				"0"
+	
+	"burn_time"					"0.5"
+	"damageRate"				"0.05"
+
+	//"fx_bounce_forcefield"		"effects/base/bullets/impact_forcefield"
+}
+
+
+damageDef damage_flamethrower_stream {
+		damage								"damage_flamethrower_stream"
+	
+		knockback							3
+		push								10000
+		
+		noheadshot
+	
+		prof_damage							"desecrator_weapons"
+	
+		stat_name							"pro_vehicle_damage"
+	
+		knockback							10
+		kick_time							100
+		kick_amplitude						0
+		kickDir								( 1 0 0 )
+	
+		tt_obituary							"tooltips/killmsgs/weapons/flamethrower"
+		tt_obituary_team_kill				"tooltips/killmsgs/weapons/flamethrower/teamkill"
+		tt_obituary_self					"tooltips/killmsgs/weapons/flamethrower/self"
+		tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
+}
+
+damageDef realistic_damage_flamethrower_stream {
+		inherit								"damage_flamethrower_stream"
+		damage								"realistic_damage_flamethrower_stream"
+}
+
+damageFilter damage_flamethrower_stream {
+
+	type {
+		target							"target_player_all"
+		damage							10
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageFilter realistic_damage_flamethrower_stream {
+
+	type {
+		target							"target_player_all"
+		damage							20
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageDef damage_flamethrower_napalm {
+	damage						"damage_flamethrower_napalm"
+	radius						50
+	knockback							3
+
+	push						10000
+
+	noheadshot
+
+	prof_damage							"desecrator_weapons"
+
+	stat_name							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/flamethrower"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/flamethrower/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/flamethrower/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
+}
+
+damageDef realistic_damage_flamethrower_napalm {
+	inherit						"damage_flamethrower_napalm"
+	damage						"realistic_damage_flamethrower_napalm"
+}
+
+damageFilter damage_flamethrower_napalm {
+
+	type {
+		target							"target_player_all"
+		damage							1
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageFilter realistic_damage_flamethrower_napalm {
+
+	type {
+		target							"target_player_all"
+		damage							2
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageDef damage_flamethrower_burning {
+	damage						"damage_flamethrower_burning"
+	radius						50
+	knockback							3
+
+	push						10000
+
+	noheadshot
+
+	prof_damage							"desecrator_weapons"
+
+	stat_name							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/flamethrower"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/flamethrower/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/flamethrower/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/flamethrower/unknown"
+}
+
+damageDef realistic_damage_flamethrower_burning {
+	inherit						"damage_flamethrower_burning"
+	damage						"realistic_damage_flamethrower_burning"
+}
+
+damageFilter damage_flamethrower_burning {
+
+	type {
+		target							"target_player_all"
+		damage							1
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}
+
+damageFilter realistic_damage_flamethrower_burning {
+
+	type {
+		target							"target_player_all"
+		damage							2
+	}
+
+	type {
+		target							"target_all"
+		damage							0
+	}
+}

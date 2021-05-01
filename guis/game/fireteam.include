@@ -1,0 +1,347 @@
+
+#ifndef __fireteam__
+#define __fireteam__
+
+#define FIRETEAMLIST_MYFIRETEAM		0
+#define FIRETEAMLIST_MAIN			1
+#define FIRETEAMLIST_JOIN			2
+#define FIRETEAMLIST_INVITE			3
+#define FIRETEAMLIST_KICK			4
+#define FIRETEAMLIST_PROMOTE		5
+#define FIRETEAMLIST_MANAGE			6
+
+#define FIRETEAM_DIALOG_MAIN			0
+#define FIRETEAM_DIALOG_JOIN			1
+#define FIRETEAM_DIALOG_CREATE			2
+#define FIRETEAM_DIALOG_LEADER_MANAGE	3
+#define FIRETEAM_DIALOG_MANAGE			4
+#define FIRETEAM_DIALOG_INVITE			5
+#define FIRETEAM_DIALOG_KICK			6
+#define FIRETEAM_DIALOG_DISBAND			7
+#define FIRETEAM_DIALOG_LEAVE			8
+#define FIRETEAM_DIALOG_PROMOTE			9
+#define FIRETEAM_DIALOG_TOGGLEPRIVATE	10
+#define FIRETEAM_DIALOG_PROPOSE			11
+#define FIRETEAM_DIALOG_RENAME			12
+
+$template _updateMenu
+	if ( dialogPage == FIRETEAM_DIALOG_MAIN ) {
+
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/main" );
+		gui.scriptPushFloat( FIRETEAMLIST_MAIN );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_JOIN ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/join" );
+		gui.scriptPushFloat( FIRETEAMLIST_JOIN );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_CREATE ) {		
+		gui.consoleCommand( "fireteam create" + _newline );
+		gui.deactivate();
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_LEADER_MANAGE || dialogPage == FIRETEAM_DIALOG_RENAME ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/main" );
+		gui.scriptPushFloat( FIRETEAMLIST_MANAGE );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_MANAGE ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/main" );
+		gui.scriptPushFloat( FIRETEAMLIST_MANAGE );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_INVITE ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/invite" );
+		gui.scriptPushFloat( playerListPage );
+		gui.scriptPushFloat( FIRETEAMLIST_INVITE );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_KICK ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/kick" );
+		gui.scriptPushFloat( FIRETEAMLIST_KICK );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_DISBAND ) {		
+		gui.consoleCommand( "fireteam disband" + _newline );
+		gui.deactivate();
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_LEAVE ) {		
+		gui.consoleCommand( "fireteam leave" + _newline );
+		gui.deactivate();
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_PROMOTE ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/promote" );
+		gui.scriptPushFloat( FIRETEAMLIST_PROMOTE );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_TOGGLEPRIVATE ) {		
+		gui.consoleCommandImmediate( "fireteam " + _quote + command + _quote + _newline );
+		gui.deactivate();
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_PROPOSE ) {
+		gui.desktop.text = localizeArgs( "guis/hud/fireteam/menu/title/propose" );
+		gui.scriptPushFloat( playerListPage );
+		gui.scriptPushFloat( FIRETEAMLIST_INVITE );
+		fillFromEnumerator( "fireTeamList" );
+		requestLayout();
+		return;
+	}
+$endtemplate
+
+$template _handleKeyEvents
+	onKeyDown "1" "kp_end" {
+		_handleKey( 0 )
+	}
+	onKeyDown "2" "kp_downarrow" {
+		_handleKey( 1 )
+	}
+	onKeyDown "3" "kp_pgdn" {
+		_handleKey( 2 )
+	}
+	onKeyDown "4" "kp_leftarrow" {
+		_handleKey( 3 )
+	}
+	onKeyDown "5" "kp_5" {
+		_handleKey( 4 )
+	}
+	onKeyDown "6" "kp_rightarrow" {
+		_handleKey( 5 )
+	}
+	onKeyDown "7" "kp_home" {
+		_handleKey( 6 )
+	}
+	onKeyDown "8" "kp_uparrow" {
+		_handleKey( 7 )
+	}
+	onKeyDown "9" "kp_pgup" {
+		_handleKey( 8 )
+	}
+	onKeyDown "0" "kp_ins" {
+		_handleKey( 9 )
+	}
+	onCancel {
+		if( dialogPage == FIRETEAM_DIALOG_JOIN || 
+			dialogPage == FIRETEAM_DIALOG_KICK || 
+			dialogPage == FIRETEAM_DIALOG_INVITE ) {
+			gui.postNamedEvent( "chooseDialog" );
+			_updateMenu
+		} else {
+			gui.deactivate();			
+		}
+	}
+$endtemplate
+
+$template _handleKey( Index )
+	if ( dialogPage == FIRETEAM_DIALOG_MAIN ) {
+		_keyEvent_Main( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_JOIN ) {
+		_keyEvent_Join( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_LEADER_MANAGE ) {
+		_keyEvent_LeaderManage( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_MANAGE ) {
+		_keyEvent_Manage( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_INVITE ) {
+		_keyEvent_Invite( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_INVITE ) {
+		_keyEvent_Propose( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+
+	if ( dialogPage == FIRETEAM_DIALOG_KICK ) {
+		_keyEvent_Kick( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_PROMOTE ) {
+		_keyEvent_Promote( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_PROPOSE ) {
+		_keyEvent_Propose( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+	
+	if ( dialogPage == FIRETEAM_DIALOG_RENAME ) {
+		_keyEvent_LeaderManage( Index )
+		postNamedEvent( "updateList" );
+		return;
+	}
+$endtemplate
+
+$template _keyEvent_Main( Index )
+	if ( Index >= 0 && Index <= 1 ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		_handleCommand( command )
+	}
+$endtemplate
+
+$template _keyEvent_Join( Index )
+	if ( Index >= 0 && Index <= 7 ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		gui.consoleCommand( "fireteam join " + command + _newline );
+		gui.deactivate();
+	}
+$endtemplate
+
+$template _keyEvent_LeaderManage( Index )
+	if ( player.fireTeamLeader ) {
+		if ( Index >= 0 && Index <= 6 ) {
+			command = gui.toStr( getItemText( Index, 1 ) );
+			_handleCommand( command )
+		}
+	}
+$endtemplate
+
+$template _keyEvent_Manage( Index )
+	if ( Index >= 0 && Index <= 1 ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		_handleCommand( command )
+	}
+$endtemplate
+
+$template _keyEvent_Invite( Index )
+	if ( Index >= 0 && Index < numItems ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		if ( icompare( command, "nextpage" ) == true || icompare( command, "prevpage" ) == true ) {
+			_handleCommand( command )
+		} else {
+			gui.consoleCommand( "fireteam invite " + _quote + command + _quote + _newline );
+			gui.deactivate();		
+		}
+	}
+$endtemplate
+
+$template _keyEvent_Propose( Index )
+	if ( Index >= 0 && Index < numItems ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		if ( icompare( command, "nextpage" ) == true || icompare( command, "prevpage" ) == true ) {
+			_handleCommand( command )
+		} else {
+			gui.consoleCommand( "fireteam propose " + _quote + command + _quote + _newline );
+			gui.deactivate();			
+		}
+	}
+$endtemplate
+
+$template _keyEvent_Kick( Index )
+	if ( Index >= 0 && Index < numItems ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		gui.consoleCommand( "fireteam kick " + _quote + command + _quote + _newline );
+		gui.deactivate();
+	}
+$endtemplate
+
+$template _keyEvent_Promote( Index )
+	if ( Index >= 0 && Index < numItems ) {
+		command = gui.toStr( getItemText( Index, 1 ) );
+		gui.consoleCommand( "fireteam promote " + _quote + command + _quote + _newline );
+		gui.deactivate();
+	}
+$endtemplate
+
+$template _handleCommand( Command )
+	if ( icompare( command, "canjoin" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_JOIN;
+	}
+	
+	if ( icompare( command, "cancreate" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_CREATE;
+	}
+
+	if ( icompare( command, "caninvite" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_INVITE;
+	}
+
+	if ( icompare( command, "cankick" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_KICK;
+	}
+
+	if ( icompare( command, "disband" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_DISBAND;
+	}
+
+	if ( icompare( command, "leave" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_LEAVE;
+	}
+
+	if ( icompare( command, "canpromote" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_PROMOTE;
+	}
+
+	if ( icompare( command, "public" ) == true || icompare( command, "private" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_TOGGLEPRIVATE;
+	}
+
+	if ( icompare( command, "canpropose" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_PROPOSE;
+	}
+
+	if ( icompare( command, "rename" ) == true ) {
+		dialogPage = FIRETEAM_DIALOG_RENAME;
+		gui.focusedWindow = "edtFireTeamName";
+	}
+
+	if ( icompare( command, "nextpage" ) == true || icompare( command, "prevpage" ) == true ) {
+		playerListPage = 1 - immediate( playerListPage );
+	}
+
+	if ( compare( command, "cannot" ) == true ) {
+		gui.playGameSound( "cannot" );
+	}
+$endtemplate
+
+#endif // !__fireteam__

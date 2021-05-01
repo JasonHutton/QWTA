@@ -1,0 +1,294 @@
+/***********************************************************************
+
+weapon_grenade.script
+
+***********************************************************************/
+
+#define GRENADE_MINRELEASETIME		0.05
+#define GRENADE_QUICKTHROWTIME		0.2
+#define GRENADE_MINPOWER			0.25
+#define GRENADE_MAXPOWER			1.5
+
+object weapon_grenade : weapon_base {
+	void		preinit();
+	void		init();
+	void		destroy();
+
+	void		Idle();
+	void		Fire();
+	void		OwnerDied();
+
+	void		ToolTipThread_Raise();
+
+	float		powerMultiplier;
+	float		throwQuick;
+	float		throwNormal;
+	float		fuseStart;
+
+	boolean		allowAltFire;
+	boolean		rollAltFire;
+
+	float		currentMode;
+
+	boolean		cancelFire;
+	void		vCancelFire() { cancelFire = true; }
+
+	boolean		AllowSprint();
+
+	entity		projectile;
+
+//mal: gonna need this to get the times on grenades.
+	float		GetFuseStart() { return fuseStart; }
+}
+
+void weapon_grenade::preinit() {
+	powerMultiplier = 200;
+	fuseStart = -1;
+	allowAltFire = getIntKey( "allow_alt_fire" );
+	rollAltFire = getIntKey( "roll_alt_fire" );
+	idleEffectOn = false;
+}
+
+void weapon_grenade::init() {
+
+	throwQuick = getFloatKeyWithDefault( "throw_quick", 0.2f );
+	throwNormal = getFloatKeyWithDefault( "throw_normal", 0.2f );
+
+	ShowUseCount();
+
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+
+	weaponState( "Raise", 0 );
+}
+
+void weapon_grenade::destroy() {
+	HideUseCount();
+	stopAllEffects();
+	if ( myPlayer != $null_entity ) {
+		myPlayer.freeze( false );
+	}
+}
+
+void weapon_grenade::Idle() {
+	myPlayer.freeze( false );
+
+	fuseStart = -1;
+
+	StartIdleEffect();
+
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+	while( 1 ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", 4 );
+		}
+
+		if ( ( ammoAvailable( 0 ) > ammoInClip( 0 ) ) && ( ammoInClip( 0 ) < clipSize( 0 ) ) ) {
+			addToClip( 0, 1 );
+		}
+
+		if ( ammoInClip( 0 ) != 0 ) {
+			if ( WEAPON_ATTACK ) {
+				myPlayer.disableSprint( 1.f );
+
+				if ( sys.getTime() > reFire ) {
+					StopIdleEffect();
+					playEffect( "fx_fire", "joint2", 0 );
+
+					currentMode = 0;
+					weaponState( "Fire", 4 );
+				}
+			} else if ( allowAltFire && WEAPON_ALTFIRE ) {
+				myPlayer.disableSprint( 1.f );
+
+				if ( sys.getTime() > reFire ) {
+					StopIdleEffect();
+					playEffect( "fx_fire", "joint2", 0 );
+
+					currentMode = 1;
+					weaponState( "Fire", 4 );
+				}
+			}
+		}
+
+		if ( AllowSprint() ) {
+			myPlayer.disableSprint( 0.f );
+			if ( myPlayer.AI_SPRINT ) {
+				StopIdleEffect();
+				weaponState( "Sprint", 4 );
+			}
+		} else {
+			myPlayer.disableSprint( 1.f );
+		}
+		
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void weapon_grenade::Fire() {
+	string animStart, animQuickThrow, animThrow;
+	float fuse;
+	float fuseEnd;
+	float currentTime;
+	float timeHeld;
+	float power;
+
+	cancelFire = false;
+	
+	if ( myPlayer.AI_PRONE ) {
+		myPlayer.freeze( true );
+	}
+
+	if ( currentMode == 0 ) {
+		animStart = "throw_start";
+		animQuickThrow = "throw_quick";
+		animThrow = "throw";
+	} else {
+		animStart = "alt_throw_start";
+		animQuickThrow = "alt_throw_quick";
+		animThrow = "alt_throw";
+	}
+
+	playAnim( ANIMCHANNEL_ALL, animStart );
+
+	fuse = 4.f;
+
+	if ( ShouldRunGuis() ) {
+		startSound( "snd_grenade_timer", SND_WEAPON_SIG );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", 0 ); // make sure to override any previous grenades
+		//if ( g_allowTimerCircles.getBoolValue() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", fuse );
+		//}
+	}
+
+	currentTime = sys.getTime();
+	fuseStart = currentTime;
+	fuseEnd = currentTime + fuse;
+
+	if ( currentMode == 0 ) {
+		while( currentTime < fuseEnd ) {
+			if ( ( currentTime > fuseStart + GRENADE_MINRELEASETIME ) && !WEAPON_ATTACK ) {
+				break;
+			}
+			sys.waitFrame();
+			currentTime = sys.getTime();
+		}
+	} else {
+		while( currentTime < fuseEnd ) {
+			if ( ( currentTime > fuseStart + GRENADE_MINRELEASETIME ) && !WEAPON_ALTFIRE ) {
+				break;
+			}
+			sys.waitFrame();
+			currentTime = sys.getTime();
+		}
+	}
+
+	timeHeld = sys.getTime() - fuseStart;
+	power = timeHeld + GRENADE_MINPOWER;
+
+	if ( power > GRENADE_MAXPOWER ) {
+		power = GRENADE_MAXPOWER;
+	}
+
+	if ( timeHeld < GRENADE_QUICKTHROWTIME ) {
+		playAnim( ANIMCHANNEL_ALL, animQuickThrow );
+		sys.wait( throwQuick );
+	} else {
+		playAnim( ANIMCHANNEL_ALL, animThrow );
+		sys.wait( throwNormal );
+	}
+
+	if ( myPlayer == sys.getLocalPlayer() ) {
+		stopSound( SND_WEAPON_SIG );
+	}
+
+	if ( cancelFire ) {
+		myPlayer.freeze( false );
+
+		if ( ShouldRunGuis() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", 0 );
+		}
+
+		if ( !ammoAvailable( 0 ) ) {
+			myPlayer.selectBestWeapon( false );
+		}
+
+		weaponState( "Idle", 4 );
+	}
+
+	startSound( "snd_fireinthehole", SND_PLAYER_VO );
+
+	if ( !sys.isClient() ) {
+		projectile = createProjectile( currentMode );
+		projectile.addOwner( getOwner() );
+		launchProjectiles( numProjectiles, currentMode, 0, sys.getTime() - fuseStart, power * powerMultiplier, 1.0 );
+
+		//vector newVelocity = projectile.getLinearVelocity() + myPlayer.getLinearVelocity();
+		vector newVelocity = projectile.getLinearVelocity();
+		if ( currentMode == 1 && rollAltFire ) {
+			newVelocity = newVelocity + getVectorKey( "roll_velocity" );
+		}
+		projectile.setLinearVelocity( newVelocity );
+		myPlayer.setPlayerGrenadeState( projectile, false ); //mal: let the bots know there is a grenade out there in the world!
+	}
+
+	UseAmmo( 0 );
+
+	reFire = sys.getTime() + fireRate;
+
+	fuseStart = -1;
+
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	if ( !ammoAvailable( 0 ) ) {
+		myPlayer.selectBestWeapon( false );
+	}
+
+	myPlayer.freeze( false );
+
+	weaponState( "Raise", 4 );
+}
+
+void weapon_grenade::OwnerDied() {
+	float timeHeld;
+
+	if ( fuseStart != -1 ) {
+		if ( !sys.isClient() ) {
+			timeHeld = sys.getTime() - fuseStart;
+
+			entity projectile = createProjectile( currentMode );
+			projectile.addOwner( getOwner() );
+
+			// allow grenade to drop
+			launchProjectiles( numProjectiles, currentMode, 0, timeHeld, 0, 1.0 );
+			myPlayer.setPlayerGrenadeState( projectile, false ); //mal: let the bots know there is a grenade out there in the world!
+			projectile.setLinearVelocity( g_vectorZero );
+
+			UseAmmo( 0 );
+		}
+
+		fuseStart = -1;
+	}
+}
+
+void weapon_grenade::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+}
+
+boolean weapon_grenade::AllowSprint() {
+	return sys.getTime() > reFire;
+}

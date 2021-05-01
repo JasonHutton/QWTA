@@ -1,0 +1,68 @@
+
+#ifndef __component_slider__
+#define __component_slider__
+
+#define SLIDER_HEIGHT   10
+#define SLIDER_WIDTH    100
+
+$template _slider( NameParm, TextParm, xPos, yPos, RangeLower, RangeUpper, WidthParm, SliderWidthParm )	
+	windowDef sld##NameParm {
+		type slider;
+		properties {
+			rect 	rect 			= xPos + WidthParm, yPos + $evalfloat( SLIDER_HEIGHT * 0.5f ), SliderWidthParm, SLIDER_HEIGHT;
+			string 	material 		= "_3h hscroll";
+			float 	orientation 	= 1;
+			vec2 	range 			= RangeLower, RangeUpper;
+			color   fillColor       = COLOR_SLIDER_THUMB;
+			rect	textRect		= absoluteRect.x - ( WidthParm ), absoluteRect.y - $evalfloat( SLIDER_HEIGHT * 0.5f ), WidthParm, BUTTON_HEIGHT;
+			wstring posString;
+			color	foreColor		= COLOR_TEXT;
+			float	flags			= immediate( flags ) | OF_FIXED_LAYOUT;
+		}
+		_tab_stop
+		events {
+			onCreate {
+				postNamedEvent( "updateString" );		
+			}
+			onPropertyChanged "flags" {
+				postNamedEvent( "updateString" );
+			}			
+			onNamedEvent "updateString" {
+				if( flags & SF_INTEGER_SNAP ) {
+					posString = toWString( ( position / ( range.y - range.x ) ) * 100, 0 );
+				} else {
+					posString = toWString( ( position / ( range.y - range.x ) ) * 100, 1 );
+				}	
+			}
+			onPostDraw {
+				drawLocalizedText( TextParm, textRect, foreColor, 12, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+			}
+			onGainFocus {
+				callSuper();
+				foreColor = transition( foreColor, COLOR_WHITE, ACTIVATE_TRANSITION_TIME );
+				borderColor = transition( bordercolor, COLOR_SLIDER_HI_LINES, 150 );
+			}
+			onLoseFocus {
+				callSuper();
+				foreColor = transition( foreColor, COLOR_TEXT, ACTIVATE_TRANSITION_TIME );
+				borderColor = transition( bordercolor, COLOR_SLIDER_LINES, 150 );
+			}
+		}		
+		_scrollable_list
+
+$endtemplate
+
+$template _end_slider
+	}
+$endtemplate
+
+$template _slider_draw_value( Factor, Precision )
+	events {
+		onPostDraw {
+			callSuper();
+			drawText( toWString( Factor * position, Precision ), "absoluteRect.x + absoluteRect.w + 5, absoluteRect.y, 24, absoluteRect.h", COLOR_WHITE, 12, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );
+		}			
+	}
+$endtemplate
+
+#endif // !__component_slider__

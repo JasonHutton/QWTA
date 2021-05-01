@@ -1,0 +1,105 @@
+
+#ifndef __stats_tools__
+#define __stats_tools__
+
+$template _tool_stats_table
+	properties {
+		float totalXP;
+		float totalUses;		
+		float index;
+		
+		float lookup;
+		
+		float flags = immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents = false;
+		float fixedRowHeight	= STATS_ROW_HEIGHT;
+	}
+	events {
+		onCreate {
+			callSuper();
+			
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/itemsandtools'><width = 33%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'><width = 33%>" ), 0, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/uses'><width = 33%>" ),0, 2 );
+			
+			postNamedEvent( "statsUpdated" );
+		}
+		onNamedEvent "statsUpdated" {
+			clearItems();
+			totalXP = 0;
+			totalUses = 0;
+$endtemplate
+
+$template _end_tool_stats_table
+		}
+	}
+$endtemplate
+
+$template _tool_totals
+	index = insertItem( toWStr( "<material = 'stats_separator'>" ), -1, 0 );
+	setItemMaterialSize( "rect.w - 4, 16", index, 0 );
+	
+	index = insertItem( toWStr( "<loc = 'guis/mainmenu/totals'>" ), -1, 0 );
+	setItemText( toWString( totalXP, 0 ), index, 1 );
+	setItemText( toWString( totalUses, 0 ), index, 2 );
+$endtemplate
+
+$template _add_tool_stat( ToolParm, NameParm, showXP, showUses )
+	index = insertItem( toWStr( "<loc = '" ## NameParm ## "'>" ), -1, 0 );
+	
+	// XP
+	$if ( showXP == "showXP" )
+		lookup = sdnet.getStat( #ToolParm ## "_xp" );
+		totalXP = immediate( totalXP + floor( lookup ) );	
+		setItemText( toWString( lookup, 0 ), index, 1 );
+	$else
+		setItemText( toWStr( "-" ), index, 1 );
+	$endif
+	
+	// Uses
+	$if ( showUses == "showUses" )
+		lookup = sdnet.getStat( #ToolParm ## "_uses" );
+		setItemText( toWString( lookup, 0 ), index, 2 );
+		totalUses = immediate( totalUses + lookup );
+	$else
+		setItemText( toWStr( "-" ), index, 2 );
+	$endif
+	
+$endtemplate
+
+// for health packs/stroyent cells we want a specific stat name for uses
+$template _add_tool_stat_health( Team, NameParm, showXP, showUses )
+	index = insertItem( toWStr( "<loc = '" ## NameParm ## "'>" ), -1, 0 );
+	
+	// XP
+	$if ( showXP == "showXP" )
+		$if ( #Team == "GDF" )
+			lookup = sdnet.getStat( "healthpack_xp" );
+		$else
+			lookup = sdnet.getStat( "stroyentcells_xp" );
+		$endif
+
+		totalXP = immediate( totalXP + floor( lookup ) );	
+		setItemText( toWString( lookup, 0 ), index, 1 );
+			
+	$else
+		setItemText( toWStr( "-" ), index, 1 );
+	$endif
+	
+	// Uses
+	$if ( showUses == "showUses" )
+		$if ( #Team == "GDF" )
+			lookup = sdnet.getStat( "gdf_healthpack_uses" );
+		$else
+			lookup = sdnet.getStat( "strogg_healthpack_uses" );
+		$endif
+
+		setItemText( toWString( lookup, 0 ), index, 2 );
+		totalUses = immediate( totalUses + lookup );
+	$else
+		setItemText( toWStr( "-" ), index, 2 );
+	$endif
+	
+$endtemplate
+
+#endif // !__stats_tools__

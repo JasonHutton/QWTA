@@ -1,0 +1,723 @@
+
+#define USER_EDIT_WIDTH 130
+
+#define CU_NO_TASK 			0
+#define CU_SERVICE_CONNECT 	1
+#define CU_CREATE_USER 		2
+#define CU_SIGN_IN 			3
+#define CU_ASSURE_PROFILE 	4
+#define CU_RESTORE_PROFILE 	5
+
+// ================================================================================
+// Create User Dialog
+// ================================================================================
+_dialog( CreateUser, caption, _center( desktop, width ), _center( desktop, height ), 260, 192, "noMove", "dim" )
+	_single_dialog( CreateUser )
+    _on_default( CreateUserNext, CreateUserCancel )
+
+	properties {
+		handle 	caption = localize( "guis/mainmenu/createuser" );
+		float 	activeWizardPage = 0;
+		float 	taskActive = CU_NO_TASK;
+		float 	onlineAccount = AC_NEW;
+		float 	userCreated = false;
+	}
+
+	events {
+		onPropertyChanged "visible" {
+			callSuper();
+			if ( visible > 0 ) {
+				activeWizardPage 	= 0;
+				onlineAccount 		= AC_NEW;
+				gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/createuser/newaccount" );
+				taskActive 			= CU_NO_TASK;
+				userCreated 		= false;
+				setTabStop( 0 );
+			}
+		}
+		onPropertyChanged "activeWizardPage" {
+			setTabStop( 0 );
+			if( activeWizardPage == 0 ) {
+				gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/createuser/newaccount" );			
+			}
+			/*
+			if( activeWizardPage == 1 ) {
+				caption = localize( "guis/mainmenu/userprivacyagreement" );
+			} else {
+				caption = localize( "guis/mainmenu/createuser" );
+			}
+			*/
+		}
+	}
+
+	_scrollable_localized_text( CreateUserInfo, localize( "guis/mainmenu/createuser/newaccount" ), 28, _top( dlgCreateUser ), _fill_to_right_of( dlgCreateUser ), 50, "noborder" )
+		properties {
+			color	fillColor					= COLOR_LIST_FILL;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.lstFillMaterial, "absoluteRect.x - 20, absoluteRect.y, absoluteRect.w + 20, absoluteRect.h", fillColor );
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1.0f, false );
+				drawCachedMaterial( gui.lstLineMaterial, "absoluteRect.x - 20, absoluteRect.y, absoluteRect.w + 20, absoluteRect.h", COLOR_LIST_LINES );
+				popColor();
+
+				drawCachedMaterial( gui.infoIcon, "absoluteRect.x - 16, absoluteRect.y + 4, 16, 16", COLOR_WHITE );
+				callSuper();
+			}
+		}
+	_end_scrollable_text
+
+	// ================================================================================
+	// Page 0
+	// ================================================================================
+	windowDef wzdCreateUser_Page_0 {
+		properties {
+			rect rect = 0, 0, gui.dlgCreateUser.rect.width, gui.dlgCreateUser.rect.height;
+			float visible = ( gui.dlgCreateUser.activeWizardPage == 0 );
+		}
+
+		_group_box_vertical( CreateUser_OnlineAccount, _left( dlgCreateUser ), _to_bottom_of( lstCreateUserInfo ) + 3, _client_dimension( dlgCreateUser, width ), $evalfloat( 4 * ( BUTTON_HEIGHT + 3 ) ) )
+			events {
+				onPropertyChanged "gui.dlgCreateUser.visible" {
+					if ( gui.dlgCreateUser.visible > 0 ) {
+						gui.dlgCreateUser.onlineAccount = AC_NEW;
+					}
+				}
+			}
+			// ================================================================================
+			// New Online Account
+			// ================================================================================
+			_radio( CreateUser_NewOnlineAccount, localize( "guis/mainmenu/onlineaccount_0" ), 0, 0, gui.grpCreateUser_OnlineAccount.rect.width - 12 )
+				_button_action(
+					callSuper();
+					gui.dlgCreateUser.onlineAccount = AC_NEW;
+					gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/createuser/newaccount" );
+				)
+				events {
+					onCreate {
+						callSuper();
+						checked = ( gui.dlgCreateUser.onlineAccount == AC_NEW );
+					}
+				}
+			_end_radio
+
+			// ================================================================================
+			// Existing Account
+			// ================================================================================
+			_radio( CreateUser_ExistingOnlineAccount, localize( "guis/mainmenu/onlineaccount_1" ), 0, 0, gui.grpCreateUser_OnlineAccount.rect.width - 12 )
+				_button_action(
+					callSuper();
+					gui.dlgCreateUser.onlineAccount = AC_EXISTING;
+					gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/createuser/existingaccount" );
+				)
+				events {
+					onCreate {
+						callSuper();
+						checked = ( gui.dlgCreateUser.onlineAccount == AC_EXISTING );
+					}
+				}
+			_end_radio
+			
+			// ================================================================================
+			// Reset Account Password
+			// ================================================================================
+			_radio( CreateUser_ResetPassword, localize( "guis/mainmenu/onlineaccount_3" ), 0, 0, gui.grpCreateUser_OnlineAccount.rect.width - 12 )
+				_button_action(
+					callSuper();
+					gui.dlgCreateUser.onlineAccount = AC_RESETPASS;
+					gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/createuser/resetpass" );
+				)
+				events {
+					onCreate {
+						callSuper();
+						checked = ( gui.dlgCreateUser.onlineAccount == AC_RESETPASS );
+					}
+				}
+			_end_radio
+
+			// ================================================================================
+			// Offline Account
+			// ================================================================================
+			_radio( CreateUser_NewOfflineAccount, localize( "guis/mainmenu/onlineaccount_2" ), 0, 0, gui.grpCreateUser_OnlineAccount.rect.width - 12 )
+				_button_action(
+					callSuper();
+					gui.dlgCreateUser.onlineAccount = AC_OFFLINE;
+					gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/createuser/offlineaccount" );
+				)
+				events {
+					onCreate {
+						callSuper();
+						checked = ( gui.dlgCreateUser.onlineAccount == AC_OFFLINE );
+					}
+				}
+			_end_radio										
+		_end_group_box_vertical
+	}
+
+	// ================================================================================
+	// Page 1
+	// ================================================================================
+	/*
+	windowDef wzdCreateUser_Page_1 {
+		properties {
+			rect rect = 0, 0, gui.dlgCreateUser.rect.width, gui.dlgCreateUser.rect.height;
+			float visible = ( gui.dlgCreateUser.activeWizardPage == 1 );
+		}
+		_scrollable_localized_text( UserAgreement, localize( "guis/mainmenu/privacyagreementtext" ), PADDING, _top( dlgCreateUser ), _fill_to_right_of( dlgCreateUser ), _fill_to_top_of( btnCreateUserNext ), "border" )
+			events {
+				onNamedEvent "onShow" {
+    				callSuper();
+    				gui.lstUserAgreementScrollbar.position = 0;
+    			}
+			}
+		_end_scrollable_text
+	}
+	*/
+
+	// ================================================================================
+	// Page 2
+	// ================================================================================
+	windowDef wzdCreateUser_Page_2 {
+		properties {
+			rect rect = 0, 0, gui.dlgCreateUser.rect.width, gui.dlgCreateUser.rect.height;
+			float visible = ( gui.dlgCreateUser.activeWizardPage == 2 );
+		}
+		events {
+			onPropertyChanged "visible" {
+				callSuper();
+				if( visible ) {
+					gui.lstCreateUserInfo.localizedText = localize( "guis/mainmenu/clantag_notice" );
+					gui.broadcastEventToDescendants( name, "onShow" );
+				}
+			}
+		}
+		windowDef lytCreateUser_Page_2 {
+			type layoutVertical;
+			properties {
+				rect rect = _right( dlgCreateUser ), _to_bottom_of( lstCreateUserInfo ) + 3, USER_EDIT_WIDTH, _fill_to_top_of( btnCreateUserNext );
+				vec4 margins = PADDING, PADDING, PADDING, PADDING;
+			}
+			_edit( CreateUser_Username, 0, 0, USER_EDIT_WIDTH, BUTTON_HEIGHT )
+				_clear_on_show
+				_draw_right_edit_label( localize( "guis/mainmenu/username" ), COLOR_TEXT, 100 )
+				properties {
+					float	maxTextLength = 20;
+				}
+	        _end_edit
+
+			_edit( CreateUser_Password, 0, 0, USER_EDIT_WIDTH, BUTTON_HEIGHT )
+				_clear_on_show
+				_draw_right_edit_label( localize( "guis/mainmenu/password" ), COLOR_TEXT, 100 )
+				properties {
+					float	maxTextLength = 20;
+					float	password = 1;
+					float	visible = ( gui.dlgCreateUser.onlineAccount < AC_OFFLINE );
+				}
+			_end_edit
+
+	        _edit( CreateUser_ConfirmPassword, 0, 0, USER_EDIT_WIDTH, BUTTON_HEIGHT )
+				_clear_on_show
+				_draw_right_edit_label( localize( "guis/mainmenu/confirmpassword" ), COLOR_TEXT, 100 )
+				properties {
+					float	maxTextLength = 20;
+					float	password = 1;
+					float	visible = ( gui.dlgCreateUser.onlineAccount <= AC_RESETPASS );
+				}
+			_end_edit
+
+			windowDef lytCDKey {
+				type layoutStatic;
+				properties {
+					rect rect = 0, 0, USER_EDIT_WIDTH, BUTTON_HEIGHT;
+					float disabled = sdnet.steamActive && compare( sdnet.storedLicenseCode, "" ) == false;
+				}
+				_edit( CreateUser_CDKey, 0, 0, $evalfloat( USER_EDIT_WIDTH - ( 23 + 2 * PADDING ) ), BUTTON_HEIGHT )
+					_advance_to_next_control_when_full( edtCreateUser_CDKeyChecksum )
+					_draw_right_edit_label( localize( "guis/mainmenu/cdkey" ), COLOR_TEXT, 100 )
+					_button_disable_if( "gui.lytCDKey.disabled", gui.lytCDKey.disabled == true )
+
+					properties {
+						float	maxTextLength = 16;
+						float	visible = ( gui.dlgCreateUser.onlineAccount <= AC_RESETPASS );
+						float	flags = immediate( flags ) | EF_UPPERCASE;
+					}
+					events {
+						onNamedEvent "onShow" {
+							callSuper();
+							editText = sdnet.storedLicenseCode;
+						}
+					}
+				_end_edit
+
+				_edit( CreateUser_CDKeyChecksum, $evalfloat( USER_EDIT_WIDTH - ( 20 + 2 * PADDING ) ), 0, 20, BUTTON_HEIGHT )
+					_clear_on_show
+					_advance_to_next_control_when_full( btnCreateUserNext )
+					_button_disable_if( "gui.lytCDKey.disabled", gui.lytCDKey.disabled == true )
+					properties {
+						float	maxTextLength = 2;
+						float	visible = ( gui.dlgCreateUser.onlineAccount <= AC_RESETPASS );
+						float	flags = immediate( flags ) | EF_UPPERCASE;
+					}
+					events {
+						onNamedEvent "onShow" {
+							callSuper();
+							editText = sdnet.storedLicenseCodeChecksum;
+						}
+					}
+				_end_edit
+			}
+	/*
+			_edit( CreateUser_Email,_right( dlgCreateUser ), _to_bottom_of( edtCreateUser_CDKey ) + 3, USER_EDIT_WIDTH, BUTTON_HEIGHT )
+
+				_clear_on_show
+				_draw_right_edit_label( localize( "guis/mainmenu/email" ), COLOR_TEXT, 100 )
+				properties {
+					float	maxTextLength = 64;
+					float	visible = ( gui.dlgCreateUser.onlineAccount == AC_NEW );
+				}
+			_end_edit
+
+			_edit( CreateUser_ConfirmEmail, _right( dlgCreateUser ), _to_bottom_of( edtCreateUser_Email ) + 3, USER_EDIT_WIDTH, BUTTON_HEIGHT )
+
+				_clear_on_show
+				_draw_right_edit_label( localize( "guis/mainmenu/confirmemail" ), COLOR_TEXT, 100 )
+				properties {
+					float	maxTextLength = 64;
+					float	visible = ( gui.dlgCreateUser.onlineAccount == AC_NEW );
+				}
+	        _end_edit
+	*/
+		}
+	}
+
+// ================================================================================
+// Wizard Navigation Buttons
+// ================================================================================
+
+	// ================================================================================
+	// Next
+	// ================================================================================
+	_button( CreateUserNext, _to_left_of( btnCreateUserCancel ) - 3, _bottom( dlgCreateUser ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/next" );
+			float 	validation 		= 0;
+		}
+		events {
+			onPropertyChanged "gui.dlgCreateUser.activeWizardPage" {
+				if( gui.dlgCreateUser.activeWizardPage == 2 ) {
+					localizedText = localize( "guis/mainmenu/finish" );
+				} else {
+					localizedText = localize( "guis/mainmenu/next" );
+				}
+			}
+		}
+
+		_button_action(
+			if ( gui.dlgCreateUser.activeWizardPage == 1 ) {
+				gui.dlgCreateUser.activeWizardPage = 2;
+				return;
+			}
+
+			if ( gui.dlgCreateUser.activeWizardPage == 0 ) {
+				// set values and move on
+				if ( gui.dlgCreateUser.onlineAccount < AC_OFFLINE && sdnet.state != SS_ONLINE ) {
+					if ( sdnet.connect() == false ) {
+						// process error
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					gui.dlgCreateUser.taskActive = CU_SERVICE_CONNECT;
+				} else {
+					if( gui.dlgCreateUser.onlineAccount == AC_NEW ) {
+						//gui.dlgCreateUser.activeWizardPage = 1;	// only if we need a user privacy agreement
+						gui.dlgCreateUser.activeWizardPage = 2;
+					} else {
+						gui.dlgCreateUser.activeWizardPage = 2;
+					}
+				}
+				return;
+			}
+
+			if( gui.dlgCreateUser.activeWizardPage == 2 ) {
+				postNamedEvent( "finish" );
+				return;
+			}
+		)
+
+		events {
+			onNamedEvent "finish" {
+				if( gui.dlgCreateUser.activeWizardPage != 2 ) {
+					return;
+				}
+
+				if ( gui.dlgCreateUser.onlineAccount <= AC_RESETPASS ) {
+					// validation
+					validation = sdnet.validateUsername( gui.edtCreateUser_Username.editText );
+					if ( validation == UV_EMPTY_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					if ( validation == UV_DUPLICATE_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/duplicateusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					if ( validation == UV_INVALID_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/invalidusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					if ( compare( gui.edtCreateUser_Password.editText, "" ) ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankpassword" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					if ( compare( gui.edtCreateUser_Password.editText, gui.edtCreateUser_ConfirmPassword.editText ) == 0 ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/confirmpasswordmismatch" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					// validate key code
+					if ( compare( gui.edtCreateUser_CDKey.editText, "" ) ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankcdkey" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					validation = sdnet.checkKey( gui.edtCreateUser_CDKey.editText, gui.edtCreateUser_CDKeyChecksum.editText );
+					if ( validation == false ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/cdkeychecksummismatch" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					// validate email
+					/*
+					validation = sdnet.validateEmail( gui.edtCreateUser_Email.editText, gui.edtCreateUser_ConfirmEmail.editText );
+					if ( validation == EV_EMPTY_MAIL ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankemail" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					if ( validation == EV_INVALID_MAIL ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/invalidemail" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					if ( validation == EV_CONFIRM_MISMATCH ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/confirmemailmismatch" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					*/
+
+					// finish the process
+					gui.dlgCreateUser.taskActive = CU_CREATE_USER;
+					_show_popup( sdNetProgress )
+
+					sdnet.createUser( gui.edtCreateUser_Username.editText );
+					sdnet.activateUser( sdnet.makeRawUsername( gui.edtCreateUser_Username.editText ) );
+	/*
+					sdnet.setProfileString( "emailAddress", gui.edtCreateUser_Email.editText );
+	*/
+					sdnet.saveUser();
+					gui.setCVar( "ui_name", gui.edtCreateUser_Username.editText );
+
+					gui.dlgCreateUser.userCreated = true;
+
+					if( gui.dlgCreateUser.onlineAccount == AC_RESETPASS ) {						
+						sdnet.accountSetUsername( gui.edtCreateUser_Username.editText );
+						sdnet.accountSetPassword( gui.edtCreateUser_Password.editText );
+						sdnet.accountResetPassword( gui.edtCreateUser_CDKey.editText, gui.edtCreateUser_Password.editText );
+						if( sdnet.taskActive == false ) {
+							_close_popup
+							_setup_confirmation_ok_error( sdnet.taskResultMessage )
+							_show_popup( confirmation )							
+						}
+						return;					
+					}
+					if( sdnet.createAccount( gui.edtCreateUser_Username.editText, gui.edtCreateUser_Password.editText, gui.edtCreateUser_CDKey.editText ) == false ) {
+						_close_popup
+						_setup_confirmation_ok_error( sdnet.taskResultMessage );
+						_show_popup( confirmation )
+					}
+
+					return;
+				}
+				if ( gui.dlgCreateUser.onlineAccount == AC_EXISTING ) {
+					// validation
+					validation = sdnet.validateUsername( gui.edtCreateUser_Username.editText );
+					if ( validation == UV_EMPTY_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					if ( validation == UV_DUPLICATE_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/duplicateusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					
+					if ( validation == UV_INVALID_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/invalidusername" ) )
+						_show_popup( confirmation )
+						return;
+					}					
+
+					if ( compare( gui.edtCreateUser_Password.editText, "" ) ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankpassword" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					// finish the process
+					gui.dlgCreateUser.taskActive = CU_SIGN_IN;	// sign in directly
+					_show_popup( sdNetProgress )
+
+					sdnet.createUser( gui.edtCreateUser_Username.editText );
+					sdnet.activateUser( sdnet.makeRawUsername( gui.edtCreateUser_Username.editText ) );
+
+					sdnet.saveUser();
+
+					gui.dlgCreateUser.userCreated = true;
+
+					sdnet.accountSetUsername( gui.edtCreateUser_Username.editText );
+					sdnet.accountSetPassword( gui.edtCreateUser_Password.editText );
+					gui.setCVar( "ui_name", gui.edtCreateUser_Username.editText );
+
+					sdnet.signIn();
+					if( sdnet.taskActive == false ) {
+						_close_popup
+						_setup_confirmation_ok_error( sdnet.taskResultMessage )
+						_show_popup( confirmation )
+					}
+
+					return;
+				}
+				if ( gui.dlgCreateUser.onlineAccount == AC_OFFLINE ) {
+					// validation
+					validation = sdnet.validateUsername( gui.edtCreateUser_Username.editText );
+					if ( validation == UV_EMPTY_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/blankusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					if ( validation == UV_DUPLICATE_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/duplicateusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					
+					if ( validation == UV_INVALID_NAME ) {
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/invalidusername" ) )
+						_show_popup( confirmation )
+						return;
+					}
+
+					// finish the process
+					sdnet.createUser( gui.edtCreateUser_Username.editText );
+					sdnet.activateUser( sdnet.makeRawUsername( gui.edtCreateUser_Username.editText ) );
+					gui.setCVar( "ui_name", gui.edtCreateUser_Username.editText );
+
+					sdnet.saveUser();
+
+					gui.dlgCreateUser.userCreated = true;
+
+					_push_page( main );
+					_close_top_dialog;
+
+					return;
+				}
+			}
+			onPropertyChanged "sdnet.state" {
+				if ( sdnet.state == SS_ONLINE ) {
+					if ( gui.dlgCreateUser.taskActive == CU_SERVICE_CONNECT ) {
+						gui.dlgCreateUser.taskActive = CU_NO_TASK;
+
+						if( gui.dlgCreateUser.onlineAccount == AC_NEW ) {
+							gui.dlgCreateUser.activeWizardPage = 2;
+						} else {
+							gui.dlgCreateUser.activeWizardPage = 2;
+						}
+					}
+				}
+			}
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive != CU_NO_TASK ) {
+					return;
+				}
+				if ( gui.dlgCreateUser.taskActive == CU_CREATE_USER ) {
+					gui.dlgCreateUser.taskActive = CU_NO_TASK;
+
+					// process result
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						gui.dlgCreateUser.taskActive = CU_SIGN_IN;
+						_show_popup( sdNetProgress )
+
+						sdnet.signIn();
+
+						return;
+					}
+
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					if ( gui.dlgCreateUser.userCreated ) {
+						sdnet.deactivateUser();
+						sdnet.deleteUser( sdnet.makeRawUsername( gui.edtCreateUser_Username.editText ) );
+						gui.dlgCreateUser.userCreated = false;
+					}
+
+					return;
+				}
+				if ( gui.dlgCreateUser.taskActive == CU_SIGN_IN ) {
+					gui.dlgCreateUser.taskActive = CU_NO_TASK;
+
+					// process result
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						gui.dlgCreateUser.taskActive = CU_ASSURE_PROFILE;
+						_show_popup( sdNetProgress )
+
+						sdnet.assureProfileExists();
+
+						return;
+					}
+
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					if ( gui.dlgCreateUser.onlineAccount == AC_NEW ) {
+						// Only do this when generating a new account. If we got
+						// here then that means the account got created and the
+						// account data in the local profile is valid.
+						// We can still play offline, continue to the main menu
+						_close_top_dialog
+						_push_page( main )
+					} else {
+						if ( gui.dlgCreateUser.userCreated ) {
+							sdnet.deactivateUser();
+							sdnet.deleteUser( sdnet.makeRawUsername( gui.edtCreateUser_Username.editText ) );
+							gui.dlgCreateUser.userCreated = 0;
+						}
+					}
+					return;
+				}
+				if ( gui.dlgCreateUser.taskActive == CU_ASSURE_PROFILE ) {
+					gui.dlgCreateUser.taskActive = CU_NO_TASK;
+
+					// process result
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						gui.dlgCreateUser.taskActive = CU_RESTORE_PROFILE;
+						_show_popup( sdNetProgress )
+
+						// we fork the task pipeline at this point
+						if ( gui.dlgCreateUser.onlineAccount == AC_NEW ) {
+							// new profile, so store our data
+							sdnet.storeProfile();
+						} else {
+							// our data is already on the server, grab it
+							sdnet.restoreProfile();
+						}
+
+						return;
+					}
+
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					// we can still play offline, continue to the main menu
+					_close_top_dialog
+					_push_page( main )
+
+					return;
+				}
+				if ( gui.dlgCreateUser.taskActive == CU_RESTORE_PROFILE ) {
+					gui.dlgCreateUser.taskActive = CU_NO_TASK;
+
+					// process result
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						if ( gui.dlgCreateUser.onlineAccount == AC_NEW ) {
+						} else {
+							sdnet.initFriends();
+							sdnet.initTeams();
+						}
+						_close_top_dialog
+						_push_page( main )
+						return;
+					}
+
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					// we can still play offline, continue to the main menu
+					_close_top_dialog
+					_push_page( main )
+
+					return;
+				}				
+			}
+			onNamedEvent "showTopLevel" {
+			    _close_top_dialog
+				_push_page( main )
+			}
+			onPropertyChanged "gui.onConnectionLost" {
+				if ( gui.dlgCreateUser.taskActive > 0 ) {
+					gui.dlgCreateUser.taskActive = 0;
+
+					if ( gui.dlgCreateUser.userCreated == 1 ) {
+						// user has been created in some way, so continue on and let the normal
+						// error handling deal with the other situations
+						_push_page( main )
+						return;
+					}
+				}
+
+				gui.dlgCreateUser.taskActive = 0;
+
+				if ( gui.dlgCreateUser.visible ) {
+					_show_single_dialog( login )
+				}
+			}
+		}
+	_end_button
+	// ================================================================================
+	// Cancel
+	// ================================================================================
+	_button( createUserCancel, _right( dlgCreateUser ), _bottom( dlgCreateUser ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+			handle localizedText = localize( "guis/mainmenu/cancel" );
+		}
+		events {
+			onPropertyChanged "gui.dlgCreateUser.activeWizardPage" {
+				if( gui.dlgCreateUser.activeWizardPage == 2 ) {
+					localizedText = localize( "guis/mainmenu/back" );
+				} else {
+					localizedText = localize( "guis/mainmenu/cancel" );
+				}
+			}
+		}
+		_button_action(
+			if( gui.dlgCreateUser.activeWizardPage == 2 ) {
+				gui.dlgCreateUser.activeWizardPage = 0;
+				return;
+			}
+			if ( gui.dlgCreateUser.userCreated ) {
+				sdnet.deactivateUser();
+				//sdnet.deleteUser( sdnet.makeRawUsername( gui.edtCreateUser_Username.editText ) );
+				gui.dlgCreateUser.userCreated = false;
+			}
+			_show_single_dialog( login )
+		)
+	_end_button
+_end_dialog
+
+#undef USER_EDIT_WIDTH

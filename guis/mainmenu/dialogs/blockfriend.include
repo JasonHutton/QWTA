@@ -1,0 +1,107 @@
+//===============================================================
+//	BlockFriend Popup
+//===============================================================
+_dialog( blockFriend, localize( "guis/mainmenu/blockfriend" ), _center( desktop, width ), _center( desktop, height ), 220, 132, "noMove", "dim" )
+	_input_dialog( blockFriend )
+	_on_default( blockFriendOk, blockFriendCancel )
+
+	properties {
+		float selectedOption = BS_NO_BLOCK;
+		string currentFriend;
+	}
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			currentFriend = toStr( gui.lstFriends.getItemText( gui.lstFriends.currentSelection, 1 ) );
+			selectedOption = sdnet.getBlockedStatus( currentFriend );
+			setTabStop( 0 );
+		}
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( visible ) {
+    			_close_input
+    		}
+    	}		
+	}
+
+	_group_box_vertical( blockFriendChoices, PADDING, _top( dlgBlockFriend ) , _client_dimension( dlgBlockFriend, width ), $evalfloat( ( 3 * BUTTON_HEIGHT ) + ( PADDING ) ) )
+        _radio( blockFriendUnblock, localize( "guis/mainmenu/unblock" ), 0, 0, 100 )
+        	events {
+				onCreate {
+					callSuper();
+					checked = ( gui.dlgBlockFriend.selectedOption == BS_NO_BLOCK );
+				}
+			}
+            _button_action(
+                gui.dlgBlockFriend.selectedOption = BS_NO_BLOCK;
+            )
+        _end_radio
+
+		_radio( blockFriendFull, localize( "guis/mainmenu/blockfull" ), 0, 0, 100 )
+        	events {
+				onCreate {
+					callSuper();
+					checked = ( gui.dlgBlockFriend.selectedOption == BS_FULL_BLOCK );
+				}
+			}
+            _button_action(
+                gui.dlgBlockFriend.selectedOption = BS_FULL_BLOCK;
+            )
+        _end_radio
+
+        _radio( blockFriendInvites, localize( "guis/mainmenu/blockinvite" ), 0, 0, 100 )
+        	events {
+				onCreate {
+					callSuper();
+					checked = ( gui.dlgBlockFriend.selectedOption == BS_INVITES_BLOCK );
+				}
+			}
+            _button_action(
+                gui.dlgBlockFriend.selectedOption = BS_INVITES_BLOCK;
+            )
+        _end_radio
+	_end_group_box_vertical
+
+    _button( blockFriendOk, _to_left_of( btnBlockFriendCancel ) - 3, _bottom( dlgBlockFriend ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+            handle	localizedText = localize( "guis/mainmenu/ok" );
+            float	taskActive = 0;
+        }
+        _button_action(
+			if( gui.lstFriends.currentSelection == -1 ) {
+				return;
+			}
+
+			taskActive = 1;
+			sdnet.setBlockedStatus( gui.dlgBlockFriend.currentFriend, floatToHandle( gui.dlgBlockFriend.selectedOption ) );
+        )
+		events {
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == 1 ) {
+						_close_input;
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							taskActive = 0;
+							gui.lstFriends.postNamedEvent( "requestUpdate" );
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage );
+						_show_popup( confirmation )
+						return;
+					}
+				}
+			}
+        }
+    _end_button
+
+    _button( blockFriendCancel, _right( dlgBlockFriend ), _bottom( dlgBlockFriend ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+            handle	localizedText = localize( "guis/mainmenu/cancel" );
+        }
+        _button_action( _close_input; )
+    _end_button
+_end_dialog

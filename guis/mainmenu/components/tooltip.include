@@ -1,0 +1,58 @@
+
+#ifndef __component_tooltip__
+#define __component_tooltip__
+
+$template _tooltip
+	windowDef tooltip {
+		properties {
+			rect rect 				= 0, 0, 200, 18;
+			rect measureRect		= absoluteRect.x, absoluteRect.y, 180, 18;
+			float active 			= false;
+			color lineColor			= COLOR_TOOLTIP_LINE;
+			color fillColor			= COLOR_TOOLTIP_FILL;
+			color colorMultiplier 	= 1,1,1,0;
+			float needMeasure		= true;
+			float fontSize			= 12;
+			
+			vec2 measure;
+			wstring tipText;
+		}
+		_fadable
+		
+		events {		
+			onPropertyChanged "active" {
+				if( active  ) {
+					_fadein
+					needMeasure = true;
+					changeZOrder( ZO_BACK );
+				} else {
+					_fadeout
+				}
+			}
+			onPropertyChanged "tipText" {
+				needMeasure = true;
+				requestLayout();
+			}
+			onPreDraw {
+				if( needMeasure ) {
+					needMeasure = false;
+					measure = measureText( tipText, measureRect, fontSize, DTF_WORDWRAP | DTF_LEFT | DTF_VCENTER );
+					rect.w = measure.x + $evalfloat( 2 * PADDING );
+					rect.h = measure.y + 4;
+				} else {				
+					drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+					
+					pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+					drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+					popColor();
+					
+					drawText( tipText, "absoluteRect.x + 2, absoluteRect.y + 2, absoluteRect.w - 4, absoluteRect.h - 4", foreColor, 12, DTF_WORDWRAP | DTF_LEFT | DTF_VCENTER );
+				}
+				
+				gui.scriptPushFloat( false );
+			}				
+		}
+	}
+$endtemplate
+
+#endif // !__component_tooltip__

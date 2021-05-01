@@ -1,0 +1,196 @@
+
+#ifndef __mainmenu_signin__
+#define __mainmenu_signin__
+
+#if !defined( SD_DEMO_BUILD )
+
+$template _signin_button( CallbackTargetParm, CallbackParm )
+	gui.nextCallbackWindow 	= CallbackTargetParm;
+	gui.nextCallback 		= CallbackParm;
+
+	if ( sdnet.hasAccount > 0 ) {
+		if ( sdnet.activeUserState == US_ONLINE ) {
+			// user is online
+			gui.broadcastEvent( gui.nextCallbackWindow, gui.nextCallback );
+			return;
+		} else {
+			if ( sdnet.accountPasswordSet() ) {
+				if ( sdnet.state != SS_ONLINE ) {
+					if ( sdnet.connect() == 0 ) {
+						// process error
+						_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+						_show_popup( confirmation )
+						return;
+					}
+					taskActive = 1;
+				} else {
+					taskActive = 2;
+					sdnet.signIn();
+					// gui.print( "signin" + _newline );
+				}
+				_show_popup( sdNetProgress )
+			} else {
+				_show_input( userLogin )
+			}
+			return;
+		}
+	}
+$endtemplate
+
+$template _signin_procedure
+    properties {
+    	float taskActive = 0;
+    }
+
+    events {
+    	onPropertyChanged "sdnet.state" {
+    		if ( sdnet.state == SS_INITIALIZED ) {
+    			if ( taskActive == 1 ) {
+    				taskActive = 0;
+
+    				// process error
+    				_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+    				_show_popup( confirmation )
+    			}
+    		}
+    		if ( sdnet.state == SS_ONLINE ) {
+    			if ( taskActive == 1 ) {
+    				taskActive = 2;
+    				sdnet.signIn();
+    			}
+    		}
+    	}
+    	onPropertyChanged "sdnet.taskActive" {
+    		if ( sdnet.taskActive == 0 ) {
+    			if ( taskActive == 2 ) {
+    				taskActive = 0;
+
+    				// process result
+    				if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+    					taskActive = 3;
+						_show_popup( sdNetProgress )
+    					sdnet.assureProfileExists();
+    					// gui.print( "assureProfileExists"  + _newline );
+    					return;
+    				}
+
+    				// process error
+    				sdnet.accountSetPassword( "" );
+
+    				_show_input( userLogin )
+
+    				_setup_confirmation_ok_error( sdnet.taskResultMessage )
+    				_show_popup( confirmation )
+
+    				return;
+    			}
+    			if ( taskActive == 3 ) {
+    				taskActive = 0;
+
+    				// process result
+    				if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+    					if ( sdnet.validateProfile() == true ) {
+							gui.broadcastEvent( gui.nextCallbackWindow, gui.nextCallback );
+							sdnet.initFriends();
+    						sdnet.initTeams();
+    					}
+    					return;
+    				}
+
+					// process error
+    				sdnet.accountSetPassword( "" );
+
+    				_show_input( userLogin )
+
+    				_setup_confirmation_ok_error( sdnet.taskResultMessage )
+    				_show_popup( confirmation )
+
+    				return;
+    			}
+    		}
+    	}
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if ( taskActive > 0 ) {
+    			if ( taskActive >= 2 ) {
+    				sdnet.accountSetPassword( "" );
+    			}
+    			taskActive = 0;
+    		}
+    	}
+    }
+$endtemplate
+
+#else
+$template _signin_button( CallbackTargetParm, CallbackParm )
+	gui.nextCallbackWindow 	= CallbackTargetParm;
+	gui.nextCallback 		= CallbackParm;
+	if ( sdnet.activeUserState == US_ONLINE ) {
+		// user is online
+		gui.broadcastEvent( gui.nextCallbackWindow, gui.nextCallback );
+		return;
+	} else {
+		if ( sdnet.state != SS_ONLINE ) {
+			if ( sdnet.connect() == 0 ) {
+				// process error
+				_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+				_show_popup( confirmation )
+				return;
+			}
+			taskActive = 1;
+		} else {
+			taskActive = 2;
+			sdnet.signIn();
+		}
+		_show_popup( sdNetProgress )
+		return;
+	}
+$endtemplate
+
+$template _signin_procedure
+    properties {
+    	float taskActive = 0;
+    }
+
+    events {
+    	onPropertyChanged "sdnet.state" {
+    		if ( sdnet.state == SS_INITIALIZED ) {
+    			if ( taskActive == 1 ) {
+    				taskActive = 0;
+
+    				// process error
+    				_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+    				_show_popup( confirmation )
+    			}
+    		}
+    		if ( sdnet.state == SS_ONLINE ) {
+    			if ( taskActive == 1 ) {
+    				taskActive = 2;
+    				sdnet.signIn();
+    			}
+    		}
+    	}
+    	onPropertyChanged "sdnet.taskActive" {
+    		if ( sdnet.taskActive == 0 ) {
+    			if ( taskActive == 2 ) {
+    				taskActive = 0;
+
+    				// process result
+    				if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+    					if ( sdnet.validateProfile() == true ) {
+							gui.broadcastEvent( gui.nextCallbackWindow, gui.nextCallback );
+    					}
+    					return;
+    				}
+
+    				_setup_confirmation_ok_error( sdnet.taskResultMessage )
+    				_show_popup( confirmation )
+
+    				return;
+    			}
+    		}
+    	}
+    }
+$endtemplate
+#endif
+
+#endif // !__mainmenu_signin__

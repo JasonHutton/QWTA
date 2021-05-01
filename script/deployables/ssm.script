@@ -1,0 +1,416 @@
+
+object deployable_ssm : deployable_base {
+	void			init();
+	void			preinit();
+	void			syncFields();
+	void			destroy();
+
+	void			Idle();
+
+	void			Ready();
+	void			Launch();
+	void			Reloading();
+
+	void			CheckReload();
+	void			CheckLaunch();
+
+	boolean			vTargetPlayerEligible( entity p );
+	boolean			vTargetGetValid( vector pos );
+	void			vTargetSetTarget( vector targetPos, entity targetEnt );
+	void			vDoneDeploy();
+	void			vOnDeploy();
+
+	boolean			CalcFiringVelocity( vector targetPos, vector launchPos );
+
+	void			PlayRaiseAnim();
+	void			PlayLowerAnim();
+
+	void			MissileCheck();
+
+	void			OnMissileChanged();
+	void			OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+
+	void			ClearFiringDecal();
+	void			CreateFiringDecal();
+	target_marker	vCreateTargetMarker();
+
+	float			vGetFireSupportMode();
+
+	float			projectileIndex;
+	float			nukeProjectileIndex;
+
+	float			launchJoint;
+
+	float			sync_reloadTime;
+
+	float			reloadTime;
+
+	boolean			hasTarget;
+	vector			target;
+	entity			targetEntity;
+
+	void			vStartMagogDrop();
+	void			StartBarrelUpdateThread();
+	void			BarrelUpdateThread();
+	void			OnBarrelChanged();
+
+	entity			barrelEntity;
+	boolean			barrelThreadActive;
+	boolean			dropping;
+
+	float			targetHeight;
+	vector			firingVelocity;
+
+	entity			missile;
+	boolean			missileActive;
+
+	generic_target_marker	firingDecal;
+	entity					firingMarker;
+}
+
+void deployable_ssm::syncFields() {
+	syncBroadcast( "sync_reloadTime" );
+	syncBroadcast( "hasTarget" );
+	syncBroadcast( "target" );
+	syncBroadcast( "missile" );
+	syncBroadcast( "barrelEntity" );
+
+	syncCallback( "missile", "OnMissileChanged" );
+	syncCallback( "barrelEntity", "OnBarrelChanged" );
+}
+
+float deployable_ssm::vGetFireSupportMode() {
+	return TARGET_SSM;
+}
+
+void deployable_ssm::preinit() {
+	float entityDeclIndex;
+
+	reloadTime			= getFloatKey( "reload_time" );
+	sync_reloadTime		= 0;
+	hasTarget			= false;
+
+	launchJoint			= getJointHandle( getKey( "joint_launch" ) );
+
+	targetHeight		= getFloatKey( "target_height" );
+
+	entityDeclIndex		= sys.getDeclType( "entityDef" );
+	projectileIndex		= sys.getDeclIndex( entityDeclIndex, getKey( "def_projectile" ) );
+	nukeProjectileIndex	= sys.getDeclIndex( entityDeclIndex, getKey( "def_nuke_projectile" ) );
+
+	fsStatus = new fireSupportStatus;
+
+	if ( !sys.isClient() ) {
+		thread MissileCheck();
+	}
+}
+
+void deployable_ssm::init() {
+
+	if ( !sys.isClient() ) {
+		// HACK: barrel clip
+		barrelEntity = sys.spawn( getKey( "def_barrel_clip" ) );
+		OnBarrelChanged();
+	}
+
+	setState( "Idle" );
+}
+
+void deployable_ssm::OnBarrelChanged() {
+	float barrelJoint = getJointHandle( "barrel_base" );
+	if ( barrelJoint != INVALID_JOINT ) {
+		vector org = getJointPos( barrelJoint );
+		vector ang = getJointAngle( barrelJoint );
+		barrelEntity.setContents( CONTENTS_PLAYERCLIP | CONTENTS_VEHICLECLIP | CONTENTS_FLYERHIVECLIP );
+		barrelEntity.unbind();
+		barrelEntity.setOrigin( org );
+		barrelEntity.setAngles( ang );
+		barrelEntity.bindToJoint( self, "barrel_base", 1 );
+	}
+}
+
+void deployable_ssm::StartBarrelUpdateThread() {
+	if ( barrelThreadActive ) {
+		return;
+	}
+
+	barrelThreadActive = true;
+	thread BarrelUpdateThread();
+}
+
+void deployable_ssm::BarrelUpdateThread() {
+	float damageIndex = GetDamage( getKey( "dmg_crush" ) );
+	vector mins = barrelEntity.getMins();
+	vector maxs = barrelEntity.getMaxs();
+
+	while ( isAnimating() || dropping ) {
+		barrelEntity.forceRunPhysics();
+		if ( !sys.isClient() ) {
+			LocalBoundsDamage( mins, maxs, barrelEntity, self, damageIndex );
+		}
+		sys.waitFrame();
+	}
+
+	barrelThreadActive = false;
+}
+
+void deployable_ssm::vStartMagogDrop() {
+	dropping = true;
+	StartBarrelUpdateThread();
+}
+
+void deployable_ssm::vOnDeploy() {
+	dropping = false;
+	thread DoDeploy();
+}
+
+void deployable_ssm::destroy() {
+	delete fsStatus;
+	if ( !sys.isClient() && barrelEntity != $null_entity ) {
+		barrelEntity.remove();
+	}
+	ClearFiringDecal();
+}
+
+void deployable_ssm::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	if ( !sys.isClient() && barrelEntity != $null_entity ) {
+		barrelEntity.remove();
+	}
+
+	DeployableBase_OnKilled( attacker, inflictor );
+}
+
+void deployable_ssm::Idle() {
+}
+
+void deployable_ssm::OnMissileChanged() {
+	if ( missile != $null_entity ) {
+		CreateFiringDecal();
+	} else {
+		ClearFiringDecal();
+	}
+}
+
+void deployable_ssm::vDoneDeploy() {
+	PlayRaiseAnim();
+	SetDeployingFinished();
+	setState( "Ready" );
+}
+
+void deployable_ssm::Ready() {
+	hasTarget			= false;
+	fireSupportState	= MPS_READY;
+
+	while( 1 ) {
+		CheckLaunch();
+		CheckReload();
+
+		sys.waitFrame();
+	}
+}
+
+void deployable_ssm::MissileCheck() {
+	while ( true ) {
+		if ( missile != $null_entity ) {
+			missileActive = true;
+		} else {
+			if ( missileActive ) {
+				missileActive = false;
+				ClearFiringDecal();
+			}
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void deployable_ssm::CheckLaunch() {
+	if( hasTarget ) {
+		setState( "Launch" );
+	}
+}
+
+void deployable_ssm::CheckReload() {
+	if ( sys.getTime() < sync_reloadTime ) {
+		setState( "Reloading" );
+	}
+}
+
+boolean deployable_ssm::CalcFiringVelocity( vector targetPos, vector launchPos ) {
+	vector targetDiff = targetPos - launchPos;
+
+	firingVelocity_x = 0;
+	firingVelocity_y = 0;
+	firingVelocity_z = sys.sqrt( 2 * 400 * targetHeight );
+
+	float upTime = firingVelocity_z / 400;
+	float downTime = ( 2 * ( targetDiff_z - targetHeight ) ) / -400;
+	if ( downTime < 0.f ) {
+		return false;
+	}
+	downTime = sys.sqrt( downTime );
+
+	float t1 = upTime + downTime;
+
+	vector temp = targetDiff;
+	temp_z = 0.f;
+	targetDiff = sys.vecNormalize( temp );
+	float diffX = sys.vecLength( temp );
+
+	firingVelocity = firingVelocity + ( ( diffX / t1 ) * targetDiff );
+
+	return true;
+}
+
+void deployable_ssm::Launch() {
+	CreateFiringDecal();
+
+	vector missilePos;
+	string anim;
+	float channel;
+
+	fireSupportState = MPS_FIRING;
+
+	missilePos = getJointPos( launchJoint );
+
+	if ( CalcFiringVelocity( target, missilePos ) ) {
+		if( !sys.isClient() ) {
+			if ( g_useNuclearHammer.getBoolValue() ) {
+				missile = launchMissileSimple( owner, self, $null_entity, nukeProjectileIndex, -1, 0.f, missilePos, firingVelocity );
+			} else {
+				missile = launchMissileSimple( owner, self, $null_entity, projectileIndex, -1, 0.f, missilePos, firingVelocity );
+			}
+			missile.vSetNewTarget( targetEntity );
+		}
+	} else {
+		ClearFiringDecal();
+	}
+
+	anim = getKey( "missile_anim" );
+	if ( anim != "" ) {
+		channel = getIntKey( "missile_channel" );
+
+		playAnim( channel, anim );
+		StartBarrelUpdateThread();
+	}
+
+	if ( g_artilleryWarning.getBoolValue() ) {
+		objManager.CPrintEvent( sys.localizeString( "game/hammer_fired" ), $null );
+	}
+
+	if ( !sys.isClient() ) {
+		sync_reloadTime = sys.getTime() + reloadTime;
+	}
+
+	sys.wait( 3 );
+
+	setState( "Reloading" );
+}
+
+void deployable_ssm::Reloading() {
+	boolean playAnims = currentState == DS_NORMAL;
+	if ( playAnims ) {
+		PlayLowerAnim();
+	}
+
+	fireSupportState = MPS_RELOADING;
+
+	while ( 1 ) {
+		if ( sys.getTime() > sync_reloadTime ) {
+			break;
+		}
+
+		sys.waitFrame();
+	}
+
+	float waitTime = getFloatKey( "stay_lowered_time" );
+	if( waitTime <= 0 ) {
+		waitTime = 15;
+	}
+	sys.wait( waitTime );
+
+	if ( playAnims && currentState == DS_NORMAL ) {
+		PlayRaiseAnim();
+	}
+
+	setState( "Ready" );
+}
+
+boolean deployable_ssm::vTargetPlayerEligible( entity p ) {
+	if ( disabledState || !finishedDeploying ) {
+		return 0.f;
+	}
+
+	return 1.f;
+}
+
+boolean deployable_ssm::vTargetGetValid( vector pos ) {
+	return true;
+}
+
+void deployable_ssm::vTargetSetTarget( vector targetPos, entity targetEnt ) {
+	hasTarget		= true;
+	target			= targetPos;
+	targetEntity	= targetEnt;
+
+	Base_TargetSetTarget( targetPos, targetEnt );
+}
+
+void deployable_ssm::PlayLowerAnim() {
+	startSound( "snd_lower", SND_ANY );
+	playAnim( ANIMCHANNEL_ALL, "lowering" );
+	StartBarrelUpdateThread();
+	waitUntil( !isAnimating() );
+}
+
+
+void deployable_ssm::PlayRaiseAnim() {
+	startSound( "snd_raise", SND_ANY );
+	playAnim( ANIMCHANNEL_ALL, "raising" );
+	StartBarrelUpdateThread();
+	waitUntil( !isAnimating() );
+}
+
+target_marker deployable_ssm::vCreateTargetMarker() {
+	string entityDef = getKey( "def_marker" );
+	if ( entityDef == "" ) {
+		return $null;
+	}
+
+	generic_target_marker marker = new generic_target_marker;
+	marker.Init( self, entityDef, getKey( "mtr_marker_cm" ), getFloatKey( "cm_marker_sort" ) );
+	return marker;
+}
+
+void deployable_ssm::ClearFiringDecal() {
+	if ( firingDecal != $null_entity ) {
+		delete firingDecal;
+	}
+
+	if ( !sys.isClient() ) {
+		if ( firingMarker != $null_entity ) {
+			thread G_DelayRemoveEntity( firingMarker, 5.f );
+			firingMarker = $null_entity;
+		}
+	}
+}
+
+void deployable_ssm::CreateFiringDecal() {
+	if ( !sys.isClient() ) {
+		firingMarker = G_CreateFiringMarker( self, firingMarker, target );
+	}
+
+	entity p = sys.getLocalPlayer();
+	if ( p == $null_entity ) {
+		return;
+	}
+
+	if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+		return;
+	}
+
+	if ( firingDecal == $null ) {
+		firingDecal = vCreateTargetMarker();
+	}
+	firingDecal.SetTargetPosition( target );
+}

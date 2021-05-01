@@ -1,0 +1,45 @@
+/////////////////////////////////////////////////////////////
+// GDF Quick Chat ///////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+// Vehicles /////////////////////////////////////////////////
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_husky {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_armadillo {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_trojan {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_titan {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_anansi {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_bumblebee {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_platypus {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}
+
+sound sounds/players/gdf/quickchat/vehicles/vehicledrops/nv_jupiter {
+
+	localization/english/sounds/players/gdf/vehicles/16097.wav
+}

@@ -1,0 +1,215 @@
+//===============================================================
+//	MessageMember Popup
+//===============================================================
+_dialog( MessageMember, localize( "guis/mainmenu/messagemember" ), _center( desktop, width ), _center( desktop, height ), 280, 226, "noMove", "dim" )
+	_input_dialog( MessageMember )
+	_on_default( MessageMemberOk, MessageMemberCancel )
+
+	properties {
+		float keepEditText = false;
+		float keepHistory = false;
+		wstring text;
+	}
+	events {
+        onNamedEvent "onShow" {
+        	callSuper();
+            if( visible ) {           
+                gui.lblMessageMemberName.text = toWStr( gui.lstTeam.currentUser );
+				text = sdnet.getTeamIMText( gui.lstTeam.currentUser );
+				gui.messageTimeStamp = sdnet.getMessageTimeStamp();
+				
+				if( keepEditText == false ) {
+					gui.edtMessageMemberMessage.editText = gui.blankWStr;
+				}
+				if( wcompare( text, gui.blankWStr ) == false ) {					
+					sdnet.addToMessageHistory( MHS_TEAM, gui.lstTeam.currentUser, gui.lstTeam.currentUser, text );
+            	}
+            	gui.lstMessageMemberHistory.postNamedEvent( "update" );
+				gui.focusedWindow = "edtMessageMemberMessage";
+				keepEditText = false;
+				keepHistory = false;
+            }
+        }
+        onPropertyChanged "visible" {
+			if( visible ) {
+	            sdnet.loadMessageHistory( MHS_TEAM, gui.lstTeam.currentUser );
+            } else {
+            	if( keepEditText == false && keepHistory == false ) {
+            		sdnet.unloadMessageHistory( MHS_TEAM, gui.lstTeam.currentUser );
+            	}
+            }
+            callSuper();
+        }
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( visible ) {
+    			_close_input
+    		}
+    	}        
+    }
+    
+	timeline checkIMs {
+    	onTime 1000 {
+    		gui.lstTeam.numIMs = sdnet.numAvailableTeamIMs( gui.lstTeam.currentUser );
+    		if( isVisible() ) {
+    			resetTime( 0 );
+    		}
+    	}
+    }
+
+	windowDef lytMessageMember {
+		type layoutVertical;
+		properties {
+			rect rect = PADDING, _top( dlgMessageMember ), _fill_to_right_of( dlgMessageMember ), _fill_to_bottom_of( dlgMessageMember );
+			vec4 margins = 0, 0, 0, 0;
+		}
+	    _label_literal( MessageMemberName, gui.blankWStr, 0, 0, 100, BUTTON_HEIGHT, "1,1,1,0.5" )
+	        properties {
+	            vec2 textAlignment = TA_LEFT, TA_VCENTER;
+	            float fontSize = 14;
+	        }
+	    _end_label
+	
+		windowDef lstMessageMemberHistory {
+			type list;
+	        properties {
+	        	rect rect = 0, 0, 100, 60;
+	        	float flags = immediate( flags ) | LF_VARIABLE_HEIGHT_ROWS;
+	        }
+	        _list_properties
+	        _list_scrollbar( MessageMemberHistory )
+	        _list_draw_background
+	        
+	        properties {
+	        	color fillColor = COLOR_EDIT_FILL;
+	        }
+	
+	        events {
+	        	onCreate {
+	        		insertColumn( toWStr( "<width = 100%>" ), 0, 0 );
+	        	}
+	        	onDoubleClick "mouse1" {
+	        		if( currentSelection == -1 ) {
+	        			return;
+	        		}
+	        		gui.copyText( getItemText( currentSelection, 0 ) );
+	        	} 
+	        	onNamedEvent "update" {
+	        		gui.scriptPushString( gui.lstTeam.currentUser );
+	        		gui.scriptPushFloat( MHS_TEAM );
+	        		
+					fillFromEnumerator( "sdnetMessageHistory" );
+					currentSelection = immediate( numItems - 1 );
+	        	}      	
+	        }
+	   }
+	    _label_literal( MessageMemberTimeStamp, localizeArgs( "guis/mainmenu/sentat", gui.messageTimeStamp ), 0, 0, 100, BUTTON_HEIGHT, COLOR_TEXT )
+		     properties {
+		    	vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		    	float visible = wcompare( gui.messageTimeStamp, gui.blankWStr ) == false;
+		    }
+	    _end_label   
+	        
+	    _editw_scroll( MessageMemberMessage, 0, 0, 100, 60 )
+	        properties {
+	        	vec2 textAlignment = TA_LEFT, TA_VCENTER;
+				float	maxTextLength = 512;
+	        }
+	    _end_editw_scroll
+
+	    _check( MessageTeamKeepOpen, localize( "guis/mainmenu/keepwindowopen" ), 0, 0, 100, BUTTON_HEIGHT )
+	    	events {
+	    		onNamedEvent "onShow" {
+	    			checked = compare( sdnet.getProfileString( "keepTeamMessageWindowOpen", "1" ), "1" );
+	    		}
+				onNamedEvent "onAction" {
+					callSuper();
+					if( checked ) {
+					    sdnet.setProfileString( "keepTeamMessageWindowOpen", "1" );
+					} else {
+						sdnet.setProfileString( "keepTeamMessageWindowOpen", "0" );
+					}
+				}
+	    	}
+	    _end_check
+	    
+		windowDef lytMessageMemberButtons {
+			type layoutHorizontal;
+			properties {
+				rect rect = gui.dlgMessageMember.rect.w - $evalfloat( ( ( BUTTON_WIDTH * 3 ) + 6 + ( 2 * PADDING ) ) ), 2, 100, BUTTON_HEIGHT;
+				vec4 margins = 0, 0, 0, 0;
+				float flags = VLF_NOSIZE;
+			}
+	    
+		    _button( MessageMemberOk, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+		        properties {
+		            handle	localizedText = localize( "guis/mainmenu/ok" );
+		            float	taskActive = 0;
+		        }
+				_button_disable_if( "gui.edtMessageMemberMessage.editText", gui.edtMessageMemberMessage.isWhitespace() )
+		        _button_action(
+		        	if( allowEvents == false ) {
+						return;
+					}
+					taskActive = 1;
+					sdnet.sendTeamMessage( gui.dlgMessageMember.gui.lstTeam.currentUser, gui.edtMessageMemberMessage.editText );
+					_show_popup( sdNetProgress )
+		        )
+		
+		        events {
+		            onPropertyChanged "sdnet.taskActive" {
+						if ( sdnet.taskActive == 0 ) {
+		                    if ( taskActive == 1 ) {
+								taskActive = 0;
+		
+								// process result
+								if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {								
+									sdnet.addToMessageHistory( MHS_TEAM, gui.lstTeam.currentUser, sdnet.activeUserName, gui.edtMessageMemberMessage.editText );
+									
+									if( gui.chkMessageTeamKeepOpen.checked ) {										
+										gui.edtMessageMemberMessage.editText = gui.blankWStr;
+										gui.focusedWindow = "edtMessageMemberMessage";
+										gui.dlgMessageMember.keepHistory = true;
+									} else {									
+										_close_input;
+									}
+
+									gui.lstMessageMemberHistory.postNamedEvent( "update" );
+									gui.lstTeam.postNamedEvent( "requestUpdate" );
+									return;
+								}
+		
+								// process error
+								_setup_confirmation_ok_error( sdnet.taskResultMessage )
+								_show_popup( confirmation )
+								return;
+							}
+						}
+					}
+		        }
+		    _end_button
+		
+		    _button( MessageMemberCancel, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+		        properties {
+		            handle	localizedText = localize( "guis/mainmenu/cancel" );
+		        }
+		        _button_action( 
+		        	gui.dlgMessageMember.keepHistory = false;
+		        	_close_input;
+		        	gui.lstTeam.postNamedEvent( "requestUpdate" );
+		        )
+		    _end_button
+		        
+		    _button( MessageMemberReadNext, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+		        properties {
+		        	wstring text = localizeArgs( "guis/mainmenu/readnext", toWString( gui.lstTeam.numIMs, 0 ) );
+		        }
+		        _button_action(
+		        	gui.dlgMessageMember.keepEditText = true;
+		        	_close_input;
+		        	gui.lstTeam.postNamedEvent( "onContextAction" );
+		        )
+			 	_button_disable_if( "gui.lstTeam.numIMs", gui.lstTeam.numIMs < 1 )
+		    _end_button
+		}
+	}
+_end_dialog

@@ -1,0 +1,547 @@
+QWTA v0.3.5:
+==========
+CHANGES:
+* Cvar g_forgivingBotMatch added.
+  + Default 0.
+  + Makes BotMatches more forgiving for a player by turning off certain
+    advantages that are given to the player in a BotMatch. A BotMatch is 
+    essentially a single-player game.
+    BaseETQW would lower enemy bots' health on low skill levels.
+    BaseETQW would prevent vehicle explosions from damaging players.
+* The way Force Escalation is calculated has been changed to discard low-XP 
+  outliers and to increase overall Force Escalation when many players are on
+  a server.
+* Cvar family g_vehicleSpawnMinPlayers* added.
+  + Default 0.
+  + Number of connected clients needs to meet or exceed each cvar for the
+    associated vehicle to spawn. Does not affect vehicle drops.
+  + Full cvar list for this group of cvars:
+    g_vehicleSpawnMinPlayersHusky
+    g_vehicleSpawnMinPlayersPlatypus
+    g_vehicleSpawnMinPlayersArmadillo
+    g_vehicleSpawnMinPlayersTrojan
+    g_vehicleSpawnMinPlayersBumblebee
+    g_vehicleSpawnMinPlayersTitan
+    g_vehicleSpawnMinPlayersAnansi
+    g_vehicleSpawnMinPlayersIcarus
+    g_vehicleSpawnMinPlayersHog
+    g_vehicleSpawnMinPlayersDesecrator
+    g_vehicleSpawnMinPlayersCyclops
+    g_vehicleSpawnMinPlayersTormentor
+    g_vehicleSpawnMinPlayersJupiter
+    g_vehicleSpawnMinPlayersAbaddon
+  + These are more meant to be used with BaseETQW settings. I've noticed over
+    time that some of the better BaseETQW servers like to informally restrict
+    vehicle use based on the number of people playing. This should allow that
+    without some newly connected player jumping in and slaughtering everyone
+    playing by the agreed upon restrictions.
+* Slightly increased the Dark Matter Cannon's gravitational effects.
+* Logistics Points introduced as a concept.
+  + Logistics Points is a direct count of your accumulated XP, with one
+    catch, when you use them, they disappear. Think of them as money.
+    Vehicle Drops now use Logistics Points to determine when each vehicle
+    can be called in. In order to help combat wasteful vehicle spam, 
+    central command is only willing to help out players so many times.
+  + Logistics point costs are listed next to FE on the quickchat menu.
+* Cvar g_vehicleDropsUseLP added.
+  + Default 1.
+  + Controls whether Logistics Points are used as a requirement of 
+    vehicle drops. It's recommended to leave this on when heavier vehicles
+    are allowed to be dropped.
+* Cvar g_huskyIcarusDropsIgnoreLP added.
+  + Default 0.
+  + Lets the Husky and Icarus Vehicle Drops ignore Logistics Points
+    requirements. This lets them be called in with 0 LP while the heavier
+    vehicles continue to require LP to be dropped onto the battlefield.
+* Modified the HUD element for Force Escalation, and added a Logistics Points
+  HUD element right below it. The vehicle charge bar has also been added to
+  the main HUD for easy viewing. These elements disappear automatically when
+  the cvars that control their use are disabled.
+* Cvar g_useVehicleDecoyAmmo added,
+  + Default 1.
+  + Controls whether vehicle decoys consume depletable ammunition or if they
+    have an infinite supply of flares.
+* Vehicles now warn when low on ammo.
+* Abaddon Plasma Beam tweaked.
+  + Hover mode uses more weapon charge and can't fire as long without cooling.
+  + Siege mode uses less charge and can fire much longer without cooling.
+* Cvar g_useAwardJackOfAllTrades implemented.
+  + Default 1.
+  + Controls whether the new "Jack of All Trades" after-round award replaces
+    the near-pointless "Newbie of the Battle" award.
+  + The Jack of All Trades award is given to the player who has accumulated
+    an average or better amount of XP with at least two classes.
+    If more than one player meets this qualification, the player with the most
+    XP accumulated in the applicable player class proficiencies wins out.
+    This award is intended to highlight those players who are constantly
+    switching classes throughout the round, in order to serve their team's
+    needs best, moment to moment.
+
+BUG FIXES:
+* Fixed BaseETQW bug: sdProjectile_Parabolic is no longer randomly invisible.
+* Fixed Abaddon's Flamethrower using improper crosshair when using concealed 
+  crosshair settings.
+* Fixed BaseETQW oversight: Frags made by vehicle explosions are now properly
+  attributed to the player who caused the explosion.
+* Corrected the charge usage of GDF vehicle machineguns and miniguns using 
+  realism settings, so that they're no longer prone to rapidly overheating.
+
+
+QWTA v0.3.4:
+==========
+CHANGES:
+* More changes to the tactical nuke behaviours for the Hammer.
+  + All changes rely on g_useNuclearHammer.
+  + Explosion effect enhanced: Bigger flash and flare, more smoke, 
+    bigger mushroom cloud, mushroom cloud lasts longer.
+  + Hammer explosion's EMP effects increased based on player feedback.
+  + Hammer explosion leaves an area of radioactivity for 20 seconds after
+    the initial explosion. Blocking line of sight or entering a vehicle
+    shields from these effects. Damage from radioactivity decreases
+    the farther from ground zero you are.
+  + Hammer explosions now cause a blinding flash, when nuclear. Hiding behind
+    cover, fleeing the area to gain distance, or simply looking away from the
+    detonation, reduce the effects of blinding.
+* Cvar g_allowEMPFriendlyFire added.
+  + Default 1.
+  + Allows EMP effects to affect friendly units, for realism purposes.
+* External ordinance on Anansi now visually in sync with ammo usage.
+  + g_useVehicleAmmo needs to be on.
+  + LAWs disappear as they're fired, and reappear as they're rearmed.
+* Revert BFG10k back to automatic charging due to player feedback.
+  + Kept the green HUD chargebar the manual BFG had.
+  + Kept the green HUD chargebar cooldown time too.
+* Some optimizations and improvements to the BFG's script.
+* Second set of bind contexts for players added as part of a bugfix for 
+  the bind contexts not working properly/being broken last release...
+  The "strogg" and "gdf" bind contexts are now overridden by class-specific
+  bind contexts. This means you can bind something to the gdf/strogg bind
+  contexts, AND to the class-specific contexts(eg: "medic"), and for a class
+  that has a class-specific context, that will be used. Or for a class without
+  a class-specific context, the team context will be used. If neither is
+  setup, the default context will be used, as usual.
+  Class Context -> Team Context -> Default Context
+  + The cvars for this bind context are "g_class_context2_classnamehere".
+* Cvar g_blood added.
+  + Default 1.
+  + Allows most of the blood effects to be turned on and off.
+  + This is particularly useful as the decal-applying parts of this code
+    will often spam error messages in the console(Don't think they're properly
+    thread-safe yet.), and some of the splatters can get a little excessive
+    when a lot of explosions are occurring in a small area near corpses.
+  + Servers should generally leave this enabled; clients can turn it off.
+  + You can avoid console spam by setting r_useThreadedRenderer to 0 if
+    you're using g_blood.
+* Cvar g_allowRadFriendlyFire added.
+  + Default 1.
+  + Allows radiation effects to affect friendly units, for realism purposes.
+* Campaign loading screen can now display up to 12 maps in a campaign.
+* Jumping into water of sufficient depth can now extinguish flames.
+* Cvar g_huskyIcarusDropsIgnoreFE added.
+  + Default 0.
+  + Lets the Husky and Icarus Vehicle Drops ignore Force Escalation 
+    requirements. This lets them be called in with 0 FE while the heavier
+    vehicles continue to require FE to be dropped onto the battlefield.
+* Vehicle Drop Force Escalation requirements now appear on the quickchat menu.
+  
+BUG FIXES:
+* Hammer explosions now cause blood splatters.
+* Fixed BaseETQW bug: The "Sniper Rifle Reload Skip Exploit" no longer works.
+  + A serious exploit exists in BaseETQW 1.5, that has been fixed in QWTA.
+  + Also fixes the same issue for the Railgun.
+* Fixed BaseETQW bug: Jump sounds added while carrying HE Charge.
+* Fixed BaseETQW bug: Jump sounds added while carrying Health Pack.
+* Fixed BaseETQW bug: Jump sounds added while carrying Ammo Pack.
+* Fixed BaseETQW bug: Jump sound(jogging) added while carrying Binoculars.
+* Fixed Anansi's LAWs having zero splash damage.
+* Fixed a stupid issue with the bind contexts being broken in v0.3.3.
+* The QWTA Limbo Menu tab has been fixed and re-added.
+
+
+QWTA v0.3.3:
+==========
+CHANGES:
+* Main menu now displays QWTA logo.
+* Abaddon hovertank added. (WIP)
+  + This is a specialized version of the Desecrator, mounting two new weapons.
+  + Uses g_advancedVehicleDrops bitflag of 8192.
+  + Costs 100 FE to request a drop of.
+* Plasma Beam added. (Vehicle weapon only for now.)
+  + A continuous-fire energy beam used by the Strogg for mining.
+  + While highly damaging to vehicles and deployables, its effectiveness
+    against living targets is low.
+* Flamethrower added. (Vehicle weapon only for now.)
+  + Spews a cone of flaming plasma across multiple targets, showering the
+    ground beneath with sticky flamelets. Vehicles and deployables are
+    immune to flame.
+  + Be advised due to QWTA v0.3.3 being kind of a rush-patch, the flamethrower
+    has significant issues(damage cone and flame graphics are desynchronized,
+    water will not extinguish flames, and flame -graphics- penetrate 
+    forcefields). The QWTA v0.4.0 flamethrower will correct these issues and 
+    introduce more realistic flame physics.
+* Players can now be lit on fire, burning and suffering damage.
+* Cvar g_useQuake4Railgun added.
+  + Default 1.
+  + Controls whether the Railgun has penetration properties, allowing it to
+    be fired through multiple targets(players and corpses only), or not.
+* Cvar g_disableVehicleRespawns added.
+  + Default 0.
+  + Allows or disallows vehicles respawning after they're destroyed.
+* Cvar g_useShieldAbsorber added.
+  + Default 1.
+  + Allows the use of the Tactical Shield's altfire, which re-absorbs
+    shields that have been deployed.
+* Matched the Quake4-style Hyperblaster's damages to the BaseETQW
+  Hyperblaster's in response to player feedback. Changed the realistic
+  damages for the Quake4-style Hyperblaster to be double for the splash
+  damage, rather than triple.
+* Improvements to the BFG10k's visual effects.
+* The BFG10k is now charged manually.
+  + Hold down fire to charge the BFG. If you release too early, the 
+    BFG energies fizzle out impotently and you must wait for the weapon to
+    cool down and reload before trying to fire it again.
+  + If you charge the BFG10k too much, its energies will overload in a 
+    massive internal detonation, destroying the Jupiter tank.
+  + Charging the BFG properly takes practice. The difference between a
+    properly charged projectile and an overload detonation is a 
+    narrow window of opportunity.
+  + Bots are kind of retarded with this new behaviour so far.
+* Cvar pm_realisticMovement has had a setting added.
+  + pm_realisticMovement may now be set to 2, as well.
+  + pm_realisticMovement 2 is now the QWTA default setting.
+  + This setting applies realistic movement physics to players, but not bots.
+    This setting is a workaround for a flaw in ETQW's bot AAS pathing design 
+    that requires maps to be recompiled to support certain changes in movement
+    physics. While bots can use realistic physics too, their AI doesn't
+    recognize it, leading to them doing very stupid things when trying to get
+    from point A to point B. This setting works around that flaw.
+* Cvar g_allowCrosshairs added.
+  + Default 0.
+  + Controls whether most(not all, notably Strogg scopes, sniper weapons'
+    scopes, and most vehicles) crosshairs ingame are disabled.
+    This is largely intended for realism purposes, as its assumed crosshairs
+    for weapons aren't painted onto the personal HUDs GDF soldiers have,
+    and in the case of the Strogg, that the crosshairs are not displayed
+    unless the Strogg is looking through what's assumed to be a biotech
+    interface for a gun camera. Ironsights are of course still available.
+* Cvar g_allowHitBeep added.
+  + Default 0.
+  + Controls whether the hit feedback beep and flash are permitted.
+* Cvar g_useBaseETQW12SniperTrail added.
+  + Default 1.
+  + Sets QWTA to use the BaseETQW 1.2 Sniper Rifle trail/tracer effect.
+    This effect is more subtle than the BaseETQW 1.5 effect, and harder
+    to spot.
+* Blood and gore effects improved considerably.
+* Cvar g_realisticDamage removed.
+* Cvar g_realisticSpread removed.
+* Cvar g_useRealisticWeapons added.
+  + Default 1.
+  + Consolidates g_realisticDamage and g_realisticSpread as well as other new
+    features into one cvar. Generally, GDF weapons have a higher rate of fire
+    than in BaseETQW. Realistic damages for these weapons lowered slightly,
+    to make up for the ability to put more lead on target. Strogg weapons
+    remain slow-firing and higher-damage, but their accuracies have also
+    improved.
+* Bind contexts for Jupiter, Abaddon, Strogg team, and GDF team, added.
+  + Jupiter: "g_bind_context_jupiter"
+  + Abaddon: "g_bind_context_abaddon"
+  + Strogg: "strogg" (Includes all the Strogg classes.)
+  + GDF: "gdf" (Includes all the GDF classes.)
+  + Jupiter and Abaddon are included as part of the bind context "vehicle" too
+* Cvar g_useVehicleAmmo added,
+  + Default 1.
+  + Controls whether vehicle weapons consume depletable ammunition or if they
+    have an infinite supply of munitions.
+* Script memory limits generally doubled from BaseETQW.
+* Tweaked the FE Prerequisites of the Hog and Desecrator in response to player
+  feedback.
+  + Hog: 30FE -> 25FE
+  + Desecrator: 40FE -> 45FE
+
+BUG FIXES:
+* Fixed Quake4-style Hyperblaster's projectiles doing triple damage to
+  vehicles and deployables.
+* Adjusted the sound shaders of the BFG10k and the DMC to more appropriate
+  volumes and distances.
+* Fixed a bug with class limit autoadjuster using GDF values for Strogg team.
+* Fixed a bug which was causing Flyer Drones to emit warning messages.
+* Some rudimentary fixes to vehicle drop permissions for land/sea deployments.
+
+
+QWTA v0.3.2:
+==========
+CHANGES:
+* Cvar g_useBaseETQW12Shotguns added.
+  + Default 1.
+  + Controls whether shotguns have a basic behaviour that follows the
+    BaseETQW 1.2 behaviour model, or the BaseETQW 1.5 behaviour model.
+  + Enable for BaseETQW 1.2 behaviour, disable for BaseETQW 1.5 behaviour.
+  + Works in conjunction with g_realisticSpread and g_realisticDamage,
+    so a variety of weapon behaviour combinations are possible.
+  + Examples: 
+    Default QWTA Shotguns:
+    g_useBaseETQW12Shotguns 1; g_realisticDamage 1; g_realisticSpread 1
+    BaseETQW 1.5 Shotguns:
+    g_useBaseETQW12Shotguns 0; g_realisticDamage 0; g_realisticSpread 0
+    BaseETQW 1.2 Shotguns: 
+    g_useBaseETQW12Shotguns 1; g_realisticDamage 0; g_realisticSpread 0
+* g_disableVehicleSpawns readded and redefaulted to 1.
+* Cvar g_artilleryWarning added.
+  + Default 0.
+  + Enables or disables the printed warning text onscreen when the Hammer or
+    Dark Matter Cannon is fired.
+* Cvar g_useQuake4DarkMatter added.
+  + Default 1.
+  + Controls whether the Dark Matter Cannon fires ETQW-style Dark Matter
+    projectiles, or Quake 4-style Dark Matter projectiles.
+* Cvar g_useDeathFading added.
+  + Default 1.
+  + Controls whether fading effects are used when players are unconscious
+    or killed.
+* Vampire and Violator now have an alt fire. Instead of the airstrike
+  proceeding from left to right from the thrower's position, the airstrike
+  instead moves right to left, when alt fire is used.
+* Cvar g_useReverseAirstrikes added.
+  + Default 1.
+  + Controls whether Vampire/Violator alt fire is permitted.
+* Jupiter tank's minigun is no longer usable.
+* Jupiter tank can no longer accelerate using overdrive.
+* Added tooltip upon entering the Jupiter tank.
+* Force Escalation is now rounded down.
+* Cvar g_useNuclearHammer added.
+  + Default 1.
+  + Controls whether the Hammer and SSM missiles behave more like tactical
+    nukes. At the moment, this is just their EMP effects.
+* Bots are now aware(only somewhat on easy difficulties) that shooting at
+  heavy vehicles with light weapons does not accomplish much, when realistic
+  damages are enabled.
+* Cvar g_useQuake4Hyperblaster added.
+  + Default 1.
+  + Controls whether the Hyperblaster fires ETQW-style hitscan bullets, or
+    Quake 4-Nailgun-style mini-plasma shells that explode on impact.
+  + Works in conjunction with g_realisticSpread and g_realisticDamage.
+* Hyperblaster's homing abilities changed to be more corrective to aim,
+  less predictive.
+* Cvar g_advancedVehicleDrops added.
+  + Default: -1
+  + A bitfield value that controls which vehicles may be dropped.
+    Setting to a negative number enables all vehicle drops. Setting to
+    zero disables all vehicle drops. Individual vehicles can be enabled
+    as follows:
+    Husky:		1		Platypus:		2
+    Armadillo:		4		Trojan:			8
+    Bumblebee:		16		Titan:			32
+    Anansi:		64		Icarus:			128
+    Hog:		256		Desecrator:		512
+    Cyclops:		1024		Tormentor:		2048
+    Jupiter:		4096
+  + Bitfields, for the uninitiated, can be combined by adding the numbers
+    corresponding to the desired values. For example:
+    Husky(1) + Icarus(128) = 129
+    Husky(1) + Icarus(128) + Platypus(2) + Armadillo(4) + Hog(256) = 391
+    Anansi(64) + Tormentor(2048) = 2112
+    All vehicles except Jupiter = 4095
+* Cvar g_useSpecificRadar added.
+  + Default 1.
+  + Controls whether radar is prevented from detecting players.
+  + 3rd Eye Camera, the MCP radar, and command-post radar are considered
+    to include Infrared detection equipment, so are exempt from this setting.
+* Cvar g_vehicleDropsUseFE added.
+  + Default 1.
+  + Controls whether Force Escalation is used as a requirement of 
+    vehicle drops. It's recommended to leave this on when heavier vehicles
+    are allowed to be dropped.
+* Cvar g_useBaseETQWVehicleCredits added.
+  + Default 0.
+  + Controls whether the Husky and Icarus's BaseETQW vehicle credit costs
+    are used, or the more expensive QWTA defaults.
+* Cvar g_useBaseETQWProficiencies added.
+  + Default 0.
+  + Prevents players from being given free Vehicle Drop rewards.
+* Cvar g_useBaseETQWVehicleCharge added.
+  + Default 0.
+  + Controls whether the vehicle credit charge timer uses BaseETQW timing.
+* Cvar bot_useVehicleDrops redefaulted to 1.
+  + The Island crash bug appears to be fixed. Bots now use vehicle drops.
+* Hyperblaster effects changed to make their explosive nature more apparent.
+* Improved blood and gore effects slightly.
+* Cvar g_vehicleSpawnsUseFE added.
+  + Default 1.
+  + Controls if regular vehicle spawning restricts which vehicles spawn,
+    when, based upon Force Escalation.
+* Cvar g_ignorePersistentRanks redefaulted to 0.
+
+BUG FIXES:
+* Jupiter tank no longer shows up as a Titan in obituaries when roadkilling.
+* Optimized loading of vehicle drops.
+  This incidentally appears to fix the Island crash bug.
+* Removed an unneccessary attempt at minimizing vehicle bounce when dropped.
+  Was causing crashes some some cases.
+
+
+QWTA v0.3.1:
+==========
+CHANGES:
+* Cvar g_showPlayerArrows redefaulted to 2.
+* Made some changes/improvements to the realistic damage fallback code.
+* Player respawn timers reverted to be identical to BaseETQW.
+  + Player feedback indicates BaseETQW gametypes are incompatible with
+  + long respawn timers. A single-life last-man-standing gametype is planned
+  + for a future QWTA release.
+* Cvar g_useGibKills added.
+  + Default 1.
+  + Allows certain attacks(Currently only Covert/Infiltrator backstabs)
+  + that don't normally instagib, to instagib so victims can't be revived.
+* Cvar bot_useVehicleDrops added.
+  + Default 0.
+  + Enables/disables bots to attempt to call down new vehicles.
+  + WARNING: See "Known Issues" section of the readme before enabling!
+* Some technical changes to how the Jupiter is implemented.
+* Cvar g_useClassLimits added.
+  + Default 1.
+  + Enables/disables the use of class limits.
+* Force Escalation introduced as a concept.
+  + Vehicles no longer have Rank requirements to be called in.
+  + Force Escalation is an average XP count of all players on a server.
+  + Vehicle Drops now use Force Escalation to determine when each vehicle
+  + can be called in. Force Escalation reflects ongoing conflict in a battle,
+  + and as it becomes more pitched, FE rises as central command takes further
+  + notice of the hotspot, and lends more aid.
+* Class limits will now dynamically adjust according to critical classes.
+* Players using temporary class limit increases will be kicked out of their
+  class upon death, after the temporary increase is removed.
+* Cvar g_modVersion added. Reports the version of QWTA that is in use.
+* Current version of QWTA is now displayed in the lower-left of the main menu.
+  
+BUG FIXES:
+* Fixed Dark Matter Cannon having zero range blast radius in realistic mode.
+* Fixed a variety of GDF GPMG and Gatling Gun vehicle weapon damage issues.
+* Fixed negativePush flag not being copied over to inherited damageDefs.
+* Fixed an unlikely potential crash by returning a BS value from a method.
+* Fixed some minor Limbo GUI issues.
+* Fixed issue with class limiter that was preventing bots from
+  giving up their spot to a human player when on a dedicated server.
+* Fixed issue with the class limiter that was allowing players to bypass it
+  by switching teams.
+
+
+QWTA v0.3:
+==========
+CHANGES:
+* Threw out all previous changes and restarted QWTA development from scratch.
+* Previous versions of QWTA: v0.21, v0.2, v0.11, and v0.1 not built off of.
+* QWTA is now compatible with ETQW v1.5.
+* Spectator controls improved.
+  + Attack: Next player.
+  + AltAttack: Previous player.
+  + Jump: Freefly spectator.
+* Dark Matter Cannon now has Quake 4 Singleplayer-style Dark Matter Gun
+  visual/audio effects and gravity pull behavior.
+  + Projectile pulls nearby objects(players, vehicles) towards it.
+  + Projectile deals damage to nearby objects slowly.
+  + Projectile hurls nearby objects away from detonation point when exploding.
+  + Gravitational effects penetrate walls and other cover.
+* Hammer has a limited EMP effect upon exploding.
+* Hammer and Dark Matter Cannon warning text upon firing removed.
+* Player respawns now take twice the length of time they do in BaseETQW.
+* Vehicles no longer spawn into the map, they must be called in by players
+  via vehicle drop. (Use the quickchat menu->vehicles->vehicle drops.)
+* The ability to use vehicle drops is given freely to all players, however:
+* Vehicle drop charging now begins at zero and charges up from there.
+* Vehicle drops take longer to charge than in BaseETQW.
+* Vehicle drops have a campaign rank prerequisite before they can be dropped.
+  + Generally, the more powerful the vehicle, the higher the rank required.
+* Vehicle drops make use multiple types of deployment transport:
+  + Jotun drops via parachute.
+  + Magog drops via cable.
+  + Strogg drops via orbital reentry.
+  + Strogg drops via teleport.
+* Bots have a rudimentary understanding of vehicle drops now.
+  + They're pretty stupid about it, but they do call for vehicles sometimes.
+* Jupiter Assault Tank added.
+  + This is a heavy GDF tank that uses the BFG10k as a main cannon.
+* BFG10k added. (Vehicle weapon only for now.)
+  + Delay on firing.
+  + Projectile fires energy beams at nearby targets(Up to 8).
+  + Projectile detonates with high damage upon impact.
+  + BFG Effect operates upon targets(Up to 8) that have line of sight
+    between the detonation point, and the Jupiter tank, 0.5 seconds later.
+* Hyperblaster now behaves more like the Quake 4 Singleplayer-style weapon.
+  + Projectiles do not hit instantly.
+  + Hyperblaster ROF is slower.
+  + Splash damage occurs upon projectile impact.
+  + Hyperblaster damage raised, but can no longer do headshots.
+  + Hyperblaster scope can get rapid target locks upon any enemy unit.
+  + Hyperblaster does not cause a lockon warning on target.
+  + Hyperblaster projectiles cannot be decoyed away with flares.
+* Shotgun and Nailgun core behavior returned to ETQW v1.2 style behavior:
+  + ROF slower.
+  + More pellets per shot.
+  + Smaller spread.
+  + More damage.
+  + Damage falls off less over distance.
+* Blood spurt effects occur when players or corpses are shot or stabbed.
+* Class number limits added.
+  + Class numbers restricted based upon class, and player count on server.
+  + Bots understand class number limits.
+* Screen fades to red when unconscious.
+* Screen fades to black when fully killed.
+  + This intentionally blocks the vision of the dead.
+* Radar split into two distinct types: Radar and Infrared.
+  + Radar cannot detect infantry.
+  + Infrared can only detect infantry.
+* Psi Radar/GDF Radar use only normal Radar.
+* 3rd Eye Camera, MCP, and command centers, use both radar and infrared.
+* Mxyzptlk's megatexture autodownload added.
+* Cvar pm_realisticMovement added.
+  + Default 1.
+  + Enables/disables "realistic movement".
+  + Enables/disables strafejumping.
+* Cvar g_realisticDamage added.
+  + Default 1.
+  + Enables/disables higher, "more realistic" weapon damages.
+  + GENERALLY, bullets do 3x normal damage and explosions do 2x normal,
+    when firing upon infantry.
+  + GENERALLY, vehicles take reduced damage from small arms fire.
+* Cvar g_realisticSpread added.
+  + Default 1.
+  + Enables/disables "more realistic" weapon spreads.
+  + GENERALLY, firing without aiming a weapon first is much more inaccurate.
+  + Bots are aware of this, and will aim more often when enabled.
+* Cvar bot_useStrafeJump redefaulted to 0.
+  + For use with pm_realisticMovement. Bots will not attempt to strafejump.
+* Cvar g_allowMineIcons redefaulted to 0.
+  + Disables minedots by default, serverside.
+* Cvar g_allowMineTriggerWarning added.
+  + Default 0.
+  + Enables/disables mine trigger warnings, serverside.
+* Cvar g_allowAPTWarning added.
+  + Default 0.
+  + Enables/disables APT and BDT(APT mode only) HUD warnings, serverside.
+* Autodetects the gametype other QWTA servers are using, hides the gametype
+  of other mods, including BaseETQW. (Easier to see on the server list.)
+* Cvar g_ignorePersistentRanks added.
+  + Default 1.
+  + Allows QWTA to ignore persistent ranks for ingame purposes.
+  + This cvar may only be set from the commandline.
+  + This is important for the vehicle rank costs, to keep players from
+  + having an unfair advantage.
+
+BUG FIXES:
+* Fixed BaseETQW bug: Corpses are now considered "flesh".
+  + BaseETQW doesn't consider corpses to be flesh, so they wouldn't bleed.
+* Fixed BaseETQW bug: 3rd Eye Camera now updates its radar origin when moved.
+  + BaseETQW doesn't update the 3rd Eye's radar origin, making attaching it
+    to vehicles or other moving objects, effectively useless for radar
+    purposes. (The commandmap radar area would move, but the actual radar
+    detection area would not.)
+* Fixed BaseETQW bug: Removed cause of a console error message with Magogs.
+  + A $null_entity item wasn't being checked for in some circumstances,
+    causing error messages to sometimes be printed to console.
+* Fixed BaseETQW bug: The "Volcano-Icarus Map Exploit" no longer works.
+  + A serious exploit exists in BaseETQW 1.5, that has been fixed in QWTA.
+  + Variations on maps other than Volcano are also addressed by this fix.
+* Fixed BaseETQW bug: Autorecordings now stopped on map change.
+  + Autorecordings will now stop on map change, then start again next map.
+  + Fix provided by TimeStar.

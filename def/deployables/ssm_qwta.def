@@ -1,0 +1,102 @@
+
+// Projectile Entity Def
+// ========================================================================
+
+entityDef projectile_deployable_ssm_qwta {
+	"spawnclass"					"idProjectile_RigidBody"
+	"mins"							"-24 -24 -100"
+	"maxs"							"24 24 217"
+	"model"							"models/weapons/missiles/strike_missile/strike_small.lwo"
+
+	//"scriptObject"				"projectile_ssm"
+	"scriptObject"					"projectile_ssm_qwta"
+
+	"dmg_damage"					"damage_ssm"
+	"dmg_splash_damage"				"damage_ssmSplash"
+
+	"health"						"400"
+	"velocity"						"0 0 0"
+	"mass"							"5"
+	"gravity"						"400"
+	"fuse"							"-1"
+	"targetRadius"					"1280"
+
+	"aor_layout"					"missile"
+
+	"detonate_on_fuse"				"0"
+	"detonate_on_death"				"1"
+	"detonate_on_world"				"1"
+	"detonate_on_actor"				"1"
+
+	"face_velocity"					"1"
+
+	"detonate_upwards"			"1"
+
+	"snd_launch"					"sounds/deployables/ssm/launch"
+	"fx_trail"						"effects/deployables/ssm_trail"
+
+ 	"fx_explode"					"effects/impacts/tactical/ssm_qwta"
+	"fx_explode_water"				"effects/water/explosion"
+	"fx_explode_water_interior"		"effects/water/explosion_interior"
+
+ 	"use_air_burst"					"1"
+	"fx_airburst"					"effects/impacts/tactical/ssm_air_qwta"
+
+	"collection_antiair"			"antiair"
+	"collection_mdfExport"			"mdfExport"
+	"collection_firesupport_gdf"	"firesupport_gdf"
+	"collection_antissm"			"antissm"
+
+	"removedelay"					"2"	// Set this to the time the exposion effect take to spawn all it's stuff
+
+	"emp_radius"					"3072"//"2458"
+	"emp_time"						"30"
+	"emp_weapon_time"				"5"
+
+	"prof_destroy"					"pro_constructor_antimissile_hammer"
+	
+	"blind_radius"					"5120"
+	"blind_time"					"20"
+	
+	"def_radiation"					"radiation_point_ssm"
+}
+
+entityDef radiation_point_ssm {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"radiation_point"
+	
+	"rate"							"0.5"
+	"lifetime"						"20.0"
+	
+	"dmg_radiation"					"damage_radiation"
+}
+
+damageFilter damage_radiation {
+	type {
+		target					"target_player_all"
+		damage					5
+	}
+}
+
+damageDef damage_radiation {
+	damage							"damage_radiation"
+	radius							3072
+	//push							10000000
+
+	noheadshot
+	
+	stat_name						"hammer"
+	
+	prof_damage						"pro_fieldops_damage"
+	
+	team_kill_cvar					"g_allowComplaint_firesupport"
+
+	tt_obituary						"tooltips/killmsgs/weapons/ssm"
+	tt_obituary_team_kill			"tooltips/killmsgs/weapons/ssm/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/weapons/ssm/self"
+	tt_obituary_unknown				"tooltips/killmsgs/weapons/ssm/unknown"
+	
+	//bleed
+	//bleedWoundType						"explosive"
+	//bleedExplode
+}

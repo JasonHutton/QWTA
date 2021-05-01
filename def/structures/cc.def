@@ -1,0 +1,42 @@
+// ========================================================================
+// Entity Def
+//
+
+entityDef structure_cc {
+	"inherit"					"structure_gdf"
+
+	"editor_mins"				"-64 -64 -64"
+	"editor_maxs"				"64 64 64"
+	"editor_usage"				"This is the Command Centre."
+
+	"scriptObject"				"structure_cc"
+
+	"type_name"					"game/struct/commandcenter"
+	"mtr_commandmap"			"guis/assets/qet/cm_cc"
+
+//	"model"						"models/structures/edf/cc/cc_new.lwo"
+
+	"health"					"0"
+
+	"vo_prefix"					"cc"
+
+	"option_combat_model"		"0"
+	"option_deploycontrol_interface"	"1"
+	"option_gui_interface"		"1"
+	"option_radar_interface"	"1"
+	"option_crosshair_offset"	"0 0 256"
+	"icon_size_cm"				"16"
+
+	"radar_range"				"7500"
+	"mask"						"3" // bitset: 1 is radar range, 2 is deployable range, 4 is fire support range
+
+	//"snd_alarm"					"strategic_alarm_edf"
+	//"snd_deploy_body"			"cc_deploy_body"
+	//"snd_deploy_feet"			"cc_deploy_feet"
+	//"snd_deploy_back"			"cc_deploy_back"
+	//"snd_deploy_steps"			"cc_deploy_steps"
+	//"snd_deploy_alarm"			"cc_deploy_alarm"
+	//"snd_exterior"				"cc_exterior"
+
+	"task_name"					"game/struct/cc"
+}

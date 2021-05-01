@@ -1,0 +1,468 @@
+/***********************************************************************
+
+	weapons/pistol.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+ //=====================================
+ // pistol standard
+ //=====================================
+
+export hauser {
+	options -prefix AKIMBO_ -sourcedir models/weapons/gdf_pistol/dev_sd -destdir models/weapons/gdf_pistol/ -keep muzzle_left silencer_muzzle_left muzzle_right silencer_muzzle_right -keepmesh left_arm_mesh left_hand_mesh gui_holder_mesh gui_mesh right_arm_mesh right_hand_mesh pistol pistol_trigger pistol_clip pistol_slide pistol_slide_catch pistol_left pistol_trigger_left pistol_clip_left pistol_slide_left pistol_slide_catch_left
+
+
+	mesh	akimbo_pistol_base_file.mb		-dest models/weapons/gdf_pistol/akimbo_view.md5mesh
+	anim	akimbo_pistol_idle.mb			-dest models/weapons/gdf_pistol/akimbo_idle.md5anim
+	anim	akimbo_pistol_raise.mb			-dest models/weapons/gdf_pistol/akimbo_raise.md5anim
+ 	anim	akimbo_pistol_lower.mb			-dest models/weapons/gdf_pistol/akimbo_lower.md5anim
+   	anim	akimbo_pistol_fire.mb			-dest models/weapons/gdf_pistol/akimbo_fire_left.md5anim -range 15 26
+   	anim	akimbo_pistol_fire.mb			-dest models/weapons/gdf_pistol/akimbo_fire_right.md5anim -range 1 12
+
+ 	anim	akimbo_pistol_reload.mb			-dest models/weapons/gdf_pistol/akimbo_reload.md5anim
+ 	anim	akimbo_pistol_start_sprint.mb	-dest models/weapons/gdf_pistol/akimbo_start_sprint.md5anim
+ 	anim	akimbo_pistol_leave_sprint.mb	-dest models/weapons/gdf_pistol/akimbo_leave_sprint.md5anim
+ 	anim	akimbo_pistol_zoom_in.mb		-dest models/weapons/gdf_pistol/akimbo_zoom_in.md5anim
+ 	anim	akimbo_pistol_zoom_out.mb		-dest models/weapons/gdf_pistol/akimbo_zoom_out.md5anim
+ 	anim	akimbo_pistol_idle_zoom.mb		-dest models/weapons/gdf_pistol/akimbo_idle_zoom.md5anim
+ 	anim	akimbo_pistol_fire_zoom.mb		-dest models/weapons/gdf_pistol/akimbo_fire_zoom.md5anim
+
+
+ //=====================================
+ // pistol silenced
+ //=====================================
+
+ 	mesh	akimbo_pistol_base_file.mb		-dest models/weapons/n2_pistol/akimbo_silenced_view.md5mesh 	-keep muzzle_left silencer_muzzle_left muzzle_right silencer_muzzle_right -keepmesh left_arm_mesh left_hand_mesh gui_holder_mesh gui_mesh right_arm_mesh right_hand_mesh pistol pistol_trigger pistol_clip pistol_slide pistol_silencer pistol_slide_catch pistol_left pistol_trigger_left pistol_clip_left pistol_slide_left pistol_silencer_left pistol_slide_catch_left
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_pistol_akimbo {
+	mesh					models/weapons/gdf_pistol/akimbo_view.md5mesh
+	anim idle				models/weapons/gdf_pistol/akimbo_idle.md5anim {
+	}
+	anim raise				models/weapons/gdf_pistol/akimbo_raise.md5anim {
+		frame begin				sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway			models/weapons/gdf_pistol/akimbo_lower.md5anim {
+	}
+ 	anim fire_right				models/weapons/gdf_pistol/akimbo_fire_right.md5anim {
+		frame begin				sound_channel snd_weapon_mech snd_mech
+	}
+	anim fire_left				models/weapons/gdf_pistol/akimbo_fire_left.md5anim {
+		frame begin				sound_channel snd_weapon_mech snd_mech
+	}
+ 	anim reload				models/weapons/gdf_pistol/akimbo_reload.md5anim {
+		frame 6					sound_channel snd_weapon_reload snd_mag_out
+		frame 14				sound_channel snd_weapon_mech snd_mag_out
+		frame 30				sound_channel snd_weapon_raise snd_raise
+		frame 39				sound_channel snd_weapon_reload snd_mag_in
+		frame 44				sound_channel snd_weapon_sig snd_release
+		frame 53				sound_channel snd_weapon_mech snd_mag_in
+		frame 56				sound_channel snd_weapon_sig snd_release
+ 	}
+ 	anim zoomin				models/weapons/gdf_pistol/akimbo_zoom_in.md5anim {
+ 	}
+	anim zoomout			models/weapons/gdf_pistol/akimbo_zoom_out.md5anim {
+	}
+	anim start_sprint		models/weapons/gdf_pistol/akimbo_start_sprint.md5anim {
+	}
+	anim leave_sprint		models/weapons/gdf_pistol/akimbo_leave_sprint.md5anim {
+	}
+	anim idle_zoom			models/weapons/gdf_pistol/akimbo_idle_zoom.md5anim {
+	}
+	anim fire_zoom_left			models/weapons/gdf_pistol/akimbo_fire_left.md5anim {
+	}
+	anim fire_zoom_right			models/weapons/gdf_pistol/akimbo_fire_right.md5anim {
+	}
+
+
+
+	channel legs					( *right_upperight_arm  )
+	channel torso					( *left_upper_arm )
+}
+
+model viewmodel_pistol_akimbo_silenced {
+	mesh					models/weapons/gdf_pistol/akimbo_silenced_view.md5mesh
+	anim idle				models/weapons/gdf_pistol/akimbo_idle.md5anim {
+	}
+	anim raise				models/weapons/gdf_pistol/akimbo_raise.md5anim {
+		frame begin				sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway			models/weapons/gdf_pistol/akimbo_lower.md5anim {
+	}
+ 	anim fire_right				models/weapons/gdf_pistol/akimbo_fire_right.md5anim {
+		frame begin				sound_channel snd_weapon_mech snd_mech
+	}
+	anim fire_left				models/weapons/gdf_pistol/akimbo_fire_left.md5anim {
+		frame begin				sound_channel snd_weapon_mech snd_mech
+	}
+
+ 	anim reload				models/weapons/gdf_pistol/akimbo_reload.md5anim {
+		frame 6					sound_channel snd_weapon_reload snd_mag_out
+		frame 14				sound_channel snd_weapon_mech snd_mag_out
+		frame 30				sound_channel snd_weapon_raise snd_raise
+		frame 39				sound_channel snd_weapon_reload snd_mag_in
+		frame 44				sound_channel snd_weapon_sig snd_release
+		frame 53				sound_channel snd_weapon_mech snd_mag_in
+		frame 56				sound_channel snd_weapon_sig snd_release
+ 	}
+ 	anim zoomin				models/weapons/gdf_pistol/akimbo_zoom_in.md5anim {
+ 	}
+	anim zoomout			models/weapons/gdf_pistol/akimbo_zoom_out.md5anim {
+	}
+	anim start_sprint		models/weapons/gdf_pistol/akimbo_start_sprint.md5anim {
+	}
+	anim leave_sprint		models/weapons/gdf_pistol/akimbo_leave_sprint.md5anim {
+	}
+	anim idle_zoom			models/weapons/gdf_pistol/akimbo_idle_zoom.md5anim {
+	}
+	anim fire_zoom			models/weapons/gdf_pistol/akimbo_fire_zoom.md5anim {
+	}
+}
+
+
+model worldmodel_pistol_right {
+	mesh		 		models/weapons/gdf_pistol/pistol_right_world.md5mesh
+
+	anim raise			models/weapons/gdf_pistol/pistol_right_world.md5anim
+	anim idle 			models/weapons/gdf_pistol/pistol_right_world.md5anim
+	anim aim			models/weapons/gdf_pistol/pistol_right_world.md5anim
+	anim fire 			models/weapons/gdf_pistol/pistol_right_world.md5anim
+	anim fire1 			models/weapons/gdf_pistol/pistol_right_world.md5anim
+	anim reload			models/weapons/gdf_pistol/pistol_right_world.md5anim
+	anim noammo			models/weapons/gdf_pistol/pistol_right_world.md5anim
+ 	anim putaway		models/weapons/gdf_pistol/pistol_right_world.md5anim
+}
+
+model worldmodel_pistol_right_silenced {
+	mesh		 		models/weapons/gdf_pistol/pistol_right_world_silenced.md5mesh
+
+	anim raise			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+	anim idle 			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+	anim aim			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+	anim fire 			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+	anim fire1 			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+	anim reload			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+	anim noammo			models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+ 	anim putaway		models/weapons/gdf_pistol/pistol_right_world_silenced.md5anim
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+template inventory/weapons/pistol_akimbo_template {
+	parameters < STATNAME >
+    text {
+		data {
+			"model_view" 						"viewmodel_pistol_akimbo"
+
+			"model_world" 						"worldmodel_pistol"
+			"model_world_2" 					"worldmodel_pistol_right"
+
+			"view_offset"						"-3 -1 -2"
+ 			"view_foreshorten"					"0.8"
+
+			"joint_attach"						"RightHand"
+			"joint_attach_2"					"LeftHand"
+
+			"num_world_models"					"2"
+
+			"anim_prefix"						"pistol_akimbo"
+			"anim_prefix_class"					"pistol"
+
+			"speed_mod"							"1.1"
+
+			"weapon_scriptobject"				"weapon_pistol_akimbo"
+
+			"recoilTime"						"120"
+			"recoilAngles"						"-0.25 0 0"
+			"kickback"							"1"
+			"kickback_prone"					"0.5"
+
+			"stat_name"							"STATNAME"
+
+			"snd_fire"							"sounds/weapons/pistol/fire"
+			"snd_fire_far"						"sounds/weapons/pistol/fire/far"
+			"snd_fire_local"					"sounds/weapons/pistol/fire/local"
+			"snd_cock"							"sounds/weapons/pistol/cock"
+			"snd_reload"						"sounds/weapons/pistol/reload"
+			"snd_mech"							"sounds/weapons/pistol/mech"
+			"snd_mag_out"						"sounds/weapons/pistol/mag_out"
+			"snd_mag_in"						"sounds/weapons/pistol/mag_in"
+			"snd_release"						"sounds/weapons/pistol/release"
+			"snd_raise"							"sounds/weapons/pistol/raise"
+			"snd_lowammo"						"sounds/weapons/misc/ammo_warning"
+			"snd_dryfire"						"sounds/weapons/misc/dryfire"
+
+			"fx_muzzle_flash"					"effects/weapons/pistol_muzzleflash_view"
+			"fx_muzzle_flash_world"				"effects/weapons/pistol_muzzleflash_world"
+
+			"fov_zoom"							"60"
+			"fov_time"							"0.25"
+			"fov_speed"							"0.5"
+			"fov_spread"						"0.5"
+			"realistic_fov_spread"				"0.125"
+
+			"fire_rate"							"0.12"
+			"low_ammo"							"4"
+
+			"tt_intro_1"						"akimbopistols_intro_1"
+			"tt_intro_2"						"generic_weapon_fire"
+			"tt_intro_ironsights_1"				""
+			"tt_intro_ironsights_2"				""
+			"tt_intro_reload"					"generic_weapon_reload"
+
+			"climate_skin_key"					"weapon_gdf"
+
+			"crosshair"							"small"
+
+			"crosshair_spread_min"				"-0.5"
+			"crosshair_spread_max"				"2.7"
+			"crosshair_spread_scale"			"2.7"
+
+			"spread_min"						"2"
+			"spread_max"						"10"
+			"spread_inc"						"2"
+
+			"spread_viewrate_min"				"2"
+			"spread_viewrate_max"				"10"
+			"spread_viewrate_inc"				"5"
+
+			"spread_max_settle_time"			"1200"
+
+			"spread_crouch_min"					"1.5"
+			"spread_crouch_max"					"8"
+			"spread_crouch_inc"					"1.25"
+
+			"spread_crouch_viewrate_min"		"1.5"
+			"spread_crouch_viewrate_max"		"8"
+			"spread_crouch_viewrate_inc"		"5"
+
+			"spread_crouch_max_settle_time"		"1000"
+
+			"spread_prone_min"					"1"
+			"spread_prone_max"					"4"
+			"spread_prone_inc"					"1.5"
+
+			"spread_prone_viewrate_min"			"1"
+			"spread_prone_viewrate_max"			"4"
+			"spread_prone_viewrate_inc"			"5"
+
+			"spread_prone_max_settle_time"		"800"
+
+			"autoswitch_priority"				"10"
+			
+			"player_weapon_num"					"1"
+		}
+    }
+}
+
+toolTip akimbopistols_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/akimbopistols_1"
+}
+
+template inventory/weapons/pistol_akimbo_clip_template {
+	parameters < PROJECTILE >
+    text {
+		clip {
+			"projectile"						"PROJECTILE"
+			"client_projectile"					"projectile_bullet"
+			"type"								"pistol"
+			"ammo_per_shot"						"1"
+			"max_ammo"							"20"
+		}
+	}
+}
+
+invItemDef inventory/weapons/pistol_akimbo {
+	type									"weapon"
+	slot									"sidearm"
+	name									"game/weapons/pistol_akimbo"
+	model									"models/weapons/gdf_pistol/pistol_player.lwo"
+	joint									"RightUpLeg"
+
+	useTemplate inventory/weapons/pistol_akimbo_template< "pistol_akimbo" >
+	useTemplate	inventory/weapons/pistol_akimbo_clip_template< "projectile_pistol_akimbo" >
+
+	data {
+		"mtr_weaponmenu"					"guis/assets/icons/weapons/akimbopistols"
+	}
+}
+
+invItemDef inventory/weapons/pistol_akimbo/silenced {
+	type									"weapon"
+	slot									"sidearm"
+	name									"game/weapons/pistol_akimbo_silenced"
+	model									"models/weapons/gdf_pistol/pistol_player.lwo"
+	joint									"RightUpLeg"
+
+	useTemplate inventory/weapons/pistol_akimbo_template< "pistol_akimbo_silenced" >
+
+	data {
+		"model_view" 						"viewmodel_pistol_akimbo_silenced"
+
+		"model_world"						"worldmodel_pistol_silenced"
+		"model_world_2"						"worldmodel_pistol_right_silenced"
+
+		"view_offset"						"-3 -1 -2"
+ 		"view_foreshorten"					"0.8"
+
+		"snd_fire"							"sounds/weapons/pistol/fire/silenced"
+		"snd_fire_far"						"silence"
+		"snd_fire_local"					"sounds/weapons/pistol/fire/silenced/local"
+
+		"fx_muzzle_flash"					"effects/weapons/pistol_muzzleflash_silenced_view"
+		"fx_muzzle_flash_world"				"effects/weapons/pistol_muzzleflash_silenced_world"
+
+		"climate_skin_key"					"weapon_gdf"
+
+		"fire_rate"							"0.15"
+
+		"spread_max_settle_time"			"1250"
+
+		"spread_crouch_max_settle_time"		"1000"
+
+		"spread_prone_max_settle_time"		"750"
+		"mtr_weaponmenu"					"guis/assets/icons/weapons/akimbosilencedpistols"
+	}
+
+	useTemplate inventory/weapons/pistol_akimbo_clip_template< "projectile_pistol_akimbo_silenced" >
+}
+
+entityDef projectile_pistol_akimbo {
+	"spawnclass"							"idProjectile"
+	"inherit"								"projectile_bullet_base"
+
+	"range"									"4096"
+	"min_damage_percent"					"10"
+
+	"dmg_damage"							"damage_pistol_akimbo"
+	"dmg_realistic_damage"						"realistic_damage_pistol_akimbo"
+}
+
+entityDef projectile_pistol_akimbo_silenced {
+	"spawnclass"							"idProjectile"
+	"inherit"								"projectile_bullet_base"
+
+	"range"									"4096"
+	"min_damage_percent"					"10"
+
+	"dmg_damage"							"damage_pistol_akimbo_silenced"
+	"dmg_realistic_damage"						"realistic_damage_pistol_akimbo_silenced"
+}
+
+damageDef damage_pistol_akimbo_silenced {
+	damage									"damage_pistol_akimbo"
+	kickDir									( 1 0 0 )
+
+	mtr_blob								"genericDamage"
+	blob_time								300
+	blob_offset_x							400
+
+	knockback								1
+
+	push									5000
+
+	kick_time								400
+	kick_amplitude							0.25
+
+	stat_name								"pistol_akimbo_silenced"
+	
+	record_hit_stats
+
+	prof_damage								"pro_light_weapons_damage"
+
+	tt_obituary								"tooltips/killmsgs/weapons/pistol_akimbo_silenced"
+	tt_obituary_team_kill					"tooltips/killmsgs/weapons/pistol_akimbo_silenced/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_pistol_akimbo_silenced {
+	inherit									"damage_pistol_akimbo_silenced"
+	damage									"realistic_damage_pistol_akimbo"
+}
+
+damageDef damage_pistol_akimbo {
+	damage									"damage_pistol_akimbo"
+	kickDir									( 1 0 0 )
+
+	mtr_blob								"genericDamage"
+	blob_time								300
+	blob_offset_x							400
+
+	knockback								1
+
+	push									5000
+
+	kick_time								400
+	kick_amplitude							0.25
+
+	stat_name								"pistol_akimbo"
+	
+	record_hit_stats
+
+	prof_damage								"pro_light_weapons_damage"
+
+	tt_obituary								"tooltips/killmsgs/weapons/pistol_akimbo"
+	tt_obituary_team_kill					"tooltips/killmsgs/weapons/pistol_akimbo/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_pistol_akimbo {
+	inherit									"damage_pistol_akimbo"
+	damage									"realistic_damage_pistol_akimbo"
+}
+
+damageFilter damage_pistol_akimbo {
+
+	type {
+		target								"target_player_all"
+		damage								15
+	}
+
+	type {
+		target								"target_veh_all"
+		damage								15
+	}
+
+	type {
+		target								"target_deployables_all"
+		damage								15
+	}
+}
+
+damageFilter realistic_damage_pistol_akimbo {
+
+	type {
+		target								"target_player_all"
+		damage								23
+	}
+
+	type {
+		target								"target_veh_light_all"
+		damage								7
+	}
+
+	type {
+		target								"target_veh_heavy_all"
+		damage								0
+	}
+
+	type {
+		target								"target_deployables_all"
+		damage								7
+	}
+}

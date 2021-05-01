@@ -1,0 +1,94 @@
+
+#ifndef __stats_deployables__
+#define __stats_deployables__
+
+$template _deployable_stats_table
+	properties {
+		float totalXP;
+		float totalUses;
+		float totalDisabled;
+		float totalDeployed;
+		float totalDestroyed;
+		float index;
+		
+		float lookup;
+		
+		float flags = immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents = false;
+		float fixedRowHeight	= STATS_ROW_HEIGHT;
+	}
+	events {
+		onCreate {
+			callSuper();
+			
+			insertColumn( toWStr( "<loc = 'guis/limbo/deployables'><width = 35%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'>" ), 32, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/deployed'><width = 17.5%>" ), 0, 2 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/uses'><width = 12.5%>" ), 0, 3 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/disabled'><width = 17.5%>" ), 0, 4 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/destroyed'><width = 17.5%>" ), 0, 5 );
+									
+			postNamedEvent( "statsUpdated" );
+		}
+		onNamedEvent "statsUpdated" {
+			clearItems();
+			totalXP = 0;
+			totalUses = 0;
+			totalDeployed = 0;
+			totalDisabled = 0;
+			totalDestroyed = 0;
+$endtemplate
+
+$template _end_deployable_stats_table
+		}
+	}
+$endtemplate
+
+$template _deployable_totals
+	index = insertItem( toWStr( "<material = 'stats_separator'>" ), -1, 0 );
+	setItemMaterialSize( "rect.w - 4, 16", index, 0 );
+	
+	index = insertItem( toWStr( "<loc = 'guis/mainmenu/totals'>" ), -1, 0 );
+	setItemText( toWString( totalXP, 0 ), index, 1 );
+	setItemText( toWString( totalDeployed, 0 ), index, 2 );
+	setItemText( toWString( totalUses, 0 ), index, 3 );
+	setItemText( toWString( totalDisabled, 0 ), index, 4 );
+	setItemText( toWString( totalDestroyed, 0 ), index, 5 );
+	
+$endtemplate
+
+$template _add_deployable_stat( ToolParm, NameParm, showUses )
+	index = insertItem( toWStr( "<loc ='game/deploy/" ## #NameParm ## "'>" ), -1, 0 );
+	
+	// XP
+	lookup = sdnet.getStat( #ToolParm ## "_xp" );
+	totalXP = immediate( totalXP + floor( lookup ) );	
+	setItemText( toWString( lookup, 0 ), index, 1 );		
+	
+	// Deployed
+	lookup = sdnet.getStat( #ToolParm ## "_deployed" );
+	setItemText( toWString( lookup, 0 ), index, 2 );
+	totalDeployed = immediate( totalDeployed + lookup );
+	
+	// Uses
+	$if ( showUses == "showUses" )
+		lookup = sdnet.getStat( #ToolParm ## "_uses" );
+		setItemText( toWString( lookup, 0 ), index, 3 );
+		totalUses = immediate( totalUses + lookup );
+	$else
+		setItemText( toWStr( "-" ), index, 3 );
+	$endif
+
+	// Disabled
+	lookup = sdnet.getStat( #ToolParm ## "_disabled" );
+	setItemText( toWString( lookup, 0 ), index, 4 );
+	totalDisabled = immediate( totalDisabled + lookup );
+
+	// Destroyed
+	lookup = sdnet.getStat( #ToolParm ## "_killed" );
+	setItemText( toWString( lookup, 0 ), index, 5 );
+	totalDestroyed = immediate( totalDestroyed + lookup );	
+	
+$endtemplate
+
+#endif // !__stats_deployables__

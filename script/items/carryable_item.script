@@ -1,0 +1,1185 @@
+
+#include "script/items/item_states.include"
+
+object carryable_item {
+	void				preinit();
+	void				init();
+	void				destroy();
+	void				syncFields();
+
+	void				OnCarrierChanged();
+	void				OnPickup( entity p );
+	void				OnDrop( entity p );
+	void				OnTouch( entity p, object traceObject );
+	void				OnReturned( string playerName );
+	float				OnUpdateCrosshairInfo( entity p );
+	void				OnObjectiveEntChanged();
+
+	void				CreateCMIcon();
+	void				DestroyCMIcon();
+
+	void				vFinishObjective() { DestroyCMIcon(); }
+	void				vStartObjective() { CreateCMIcon(); }
+
+	float				OnCollide( object traceObject, vector velocity, float bodyId );
+
+	void				SetupTasks();
+	void				SetupEffects();
+	void				SetupDropReturn();
+
+	void				DropReturnThread( float delay );
+	void				KillDropReturnThread();
+
+	void				CreatePickupTask();
+	void				CreateDefendTask();
+	void				CreateReturnTask();
+	void				CreateDeliverTask();
+	void				CreateDefendDeliverPointTask();
+	void				CreateStopTask();
+
+	void				Idle();
+	void				IdleAtBase();
+	void				Drop();
+	void				Reset();
+
+	void				SetAtBase( boolean value );
+
+	string				vGetQuickChatString( entity p );
+
+	entity				carrier;
+	entity				oldCarrier;
+
+	handle				itemname;
+	
+	string				objString;
+
+	string				vGetObjectiveString() { return objString; }
+	entity				vGetSpectateEntity();
+
+	boolean				atBase;
+	vector				startPos;
+	vector				startAngles;
+	float				waitTime;
+	float				iconHandle;
+	string				iconMaterial;
+	float				iconPriority;
+
+	handle				itemDroppedPlayer;
+	handle				itemDroppedEmpty;
+	handle				itemReturnedPlayer;
+	handle				itemReturnedEmpty;
+	handle				itemGrabbed;
+	handle				itemCaptured;
+
+	float				cmIconHandle;
+
+	string				crosshairIcon;
+
+	entity				vGetCarrier() { return carrier; }
+
+	entity				objectiveEnt;
+
+	float				pickupTaskDef;
+	float				deliverTaskDef;
+	float				defendDeliverPointTaskDef;
+
+	float				returnTaskDef;
+	float				defendTaskDef;
+	float				stopTaskDef;
+
+	task				pickupTask;
+	task				deliverTask;
+	task				defendDeliverPointTask;
+
+	task				returnTask;
+	task				defendTask;
+	task				stopTask;
+
+	void				UpdateObjectiveProgress();
+	void				SetObjectiveIndicator();
+	void				OnIsPrimaryObjectiveChanged();
+	void				vMakePrimaryObjective( boolean value );
+	void				UpdateObjectiveThread();
+	void				ClearObjectiveIndicator();
+	void				SetObjectiveReminderTime( float time );
+
+	boolean				isPrimaryObjective;
+
+	boolean				vIsPrimaryObjective() { return isPrimaryObjective; }
+
+	float				GetState();
+
+	float				nextObjectiveReminderTime;
+
+	handle				padEffect;
+	handle				dropEffect;
+	boolean				deployed;
+	
+	float				returnProficiencyCount;
+
+	void				vOnDeploy();
+	void				OnPosSynced();
+
+	void				FreePickupTask();
+	void				FreeReturnTask();
+	void				FreeDeliverTask();
+	void				FreeDefendDeliverPointTask();
+	void				FreeStopTask();
+	void				FreeDefendTask();
+
+	void				UpdateGUIThread();
+	void				FreeUpdateGUIThread();
+	
+	void				vCaptured();
+	
+	boolean				vDisablePlantCharge() { return true; }
+
+	boolean				initialised;
+	boolean				isMultiPartObjective;
+
+	float				updateGUIThread;
+}
+
+void carryable_item::FreePickupTask() {
+	if ( pickupTask != $null ) {
+		pickupTask.free();
+		pickupTask = $null;
+	}
+}
+
+void carryable_item::FreeReturnTask() {
+	if ( returnTask != $null ) {
+		returnTask.free();
+		returnTask = $null;
+	}
+}
+
+void carryable_item::FreeDeliverTask() {
+	if ( deliverTask != $null ) {
+		deliverTask.free();
+		deliverTask = $null;
+	}
+}
+
+void carryable_item::FreeDefendDeliverPointTask() {
+	if ( defendDeliverPointTask != $null ) {
+		defendDeliverPointTask.free();
+		defendDeliverPointTask = $null;
+	}
+}
+
+void carryable_item::FreeStopTask() {
+	if ( stopTask != $null ) {
+		stopTask.free();
+		stopTask = $null;
+	}
+}
+
+void carryable_item::FreeDefendTask() {
+	if ( defendTask != $null ) {
+		defendTask.free();
+		defendTask = $null;
+	}
+}
+
+
+// Gordon: FIXME: I really don't like this
+#define CARRYABLE_ITEM_START_UNDEFINED		'6666666 6666666 6666666'
+
+void carryable_item::preinit() {
+	itemname			= sys.localizeString( getKey( "item_name" ) );
+	waitTime			= getFloatKeyWithDefault( "wait_time", 30 );
+
+	itemDroppedPlayer	= sys.localizeString( "maps/generic/item/dropped/player" );
+	itemDroppedEmpty	= sys.localizeString( "maps/generic/item/dropped/empty" );
+	itemReturnedPlayer	= sys.localizeString( "maps/generic/item/returned/player" );
+	itemReturnedEmpty	= sys.localizeString( "maps/generic/item/returned/empty" );
+	itemGrabbed			= sys.localizeString( "maps/generic/item/grabbed" );
+	itemCaptured		= sys.localizeString( "maps/generic/item/captured" );
+
+	iconMaterial		= getKey( "mtr_icon" );
+	iconPriority		= getFloatKeyWithDefault( "icon_priority", 10 );
+	crosshairIcon		= getKey( "mtr_crosshair_icon" );
+
+	pickupTaskDef		= GetPlayerTask( getKey( "task_pickup" ) );
+	returnTaskDef		= GetPlayerTask( getKey( "task_return" ) );
+	deliverTaskDef		= GetPlayerTask( getKey( "task_deliver" ) );
+	defendDeliverPointTaskDef = GetPlayerTask( getKey( "task_defend_deliver_point" ) );
+	defendTaskDef		= GetPlayerTask( getKey( "task_defend" ) );
+	stopTaskDef			= GetPlayerTask( getKey( "task_stop" ) );
+
+	cmIconHandle		= -1;
+
+	padEffect			= 0;
+	dropEffect			= 0;
+
+	objString			= "docObjective";
+	
+	returnProficiencyCount = getFloatKeyWithDefault( "return_prof_count", 1.f );
+	
+	isMultiPartObjective= getIntKey( "multi_part_objective" );
+
+	updateGUIThread		= -1;
+
+	// initialize startPos to a wacky number
+	startPos = CARRYABLE_ITEM_START_UNDEFINED;
+	
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".transmitProgress", 0 );
+}
+
+void carryable_item::init() {
+	string teamName = getKey( "team" );
+	if ( teamName == "" ) {
+		sys.error( "carryable_item::preinit no team specified" );
+	} else {
+		setGameTeam( sys.getTeam( teamName ) );
+	}
+
+	setContents( CONTENTS_TRIGGER );
+	setClipmask( MASK_SOLID | CONTENTS_PLAYERCLIP | CONTENTS_FORCEFIELD );
+
+	if ( !sys.isClient() ) {
+		startPos	= getWorldOrigin();
+		startAngles	= getAngles();
+
+		if ( sys.getTeam( teamName ) == gdfTeam ) { //mal: flag there being an carryable obj on the map, and setup who owns it.
+			objManager.setActionObjState( ACTION_STATE_OBJ_BORN, GDF, self, self );
+		} else {
+			objManager.setActionObjState( ACTION_STATE_OBJ_BORN, STROGG, self, self );
+		}
+
+		if ( objectiveEnt == $null_entity ) {
+			objectiveEnt = getEntityKey( "objective" );
+			if ( objectiveEnt != $null_entity ) {
+				OnObjectiveEntChanged();
+			}
+		}
+	}
+
+	disableImpact();
+	disableKnockback();
+	
+	initialised = true;
+
+	if ( !sys.isClient() ) {
+		SetAtBase( true );
+	} else {
+		SetAtBase( atBase );
+	}
+}
+
+void carryable_item::vSetObjectiveString( string message ) {
+	objString = message;
+}
+
+void carryable_item::SetAtBase( boolean value ) {
+	atBase = value;
+	if ( initialised ) {
+		if ( atBase ) {
+			freeze( true );
+			setState( "IdleAtBase" );
+		} else {
+			freeze( false );
+			setState( "Idle" );
+		}
+	}
+}
+
+void carryable_item::UpdateObjectiveProgress() {
+	if ( sys.doClientSideStuff() ) {
+		float state = GetState();
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".progress", state );
+		
+		float transmitProgress = 0.f;
+		if ( objectiveEnt != $null_entity ) {
+			transmitProgress = objectiveEnt.vGetTransmitProgress();
+		}
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".transmitProgress", transmitProgress );
+	}
+}
+
+void carryable_item::SetObjectiveIndicator() {
+	UpdateObjectiveProgress();
+
+	if ( !isMultiPartObjective ) {
+		thread UpdateObjectiveThread();
+	}
+
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".isMultiPart", isMultiPartObjective );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".active", 1.f );
+	}
+
+	SetupTasks();
+	CreateCMIcon();
+}
+
+void carryable_item::OnIsPrimaryObjectiveChanged() {
+	ClearObjectiveIndicator();
+
+	if ( isPrimaryObjective ) {
+		SetObjectiveIndicator();
+	}
+}
+
+void carryable_item::vMakePrimaryObjective( boolean value ) {
+	isPrimaryObjective = value;
+	OnIsPrimaryObjectiveChanged();
+}
+
+void carryable_item::UpdateObjectiveThread() {
+	waitUntil( objManager.gameState == GS_GAMEON );
+
+	objManager.PlaySound( getKey( "snd_intro_strogg" ), stroggTeam );
+	objManager.PlaySound( getKey( "snd_intro_gdf" ), gdfTeam );
+
+	SetObjectiveReminderTime( sys.getTime() + OBJECTIVEMESSAGE_WAIT_TIME );
+
+	while ( true ) {
+		UpdateObjectiveProgress();
+
+		if ( !sys.isClient() ) {
+			if ( sys.getTime() >= nextObjectiveReminderTime ) {
+				if ( objManager.gameState == GS_GAMEON ) {
+					objManager.PlaySound( getKey( "snd_reminder_strogg" ), stroggTeam );
+					objManager.PlaySound( getKey( "snd_reminder_gdf" ), gdfTeam );
+				}
+
+				SetObjectiveReminderTime( sys.getTime() + OBJECTIVEMESSAGE_WAIT_TIME );
+			}
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void carryable_item::ClearObjectiveIndicator() {
+	sys.killThread( "UpdateObjectiveThread_" + getName() );
+
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".active", 0.f );
+	}
+
+	FreePickupTask();
+	FreeReturnTask();
+	FreeDeliverTask();
+	FreeDefendDeliverPointTask();
+}
+
+void carryable_item::SetObjectiveReminderTime( float time ) {
+	if ( time > nextObjectiveReminderTime ) {
+		nextObjectiveReminderTime = time;
+	}
+}
+
+void carryable_item::CreatePickupTask() {
+	if ( pickupTask == $null ) {
+		pickupTask = taskManager.allocEntityTask( pickupTaskDef, self );
+	}
+}
+
+void carryable_item::CreateDefendTask() {
+	if ( defendTask == $null ) {
+		defendTask = taskManager.allocEntityTask( defendTaskDef, self );
+	}
+}
+
+void carryable_item::CreateReturnTask() {
+	if ( returnTask == $null ) {
+		returnTask = taskManager.allocEntityTask( returnTaskDef, self );
+	}
+}
+
+void carryable_item::CreateDeliverTask() {
+	if ( deliverTask == $null ) {
+		deliverTask = taskManager.allocEntityTask( deliverTaskDef, objectiveEnt );
+	}
+}
+
+void carryable_item::CreateDefendDeliverPointTask() {
+	if ( defendDeliverPointTask == $null ) {
+		defendDeliverPointTask = taskManager.allocEntityTask( defendDeliverPointTaskDef, objectiveEnt );
+	}
+}
+
+void carryable_item::CreateStopTask() {
+	if ( stopTask == $null ) {
+		stopTask = taskManager.allocEntityTask( stopTaskDef, objectiveEnt );
+	}
+}
+
+void carryable_item::SetupTasks() {
+	SetupEffects();
+
+	if ( !isPrimaryObjective ) {
+		return;
+	}
+
+	if ( !isMultiPartObjective ) {
+		// ao: always show deliver task, makes it consistent with MCP task.
+		CreateDeliverTask();
+		CreateDefendDeliverPointTask();
+	}
+
+	if ( carrier == $null_entity ) {
+		FreeStopTask();
+		
+		CreatePickupTask();
+
+		if ( atBase ) {
+			FreeReturnTask();
+			CreateDefendTask();
+		} else {
+			FreeDefendTask();
+			CreateReturnTask();
+		}
+	} else {
+		FreePickupTask();
+		FreeReturnTask();
+		FreeDefendTask();
+		
+		if ( !isMultiPartObjective ) {
+			CreateStopTask();
+		}
+	}
+}
+
+void carryable_item::vOnDeploy() {
+	SetupTasks();
+	deployed = true;
+}
+
+void carryable_item::SetupEffects() {
+	if ( startPos == CARRYABLE_ITEM_START_UNDEFINED ) {
+		return;
+	}
+
+	if ( carrier == $null_entity ) {
+		if ( atBase ) {
+			if ( !padEffect ) {
+				padEffect = playOriginEffect( "fx_pad", "", startPos, '0 0 1', 1 );
+				unBindEffectHandle( padEffect );
+				setEffectOrigin( padEffect, startPos );
+				setEffectAngles( padEffect, '-90 0 0' );
+			}
+			if ( dropEffect ) {
+				stopEffectHandle( dropEffect );
+				dropEffect = 0;
+			}
+		} else {
+			if ( padEffect ) {
+				stopEffectHandle( padEffect );
+				padEffect = 0;
+			}
+			if ( !dropEffect ) {
+				// I'm not sure if the nerve guys want the dropped effect or not,
+				// but the script is in place just in case
+				//dropEffect = playEffect( "fx_dropped", "", 1 );
+			}
+		}
+	} else {
+		if ( padEffect ) {
+			stopEffectHandle( padEffect );
+		}
+		if ( dropEffect ) {
+			stopEffectHandle( dropEffect );
+		}
+
+		padEffect = 0;
+		dropEffect = 0;
+	}
+}
+
+void carryable_item::OnObjectiveEntChanged() {
+	SetupTasks();
+}
+
+void carryable_item::CreateCMIcon() {
+	DestroyCMIcon();
+
+	cmIconHandle		= sys.allocCMIcon( self, -103 );
+	float commandMapSize	= getFloatKeyWithDefault( "icon_size_cm", 16 );
+	sys.setCMIconSize( cmIconHandle, commandMapSize );
+	sys.setCMIconColorMode( cmIconHandle, CM_NORMAL );
+	sys.setCMIconMaterial( cmIconHandle, GetMaterial( iconMaterial ) );
+	sys.setCMIconFlag( cmIconHandle, CMF_ALWAYSKNOWN );
+}
+
+void carryable_item::DestroyCMIcon() {
+	if ( cmIconHandle != -1 ) {
+		sys.freeCMIcon( self, cmIconHandle );
+		cmIconHandle = -1;
+	}
+}
+
+void carryable_item::vOnPlayerKilled( entity p ) {
+	if ( p == carrier ) {
+		Drop();
+	}
+}
+
+void carryable_item::Idle() {
+	playCycle( ANIMCHANNEL_ALL, "idle_onground" );
+	freeze( false );
+}
+
+void carryable_item::IdleAtBase() {	
+	startSound( "snd_idle", SND_ANY );
+	playCycle( ANIMCHANNEL_ALL, "idle_atbase" );
+	while ( true ) {
+		sys.waitFrame();
+	}
+}
+
+void carryable_item::destroy() {
+
+	if ( !sys.isClient() ) { //mal: let the bots know it was delivered - useful for multi - obj maps.
+		objManager.setActionObjState( ACTION_STATE_OBJ_DELIVERED, NOTEAM, self, self );
+	}	
+
+	if ( carrier != $null_entity ) {
+		carrier.setCarryingObjective( false );
+		carrier.freeIcon( iconHandle );
+	}
+
+	FreePickupTask();
+	FreeReturnTask();
+	FreeDeliverTask();
+	FreeDefendDeliverPointTask();
+	DestroyCMIcon();
+
+	if ( padEffect ) {
+		stopEffectHandle( padEffect );
+	}
+	if ( dropEffect ) {
+		stopEffectHandle( dropEffect );
+	}
+	
+	if ( isPrimaryObjective ) {
+		ClearObjectiveIndicator();
+	}
+
+	entity p = sys.getLocalPlayer();
+	if ( p != $null_entity ) {
+		if ( p == carrier ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.carryableItemActive", 0 );
+			FreeUpdateGUIThread();
+		}
+	}
+
+	stopSound( SND_ANY );
+}
+
+void carryable_item::syncFields() {
+	syncBroadcast( "carrier" );
+	syncCallback( "carrier", "OnCarrierChanged" );
+	syncBroadcast( "startPos" );
+	syncCallback( "startPos", "OnPosSynced" );
+	syncBroadcast( "atBase" );
+	syncCallback( "atBase", "OnPosSynced" );
+	syncBroadcast( "objectiveEnt" );
+	syncCallback( "objectiveEnt", "OnObjectiveEntChanged" );
+	syncBroadcast( "deployed" );
+	syncCallback( "deployed", "vOnDeploy" );
+}
+
+void carryable_item::Drop() {
+	if ( stopTask != $null ) {
+		stopTask.complete();
+		stopTask.free();
+		stopTask = $null;
+	}
+
+	OnDrop( carrier );
+
+	activatePhysics();
+
+	carrier		= $null_entity;
+	SetupTasks();
+}
+
+void carryable_item::Reset() {
+	if ( !sys.isClient() ) {
+		objManager.setActionObjState( ACTION_STATE_OBJ_RETURNED, NOTEAM, self, self );
+	}
+
+	SetAtBase( true );
+	setOrigin( startPos );
+	setAngles( startAngles );
+
+	SetupTasks();
+
+	// ao: Must be the last thing that happens in this function.
+	OnReturned( "" );
+}
+
+void carryable_item::SetupDropReturn() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( waitTime <= 0 ) {
+		return;
+	}
+	
+	thread DropReturnThread( waitTime );
+}
+
+void carryable_item::DropReturnThread( float delay ) {
+	sys.wait( delay );	
+	Reset();
+}
+
+void carryable_item::OnCarrierChanged() {
+	if ( carrier != $null_entity ) {
+		OnPickup( carrier );
+	} else {
+		OnDrop( oldCarrier );
+	}
+
+	oldCarrier = carrier;
+
+	SetupEffects();
+}
+
+void carryable_item::KillDropReturnThread() {
+	sys.killThread( "DropReturnThread_" + getName() );
+}
+
+void carryable_item::OnPickup( entity p ) {
+	objManager.PushCPrintString( p.getUserName() );
+	objManager.PushCPrintHandle( itemname );
+	objManager.CPrintEvent( itemGrabbed, $null );
+
+	objManager.PlaySound( getKey( "snd_stolen_strogg" ), stroggTeam );
+	objManager.PlaySound( getKey( "snd_stolen_gdf" ), gdfTeam );
+
+	stopSound( SND_ANY );
+
+	// create the player icon
+	iconHandle = p.createIcon( iconMaterial, iconPriority, 0.f );
+	
+	if ( !sys.isClient() ) {
+		if ( p.isDisguised() ) {
+			p.disguise( $null_entity );
+		}
+	}
+	
+	KillDropReturnThread();
+
+	setOrigin( p.getWorldOrigin() + '0 0 64' );
+	bind( p );
+	hide();
+
+	player pEnt = p;
+	pEnt.setCarryingObjective( true );
+
+	sys.setCMIconFlag( cmIconHandle, CMF_ENEMYALWAYSKNOWN );
+	sys.clearCMIconFlag( cmIconHandle, CMF_ALWAYSKNOWN );
+
+	if ( p.isLocalPlayer() ) {
+		p.sendToolTip( GetToolTip( getKey( "tt_pickup" ) ) );
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.carryableItemActive", 1 );
+		FreeUpdateGUIThread();
+		updateGUIThread = thread UpdateGUIThread();
+	}
+
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".state", CARRYABLE_ITEM_CARRIER );
+}
+
+void carryable_item::OnDrop( entity p ) {
+	if ( p != $null_entity ) {
+		objManager.PushCPrintString( p.getUserName() );
+		objManager.PushCPrintHandle( itemname );
+		objManager.CPrintEvent( itemDroppedPlayer, $null );
+	} else {
+		objManager.PushCPrintHandle( itemname );
+		objManager.CPrintEvent( itemDroppedEmpty, $null );
+	}
+
+	objManager.PlaySound( getKey( "snd_dropped_strogg" ), stroggTeam );
+	objManager.PlaySound( getKey( "snd_dropped_gdf" ), gdfTeam );
+
+	startSound( "snd_idle", SND_ANY );
+
+	SetupDropReturn();
+
+	if ( p != $null_entity ) {
+		p.freeIcon( iconHandle );
+
+		player pEnt = p;
+		pEnt.setCarryingObjective( false );
+	}
+
+	if ( !sys.isClient() ) {
+		objManager.setActionObjState( ACTION_STATE_OBJ_DROPPED, NOTEAM, self, self );
+	}	
+
+	unbind();
+	show();
+
+	sys.clearCMIconFlag( cmIconHandle, CMF_ENEMYALWAYSKNOWN );
+	sys.setCMIconFlag( cmIconHandle, CMF_ALWAYSKNOWN );
+
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".state", CARRYABLE_ITEM_DROPPED );
+
+	if ( p.isLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.carryableItemActive", 0 );
+		FreeUpdateGUIThread();
+	}
+}
+
+void carryable_item::OnTouch( entity p, object traceObject ) {
+	if ( carrier != $null_entity || sys.isClient() || p.getHealth() <= 0 ) {
+		return;
+	}
+
+	player test = p;
+	if ( test == $null_entity ) {
+		return;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	if ( allegiance == TA_ENEMY ) {
+		if ( p.vGetCarryableItem() != $null_entity ) {
+			return;
+		}
+
+		if ( !sys.isClient() ) {
+			objManager.setActionObjState( ACTION_STATE_OBJ_STOLEN, NOTEAM, self, p );
+		}
+		
+		SetAtBase( false );
+		carrier = p;
+		OnPickup( p );
+		if ( pickupTask != $null ) {
+			pickupTask.complete();
+			pickupTask.free();
+			pickupTask = $null;
+		}
+		SetupTasks();
+	} else if ( allegiance == TA_FRIEND ) {
+		if ( !atBase ) {
+			setOrigin( startPos );
+			setAngles( startAngles );
+			SetAtBase( true );
+
+			if ( !sys.isClient() ) {
+				objManager.setActionObjState( ACTION_STATE_OBJ_RETURNED, NOTEAM, self, p );
+			}
+			
+			p.giveClassProficiency( returnProficiencyCount, "returned objective" );
+	
+			OnReturned( p.getUserName() );
+			if ( returnTask != $null ) {
+				returnTask.complete();
+				returnTask.free();
+				returnTask = $null;
+			}
+			SetupTasks();
+		}
+	}
+}
+
+void carryable_item::OnReturned( string playerName ) {
+	objManager.PlaySound( getKey( "snd_returned_strogg" ), stroggTeam );
+	objManager.PlaySound( getKey( "snd_returned_gdf" ), gdfTeam );
+
+	if ( playerName != "" ) {
+		objManager.PushCPrintString( playerName );
+		objManager.PushCPrintHandle( itemname );
+		objManager.CPrintEvent( itemReturnedPlayer, $null );
+	} else {
+		objManager.PushCPrintHandle( itemname );
+		objManager.CPrintEvent( itemReturnedEmpty, $null );
+	}
+
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".state", CARRYABLE_ITEM_HOME );
+
+	// ao: Must be the last thing that happens in this function
+	KillDropReturnThread();
+}
+
+float carryable_item::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+
+	chSetNumLines( 0 );
+
+	vector color = GetAllegianceColor( allegiance );
+	team_base team;
+
+	float index = chAddLine();
+	chSetLineTextIndex( index, itemname );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+	if ( ( range <= 25.f ) && ( range >= 5.f ) ) {
+		index = chAddLine();
+		chSetLineText( index, G_BuildRangeStr( range ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;
+}
+
+void carryable_item::OnPosSynced() {
+	SetupEffects();
+	SetAtBase( atBase );
+
+	if ( atBase ) {
+		OnReturned( "" );
+	}
+}
+
+float carryable_item::OnCollide( object traceObject, vector velocity, float bodyId ) {
+	float shaderFlags;
+	entity collisionEnt;
+
+	shaderFlags = traceObject.getTraceSurfaceFlags();
+	if ( shaderFlags & SURF_NOIMPACT || shaderFlags & SURF_NOPLANT ) {
+		return false;
+	}
+
+	collisionEnt = traceObject.getTraceEntity();
+	
+	if ( collisionEnt != sys.getEntity( "worldspawn" ) ) {
+		return false;
+	}
+	
+	// push the view out of the surface a bit
+	vector normal = traceObject.getTraceNormal();
+	if ( normal_z < 0.4f ) {
+		return false;
+	}
+	
+	// align to the surface normal
+	alignToAxis( normal, Z_AXIS );
+	setOrigin( traceObject.getTracePoint() );
+
+	if ( !sys.isClient() ) {
+		putToRest();
+	}
+	return true;
+}
+
+string carryable_item::vGetQuickChatString( entity p ) {
+	if ( p.getGameTeam() == getGameTeam() ) {
+		if ( atBase ) {
+			return "quickchat/objectives/defend";
+		} else {
+			return "quickchat/objectives/return";
+		}
+	} else {
+		return "quickchat/objectives/take";
+	}
+
+	return "";
+}
+
+void carryable_item::UpdateGUIThread() {
+	while ( true ) {
+		sys.wait( 5.f );
+		sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.bumpNotifyIcon", "carryableitem" );
+	}
+}
+
+void carryable_item::FreeUpdateGUIThread() {
+	if ( updateGUIThread != -1 ) {
+		sys.terminate( updateGUIThread );
+		updateGUIThread = -1;
+	}
+}
+
+float carryable_item::GetState() {
+	float state = IS_DEFAULT;
+	if ( carrier == $null_entity ) {
+		if ( !atBase ) {
+			state = IS_DROPPED;
+		}
+	} else {
+		state = IS_CARRIED;
+	}
+	return state;
+}
+
+
+void carryable_item::vCaptured() {
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, objString + ".transmitProgress", 1 );
+}
+
+entity carryable_item::vGetSpectateEntity() {
+	if ( carrier != $null_entity ) {
+		return carrier;
+	}
+	if ( !atBase ) {
+		return self;
+	}
+	
+	return $null_entity;
+}
+
+/*
+===============================================================================
+
+carryable_item_dropped
+
+===============================================================================
+*/
+object carryable_item_dropped : carryable_item {
+	void		syncFields();
+	void		init();
+
+	boolean		manualDeploy;
+	entity		deployer;
+};
+
+void carryable_item_dropped::syncFields() {
+	syncBroadcast( "deployer" );
+}
+
+void carryable_item_dropped::init() {
+	if ( !manualDeploy && !sys.isClient() ) {
+		vOnDeploy();
+	}
+}
+
+void carryable_item_dropped::vSetOwner( entity o ) {
+	deployer = o;
+}
+
+void carryable_item_dropped::vOnDeploy() {
+	deployed = true;
+	startPos	= getWorldOrigin();
+	startAngles	= getAngles();
+
+	if ( !sys.isClient() ) {
+		objectiveEnt = deployer.getEntityKey( "target_objective" );
+		OnObjectiveEntChanged();
+
+		setGameTeam( sys.getTeam( getKey( "deployteam" ) ) );
+	}
+}
+
+void carryable_item_dropped::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+
+
+/*
+===============================================================================
+
+item_drop_pod
+
+===============================================================================
+*/
+object item_drop_pod {
+	void		preinit();
+	void		syncFields();
+	void		init();
+
+	void		SmashThread();
+	void		OnEffectOriginUpdate();
+
+	void		vSetOwner( entity o );
+
+	void		DeployAnimThread( entity item );
+
+	boolean		manualDeploy;
+	boolean		deployed;
+
+	string		idleClosedAnim;
+	string		idleOpenAnim;
+	string		openAnim;
+	string		defaultEffect;
+
+	// used for playing the crashing effects
+	// note that it can only play one effect per frame
+	entity		lastEffectEntity;
+	vector		lastEffectOrigin;
+
+	entity		targetEnt;
+	
+	float		itemIndex;
+}
+
+void item_drop_pod::syncFields() {
+	syncBroadcast( "deployed" );
+	syncCallback( "deployed", "vOnDeploy" );
+	sync( "lastEffectEntity" );
+	sync( "lastEffectOrigin" );
+	syncCallback( "lastEffectOrigin", "OnEffectOriginUpdate" );
+}
+
+void item_drop_pod::preinit() {
+	defaultEffect = getKey( "fx_smash" );
+	if ( !sys.isClient() ) {
+		thread SmashThread();
+	}
+	
+	itemIndex = getFloatKeyWithDefault( "item_index", -1 );
+	if ( itemIndex == -1 ) {
+		sys.warning( "item_drop_pod::preinit no item index set" );
+	}
+}
+void item_drop_pod::init() {
+	if ( !manualDeploy && !sys.isClient() ) {
+		vOnDeploy();
+	}
+
+	idleClosedAnim = getKeyWithDefault( "anim_idle_closed", "idle_closed" );
+	idleOpenAnim = getKeyWithDefault( "anim_idle_open", "idle_open" );
+	openAnim = getKeyWithDefault( "anim_open", "deploy" );
+
+	if ( !deployed ) {
+		playCycle( ANIMCHANNEL_ALL, idleClosedAnim );
+
+		disableImpact();
+		forceDisableClip();
+	} else {
+		playCycle( ANIMCHANNEL_ALL, idleOpenAnim );
+	}
+}
+
+void item_drop_pod::vSetOwner( entity o ) {
+	targetEnt = o.getEntityKey( "target" );
+}
+
+void item_drop_pod::vOnDeploy() {
+	deployed = true;
+
+	forceEnableClip();
+	putToRest();
+	disableImpact();
+
+	sys.killThread( "SmashThread_" + getName() );
+
+	entity item;
+	if ( !sys.isClient() ) {
+		// create the item, then open the pod up
+		float itemDef = GetEntityDef( getKey( "def_item" ) );
+		item = sys.spawnType( itemDef );
+
+		vector mins = item.getMins();
+		vector maxs = item.getMaxs();
+
+		// find the spawning point for the item
+		vector traceEnd = getWorldOrigin();
+		vector traceStart = traceEnd + '0 0 128';
+		
+		sys.trace( traceStart, traceEnd, mins, maxs, CONTENTS_PLAYERCLIP, item );
+		vector spawnPoint = sys.getTraceEndPos();
+		item.setWorldOrigin( spawnPoint );
+
+		item.setAngles( getAngles() );
+		if ( itemIndex != -1 ) {
+			targetEnt.vOnItemDeployed( itemIndex, item );
+		}
+
+		// do some radius damage
+		sys.applyRadiusDamage( getWorldOrigin(), self, $null_entity, $null_entity, self, GetDamage( getKey( "dmg_landing" ) ), 1.0f, 1.0f );
+	}
+	
+	thread DeployAnimThread( item );
+}
+
+void item_drop_pod::DeployAnimThread( entity item ) {
+	playAnim( ANIMCHANNEL_ALL, openAnim );
+	waitUntil( !isAnimating() );
+	playCycle( ANIMCHANNEL_ALL, idleOpenAnim );
+
+	if ( item != $null_entity ) {
+		item.vOnDeploy();
+	}
+}
+
+void item_drop_pod::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+void item_drop_pod::SmashThread() {
+	vector lastOrigin = getWorldOrigin();
+	eachFrame {
+		vector origin = getWorldOrigin();
+
+		// build a bounds with the last origin and this origin
+		vector mins = origin;
+		vector maxs = lastOrigin;
+		if ( mins_x > maxs_x ) {
+			mins_x = lastOrigin_x;
+			maxs_x = origin_x;
+		}
+		if ( mins_y > maxs_y ) {
+			mins_y = lastOrigin_y;
+			maxs_y = origin_y;
+		}
+		if ( mins_z > maxs_z ) {
+			mins_z = lastOrigin_z;
+			maxs_z = origin_z;
+		}
+
+		mins = mins - '16 16 16';
+		maxs = maxs + '16 16 16';
+
+		lastOrigin = origin;
+
+	//	sys.debugBounds( '1 1 1', mins, maxs, 0.f );
+
+		float count = entitiesInBounds( mins, maxs, MASK_ALL, 1 );
+		float i;
+		boolean hasPlayedEffect = false;
+		for( i = 0; i < count; i++ ) {
+			entity ent = getBoundsCacheEntity( i );
+			if( ent == self || ent == $null_entity ) {
+				continue;
+			}
+
+			if ( !hasPlayedEffect ) {
+				if ( ent.inCollection( "drop_pod_smash" ) ) {
+					ent.hide();
+					ent.forceDisableClip();
+
+					// show the showing target
+					entity showEnt = ent.getEntityKey( "target_show" );
+					if ( showEnt != $null_entity ) {
+						showEnt.show();
+						showEnt.forceEnableClip();
+					}
+
+					// set up the effect stuff
+					lastEffectEntity = ent;
+					lastEffectOrigin = ( origin + lastOrigin ) * 0.5f;
+					OnEffectOriginUpdate();
+
+
+					// NOTE - since it can only play one effect per frame,
+					// for consistency I'm not letting it hide multiple entities
+					// per frame either.
+					break;
+				}
+			}
+		}
+	}
+}
+
+void item_drop_pod::OnEffectOriginUpdate() {
+	if ( lastEffectEntity == $null_entity ) {
+		return;
+	}
+
+	string effect = lastEffectEntity.getKeyWithDefault( "fx_drop_pod_smash", defaultEffect );
+
+	// play the effect
+	if ( effect != "" ) {
+		sys.playWorldEffect( effect, '1 1 1', lastEffectOrigin, '0 0 1' );
+	}
+}

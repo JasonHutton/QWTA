@@ -1,0 +1,384 @@
+/***********************************************************************
+
+	weapons/misc/blaster.def
+
+***********************************************************************/
+
+//quicktest
+export frankie
+
+	{
+
+	camera	demos/webpage_test_4_b.mb -dest demos/webpage_test_1
+	}
+
+//quicktest end
+
+
+
+
+
+
+
+
+
+
+
+// ========================================================================
+// Export weapons/misc/nailgun.def
+//
+/*
+export hauser {
+	options -prefix BLASTER_ -sourcedir models/weapons/strogg_blaster/dev_sd -destdir models/weapons/strogg_blaster/ -keep muzzle overheat_left overheat_right
+
+
+	mesh	blaster_base_file.mb	-dest models/weapons/strogg_blaster/view.md5mesh
+
+
+	anim	blaster_base_file.mb	-dest models/weapons/strogg_blaster/base.md5anim
+	anim	blaster_idle.mb			-dest models/weapons/strogg_blaster/idle.md5anim
+ 	anim	blaster_raise.mb		-dest models/weapons/strogg_blaster/raise.md5anim
+ 	anim	blaster_lower.mb		-dest models/weapons/strogg_blaster/lower.md5anim
+ 	anim	blaster_fire.mb			-dest models/weapons/strogg_blaster/fire.md5anim
+ 	anim	blaster_fire2.mb		-dest models/weapons/strogg_blaster/fire2.md5anim
+ 	anim	blaster_fire3.mb		-dest models/weapons/strogg_blaster/fire3.md5anim
+ 	anim	blaster_reload.mb		-dest models/weapons/strogg_blaster/reload.md5anim
+
+	anim	blaster_chargeup.mb		-dest models/weapons/strogg_blaster/blaster_chargeup.md5anim
+ 	anim	blaster_charged_idle.mb	-dest models/weapons/strogg_blaster/blaster_charged_idle.md5anim
+ 	anim	blaster_charged_fire.mb	-dest models/weapons/strogg_blaster/blaster_charged_fire.md5anim
+
+
+}
+*/
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_blaster {
+	mesh				models/weapons/strogg_blaster/view.md5mesh
+
+	anim idle			models/weapons/strogg_blaster/idle.md5anim {
+	}
+	anim raise			models/weapons/strogg_blaster/raise.md5anim {
+		frame	1		sound_channel snd_weapon_foley snd_raise
+	}
+	anim fire			models/weapons/strogg_blaster/fire.md5anim {
+	}
+	anim fire2			models/weapons/strogg_blaster/fire2.md5anim {
+	}
+	anim fire3			models/weapons/strogg_blaster/fire3.md5anim {
+	}
+	anim putaway 		models/weapons/strogg_blaster/lower.md5anim {
+	}
+	anim overheat 			models/weapons/strogg_blaster/reload.md5anim {
+		frame 7				effect fx_overheat overheat_left
+		frame 10			sound_channel snd_weapon_mech snd_steam
+	}
+	anim zoomout			models/weapons/strogg_blaster/base.md5anim {
+	}
+	anim zoomin				models/weapons/strogg_blaster/base.md5anim {
+		frame 1				sound_channel snd_weapon_foley snd_init
+	}
+	anim idle_zoom			models/weapons/strogg_blaster/base.md5anim {
+	}
+	anim fire_zoom			models/weapons/strogg_blaster/fire.md5anim {
+	}
+
+	anim start_sprint 		models/weapons/strogg_blaster/lower.md5anim {
+	}
+	anim leave_sprint 		models/weapons/strogg_blaster/raise.md5anim {
+	}
+	anim chargeup 			models/weapons/strogg_blaster/blaster_chargeup.md5anim {
+	}
+	anim charged_idle 		models/weapons/strogg_blaster/blaster_charged_idle.md5anim {
+	}
+	anim charged_fire 		models/weapons/strogg_blaster/blaster_charged_fire.md5anim {
+	}
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_blaster {
+	mesh		 				models/weapons/strogg_blaster/blaster.md5mesh
+
+	anim raise					models/weapons/strogg_blaster/blaster.md5anim {
+	}
+	anim idle 					models/weapons/strogg_blaster/blaster.md5anim {
+	}
+	anim aim					models/weapons/strogg_blaster/blaster.md5anim {
+	}
+	anim fire1 					models/weapons/strogg_blaster/blaster.md5anim {
+	}
+	anim reload					models/weapons/strogg_blaster/blaster.md5anim {
+	}
+	anim noammo					models/weapons/strogg_blaster/blaster.md5anim {
+	}
+ 	anim putaway				models/weapons/strogg_blaster/blaster.md5anim {
+ 	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/blaster {
+	type									"weapon"
+	slot									"sidearm"
+	name									"game/weapons/blaster"
+	model									"models/weapons/strogg_blaster/blaster_player.lwo"
+	joint									"RightUpLeg"
+
+	data {
+		"model_view" 						"viewmodel_blaster"
+		"model_world" 						"worldmodel_blaster"
+		"view_offset"						"-5.5 -0.9 0"
+		"view_foreshorten"					"0.86"
+		"joint_attach"						"RightForeArmRoll"
+
+		"anim_prefix"						"blaster"
+		"anim_prefix_class"					"hands"
+
+		"speed_mod"							"1.1"
+
+		"weapon_scriptobject"				"weapon_blaster"
+		"silent_fire"						"0"
+
+		"recoilTime"						"150"
+		"recoilAngles"						"-0.25 0 0"
+		"kickback"							"1"
+		"kickback_prone"					"0.5"
+
+		"stat_name"							"blaster"
+
+		"fx_overheat"						"effects/weapons/blaster_steam"
+		"fx_overheat_world"					"effects/weapons/blaster_steam"
+		"fx_muzzle_flash"					"effects/weapons/blaster_muzzleflash_view"
+		"fx_muzzle_flash_world"					"effects/weapons/blaster_muzzleflash_world"
+
+		//charged shot
+		"fx_charge_muzzle"					"effects/weapons/blaster_chargedshot_chargeup_view"
+		"fx_charge_muzzle_loop"				"effects/weapons/blaster_chargedshot_idle_view"
+		"fx_charge_left"					"effects/weapons/blaster_chargedshot_steam_view"
+		"fx_charge_muzzle_world"			"effects/weapons/blaster_chargedshot_chargeup_world"
+		"fx_charge_muzzle_loop_world"			"effects/weapons/blaster_chargedshot_idle_world"
+
+		"snd_fire"							"sounds/weapons/blaster/fire"
+		"snd_fire_far"						"sounds/weapons/blaster/fire/far"
+		"snd_fire_local"					"sounds/weapons/blaster/fire/local"
+		"snd_cock"							"sounds/weapons/pistol/cock"
+		"snd_steam"							"sounds/weapons/blaster/steam"
+		"snd_lowammo"						"sounds/weapons/misc/ammo_warning"
+		"snd_raise"							"sounds/weapons/blaster/raise"
+		"snd_init"							"sounds/weapons/railgun/init"
+		"snd_unzoom"						"sounds/weapons/railgun/unzoom"
+		"snd_charge"						"sounds/weapons/blaster/charge"
+		"snd_fire_charged"					"sounds/weapons/blaster/fire/charged"
+		"snd_fire_charged_local"			"sounds/weapons/blaster/fire/charged/local"
+
+		"fov_zoom"							"60"
+		"fov_time"							"0.25"
+		"fov_speed"							"0.5"
+		"fov_spread"						"0.5"
+		"realistic_fov_spread"				"0.25"
+
+		"fire_rate"							"0.15"
+
+		"num_projectiles"					"1"
+		"low_ammo"							"5"
+		"show_all_ammo"						"0"
+		"hide_clip"							"1"
+		"clip_based"						"0"
+
+		"mtr_weaponmenu"					"guis/assets/icons/weapons/blaster"
+		"gui_sniper_scope"					"guis/game/sights/generic_scope"
+		"hud_sort"							"999"
+
+		"crosshair"							"small"
+		"disabled_crosshair_secondary"		"small"
+
+		"crosshair_spread_min"				"-0.5"
+		"crosshair_spread_max"				"4"
+		"crosshair_spread_scale"			"2"
+
+		"spread_min"						"1"
+		"spread_max"						"10"
+		"spread_inc"						"2"
+
+		"spread_viewrate_min"				"1"
+		"spread_viewrate_max"				"10"
+		"spread_viewrate_inc"				"5"
+
+		"spread_max_settle_time"			"1200"
+
+		"spread_crouch_min"					"0.75"
+		"spread_crouch_max"					"8"
+		"spread_crouch_inc"					"1.75"
+
+		"spread_crouch_viewrate_min"		"0.75"
+		"spread_crouch_viewrate_max"		"8"
+		"spread_crouch_viewrate_inc"		"5"
+
+		"spread_crouch_max_settle_time"		"1000"
+
+		"spread_prone_min"					"0.5"
+		"spread_prone_max"					"4"
+		"spread_prone_inc"					"1.5"
+
+		"spread_prone_viewrate_min"			"0.5"
+		"spread_prone_viewrate_max"			"4"
+		"spread_prone_viewrate_inc"			"5"
+
+		"spread_prone_max_settle_time"		"800"
+
+		"overheat_length"					"5"
+		"overheat_per_shot"					"0.6"
+		"timer_heat"						"heat_blaster"
+
+		"autoswitch_priority"				"10"
+
+		"hide_crosshair"					"0"
+
+		"player_weapon_num"					"1"
+
+		"tt_intro_1"						"blaster_intro_1"
+		"tt_intro_2"						"generic_weapon_fire"
+		"tt_intro_ironsights_1"				"blaster_ironsights"
+		"tt_intro_ironsights_2"				"generic_weapon_ironsights"
+		"tt_intro_heat"						"generic_weapon_heat"
+	}
+
+	clip {
+		"projectile"						"projectile_blaster"
+		"client_projectile"					""
+		"type"								"infinite"
+		"ammo_per_shot"						"0"
+		"max_ammo"							"1"
+	}
+}
+
+entityDef projectile_blaster {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base_big"
+
+	"range"								"4096"
+	"min_damage_percent"				"10"
+
+	"tracer_chance"						"0"
+	"tracer_interval"					"1"
+	"fx_tracer"							"effects/weapons/hyperblaster_tracer"
+
+  	"fx_explode"						"effects/impacts/blaster/impact_default"
+	"fx_explode_pavement"				"effects/impacts/blaster/impact_pavement"
+ 	"fx_explode_stone"					"effects/impacts/blaster/impact_stone"
+  	"fx_explode_concrete"				"effects/impacts/blaster/impact_stone"
+	"fx_explode_dirt"					"effects/impacts/blaster/impact_dirt"
+	"fx_explode_mud"					"effects/impacts/blaster/impact_dirt"
+	"fx_explode_flesh"					"effects/impacts/blaster/impact_flesh"
+	"fx_explode_glass"					"effects/impacts/blaster/impact_glass"
+	"fx_explode_ice"					"effects/impacts/blaster/impact_glass"
+ 	"fx_explode_gravel"					"effects/impacts/blaster/impact_stone"
+	"fx_explode_metal"					"effects/impacts/blaster/impact_metal"
+	"fx_explode_metal_thick"			"effects/impacts/blaster/impact_metal"
+	"fx_explode_dusty_road"				"effects/impacts/blaster/impact_sand"
+	"fx_explode_sand"					"effects/impacts/blaster/impact_sand"
+	"fx_explode_snow"					"effects/impacts/blaster/impact_snow"
+	"fx_explode_wood"					"effects/impacts/blaster/impact_wood"
+	"fx_explode_wood_thick"				"effects/impacts/blaster/impact_wood"
+ 	"fx_explode_liquid"					"effects/impacts/blaster/impact_liquid"
+  	"fx_explode_water"					"effects/impacts/blaster/impact_liquid"
+	"fx_explode_water_interior"			"effects/impacts/blaster/impact_liquid"
+	"fx_explode_forcefield"				"effects/base/bullets/impact_forcefield"
+	"fx_explode_grass"					"effects/impacts/blaster/impact_grass"
+ 	"fx_explode_plastic"				"effects/impacts/blaster/impact_plastic"
+
+	"dmg_damage"						"damage_blaster"
+	"dmg_realistic_damage"					"realistic_damage_blaster"
+}
+
+damageDef damage_blaster {
+	damage								"damage_blaster"
+
+	knockback							1
+	push								5000
+
+	prof_damage							"pro_light_weapons_damage"
+
+	stat_name							"blaster"
+
+	record_hit_stats
+
+	knockback							10
+	kick_time							100
+	kick_amplitude						0
+	kickDir								( 1 0 0 )
+
+	tt_obituary							"tooltips/killmsgs/weapons/blaster"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/blaster/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_blaster {
+	inherit								"damage_blaster"
+	damage								"realistic_damage_blaster"
+}
+
+damageFilter damage_blaster {
+
+	type {
+		target							"target_player_all"
+		damage							18
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							18
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							13
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							18
+	}
+}
+
+damageFilter realistic_damage_blaster {
+
+	type {
+		target							"target_player_all"
+		damage							45
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							18
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							18
+	}
+}
+
+toolTip blaster_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/blaster_1"
+}
+
+toolTip blaster_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}

@@ -1,0 +1,408 @@
+/***********************************************************************
+
+weapon_lightningpistol.script
+
+***********************************************************************/
+
+object weapon_lightningpistol : weapon_base {
+	void		preinit();
+	void		init();
+	void		destroy();
+
+	void		Idle();
+	void		Fire();
+	void		Raise();
+	void		Lower();
+	void		Cleanup();
+	void		UpdateLightningEffect( vector hitPos, vector hitDir, float traceFraction, vector traceNormal );
+	void		DoLightning( boolean doDamage );
+	void		Overheat();
+	void		Reload() { Overheat(); }
+
+	void		LoadScopeGUI();
+	void		FreeScopeGUI();
+
+	void		OnIronSightsEnabled() { hide(); }
+	void		OnIronSightsDisabled() { show(); }
+
+	void		OnBecomeViewWeapon();	
+	void		OnFinishViewWeapon();
+
+	float		range;
+	object		effect;
+	object		effectImpact;
+	
+	float		worldMuzzle;
+	entity		worldModel;
+	
+	float		localMuzzle;
+	float		scopeGUIHandle;
+
+	handle		statNumFired;
+	
+	float		lightningDamage;
+
+	boolean		dryfireAttack;
+}
+
+void weapon_lightningpistol::preinit() {
+	range = getFloatKeyWithDefault( "range", 2048 );
+	
+	string statName = getKey( "stat_name" );
+	if ( statName != "" ) {
+		statNumFired = sys.allocStatInt( statName + "_shots_fired" );
+	}
+	
+	lightningDamage = GetDamage( getKey( "dmg_lightning" ) );
+}
+
+void weapon_lightningpistol::init() {
+	worldModel	= getWorldModel( 0 );
+	worldMuzzle = worldModel.getJointHandle( "muzzle" );
+	
+	localMuzzle	= getJointHandle( "muzzle" );
+	
+	weaponState( "Raise", 0 );
+}
+
+void weapon_lightningpistol::destroy() {
+	stopSound( SND_WEAPON_FIRE2 );
+	killEffect( "fx_muzzle_flash" );
+	
+	FreeScopeGUI();
+
+	if ( effect != $null_entity ) {
+		effect.remove();
+	}
+	if ( effectImpact != $null_entity ) {
+		effectImpact.remove();
+	}
+
+	if ( ShouldRunGuis() ) {
+		KillUpdateHeat();
+	}
+}
+
+void weapon_lightningpistol::Cleanup() {
+	FreeScopeGUI();
+	DisableIronSights();
+	stopSound( SND_WEAPON_FIRE2 );
+}
+
+void weapon_lightningpistol::Idle() {
+	myPlayer.disableSprint( 0.f );
+
+	weaponReady();
+
+	if ( ironSightsEnabled ) {
+		playCycle( ANIMCHANNEL_ALL, "idle_zoom" );
+	} else {
+		playCycle( ANIMCHANNEL_ALL, "idle" );
+	}
+
+	while ( true ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			weaponState( "Lower", 4 );
+		}
+
+		CheckIronSights();
+
+		// dryfire sound
+		if ( myPlayer.getButton( PK_ATTACK ) ) {
+			if ( !dryfireAttack && !ammoAvailable( 0 ) ) {
+				if ( myPlayer == sys.getLocalViewPlayer() ) {
+					startSound( "snd_dryfire", SND_WEAPON_DRYFIRE );
+					dryfireAttack = true;
+				}
+			}
+		} else {
+			dryfireAttack = false;
+		}
+
+		if ( ( sys.getTime() >= reFire ) ) {
+			if ( WEAPON_ATTACK ) {
+				if ( ammoAvailable( 0 ) > 0 ) {
+					weaponState( "Fire", 0 );
+				}
+			}
+		}
+
+		if ( myPlayer.AI_SPRINT ) {
+			weaponState( "Sprint", 4 );
+		}
+
+		UpdateCharge();
+
+		sys.waitFrame();
+	}
+}
+
+void weapon_lightningpistol::Fire() {
+	myPlayer.disableSprint( 1.f );
+
+	PlayFireSound();
+	startSound( "snd_fire_loop", SND_WEAPON_FIRE2 );
+
+	// start firing - create the lightning effect
+	effect = spawnClientEffect( "fx_lightning" );
+	if ( effect != $null_entity ) {
+		effect.setEffectLooping( 1 );
+	}
+
+	float nextAnimation = 0;
+
+	while ( ammoAvailable( 0 ) > 0 && WEAPON_ATTACK ) {
+		if ( sys.getTime() > nextAnimation ) {
+			if ( !sys.isClient() ) {
+				if ( myPlayer != $null_entity ) {
+					sys.increaseStatInt( statNumFired, myPlayer.getEntityNumber(), 1 );
+				}
+			}
+			PlayFireEffect();
+			playAnim( ANIMCHANNEL_ALL, "fire" );
+			nextAnimation = sys.getTime() + fireRate;
+			AmmoCheckClip( 0 );
+			DoLightning( true );
+		} else {
+			DoLightning( false );
+		}
+
+		if ( IsOverheated() ) {
+			if ( effect != $null_entity ) {
+				effect.remove();
+			}
+			if ( effectImpact != $null_entity ) {
+				effectImpact.remove();
+			}
+
+			stopSound( SND_WEAPON_FIRE2 );
+
+			weaponState( "Overheat", 4 );
+		}
+
+		CheckIronSights();
+
+		if ( WEAPON_LOWERWEAPON ) {
+			break;
+		}
+
+		sys.waitFrame();
+	}
+
+	if ( !ammoAvailable( 0 ) ) {
+		if ( !dryfireAttack ) {
+			if ( myPlayer == sys.getLocalViewPlayer() ) {
+				startSound( "snd_dryfire", SND_WEAPON_DRYFIRE );
+				dryfireAttack = true;
+			}
+		}
+		weaponHolstered();
+//		nextWeapon();
+	}
+
+	if ( effect != $null_entity ) {
+		effect.remove();
+	}
+	if ( effectImpact != $null_entity ) {
+		effectImpact.remove();
+	}
+
+	stopSound( SND_WEAPON_FIRE2 );
+
+	weaponState( "Idle", 0 );
+}
+
+void weapon_lightningpistol::UpdateLightningEffect( vector hitPos, vector hitDir, float traceFraction, vector traceNormal ) {
+	vector muzzlePos;
+
+	if ( !sys.doClientSideStuff() ) {
+		return;
+	}
+
+	if ( sys.getLocalViewPlayer() != myPlayer || pm_thirdperson.getBoolValue() ) {
+		muzzlePos = worldModel.getJointPos( worldMuzzle );
+		if ( effect != $null_entity ) {
+			effect.unbind();
+			effect.setOrigin( muzzlePos );
+		}
+	} else {
+		if ( effect != $null_entity ) {
+			effect.unbind();
+			effect.setOrigin( '0 0 0' );
+			effect.bindToJoint( self, "muzzle", 0 );
+		}
+		muzzlePos = getJointPos( localMuzzle );
+	}
+
+	vector dir = hitPos - muzzlePos;
+	vector angles;
+	
+	float len = sys.vecLengthSquared( dir );
+	dir = sys.vecNormalize( dir );
+	float dp = dir * hitDir;
+	if ( len < 1500 || dp < 0.f ) {
+		dir = hitDir;
+	} else
+	if ( len < 2000 ) {
+		float blend = (len - 1500) / 500;
+		dir = dir * blend + hitDir * (1-blend);
+	}
+	
+	// the beam
+	if ( effect != $null_entity ) {
+		effect.setEffectEndOrigin( hitPos );
+		
+		angles = sys.vecToAngles( dir );
+		effect.setAngles( angles );
+	}
+	
+	// impact effect
+	if ( traceFraction < 1.0f ) {
+		if ( effectImpact == $null_entity ) {
+			effectImpact = spawnClientEffect( "fx_lightning_hit" );
+			if ( effectImpact != $null_entity ) {
+				effectImpact.setEffectLooping( 1 );
+			}
+		}
+	} else {
+		if ( effectImpact != $null_entity ) {
+			effectImpact.remove();
+		}
+	}
+	
+	if ( effectImpact != $null_entity ) {
+		effectImpact.setOrigin( hitPos );
+		
+		if ( traceFraction < 1.0f ) {
+			dir = traceNormal;
+		} else {
+			dir = -dir;
+		}
+		
+		angles = sys.vecToAngles( dir );
+		effectImpact.setAngles( angles );
+	}
+}
+
+void weapon_lightningpistol::DoLightning( boolean doDamage ) {
+	fired();
+
+	float mask = MASK_PROJECTILE | MASK_SHOT_BOUNDINGBOX;
+	if ( sys.isClient() ) {
+		mask = mask | CONTENTS_WATER;
+	}
+	sys.enablePlayerHeadModels();
+	melee( mask, range, true, true );
+
+	vector traceEnd = getMeleeEndPos();
+	vector startPos = myPlayer.getViewOrigin();
+	vector dir = traceEnd - startPos;
+	dir = sys.vecNormalize( dir );
+	
+	float traceFraction = getMeleeFraction();
+	vector traceNormal = getMeleeNormal();
+
+	entity collisionEnt = getMeleeEntity();
+	string collisionSurface = getMeleeSurfaceType();
+
+	if ( doDamage ) {
+		if ( collisionEnt != $null_entity ) {
+			// TODO: This could possibly be done with meleeAttack instead
+			object traceObject = saveMeleeTrace();
+			collisionEnt.applyDamage( self, myPlayer, dir, lightningDamage, 1.f - getMeleeFraction(), traceObject );
+			sys.freeTrace( traceObject );
+
+			spawnClientCrawlEffect( "fx_crawl", collisionEnt, 0.5 );
+		}
+		
+		UseAmmo_Stroyent( 0 );
+
+		AddHeat();
+	}
+	sys.disablePlayerHeadModels();
+
+	UpdateLightningEffect( traceEnd, dir, traceFraction, traceNormal );
+}
+
+void weapon_lightningpistol::Overheat() {
+	boolean wasEnabled = false;
+	float lastZoomState;
+
+	wasEnabled = ironSightsEnabled;
+	if ( wasEnabled ) {
+		show();
+		DisableIronSights();
+		waitUntil( !ironSightsThreadActive );
+	}
+
+	weaponReloading();
+	stopSound( SND_WEAPON_FIRE2 );
+
+	if ( effect != $null_entity ) {
+		effect.remove();
+	}
+	if ( effectImpact != $null_entity ) {
+		effectImpact.remove();
+		effectImpact = $null_entity;
+	}
+	
+	StartCooling();
+
+	playAnim( ANIMCHANNEL_ALL, "overheat" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+
+	FinishCooling();
+
+	/*if ( wasEnabled ) {
+		EnableIronSights();
+		waitUntil( !ironSightsThreadActive );
+	}*/
+
+	weaponState( "Idle", 4 );
+}
+
+void weapon_lightningpistol::Raise() {
+	if ( ShouldRunGuis() ) {
+		CreateUpdateHeat();
+	}
+	Base_Raise();	
+}
+	
+void weapon_lightningpistol::Lower() {
+	stopSound( SND_WEAPON_FIRE2 );
+	
+	if ( ShouldRunGuis() ) {
+		KillUpdateHeat();
+	}
+	Base_Lower();	
+}
+
+void weapon_lightningpistol::LoadScopeGUI() {
+	FreeScopeGUI();
+
+	scopeGUIHandle = sys.allocHudModule( getKey( "gui_sniper_scope" ), getFloatKeyWithDefault( "hud_sort", 0 ), false );
+}
+
+void weapon_lightningpistol::FreeScopeGUI() {
+	if ( scopeGUIHandle != -1 ) {
+		sys.freeHudModule( scopeGUIHandle );
+		scopeGUIHandle = -1;
+	}
+}
+
+void weapon_lightningpistol::OnBecomeViewWeapon() {
+	if ( localIronSightsEffectsActive ) {
+		AddLocalIronSightsEffects();
+	}
+	if ( ShouldRunGuis() ) {
+		CreateUpdateHeat();
+	}
+	UpdateCrosshair();
+}
+
+void weapon_lightningpistol::OnFinishViewWeapon() {
+	KillUpdateHeat();
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponReloadTime", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0.f );
+	RemoveLocalIronSightsEffects();
+}

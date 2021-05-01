@@ -1,0 +1,469 @@
+
+table jupiter_gear_speedtable {
+	clamp
+	{
+		10, 20, 30, 35, 40
+	}
+}
+
+table jupiter_gear_forcetable {
+	clamp
+	{
+		3000000, 2750000, 2500000, 2250000, 2000000
+	}
+}
+
+template templates/vehicles/jupiter/wheel_behavior {
+	parameters< >
+	text {
+		"slowonLeftRightParm"			"1"
+
+		"drive"							"1"
+		"noRotation"					"1"
+		"contactFriction" 				"0.3 0.7 0"
+
+		"health"						"-1"
+
+		"radius"						"20"
+		"footprint"						"30"
+
+		"suspensionUpTrace"				"12"
+		"suspensionDownTrace"			"28"
+		"suspensionKCompress"			"35000"
+		"suspensionDamping"				"0.1"
+		"suspensionVelocityScale"		"200"
+		"suspensionBase"				"250000"
+		"suspensionRange"				"32"
+		"suspensionMaxRestVelocity"		"2.5"
+
+		"traction_sand"					"0.85"
+		"traction_mud"					"0.85"
+		"traction_grass"				"1.00"
+		"traction_stone"				"0.85"
+	}
+}
+
+
+template templates/vehicles/jupiter/small_wheel_behavior {
+	parameters< LeftRightParm, NumParm>
+	text {
+		"name"					"LeftRightParm_wheel_rotation_NumParm"
+		"joint"					"LeftRightParm_wheel_rotation_NumParm"
+
+		"noRotation"			"1"
+		"noPhysics"				"1"
+		"footprint"				"1"
+
+		"radius"				"10"
+	}
+}
+
+vehicleDef jupiter {
+
+	engineSoundDef {
+		sound					"snd_treads"	// sound shader
+		low						5				// starting speed of mover units/sec
+		high					1000			// end speed of mover units/sec
+		volumeMin				-60				// volume @ FadeIn in dB (default -25)
+		volumeMax				-15
+		fadeIn					200				// fade in @ speed (low + fadeIn)
+		fadeOut					0				// fade out @ speed (high - fadeOut)
+		lowFrequency			0.8				// freq multiplier @ low + frequencyChangeStart
+		highFrequency			1.4				// freq multiplier @ high + frequencyChangeStop
+		frequencyChangeStart	0				// pitch change starts @ low + frequencyChangeStart
+		frequencyChangeStop		1500			// pitch change ends @ low + frequencyChangeStop
+	}
+
+	// main chassis
+	part {
+		"mins"				"-112 -92 30"
+		"maxs"				"182 92 60"
+
+		"type"				"frustum"
+		"topOffset"			"-2"
+
+		"mass"				"10000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.125"
+
+		"buoyancy"			"0.025"
+	}
+
+	// rear bit
+	part {
+		"mins"				"-138 -48 30"
+		"maxs"				"-100 48 64"
+
+		"type"				"frustum"
+		"topOffset"			"-2"
+
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"collisionScale"	"0.25"
+
+		"buoyancy"			"1"
+	}
+
+	// upper turret
+	part {
+		"mins"				"-126 -73 60"
+		"maxs"				"82 73 108"
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+
+		"buoyancy"			"0.065"
+	}
+
+	// main chassis
+	hurtZone {
+		"mins"				"-112 -92 0"
+		"maxs"				"182 92 30"
+	}
+
+	mass {
+		"origin"			"0 0 16"
+		"mass"				"5000"
+	}
+	
+	antiroll {
+		"angle_start"					"0.1"
+		"angle_end"						"15"
+		"strength"						"2"
+	}
+	antipitch {
+		"angle_start"					"0.1"
+		"angle_end"						"15"
+		"strength"						"2"
+	}
+
+	wheel /* left_01 */ {
+		useTemplate templates/vehicles/jupiter/small_wheel_behavior< "left", "01" >
+	}
+
+	wheel /* left_08 */ {
+		useTemplate templates/vehicles/jupiter/small_wheel_behavior< "left", "08" >
+	}
+
+	wheel /* right_01 */ {
+		useTemplate templates/vehicles/jupiter/small_wheel_behavior< "right", "01" >
+	}
+
+	wheel /* right_08 */ {
+		useTemplate templates/vehicles/jupiter/small_wheel_behavior< "right", "08" >
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_jupiter_cockpit"
+		"scriptobject"		"vehicle_basic_cockpit"
+	}
+
+	positionDef {
+		name				"guis/vehicles/jupiter_driver"
+		hudname				"guis/vehicles/jupiter_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"15"
+			"cockpit"				"main"
+			"stat_name"				"titan_driver"
+			"joint_icon"			"carrier_driver"
+		}
+
+		view {
+			eyeJoint		"gunner_cam"
+			eyeJointPivot	"turret"
+			type			"pivot"
+			followYaw
+			followPitch
+			cameraHeight	-7
+			cameraDistance	-15
+			thirdperson
+		//	showCockpit
+			showTargetingInfo
+			showCrosshairInThirdPerson
+			noMatchPrevious
+			sensitivityPitchScale	"m_heavyVehiclePitchScale"
+			sensitivityYawScale		"m_heavyVehicleYawScale"
+
+			clamp pitch {
+				min			-40
+				max			7
+				rate 		110
+			}
+
+			clamp yaw {
+				rate		110
+			}
+			
+			clamp dampedPitch {
+				min			-360
+				max			46
+			}
+		}
+
+		view {
+			eyeJoint		"turret"
+			type			"smooth_free"
+			cameraHeight	150
+			cameraDistance	500
+			thirdperson
+			sensitivityPitchScale	"m_heavyVehiclePitchScale"
+			sensitivityYawScale		"m_heavyVehicleYawScale"
+
+			clamp pitch {
+				min			-40
+				max			10
+				rate		240
+			}
+
+			clamp yaw {
+				rate		240
+			}
+		}
+
+
+		weapon {
+			weapon			"vehicle_jupiter_weapon1"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp pitch {
+				min			-40
+				max			7
+				rate		110
+				sound		"sounds/vehicles/titan/turret/pitch"
+			}
+
+			clamp yaw {
+				rate		110
+				sound		"sounds/vehicles/titan/turret/yaw"
+			}
+		}
+	}
+
+	exitDef {
+		joint			"exit_point_03"
+	}
+
+	exitDef {
+		joint			"exit_point_04"
+	}
+
+	exitDef {
+		joint			"exit_point_01"
+	}
+
+	exitDef {
+		joint			"exit_point_02"
+	}
+
+	track {
+		"direction"			"1 0 0"
+		"joint"				"right_wheel_rotation_04"
+		"shaderParmIndex"	"10"
+
+		"num_true_wheels"	"5"
+
+		"start_wheel"		"right_wheel_rotation_01"
+		"end_wheel"			"right_wheel_rotation_08"
+
+		"wheel_joint_2"			"right_wheel_rotation_02"
+		"wheel_suspension_2"	"right_wheel_dynamix_02"
+
+		"wheel_joint_3"			"right_wheel_rotation_03"
+		"wheel_suspension_3"	"right_wheel_dynamix_03"
+
+		"wheel_joint_4"			"right_wheel_rotation_04"
+		"wheel_suspension_4"	"right_wheel_dynamix_04"
+
+		"wheel_joint_5"			"right_wheel_rotation_05"
+		"wheel_suspension_5"	"right_wheel_dynamix_05"
+
+		"wheel_joint_6"			"right_wheel_rotation_07"
+		"wheel_suspension_6"	"right_wheel_dynamix_07"
+
+		"wheel_trace_index_2"	"5"
+		"wheel_trace_index_3"	"2"
+		"wheel_trace_index_4"	"4"
+		"wheel_trace_index_5"	"8"
+		"wheel_trace_index_6"	"1"
+
+		useTemplate templates/vehicles/jupiter/wheel_behavior<>
+		"base_org_offset"				"0 7 0"
+	}
+
+	track {
+		"direction"			"1 0 0"
+		"joint"				"left_wheel_rotation_04"
+		"shaderParmIndex"	"9"
+
+		"num_true_wheels"	"5"
+
+		"start_wheel"		"left_wheel_rotation_01"
+		"end_wheel"			"left_wheel_rotation_08"
+
+		"wheel_joint_2"			"left_wheel_rotation_02"
+		"wheel_suspension_2"	"left_wheel_dynamix_02"
+
+		"wheel_joint_3"			"left_wheel_rotation_03"
+		"wheel_suspension_3"	"left_wheel_dynamix_03"
+
+		"wheel_joint_4"			"left_wheel_rotation_04"
+		"wheel_suspension_4"	"left_wheel_dynamix_04"
+
+		"wheel_joint_5"			"left_wheel_rotation_05"
+		"wheel_suspension_5"	"left_wheel_dynamix_05"
+
+		"wheel_joint_6"			"left_wheel_rotation_07"
+		"wheel_suspension_6"	"left_wheel_dynamix_07"
+
+		"wheel_trace_index_2"	"0"
+		"wheel_trace_index_3"	"7"
+		"wheel_trace_index_4"	"5"
+		"wheel_trace_index_5"	"3"
+		"wheel_trace_index_6"	"6"
+
+		useTemplate templates/vehicles/jupiter/wheel_behavior<>
+		"base_org_offset"				"0 -7 0"
+	}
+
+	simplePart {
+		"name"				"barrel"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_jupiter_barrel"
+		"health" 			"-1"
+	}
+
+	simplePart {
+		"name"				"gun"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_jupiter_gun"
+		"health" 			"-1"
+	}
+
+	simplePart {
+		"name"				"hull"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_jupiter_hull"
+		"health" 			"-1"
+		"flip_power"		"20"
+		"flip_master"		"1"
+	}
+
+	simplePart {
+		"name"				"turret"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_jupiter_turret"
+		"health" 			"-1"
+	}
+}
+
+entityDef part_vehicle_jupiter_barrel {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/barrel.lwo",
+			"1500 0 1000",
+			"0 0 90",
+			"vehicles/misc/debris/hollow_large"
+		>
+	"climate_skin_key"				"titan"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_jupiter_gun {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/gun.lwo",
+			"0 0 900",
+			"6 0 12",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"titan"
+	
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_jupiter_hull {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/hull.lwo",
+			"0 0 500",
+			"0 10 0",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"titan"
+	
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_jupiter_turret {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_titan/parts/turret.lwo",
+			"700 150 1500",
+			"0 20 0",
+			"vehicles/misc/debris/metal_large"
+		>
+	"climate_skin_key"				"titan"
+	
+
+	"priority"						"2"
+}
+
+stringMap jupiterTestSuspension {
+	"joint"				"right_wheel_dynamix_02"
+	"type"				"vertical"
+	"lerp_scale"		".3"
+}
+
+entityDef vehicle_jupiter_cockpit {
+	"model"						"models/scopes/scope_titan.lwo"
+	"joint_attach"				"pilot_cam"
+	"offset"					"1 0 -0.5"
+	"passenger_id"				"1"
+}
+
+stringMap vehicle_jupiter_weapon1 {
+	"gunName"					"game/weapons/bfg10k"
+	"weapon_name"				"bfg"
+
+	"charge_max"				"3"
+	"charge_per_use"			"100"
+	"overheat_penalty"			"0"
+	"use_heat_bar"				"0"
+
+	"weapon1_muzzle"			"muzzle"
+	"gunJointYaw"				"turret"
+	"gunJointPitch"				"gun"
+
+	"muzzle"					"muzzle"
+	"muzzle_parent"				"gun"
+	"muzzle_flash"				"fx_bfg_muzzlefire"
+	"muzzle_sound"				"snd_bfg_firesound"
+	"muzzle_sound_local"			"snd_bfg_firesound_local"
+	"muzzle_charge"				"fx_bfg_muzzlecharge"
+	"muzzle_chargesound"			"snd_bfg_chargesound"
+	"muzzle_chargesound_local"		"snd_bfg_chargesound_local"
+	//"muzzle_fizzle"				"fx_bfg_muzzlefizzle"
+	//"muzzle_dryfire"			"snd_bfg_dryfire"
+	
+	"trigger_delay"				"2.2"
+	
+	"feedback"					"1000000"
+	"velocity"					"2000 0 0"
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_chargeshot"
+	"def_projectile"			"projectile_bfg"
+	"weapon_priority"			"1"
+	
+	//"dmg_bfg_overcharged"		"damage_bfg_overcharged"
+	
+	//"clean_explode"				"fx_bfg_cleanexplode"
+
+	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"20"
+	"ammo_per_use"				"1"
+}

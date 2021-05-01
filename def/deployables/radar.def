@@ -1,0 +1,254 @@
+// ========================================================================
+// Export for game
+/*
+reexportmodels deployables/radar.def
+testmodel deployable_radar
+*/
+
+export hauser {
+	options -prefix RADA_ -sourcedir models/structures/edf/deployables/intel/dev_sd -destdir models/structures/edf/deployables/intel/ -keep lower_arm front_left_upper_leg front_left_hip front_right_upper_leg front_right_hip rear_left_upper_leg rear_left_hip rear_right_upper_leg rear_right_hip front_right_lower_leg rear_left_lower_leg rear_right_lower_leg front_left_lower_leg
+addoptions -keepmesh MESH_upper_hydrolix MESH_upper_piston MESH_turntable MESH_upper_arm MESH_upper_hydrolix6 MESH_main_hydrolix MESH_main_piston MESH_hinge MESH_front_right_lower_leg MESH_front_left_lower_leg MESH_rear_left_lower_leg MESH_rear_right_lower_leg MESH_front_left_feet1 MESH_front_right_feet1 MESH_rear_left_feet1 MESH_rear_right_feet1 MESH_hull MESH_radar_dish MESH_rear_left_wheel MESH_rear_right_wheel MESH_front_left_wheel MESH_front_right_wheel MESH_front_right_hip MESH_front_left_hip MESH_rear_left_hip MESH_rear_right_hip MESH_rear_left_upper_leg MESH_front_left_upper_leg MESH_front_right_upper_leg MESH_rear_right_upper_leg
+
+	mesh	radar_LOD0.mb		-dest radar.md5mesh
+	//anim	radar_anims.mb		-dest radar_undeployed.md5anim 			-range 	1 1
+	//anim	radar_anims.mb		-dest radar_deploy_fk.md5anim 			-range  1 44
+ 	//anim	radar_anims.mb		-dest radar_deploy_ik.md5anim 			-range  45 176
+ 	//anim	radar_anims.mb		-dest radar_idle.md5anim 			-range  176 176
+
+ 	//anim	radar_anims.mb		-dest radar_damaged.md5anim 			-range  180 190
+ 	//anim	radar_anims.mb		-dest radar_disabled.md5anim 			-range  200 220
+
+ 	//anim	radar_anims.mb		-dest radar_disabled_to_damaged.md5anim 	-range  190 190
+ 	//anim	radar_anims.mb		-dest radar_damaged_to_idle.md5anim 		-range  176 176
+
+
+	//anim	radar_deploy_nerve.mb		-dest radar_deploy_fk.md5anim 			-range  1 58
+ 	//anim	radar_deploy_nerve.mb		-dest radar_deploy_ik.md5anim 			-range  59 200
+
+
+ 	//mesh	radar_LOD1.ma		-dest radar_lod1_boned.md5mesh
+ 	//mesh	radar_LOD2.ma		-dest radar_lod2_boned.md5mesh
+}
+
+export hauser {
+		options -prefix RADA_ -sourcedir models/structures/edf/deployables/intel/dev_sd -destdir models/structures/edf/deployables/intel/ -keep lower_arm front_left_upper_leg front_left_hip front_right_upper_leg front_right_hip rear_left_upper_leg rear_left_hip rear_right_upper_leg rear_right_hip front_right_lower_leg rear_left_lower_leg rear_right_lower_leg front_left_lower_leg
+
+	addoptions 	-noJoints
+	addoptions	-keepmesh L2_front_left_lower_leg L2_front_right_lower_leg L2_rear_right_lower_leg L2_rear_left_lower_leg L2_turntable L2_upper_arm L2_lower_arm L2_main_hydrolix L2_main_piston L2_hinge L2_front_left_feet1 L2_front_right_feet1 L2_rear_right_feet1 L2_rear_left_feet1 L2_rear_left_upper_leg L2_rear_right_upper_leg L2_front_right_upper_leg L2_front_left_upper_leg L2_radar_dish L2_hull L2_upper_hydrolix5 L2_upper_piston L2_rear_right_wheel L2_rear_left_wheel L2_front_right_wheel L2_front_left_wheel
+
+	mesh	radar_LOD0.mb		-dest radar_lod1.md5mesh
+
+	mesh	radar_LOD0.mb		-dest radar_lod2.md5mesh
+}
+
+// ========================================================================
+// Models
+//
+
+model deployable_radar {
+	mesh							models/structures/edf/deployables/intel/radar.md5mesh
+
+	anim base						models/structures/edf/deployables/intel/radar_idle.md5anim
+	anim undeployed					models/structures/edf/deployables/intel/radar_undeployed.md5anim
+	anim pre_ik						models/structures/edf/deployables/intel/radar_deploy_fk.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy_feet
+	}
+	anim post_ik					models/structures/edf/deployables/intel/radar_deploy_ik.md5anim {
+		frame 10						sound_channel snd_deployable_deploy2 snd_deploy_arm
+	}
+
+	//anim deployed					models/structures/edf/deployables/intel/radar_idle.md5anim
+	anim damaged					models/structures/edf/deployables/intel/radar_damaged.md5anim
+	anim destroyed					models/structures/edf/deployables/intel/radar_disabled.md5anim
+	anim disabled_to_damaged		models/structures/edf/deployables/intel/radar_disabled_to_damaged.md5anim
+	anim damaged_to_idle			models/structures/edf/deployables/intel/radar_damaged_to_idle.md5anim
+}
+
+// ========================================================================
+// Entity Def
+//
+
+deployObject deployobject_radar {
+	"name"							"radar"
+	"title"							"game/deploy/radar"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_radar"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"str_placement"					"deployitem_radar_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"intelligence"
+	"allow_rotation"				"0"
+}
+
+stringMap deployitem_radar_placement_model {
+	"model"							"models/structures/edf/deployables/intel/radar.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+entityDef deployable_radar {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_gdf"
+
+	"climate_skin_key"				"deployable_intel"
+
+	"title"							"game/deploy/radar"
+
+	"collection_gui_count"			"deployable_radar"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The EDF Radar Unit"
+	"editor_mins"					"-128 -144 0"
+	"editor_maxs"					"168 144 512"
+
+	"spawnclass"					"sdScriptEntity"
+	"scriptobject"					"deployable_intelligence"
+
+	"model"							"deployable_radar"
+	"cm_model"						"models/structures/edf/deployables/intel/radar_clip.lwo"
+
+	"num_ik"						"4"
+	"str_ik0"						"sounds/deployables/radar/leg_1_ik"
+	"str_ik1"						"sounds/deployables/radar/leg_2_ik"
+	"str_ik2"						"sounds/deployables/radar/leg_3_ik"
+	"str_ik3"						"sounds/deployables/radar/leg_4_ik"
+
+	"mtr_color"						"guis/assets/deploy/icons/gdf_radar"
+	"mtr_desat"						"guis/assets/deploy/icons/gdf_radar_desat"
+	"mtr_half_desat"				"guis/assets/deploy/icons/gdf_radar_half_desat"
+	"mtr_full_desat"				"guis/assets/deploy/icons/gdf_radar_bright_desat"
+
+	"stat_name"						"radar"
+
+	"task_name"						"game/deploy/radar"
+
+	"ch_name"						"game/deploy/radar"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_radar_interface"		"1"
+	"option_crosshair_offset"		"0 0 128"
+	"option_no_inhibit_physics"		"1"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"radar"
+
+	// jotun parachuting stuff
+	"option_simple_physics"			"1"
+	"drop_snap"						"1"
+	"freeze_on_spawn"				"1"
+	"parachute_offset"				"0 0 100"
+	"gravity"						"800"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_radar"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_radar"
+	"icon_size_cm"					"10"
+
+	"health"						"3000"
+	"repair_multiplier"				"1.5"
+
+	"action_time"					"10"
+
+	"range"							"8500"
+	"mask"							"1"
+	"global"						"0"
+
+	"snd_idle"						"sounds/deployables/radar/idle"
+	"snd_deploy_feet"				"sounds/deployables/radar/deploy/feet"
+	"snd_deploy_arm"				"sounds/deployables/radar/deploy/arm"
+
+	"do_object"						"deployobject_radar"
+
+	"mtr_radar"						"hud/commandmap/radar"
+
+	"tt_deploy_finished"			"radar_deploy_finished"
+
+	"fx_death"						"effects/deployables/radar_destroy"
+	"fx_hitground"					"effects/deployables/landfall_hitground_small"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"hull"
+
+	"deployable_type"				"32"
+
+	"play_hitground_effect"			"1"
+
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/radarspotted"
+	
+	"prof_deploybonus"				"pro_covertops_deploy_bonus"
+	"deploybonus_requireactive"		"1"
+	
+	"tt_deployed"					"radar_deployed"
+}
+
+stringMap sounds/deployables/radar/leg_1_ik {
+	"joint_upper"					"front_left_upper_leg"
+	"joint_middle"					"front_left_lower_leg"
+	"joint_lower"					"front_left_feet"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"32"
+	"max_down_trace"				"32"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/radar/leg_2_ik {
+	"joint_upper"					"front_right_upper_leg"
+	"joint_middle"					"front_right_lower_leg"
+	"joint_lower"					"front_right_feet"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"32"
+	"max_down_trace"				"32"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/radar/leg_3_ik {
+	"joint_upper"					"rear_left_upper_leg"
+	"joint_middle"					"rear_left_lower_leg"
+	"joint_lower"					"rear_left_feet"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"32"
+	"max_down_trace"				"32"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/radar/leg_4_ik {
+	"joint_upper"					"rear_right_upper_leg"
+	"joint_middle"					"rear_right_lower_leg"
+	"joint_lower"					"rear_right_feet"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"32"
+	"max_down_trace"				"32"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+#include <templates/tooltips.include>
+
+toolTip radar_deploy_finished {
+	sound "sounds/ui/main/good"
+	text "game/tt/intro/radar/deploy_finished"
+	locationIndex TOOLTIP_POSITION_DEPLOYABLE
+}

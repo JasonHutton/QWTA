@@ -1,0 +1,583 @@
+
+/***********************************************************************
+
+projectile_teleporter
+
+***********************************************************************/
+
+object projectile_teleporter : projectile_missile {
+	void			syncFields();
+	void			init();
+	void			preinit();
+	void			destroy();
+
+	void			DoExplodeEffect( entity collisionEnt );
+	void			vActivateTeleportation();
+	void			vCancelTeleportation();
+
+	float			vGetPliersProgressBarValue( float action );
+	boolean			vCheckActionCode( entity p, float actionCode );
+	void			vArm( entity p );
+	
+	void			DoTeleportation();
+
+	float			OnActivate( entity p, float distance );
+	float			GetActivateCode( entity p, float distance );
+	float			OnUpdateCrosshairInfo( entity p );
+	
+	void			SetupCommandmapIcon();
+	void			ClearCommandmapIcon();
+
+	void			OnOwnerChanged();
+
+	void			DropOwnerItems();
+
+	player			owner;
+
+	void			vSetOwner( entity other ) { owner = other; OnOwnerChanged(); }
+	entity			vGetOwner() { return owner; }
+	
+	void			OwnerCheck();
+	
+	float			SweepCheck( vector worldOrigin, float radius, float startAngle, float angleIncrement, vector ownerMins, vector ownerMaxs );
+	void			FindPosition( boolean sweepRange );
+
+	void			SetupContents();
+
+	vector			lastValidPosition;
+	vector			portPosition;
+	float			portTime;
+	float			failedPortTime;
+	
+	void			OnPortPositionChanged();
+	void			OnFailedPortChanged();
+	
+	float			disarmCurrent;
+	float			disarmMaxCount;
+	
+	float			commandmapIcon;
+	
+	float			destroyedToolTip;
+	
+	float			chargePerUse;
+	void			vSetCharge( float amount ) { chargePerUse = amount; }
+
+	float			useMeToolTip1;
+	float			useMeToolTip2;
+	float			badLocationToolTip;
+	
+	boolean			doingTeleport;
+	boolean			vIsTeleporting() { return doingTeleport; }
+
+	boolean			localIsOwner;
+}
+
+#define BAD_PORT_POSITION		'-999999 -999999 -999999'
+
+void projectile_teleporter::init() {
+	setNetworkSynced( true );
+
+	SetupContents();
+	lastValidPosition = getWorldOrigin();
+	failedPortTime = 0;
+	setState( "Idle" );
+}
+
+void projectile_teleporter::preinit() {
+	commandmapIcon = -1;
+
+	disarmMaxCount = getFloatKeyWithDefault( "disarm_count", 20 );
+
+	destroyedToolTip = GetToolTip( getKey( "tt_destroyed" ) );
+	useMeToolTip1 = GetToolTip( getKey( "tt_useMeToolTip1" ) );
+	useMeToolTip2 = GetToolTip( getKey( "tt_useMeToolTip2" ) );
+	badLocationToolTip = GetToolTip( getKey( "tt_badLocation" ) );
+
+	// crazy number it would never reach (heh, hopefully!)
+	portPosition = BAD_PORT_POSITION;
+	thread OwnerCheck();
+}
+
+void projectile_teleporter::destroy() {
+	ClearCommandmapIcon();
+
+	if ( owner != $null_entity ) {
+		if ( !sys.isClient() ) {
+			owner.binRemove( self );
+			owner.setTeleporterState( true );
+			sys.broadcastToolTip( destroyedToolTip, owner, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+		}
+
+		if ( owner == sys.getLocalPlayer() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.teleporterActive", 0 );
+		}
+	}
+}
+
+void projectile_teleporter::syncFields() {
+	sync( "disarmCurrent" );
+
+	syncBroadcast( "owner" );
+	syncBroadcast( "lastValidPosition" );
+	syncBroadcast( "portTime" );
+	syncBroadcast( "failedPortTime" );
+	syncBroadcast( "portPosition" );
+	syncBroadcast( "chargePerUse" );
+	syncCallback( "owner", "OnOwnerChanged" );
+	syncCallback( "portPosition", "OnPortPositionChanged" );
+	syncCallback( "failedPortTime", "OnFailedPortChanged" );
+}
+
+void projectile_teleporter::SetupContents() {
+	setContents( 0 );
+	setClipmask( MASK_PROJECTILE | CONTENTS_BODY | CONTENTS_SLIDEMOVER );
+}
+
+void projectile_teleporter::OnFailedPortChanged() {
+	if ( failedPortTime > 0 ) {
+		// invalid position, play a sound to indicate that
+		if ( owner == sys.getLocalPlayer() ) {
+			sys.startSoundDirect( getKey( "snd_invalid" ), SND_WEAPON_FIRE_LOCAL );
+			if ( !owner.isToolTipPlaying() ) {
+				owner.sendToolTip( badLocationToolTip );
+			}
+		}
+	}
+}
+
+void projectile_teleporter::DoExplodeEffect( entity collisionEnt ) {
+}
+
+void projectile_teleporter::DropOwnerItems() {
+	if ( owner == $null_entity ) {
+		return;
+	}
+
+	float count = entitiesOfCollection( "carryables" );
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		carryable_item other = getBoundsCacheEntity( i );
+		if ( other == $null_entity ) {
+			continue;
+		}
+
+		if ( other.carrier != owner ) {
+			continue;
+		}
+		
+		other.Drop();
+	}
+}
+
+void projectile_teleporter::DoTeleportation() {
+
+	// upright the model, and make it reserve the space the player
+	// will need when he ports in, so things can't get in the way during the process
+	// I don't like snapping the origin & angles like this :/
+	setContents( CONTENTS_SOLID|CONTENTS_PLAYERCLIP|CONTENTS_BODY );
+	
+	if ( !sys.isClient() ) {
+		owner.setTeleporterState( true );
+		setOrigin( portPosition );
+		setAngles( '0 0 0' );
+		setBoxClipModel( owner.getMins(), owner.getMaxs(), 10000.0f );
+		freeze( 1 );
+	}
+
+	doingTeleport = true;
+	
+	vector pos = portPosition;
+	vector angles = owner.getViewAngles();
+	angles_x = angles_z = 0;
+	vector forward = sys.angToForward( angles );
+
+	// Play effects both for fading out at our current position and fading in at the destination
+	player p = owner;
+	boolean doneFX = false;
+	if ( p != $null_entity ) {
+		if ( p.AI_CROUCH ) {
+			sys.playWorldEffect( getKey( "fx_teleport_start_crouch" ), '1 1 1', owner.getWorldOrigin(), forward );
+			sys.playWorldEffect( getKey( "fx_teleport_end_crouch" ), '1 1 1', pos, forward );
+			doneFX = true;
+		} else
+		if ( p.AI_PRONE ) {
+			sys.playWorldEffect( getKey( "fx_teleport_start_prone" ), '1 1 1', owner.getWorldOrigin(), forward );
+			sys.playWorldEffect( getKey( "fx_teleport_end_prone" ), '1 1 1', pos, forward );
+			doneFX = true;
+		}
+	}
+	
+	if ( !doneFX ) {
+		sys.playWorldEffect( getKey( "fx_teleport_start" ), '1 1 1', owner.getWorldOrigin(), forward );
+		sys.playWorldEffect( getKey( "fx_teleport_end" ), '1 1 1', pos, forward );
+	}
+
+	// Wait half a sec before teleporting
+	// And then another half a sec before showing the player again
+	// so there is some time to have fancy effects
+	hide();	
+	owner.freeze( 1 );	
+	float portEndTime = portTime + 0.5f;
+	if ( portEndTime > sys.getTime() ) {
+		sys.wait( portEndTime - sys.getTime() );
+	}
+	
+	owner.hide();
+	
+	float contents;
+	if ( !sys.isClient() ) {
+		forceDisableClip();
+		
+		DropOwnerItems();
+		owner.setWorldOrigin( pos );
+		owner.setLinearVelocity( g_vectorZero );
+
+		// check to see if the player is now embedded in something
+		contents = sys.checkContents( pos, owner.getMins(), owner.getMaxs(), MASK_PLAYERSOLID, owner );
+		if ( contents ) {
+			// kill the owner
+			owner.applyDamage( self, owner, g_vectorZero, GetDamage( getKey( "dmg_blocked" ) ), 1.0f, $null_entity );
+		}
+	}
+
+
+	if ( owner.getHealth() > 0 ) {
+		portEndTime = portTime + 1.f;
+		if ( portEndTime > sys.getTime() ) {
+			sys.wait( portEndTime - sys.getTime() );
+		}
+	}
+
+	owner.show();
+	owner.freeze( 0 );	
+
+	if ( !sys.isClient() ) {
+		// double-check to see if the player is now embedded in something
+		contents = sys.checkContents( pos, owner.getMins(), owner.getMaxs(), MASK_PLAYERSOLID, owner );
+		if ( contents ) {
+			// kill the owner
+			owner.applyDamage( self, owner, g_vectorZero, GetDamage( getKey( "dmg_blocked" ) ), 1.0f, $null_entity );
+		}
+	
+		owner.binRemove( self );
+		owner = $null_entity;
+		OnOwnerChanged();
+		remove();
+	}
+}
+
+void projectile_teleporter::SetupCommandmapIcon() {
+	ClearCommandmapIcon();
+	
+	commandmapIcon = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
+
+	sys.setCMIconMaterial( commandmapIcon, GetMaterial( getKey( "mtr_icon" ) ) );
+	sys.setCMIconFlag( commandmapIcon, CMF_ALWAYSKNOWN );
+	sys.setCMIconSize( commandmapIcon, getFloatKey( "icon_size_cm" ) );
+}
+
+void projectile_teleporter::ClearCommandmapIcon() {
+	if ( commandmapIcon != -1 ) {
+		sys.freeCMIcon( self, commandmapIcon );
+		commandmapIcon = -1;
+	}
+}
+
+void projectile_teleporter::OnOwnerChanged() {
+	if ( owner == sys.getLocalPlayer() ) {
+		SetupCommandmapIcon();
+		localIsOwner = true;
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.teleporterActive", 1 );
+	} else {
+		ClearCommandmapIcon();
+
+		if ( localIsOwner ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.teleporterActive", 0 );
+		}
+	}
+}
+
+void projectile_teleporter::OnPortPositionChanged() {
+	if ( portPosition != BAD_PORT_POSITION ) {
+		if ( owner != $null_entity ) {
+			owner.teleportSucceeded = true;
+		}
+		
+		owner.EnergyBar_Remove( chargePerUse );
+		thread DoTeleportation();
+	} else {
+		if ( !sys.isClient() ) {
+			// communicates failure to the client
+			failedPortTime = sys.getTime();
+			OnFailedPortChanged();
+		}
+	}
+}
+
+
+void projectile_teleporter::vActivateTeleportation() {
+	if ( !sys.isClient() ) {
+		// do a more thorough check to see if theres a position we can spawn to
+		FindPosition( true );
+		
+		// ensure that the last valid position is still clear
+		float contents = sys.checkContents( lastValidPosition, owner.getMins(), owner.getMaxs(), MASK_PLAYERSOLID, self );
+		if ( !contents ) {
+			portPosition = lastValidPosition;
+		} else {
+			portPosition = BAD_PORT_POSITION;
+		}
+		
+		portTime = sys.getTime();
+		OnPortPositionChanged();
+	}
+}
+
+void projectile_teleporter::vCancelTeleportation() {
+	if ( !doingTeleport && !sys.isClient() ) {
+		owner.binRemove( self );
+		owner = $null_entity;
+		OnOwnerChanged();
+		remove();
+	}
+}
+
+float projectile_teleporter::SweepCheck( vector worldOrigin, float radius, float startAngle, float angleIncrement, vector ownerMins, vector ownerMaxs ) {
+	float angle = startAngle;
+	float contents = 1;
+	vector testOrigin;
+	vector testAngles;
+	vector offset; 
+	
+	while ( contents != 0 && angle < 360.0f ) {
+		testAngles = g_vectorZero;
+		testAngles_y = angle;
+		offset = radius * 0.5f * sys.angToForward( testAngles );
+		testOrigin = worldOrigin + offset;
+		
+		contents = sys.checkContents( testOrigin, ownerMins, ownerMaxs, MASK_PLAYERSOLID, self );
+		if ( !contents ) {
+			lastValidPosition = testOrigin;
+		}
+	
+		angle += angleIncrement;
+	}
+	
+	return contents;
+}
+
+void projectile_teleporter::FindPosition( boolean sweepRange ) {
+	if ( owner == $null_entity ) {
+		return;
+	}
+	
+	vector ownerMins = owner.getMins();
+	vector ownerMaxs = owner.getMaxs();
+		
+	vector worldOrigin = getWorldOrigin();
+
+	// do a "sweep around the entity" check
+	// checks at a few different positions to find a nearby empty point
+	vector myMins = owner.getMins();
+	vector myMaxs = owner.getMaxs();
+	vector mySize = myMaxs - myMins;
+	mySize_z = 0.0f;
+	float myDiagSize = sys.vecLength( mySize );
+				
+	// rough check the centre
+	float contents = sys.checkContents( worldOrigin, ownerMins, ownerMaxs, MASK_PLAYERSOLID, self );
+	if ( !contents ) {
+		lastValidPosition = worldOrigin;
+	} else {
+		contents = SweepCheck( worldOrigin, myDiagSize, 0.0f, 120.0f, ownerMins, ownerMaxs );
+		if ( contents && sweepRange ) {
+			contents = SweepCheck( worldOrigin, myDiagSize, 0.0f, 120.0f, ownerMins, ownerMaxs );
+			if ( contents ) {
+				contents = SweepCheck( worldOrigin, myDiagSize, 60.0f, 120.0f, ownerMins, ownerMaxs );
+				if ( contents ) {
+					contents = SweepCheck( worldOrigin, myDiagSize, 30.0f, 120.0f, ownerMins, ownerMaxs );
+					if ( contents ) {
+						contents = SweepCheck( worldOrigin, myDiagSize, 90.0f, 120.0f, ownerMins, ownerMaxs );
+					}
+				}
+			}
+		}
+	}
+}
+
+void projectile_teleporter::OwnerCheck() {
+	if ( !sys.isClient() ) {
+		while ( owner == $null_entity ) {
+			sys.waitFrame();
+		}
+
+		owner.setTeleporterState( false );
+		
+		while ( true ) {
+			// 
+			// Check if a player can be spawned here
+			//
+			
+			vector velocity = getLinearVelocity();
+			float velSqr = sys.vecLengthSquared( velocity );
+			if ( velSqr > 1500.0f ) {
+				FindPosition( false );
+			}
+			
+			if ( velSqr < 10.f ) {
+				if ( !noTrail ) {
+					stopEffect( "fx_trail" );
+					noTrail = true;
+				}
+			}
+			
+			// if the position is too far from the actual position of the object, ignore it
+			vector myOrigin = getWorldOrigin();
+			float distSq = sys.vecLengthSquared( myOrigin - lastValidPosition );
+			if ( distSq > 60.0f*60.0f ) {
+				lastValidPosition = BAD_PORT_POSITION;
+			}		
+			
+			//
+			// Check if the owner is still alive
+			//
+			if ( owner == $null_entity ) {
+				remove();
+			} else {			
+				if ( owner.getHealth() <= 0.0f ) {
+					remove();
+				}
+			}
+						
+			sys.waitFrame();
+		}
+	}
+}
+
+float projectile_teleporter::OnActivate( entity p, float distance ) {
+	float code = GetActivateCode( p, distance );
+	if ( code == AK_NONE ) {
+		return 0.f;
+	}
+	
+	p.vSelectActionItem( code );
+	return 1.f;
+}
+
+float projectile_teleporter::GetActivateCode( entity p, float distance ) {
+	if ( p.getViewingEntity() != p || distance > DISTANCE_FOR_ACTION ) {
+		return AK_NONE;
+	}
+
+	if ( p.getHealth() <= 0 ) {
+		return AK_NONE;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+
+	if ( allegiance == TA_ENEMY ) {	
+		return AK_ARM;
+	}
+
+	return AK_NONE;
+}
+
+float projectile_teleporter::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+
+	chSetNumLines( 0 );
+	float index;
+	
+	if ( p != $null_entity ) {
+		// see if theres a valid action to perform
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE && p.vHasActionItem( code ) ) {
+			index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+			
+			if ( p.isLocalPlayer() ) {
+				if ( !p.isToolTipPlaying() ) {
+					if ( sys.getTime() - p.getCrosshairStartTime() > 1.f ) {
+						if ( p.getCurrentWeapon() != p.vGetActionItem( code ) ) {
+							p.sendToolTip( useMeToolTip1 );
+						} else {
+							p.sendToolTip( useMeToolTip2 );
+						}
+					}
+				}
+			}
+		}
+	}
+	
+	index = chAddLine();
+	chSetLineTextIndex( index, g_locStr_TeleportBeacon );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	if ( range <= 100 ) {
+		index = chAddLine();
+
+		chSetLineText( index, G_BuildRangeStr( range ) );
+		chSetLineColor( index, color, 1.f );
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+	}
+
+	return 1.f;
+}
+
+float projectile_teleporter::vGetPliersProgressBarValue( float action ) {
+	if ( action == AC_DISARM ) {
+		return disarmCurrent / disarmMaxCount;
+	}
+
+	return 0.f;
+}
+
+boolean projectile_teleporter::vCheckActionCode( entity p, float actionCode ) {
+	if ( actionCode == AC_DISARM ) {
+		if ( getEntityAllegiance( p ) != TA_ENEMY ) {
+			return false;
+		}
+		return disarmCurrent < disarmMaxCount;
+	}
+	
+	return false;	
+}
+
+void projectile_teleporter::vArm( entity p ) {
+	float count = 1;
+
+	team_base team = p.getGameTeam();		
+	if ( team.HasDisarmBonus( p ) ) {
+		count = count * 1.25f;
+	}
+
+	disarmCurrent = disarmCurrent + count;
+
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( disarmCurrent >= disarmMaxCount ) {
+		if ( owner != $null_entity ) {
+			if ( !sys.isClient() ) {
+				sys.broadcastToolTip( destroyedToolTip, owner, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+			}
+		}
+
+		remove();
+	}
+}

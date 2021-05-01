@@ -1,0 +1,547 @@
+
+object deployable_turret : deployable_base {
+	void	preinit();
+	void	init();
+	void	destroy();
+
+	// states
+	float	OnUsed( entity p, float distance );
+
+	void	OnDisabled();
+	void	OnReEnabled();
+	
+	void	OnBeginAttack();
+	void	OnEndAttack();
+
+	boolean	InRange( vector targetPos );
+	boolean	InFiringRange( vector targetPos );
+
+	void	KillAttackThread();
+	void	AttackThread();
+	
+	void	vCheckProficiency();
+
+	boolean	TargetIsValid( entity targetEnt ) { return false; }
+	
+	void	FireMissile();
+	
+	void	FreeArcIcon();
+	void	SetupFiringArc();
+
+	void	vOnDeploy();
+
+	float GetTurretMaxRange();
+	float GetTurretMinRange();
+
+	boolean	TraceCheck( entity other );
+
+	void	OnEnter( entity user );
+	void	OnExit( entity user );
+
+	void	OnKilled( entity inflictor, entity attacker, float damage, vector dir, float location );
+
+	float	OnValidateTarget();
+	
+	float	OnUpdateCrosshairInfo( entity p );
+
+	void	CreateDestroyThread();
+
+	void	UpdateCharge() { }
+
+	float	vGetFiringStatus( object traceObject );
+	
+	float	numTracerJoints;
+
+	float	minRange;
+	float	maxRange;
+	float	firingRange;
+
+	float	angleRange;
+
+	float	jointBarrel;
+
+	float	projectileIndex;
+
+	float	projectileSpeed;
+	float	spread;
+	float	fireRate;
+	float	realisticFireRate;
+	float	reFire;
+	
+	float	commandmapVisibleArcHandle;
+
+	float	checkMask;
+	
+	vector	traceCheckOffset;
+
+	boolean	playingBrassSound;
+	
+	entity	myUser;
+	
+	// overheating/power bar stuff
+	boolean	CanFire() { return true; }
+	void	Fired() { }
+
+	boolean attacking;
+	float	retributionDelay;
+};
+
+void deployable_turret::preinit() {
+	projectileIndex		= GetEntityDef( getKey( "def_projectile" ) );
+
+	projectileSpeed		= getFloatKey( "missile_velocity" );
+
+	minRange			= MetresToInches( getFloatKey( "range_min" ) );
+	maxRange			= MetresToInches( getFloatKey( "range_max" ) );
+	firingRange			= MetresToInches( getFloatKeyWithDefault( "range_firing", InchesToMetres( maxRange ) ) );
+
+	fireRate			= getFloatKey( "fireRate" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realisticFireRate", fireRate );
+	}
+	
+	spread				= getFloatKey( "spread" );
+	reFire				= 0;
+	
+	jointBarrel			= getJointHandle( getKey( "joint_barrel" ) );
+
+
+	numTracerJoints		= getFloatKey( "num_tracerjoints" );
+
+	retributionDelay	= getFloatKeyWithDefault( "retribution_delay", 0.0f );
+
+	checkMask			= MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX;
+
+	vector mins			= getMins();
+	vector maxs			= getMaxs();
+
+	traceCheckOffset_z = mins_z + ( ( maxs_z - mins_z ) * ( getFloatKeyWithDefault( "trace_offset_pct", 75.f ) * 0.01f ) );
+
+	commandmapVisibleArcHandle	= -1;
+}
+
+void deployable_turret::FreeArcIcon() {
+	if ( commandmapVisibleArcHandle != -1 ) {
+		sys.freeCMIcon( self, commandmapVisibleArcHandle );
+		commandmapVisibleArcHandle = -1;
+	}
+}
+
+void deployable_turret::SetupFiringArc() {
+	FreeArcIcon();
+	
+	angleRange			= getFloatKey( "angle_range" );
+	if ( angleRange <= 0 ) {
+		angleRange = 135;
+	}
+	
+	vector ang = getAngles();
+
+	commandmapVisibleArcHandle = sys.allocCMIcon( self, 100 );
+	sys.setCMIconAngle( commandmapVisibleArcHandle, -ang_y );
+	sys.setCMIconSizeMode( commandmapVisibleArcHandle, SM_WORLD );
+	sys.setCMIconColor( commandmapVisibleArcHandle, g_colorRed, 0.25f );
+	sys.setCMIconSides( commandmapVisibleArcHandle, 24 );
+	sys.setCMIconDrawMode( commandmapVisibleArcHandle, DM_ARC );
+	sys.setCMIconMaterial( commandmapVisibleArcHandle, GetMaterial( "_white_depth" ) );
+	sys.setCMIconUnknownMaterial( commandmapVisibleArcHandle, GetMaterial( "_white_depth" ) );
+	sys.setCMIconSize( commandmapVisibleArcHandle, maxRange );
+	sys.setCMIconUnknownSize( commandmapVisibleArcHandle, maxRange );
+	sys.setCMIconFlag( commandmapVisibleArcHandle, CMF_ENEMYONLY | CMF_ONLYSHOWKNOWN );
+	sys.setCMIconArcAngle( commandmapVisibleArcHandle, angleRange );
+	sys.setCMIconFlag( commandmapVisibleArcHandle, CMF_FOLLOWROTATION );
+
+	angleRange			= sys.cos( angleRange * 0.5f );
+}
+
+void deployable_turret::vOnDeploy() {
+	SetupFiringArc();
+
+	thread DoDeploy();
+}
+
+void deployable_turret::init() {
+	startSound( "snd_turret_yaw", SND_DEPLOYABLE_YAW );
+	startSound( "snd_turret_pitch", SND_DEPLOYABLE_PITCH );
+	fadeSound( SND_DEPLOYABLE_YAW, -60.f, 0.f );
+	fadeSound( SND_DEPLOYABLE_PITCH, -60.f, 0.f );
+}
+
+void deployable_turret::destroy() {
+	FreeArcIcon();
+	KillAttackThread();
+}
+
+boolean deployable_turret::TraceCheck( entity other ) {
+	vector targetPos = getTargetPosition( other );
+	
+	sys.tracePoint( getWorldOrigin() + traceCheckOffset, targetPos, checkMask, self );
+	if ( sys.getTraceFraction() == 1.f ) {
+		return true;
+	}
+	if ( sys.getTraceEntity() != other ) {
+		return false;
+	}
+	return true;
+}
+
+void deployable_turret::KillAttackThread() {
+	sys.killThread( "AttackThread_" + getName() );
+}
+
+void deployable_turret::AttackThread() {
+	float delay = reFire - sys.getTime();
+	if ( delay > 0 ) {
+		sys.wait( delay );
+	}
+	
+	while ( true ) {
+		if ( CanFire() ) {
+			FireMissile();
+		}
+		
+		delay = fireRate;
+		reFire = sys.getTime() + delay;
+		sys.wait( delay );
+	}
+}
+
+// ==========================================
+// Utility Funcs
+// ==========================================
+
+void deployable_turret::FireMissile() {
+	entity target;
+	entity controller = getBoundPlayer( 0 );
+	if ( controller != $null_entity ) {
+		target = controller.getEnemy();
+	} else {
+		if ( owner != $null_entity ) {
+			controller = owner;
+		} else {
+			controller = self;
+		}
+		target = getEnemy();
+	}
+
+	launchMissileSimple( controller, self, target, projectileIndex, -1, spread, getJointPos( jointBarrel ), getJointAxis( jointBarrel, 0 ) * projectileSpeed );
+	playJointEffect( "fx_fire", jointBarrel, 0 );
+
+	float muzzleJoint;
+	if ( playTracerFX ) {
+		if( numTracerJoints > 1 ) {
+			muzzleJoint = int( sys.random( numTracerJoints ) ) + 1;
+		} else {
+			muzzleJoint = numTracerJoints;
+		}
+		playEffect( "fx_tracer", getKey( "joint_tracer" + muzzleJoint ), 0 );
+	}
+	playEffect( "fx_muzzle", getKey( "joint_tracer" + muzzleJoint ), 0 );
+
+	Fired();
+}
+
+float deployable_turret::OnValidateTarget() {
+	entity target = getEnemy();
+
+	if ( !TargetIsValid( target ) ) {
+		return 0.f;
+	}
+	
+	if ( !InRange( target.getWorldOrigin() ) ) {
+		return 0.f;
+	}
+	
+	return 1.f;
+}
+
+float deployable_turret::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	vector color = GetAllegianceColor( allegiance );
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+	float health = getHealth();
+
+	chSetNumLines( 0 );
+	float index;
+
+	// define length of health bar
+	float healthBarLength;
+	float maxHealth = getMaxHealth();
+	if ( maxHealth >= 2000.f ) {
+		healthBarLength = 150.f;
+	} else if ( maxHealth >= 1000.f ) {
+		healthBarLength = 100.f;
+	} else {
+		healthBarLength = 75.f;
+	}
+
+	if ( p != $null_entity ) {
+		// see if theres a valid action to perform
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE ) {
+			index = chAddLine();
+			chSetLineMaterial( index, p.vGetActionIcon( code ) );
+			chSetLineType( index, CI_IMAGE );
+			chSetLineSize( index, 64, 64 );
+			chSetLineColor( index, g_colorWhite, 0.9f );
+
+			if ( p.isLocalPlayer() ) {
+				if ( !p.isToolTipPlaying() ) {
+					if ( sys.getTime() - p.getCrosshairStartTime() > 1.f ) {
+						if ( p.getCurrentWeapon() != p.vGetActionItem( code ) ) {
+							if ( code == AK_HACK ) {
+								p.sendToolTip( useMeToolTip1_Hack );
+							}
+						} else {
+							if ( code == AK_HACK ) {
+								p.sendToolTip( useMeToolTip2_Hack );
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	vector disabledColor;
+	if ( allegiance == TA_ENEMY || allegiance == TA_FRIEND ) {
+		disabledColor = g_colorYellow;
+	} else {
+		disabledColor = color;
+	}
+
+	index = chAddLine();
+	chSetLineTextIndex( index, objectTitle );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	if ( owner != $null_entity ) {
+		if ( allegiance == TA_FRIEND ) {
+			index = chAddLine();
+			sys.pushLocString( sys.toWStr( owner.getCleanUserName() ) );
+			chSetLineText( index, sys.localizeStringArgs( "game/deployable_owner" ) );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	}
+
+	if ( health <= 0 ) {
+		if ( maxHealth != 0.f ) {
+			index = chAddLine();
+			chSetLineTextIndex( index, g_locStr_Destroyed );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	} else {
+		if ( disabledState ) {
+			index = chAddLine();
+			
+			float diff = disableEndTime - sys.getTime();			
+			if ( diff > 0 ) {
+				sys.pushLocString( int( diff ) );
+				chSetLineText( index, sys.localizeStringArgs( "game/disabled_info" ) );
+			} else {
+				chSetLineTextIndex( index, g_locStr_Disabled );
+			}
+
+			chSetLineColor( index, disabledColor, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+
+		index = chAddLine();
+		chSetLineColor( index, color, 0.5f );
+		chSetLineType( index, CI_BAR );
+		chSetLineFraction( index, getHealth() / getMaxHealth() );
+		chSetLineSize( index, healthBarLength, CROSSHAIR_INFO_BAR_HEIGHT );
+
+		if ( !disabledState ) {
+			float fsState = vGetFiringStatus( $null_entity );
+			G_StringForFireSupportState( fsState );
+
+			index = chAddLine();
+			chSetLineTextIndex( index, g_fireSupportStateStr );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+
+		if ( range <= 100 ) {
+			index = chAddLine();
+			chSetLineText( index, G_BuildRangeStr( range ) );
+			chSetLineColor( index, color, 1.f );
+			chSetLineType( index, CI_TEXT );
+			chSetLineSize( index, 0, 0 );
+		}
+	}
+
+	return 1.f;
+}
+boolean	deployable_turret::InRange( vector targetPos ) {
+	float len = sys.vecLength( targetPos - getWorldOrigin() );
+	return ( ( len >= minRange ) && ( len <= maxRange ) );
+}
+
+boolean deployable_turret::InFiringRange( vector targetPos ) {
+	float len = sys.vecLength( targetPos - getWorldOrigin() );
+	return ( ( len >= minRange ) && ( len <= firingRange ) );
+}
+
+// ==========================================
+// ==========================================
+
+float deployable_turret::OnUsed( entity p, float distance ) {
+	entity team = p.getGameTeam();
+	if ( team == $null_entity ) {
+		return 0.f;
+	}
+
+	if ( p.getHealth() <= 0 ) {
+		return 0.f;
+	}
+
+	if ( distance > 128.f ) {
+		return 0.f;
+	}
+
+	if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+		return 1.f;
+	}
+
+	entity other = p.getProxyEntity();
+	if ( other != $null_entity ) {
+		sys.assert( self == other );
+
+		if ( !sys.isClient() ) {
+			removeBoundPlayer( p );
+		}
+
+		return 1.f;
+	}
+
+	if ( getBoundPlayer( 0 ) != $null_entity ) {
+		return 1.f;
+	}
+
+	if ( !sys.isClient() ) {
+		p.enter( self );
+	}
+
+	return 1.f;
+}
+
+void deployable_turret::OnKilled( entity inflictor, entity attacker, float damage, vector dir, float location ) {
+	entity currentUser = getBoundPlayer( 0 );
+	if( currentUser != $null_entity ) {
+		currentUser.applyDamage( inflictor, attacker, dir, GetDamage( "damage_deployable_turret_user" ), 1.f, $null_entity );
+	}
+	
+	DeployableBase_OnKilled( attacker, inflictor );
+}
+
+void deployable_turret::OnEnter( entity user ) {
+	sys.assert( false );
+
+	if ( user.isDisguised() ) {
+		user.disguise( $null_entity );
+	}
+
+	myUser = user;
+	user.vHideNormalChargeBar( true );
+	if ( user == sys.getLocalPlayer() ) {
+		sys.setGUIString( GUI_GLOBALS_HANDLE, "gameHud.weaponCrosshair", getKey( "crosshair" ) );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowAllAmmo", 1 );		
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowClip", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponHideAmmo", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 1 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energySegments", 1 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCustom", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showHeat", 1.f );
+
+		thread UpdateCharge();
+	}
+}
+
+void deployable_turret::OnExit( entity user ) {
+	sys.assert( false );
+
+	myUser = $null_entity;
+	user.vHideNormalChargeBar( false );
+	if ( user == sys.getLocalPlayer() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.showHeat", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+	}
+}
+
+void deployable_turret::CreateDestroyThread() {
+	sys.freeCMIcon( self, commandmapVisibleArcHandle );
+	commandmapVisibleArcHandle = -1;
+	thread DestroyThread();
+}
+
+void deployable_turret::OnBeginAttack() {
+	attacking = true;
+
+	KillAttackThread();
+	thread AttackThread();
+}
+
+void deployable_turret::OnEndAttack() {
+	attacking = false;
+
+	KillAttackThread();
+}
+
+void deployable_turret::vCheckProficiency() {
+	SetupFiringArc();
+}
+
+void deployable_turret::OnDisabled() {
+	setDisabled( true );
+	sys.setCMIconShaderParm( commandMapHandle, 5, 0 );
+	if ( owner != $null_entity ) {
+		if ( owner.isLocalPlayer() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_DISABLED );
+		}
+	}
+}
+
+void deployable_turret::OnReEnabled() {
+	setDisabled( false );
+	sys.setCMIconShaderParm( commandMapHandle, 5, 1 );
+	if ( owner != $null_entity ) {
+		if ( owner.isLocalPlayer() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "deployables.state", DS_NORMAL );
+		}
+	}
+}
+
+float deployable_turret::GetTurretMaxRange() {
+	return firingRange;
+}
+
+float deployable_turret::GetTurretMinRange() {
+	return minRange;
+}
+
+float deployable_turret::vGetFiringStatus( object traceObject ) {
+	if ( attacking ) {
+		return MPS_FIRING;
+	}
+
+	if ( !finishedDeploying ) {
+		return MPS_NONE_ACTIVE;
+	}
+
+	return MPS_READY;
+}

@@ -1,0 +1,82 @@
+
+#include <guis/game/limbo/stats.include>
+
+#define COLOR_NAME_PANEL_FILL COLOR_DIALOG_FILL
+#define COLOR_NAME_PANEL_LINE COLOR_DIALOG_LINES
+#define COLOR_NAME_PANEL_GRADIENT COLOR_DIALOG_GRADIENT
+
+
+#if !defined( SD_DEMO_BUILD )	
+	#include <guis/common/stats/achievements.include>
+#else
+	#include <guis/common/stats/achievements_demo.include>
+#endif
+
+// ================================================================================
+// Player Stats Dialog
+// ================================================================================
+_dialog( PlayerStats, title, PADDING, 44, BAR_WIDTH, _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )	
+	_closable_subdialog
+	_single_dialog( playerStats )
+	properties {
+#if !defined( SD_DEMO_BUILD )		
+		handle title = localize( "guis/mainmenu/playerstats" );
+#else
+		handle title = localize( "blank" );
+#endif		
+	}
+
+	_tab_container( Stats, PS_OVERVIEW, _left( dlgPlayerStats ), _top( dlgPlayerStats ), _fill_to_right_of( dlgPlayerStats ), _fill_to_bottom_of( dlgPlayerStats ) )
+		_stat_contents
+#if defined( SD_DEMO_BUILD )		
+		properties {
+			handle screenshot =  gui.cacheMaterial( "demostatsShot", "shot3" );
+		}
+#endif
+	_end_tab_container
+_end_dialog
+
+#if !defined( SD_DEMO_BUILD )	
+_button( refreshStats, _right( desktop ), _bottom( desktop ) + 3, $evalfloat( 2 * BUTTON_WIDTH ), BUTTON_HEIGHT )
+	properties {
+		handle	localizedText		= localize( "guis/limbo/refreshstats" );
+		float	statsTaskActive		= false;
+		float	visible				= gui.dlgPlayerStats.visible;
+	}
+	_signin_procedure
+	_button_action( _signin_button( name, "OnNext" ) )
+	_button_disable_if( "statsTaskActive", statsTaskActive == true )
+
+	events {
+		onPropertyChanged "gui.dlgPlayerStats.visible" {
+			if( gui.dlgPlayerStats.visible && statsTaskActive == false ) {
+				postNamedEvent( "onAction" );
+			}
+		}
+		onNamedEvent "OnNext" {
+			gui.nextCallbackWindow = "";
+			gui.nextCallback = "";
+			if( sdnet.requestStats( globals.game.isRunning == false ) ) {
+				statsTaskActive = true;
+			}
+		}
+		onPropertyChanged "sdnet.statsRequestState" {
+			if( statsTaskActive ) {
+				if( sdnet.statsRequestState == SR_REQUESTING ) {
+					return;
+				}
+				if( sdnet.statsRequestState == SR_COMPLETED ) {
+					statsTaskActive = false;
+					gui.focusedWindow = gui.statsPlayerBanner.lastSelectedMedalList;
+					gui.broadcastEventToDescendants( "dlgPlayerStats", "statsUpdated" );
+					return;
+				}
+				if( sdnet.statsRequestState == SR_FAILED ) {
+					statsTaskActive = false;
+				}
+			}
+		}
+	}
+_end_button
+
+#endif

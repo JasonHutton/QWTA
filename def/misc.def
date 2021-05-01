@@ -1,0 +1,429 @@
+/***********************************************************************
+
+ miscellaneous
+
+***********************************************************************/
+
+entityDef worldspawn {
+	"spawnclass"					"idWorldspawn"
+	"editor_spawnclass"				"sdEntityClass_Worldspawn"
+
+	"editor_color"					"0 0 0"
+	"editor_mins"					"?"
+	"editor_maxs"					"?"
+	"editor_usage"						"Every map should have exactly one worldspawn."
+	"editor_var gravity"				"gravity value for the level."
+	"editor_var _blocksize" 			"Suggested value: 8192. Dmap always splits the BSP tree along the planes X=_blocksize*n and Y=_blocksize*n. Default _blocksize value is 1024. Increase the blocksize using larger powers of 2 to reduce compile times on very large maps with a low structural brush density."
+	"editor_var flight_ceiling_lower" 	"The collective starts to falloff beyond this height."
+	"editor_var flight_ceiling_upper" 	"The effect of the collective is zero at this height."
+	"editor_skipmenu"				"1"
+	
+	"task_engineer_deploy"			"engineer_deploy_turret"
+	"task_constructor_deploy"		"constructor_deploy_turret"
+
+	"task_fieldops_deploy"			"fieldops_deploy_firesupport"
+	"task_oppressor_deploy"			"oppressor_deploy_firesupport"
+	
+	"task_covertops_deploy"			"covertops_deploy_radar"
+	"task_infiltrator_deploy"		"infiltrator_deploy_radar"
+	
+	"task_medic_deploy"				"medic_deploy_supplies"
+	
+	"task_engineer_plant_mines"		"engineer_deploy_mines"
+	"task_constructor_plant_mines"	"constructor_deploy_mines"
+
+	"expandAAS"						"1"
+	"gravity"						"1066"
+	"name"							"worldspawn"
+}
+
+entityDef lodentity {
+	"spawnclass"					"sdLODEntity"
+	
+	"editor_skipmenu"				"1"
+}
+
+entityDef misc_instance_spawner {
+	"spawnclass"					"sdInstStatic"
+	
+	"editor_skipmenu"				"1"
+}
+
+
+entityDef speaker {
+	"spawnclass"					"idSound"
+
+	"editor_color"					"0 1 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	
+	"noscriptobject"				"1"
+	
+	"editor_spawnclass"				"sdEntityClass_Sound"
+	
+	"editor_material"				"textures/common/speaker"
+	"editor_usage"					""
+	"editor_snd s_shader"			"the sound shader or wavefile."
+	"editor_var overlayDemonic"		"set to 1 overlays the demonic sound instead of replacing it."
+	"editor_var s_waitfortrigger"	"play on load or play when triggered."
+	"editor_var s_volume"			"override shader volume level."
+	"editor_var s_minDistance"		"override shader minDistance."
+	"editor_var s_maxDistance"		"override shader maxDistance."
+	"editor_var s_omni"				"force omnidirectional"
+	"editor_var s_looping"			"force looping"
+	"editor_var s_occlusion"		"force no portal occlusion"
+	"editor_var s_global"			"force no falloff at all"
+	"editor_var s_shakes"			"this entity can make the screen shake when the sound is loud."
+	"editor_var s_singleArea"		"falloff only when outside of the area this speaker is in."
+	"editor_var wait"				"when set > 0, seconds between triggerings.  time between sounds is wait + or - random"
+	"editor_var random"				"wait variance."
+}
+
+entityDef globalConstants {
+	"energy_device_time"				"30"
+	"energy_supply_time"				"30"
+	"energy_timer_time"					"30"
+	"energy_charge_time"				"40"
+	"energy_firesupport_time"			"60"
+	"energy_deployment_time"			"60"
+	"charge_explode_time"				"40" //mal: how long til HE/Plasma charge explodes.
+	"vehiclecredit_timer_time"			"200"
+	"qwta_vehiclecredit_timer_time"		"300"
+	"tripmine_beam_range"				"160"
+}
+
+entityDef misc_scripted {
+	"spawnclass"						"sdScriptEntity"
+	
+	"editor_mins"						"?"
+	"editor_maxs"						"?"
+}
+
+entityDef misc_teleporter {
+	"spawnclass"						"sdTeleporter"
+		
+	"editor_var target"					"The teleporter to port to"
+	"editor_var storage_entity"			"Entity to place teleporting objects at during teleport"
+	"editor_var view_entity"			"Entity player's will view from during teleport"
+	"editor_bool gdf_starts_enabled"	"Whether the GDF team can go through it initially"
+	"editor_bool strogg_starts_enabled"	"Whether the Strogg team can go through it initially"
+	
+	"gdf_starts_enabled"				"1"
+	"strogg_starts_enabled"				"1"
+	
+	"model"								"models/structures/strogg/slipgate/slipgate.lwo"
+	"cm_model"							"models/structures/strogg/slipgate/slipgate.lwo"
+	"cm_trigger"						"models/structures/strogg/slipgate/slipgate_teleporter_trigger.lwo"
+	
+	"deploy_reverse"					"96"
+	"deploy_length"						"512"
+	"deploy_width"						"450"
+	
+	"dmg_telefrag"						"damage_telefrag_slipgate"
+}
+
+entityDef misc_teleporter_angles {
+	"spawnclass"						"idTarget"
+	
+	"editor_color"						"1 1 0"
+	"editor_mins"						"-8 -8 -8"
+	"editor_maxs"						"8 8 8"
+	"editor_showangle"					"1"
+}
+
+damageDef damage_telefrag_slipgate {
+	damage								"damage_telefrag_slipgate"
+	noArmor
+	noGod
+	forcePassengerKill
+
+	tt_obituary							"tooltips/killmsgs/generic/telefrag"
+	tt_obituary_self					"tooltips/killmsgs/generic/telefrag"
+	tt_obituary_unknown					"tooltips/killmsgs/generic/telefrag"
+	tt_obituary_team_kill				"tooltips/killmsgs/generic/telefrag"
+	tt_obituary_unknown_friendly		"tooltips/killmsgs/generic/telefrag"
+}
+
+damageFilter damage_telefrag_slipgate {
+	type {
+		target	"target_player_all"
+		damage	100%
+		noScale
+	}
+	type {
+		target	"target_veh_all"
+		damage	100%
+		noScale
+	}
+}
+
+entityDef misc_mcp_marker {
+	"spawnclass"						"sdScriptEntity"
+	"scriptobject"						"mcp_marker"
+	
+	"editor_mins"						"-8 -8 -8"
+	"editor_maxs"						"8 8 8"
+	
+	"editor_var decal_size"				"Deploy size vector"
+	"editor_var team"					"Team owning this deploy point"
+	"editor_var mtr_deploy"				"Deploy decal material"
+	
+	"collection_mcp_marker"				"mcp_marker"
+}
+
+entityDef misc_imposter_spawner {
+	"editor_var imposter"		"FOR COMPILER USE ONLY. Holds misc_imposter entity references."
+	"editor_color"				"0 0.25 0"
+	"editor_mins"				"-16 -16 -16"
+	"editor_maxs"				"16 16 16"
+	"editor_skipmenu"			"1"
+	
+	"spawnclass"				"sdImposterEntity"
+	"noscriptobject"			"1"
+}
+
+entityDef misc_imposter {
+	"editor_var imposter"		"Imposter decl to use for this entity."
+	"editor_color"				"0 0.25 0"
+	"editor_mins"				"-16 -16 -16"
+	"editor_maxs"				"16 16 16"
+	
+	"spawnclass"				"sdImposterEntity"
+	"editor_spawnclass"			"sdEntityClass_Imposter"
+	"noscriptobject"			"1"
+}
+
+entityDef lightning {
+	"editor_color"				"0 .5 .8"
+	"editor_mins"				"-8 -8 -8"
+	"editor_maxs"				"8 8 8"
+	"editor_usage"				"Sets the lighting shader parameter"
+	"editor_var wait_min"		"Minimum wait between two bolts"
+	"editor_var wait_max"		"Maximum wait between two bolts"
+	"editor_var bolt_min"		"Minimum length of a bolt"
+	"editor_var bolt_max"		"Maximum length of a bolt"	
+	
+	"spawnclass"				"sdScriptEntity"
+	"scriptObject"				"lightning"
+}
+
+entityDef misc_advert {
+	"editor_color"					"0 .5 .8"
+	"editor_mins"					"?"
+	"editor_maxs"					"?"
+
+	"spawnclass"					"sdAdEntity"
+	
+	"editor_var billboard_name"		"ID of the massive inventory element to use"
+}
+
+entityDef misc_reverb {
+	"editor_var reverb"				"Reverb declaration."
+	"editor_var radius"				"Description here."
+
+	"editor_color"					"0.3 .5 .2"
+	"editor_mins"					"-32 -32 -32"
+	"editor_maxs"					"32 32 32"
+	
+	"editor_callback reverb"		"decl://reverb"
+
+	"spawnclass"					"sdReverb"
+	
+	"radius"						"1024"
+}
+
+entityDef vis_dummy {
+	"inherit"					"target_null"
+	"editor_color"				"0.5 0.85 0.1"
+	"noscriptobject"			"1"
+}
+
+stringMap life_stats_data {
+	"life_stat_infiltrator_1"			"flyerhive_kills"
+	"text_life_stat_infiltrator_1"		"lifeStat/flyerhive_kills"
+	"life_stat_infiltrator_2"			"strogg_radar_enemies_spotted"
+	"text_life_stat_infiltrator_2"		"lifeStat/strogg_radar_enemies_spotted"
+	"life_stat_infiltrator_3"			"strogg_hack_uses"
+	"text_life_stat_infiltrator_3"		"lifeStat/strogg_hack_uses"
+	"life_stat_infiltrator_4"			"strogg_emp_uses"
+	"text_life_stat_infiltrator_4"		"lifeStat/strogg_emp_uses"
+	"life_stat_infiltrator_5"			"strogg_backstab_uses"
+	"text_life_stat_infiltrator_5"		"lifeStat/strogg_backstab_uses"
+	"life_stat_infiltrator_6"			"strogg_disguise_uses"
+	"text_life_stat_infiltrator_6"		"lifeStat/strogg_disguise_uses"
+	"life_stat_infiltrator_7"			"railgun_kills"
+	"text_life_stat_infiltrator_7"		"lifeStat/railgun_kills"
+	"life_stat_infiltrator_8"			"lacerator_scoped_kills"
+	"text_life_stat_infiltrator_8"		"lifeStat/lacerator_scoped_kills"
+	"life_stat_infiltrator_9"			"strogg_teleport_uses"
+	"text_life_stat_infiltrator_9"		"lifeStat/strogg_teleport_uses"
+	                                	
+	"life_stat_oppressor_1"				"railhowitzer_kills"
+	"text_life_stat_oppressor_1"		"lifeStat/railhowitzer_kills"
+	"life_stat_oppressor_2"				"railhowitzer_damage"
+	"text_life_stat_oppressor_2"		"lifeStat/railhowitzer_damage"
+	"life_stat_oppressor_3"				"plasma_mortar_kills"
+	"text_life_stat_oppressor_3"		"lifeStat/plasma_mortar_kills"
+	"life_stat_oppressor_4"				"plasma_mortar_damage"
+	"text_life_stat_oppressor_4"		"lifeStat/plasma_mortar_damage"
+	"life_stat_oppressor_5"				"ssg_kills"
+	"text_life_stat_oppressor_5"		"lifeStat/ssg_kills"
+	"life_stat_oppressor_6"				"ssg_damage"
+	"text_life_stat_oppressor_6"		"lifeStat/ssg_damage"
+	"life_stat_oppressor_7"				"violator_kills"
+	"text_life_stat_oppressor_7"		"lifeStat/violator_kills"
+	"life_stat_oppressor_8"				"violator_damage"
+	"text_life_stat_oppressor_8"		"lifeStat/violator_damage"
+	                                	
+	"life_stat_constructor_1"			"landmine_strogg_kills"
+	"text_life_stat_constructor_1"		"lifeStat/landmine_strogg_kills"
+	"life_stat_constructor_2"			"antipersonnel_strogg_kills"
+	"text_life_stat_constructor_2"		"lifeStat/antipersonnel_strogg_kills"
+	"life_stat_constructor_3"			"antivehicle_strogg_kills"
+	"text_life_stat_constructor_3"		"lifeStat/antivehicle_strogg_kills"
+	"life_stat_constructor_4"			"antimissile_strogg_uses"
+	"text_life_stat_constructor_4"		"lifeStat/antimissile_strogg_uses"
+	"life_stat_constructor_5"			"strogg_damage_repaired"
+	"text_life_stat_constructor_5"		"lifeStat/strogg_damage_repaired"
+	                                	
+	"life_stat_aggressor_1"				"obliterator_kills"
+	"text_life_stat_aggressor_1"		"lifeStat/obliterator_kills"
+	"life_stat_aggressor_2"				"obliterator_damage"
+	"text_life_stat_aggressor_2"		"lifeStat/obliterator_damage"
+	"life_stat_aggressor_3"				"hyperblaster_kills"
+	"text_life_stat_aggressor_3"		"lifeStat/hyperblaster_kills"
+	"life_stat_aggressor_4"				"hyperblaster_damage"
+	"text_life_stat_aggressor_4"		"lifeStat/hyperblaster_damage"
+	"life_stat_aggressor_5"				"nailgun_kills"
+	"text_life_stat_aggressor_5"		"lifeStat/nailgun_kills"
+	"life_stat_aggressor_6"				"nailgun_damage"
+	"text_life_stat_aggressor_6"		"lifeStat/nailgun_damage"
+	"life_stat_aggressor_7"				"lightning_pistol_kills"
+	"text_life_stat_aggressor_7"		"lifeStat/lightning_pistol_kills"
+	"life_stat_aggressor_8"				"lightning_pistol_damage"
+	"text_life_stat_aggressor_8"		"lifeStat/lightning_pistol_damage"
+	
+	"life_stat_technician_1"			"strogg_players_revived"
+	"text_life_stat_technician_1"		"lifeStat/strogg_players_revived"
+	"life_stat_technician_2"			"strogg_healthpack_uses"
+	"text_life_stat_technician_2"		"lifeStat/strogg_healthpack_uses"
+	"life_stat_technician_3"			"strogg_spawnhosts_created"
+	"text_life_stat_technician_3"		"lifeStat/strogg_spawnhosts_created"
+	                                	
+	"life_stat_soldier_1"				"rocketlauncher_kills"
+	"text_life_stat_soldier_1"			"lifeStat/rocketlauncher_kills"
+	"life_stat_soldier_2"				"rocketlauncher_damage"
+	"text_life_stat_soldier_2"			"lifeStat/rocketlauncher_damage"
+	"life_stat_soldier_3"				"gpmg_kills"
+	"text_life_stat_soldier_3"			"lifeStat/gpmg_kills"
+	"life_stat_soldier_4"				"gpmg_damage"
+	"text_life_stat_soldier_4"			"lifeStat/gpmg_damage"
+	"life_stat_soldier_5"				"shotgun_kills"
+	"text_life_stat_soldier_5"			"lifeStat/shotgun_kills"
+	"life_stat_soldier_6"				"shotgun_damage"
+	"text_life_stat_soldier_6"			"lifeStat/shotgun_damage"
+	"life_stat_soldier_7"				"machinepistol_kills"
+	"text_life_stat_soldier_7"			"lifeStat/machinepistol_kills"
+	"life_stat_soldier_8"				"machinepistol_damage"
+	"text_life_stat_soldier_8"			"lifeStat/machinepistol_damage"
+	"life_stat_soldier_9"				"soldier_xp"
+	"text_life_stat_soldier_9"			"lifeStat/soldier_xp"
+	
+	"life_stat_medic_1"					"gdf_players_revived"
+	"text_life_stat_medic_1"			"lifeStat/gdf_players_revived"
+	"life_stat_medic_2"					"gdf_healthpack_uses"
+	"text_life_stat_medic_2"			"lifeStat/gdf_healthpack_uses"
+	"life_stat_medic_3"					"gdf_spawnhosts_destroyed"
+	"text_life_stat_medic_3"			"lifeStat/gdf_spawnhosts_destroyed"
+	"life_stat_medic_4"					"medic_xp"
+	"text_life_stat_medic_4"			"lifeStat/medic_xp"
+	                                	
+	"life_stat_engineer_1"				"landmine_gdf_kills"
+	"text_life_stat_engineer_1"			"lifeStat/landmine_gdf_kills"
+	"life_stat_engineer_2"				"antipersonnel_gdf_kills"
+	"text_life_stat_engineer_2"			"lifeStat/antipersonnel_gdf_kills"
+	"life_stat_engineer_3"				"antivehicle_gdf_kills"
+	"text_life_stat_engineer_3"			"lifeStat/antivehicle_gdf_kills"
+	"life_stat_engineer_4"				"antimissile_gdf_uses"
+	"text_life_stat_engineer_4"			"lifeStat/antimissile_gdf_uses"
+	"life_stat_engineer_5"				"gdf_damage_repaired"
+	"text_life_stat_engineer_5"			"lifeStat/gdf_damage_repaired"
+	"life_stat_engineer_6"				"engineer_xp"
+	"text_life_stat_engineer_6"			"lifeStat/engineer_xp"
+	
+	"life_stat_fieldops_1"				"artillery_kills"
+	"text_life_stat_fieldops_1"			"lifeStat/artillery_kills"
+	"life_stat_fieldops_2"				"artillery_damage"
+	"text_life_stat_fieldops_2"			"lifeStat/artillery_damage"
+	"life_stat_fieldops_3"				"rockets_kills"
+	"text_life_stat_fieldops_3"			"lifeStat/rockets_kills"
+	"life_stat_fieldops_4"				"rockets_damage"
+	"text_life_stat_fieldops_4"			"lifeStat/rockets_damage"
+	"life_stat_fieldops_5"				"hammer_kills"
+	"text_life_stat_fieldops_5"			"lifeStat/hammer_kills"
+	"life_stat_fieldops_6"				"hammer_damage"
+	"text_life_stat_fieldops_6"			"lifeStat/hammer_damage"
+	"life_stat_fieldops_7"				"vampire_kills"
+	"text_life_stat_fieldops_7"			"lifeStat/vampire_kills"
+	"life_stat_fieldops_8"				"vampire_damage"
+	"text_life_stat_fieldops_8"			"lifeStat/vampire_damage"
+	"life_stat_fieldops_9"				"gdf_supply_uses"
+	"text_life_stat_fieldops_9"			"lifeStat/gdf_supply_uses"
+	"life_stat_fieldops_10"				"assaultrifle_scoped_kills"
+	"text_life_stat_fieldops_10"		"lifeStat/assaultrifle_scoped_kills"
+	"life_stat_fieldops_11"				"fieldops_xp"
+	"text_life_stat_fieldops_11"		"lifeStat/fieldops_xp"
+	
+	"life_stat_covertops_1"				"third_eye_kills"
+	"text_life_stat_covertops_1"		"lifeStat/third_eye_kills"
+	"life_stat_covertops_2"				"gdf_radar_enemies_spotted"
+	"text_life_stat_covertops_2"		"lifeStat/gdf_radar_enemies_spotted"
+	"life_stat_covertops_3"				"gdf_hack_uses"
+	"text_life_stat_covertops_3"		"lifeStat/gdf_hack_uses"
+	"life_stat_covertops_4"				"gdf_emp_uses"
+	"text_life_stat_covertops_4"		"lifeStat/gdf_emp_uses"
+	"life_stat_covertops_5"				"gdf_backstab_uses"
+	"text_life_stat_covertops_5"		"lifeStat/gdf_backstab_uses"
+	"life_stat_covertops_6"				"gdf_disguise_uses"
+	"text_life_stat_covertops_6"		"lifeStat/gdf_disguise_uses"
+	"life_stat_covertops_7"				"sniperrifle_kills"
+	"text_life_stat_covertops_7"		"lifeStat/sniperrifle_kills"
+	"life_stat_covertops_8"				"grenade_smoke_shots_fired"
+	"text_life_stat_covertops_8"		"lifeStat/grenade_smoke_shots_fired"
+	"life_stat_covertops_9"			"covertops_xp"
+	"text_life_stat_covertops_9"		"lifeStat/covertops_xp"
+	
+	"life_stat_global_1"				"total_damage"
+	"text_life_stat_global_1"			"lifeStat/total_damage"
+	"life_stat_global_2"				"total_time_alive"
+	"text_life_stat_global_2"			"lifeStat/total_time_alive"
+	"timebased_life_stat_global_2"		"1"
+	"life_stat_global_3"				"total_kills"
+	"text_life_stat_global_3"			"lifeStat/total_kills"
+	"life_stat_global_4"				"battlesense_xp"
+	"text_life_stat_global_4"			"lifeStat/battlesense_xp"
+	"life_stat_global_5"				"total_kills_deployable"
+	"text_life_stat_global_5"			"lifeStat/total_kills_deployable"
+	"life_stat_global_6"				"total_kills_vehicle"
+	"text_life_stat_global_6"			"lifeStat/total_kills_vehicle"
+	"life_stat_global_7"				"total_headshot_kills"
+	"text_life_stat_global_7"			"lifeStat/total_headshot_kills"
+	"life_stat_global_8"				"total_roadkills"
+	"text_life_stat_global_8"			"lifeStat/total_roadkills"
+	"life_stat_global_9"				"vehicle_xp"
+	"text_life_stat_global_9"			"lifeStat/vehicle_xp"
+	
+	"life_stat_gdf_global_1"			"assaultrifle_kills"
+	"text_life_stat_gdf_global_1"		"lifeStat/assaultrifle_kills"
+	"life_stat_gdf_global_2"			"knife_kills"
+	"text_life_stat_gdf_global_2"		"lifeStat/knife_kills"
+	"life_stat_gdf_global_3"			"grenade_frag_kills"
+	"text_life_stat_gdf_global_3"		"lifeStat/grenade_frag_kills"
+	
+	"life_stat_strogg_global_1"			"lacerator_kills"
+	"text_life_stat_strogg_global_1"	"lifeStat/lacerator_kills"
+	"life_stat_strogg_global_2"			"spikes_kills"
+	"text_life_stat_strogg_global_2"	"lifeStat/spikes_kills"
+	"life_stat_strogg_global_3"			"grenade_shrap_kills"
+	"text_life_stat_strogg_global_3"	"lifeStat/grenade_shrap_kills"
+}

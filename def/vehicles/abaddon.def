@@ -1,0 +1,290 @@
+// Export
+// ========================================================================
+/*
+reexportmodels vehicles/desecrator.def
+testmodel vehicle_desecrator
+*/
+
+#include <quickchat/avdbits.include>
+
+export hauser {
+	options -prefix DES_        -scale 0.7   -rotate -90 -sourcedir models/vehicles/strogg_desecrator/dev_sd -nomerge -destdir models/vehicles/strogg_desecrator
+
+	addoptions -keep carrier_driver carrier_gunner1 player_pos front_right_hover front_left_hover rear_left_hover rear_right_hover turret_muzzle turret_camera camera gun_muzzle gun_camera gun_1 front_right_exit front_left_exit rear_right_exit rear_left_exit left_wheel_dynamix_01 left_wheel_rotation_01 left_wheel_dynamix_02 left_wheel_rotation_02 left_wheel_dynamix_03 left_wheel_rotation_03 left_wheel_dynamix_04 left_wheel_rotation_04 left_wheel_dynamix_05 left_wheel_rotation_05 left_wheel_dynamix_07 left_wheel_rotation_07 left_wheel_dynamix_08 left_wheel_rotation_08 right_wheel_dynamix_01 right_wheel_rotation_01 right_wheel_dynamix_02 right_wheel_rotation_02 right_wheel_dynamix_03 right_wheel_rotation_03 right_wheel_dynamix_04 right_wheel_rotation_04 right_wheel_dynamix_05 right_wheel_rotation_05 right_wheel_dynamix_07 right_wheel_rotation_07 right_wheel_dynamix_08 right_wheel_rotation_08 blaster_cam blaster_muzzle
+
+	mesh desecrator_lod0.mb		-dest desecrator.md5mesh
+	anim desecrator_lod0.mb		-dest desecrator.md5anim				-range 1 1
+	anim desecrator_lod0.mb		-dest desecrator_idle.md5anim			-range 20 49
+//	mesh desecrator_lod1.mb		-dest desecrator_lod1_boned.md5mesh
+//	mesh desecrator_lod2.mb		-dest desecrator_lod2_boned.md5mesh
+//	mesh desecrator_lod3.mb		-dest desecrator_lod3_boned.md5mesh
+
+	addoptions -noJoints
+
+	mesh desecrator_lod3.mb		-dest desecrator_lod1.md5mesh
+	mesh desecrator_lod3.mb		-dest desecrator_lod2.md5mesh
+	mesh desecrator_lod3.mb		-dest desecrator_lod3.md5mesh
+
+}
+
+
+// Models
+// ========================================================================
+//
+
+model vehicle_abaddon {
+	mesh			models/vehicles/strogg_desecrator/desecrator.md5mesh
+	anim base		models/vehicles/strogg_desecrator/desecrator.md5anim {
+	}
+	anim ik_pose		models/vehicles/strogg_desecrator/desecrator.md5anim {
+	}
+	anim initial		models/vehicles/strogg_desecrator/desecrator.md5anim {
+	}
+	anim idle		models/vehicles/strogg_desecrator/desecrator_idle.md5anim {
+	}
+}
+
+// Entity Def
+// ========================================================================
+//
+
+deployObject deployobject_abaddon {
+	"name"							"abaddon"
+	"title"							"game/vec/abaddon"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_abaddon"
+	"def_deployable_carrier"		"vehicle_strogg_drop_teleport"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+	"rank_required"					"captain"
+	"force_escalation_required"		"100"
+	"logistics_points_required"		"90"
+	"avdbit"						AVDBIT_ABADDON
+}
+
+entityDef vehicle_abaddon {
+	"inherit"						"vehicle_base_strogg"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_ragdoll"				"1"
+	"editor_usage"					"Vehicle."
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_abaddon"
+	"vs_vehicleScript"				"abaddon"
+
+	"control_context"				"g_bind_context_abaddon"
+
+	"angular_friction"				"0.2"
+	"linear_friction"				"0.6"
+	"bouncyness"					"0"
+
+	"health"						"2000"
+
+	"info_name"						"game/vec/abaddon"
+
+	"model"							"vehicle_desecrator"
+
+	"decay_time"					"40"
+
+	"dmg_collide"					"damage_abaddon_collide"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"gravity"						"1066"
+
+	"fx_explode"					"effects/base/explosion"
+
+	"fx_cannon_muzzle"				"effects/weapons/plasmacannon/desecrator"
+	"fx_cannon_muzzle_local"		"effects/weapons/plasmacannon/desecrator_local"	
+
+	"fx_hyperblaster_fire"			"effects/weapons/hyperblaster_fire_desecrator"			// For Xian: Hyperblaster sound goes in here
+	"fx_hyperblaster_muzzle"		"effects/weapons/hyperblaster_muzzleflash_vehicle"
+
+	"fx_hyperblaster_tracer"		"effects/base/tracers_strogg"
+	"effectchance fx_hyperblaster_tracer"	"1.0"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_desecrator"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_desecrator"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_desecrator"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_desecrator"
+
+	"fx_park_engage"				"effects/vehicles/desecrator/desecrator_siege_in"
+	"fx_park_disengage"				"effects/vehicles/desecrator/desecrator_siege_out"
+	"snd_park_engage"				"sounds/vehicles/desecrator/siege/start"
+	"snd_park_disengage"			"sounds/vehicles/desecrator/siege/stop"
+	"joint_park_fx"					"base"
+
+	"fx_hoverpad"					"effects/desecrator_hoverpads"	// Effect to use for lightning bolts & particles
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"turret_1"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"snd_crash_heavy"				"sounds/vehicles/misc/strogg/impact"
+	"snd_crash_light"				"sounds/vehicles/misc/strogg/impact"
+	"snd_crash_medium"				"sounds/vehicles/misc/strogg/impact"
+
+	"snd_startup"					"sounds/vehicles/desecrator/engine_start"
+	"snd_shutdown"					"sounds/vehicles/desecrator/engine_stop"
+	"snd_engine_idle"				"sounds/vehicles/desecrator/engine_idle"
+	"snd_engine_hover"				"sounds/vehicles/desecrator/engine_hover"
+	"snd_brake"						"silence"
+	"snd_overdrive"					"sounds/vehicles/desecrator/turbo_start"
+	"snd_overdrive_stop"			"sounds/vehicles/desecrator/turbo_stop"
+	"snd_recharge_2s"				"sounds/vehicles/desecrator/recharge_2s"
+	"snd_recharge_4s"				"sounds/vehicles/desecrator/recharge_4s"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/strogg"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"icon_size_cm"					"21"
+
+	"repair_multiplier"				"3"
+
+	"tt_enter"						"vehicle_abaddon_enter"
+
+	"gui_vehicle"					"guis/vehicles/strogg_desecrator"
+
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"1.5"
+
+	"ti_lightning"					"target_lightning_attractor"	// Targets for lighting bolts
+
+	"task_name"						"game/vec/abaddon"
+
+	"waypoint_offset"				"0 0 128"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_heavy"		"vehicles_heavy"
+
+	"def_projectile_decoy"			"projectile_decoy_desecrator"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_joint"		"turret_2"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+	"projectile_decoy_velocity"		"0 0 500"
+	
+	"projectile_decoy_ammo_max"		"20"
+	"projectile_decoy_ammo_per_use"	"1"
+
+	"give_consent"					"1"
+
+	"joint_damage_smoke"			"base"
+	"joint_damage_fire"				"base"
+
+	"input_mode"					"hovertank"
+	"vehicle_control"				"desecrator"
+
+	"wake_center_width"				"0 0"
+	"wake_edge_width"				"0 0"
+
+	"aor_layout"					"keep_anims"
+
+	"fx_groundeffect_none"			"effects/vehicles/desecrator/groundeffect_dirt"
+	"fx_groundeffect_grass"			"effects/vehicles/desecrator/groundeffect_grass"
+	"fx_groundeffect_stone"			"effects/vehicles/desecrator/groundeffect_stone"
+	"fx_groundeffect_sand"			"effects/vehicles/desecrator/groundeffect_sand"
+	"fx_groundeffect_pavement"		"effects/vehicles/desecrator/groundeffect_pavement"
+	"fx_groundeffect_dirt"			"effects/vehicles/desecrator/groundeffect_dirt"
+	"fx_groundeffect_dusty_road"	"effects/vehicles/desecrator/groundeffect_dirt"
+	"fx_groundeffect_gravel"		"effects/vehicles/desecrator/groundeffect_stone"
+	"fx_groundeffect_default"		"effects/vehicles/desecrator/groundeffect_dirt"
+	"fx_groundeffect_water"			"effects/vehicles/desecrator/groundeffect_water"
+	"fx_groundeffect_snow"			"effects/vehicles/desecrator/groundeffect_snow"
+
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"abaddon"
+	"vehicle_team"					"1"
+	"vehicle_flags"					"22" //mal: can travel over water and ground, and is a tank.
+
+	"qc_spotted"					"quickchat/context/attack/armorspotted"
+	
+	"validate_drop"					"1"
+	
+	"fx_stream_fire"				"effects/weapons/flamethrower/stream"
+	"snd_stream_fire_loop"			"sounds/weapons/flamethrower/stream"
+	"snd_plasmabeam_fire_loop"		"sounds/weapons/plasmabeam/fire_loop"
+	"fx_plasmabeam_fire"			"effects/weapons/plasmabeam/fire"
+	"fx_plasmabeam_burn"			"effects/weapons/plasmabeam/impact_burn"
+
+	"fx_plasmabeam_impact"			"effects/weapons/plasmabeam/impact_default"
+	"fx_plasmabeam_impact_forcefield" "effects/weapons/plasmabeam/impact_forcefield"
+	"fx_plasmabeam_impact_liquid"	"effects/weapons/plasmabeam/impact_liquid"
+	"fx_plasmabeam_impact_water"	"effects/weapons/plasmabeam/impact_liquid"
+  	"fx_plasmabeam_impact_water_interior"	"effects/weapons/plasmabeam/impact_liquid"
+  	
+  	"fx_plasmabeam_impact_pavement"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_stone"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_concrete"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_dirt"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_mud"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_flesh"	"effects/weapons/plasmabeam/impact_flesh"
+  	"fx_plasmabeam_impact_glass"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_ice"		"effects/weapons/plasmabeam/impact_snow"
+  	"fx_plasmabeam_impact_gravel"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_metal"	"effects/weapons/plasmabeam/impact_metal"
+  	"fx_plasmabeam_impact_metal_thick"	"effects/weapons/plasmabeam/impact_metal"
+  	"fx_plasmabeam_impact_dusty_road"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_sand"		"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_snow"		"effects/weapons/plasmabeam/impact_snow"
+  	"fx_plasmabeam_impact_wood"		"effects/weapons/plasmabeam/impact_wood"
+  	"fx_plasmabeam_impact_wood_thick"	"effects/weapons/plasmabeam/impact_wood"
+  	"fx_plasmabeam_impact_grass"	"effects/weapons/plasmabeam/impact_default"
+  	"fx_plasmabeam_impact_plastic"		"effects/weapons/plasmabeam/impact_default"
+}
+
+damageDef damage_abaddon_collide {
+	damage							"damage_abaddon_collide"
+
+	prof_damage						"pro_vehicle_damage"
+
+	stat_name						"desecrator_weapons"
+
+	team_kill_cvar					"g_allowComplaint_vehicles"
+
+	tt_obituary						"tooltips/killmsgs/vehicles/abaddon"
+	tt_obituary_unknown				"tooltips/killmsgs/vehicles/abaddon/empty"
+	tt_obituary_team_kill			"tooltips/killmsgs/vehicles/abaddon/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_abaddon_collide {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_veh_all"
+		damage	300
+	}
+	type {
+		target	"target_supply_crate"
+		damage	600
+	}
+	type {
+		target	"target_deployables_all"
+		damage	300
+	}	
+}
+
+toolTip vehicle_abaddon_enter {
+	length	5
+	text	"game/tt/abaddon"
+}

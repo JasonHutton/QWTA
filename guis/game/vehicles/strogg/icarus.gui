@@ -1,0 +1,22 @@
+
+#include <guis/game/hud/hud.include>
+#include <guis/game/hud/vehicle_panel.include>
+#include <guis/common/utility.include>
+
+gui guis/vehicles/strogg_icarus {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+	materials {
+		"icon"					"guis/assets/hud/strogg/vehicles/icarus"
+	}
+		
+	_class_icons
+	_hud_materials
+	
+	_base_icon
+	_position( 0, 2, 10 )
+
+	__vehicle_bar( boost, 42, 40, ( gui.background.absoluteRect.w * 0.75 ) - 12, "_st vehicle_boost_icon", globals.vehicles.chargeValue, "flash" )
+	__vehicle_bar_end
+}

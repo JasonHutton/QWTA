@@ -1,0 +1,148 @@
+/***********************************************************************
+
+	vehicles_weapons_haw.def
+
+***********************************************************************/
+
+entityDef projectile_haw {
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_homingmissile"
+
+	"aor_layout"						"missile"
+
+	"mins"								"-3 -3 -6"
+	"maxs"								"3 3 6"
+	
+	"cone"								"3"
+	
+	"model" 							"models/md5/vehicles/anansi/haw.lwo"
+
+	"dmg_damage"						"damage_haw"
+	"dmg_realistic_damage"					"realistic_damage_haw"
+	"dmg_splash_damage"					"damage_haw_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_haw_splash"
+
+	"launchFromBarrel"					"1"
+	"health"							"0"
+	"velocity"							"3000 0 0"
+	"angular_velocity"					"0 0 0"
+	"face_velocity"						"1"
+	"launch_velocity"					"0 0 0"
+	"target_post_launch"				"0"
+	"mass"								"5"
+	"gravity"							"0"
+	"fuse"								"2"
+	"has_thrust"						"1"
+
+	"lock_distance"						"8192"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_death"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+
+	"fx_trail"							"effects/base/missile_trail"
+	"fx_explode"						"effects/base/explosion_large"
+	"fx_explode_sand"					"effects/base/explosion_large_sand"
+	"fx_explode_water"					"effects/water/explosion"
+
+	"snd_fly"							"sounds/weapons/haw/fire"
+
+	"collection_decoy_target"			"decoy_target"
+	"collection_mdfExport"				"mdfExport"
+}
+
+entityDef projectile_haw_anansi {
+	"inherit"							"projectile_haw"
+
+	"launch_velocity"					"0 0 -200"
+	"target_post_launch"				"0.1"
+
+	"snd_release"						"weapons/haw/release"
+}
+
+damageDef damage_haw {
+	damage								"damage_haw"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	noheadshot	
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_haw {
+	inherit							"damage_haw"
+	damage							"realistic_damage_haw"
+}
+
+damageDef damage_haw_splash {
+	damage								"damage_haw"
+	radius								512
+	knockback							0
+
+	prof_damage							"pro_vehicle_damage"
+	
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	noheadshot
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_haw_splash {
+	inherit							"damage_haw_splash"
+	damage							"realistic_damage_haw"
+}
+
+damageFilter damage_haw {
+
+	type {
+		target	"target_player_all"
+		damage	500
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	250
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter realistic_damage_haw {
+
+	type {
+		target	"target_player_all"
+		damage	1000
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	250
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}

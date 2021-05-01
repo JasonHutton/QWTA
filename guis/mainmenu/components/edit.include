@@ -1,0 +1,168 @@
+
+#ifndef __component_edit__
+#define __component_edit__
+
+#define	EDIT_HEIGHT		16
+
+$template __edit_draw_background( RectParm )
+	properties {
+		color	borderColor			= COLOR_EDIT_LINES;
+		color	fillColor			= COLOR_EDIT_FILL;
+	}
+	events {
+		onPreDraw {
+			drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+			drawCachedMaterial( gui.wndLineMaterial, absoluteRect, borderColor );
+
+			gui.scriptPushFloat( true );	// continue normal windowDef drawing
+		}
+		onMouseEnter {
+			fillColor = transition( fillColor, COLOR_EDIT_HI_FILL, ACTIVATE_TRANSITION_TIME );
+			gui.playSound( "boop" );
+		}
+		onMouseExit {
+			fillColor = transition( fillColor, COLOR_EDIT_FILL, ACTIVATE_TRANSITION_TIME );
+		}
+		onGainFocus {
+			borderColor = transition( borderColor, COLOR_EDIT_HI_LINES, ACTIVATE_TRANSITION_TIME );
+			gui.playSound( "boop" );
+		}
+		onLoseFocus {
+			borderColor = transition( borderColor, COLOR_EDIT_LINES, ACTIVATE_TRANSITION_TIME );
+		}		
+	}
+$endtemplate
+
+// ----------------------
+// Edit controls
+// ----------------------
+$template __edit( NameParm, xPos, yPos, WidthParm, HeightParm, windowType )
+	windowDef edt##NameParm {
+		type windowType;
+		properties {
+			rect	rect				= xPos, yPos, WidthParm, HeightParm;
+			float	fontSize			= 12;
+			color	foreColor 			= COLOR_WHITE;
+			color	IMEFillColor		= COLOR_EDIT_FILL;
+			color	IMEBorderColor		= COLOR_EDIT_LINES;
+			color	IMESelectionColor	= foreColor.r, foreColor.g, foreColor.b, 0.25;
+			color	IMETextColor		= foreColor;
+		}
+		_tab_stop	
+
+$endtemplate
+
+$template _edit( NameParm, xPos, yPos, widthParm, heightParm )
+    __edit( NameParm, xPos, yPos, widthParm, heightParm, edit )
+	__edit_draw_background( absoluteRect )    
+	properties {
+		vec2	textOffset		= 3, 1;
+	}
+$endtemplate
+
+$template _editw( NameParm, xPos, yPos, widthParm, heightParm )
+    __edit( NameParm, xPos, yPos, widthParm, heightParm, editw )
+    __edit_draw_background( absoluteRect ) 
+    
+    properties {
+		vec2	textOffset		= 3, 3;
+	}
+$endtemplate
+
+
+$template _end_edit
+	}
+$endtemplate
+
+$template _advance_to_next_control_when_full( NextControl )
+	events {
+		onPropertyChanged "editText" {
+			callSuper();
+			if( maxTextLength > 0 && strLen( editText ) == maxTextLength ) {
+				gui.focusedWindow = #NextControl;
+			}
+		}
+	}
+$endtemplate
+
+$template _clear_on_show
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			editText = "";
+		}
+	}
+$endtemplate
+
+
+
+$template __draw_edit_label( TextParm, ColorParm, WidthParm, TextDrawFlags )
+	properties {
+		handle 	labelText = TextParm;
+		float 	labelWidth = WidthParm;
+		rect	labelRect = absoluteRect.x - ( labelWidth + 3 ), absoluteRect.y, labelWidth - 3, absoluteRect.h;
+	}
+	events {
+		onPreDraw {
+			drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+			drawCachedMaterial( gui.wndLineMaterial, absoluteRect, borderColor );
+
+			if( isValidHandle( labelText ) ) {
+				drawLocalizedText( labelText, labelRect, ColorParm, 12, TextDrawFlags );
+			}
+			gui.scriptPushFloat( true );
+		}
+	}
+$endtemplate
+
+$template _draw_left_edit_label( TextParm, ColorParm, WidthParm )
+	__draw_edit_label( TextParm, ColorParm, WidthParm, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE )
+$endtemplate
+
+$template _draw_right_edit_label( TextParm, ColorParm, WidthParm )
+	__draw_edit_label( TextParm, ColorParm, WidthParm, DTF_RIGHT | DTF_VCENTER | DTF_SINGLELINE )
+$endtemplate
+
+$template _edit_scrollbar( NameParm, xPos )
+	windowDef edt##NameParm##Scrollbar {
+		type slider;
+		properties {
+			rect 	rect 			= xPos, gui.edt##NameParm.rect.y, SCROLLBAR_WIDTH, gui.edt##NameParm.absoluteRect.h;
+			string 	material 		= "_3v scroll";
+			float 	orientation 	= SO_VERTICAL;
+			vec2 	range 			= 0.0, abs( gui.edt##NameParm.scrollAmountMax );
+			//float   visible         = abs( gui.edt##NameParm.scrollAmountMax ) > 0;
+			float 	pageStep 		= gui.edt##NameParm.lineHeight;
+		}
+		events {
+			onPropertyChanged "gui.edt" ## #NameParm ## ".scrollAmount" {
+				position = immediate( abs( gui.edt##NameParm.scrollAmount.y ) );
+			}
+			onPropertyChanged "position" {
+				gui.edt##NameParm.scrollAmount.y = position * -1;
+			}
+		}
+		_scrollable_list
+	}
+$endtemplate
+
+$template _editw_scroll( NameParm, xPos, yPos, widthParm, heightParm )
+	windowDef edt##NameParm##Container {
+		properties {
+			rect rect = xPos, yPos, widthParm, heightParm;
+		}		
+		_edit_scrollbar( NameParm, gui.edt##NameParm##Container.rect.w - ( SCROLLBAR_WIDTH + 2 ) )
+		__edit( NameParm, 2, 2, gui.edt##NameParm##Container.rect.w - ( SCROLLBAR_WIDTH + 5 ), gui.edt##NameParm##Container.rect.h - 4, editw )
+		__edit_draw_background( absoluteRect )
+		properties {
+			float flags = immediate( flags ) | EF_MULTILINE | WF_WRAP_TEXT;	
+			vec2	textOffset		= 3, 3;	
+		}
+$endtemplate
+
+$template _end_editw_scroll
+		_end_edit
+	}
+$endtemplate
+
+#endif // !__component_edit__

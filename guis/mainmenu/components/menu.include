@@ -1,0 +1,170 @@
+
+#ifndef __component_menu__
+#define __component_menu__
+
+$template _menu( NameParm, xPos, yPos, widthParm, heightParm )
+	windowDef mnu##NameParm {
+		type list;
+		properties {
+			rect	rect 				= xPos, yPos, widthParm, heightParm;
+			float	fixedRowHeight		= 14;
+			float	fontSize 			= 12;
+			color	backColor			= 0, 0, 0, 0;
+			float	internalBorderWidth	= 2.0f;
+			string	material			= "_frame window_line";
+			color	foreColor			= 0.5, 0.5, 0.5, 1.0f;
+			color	borderColor			= COLOR_BOX_LINES;
+			color	selectedItemForeColor	= COLOR_WHITE;
+			float 	flags 					= immediate( flags ) | WF_AUTO_SIZE_HEIGHT | LF_HOT_TRACK;
+			float	visible 				= 0;
+			float	newItem					= -1;	
+			float	lastValidItem 			= -1;
+			rect	itemRect;
+			float	drawItem;
+			float	showToolTips			= false;
+			color	fillColor				= COLOR_LIST_FILL;
+		}		
+		events {
+			onCreate {
+				callSuper();
+				setParent( "desktop" );
+				insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// Text
+				insertColumn( gui.blankWStr, 0, 1 );				// Target
+				insertColumn( gui.blankWStr, 0, 2 );				// Callback
+				insertColumn( gui.blankWStr, 0, 3 );				// Disabled
+				fillColor.a = 1;				
+			}
+			onNamedEvent "showMenu" {
+				callSuper();
+				visible = true;
+				gui.broadcastEvent( name, "initMenu" );
+				
+				currentSelection = -1;
+				scrollAmount = 0;
+				gui.focusedWindow = name;
+				rect.x = immediate( gui.cursorPos.x );
+				rect.y = immediate( gui.cursorPos.y );
+				
+				changeZOrder( ZO_BACK );
+				
+				showToolTips = immediate( gui.flags & GUI_TOOLTIPS );
+				gui.flags = immediate( gui.flags ) & ~GUI_TOOLTIPS;
+				gui.playSound( "accept" );
+			}
+			onPropertyChanged "absoluteRect.h" "absoluteRect.w" {
+				if( rect.x + rect.w > SCREEN_WIDTH ) {
+					rect.x = immediate( rect.x - ( ( rect.x + rect.w ) - SCREEN_WIDTH ) ) - PADDING;
+				}
+				if( rect.y + absoluteRect.h > SCREEN_HEIGHT ) {
+					rect.y = immediate( rect.y - ( ( rect.y + absoluteRect.h ) - SCREEN_HEIGHT ) ) - PADDING;
+				}			
+			}
+			onPropertyChanged "visible" {
+				if( visible == false ) {
+					flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+					if( showToolTips ) {
+						gui.flags = immediate( gui.flags ) | GUI_TOOLTIPS;
+					}
+				}
+			}
+			onPropertyChanged "gui.focusedWindow" {
+				if( icompare( name, gui.focusedWindow ) == false ) {
+					visible = false;
+				}
+			}
+			onPropertyChanged "currentSelection" {
+				callSuper();
+				if( currentSelection == -1 ) {
+					return;
+				}
+				if( wcompare( getItemText( currentSelection, 1 ), gui.blankWStr ) && lastValidItem != -1 ) {
+					currentSelection = -1;
+				} else {
+					lastValidItem = immediate( currentSelection );
+				}
+			}		
+
+			onGainFocus {
+				borderColor = transition( borderColor, COLOR_LIST_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				flags = immediate( flags ) | WF_CAPTURE_KEYS;
+			}
+			onLoseFocus {
+				borderColor = transition( borderColor, COLOR_LIST_LINES, ACTIVATE_TRANSITION_TIME );
+				flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				gui.scriptPushFloat( true );	// continue normal windowDef drawing
+			}
+			onDrawSelectedBackground {
+				drawItem = gui.scriptGetFloatResult();
+				itemRect = gui.scriptGetVec4Result();
+				drawCachedMaterial( gui.btnFillMaterial, itemRect, COLOR_LIST_HIGHLIGHT );
+				drawCachedMaterial( gui.btnGradMaterial, itemRect, COLOR_LIST_GRADIENT );
+			}
+			onNamedEvent "accept" {
+				if( currentSelection == -1 || wcompare( getItemText( currentSelection, 3 ), toWStr( "1" ) ) ) {
+					return;
+				}
+				visible = false;
+				gui.broadcastEvent( toStr( getItemText( currentSelection, 1 ) ), toStr( getItemText( currentSelection, 2 ) ) );
+				gui.playSound( "accept" );
+			}
+			onKeyUp "mouse1" {
+				postNamedEvent( "accept" );
+			}
+			
+			onAccept {
+				postNamedEvent( "accept" );
+			}
+			onCancel {
+				visible = false;
+			}				
+		}		
+$endtemplate
+
+$template _end_menu
+	}
+$endtemplate
+
+$template _menu_items
+	events {
+		onNamedEvent "initMenu" {
+			callSuper();
+			clearItems();			
+			
+$endtemplate
+
+$template _end_menu_items
+			requestLayout();
+			if( numItems == 0 ) {
+				visible = false;
+			}
+		}
+	}
+$endtemplate
+
+$template _menu_item( TextParm, TargetParm, CallbackParm )
+	newItem = insertItem( TextParm, -1, 0 );
+	setItemText( toWStr( TargetParm ), newItem, 1 );
+	setItemText( toWStr( CallbackParm ), newItem, 2 );
+	setItemForeColor( COLOR_TEXT, newItem, 0 );
+$endtemplate
+
+$template _menu_disable_last_item_if( Predicate )
+	if( Predicate ) {
+		setItemForeColor( "foreColor.r, foreColor.g, foreColor.b, 0.25", newItem, 0 );
+		setItemText( toWStr( "1" ), newItem, 3 );
+	}
+$endtemplate
+
+$template _menu_divider
+	if( numItems > 0 ) {
+		newItem = insertItem( toWStr( "<material = 'menu_separator'>\t\t\t1" ), -1, 0 );
+		setItemForeColor( COLOR_BUTTON_LINES, newItem, 0 );
+		setItemMaterialSize( "rect.w - 6, fixedRowHeight", newItem, 0 );
+	}
+$endtemplate
+
+
+#endif __component_menu__

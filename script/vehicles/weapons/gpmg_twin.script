@@ -1,0 +1,99 @@
+
+object vehicle_weapon_gpmg_twin : vehicle_weapon_base {
+	void				preinit();
+	void				init();
+	void				Fire();
+
+	string				muzzleFlashFX;
+	string				muzzleTracerFX;
+	string				muzzleSound;
+
+	entity				vehicle;
+
+	float				projectileIndex;
+
+	float				fireRate;
+	float				spread;
+	vector				velocity;
+
+	float				muzzleJoint1;
+	float				muzzleJoint2;
+
+	float				currentWeapon;
+
+	boolean				fireAnim;
+	
+	float				tracerCounter;
+	float				tracerInterval;
+	
+};
+
+void vehicle_weapon_gpmg_twin::preinit() {
+	muzzleFlashFX		= getKey( "muzzle_flash" );
+	muzzleTracerFX		= getKey( "muzzle_tracer" );
+	muzzleSound			= getKey( "muzzle_sound" );
+
+	projectileIndex		= GetEntityDef( getKey( "def_projectile" ) );
+
+	vehicle				= getVehicle();
+
+	muzzleJoint1		= vehicle.getJointHandle( getKey( "muzzle_left" ) );
+	muzzleJoint2		= vehicle.getJointHandle( getKey( "muzzle_right" ) );
+
+	fireAnim			= getFloatKey( "fire_anim" ) != 0;
+
+	fireRate			= getFloatKey( "fire_rate" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	spread				= getFloatKey( "spread" );
+	velocity			= getVectorKey( "velocity" );
+	
+	tracerCounter		= 0;
+	tracerInterval		= 1;// sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );	
+}
+
+void vehicle_weapon_gpmg_twin::init() {
+}
+
+
+void vehicle_weapon_gpmg_twin::Fire() {
+	currentWeapon++;
+	if ( currentWeapon == 2 ) {
+		currentWeapon = 0;
+	}
+	
+	RemoveCharge();
+	RemoveAmmo();
+
+	float jointHandle;
+	if ( currentWeapon == 0 ) {
+		jointHandle = muzzleJoint1;
+		if( fireAnim ) {
+			vehicle.playAnim( ANIMCHANNEL_HEAD, "fire_left" );
+		}
+	} else {
+		jointHandle = muzzleJoint2;
+		if( fireAnim ) {
+			vehicle.playAnim( ANIMCHANNEL_HEAD, "fire_right" );
+		}
+	}
+	
+	float forceTracer = TRACER_CHANCE;
+	if ( tracerInterval > 0 ) {
+		if ( tracerCounter % tracerInterval == 0 ) {
+			forceTracer = TRACER_FORCE;
+		}
+	}
+
+	vehicle.launchBullet( vehicle, vehicle, projectileIndex, spread, vehicle.getJointPos( jointHandle ), vehicle.jointToWorldSpace( jointHandle, velocity ), forceTracer, true );
+	tracerCounter++;
+	
+	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+	vehicle.playJointEffect( muzzleTracerFX, jointHandle, 0 );
+	vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+
+	AddReFireDelay( fireRate );
+
+	GoToIdle();
+}

@@ -1,0 +1,1688 @@
+
+// NEVER use "player.<propname>" properties in the limbo menu
+// Many "player." properties represent the local player OR
+// the player that the local player is spectating
+// ALWAYS use the limbo.<propname> equivalents as they only ever
+// refer to the local player
+// XOXOXO - jrad
+
+#include <guis/common/utility.include>
+#include <guis/common/materials.include>
+#include <guis/common/colors.include>
+
+#include <guis/game/limbo/colors.include>
+#include <guis/game/limbo/limbo.include>
+#include <guis/game/limbo/materials.include>
+#include <guis/game/limbo/stats.include>
+
+#include <guis/game/hud/text.include>
+#include <guis/game/chat.include>
+
+#include <guis/mainmenu/defines.include>
+#include <guis/mainmenu/effects.include>
+#include <guis/mainmenu/materials.include>
+#include <guis/mainmenu/utility.include>
+
+#include <guis/game/game_materials.include>
+
+#include <guis/mainmenu/cvars.include>
+#include <guis/mainmenu/components/button.include>
+#include <guis/mainmenu/components/check.include>
+#include <guis/mainmenu/components/dialog.include>
+#include <guis/mainmenu/components/dropdown.include>
+#include <guis/mainmenu/components/edit.include>
+#include <guis/mainmenu/components/group.include>
+#include <guis/mainmenu/components/list.include>
+#include <guis/mainmenu/components/menu.include>
+#include <guis/mainmenu/components/icon.include>
+#include <guis/mainmenu/components/label.include>
+#include <guis/mainmenu/components/radio.include>
+#include <guis/mainmenu/components/slider.include>
+#include <guis/mainmenu/components/tab_page.include>
+#include <guis/mainmenu/components/tooltip.include>
+#include <guis/mainmenu/components/window.include>
+
+
+// Proficiency Tabs
+#define PT_ROLE        	1
+#define PT_PROFICIENCY  2
+
+// Game Info
+#define GI_CAMPAIGN 	1
+#define GI_STATS 		2
+#define GI_ADMIN 		3
+#define GI_VOTE 		4
+#define GI_QWTAINFO		5
+
+// Player Info
+#define PI_INFO		1
+#define PI_CHAT		2
+
+gui limbo {
+	properties {
+		float 	flags						= immediate( flags ) | GUI_SHOWCURSOR | GUI_FULLSCREEN | GUI_TOOLTIPS | GUI_INHIBIT_GAME_WORLD | GUI_CATCH_ALL_EVENTS;
+		float	mapZoomLevel				= 1;
+		float	numAvailableWeapons			= 0;
+		string	teamSelection 				= "";
+		string	lastTeamSelection			= "";
+		string	classSelection				= "";
+		float	weaponSelection				= 0;
+		float	weaponSelectionKey			= 0;
+		float	activeWeaponSelection		= 0;
+		float	activeWeaponSelectionKey	= 0;
+
+		string	bindContext 				= "menu";
+		
+		float	trainingMode				= 0;
+		float	checkCookie					= false;
+		string	voiceOver					= "";
+		float	volumeScale					= 0;
+
+		handle 	noLimitText 				= localize( "guis/mainmenu/nolimit" );
+		handle 	disabledText 				= localize( "guis/mainmenu/botsdisabled" );
+
+		string	respawnTimerText;
+
+		float	twoHandedBank;	// cached handle for the two-handed weapon bank
+		float	allowKeyBindings			= icompare( focusedWindow, "edtChat" ) == false;
+
+		float	playZone = 0;
+		
+		float	modelDragging				= false;
+		string	flashButton					= "";
+
+		handle	gradMaterial 		= cacheMaterial( "btnGradAdd", 		"_3h button_grad_add" );
+		handle	facFillMaterial 	= cacheMaterial( "facFill",			"_frame faction" );
+		handle	facLineMaterial 	= cacheMaterial( "facLine", 		"_frame faction_line" );
+		handle	facGradMaterial 	= cacheMaterial( "facGrad", 		"_frame faction_grad" );
+		handle	facHiGradMaterial 	= cacheMaterial( "facHiGrad", 		"_3h faction_hi_grad" );
+
+		handle	profBackMaterial	= cacheMaterial( "profBack", 		"_st prof_starback" );
+		handle	profIconMaterial	= cacheMaterial( "profStar", 		"_st prof_star" );
+
+		handle 	levelPreview		= cacheMaterial( "levelPreview",	"levelshot" );
+		handle 	campaignPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
+		handle 	tacticalPreview 	= cacheMaterial( "campPreview", 	"campaignshot" );
+
+		handle 	criticalClass 		= cacheMaterial( "critClass", 		"critical_class" );
+	}
+
+	_dialog_container
+
+	// init window classes
+	_btn_init
+	_chk_init
+	_dlg_init
+	_wnd_init
+	_lst_init
+	_rad_init
+	_tabs_init
+
+	materials {
+		"prof_star"				"guis/assets/icons/icons_sheet1, rect( 64, 96, 16, 16 )"
+		"prof_starback"			"guis/assets/icons/icons_sheet1, rect( 80, 96, 16, 16 )"
+
+		"prof_fieldops"			"guis/assets/icons/stats, rect( 0, 0, 32, 32 )"
+		"prof_soldier"			"guis/assets/icons/stats, rect( 32, 0, 32, 32 )"
+		"prof_engineer"			"guis/assets/icons/stats, rect( 64, 0, 32, 32 )"
+		"prof_medic"			"guis/assets/icons/stats, rect( 96, 0, 32, 32 )"
+		"prof_covertops"		"guis/assets/icons/stats, rect( 128, 0, 32, 32 )"
+
+		"prof_battlesense"		"guis/assets/icons/stats, rect( 224, 0, 32, 32 )"
+		"prof_weapon_handling"	"guis/assets/icons/stats, rect( 160, 0, 32, 32 )"
+		"prof_vehicle"			"guis/assets/icons/stats, rect( 192, 0, 32, 32 )"
+
+		"logostrogg"			"guis/assets/limbo/logostrogg"
+		"logogdf"				"guis/assets/limbo/logogdf"
+		"logospec"				"guis/assets/limbo/logo"
+		"stats_separator"		"guis/assets/mainmenu/sheet_add, rect( 227, 224, 2, 16 )"
+
+		"lagicon"				"hud/icons/lagicon"
+
+		"obj01"					"hud/objectives/marker_01"
+		"obj02"					"hud/objectives/marker_02"
+		"obj03"					"hud/objectives/marker_03"
+		"obj04"					"hud/objectives/marker_04"
+		"obj05"					"hud/objectives/marker_05"
+
+		"critical_class"		"guis/assets/icons/icons_sheet1, rect( 32, 0, 16, 16 )"
+		"documents"				"hud/icons/missionsystem/obj_document"
+		"bot"					"guis/assets/icons/icons_sheet1, rect( 80, 0, 16, 16 )"		
+		
+		"objective_highlight"	"hud/icons/missionsystem/obj_highlight"
+	}
+	timeline limboVoice {
+		properties {
+			float active = false;
+		}
+		onTime 500 {
+			if( player.serverIsRepeater == false ) {
+				gui.stopVoice();
+				gui.checkCookie = true;
+				gui.voiceOver = "enter_limbo";
+				gui.postNamedEvent( "startVoice" );
+			}
+		}
+		/*onTime 14000 {
+			if( player.serverIsRepeater == false ) {
+				gui.checkCookie = true;
+				gui.voiceOver = "welcome_1";
+				gui.postNamedEvent( "startVoice" );
+			}
+		}*/
+	}
+	timeline stroggTeamVoice {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			gui.timeline.limboVoice.active = false;
+			gui.timeline.limboVoice.resetTime( 0 );
+			
+			gui.voiceOver = "team_strogg";
+			gui.postNamedEvent( "startVoice" );
+		}
+		onTime 14000 {
+			gui.stopVoice();
+			gui.voiceOver = "welcome_2";
+			gui.postNamedEvent( "startVoice" );
+		}
+		/*onTime 29000 {
+			gui.stopVoice();
+			gui.voiceOver = "welcome_3";
+			gui.postNamedEvent( "startVoice" );
+		}*/
+	}
+	timeline gdfTeamVoice {
+		properties {
+			float active = false;
+		}
+		onTime 0 {
+			gui.timeline.limboVoice.active = false;
+			gui.timeline.limboVoice.resetTime( 0 );
+
+			gui.voiceOver = "team_gdf";
+			gui.postNamedEvent( "startVoice" );
+		}
+		onTime 16000 {
+			gui.stopVoice();
+			gui.voiceOver = "welcome_2";
+			gui.postNamedEvent( "startVoice" );
+		}
+		/*onTime 29000 {
+			gui.stopVoice();
+			gui.voiceOver = "welcome_3";
+			gui.postNamedEvent( "startVoice" );
+		}*/
+	}
+
+	atmospheres {
+		"limbo"	""
+	}
+
+	_menu_icons
+	_limbo_materials
+	_player_upgrade_icons
+	sounds {
+		"bad"				"sounds/ui/main/bad"
+		"interaction"		"sounds/ui/main/interaction"
+		"spawnSelect"		"sounds/ui/main/select_01"
+
+		// VO's
+		"enter_limbo"		"sounds/tooltips/limbo/enter_limbo"
+		"team_gdf"			"sounds/tooltips/limbo/team_gdf"
+		"team_strogg"		"sounds/tooltips/limbo/team_strogg"
+		"aggressor"			"sounds/tooltips/limbo/aggressor"
+		"technician"		"sounds/tooltips/limbo/technician"
+		"constructor"		"sounds/tooltips/limbo/constructor"
+		"oppressor"			"sounds/tooltips/limbo/oppressor"
+		"infiltrator"		"sounds/tooltips/limbo/infiltrator"
+		"soldier"			"sounds/tooltips/limbo/soldier"
+		"medic"				"sounds/tooltips/limbo/medic"
+		"engineer"			"sounds/tooltips/limbo/engineer"
+		"fieldops"			"sounds/tooltips/limbo/fieldops"
+		"covertops"			"sounds/tooltips/limbo/covertops"
+		
+		"welcome_1"			"sounds/tooltips/tooltip_introductory1/info"
+		"welcome_2"			"sounds/tooltips/tooltip_introductory2/info"
+		"welcome_3"			"sounds/tooltips/tooltip_introductory3/info"
+	}
+	events {
+		onCVarChanged "g_trainingMode" {
+			trainingMode = gui.getCVarFloat( "g_trainingMode" );
+		}
+		onCVarChanged "g_tooltipVolumeScale" {
+			volumeScale = gui.getCVarFloat( "g_tooltipVolumeScale" );
+		}
+		onActivate {
+			trainingMode = gui.getCVarFloat( "g_trainingMode" );
+			volumeScale = gui.getCVarFloat( "g_tooltipVolumeScale" );
+
+			gui.flashTeams.postNamedEvent( "stopFlash" );
+			gui.flashClasses.postNamedEvent( "stopFlash" );
+			gui.flashClass.postNamedEvent( "stopFlash" );
+
+			twoHandedBank = getWeaponBankForName( "twohanded" );			
+
+			if( player.serverIsRepeater == false ) {
+				teamSelection 		= immediate( limbo.teamName );
+				if( icompare( teamSelection, "spec" ) == false ) {
+					lastTeamSelection	= immediate( teamSelection );
+				}
+	
+				classSelection 		= limbo.role;
+				
+				weaponList.postNamedEvent( "updateList" );
+	
+				weaponList.currentSelection = weaponList.findItemDataInt( limbo.weaponIndex, 0 );
+	
+				postNamedEvent( "remapClasses" );
+				postNamedEvent( "updateTimers" );
+				
+				playerModel_RenderModel.postNamedEvent( "updateModel" );
+				playerModel_Weapon.postNamedEvent( "updateModel" );
+	
+				edtChat.allowDeactivate = false;
+				edtChat.allowUnfocus = true;
+				focusedWindow = "";
+			} else {
+				teamSelection = "spec";
+			}
+			_set_tab_page_fast( gameInfo, GI_CAMPAIGN )
+
+			if( player.serverIsRepeater == false ) {
+				if( globals.gameHud.wantAdmin ) {
+					_set_tab_page_fast( gameInfo, GI_ADMIN )
+				}				
+	
+				if( globals.gameHud.wantVote ) {
+					_set_tab_page_fast( gameInfo, GI_VOTE )
+				}				
+			}
+			
+			globals.gameHud.wantAdmin = 0;
+			globals.gameHud.wantVote = 0;
+
+			playZone = limbo.defaultPlayZone;
+
+
+			timeline.limboVoice.active = true;
+			timeline.limboVoice.resetTime( 0 );
+
+			fadeSoundClass( 2, volumeScale, 500 ); // tooltip VO
+		}
+
+		onDeactivate {
+			fadeSoundClass( 1, -60, 500 );
+			fadeSoundClass( 2, 0, 500 ); // tooltip VO
+			postNamedEvent( "stopVoice" );
+		}
+
+		onNamedEvent "deploy" {
+			if( icompare( teamSelection, "spec" ) == 1 ) {
+				consoleCommand( "clientTeam spec" + _newline );
+				deactivate();
+			} else {
+				if( icompare( classSelection, "spec" ) == 0 ) {
+					consoleCommand( "clientTeam " + teamSelection + _newline );
+					consoleCommand( "clientClass " + classSelection + " " + toString( weaponSelectionKey, 0 ) + _newline );
+					activeWeaponSelection = immediate( weaponSelection );
+					activeWeaponSelectionKey = immediate( weaponSelectionKey );
+					deactivate();
+				}
+			}
+		}
+		onPropertyChanged "limbo.teamName" {
+			postNamedEvent( "updateTimers" );
+		}
+		onNamedEvent "updateTimers" {
+			if ( icompare( teamSelection, "gdf" ) ) {
+				respawnTimerText = msToHMS( globals.gameHud.gdfRespawnTime - player.gameTime );
+				return;
+			}
+			if ( icompare( teamSelection, "strogg" ) ) {
+				respawnTimerText = msToHMS( globals.gameHud.stroggRespawnTime - player.gameTime );
+				return;
+			}
+			respawnTimerText = "";
+		}
+
+		onPropertyChanged "teamSelection" {
+			postNamedEvent( "remapClasses" );
+		}
+		onNamedEvent "remapClasses" {
+			if( icompare( teamSelection, "spec" ) == false ) {
+				classSelection = gui.getEquivalentClass( lastTeamSelection, teamSelection, classSelection );
+			}
+		}
+		onPropertyChanged "classSelection" {
+			postNamedEvent( "stopVoice" );
+			
+			numAvailableWeapons	= getNumWeaponPackages( classSelection );
+			if( icompare( classSelection, limbo.role ) ) {
+				weaponSelection = immediate( activeWeaponSelection );
+				weaponSelectionKey = immediate( activeWeaponSelectionKey );
+			} else {
+				weaponSelection = 0;
+				weaponSelectionKey = 0;
+			}
+			updateLimboProficiency( classSelection );
+		}
+		onNamedEvent "startVoice" {
+			if ( !sdnet.hasActiveUser || player.serverIsRepeater ) {
+				return;
+			}
+			
+			if ( compare( gui.voiceOver, "" ) == true ) {
+				return;
+			}
+
+			if ( checkCookie || trainingMode == false ) {
+				if ( compare( sdnet.getProfileString( "vo_" + gui.voiceOver, "0" ), "1" ) == true ) {
+					return;
+				}
+			}
+
+			if( ( gui.getCVarInt( "g_playTooltipSound" ) == 0 ) || ( ( gui.getCVarInt( "g_playTooltipSound" ) == 1 ) && ( player.isSinglePlayer == false ) ) ) {
+				return;
+			}
+
+			// flash teams
+			if ( compare( gui.voiceOver, "enter_limbo" ) == true ) {
+				gui.flashTeams.postNamedEvent( "startFlash" );
+				gui.flashClasses.postNamedEvent( "stopFlash" );
+				gui.flashClass.postNamedEvent( "stopFlash" );
+			}
+			
+			// flash classes
+			if ( compare( gui.voiceOver, "team_gdf" ) == true || compare( gui.voiceOver, "team_strogg" ) == true ) {
+				gui.flashTeams.postNamedEvent( "stopFlash" );
+				gui.flashClasses.postNamedEvent( "startFlash" );
+				gui.flashClass.postNamedEvent( "stopFlash" );
+			}
+
+			// flash class
+			if ( compare( gui.voiceOver, "enter_limbo" ) == false && compare( gui.voiceOver, "team_gdf" ) == false && compare( gui.voiceOver, "team_strogg" ) == false && compare( gui.voiceOver, "welcome_1" ) == false && compare( gui.voiceOver, "welcome_2" ) == false && compare( gui.voiceOver, "welcome_3" ) == false ) {
+				gui.flashTeams.postNamedEvent( "stopFlash" );
+				gui.flashClasses.postNamedEvent( "stopFlash" );
+				gui.flashClass.postNamedEvent( "startFlash" );
+			}
+			
+			gui.playVoice( gui.voiceOver );
+			sdnet.setProfileString( "vo_" + gui.voiceOver, "1" );
+			gui.voiceOver = "";
+			gui.checkCookie = false;
+		}
+		onNamedEvent "stopVoice" {
+			gui.timeline.stroggTeamVoice.active = false;
+			gui.timeline.stroggTeamVoice.resetTime( 0 );
+			gui.timeline.gdfTeamVoice.active = false;
+			gui.timeline.gdfTeamVoice.resetTime( 0 );
+
+			gui.flashTeams.postNamedEvent( "stopFlash" );
+			gui.flashClasses.postNamedEvent( "stopFlash" );
+			gui.flashClass.postNamedEvent( "stopFlash" );
+			gui.stopVoice();
+		}
+		onNamedEvent "resetVoiceTutorial" {
+			if ( !sdnet.hasActiveUser ) {
+				return;
+			}
+
+			sdnet.setProfileString( "vo_enter_limbo", "0" );
+			sdnet.setProfileString( "vo_team_gdf", "0" );
+			sdnet.setProfileString( "vo_team_strogg", "0" );
+			sdnet.setProfileString( "vo_aggressor", "0" );
+			sdnet.setProfileString( "vo_technician", "0" );
+			sdnet.setProfileString( "vo_constructor", "0" );
+			sdnet.setProfileString( "vo_oppressor", "0" );
+			sdnet.setProfileString( "vo_infiltrator", "0" );
+			sdnet.setProfileString( "vo_soldier", "0" );
+			sdnet.setProfileString( "vo_medic", "0" );
+			sdnet.setProfileString( "vo_engineer", "0" );
+			sdnet.setProfileString( "vo_fieldops", "0" );
+			sdnet.setProfileString( "vo_covertops", "0" );
+			sdnet.setProfileString( "vo_welcome_1", "0" );
+			sdnet.setProfileString( "vo_welcome_2", "0" );
+			sdnet.setProfileString( "vo_welcome_3", "0" );
+			sdnet.setProfileString( "vo_sounds/tooltips/upgrade_new_weapon/info", "0" );
+			sdnet.setProfileString( "vo_sounds/tooltips/upgrade_now_available/info", "0" );
+			sdnet.setProfileString( "vo_sounds/tooltips/upgrade_on_respawn/info", "0" );
+		}
+	}
+
+	windowDef desktop {
+		properties {
+			color	backColor = COLOR_BACKGROUND;
+			float	flags = immediate( flags ) | WF_CAPTURE_KEYS;
+			rect 	rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+			float allowEvents 		= gui.modalDialogActive == false;
+		}
+		events {
+			onPropertyChanged "gui.allowKeyBindings" {
+				if( gui.allowKeyBindings ) {
+					flags = immediate( flags ) | WF_CAPTURE_KEYS;
+				} else {
+					flags = immediate( flags ) & ~WF_CAPTURE_KEYS;
+				}
+			}
+
+			onKeyDown "bind_limbomenu" {
+				gui.postNamedEvent( "deploy" );
+			}
+			onAccept {
+				gui.postNamedEvent( "deploy" );
+			}
+			onKeyDown "del" "kp_del" {
+				gui.consoleCommand( "kill" + _newline );
+				gui.postNamedEvent( "deploy" );		
+			}
+			onKeyDown "bindkill" {
+				gui.consoleCommand( "kill" + _newline );
+				gui.postNamedEvent( "deploy" );
+			}
+			onPropertyChanged "limbo.teamName" {
+				if( icompare( gui.teamSelection, "spec" ) == false ) {
+					gui.lastTeamSelection	= immediate( gui.teamSelection );
+				}
+				gui.teamSelection = immediate( limbo.teamName );
+			}
+			onKeyDown "[" {
+				_set_tab_page( classInfo, PT_ROLE );
+			}
+			onKeyDown "]" {
+				_set_tab_page( classInfo, PT_PROFICIENCY );
+			}
+			onPropertyChanged "limbo.role" {
+				gui.classSelection = immediate( limbo.role );
+			}
+			onKeyUp "mouse1" {
+				if ( gui.modelDragging == true || gui.flashClass.timeline.default.active == false ) {
+					gui.playerModel_RenderModel.modelRotation.y = immediate( gui.playerModel_RenderModel.modelRotation.y );
+				}
+			}
+			onNavForward {
+				gui.lstSpawnPoints.postNamedEvent( "nextPoint" );
+			}
+			onNavBackward {
+				gui.lstSpawnPoints.postNamedEvent( "prevPoint" );
+			}
+			onQueryTooltip {
+				if( gui.classSelection.isVisible() ) {
+					if( containsPoint( "0, gui.playerInfoSurround.absoluteRect.y, gui.playerInfoSurround.absoluteRect.w, gui.respawnTimerText.absoluteRect.y - gui.playerInfoSurround.absoluteRect.y" , gui.cursorPos.x, gui.cursorPos.y ) ) {
+						tooltipText = localizeArgs( "guis/mainmenu/tooltips/quickclass" );
+						return;
+					}
+					if( gui.lytSpawnPointsStatic.isVisible() && containsPoint( gui.lytSpawnPointsStatic.absoluteRect, gui.cursorPos.x, gui.cursorPos.y ) ) {
+						tooltipText = localizeArgs( "guis/mainmenu/tooltips/quickspawn", gui.getKeyBind( "_menuNavForward", "menu" ), gui.getKeyBind( "_menuAccept", "menu" ) );
+						return;
+					}
+				}
+				
+				if( player.serverIsRepeater == false ) {
+					if( containsPoint( "0, gui.respawnTimerText.absoluteRect.y, gui.respawnTimerText.absoluteRect.w, gui.screenDimensions.y - gui.respawnTimerText.absoluteRect.y", gui.cursorPos.x, gui.cursorPos.y ) ) {
+						tooltipText = localizeArgs( "guis/mainmenu/tooltips/quickaccept", gui.getKeyBind( "_menuAccept", "menu" ), gui.getKeyBind( "_limbomenu", "" ), gui.getKeyBind( "_menuCancel", "menu" ) );
+						return;
+					}
+					if( containsPoint( "0, 0, gui.deploySurround.rect.w, gui.screenDimensions.y", gui.cursorPos.x, gui.cursorPos.y ) ) {
+						tooltipText = localizeArgs( "guis/mainmenu/tooltips/quickteam" );
+						return;
+					}
+				}
+				tooltipText = gui.blankWStr;							
+			}
+		}
+	}
+
+	windowDef leftSurround {
+		properties {
+			rect rect 				= 0, 0, 220, SCREEN_HEIGHT;
+			float allowEvents 		= gui.modalDialogActive == false;
+			float allowChildEvents 	= gui.modalDialogActive == false;
+		}
+		_team_button( strogg, 	"8", "game/strogg", 	"game/strogg", 		PADDING, PADDING, COLOR_STROGG_SELECTED, COLOR_STROGG_SELECTED_GRADIENT )
+			events {
+				onPropertyChanged "player.serverIsRepeater" {
+					postNamedEvent( "updateState" );
+				}
+				onActivate {
+					postNamedEvent( "updateState" );
+				}
+				onNamedEvent "updateState" {
+					if( player.serverIsRepeater ) {
+						colorMultiplier.a = 0.15;
+						allowEvents = false;
+					} else {
+						colorMultiplier.a = 1;
+						allowEvents = true;					
+					}
+				}
+			}
+		_end_team_button
+				
+		_team_button( spec, 	"9", "game/spectator", 	"game/spectators", 	_to_right_of( btnStrogg ) + PADDING, PADDING, COLOR_SPEC_SELECTED, COLOR_SPEC_SELECTED_GRADIENT )
+		_end_team_button
+		
+		_team_button( gdf, 		"0", "game/gdf", 		"game/gdf", 		_to_right_of( btnSpec ) + PADDING, PADDING, COLOR_GDF_SELECTED, COLOR_GDF_SELECTED_GRADIENT )
+			events {
+				onPropertyChanged "player.serverIsRepeater" {
+					postNamedEvent( "updateState" );
+				}
+				onActivate {
+					postNamedEvent( "updateState" );
+				}
+				onNamedEvent "updateState" {
+					if( player.serverIsRepeater ) {
+						colorMultiplier.a = 0.15;
+						allowEvents = false;
+					} else {
+						colorMultiplier.a = 1;
+						allowEvents = true;					
+					}
+				}
+			}	
+		_end_team_button
+
+		_button( AutoJoin, PADDING, _to_bottom_of( btnStrogg ) + 2, 212, 14 )
+			properties {
+				handle localizedText = localize( "guis/limbo/autojoin" );
+				float gdfCount		= 0;
+				float stroggCount	= 0;
+				float flags 		= WF_CAPTURE_KEYS;
+			}
+			events {
+				onNamedEvent "onAction" {
+					if( icompare( gui.teamSelection, "spec" ) == 0 ) {
+						gui.lastTeamSelection	= immediate( gui.teamSelection );
+					}
+
+					gui.consoleCommand( "clientTeam auto" + _newline );
+					gui.playGameSound( "system/button/click" );
+					gui.deactivate();
+				}
+				onKeyDown "a" {
+					postNamedEvent( "onAction" );
+				}
+			}
+		_end_button
+
+		//class selection
+		windowDef classSelection {
+			properties {
+				float	visible = icompare( gui.teamSelection, "spec" ) == false;
+			}
+
+			windowDef playerInfoSurround {
+				properties {
+					rect	rect 			= PADDING, _to_bottom_of( btnAutoJoin ) + 2, _fill_to_right_of( leftSurround ), 36;
+					rect	rankIconRect	= absoluteRect.x + 2, absoluteRect.y + 2, 28, 28;
+					rect	textRect		= absoluteRect.x + 32, absoluteRect.y, absoluteRect.w, absoluteRect.h;
+
+					handle	rankIcoMaterial;
+				}
+				events {
+					onPropertyChanged "limbo.rankMaterial" {
+						rankIcoMaterial = gui.cacheMaterial( name + "rankIco", "_st " + limbo.rankMaterial );
+					}
+					onPreDraw {
+						drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_NAME_PANEL_FILL );
+						drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_NAME_PANEL_LINE );
+						drawCachedMaterial( gui.gradMaterial, absoluteRect, COLOR_NAME_PANEL_GRADIENT );
+						drawCachedMaterial( rankIcoMaterial, rankIconRect, COLOR_WHITE );
+						drawLocalizedText( limbo.rank, textRect, COLOR_WHITE, 12, DTF_LEFT | DTF_TOP | DTF_SINGLELINE );
+
+						gui.scriptPushFloat( false );
+					}
+				}
+
+				windowDef playerTitle {
+					properties {
+						rect	rect = 32, 16, _fill_to_right_of( playerInfoSurround ), 16;
+						float	fontSize = 16;
+						wstring text = toWStr( limbo.name );
+						vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+						float 	flags = immediate( flags ) | WF_TRUNCATE_TEXT;
+					}
+				}
+			}
+
+			//class buttons
+			windowDef classSurround {
+				properties {
+					rect	rect 		= PADDING, _to_bottom_of( playerInfoSurround ) + PADDING, _fill_to_right_of( leftSurround ), 290;
+					color borderColor 	= COLOR_LINES;
+					string material 	= "_frame faction_line";
+				}
+
+				windowDef GDFClasses {
+					properties {
+						float visible = icompare( gui.teamSelection, "gdf" );
+					}
+					_class_button( 	soldier, 	gdf,  	PADDING, $evalfloat( 2 * PADDING ), 1 )
+					_class_button( 	medic, 		gdf,  	_to_right_of( btnClassSoldier ), $evalfloat( 2 * PADDING ), 2 )
+					_class_button( 	engineer,	gdf,  	_to_right_of( btnClassMedic ), $evalfloat( 2 * PADDING ), 3 )
+					_class_button( 	fieldops, 	gdf,	_to_right_of( btnClassEngineer ), $evalfloat( 2 * PADDING ), 4 )
+					_class_button( 	covertops, 	gdf,  	_to_right_of( btnClassFieldops ), $evalfloat( 2 * PADDING ), 5 )
+				}
+
+				windowDef StroggClasses {
+					properties {
+						float visible = icompare( gui.teamSelection, "strogg" );
+					}
+					_class_button( 	aggressor, 		strogg,   	PADDING, $evalfloat( 2 * PADDING ), 1 )
+					_class_button( 	technician, 	strogg,   	_to_right_of( btnClassAggressor ), $evalfloat( 2 * PADDING ), 2 )
+					_class_button( 	constructor, 	strogg,   	_to_right_of( btnClassTechnician ), $evalfloat( 2 * PADDING ), 3 )
+					_class_button( 	oppressor, 		strogg,		_to_right_of( btnClassConstructor ), $evalfloat( 2 * PADDING ), 4 )
+					_class_button( 	infiltrator, 	strogg,   	_to_right_of( btnClassOppressor ), $evalfloat( 2 * PADDING ), 5 )
+				}
+				_tab_container( classInfo, PT_ROLE, PADDING, _to_bottom_of( btnClassSoldier ) + PADDING, _fill_to_right_of( classSurround ), _fill_to_bottom_of( classSurround ) - PADDING )
+					_tab_page( role, localize( "guis/limbo/role" ), classInfo, PT_ROLE, 2, 0 )
+						windowDef classTitle {
+							properties {
+								rect	rect 		= PADDING * 1.5, PADDING, 110, 16;
+								float	fontSize 	= 12;
+								handle	localizedText 	= localize( "game/classes/" + gui.classSelection );
+								vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+							}
+						}
+						_scrollable_localized_text( ClassText, localize( "blank" ), $evalfloat( PADDING * 2 ), _to_bottom_of( classTitle ), _fill_to_right_of( tabpRoleContent ), 63, "noborder" )
+							properties {
+								color foreColor = COLOR_TAB_CONTENT_TEXT;
+							}
+							events {
+								onPropertyChanged "gui.classSelection" {
+									if( compare( gui.classSelection, "spectating" ) == false ) {
+										localizedText = localize( "game/classes/" + gui.classSelection + "_blurb" );
+									} else {
+										localizedText = localize( "blank" );
+									}
+								}
+							}
+						_end_scrollable_text
+
+						windowDef weaponTitle {
+							properties {
+								rect	rect 		= PADDING * 1.5, _client_dimension( tabpRoleContent, height ) * 0.42, 150, 16;
+								float 	fontSize 	= 12;
+								handle	localizedText 	= localize( "guis/limbo/main_weapon" );
+								vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+							}
+						}
+						windowDef weaponList {
+							type list;
+							properties {
+								rect 	rect 		= 4, _to_bottom_of( weaponTitle ), _fill_to_right_of( tabpRoleContent ), 128;
+								color   backColor	= 0, 0, 0, 0;
+								float	fontSize 	= 12;
+								color	backColor	= 0, 0, 0, 0;
+								float	fixedRowHeight 	= 28;
+								float	rowSpacing	= 2;
+								float	flags		= WF_AUTO_SIZE_HEIGHT;
+								rect	itemRect;
+								color	itemColor;
+								float	drawItem;
+								wstring	toolTipText = localizeArgs( "guis/limbo/clicktochange" );
+								color	selectedItemForeColor = COLOR_WHITE;
+								vec2 	hoverItem;
+								vec4	transitionStart;
+								float	initialized = false;
+							}
+							events {
+								onCreate {
+									insertColumn( gui.blankWStr, 68, 0 );			// Icon
+									insertColumn( toWStr( "<width = 100%>" ), 0, 1 );	// Item
+									initialized = true;
+								}
+								onNamedEvent "setupItems" {
+									if( initialized ) {
+										clearTransitions( -1, -1 );
+										setItemForeColor( COLOR_ACTIVE_TAB_FILL_LEFT, -1, 0 );
+										setItemForeColor( COLOR_TAB_CONTENT_TEXT, -1, 1 );
+										setItemMaterialSize( "68, 17", -1, 0 );
+										setItemTextFlags( DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE, -1, 0 );
+										setItemTextFlags( DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE, -1, 1 );
+									}
+								}
+								onPropertyChanged "gui.classSelection" "gui.teamSelection" "gui.weaponSelection" {
+									postNamedEvent( "updateList" );
+								}
+								onQueryToolTip {
+									hoverItem = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+									if( hoverItem.x == currentSelection ) {
+										toolTipText = gui.blankWStr;
+									} else {
+										toolTipText = localizeArgs( "guis/limbo/clicktochange" );
+									}
+								}
+								onNamedEvent "updateList" {
+									clearItems();
+
+									gui.scriptPushString( gui.classSelection );
+									gui.scriptPushFloat( -1 );
+									gui.scriptPushFloat( gui.twoHandedBank );
+
+									fillFromEnumerator( "inventoryList" );									
+
+									postNamedEvent( "setupItems" );
+
+									currentSelection = immediate( gui.weaponSelection );
+								}
+								onPropertyChanged "currentSelection" {
+									postNamedEvent( "setupItems" );
+									callSuper();
+									if( currentSelection >= 0 && currentSelection < numItems ) {
+										gui.weaponSelection = immediate( currentSelection );										
+										gui.weaponSelectionKey = getItemDataInt( gui.weaponSelection, 0, 0 );
+										gui.playGameSound( "accept" );
+									}
+								}
+								onPropertyChanged "limbo.weaponIndex" {
+									currentSelection = findItemDataInt( limbo.weaponIndex, 0 );
+								}
+								onKeyUp "mouse1" {
+//									gui.playGameSound( "accept" );
+								}
+								onDrawItemBackground {
+									drawItem 	= gui.scriptGetFloatResult();
+									itemColor 	= gui.scriptGetVec4Result();
+									itemRect 	= gui.scriptGetVec4Result();
+
+									drawCachedMaterial( gui.wndFillMaterial, itemRect, COLOR_WEAPON_FILL );
+									drawCachedMaterial( gui.gradMaterial, itemRect, COLOR_WEAPON_GRADIENT );
+									drawCachedMaterial( gui.gradMaterial, itemRect, getItemTransitionVec4Result( LTP_PROPERTY_1, COLOR_INVISIBLE, drawItem, 0 ) );
+									drawCachedMaterial( gui.wndLineMaterial, itemRect, getItemTransitionVec4Result( LTP_PROPERTY_0, COLOR_WEAPON_LINE, drawItem, 0 ) );
+								}
+								onDrawSelectedBackground {
+									drawItem 	= gui.scriptGetFloatResult();
+									itemRect 	= gui.scriptGetVec4Result();
+									drawCachedMaterial( gui.wndFillMaterial, itemRect, COLOR_ACTIVE_WEAPON_FILL );
+									drawCachedMaterial( gui.gradMaterial, itemRect, COLOR_ACTIVE_WEAPON_GRADIENT );
+									drawCachedMaterial( gui.gradMaterial, itemRect, getItemTransitionVec4Result( LTP_PROPERTY_1, COLOR_INVISIBLE, drawItem, 0 ) );
+									drawCachedMaterial( gui.wndLineMaterial, itemRect, COLOR_ACTIVE_WEAPON_LINE );
+								}
+								onEnterItem {
+									hoverItem.x = gui.scriptGetFloatResult();
+									hoverItem.y = gui.scriptGetFloatResult();
+
+									transitionStart = getItemTransitionVec4Result( LTP_PROPERTY_0, COLOR_WEAPON_LINE, hoverItem.x, 0 );
+									transitionItemVec4( LTP_PROPERTY_0, transitionStart, COLOR_ACTIVE_WEAPON_LINE, ACTIVATE_TRANSITION_TIME, "", hoverItem.x, 0 );
+
+									transitionStart = getItemTransitionVec4Result( LTP_PROPERTY_1, COLOR_INVISIBLE, hoverItem.x, 0 );
+									transitionItemVec4( LTP_PROPERTY_1, transitionStart, COLOR_WEAPON_GRADIENT, ACTIVATE_TRANSITION_TIME, "", hoverItem.x, 0 );
+									if( hoverItem.x != currentSelection ) {
+										gui.playGameSound( "boop" );
+									}
+								}
+								onExitItem {
+									hoverItem.x = gui.scriptGetFloatResult();
+									hoverItem.y = gui.scriptGetFloatResult();
+
+									transitionStart = getItemTransitionVec4Result( LTP_PROPERTY_0, COLOR_WHITE, hoverItem.x, 0 );
+									transitionItemVec4( LTP_PROPERTY_0, transitionStart, COLOR_WEAPON_LINE, ACTIVATE_TRANSITION_TIME, "", hoverItem.x, 0 );
+
+									transitionStart = getItemTransitionVec4Result( LTP_PROPERTY_1, COLOR_ACTIVE_WEAPON_GRADIENT, hoverItem.x, 0 );
+									transitionItemVec4( LTP_PROPERTY_1, transitionStart, COLOR_INVISIBLE, ACTIVATE_TRANSITION_TIME, "", hoverItem.x, 0 );
+								}
+							}
+						}
+					_end_tab_page
+
+					_tab_page( prof, localize( "guis/limbo/prof" ), classInfo, PT_PROFICIENCY, _to_right_of( tabpRole ), 0 )
+						windowDef xpTitle {
+							properties {
+								rect	rect 			= PADDING * 1.5, PADDING, 150, 16;
+								float	fontSize 		= 12;
+								handle	localizedText	= localize( "game/classes/" + gui.classSelection );
+								handle	xpText			= localize( "guis/game/scoreboard/xp" );
+								vec2 	textAlignment	= TA_LEFT, TA_VCENTER;
+								float	flags			= immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+							}
+							events {
+								onPostDraw {
+									drawLocalizedText( xpText, "absoluteRect.x + absoluteRect.w + 2, absoluteRect.y, 32, absoluteRect.h", COLOR_WHITE, fontSize, DTF_LEFT | DTF_SINGLELINE | DTF_VCENTER );
+								}
+							}
+						}
+						windowDef XPCount {
+							properties {
+								rect 	rect 			= $evalfloat( PADDING * 3 ), _to_bottom_of( xpTitle ) + 1, 32, 12;
+								color	foreColor		= COLOR_TAB_CONTENT_TEXT;
+								float 	fontSize 		= 12;
+								vec2	textAlignment 	= TA_RIGHT, TA_VCENTER;
+								wstring	text			= toWString( limbo.proficiencyXP0, 0 );
+							}
+						}
+
+						windowDef XPProgress {
+							properties {
+								rect rect 				= _to_right_of( XPCount ) + 3, gui.XPCount.rect.y - 1, _fill_to_right_of( tabpProfContent ), 12;
+								rect fillRect 			= absoluteRect.x + 2, absoluteRect.y + 2, ( absoluteRect.w * max( 0.0f, min( limbo.proficiencyPercent0, 1.0f ) ) ) - 4, absoluteRect.h - 4;
+								rect textRect 			= absoluteRect.x + absoluteRect.w + 4, absoluteRect.y + 2, absoluteRect.w, absoluteRect.h;
+								handle gradMaterial 	= gui.cacheMaterial( "xpgrad", "_st button_grad_c" );
+							}
+							events {
+								onPreDraw {
+									clipToRect( fillRect );
+									drawCachedMaterial( gui.btnFillMaterial, absoluteRect, COLOR_PROGRESS_FILL );
+									drawCachedMaterial( gradMaterial, absoluteRect, COLOR_PROGRESS_GRADIENT );
+									unclipRect();
+
+									drawCachedMaterial( gui.btnLineMaterial, absoluteRect, COLOR_PROGRESS_LINES );
+									gui.scriptPushFloat( false );
+								}
+							}
+						}
+						windowDef skillsTitle {
+							properties {
+								rect	rect 			= PADDING * 1.5, 39, 150, 16;
+								float 	fontSize 		= 12;
+								handle	localizedText	= localize( "guis/limbo/rank_levels" );
+								vec2 	textAlignment	= TA_LEFT, TA_VCENTER;
+							}
+						}
+						_proficiency_bar( 0, $evalfloat( PADDING * 2 ), _to_bottom_of( skillsTitle ), localizeArgs( "game/classes/" + gui.classSelection ) )
+							_rewards( 0, gui.prof0.rect.x + PADDING, _to_bottom_of( prof0 ) - 4 )
+						_end_rewards
+
+						_proficiency_bar( 1, _right( tabpProfContent ), _to_bottom_of( skillsTitle ), localizeArgs( "game/proficiency/battlesense" ) )
+							_rewards( 1, gui.prof1.rect.x + PADDING, _to_bottom_of( prof1 ) - 4  )
+						_end_rewards
+
+						_proficiency_bar( 2, $evalfloat( PADDING * 2 ), _to_bottom_of( rewards0 ) + $evalfloat( 4 * PADDING ), localizeArgs( "game/proficiency/lightweapons" ) )
+							_rewards( 2, gui.prof2.rect.x + PADDING, _to_bottom_of( prof2 ) - 4  )
+						_end_rewards
+
+						_proficiency_bar( 3, _right( tabpProfContent ), _to_bottom_of( rewards1 ) + $evalfloat( 4 * PADDING ), localizeArgs( "game/proficiency/vehicle" ) )
+							_rewards( 3, gui.prof3.rect.x + PADDING, _to_bottom_of( prof3 ) - 4  )
+						_end_rewards
+
+
+					_end_tab_page
+				_end_tab_container
+			}
+		}
+
+		windowDef contentSpectator {
+			properties {
+				float	visible = icompare( gui.teamSelection, "spec" ) == true;
+			}
+
+			windowDef specInfoSurround {
+				properties {
+					rect	rect 			= PADDING, _to_bottom_of( btnAutoJoin ) + 2, _fill_to_right_of( leftSurround ), 36;
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_TAB_FILL );
+						drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_TAB_LINE );
+						drawCachedMaterial( gui.gradMaterial, absoluteRect, COLOR_ACTIVE_TAB_FILL_LEFT );
+
+						gui.scriptPushFloat( true );
+					}
+				}
+				windowDef lblSpectating {
+					properties {
+						rect	rect 			= PADDING, PADDING, _fill_to_right_of( specInfoSurround ), 12;
+						handle	localizedText		= localize( "guis/limbo/currently_spectating" );
+						float 	fontSize 		= 12;
+						vec2	textAlignment		= TA_LEFT, TA_VCENTER;
+					}
+				}
+
+				windowDef spectatorList {
+					type marquee;
+					properties {
+						rect	rect 			= PADDING, _to_bottom_of( lblSpectating ) + 2, _fill_to_right_of( specInfoSurround ), 14;
+						float 	fontSize 		= 12;
+						color	forecolor		= 1,1,1,0.7;
+						vec2	textAlignment	= TA_LEFT, TA_VCENTER;
+						float	speed			= 9;
+					}
+
+					timeline {
+						onTime 500 {
+							text = toWStr( gui.getSpectatorList() );
+							resetTime( 0 );
+						}
+					}
+				}
+			}
+
+			windowDef spectatorSurround {
+				properties {
+					rect	rect 		= PADDING, _to_bottom_of( specInfoSurround ) + PADDING, _fill_to_right_of( leftSurround ), _fill_to_bottom_of( leftSurround );
+				}
+				events {
+					onPreDraw {
+						drawCachedMaterial( gui.facFillMaterial, absoluteRect, COLOR_ACTIVE_TAB_FILL_LEFT );
+						drawCachedMaterial( gui.facLineMaterial, absoluteRect, COLOR_LINES );
+						gui.scriptPushFloat( true );
+					}
+				}
+
+				windowDef lstStrogg {
+					type list;
+					properties {
+						rect rect = PADDING, PADDING, _fill_to_right_of( spectatorSurround ), 166;
+						wstring	toolTipText = gui.blankWStr;
+					}
+					_teamListColumns( "strogg" )
+					_list_scrollbar( Strogg )
+
+
+					events {
+						onEnterItem {
+							// pop row/column
+							gui.scriptGetFloatResult();
+							gui.scriptGetFloatResult();
+							toolTipText = localizeArgs( "guis/limbo/dblclicktospectate" );
+						}
+						onExitItem {
+							// pop row/column
+							gui.scriptGetFloatResult();
+							gui.scriptGetFloatResult();
+							toolTipText = gui.blankWStr;
+						}
+					}
+				}
+
+				windowDef lstGDF {
+					type list;
+					properties {
+						rect rect = PADDING, _to_bottom_of( lstStrogg ), _fill_to_right_of( spectatorSurround ), 166;
+						wstring	toolTipText = gui.blankWStr;
+					}
+					_teamListColumns( "gdf" )
+					_list_scrollbar( GDF )
+
+					events {
+						onEnterItem {
+							// pop row/column
+							gui.scriptGetFloatResult();
+							gui.scriptGetFloatResult();
+							toolTipText = localizeArgs( "guis/limbo/dblclicktospectate" );
+						}
+						onExitItem {
+							// pop row/column
+							gui.scriptGetFloatResult();
+							gui.scriptGetFloatResult();
+							toolTipText = gui.blankWStr;
+						}
+					}
+				_end_list
+
+				_deploy_button( spectate, localize( "guis/limbo/spectate" ), PADDING, _bottom( spectatorSurround ), _fill_to_right_of( spectatorSurround ) )
+					properties {
+						wstring	toolTipText = localizeArgs( "guis/limbo/clicktospectate" );
+					}
+				_end_deploy_button
+			}
+		}
+
+		windowDef respawnTimerText {
+			properties {
+				wstring	text		= localizeArgs( "game/reinforcements", toWStr( gui.respawnTimerText ) );
+				float	fontSize 	= 12;
+				rect	rect		= gui.leftSurround.rect.x, _to_bottom_of( classSurround ) + 4, _fill_to_right_of( leftSurround ), 10;
+				color	foreColor 	= COLOR_WHITE;
+				float	visible		= player.warmup == false && icompare( limbo.teamName, "spec" ) == false && icompare( gui.teamSelection, "spec" ) == false;
+			}
+		}
+
+		windowDef deploySurround {
+			properties {
+				rect	rect 		= PADDING, _to_bottom_of( respawnTimerText ), gui.classSurround.rect.w, _fill_to_bottom_of( leftSurround );
+				color 	borderColor	= COLOR_LINES;
+				string 	material 	= "_frame faction_line";
+				float	visible		= icompare( gui.teamSelection, "spec" ) == false;
+			}
+
+			_deploy_button( deploy, localize( "guis/limbo/deploy" ), PADDING, PADDING, _fill_to_right_of( deploySurround ) )
+			_end_deploy_button
+
+			windowDef btnSuicide {
+				properties {
+					rect	rect 			= PADDING, _bottom( deploySurround ), _fill_to_right_of( deploySurround ), 24;
+					float	visible 		= icompare( gui.teamSelection, "spec" ) == 0;
+					color	foreColor 		= 1, 1, 1, 0.4;
+					handle	localizedText	= localize( "guis/limbo/respawn" );
+					color	gradColor		= COLOR_BLACK;
+					wstring	toolTipText = localizeArgs( "guis/limbo/clicktosuicide" );
+				}
+				events {
+					onCreate {
+						gradColor.a = 0;
+					}
+					onPreDraw {
+						drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_RESPAWN_FILL );
+						drawCachedMaterial( gui.gradMaterial, absoluteRect, gradColor );
+						drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_RESPAWN_LINE );
+
+						drawLocalizedText( localizedText, absoluteRect, foreColor, 12, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE );
+
+						gui.scriptPushFloat( false );
+					}
+					onKeyDown "mouse1" {
+						gui.playGameSound( "click" );
+
+						gui.consoleCommand( "kill" + _newline );
+						gui.postNamedEvent( "deploy" );
+					}
+					onMouseEnter {
+						gradColor = transition( gradColor, COLOR_ACTIVE_RESPAWN_FILL, ACTIVATE_TRANSITION_TIME );
+						foreColor.a = transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+						gui.playGameSound( "boop" );
+					}
+					onMouseExit {
+						gradColor = transition( gradColor, COLOR_BLACK, ACTIVATE_TRANSITION_TIME );
+						foreColor.a = transition( foreColor.a, 0.4, ACTIVATE_TRANSITION_TIME );
+					}
+				}
+			}
+		}
+	}
+
+	windowDef rightSurround {
+		properties {
+			rect	rect 		= _to_right_of( leftSurround ), PADDING, _fill_to_right_of( desktop ), _fill_to_bottom_of( desktop );
+			string	material	= "_frame faction_line";
+			color	borderColor	= COLOR_LINES;
+			float allowEvents 		= gui.modalDialogActive == false;
+			float allowChildEvents 	= gui.modalDialogActive == false;
+		}
+
+		_tab_container( gameInfo, GI_CAMPAIGN, PADDING, PADDING, _fill_to_right_of( rightSurround ), _fill_to_bottom_of( rightSurround ) )
+			#include <guis/game/limbo/tabpages/campaign_info.include>
+			#include <guis/game/limbo/tabpages/player_stats.include>
+			#include <guis/game/limbo/tabpages/voting.include>
+			#include <guis/game/limbo/tabpages/admin.include>
+			#include <guis/game/limbo/tabpages/qwta_info.include>
+		_end_tab_container
+
+	}
+
+#if 0
+		windowDef matchTimer {
+			properties {
+				wstring text		= toWStr( msToHMS( limbo.matchTime ) );
+				float	fontSize 	= 14;
+				rect	rect		= gui.MapBorderInner.rect.w - rect.w, gui.MapBorderInner.rect.h + 10, 50, 12;
+				vec2	textAlignment 	= TA_RIGHT, TA_VCENTER;
+				color	foreColor 	= 1, 1, 1, 1;
+			}
+		}
+	}
+#endif
+
+
+//==========================================
+//
+//character model goes here, above other windows but below weapon selection
+
+	windowDef playerModel {
+		type renderWorld;
+		properties {
+			rect	rect 			= 134 , 112, 240, 278;
+			float	visible			= icompare( gui.teamSelection, "spec" ) == 0 && gui.tabpCampaignContent.visible;
+			string	atmosphere		= "limbo";
+			string 	modelname		= "";
+			//float borderwidth = 1;
+		}
+		windowDef playerModel_Camera {
+			type renderCamera;
+			properties {
+				float	fov 			= 10;
+			}
+		}
+		windowDef playerModel_RenderModel {
+			type renderModel;
+
+			properties {
+				string	animName 		= "menu";
+				vec3	modelRotation 	= 0, 50, 0;
+				vec3	modelOrigin 	= 370, 0, -47;
+			}
+			events { 
+				onPropertyChanged "modelName" "gui.teamSelection" {
+					if( compare( gui.teamSelection, "gdf" ) ) {
+						modelRotation = 0, 180, 0;
+					} else {
+						modelRotation = 0, 180, 0;
+					}
+				}
+				onPropertyChanged "gui.teamSelection" "gui.classSelection" "gui.weaponSelection" {
+					postNamedEvent( "updateModel" );
+					
+				}
+				onNamedEvent "updateModel" {
+					if ( compare( gui.teamSelection, "spec" ) == 0 && compare( gui.classSelection, "spec" ) == 0 ) {
+						skinName = gui.getClassSkin( gui.classSelection );
+						modelName = immediate( "models/players/" + gui.teamSelection + "/" + gui.classSelection );
+						animClass = immediate( "player_" + gui.teamSelection + "_" + gui.classSelection );
+						animName = gui.getWeaponData( gui.classSelection, gui.twoHandedBank, 0, gui.weaponSelection, "anim_limbomenu" );
+					}
+				}
+			}
+			windowDef playerModel_Weapon {
+				type renderModel;
+
+				properties {
+					string animName = "idle";
+					float	visible = compare( modelName, "" ) != 1;
+				}
+				events {
+					onPropertyChanged "gui.weaponSelection" "gui.classSelection" {
+						postNamedEvent( "updateModel" );
+					}
+					onNamedEvent "updateModel" {					
+						modelName = gui.getWeaponData( gui.classSelection, gui.twoHandedBank, 0, gui.weaponSelection, "model_world" );
+						bindJoint = gui.getWeaponData( gui.classSelection, gui.twoHandedBank, 0, gui.weaponSelection, "joint_attach" );
+					}
+				}
+			}
+		}
+
+		windowDef playerModel_RenderLight {
+			type renderLight;
+
+			properties {
+				// Rim Light
+				vec3	lightOrigin 		= 400, 25, 40;
+				color 	lightColor 		= 2,2.5,3,0;
+
+			}
+		}
+
+		windowDef playerModel_RenderLight1 {
+			type renderLight;
+
+			properties {
+				// Key Light
+  				vec3	lightOrigin 		= 315, -89, 48;
+  				color 	lightColor 		= 1.4,1.4,1.3,0;
+			}
+		}
+
+		windowDef playerModel_RenderLight2 {
+			type renderLight;
+
+			properties {
+				// Light up selector
+  				vec3	lightOrigin 		= 300, -80, -40;
+  				color 	lightColor 		= 0,0,0,0;
+			}
+		}
+
+		windowDef playerModel_RenderLight3 {
+			type renderLight;
+
+			properties {
+				vec3		lightOrigin 	= 100, -21, -40;
+  				color 	lightColor 		= 0,0,0,0;
+			}
+		}
+
+		windowDef playerModelControl {
+
+			properties {
+				rect rect = ( 0.5 * gui.playerModel.rect.w ) - 24, ( 0.5 * gui.playerModel.rect.h ) - 120, 64, 220;
+				vec2	anchor;
+				float dragging = false;
+			}
+			events {
+				onPropertyChanged "dragging" {
+					if ( dragging ) {
+						gui.modelDragging = true;
+					}
+				}
+				onPropertyChanged "gui.playerModel_RenderModel.modelRotation.y" {
+					anchor.x = immediate( gui.cursorPos.x );
+					anchor.y = immediate( gui.cursorPos.y );
+				}
+				onKeyDown "mouse1" {
+					anchor.x = immediate( gui.cursorPos.x );
+					anchor.y = immediate( gui.cursorPos.y );
+					dragging = true;
+					gui.playerModel_RenderModel.modelRotation.y = immediate( gui.playerModel_RenderModel.modelRotation.y ) + ( gui.cursorPos.x - anchor.x ) * 0.5;
+					flags = immediate( flags ) | WF_CAPTURE_MOUSE;
+				}
+				onKeyUp "mouse1" {
+					gui.playerModel_RenderModel.modelRotation.y = immediate( gui.playerModel_RenderModel.modelRotation.y );
+					dragging = false;
+					flags = immediate( flags ) & ~WF_CAPTURE_MOUSE;
+
+					if( containsPoint( absoluteRect, gui.cursorPos.x, gui.cursorPos.y ) == false ) {
+						gui.playerModel_RenderLight3.lightColor = transition( gui.playerModel_RenderLight3.lightColor, "0, 0, 0, 1", 150 );
+						gui.playerModel_RenderLight2.lightColor = transition( gui.playerModel_RenderLight2.lightColor, "0, 0, 0, 0", 150 );
+					}
+				}
+				onMouseEnter {
+					gui.playerModel_RenderLight3.lightColor = transition( gui.playerModel_RenderLight3.lightColor, "0.2, 0.2, 0.3, 1", 150 );
+					gui.playerModel_RenderLight2.lightColor = transition( gui.playerModel_RenderLight2.lightColor, "0.4, 0.4, 0.4, 1", 150 );
+					gui.playGameSound( "boop" );
+				}
+				onMouseExit {
+					if( dragging == false ) {
+						gui.playerModel_RenderLight3.lightColor = transition( gui.playerModel_RenderLight3.lightColor, "0, 0, 0, 1", 200 );
+						gui.playerModel_RenderLight2.lightColor = transition( gui.playerModel_RenderLight2.lightColor, "0, 0, 0, 0", 200 );
+					}
+				}
+			}
+		}
+	}
+
+	//===============================================================
+	//	AdminLogin Popup
+	//===============================================================
+	_dialog( AdminLogin, localize( "guis/admin/login" ), _center( desktop, width ), _center( desktop, height ), 220, 100, "noMove", "dim" )
+	    _input_dialog( AdminLogin )
+	    _on_default( AdminLoginOk, AdminLoginCancel )
+
+	    _label_localized( AdminLogin, localize( "guis/mainmenu/password" ), _left( dlgAdminLogin ), _center( dlgAdminLogin, height ) - $evalfloat( 2 * PADDING ), 80, BUTTON_HEIGHT, "1,1,1,1" )
+			properties {
+				vec2 	textAlignment = TA_RIGHT, TA_VCENTER;
+			}
+	    _end_label
+
+		_edit( AdminLogin, _right( dlgAdminLogin ), _center( dlgAdminLogin, height ) - $evalfloat( 2 * PADDING ), _client_dimension( dlgAdminLogin, width ) - ( gui.lblAdminLogin.rect.width + PADDING ), BUTTON_HEIGHT )
+			properties {
+				float	maxTextLength = 64;
+				float 	password = true;
+			}
+			events {
+				onPropertyChanged "gui.dlgAdminLogin.visible" {
+					if ( gui.dlgAdminLogin.visible > 0 ) {
+						editText = "";
+						gui.focusedWindow = "edtAdminLogin";
+					}
+				}
+			}
+	    _end_edit
+		_button( AdminLoginOk, _to_left_of( btnAdminLoginCancel ) - 3, _bottom( dlgAdminLogin ), $evalfloat( BUTTON_WIDTH - 20 ), BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/ok" );
+			}
+			_button_disable_if( "gui.edtAdminLogin.editText", compare( gui.edtAdminLogin.editText, "" ) )
+
+			_button_action(
+				gui.consoleCommand( "admin login " + _quote +  gui.edtAdminLogin.editText + _quote +  _newline );
+				_close_input;
+	        )
+
+	    _end_button
+		_button( AdminLoginCancel, _right( dlgAdminLogin ), _bottom( dlgAdminLogin ), $evalfloat( BUTTON_WIDTH - 20 ), BUTTON_HEIGHT )
+			properties {
+				handle localizedText = localize( "guis/mainmenu/cancel" );
+			}
+	        _button_action(
+				_close_input;
+	        )
+		_end_button
+	_end_dialog
+
+	_tooltip
+
+	_menu( Admin_PlayerCommands, 0, 0, $evalfloat( BUTTON_WIDTH * 1.25 ) + 19, 260 )
+		_menu_items
+			_menu_item( toWStr( "<loc ='guis/admin/mutelocally'>" ), "tabpAdmin_PlayersContent", "onMuteLocal"  )
+			_menu_item( toWStr( "<loc ='guis/admin/unmutelocally'>" ), "tabpAdmin_PlayersContent", "onUnmuteLocal"  )
+			
+			_menu_item( toWStr( "<loc ='guis/admin/mutequickchat'>" ), "tabpAdmin_PlayersContent", "onMuteQuickChat"  )
+			_menu_item( toWStr( "<loc ='guis/admin/unmutequickchat'>" ), "tabpAdmin_PlayersContent", "onUnmuteQuickchat"  )
+			
+
+			if( admin.canSetTeam ) {
+				if( numItems > 0 ) {
+					_menu_divider
+				}
+				_menu_item( toWStr( "<loc ='guis/admin/makespectator'>" ), "tabpAdmin_PlayersContent", "onMakeSpec"  )
+				_menu_item( toWStr( "<loc ='guis/admin/makegdf'>" ), "tabpAdmin_PlayersContent", "onMakeGDF"  )
+				_menu_item( toWStr( "<loc ='guis/admin/makestrogg'>" ), "tabpAdmin_PlayersContent", "onMakeStrogg"  )
+			}
+
+			if( admin.canBan || admin.canWarn || admin.canKick ) {
+				if( numItems > 0 ) {
+					_menu_divider
+				}
+				if( admin.canKick ) {
+					_menu_item( toWStr( "<loc ='guis/admin/kick'>" ), "tabpAdmin_PlayersContent", "onKick"  )
+				}
+				if( admin.canBan ) {
+					_menu_item( toWStr( "<loc ='guis/admin/ban'>" ), "tabpAdmin_PlayersContent", "onBan"  )
+				}
+				if( admin.canWarn ) {
+					_menu_item( toWStr( "<loc ='guis/admin/warn'>" ), "tabpAdmin_PlayersContent", "onWarn"  )
+				}
+			}
+
+			if( admin.canPlayerMute ) {
+				if( numItems > 0 ) {
+					_menu_divider
+				}
+				_menu_item( toWStr( "<loc ='guis/admin/mute'>" ), "tabpAdmin_PlayersContent", "onPlayerMute"  )
+				_menu_item( toWStr( "<loc ='guis/admin/unmute'>" ), "tabpAdmin_PlayersContent", "onPlayerUnmute"  )
+			}
+			if( admin.canPlayerMuteVoip ) {
+				if( numItems > 0 ) {
+					_menu_divider
+				}
+				_menu_item( toWStr( "<loc ='guis/admin/silence'>" ), "tabpAdmin_PlayersContent", "onPlayerVoiPMute"  )
+				_menu_item( toWStr( "<loc ='guis/admin/unsilence'>" ), "tabpAdmin_PlayersContent", "onPlayerVoiPUnmute"  )
+			}
+		_end_menu_items
+	_end_menu
+
+	windowDef lagged {
+		properties {
+			rect rect 			= SCREEN_WIDTH - 36, 5, 32, 32;
+			color backColor 	= COLOR_WHITE;
+			string material 	= "lagicon";
+			vec2 materialScale 	= -1, 1;
+			float visible 		= player.isLagged;
+		}
+	}
+	windowDef flashTeams {
+		properties {
+			float	alpha			= 0;
+			color	foreColor		= 0.9 * alpha, 0.8016 * alpha, 0.1133 * alpha, 1;
+		}
+		events {
+			onPreDraw {
+				if ( timeline.default.active ) {
+					drawCachedMaterial( gui.facLineMaterial, gui.btnStrogg.absoluteRect, foreColor );
+					drawCachedMaterial( gui.facLineMaterial, gui.btnSpec.absoluteRect, foreColor );
+					drawCachedMaterial( gui.facLineMaterial, gui.btnGdf.absoluteRect, foreColor );
+				}
+				gui.scriptPushFloat( false );
+			}
+			onNamedEvent "stopFlash" {
+				timeline.default.active = false;
+				timeline.default.resetTime( 0 );
+			}
+			onNamedEvent "startFlash" {
+				timeline.default.active = true;
+				timeline.default.resetTime( 0 );
+			}
+		}
+		timeline {
+			properties {
+				float active = false;
+				float endTime;
+			}
+			onTime 0 {
+				endTime = immediate( gui.time ) + 7500;
+			}
+			onTime 1000 {
+				if ( immediate( gui.time ) >= endTime ) {
+					alpha = transition( alpha, 0, 500 );
+					active = false;
+					resetTime( 0 );
+					return;
+				}
+
+				gui.playGameSound( "boop" );
+				alpha = transition( 0, 1, 500 );
+			}
+			onTime 1500 {
+				if ( immediate( gui.time ) >= endTime ) {
+					alpha = transition( alpha, 0, 500 );
+					active = false;
+					resetTime( 0 );
+					return;
+				}
+
+				alpha = transition( 1, 0, 500 );
+			}
+			onTime 2000 {
+				resetTime( 1000 );
+			}
+		}
+	}
+	
+	windowDef flashClasses {
+		properties {
+			float	alphaObjective	= 0;
+			color	objectiveColor	= 0.9 * alphaObjective, 0.8016 * alphaObjective, 0.1133 * alphaObjective, 1;
+			rect	objectiveRectBase = gui.tabpUserInfo_ObjectivesContent.absoluteRect.x - 2, gui.tabpUserInfo_ObjectivesContent.absoluteRect.y - 2, gui.tabpUserInfo_ObjectivesContent.absoluteRect.w + 4, gui.tabpUserInfo_ObjectivesContent.absoluteRect.h + 4;
+			rect	objectiveRect	= objectiveRectBase;
+			
+			float	alphaClass		= 0;
+			color	classColor		= 0.9 * alphaClass, 0.8016 * alphaClass, 0.1133 * alphaClass, 1;
+			rect	classRectBase	= gui.btnClassSoldier.absoluteRect.x - 2, gui.btnClassSoldier.absoluteRect.y - 2, gui.btnClassSoldier.absoluteRect.w + 4, gui.btnClassSoldier.absoluteRect.h + 4;
+			rect	classRect		= classRectBase;
+			
+			float	drawClass		= ( gui.btnStrogg.activeColor.a == 1 || gui.btnGdf.activeColor.a == 1 ) && timeline.default.active;
+			float	drawObjective	= timeline.objective.active && gui.tabcGameInfo.currentPage == GI_CAMPAIGN && gui.tabcUserInfo.currentPage == PI_INFO;
+		}
+		events {
+			onPreDraw {
+				if ( drawClass ) {
+					drawCachedMaterial( gui.facLineMaterial, classRect, classColor );
+				}
+				if ( drawObjective ) {
+					drawCachedMaterial( gui.facLineMaterial, objectiveRect, objectiveColor );
+				}
+				gui.scriptPushFloat( false );
+			}
+			onNamedEvent "stopFlash" {
+				timeline.default.active = false;
+				timeline.default.resetTime( 0 );
+				timeline.objective.active = false;
+				timeline.objective.resetTime( 0 );
+				gui.lstObjectives.timeline.highlight.active = false;
+				gui.lstObjectives.timeline.highlight.resetTime( 0 );
+			}
+			onNamedEvent "startFlash" {
+				timeline.default.active = true;
+				timeline.default.resetTime( 0 );
+				timeline.objective.active = true;
+				timeline.objective.resetTime( 0 );
+				gui.lstObjectives.timeline.highlight.active = true;
+				gui.lstObjectives.timeline.highlight.resetTime( 0 );
+			}
+		}
+		timeline {
+			onTime 0 {
+				alphaClass = 0;
+			}
+
+			onTime 1000 {
+				if ( gui.tabcGameInfo.currentPage == GI_CAMPAIGN ) {
+					_set_tab_page( UserInfo, PI_INFO )
+					gui.playGameSound( "boop" );
+				}
+			}
+
+			// #1
+			onTime 7000 {
+				if ( drawClass ) {
+					gui.playGameSound( "boop" );
+					classRect = gui.btnClassSoldier.absoluteRect;
+					alphaClass = transition( 0, 1, 500 ); 
+				}
+			}
+			onTime 7500 {
+				if ( drawClass ) {
+					alphaClass = transition( 1, 0, 500 ); 
+				}
+			}
+
+			// #2
+			onTime 8000 {
+				if ( drawClass ) {
+					gui.playGameSound( "boop" );
+					classRect = gui.btnClassMedic.absoluteRect;
+					alphaClass = transition( 0, 1, 500 );
+				}
+			}
+			onTime 8500 {
+				if ( drawClass ) {
+					alphaClass = transition( 1, 0, 500 ); 
+				}
+			}
+			
+			// #3
+			onTime 9000 {
+				if ( drawClass ) {
+					gui.playGameSound( "boop" );
+					classRect = gui.btnClassEngineer.absoluteRect;
+					alphaClass = transition( 0, 1, 500 ); 
+				}
+			}
+			onTime 9500 {
+				if ( drawClass ) {
+					alphaClass = transition( 1, 0, 500 ); 
+				}
+			}
+
+			// #4
+			onTime 10000 {
+				if ( drawClass ) {
+					gui.playGameSound( "boop" );
+					classRect = gui.btnClassFieldops.absoluteRect;
+					alphaClass = transition( 0, 1, 500 ); 
+				}
+			}
+			onTime 10500 {
+				if ( drawClass ) {
+					alphaClass = transition( 1, 0, 500 ); 
+				}
+			}
+			
+			// #5
+			onTime 11000 {
+				if ( drawClass ) {
+					gui.playGameSound( "boop" );
+					classRect = gui.btnClassCovertops.absoluteRect;
+					alphaClass = transition( 0, 1, 500 ); 
+				}
+			}
+			onTime 11500 {
+				if ( drawClass ) {
+					alphaClass = transition( 1, 0, 500 ); 
+				}
+			}
+			onTime 12001 {
+				alphaClass = 0;
+			}
+		}
+		timeline objective {
+			properties {
+				float active = false;
+				float endTime;
+			}
+			onTime 0 {
+				endTime = immediate( gui.time ) + 9000;
+				alphaObjective = 0;
+			}
+			onTime 4000 {
+				if ( immediate( gui.time ) >= endTime ) {
+					alphaObjective = transition( alphaObjective, 0, 500 );
+					active = false;
+					resetTime( 0 );
+					return;
+				}
+
+				alphaObjective = transition( 0, 1, 500 );
+				objectiveRect = transition( objectiveRect, gui.tabpUserInfo_ObjectivesContent.absoluteRect, 500 );
+			}
+			onTime 4500 {
+				if ( immediate( gui.time ) >= endTime ) {
+					alphaObjective = transition( alphaObjective, 0, 500 );
+					active = false;
+					resetTime( 0 );
+					return;
+				}
+
+				alphaObjective = transition( 1, 0, 500 );
+				objectiveRect = transition( objectiveRect, objectiveRectBase, 500 );
+			}
+			onTime 5000 {
+				resetTime( 4000 );
+			}
+		}
+	}
+	windowDef flashClass {
+		properties {
+			rect	flashRect;
+			float	alpha			= 0;
+			color	foreColor		= 0.9 * alpha, 0.8016 * alpha, 0.1133 * alpha, 1;
+			float	drawClass		= ( gui.btnStrogg.activeColor.a == 1 || gui.btnGdf.activeColor.a == 1 ) && gui.tabcClassInfo.currentPage == PT_ROLE;
+			float	active			= true;
+		}
+		events {
+			onPreDraw {
+				if ( active && drawClass ) {
+					drawCachedMaterial( gui.facLineMaterial, flashRect, foreColor );
+				}
+				gui.scriptPushFloat( false );
+			}
+			onNamedEvent "stopFlash" {
+				active = false;
+				timeline.default.active = false;
+				timeline.default.resetTime( 0 );
+				timeline.weaponHighlight.active = false;
+				timeline.weaponHighlight.resetTime( 0 );
+			}
+			onNamedEvent "startFlash" {
+				// mouse is not dragging the model
+				gui.modelDragging = false;
+				active = true;
+
+				timeline.default.active = true;
+				timeline.default.resetTime( 1000 );
+				timeline.weaponHighlight.active = true;
+				timeline.weaponHighlight.resetTime( 1000 );
+			}
+		}
+		timeline {
+			onTime 2000 {
+				if ( !gui.modelDragging ) {
+					gui.playerModel_RenderModel.modelRotation.y = transition( 180, 0, 3000 );
+				}
+			}
+			onTime 5000 {
+				if ( !gui.modelDragging ) {
+					gui.playerModel_RenderModel.modelRotation.y = transition( 360, 180, 3000 );
+				}
+			}
+			onTime 8000 {
+				active = false;
+			}
+		}
+		timeline weaponHighlight {
+			onTime 3000 {
+				if ( gui.weaponList.numItems >= 1 ) {
+					_set_tab_page( classInfo, PT_ROLE );
+					gui.playGameSound( "boop" );
+					flashRect = gui.weaponList.getItemRect( 0, 1, GIR_FULLWIDTH );
+					alpha = transition( 1, 0, 1500 );
+				}
+			}
+			onTime 5000 {
+				if ( gui.weaponList.numItems >= 2 ) {
+					gui.playGameSound( "boop" );
+					flashRect = gui.weaponList.getItemRect( 1, 1, GIR_FULLWIDTH );
+					alpha = transition( 1, 0, 1500 );
+				}
+			}
+			onTime 7000 {
+				if ( gui.weaponList.numItems >= 3 ) {
+					gui.playGameSound( "boop" );
+					flashRect = gui.weaponList.getItemRect( 2, 1, GIR_FULLWIDTH );
+					alpha = transition( 1, 0, 1500 );
+				}
+			}
+			onTime 9000 {
+				if ( gui.weaponList.numItems >= 4 ) {
+					gui.playGameSound( "boop" );
+					flashRect = gui.weaponList.getItemRect( 3, 1, GIR_FULLWIDTH );
+					alpha = transition( 1, 0, 1500 );
+				}
+			}
+		}
+	}
+
+	//_voice_reset_button( voiceReset, gui.tabpCampaignContent.absoluteRect.x + 4, gui.tabpCampaignContent.absoluteRect.y + 2, 16, 16, COLOR_VOICE_RESET_BUTTON_FILL, COLOR_VOICE_RESET_BUTTON_LINE )
+	//_end_voice_reset_button	
+}

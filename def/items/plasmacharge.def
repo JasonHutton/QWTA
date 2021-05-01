@@ -1,0 +1,281 @@
+/***********************************************************************
+
+	reexportModels items/plasmacharge.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix HEAVYEXPL_ -sourcedir models/items/plasmacharge/dev_sd -destdir models/items/plasmacharge/
+
+
+	mesh	strogg_heavy_explosive_base_file.mb	-dest models/items/plasmacharge/plasmacharge_view.md5mesh
+	anim	strogg_heavy_explosive_idle.mb		-dest models/items/plasmacharge/plasmacharge_idle.md5anim
+	anim	strogg_heavy_explosive_raise.mb		-dest models/items/plasmacharge/plasmacharge_raise.md5anim
+ 	anim	strogg_heavy_explosive_lower.mb		-dest models/items/plasmacharge/plasmacharge_lower.md5anim
+   	anim	strogg_heavy_explosive_fire.mb		-dest models/items/plasmacharge/plasmacharge_fire.md5anim
+   	//anim	strogg_heavy_explosive_fire2.mb		-dest models/items/plasmacharge/plasmacharge_fire.md5anim
+
+}
+
+// ========================================================================
+// view Models
+//
+
+model viewmodel_plasmacharge {
+	mesh						models/items/plasmacharge/plasmacharge_view.md5mesh
+
+	anim idle					models/items/plasmacharge/plasmacharge_idle.md5anim {
+	}
+
+	anim fire					models/items/plasmacharge/plasmacharge_fire.md5anim {
+		frame 1						sound_channel snd_weapon_fire snd_fire
+	}
+
+	anim putaway 				models/items/plasmacharge/plasmacharge_lower.md5anim {
+	}
+
+	anim raise 					models/items/plasmacharge/plasmacharge_raise.md5anim {
+		frame	1					sound_channel snd_weapon_temp1 snd_movement01
+		frame	11					sound_channel snd_weapon_temp2 snd_movement02
+		frame	18					sound_channel snd_weapon_temp3 snd_movement03
+	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/items/plasma_charge {
+	type					"item"
+	slot					"item"
+	name					"game/weapons/plasma"
+
+	data {
+		"model_view" 				"viewmodel_plasmacharge"
+		"model_world" 				"models/items/plasmacharge/plasmacharge_world.lwo"
+		"joint_attach"				"RightForeArmRoll"
+
+		"view_foreshorten"			"0.8.5"
+		"view_offset"				"-5 0 0"
+		"anim_prefix"				"hands_plasma"
+		"anim_prefix_class"			"hands"
+
+		"weapon_scriptobject"		"item_plasma_charge"
+
+		"snd_fire"					"sounds/tools/hecharge/fire"
+		"snd_movement01"			"sounds/misc/pcharge_01"
+		"snd_movement02"			"sounds/misc/pcharge_02"
+		"snd_movement03"			"sounds/misc/pcharge_03"
+		"snd_need_charge"			"sounds/ui/main/cannot"
+
+		"melee_distance"			"76"
+
+		"stat_name"					"plasma_charge"
+
+		"num_projectiles"			"1"
+		"hide_clip"					"1"
+		"show_charge"				"1"
+
+		"finish_fire_anim"			"1"
+
+		"timer_charge"				"energy_charge"
+		"def_charge"				"projectiles/plasma_charge"
+
+		"charge_per_use"			"100"
+		"mtr_weaponmenu"			"guis/assets/icons/weapons/plasmacharge"
+
+		"crosshair"					"none"
+
+		"tt_invalid_position"		"plasma_charge_invalid_position"
+		"tt_not_enough_charge"		"plasma_charge_not_enough_charge"
+
+		"crosshair_spread_min"		"0.1"
+		"crosshair_spread_max"		"0.1"
+		"crosshair_spread_scale"	"1"
+
+		"spread_min"				"0"
+		"spread_max"				"0"
+
+		"spread_crouch_min"			"0"
+		"spread_crouch_max"			"0"
+
+		"spread_prone_min"			"0"
+		"spread_prone_max"			"0"
+
+		"spread_jump_min"			"0"
+		"spread_jump_max"			"0"
+
+		"tt_intro_1"				"plasma_charge_intro_1"
+		"tt_intro_2"				"plasma_charge_intro_2"
+		"tt_action_failed"			"plasma_charge_action_failed"
+		"tt_need_charge"			"plasma_charge_need_charge"
+
+		"player_weapon_num"			"16"
+	}
+
+	clip {
+		"projectile"			"projectiles/plasma_charge"
+		"type"					"infinite"
+		"ammo_per_shot"			"-1"
+	}
+}
+
+entityDef projectiles/plasma_charge {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"projectile_charge"
+
+	"mins"							"0 -4 -4"
+	"maxs"							"8 4 4"
+
+	"model" 						"models/items/plasmacharge/plasmacharge.lwo"
+
+	"maxVistDist"					"2048"
+
+	"dmg_splash_damage"				"damage/plasma_charge_splash"
+
+	"health"						"0"
+
+	"is_charge"						"1"
+	"arm_count"						"24"
+	"disarm_count"					"40"
+
+	"snd_armed"						"sounds/tools/plasmacharge/armed"
+	"snd_beep"						"sounds/tools/plasmacharge/beep"
+
+	"fx_glow"						"effects/items/plasmacharge_glow"
+	"fx_unarmed_glow"				"effects/items/plasmacharge_unarmed_glow"
+
+	"collection_charges"			"charges"
+	"collection_gamereviewwatch"	"gamereviewwatch"
+
+	"option_crosshair_interface"	"1"
+	"option_interactive_interface"	"1"
+	"option_write_bind"				"1"
+
+	"detonate_on_trigger"			"1"
+	
+	"task_name"						"game/weapons/plasma"
+	
+	"task_defuse"					"engineer_defuse_charge"
+
+	"tt_intro_arm_me_1"				"plasma_charge_crosshair_info_1"
+	"tt_intro_arm_me_2"				"plasma_charge_crosshair_info_2"
+	"tt_intro_disarm_me_1"			""
+	"tt_intro_disarm_me_2"			""
+
+	"item_armed"					"best"
+
+//  EXPLODE SURFACETYPES
+
+	"fx_explode"				"effects/impacts/plasmacharge/explosion_default"
+	"fx_explode_pavement"		"effects/impacts/plasmacharge/explosion_pavement"
+ 	"fx_explode_stone"			"effects/impacts/plasmacharge/explosion_pavement"
+  	"fx_explode_concrete"		"effects/impacts/plasmacharge/explosion_pavement"
+	"fx_explode_dirt"			"effects/impacts/plasmacharge/explosion_dirt"
+	"fx_explode_mud"			"effects/impacts/plasmacharge/explosion_dirt"
+	"fx_explode_glass"			"effects/impacts/plasmacharge/explosion_metal"
+	"fx_explode_ice"			"effects/impacts/plasmacharge/explosion_metal"
+ 	"fx_explode_gravel"			"effects/impacts/plasmacharge/explosion_pavement"
+	"fx_explode_metal"			"effects/impacts/plasmacharge/explosion_metal"
+	"fx_explode_metal_thick"	"effects/impacts/plasmacharge/explosion_metal"
+	"fx_explode_dusty_road"		"effects/impacts/plasmacharge/explosion_sand"
+	"fx_explode_sand"			"effects/impacts/plasmacharge/explosion_sand"
+	"fx_explode_snow"			"effects/impacts/plasmacharge/explosion_snow"
+ 	"fx_explode_liquid"			"effects/impacts/frag/explosion_water"
+  	"fx_explode_water"			"effects/impacts/frag/explosion_water"
+  	"fx_explode_water_interior"	"effects/impacts/frag/explosion_water"
+	"fx_explode_grass"			"effects/impacts/plasmacharge/explosion_dirt"
+
+	"prof_disarm"				"pro_engineer_disarm_charge"
+	
+	"mtr_icon_flash"				"hud/icons/missionsystem/tsk_engineer"
+	"icon_sort_cm_flash_icon"		"-102"
+}
+
+damageDef damage/plasma_charge_splash {
+	damage						"damage/plasma_charge"
+	radius						512
+	push						10000000
+
+	stat_name					"plasma_charge"
+
+	prof_damage					"pro_aggressor_damage"
+
+	team_kill_cvar				"g_allowcomplaint_charge"
+
+	tt_obituary					"tooltips/killmsgs/weapons/charges/plasma"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/charges/plasma/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/charges/plasma/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/charges/plasma/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageFilter damage/plasma_charge {
+
+	type {
+		target	"target_all"
+		damage	4000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	5000
+	}
+
+	type {
+		target	"target_objectives_he"
+		damage 	5000
+	}
+
+	type {
+		target	"target_explodable"
+		damage	5000
+	}
+}
+
+#include "templates/tooltips.include"
+
+toolTip plasma_charge_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/plasma_charge_1"
+}
+
+toolTip plasma_charge_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_deploy_item"
+}
+
+toolTip plasma_charge_action_failed {
+	sound "sounds/ui/main/cannot"
+	text "game/tt/intro/plasma_charge_action_failed"
+	length 5
+}
+
+toolTip plasma_charge_need_charge {
+	alwaysPlay
+	length	2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+toolTip plasma_charge_crosshair_info_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/arm_me_plasmacharge_1"
+	locationIndex TOOLTIP_POSITION_WEAPON_CHANGE
+}
+
+
+toolTip plasma_charge_crosshair_info_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/arm_me_plasmacharge_2"
+	nextShowDelay 30
+}

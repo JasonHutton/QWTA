@@ -1,0 +1,393 @@
+
+#include "templates/tooltips.include"
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/grenades/airstrike_marker_gdf {
+	type								"item"
+	slot								"item"
+	name								"game/weapons/airstrike"
+
+	data {
+		"model_view"					"viewmodel_grenade_smoke_blue"
+		"model_world" 					"models/weapons/gdf_smoke_grenade/smoke_grenade_thirdperson_blue.lwo"
+		"joint_attach"					"weapon_attach"
+
+		"view_offset"					"-1 -1 -1"
+ 		"view_foreshorten"				"0.8"
+
+		"anim_prefix"					"grenade"
+
+		"weapon_scriptobject"			"item_smoke_grenade_firesupport_qwta"
+		//"weapon_scriptobject"			"item_smoke_grenade_firesupport"
+
+		"def_explode_inhand"			"projectile_grenade_flash"
+
+		"snd_raise"						"sounds/weapons/grenades/smoke/raise"
+		"snd_reload"					"sounds/weapons/grenades/reload"
+		"snd_grenade_timer"				"sounds/weapons/grenades/timer"
+		"snd_modeswitch_01"				"sounds/weapons/misc/mode_switch_01"
+		"snd_modeswitch_02"				"sounds/weapons/misc/mode_switch_02"
+		"snd_throw"						"sounds/weapons/grenades/throw"
+		"snd_pin"						"sounds/weapons/grenades/pin"
+		"snd_need_charge"				"sounds/ui/main/cannot"
+
+		"tt_intro_1"					"airstrike_marker_gdf_intro_1"
+		"tt_intro_2"					"airstrike_marker_gdf_intro_2"
+		"tt_need_charge"				"airstrike_marker_gdf_need_charge"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"stat_name"						"vampire"
+
+		"throw_quick"					"0.2"
+		"throw_normal"					"0.2"
+
+		"num_projectiles"				"1"
+		"hide_clip"						"1"
+		"show_charge"					"1"
+		"no_energy_segments"			"1"
+
+		"timer_charge"					"energy_firesupport"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/smoke_marker.tga"
+		"crosshair"						"small"
+
+		"charge_per_use"				"100"
+
+		"player_weapon_num"				"10"
+		
+		"allow_alt_fire"		"1"
+	}
+
+	clip {
+		"projectile"					"projectile_grenade_airstrike_marker_gdf"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+	
+	clip {
+		"projectile"					"projectile_grenade_airstrike_marker_gdf_reverse"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+}
+
+invItemDef inventory/weapons/grenades/airstrike_marker_strogg {
+	type								"weapon"
+	slot								"item"
+	name								"game/weapons/violator_beacon"
+
+	data {
+		"model_view"					"viewmodel_airstrike_beacon"
+		"model_world" 					"strogg_beacon"
+		"joint_attach"					"LeftHand"
+
+		"view_offset"					"-1 3 -1"
+ 		"view_foreshorten"				"0.8"
+
+		"anim_prefix"					"hands_beacon"
+		"anim_prefix_class"				"hands"
+
+		"weapon_scriptobject"			"item_smoke_grenade_firesupport_qwta"
+		//"weapon_scriptobject"			"item_smoke_grenade_firesupport"
+
+		"def_explode_inhand"			"projectile_grenade_flash"
+
+		"snd_reload"					"sounds/weapons/grenades/reload"
+		"snd_grenade_timer"				"sounds/weapons/grenades/timer"
+		"snd_modeswitch_01"				"sounds/weapons/misc/mode_switch_01"
+		"snd_modeswitch_02"				"sounds/weapons/misc/mode_switch_02"
+		"snd_tabklink"					"sounds/deployables/violator/tab_klink"
+		"snd_throw"						"sounds/weapons/grenades/throw"
+		"snd_idle"						"sounds/deployables/violator/idle"
+		"snd_spinup"					"sounds/deployables/violator/spinup"
+		"snd_need_charge"				"sounds/ui/main/cannot"
+
+		"tt_intro_1"					"airstrike_marker_strogg_intro_1"
+		"tt_intro_2"					"airstrike_marker_strogg_intro_2"
+		"tt_need_charge"				"airstrike_marker_strogg_need_charge"
+
+		"stat_name"						"violator"
+
+		"throw_quick"					"0.2"
+		"throw_normal"					"0.2"
+
+		"num_projectiles"				"1"
+		"hide_clip"						"1"
+		"show_charge"					"1"
+		"no_energy_segments"			"1"
+
+		"timer_charge"					"energy_firesupport"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/violator_marker.tga"
+		"crosshair"						"small"
+
+		"charge_per_use"				"100"
+
+		"player_weapon_num"				"10"
+
+		"fx_fire"					"effects/weapons/grenades/violator_beacon_fire"
+		"fx_fire_world"					"effects/weapons/grenades/violator_beacon_fire_world"
+		"fx_fire_start"					"effects/weapons/grenades/violator_beacon_fire_start"
+
+		"fx_idle"						"effects/weapons/grenades/violator_beacon_idle"
+		"idle_effect_joint"				"joint1"
+		
+		"allow_alt_fire"		"1"
+	}
+
+	clip {
+		"projectile"					"projectile_grenade_airstrike_marker_strogg"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+	
+	clip {
+		"projectile"					"projectile_grenade_airstrike_marker_strogg_reverse"
+		"type"							"infinite"
+		"ammo_per_shot"					"-1"
+	}
+}
+
+entityDef projectile_grenade_airstrike_marker_base {
+	"spawnclass"						"sdScriptEntity_Projectile"
+
+	"option_simple_rigid_body_physics"	"1"
+	"option_interactive_interface"		"1"
+	"option_crosshair_interface"		"1"
+	"option_unlock_interpolate"			"1"
+
+	"inherit"							"projectile_grenade"
+	"velocity"							"1000 0 0"
+	"angular_velocity"					"5 6 4"
+
+	"scriptobject"						"airstrike_marker"
+
+	"mins"								"-3 -3 -5"
+	"maxs"								"3 3 6"
+	"bouncyness"						"0.35"
+
+	"fly_timeoffset"					"5"
+
+	"charge_reinstated"					"50"
+
+	"collection_maprestartwatch"		"maprestartwatch"
+	"collection_emp"					"emp"
+
+	"trailUnderWater"					"0"
+	"fx_trail"							"_default"
+	"fx_explode"						"effects/weapons/grenades/explode_smoke_blue"
+
+	"allow_defuse"						"0"
+	"reverse"							"0"
+}
+
+entityDef projectile_grenade_airstrike_marker_gdf {
+	"inherit"							"projectile_grenade_airstrike_marker_base"
+
+	"airstrike_wait_time"				"3"
+
+	"def_bomber"						"vehicle_vampire"
+	"timer_delay"						"30"
+
+	"energy_timer"						"energy_firesupport"
+
+	"model"			 				"models/weapons/gdf_smoke_grenade/smoke_grenade_world_blue.lwo"
+	"dmg_splash_damage"					"damage_airstrike_marker_splash"
+
+	"object_name"						"game/weapons/airstrike"
+
+	"fx_trail"						"effects/weapons/grenades/marker_smoke_blue"
+
+	"tt_unknown_target"					"airstrike_marker_unknown_target_gdf"
+
+	"snd_approved"						"sounds/vo/gdf/npc/vampire/approved"
+	"snd_unknown_target"				"sounds/vo/gdf/npc/vampire/invalid"
+}
+
+entityDef projectile_grenade_airstrike_marker_gdf_reverse {
+	"inherit"							"projectile_grenade_airstrike_marker_gdf"
+	"reverse"							"1"
+}
+
+entityDef projectile_grenade_airstrike_marker_strogg {
+	"inherit"							"projectile_grenade_airstrike_marker_base"
+
+	"airstrike_wait_time"				"3"
+
+	"mins"								"-4 -4 -4"
+	"maxs"								"4 4 4"
+
+	"def_bomber"						"vehicle_violator"
+	"timer_delay"						"30"
+
+	"energy_timer"						"energy_firesupport"
+
+	"model"			 					"models/weapons/strogg_beacon/strogg_beacon_world.lwo"
+	"dmg_splash_damage"					"damage_violator_beacon_splash"
+
+	"object_name"						"game/weapons/violator_beacon"
+
+	"fx_trail"							"effects/weapons/grenades/marker_smoke_strogg"
+	"fx_explode"						"effects/tools/repairdrone/fizzle"
+
+	"tt_unknown_target"					"airstrike_marker_unknown_target_strogg"
+
+	"snd_approved"						"sounds/vo/strogg/npc/violator/approved"
+	"snd_unknown_target"				"sounds/vo/strogg/npc/violator/invalid"
+}
+
+entityDef projectile_grenade_airstrike_marker_strogg_reverse {
+	"inherit"							"projectile_grenade_airstrike_marker_strogg"
+	"reverse"							"1"
+}
+
+
+
+damageDef damage_airstrike_marker_splash {
+	damage						"damage_airstrike_marker_splash"
+	radius						128
+	knockback					100
+
+	push						100000
+
+	noheadshot
+
+	prof_damage					"pro_light_weapons_damage"
+
+	tt_obituary					"tooltips/killmsgs/weapons/grenades/airstrike_marker"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/airstrike_marker/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/airstrike_marker/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/airstrike_marker/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageFilter damage_airstrike_marker_splash {
+	type {
+		target	"target_player_all"
+		damage	192
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	600
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	600
+	}
+
+	type {
+		target	"target_explodable"
+		damage	600
+	}
+}
+
+
+damageDef damage_violator_beacon_splash {
+	damage						"damage_violator_beacon_splash"
+	radius						128
+	knockback					100
+
+	push						100000
+
+	noheadshot
+
+	prof_damage					"pro_light_weapons_damage"
+
+	tt_obituary					"tooltips/killmsgs/weapons/grenades/violator_beacon"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/violator_beacon/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/violator_beacon/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/violator_beacon/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageFilter damage_violator_beacon_splash {
+	type {
+		target	"target_player_all"
+		damage	192
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	600
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	600
+	}
+
+	type {
+		target	"target_explodable"
+		damage	600
+	}
+}
+
+
+
+
+
+toolTip airstrike_marker_gdf_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/airstrike_marker_gdf_1"
+}
+
+toolTip airstrike_marker_gdf_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_throw_item"
+}
+
+toolTip airstrike_marker_gdf_need_charge {
+	alwaysPlay
+	length 2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+
+toolTip airstrike_marker_strogg_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/airstrike_marker_strogg_1"
+}
+
+toolTip airstrike_marker_strogg_intro_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/fire_throw_item"
+}
+
+toolTip airstrike_marker_strogg_need_charge {
+	alwaysPlay
+	length 2
+	nextShowDelay 0
+
+	text "game/tt/intro/generic/need_charge"
+	locationIndex TOOLTIP_POSITION_CHARGE
+}
+
+
+toolTip airstrike_marker_unknown_target_gdf {
+	alwaysPlay
+	singlePlayerToolTip
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/unknown_targeting_location"
+}
+
+toolTip airstrike_marker_unknown_target_strogg {
+	alwaysPlay
+	singlePlayerToolTip
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/unknown_targeting_location"
+}

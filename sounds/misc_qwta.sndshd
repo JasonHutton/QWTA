@@ -1,0 +1,7 @@
+sound sounds/tools/forceshield/absorb {
+	volume -4
+	minDistance	3
+	maxDistance 25
+	sounds/tools/forceshield/tube1.ogg
+	sounds/tools/forceshield/tube2.ogg
+}

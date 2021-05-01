@@ -1,0 +1,363 @@
+// Export
+// ========================================================================
+/*
+reexportmodels vehicles/anansi.def
+testmodel vehicle_anansi
+*/
+
+#include <quickchat/avdbits.include>
+
+export hauser {
+	options -prefix ANA_ -scale .85 -rotate -90 -nomerge -sourcedir models/vehicles/edf_anansi/dev_sd -destdir models/vehicles/edf_anansi -keepmesh S_anansi S_rear_wheel_brace S_front_right_lower_wheel_brace S_front_right_detachable_1 S_front_left_detachable_2 S_middle_landing_bay_door S_right_landing_bay_door S_front_right_upper_wheel_brace S_right_wheel S_front_left_detachable_1 S_rear_wheel S_front_left_lower_wheel_brace S_left_landing_bay_door S_front_left_upper_wheel_brace S_front_left_wheel S_front_right_detachable_2 M_center_rotor M_tail_rotor lod0and1_M_windows M_anansi M_right_haw_1 M_right_haw_2 M_right_haw_3 M_right_haw_4 M_left_haw_1 M_left_haw_2 M_left_haw_3 M_left_haw_4 M_rear_wheel_brace M_rear_wheel M_front_left_detachable_1 M_front_right_detachable_1 M_front_right_detachable_2 M_front_left_detachable_2 M_left_landing_bay_door M_middle_landing_bay_door M_right_landing_bay_door M_front_right_upper_wheel_brace M_front_right_lower_wheel_brace M_right_wheel M_front_left_upper_wheel_brace M_front_left_lower_wheel_brace M_front_left_wheel minigun_shadow minigun_base_shadow minigun_arm_shadow base_rotator_shadow barrel_shadow minigun_base minigun minigun_arm base_rotator barrel
+
+	addoptions -keep main dummyjoint carrier_driver carrier_gunner1 center_rotor exit_left_1 exit_left_2 exit_right_1 exit_right_2 gpmg_mount 	gpmg_pivot gpmg_cam gpmg_muzzle gunner_cam gunner_position left_haw_1 left_haw_2 left_haw_3 left_haw_4 left_law left_law_exit left_thruster pilot_cam pilot_gun pilot_position rear_wheel_brace rear_wheel right_haw_1 right_haw_2 right_haw_3 right_haw_4 right_law right_law_exit right_thruster tail_rotor wheels front_left_upper_wheel_brace front_left_lower_wheel_brace front_left_wheel front_right_upper_wheel_brace front_right_lower_wheel_brace front_right_wheel left_landing_door middle_landing_door right_landing_door -parent tail_rotor dummyjoint -parent rear_wheel_brace dummyjoint
+
+
+	addoptions -noAnimate M_tail /*M_left_law M_right_haw_1 M_right_haw_3 M_left_haw_holder M_left_haw_1 M_left_haw_2 M_left_haw_3 M_left_haw_4 M_front_left_detachable_1*/ M_left_wing M_left_engine M_right_engine M_right_tail_end M_right_tail M_left_tail M_left_tail_end M_windows M_main_body /*M_right_haw_2 M_right_haw_4*/ M_right_haw_holder M_window_frame /*M_front_right_detachable_1 M_front_right_detachable_2 M_front_left_detachable_2*/ M_right_wing M_middle_landing_bay_door M_right_law S_tail S_left_law S_right_haw_1 S_right_haw_3 S_left_haw_holder S_left_haw_1 S_left_haw_2 S_left_haw_3 S_left_haw_4 S_front_left_detachable_1 S_left_wing S_left_engine S_right_engine S_right_tail_end S_right_tail S_left_tail S_left_tail_end S_main_body S_right_haw_2 S_right_haw_4 S_right_haw_holder S_window_frame S_front_right_detachable_1 S_front_right_detachable_2 S_front_left_detachable_2 S_right_wing S_middle_landing_bay_door S_right_law
+
+	mesh anansi.mb		-dest anansi.md5mesh
+	anim anansi.mb 		-dest anansi.md5anim			-range 1 1
+	anim anansi.mb 	    -dest raise_wheels.md5anim		-range 1 53
+	anim anansi.mb 	    -dest lower_wheels.md5anim		-range 54 105
+}
+
+export hauser {
+
+	options -prefix ANA_ -scale .85 -rotate -90 -nomerge -sourcedir models/vehicles/edf_anansi/dev_sd -destdir models/vehicles/edf_anansi
+	addoptions -keep main dummyjoint carrier_driver carrier_gunner1 center_rotor exit_left_1 exit_left_2 exit_right_1 exit_right_2 gpmg_mount 	gpmg_pivot gpmg_cam gpmg_muzzle gunner_cam gunner_position left_haw_1 left_haw_2 left_haw_3 left_haw_4 left_law left_law_exit left_thruster pilot_cam pilot_gun pilot_position rear_wheel_brace rear_wheel right_haw_1 right_haw_2 right_haw_3 right_haw_4 right_law right_law_exit right_thruster tail_rotor wheels front_left_upper_wheel_brace front_left_lower_wheel_brace front_left_wheel front_right_upper_wheel_brace front_right_lower_wheel_brace front_right_wheel left_landing_door middle_landing_door right_landing_door -parent tail_rotor dummyjoint -parent rear_wheel_brace dummyjoint
+	addoptions -noJoints
+	addoptions -keepmesh lod1_M_anansi lod1_M_rear_wheel_brace lod1_M_front_left_detachable_1 lod1_M_front_right_detachable_2 lod1_M_front_left_upper_wheel_brace lod1_M_front_right_detachable_1 lod1_M_front_right_upper_wheel_brace lod1_M_front_left_detachable_2 lod1_M_left_haw_2 lod1_M_left_haw_1 lod1_M_left_haw_4 lod1_M_left_haw_3 lod1_M_right_haw_1 lod1_M_right_haw_2 LOD_1|lod1_M_right_haw_4 lod1_M_right_haw_3 lod1_M_rear_wheel lod1_M_front_left_lower_wheel_brace lod1_M_middle_landing_bay_door lod1_M_left_landing_bay_door lod1_M_front_left_wheel lod1_M_front_right_lower_wheel_brace lod1_M_right_landing_bay_door lod1_M_right_wheel lod0and1_M_windows M_tail_rotor M_center_rotor S_front_right_detachable_2 S_front_left_wheel S_front_left_upper_wheel_brace S_left_landing_bay_door S_front_left_lower_wheel_brace S_rear_wheel S_front_left_detachable_1 S_right_wheel S_front_right_upper_wheel_brace S_right_landing_bay_door S_middle_landing_bay_door S_front_left_detachable_2 S_front_right_detachable_1 S_front_right_lower_wheel_brace S_rear_wheel_brace S_anansi minigun_shadow minigun_base_shadow minigun_arm_shadow base_rotator_shadow barrel_shadow minigun_base minigun minigun_arm base_rotator barrel
+	mesh anansi.mb			-dest anansi_lod1.md5mesh
+}
+
+export hauser {
+	options -prefix ANA_ -scale .85 -rotate -90 -nomerge -sourcedir models/vehicles/edf_anansi/dev_sd -destdir models/vehicles/edf_anansi
+ 	addoptions -keep main dummyjoint carrier_driver carrier_gunner1 center_rotor exit_left_1 exit_left_2 exit_right_1 exit_right_2 gpmg_mount 	gpmg_pivot gpmg_cam gpmg_muzzle gunner_cam gunner_position left_haw_1 left_haw_2 left_haw_3 left_haw_4 left_law left_law_exit left_thruster pilot_cam pilot_gun pilot_position rear_wheel_brace rear_wheel right_haw_1 right_haw_2 right_haw_3 right_haw_4 right_law right_law_exit right_thruster tail_rotor wheels front_left_upper_wheel_brace front_left_lower_wheel_brace front_left_wheel front_right_upper_wheel_brace front_right_lower_wheel_brace front_right_wheel left_landing_door middle_landing_door right_landing_door -parent tail_rotor dummyjoint -parent rear_wheel_brace dummyjoint
+ 	addoptions -noJoints
+	addoptions -keepmesh lod2_M_anansi lod2_M_rear_wheel lod2_M_rear_wheel_brace lod2_M_front_left_lower_wheel_brace lod2_M_front_left_wheel lod2_M_front_right_lower_wheel_brace lod2_M_right_wheel lod2_M_left_landing_bay_door lod2_M_right_landing_bay_door lod2_M_front_left_detachable_1 lod2_M_front_right_detachable_2 lod2_M_front_left_upper_wheel_brace lod2_M_front_right_detachable_1 lod2_M_front_right_upper_wheel_brace lod2_M_left_haw_2 lod2_M_left_haw_1 lod2_M_left_haw_4 lod2_M_left_haw_3 lod2_M_right_haw_1 lod2_M_right_haw_2 LOD_2|lod2_M_right_haw_4 lod2_M_front_left_detachable_2 lod2_M_right_haw_3 lod2_M_middle_landing_bay_door S_front_right_detachable_2 S_front_left_wheel S_front_left_upper_wheel_brace S_left_landing_bay_door S_front_left_lower_wheel_brace S_rear_wheel S_front_left_detachable_1 S_right_wheel S_front_right_upper_wheel_brace S_right_landing_bay_door S_middle_landing_bay_door S_front_left_detachable_2 S_front_right_detachable_1 S_front_right_lower_wheel_brace S_rear_wheel_brace S_anansi M_center_rotor M_tail_rotor lod2and3_M_windows minigun_shadow minigun_base_shadow minigun_arm_shadow base_rotator_shadow barrel_shadow minigun_base minigun minigun_arm base_rotator barrel
+
+ 	mesh anansi.mb			-dest anansi_lod2.md5mesh
+}
+
+
+export hauser {
+	options -prefix ANA_ -scale .85 -rotate -90 -nomerge -sourcedir models/vehicles/edf_anansi/dev_sd -destdir models/vehicles/edf_anansi
+	addoptions -keep main dummyjoint carrier_driver carrier_gunner1 center_rotor exit_left_1 exit_left_2 exit_right_1 exit_right_2 gpmg_mount 	gpmg_pivot gpmg_cam gpmg_muzzle gunner_cam gunner_position left_haw_1 left_haw_2 left_haw_3 left_haw_4 left_law left_law_exit left_thruster pilot_cam pilot_gun pilot_position rear_wheel_brace rear_wheel right_haw_1 right_haw_2 right_haw_3 right_haw_4 right_law right_law_exit right_thruster tail_rotor wheels front_left_upper_wheel_brace front_left_lower_wheel_brace front_left_wheel front_right_upper_wheel_brace front_right_lower_wheel_brace front_right_wheel left_landing_door middle_landing_door right_landing_door -parent tail_rotor dummyjoint -parent rear_wheel_brace dummyjoint
+	addoptions -noJoints
+	addoptions -keepmesh lod3_M_anansi lod3_M_rear_wheel_brace lod3_M_front_left_detachable_1 lod3_M_front_right_detachable_2 lod3_M_middle_landing_bay_door lod3_M_front_left_upper_wheel_brace lod3_M_front_right_detachable_1 lod3_M_right_landing_bay_door lod3_M_front_right_upper_wheel_brace lod3_M_left_haw_2 lod3_M_left_haw_1 lod3_M_left_haw_4 lod3_M_left_haw_3 lod3_M_right_haw_1 lod3_M_right_haw_2 lod3_M_right_haw_4 lod3_M_front_left_detachable_2 lod3_M_right_haw_3 lod3_M_front_left_lower_wheel_brace lod3_M_left_landing_bay_door lod3_M_front_left_wheel lod3_M_rear_wheel lod3_M_front_right_lower_wheel_brace lod3_M_right_wheel lod2and3_M_windows M_tail_rotor M_center_rotor S_front_right_detachable_2 S_front_left_wheel S_front_left_upper_wheel_brace S_left_landing_bay_door S_front_left_lower_wheel_brace S_rear_wheel S_front_left_detachable_1 S_right_wheel S_front_right_upper_wheel_brace S_right_landing_bay_door S_middle_landing_bay_door S_front_left_detachable_2 S_front_right_detachable_1 S_front_right_lower_wheel_brace S_rear_wheel_brace S_anansi minigun_shadow minigun_base_shadow minigun_arm_shadow base_rotator_shadow barrel_shadow 		minigun_base minigun minigun_arm base_rotator barrel
+
+	mesh anansi.mb			-dest anansi_lod3.md5mesh
+}
+
+/*
+ 	mesh anansi_lod1.mb			-dest anansi_lod1_boned.md5mesh
+ 	mesh anansi_lod2.mb			-dest anansi_lod2_boned.md5mesh
+	mesh anansi_lod3.mb			-dest anansi_lod3_boned.md5mesh
+*/
+
+
+
+// Models
+// ========================================================================
+//
+
+model vehicle_anansi {
+	mesh							models/vehicles/edf_anansi/anansi.md5mesh
+	anim base						models/vehicles/edf_anansi/anansi.md5anim {
+	}
+	anim ik_pose					models/vehicles/edf_anansi/anansi.md5anim {
+	}
+	anim initial					models/vehicles/edf_anansi/anansi.md5anim {
+	}
+	anim idle						models/vehicles/edf_anansi/anansi.md5anim {
+	}
+	anim gear_down					models/vehicles/edf_anansi/lower_wheels.md5anim {
+		frame 1							sound_channel snd_vehicle_misc snd_gear_down
+	}
+	anim gear_up					models/vehicles/edf_anansi/raise_wheels.md5anim {
+		frame 1							sound_channel snd_vehicle_misc snd_gear_up
+	}
+}
+
+// Entity Def
+// ========================================================================
+//
+
+deployObject deployobject_anansi {
+	"name"							"anansi"
+	"title"							"Anansi"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_anansi"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+	"rank_required"					"third_lieutenant"
+	"force_escalation_required"		"90"
+	"logistics_points_required"		"80"
+	"avdbit"						AVDBIT_ANANSI
+	"terrain_disallowed"			"2"
+}
+
+entityDef vehicle_anansi {
+	"inherit"						"vehicle_base_gdf"
+
+	"maxVisDist"					"16384"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+
+	"editor_usage"					"Helicopter."
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_anansi"
+
+	"model"							"vehicle_anansi"
+	"vs_vehicleScript"				"anansi"
+
+	"control_context"				"g_bind_context_anansi"
+
+	"health"						"1200"
+
+	"repair_multiplier"				"0.5"
+	
+	"info_name"						"game/vec/anansi"
+	"mass"							"100000"
+
+	"snd_rotor_start"				"sounds/vehicles/anansi/rotor_start"
+	"snd_rotor_stop"				"sounds/vehicles/anansi/rotor_stop"
+	"snd_rotor_throttle"			"sounds/vehicles/anansi/rotor_throttle"
+	"snd_rotor_tail"				"sounds/vehicles/anansi/rotor_tail"
+	"snd_turbine_start"				"sounds/vehicles/anansi/turbine_start"
+	"snd_turbine_stop"				"sounds/vehicles/anansi/turbine_stop"
+	"snd_overdrive"					"sounds/vehicles/anansi/overdrive_start"
+	//"snd_vswitch"					"sounds/vehicles/misc/vswtich_01"
+
+	"snd_cockpit"					"sounds/vehicles/anansi/interior/cockpit"
+	"snd_rotor_start_interior"		"sounds/vehicles/anansi/interior/rotor_start"
+	"snd_rotor_stop_interior"		"sounds/vehicles/anansi/interior/rotor_stop"
+	"snd_rotor_throttle_interior"	"sounds/vehicles/anansi/interior/rotor_throttle"
+	"snd_turbine_start_interior"	"sounds/vehicles/anansi/interior/turbine_start"
+	"snd_turbine_stop_interior"		"sounds/vehicles/anansi/interior/turbine_stop"
+	"snd_gear_up"					"sounds/vehicles/anansi/interior/gear_up"
+	"snd_gear_down"					"sounds/vehicles/anansi/interior/gear_down"
+	//"snd_turbine_far"				"sounds/vehicles/anansi/turbine_far"
+
+	"sound_control"					"helicopter"
+
+	"snd_gatling_fire_start"		"sounds/weapons/gatling/fire/start"
+	"snd_gatling_fire_stop"			"sounds/weapons/gatling/fire/stop"
+	"snd_gatling_barrel_loop"		"sounds/weapons/gatling/barrel/loop"
+	"snd_gatling_barrel_loop_low"	"sounds/weapons/gatling/barrel/loop_low"
+	"snd_gatling_brass_start"		"sounds/weapons/gatling/brass/start"
+	"snd_gatling_brass_stop"		"sounds/weapons/gatling/brass/stop"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/air/gdf"
+
+	"climate_skin_key"				"anansi"
+
+	"engine_pitch_low"				"1"
+	"engine_pitch_high"				"3"
+	"engine_speed_low"				"10"
+	"engine_speed_high"				"200"
+
+	"decay_time"					"40"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"icon_size_cm"					"21"
+
+	"tt_enter"						"vehicle_anansi_enter"
+
+	"landing_threshold_distance"	"15"
+	"landing_threshold_speed"		"20"
+
+	"dmg_collide"					"damage_anansi_collide"
+	"collide_dot_limit"				"-2"
+
+	"mtr_attitude_pitch"			"guis/assets/qet/hud_attitude_pitch"
+
+	"model_weapon"					"models/vehicles/edf_anansi/haw.lwo"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"angular_friction"				"0.95" // turning
+	"linear_friction"				"0.95" // moving
+	"bouncyness"					"0.1"
+
+	"collective_min"				"-0.3"
+	"collective_max"				"0.3"
+	"collective_rate"				"1"
+
+	"overdrive_time"				"10"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"10"
+
+	"fx_downdraft"					"effects/vehicles/anansi/downdraft"
+	"fx_thruster_left"				"effects/vehicles/anansi/thruster_left"
+	"fx_thruster_right"				"effects/vehicles/anansi/thruster_right"
+//	"fx_thruster_reverse_left"		"effects/vehicles/anansi/thruster_left"
+//	"fx_thruster_reverse_right"		"effects/vehicles/anansi/thruster_right"
+	"fx_thruster_base_left"			"effects/vehicles/anansi/thruster_base_left"
+	"fx_thruster_base_right"		"effects/vehicles/anansi/thruster_base_right"
+
+	"left_thrust_effect_joint"		"left_thruster"
+	"right_thrust_effect_joint"		"right_thruster"
+
+	"fx_destroy"					"effects/vehicles/anansi_explosion"
+
+ 	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_sand"
+ 	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_sand"
+
+	"fx_groundeffect_none"			"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_grass"			"effects/vehicles/anansi/groundeffect_grass"
+	"fx_groundeffect_stone"			"effects/vehicles/anansi/groundeffect_stone"
+	"fx_groundeffect_sand"			"effects/vehicles/anansi/groundeffect_sand"
+	"fx_groundeffect_pavement"		"effects/vehicles/anansi/groundeffect_pavement"
+	"fx_groundeffect_dirt"			"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_dusty_road"	"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_gravel"		"effects/vehicles/anansi/groundeffect_stone"
+	"fx_groundeffect_default"		"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_water"			"effects/vehicles/anansi/groundeffect_water"
+	"fx_groundeffect_snow"			"effects/vehicles/anansi/groundeffect_snow"
+
+	"fx_minigun_muzzle"				"effects/weapons/gatling_muzzleflash"
+	"fx_fafff_muzzle"				"effects/weapons/fafff_muzzleflash"
+	"fx_haw_muzzle"					"effects/weapons/haw_muzzleflash"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_anansi"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_anansi"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_anansi"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_anansi"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"main"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"joint_damage_smoke"			"main"
+	"joint_damage_fire"				"main"
+
+	"aor_layout"					"air_vehicles"
+
+	"groundeffects_threshhold"		"300"
+
+	"gui_vehicle"					"guis/vehicles/edf_anansi"
+
+	"collision_dot_falloff"			"-0.85"
+
+	"task_name"						"game/vec/anansi"
+	"waypoint_offset"				"0 0 192"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_vehicles_gdf"		"vehicles_gdf"
+
+	"give_consent"					"1"
+	"try_keep_driver"				"1"
+
+	"input_mode"					"helicopter"
+	"vehicle_control"				"anansi"
+
+	"wake_center_width"				"0 0"
+	"wake_edge_width"				"0 0"
+
+	"spiral_health"					"200"
+
+	// DECOY STUFF
+	// this should simulate the effect for the real decoy, but can't just be that effect as this is not attached to a projectile
+
+ 	"fx_decoy_extra"				"effects/weapons/flare_extra"
+	"extra_decoy_count"				"3"
+	"extra_decoy_delay"				"0.3"		// in seconds1
+//	"fx_decoy"						"effects/weapons/flare_extra"
+	"def_projectile_decoy"			"projectile_decoy_anansi"
+	"projectile_decoy_rate"			"6"
+	"projectile_decoy_velocity"		"0 0 -300"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"6"
+	
+	"projectile_decoy_ammo_max"		"15"
+	"projectile_decoy_ammo_per_use"	"1"
+
+	"careen_speed"					"700"
+	"careen_height"					"1024"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"anansi"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"8" //mal: this is an air based vehicle
+
+	// hack the inertia tensor to be symmetric, so that there is no cross-linking between pitch yaw and roll controls
+	"do_not_modify_ito"				"0 0 0"
+
+	"qc_spotted"					"quickchat/context/attack/aircraftspotted"
+	
+	"validate_drop"					"1"
+}
+
+damageDef damage_anansi_collide {
+	damage								"damage_anansi_collide"
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"anansi_weapons"
+	
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/anansi"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/anansi/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/anansi/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageDef damage_anansi_rotor {
+	damage		"damage_anansi_rotor"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/anansi"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/anansi/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/anansi/teamkill"
+}
+
+damageFilter damage_anansi_collide {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	500
+	}
+	type {
+		target	"target_deployables_all"
+		damage	300
+	}
+}
+
+damageFilter damage_anansi_rotor {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	800
+	}
+	type {
+		target	"target_deployables_all"
+		damage	300
+	}	
+}
+
+toolTip vehicle_anansi_enter {
+	length	5
+	text	"game/tt/vehicle_passenger_air"
+}

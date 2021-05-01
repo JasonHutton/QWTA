@@ -1,0 +1,35 @@
+/////////////////////////////////////////////////////////////
+// Strogg Quick Chat ////////////////////////////////////////
+/////////////////////////////////////////////////////////////
+
+// Vehicles /////////////////////////////////////////////////
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_icarus {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_hog {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_desecrator {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_cyclops {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_tormentor {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}
+
+sound sounds/players/strogg/quickchat/vehicles/vehicledrops/nv_abaddon {
+
+	localization/english/sounds/players/strogg/vehicles/26097.wav
+}

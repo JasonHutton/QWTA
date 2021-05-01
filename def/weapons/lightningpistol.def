@@ -1,0 +1,298 @@
+/***********************************************************************
+
+	lightningpistol.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix LIGHTNINGPISTOL_ -sourcedir models/weapons/lightning_pistol/dev_sd -destdir models/weapons/lightning_pistol/ -keep muzzle overheat_left overheat_right lightning_point1 lightning_point2lightning_point3 lightning_point4 lightning_point5 lightning_point6 lightning_point7
+
+	mesh	lightning_pistol_base_file.mb		-dest models/weapons/lightning_pistol/view.md5mesh
+
+	anim	lightning_pistol_base_file.mb		-dest models/weapons/lightning_pistol/base.md5anim
+	anim	lightning_pistol_idle.mb			-dest models/weapons/lightning_pistol/idle.md5anim
+ 	anim	lightning_pistol_raise.mb			-dest models/weapons/lightning_pistol/raise.md5anim
+ 	anim	lightning_pistol_lower.mb			-dest models/weapons/lightning_pistol/lower.md5anim
+ 	anim	lightning_pistol_fire.mb			-dest models/weapons/lightning_pistol/fire.md5anim
+ 	anim	lightning_pistol_fire2.mb			-dest models/weapons/lightning_pistol/fire2.md5anim
+ 	anim	lightning_pistol_fire3.mb			-dest models/weapons/lightning_pistol/fire3.md5anim
+
+
+ 	anim	lightning_pistol_reload.mb			-dest models/weapons/lightning_pistol/reload.md5anim
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_lightningpistol {
+	mesh						models/weapons/lightning_pistol/view.md5mesh
+
+	anim idle 					models/weapons/lightning_pistol/idle.md5anim {
+		frame 12					effect fx_fingersparks_idle muzzle
+		frame 50					effect fx_fingersparks_idle muzzle
+		frame 130					effect fx_fingersparks_idle muzzle
+	}
+	anim putaway				models/weapons/lightning_pistol/lower.md5anim {
+	}
+	anim raise					models/weapons/lightning_pistol/raise.md5anim {
+		frame	1					sound_channel snd_weapon_foley snd_raise
+	}
+	anim fire					models/weapons/lightning_pistol/fire.md5anim {
+	}
+	anim fire2					models/weapons/lightning_pistol/fire2.md5anim {
+	}
+	anim fire3					models/weapons/lightning_pistol/fire3.md5anim {
+	}
+	anim overheat 				models/weapons/lightning_pistol/reload.md5anim {
+		frame 1						sound_channel snd_weapon_mech snd_steam
+		frame 12					effect fx_overheat overheat_left
+		frame 12					effect fx_overheat overheat_right
+	}
+	anim zoomout				models/weapons/lightning_pistol/base.md5anim {
+	}
+	anim zoomin					models/weapons/lightning_pistol/base.md5anim {
+		frame	1					sound_channel snd_weapon_foley snd_initzoom
+	}
+	anim idle_zoom				models/weapons/lightning_pistol/base.md5anim {
+	}
+	anim fire_zoom				models/weapons/lightning_pistol/base.md5anim {
+	}
+	anim start_sprint			models/weapons/lightning_pistol/lower.md5anim {
+	}
+	anim leave_sprint			models/weapons/lightning_pistol/raise.md5anim {
+	}
+}
+
+model viewmodel_lightningpistol_raven {
+	mesh						models/weapons/raven/lightning_gun/mesh.md5mesh
+
+	anim idle 					models/weapons/raven/lightning_gun/idle.md5anim {
+	}
+	anim putaway				models/weapons/raven/lightning_gun/lower.md5anim {
+	}
+	anim raise					models/weapons/raven/lightning_gun/raise.md5anim {
+	}
+	anim fire					models/weapons/raven/lightning_gun/shoot_loop.md5anim {
+	}
+	anim overheat 				models/weapons/raven/lightning_gun/idle.md5anim {
+	}
+	anim start_sprint			models/weapons/raven/lightning_gun/lower.md5anim {
+	}
+	anim leave_sprint			models/weapons/raven/lightning_gun/raise.md5anim {
+	}
+//	anim shoot_start			models/weapons/raven/lightning_gun/shoot_start.md5anim
+//	anim shoot_loop				models/weapons/raven/lightning_gun/shoot_loop.md5anim
+//	anim shoot_end				models/weapons/raven/lightning_gun/shoot_end.md5anim
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_lightningpistol {
+	mesh		 				models/characters/animations/strogg/lightning_gun.md5mesh
+
+	anim raise					models/characters/animations/strogg/lightning_gun.md5anim {
+	}
+	anim idle 					models/characters/animations/strogg/lightning_gun.md5anim {
+	}
+	anim aim					models/characters/animations/strogg/lightning_gun.md5anim {
+	}
+	anim fire1 					models/characters/animations/strogg/lightning_gun.md5anim {
+	}
+	anim overheat				models/characters/animations/strogg/lightning_gun.md5anim {
+	}
+	anim noammo					models/characters/animations/strogg/lightning_gun.md5anim {
+	}
+ 	anim putaway				models/characters/animations/strogg/lightning_gun.md5anim {
+ 	}
+}
+
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/lightningpistol {
+	type								"weapon"
+	slot								"sidearm"
+	name								"game/weapons/lightning_pistol"
+	model								"models/weapons/lightning_pistol/lightning_pistol_player.lwo"
+	joint								"RightUpLeg"
+
+	data {
+		"model_view" 					"viewmodel_lightningpistol"
+		"model_world" 					"worldmodel_lightningpistol"
+		"joint_attach"					"RightForeArmRoll"
+		"view_offset"					"-6 0.5 0.7"
+		"view_foreshorten"				"0.8"
+		"anim_prefix"					"blaster"
+		"anim_prefix_class"				"hands"
+
+		"speed_mod"						"1.05"
+
+		"weapon_scriptobject"			"weapon_lightningpistol"
+
+		"muzzle_kick_time"				"0.2"
+		"muzzle_kick_maxtime"			"0.6"
+		"muzzle_kick_angles"			"45 0 0"
+		"muzzle_kick_offset"			"50 1 2"
+		"recoilTime"					"80"
+		"recoilAngles"					"-0.1 0 0"
+
+		"stat_name"						"lightning_pistol"
+
+		"fx_overheat"					"effects/weapons/lightningpistol_overheat"
+		"fx_overheat_world"				"effects/weapons/lightningpistol_overheat"
+		"fx_fingersparks_idle"			"effects/weapons/lightningpistol_fingers_idle"
+
+		"fx_muzzle_flash"				"effects/weapons/lightningpistol_muzzleflash"
+		"fx_muzzle_flash_world"			"effects/weapons/lightningpistol_muzzleflash"
+
+		"snd_fire"						"sounds/weapons/lightningpistol/fire"
+		"snd_fire_far"					"sounds/weapons/lightningpistol/fire/far"
+		"snd_fire_local"				"sounds/weapons/lightningpistol/fire/local"
+		"snd_fire_loop"					"sounds/weapons/lightningpistol/fire_loop"
+		"snd_cock"						"sounds/weapons/machinepistol/cock"
+		"snd_reload"					"sounds/weapons/machinepistol/reload"
+		"snd_steam"						"sounds/weapons/blaster/steam"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_raise"						"sounds/weapons/lightningpistol/raise"
+		"snd_initzoom"					"sounds/weapons/railgun/init"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+
+		"fov_zoom"						"60"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.5"
+		"fov_spread"					"1"
+
+		"trigger_delay"					"0"
+		"fire_rate"						"0.08"
+		"num_projectiles"				"1"
+
+		"low_ammo"						"6"
+		"show_all_ammo"					"1"
+		"clip_based"					"0"
+
+		"gui_sight"						"game/sights/assaultrifle_scope"
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/lightningpistol"
+		"gui_sniper_scope"				"guis/game/sights/generic_scope"
+		"hud_sort"						"999"
+
+		"crosshair"						"small"
+		"disabled_crosshair_secondary"	"small"
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"fx_lightning"					"effects/projectile_lightning_2"
+		"fx_lightning_hit"				"effects/projectile_lightning_impact"
+		"fx_crawl"						"effects/projectile_lightning_crawl"
+
+		"overheat_length"				"5"
+		"overheat_per_shot"				"0.179"
+		"timer_heat"					"heat_lightning"
+
+		"autoswitch_priority"			"7"
+
+		"player_weapon_num"				"1"
+
+		"hide_crosshair"				"0"
+		
+		"dmg_lightning"					"damage_lightningpistol"
+		"dmg_realistic_lightning"			"realistic_damage_lightningpistol"
+	}
+
+	clip {
+		"type"							"stroyent"
+		"ammo_per_shot"					"3"
+		"max_ammo"						"-1"
+	}
+}
+
+damageDef damage_lightningpistol {
+	damage								"damage_lightningpistol"
+
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.25
+
+	knockback							5
+	push								2500
+
+	stat_name							"lightning_pistol"
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/lightningpistol"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/lightningpistol/teamkill"
+}
+
+damageDef realistic_damage_lightningpistol {
+	inherit								"damage_lightningpistol"
+	damage								"realistic_damage_lightningpistol"
+}
+
+damageFilter damage_lightningpistol {
+
+	type {
+		target							"target_player_all"
+		damage							9
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							9
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							9
+	}
+}
+
+damageFilter realistic_damage_lightningpistol {
+
+	type {
+		target							"target_player_all"
+		damage							23
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							9
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							9
+	}
+}

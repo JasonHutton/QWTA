@@ -1,0 +1,503 @@
+// Export
+// ========================================================================
+/*
+reexportmodels deployables/antipersonnel_strogg.def
+testmodel deployable_antipersonnel_strogg
+*/
+
+export hauser {
+	options -prefix STAP_ -rotate 90 -SCALE .833 -sourcedir models/structures/strogg/deployables/weapons/antipersonnel_turret/dev_sd -destdir models/structures/strogg/deployables/weapons/antipersonnel_turret/
+
+	addoptions -keep pilot cam mid_left_ik rear_left_ik front_left_ik rear_right_ik mid_right_ik front_right_ik proxy_muzzle  -keepmesh  mesh_front_left_foot mesh_front_left_knee mesh_front_left_leg mesh_front_right_foot mesh_front_right_knee mesh_front_right_leg mesh_hull mesh_left_gun_lower_a mesh_left_gun_lower_b mesh_left_gun_lower_c mesh_left_gun_upper_a mesh_left_gun_upper_b mesh_left_gun_upper_c mesh_mid_left_foot mesh_mid_left_knee mesh_mid_left_leg mesh_mid_right_foot mesh_mid_right_knee mesh_mid_right_leg mesh_pitch mesh_pivot mesh_pivot_glass mesh_rear_left_foot mesh_rear_left_knee mesh_rear_left_leg mesh_rear_right_foot mesh_rear_right_knee mesh_rear_right_leg mesh_right_gun_lower_a mesh_right_gun_lower_b mesh_right_gun_lower_c mesh_right_gun_upper_a mesh_right_gun_upper_b mesh_right_gun_upper_c mesh_tail					shadow_tail shadow_front_left_foot shadow_front_left_knee shadow_front_left_leg shadow_front_right_foot shadow_front_right_knee shadow_front_right_leg shadow_mid_left_foot shadow_mid_left_knee shadow_mid_left_leg shadow_rear_left_foot shadow_rear_left_knee shadow_rear_left_leg shadow_mid_right_foot shadow_mid_right_knee shadow_mid_right_leg shadow_rear_right_foot shadow_rear_right_knee shadow_rear_right_leg shadow_right_gun_upper_b shadow_right_gun_upper_c shadow_right_gun_upper_a shadow_right_gun_lower_a shadow_right_gun_lower_c shadow_right_gun_lower_b shadow_left_gun_upper_b shadow_left_gun_upper_c shadow_left_gun_upper_a shadow_left_gun_lower_a shadow_left_gun_lower_c shadow_left_gun_lower_b shadow_hull shadow_pivot shadow_pitch
+/*
+	mesh	SAP_anims.mb		-dest strogg_ap_turret.md5mesh
+
+	anim	SAP_anims.mb		-dest strogg_ap_turret_undeployed.md5anim 			-range 23 23
+
+
+	anim	SAP_anims.mb		-dest strogg_ap_turret_deploy.md5anim 				-range 22 80
+	*/
+
+	/*
+	anim	SAP_anims.mb		-dest strogg_ap_turret_idle.md5anim 				-range 80 80
+	anim	SAP_anims.mb		-dest strogg_ap_turret_fire.md5anim 				-range 82 107
+	anim	SAP_anims.mb		-dest strogg_ap_turret_reload.md5anim 				-range 80 80
+*/
+	anim	SAP_anims.mb		-dest strogg_ap_turret_pre_ik.md5anim 				-range 22 62
+	anim	SAP_anims.mb		-dest strogg_ap_turret_post_ik.md5anim 				-range 63 80
+/*
+	anim	SAP_anims.mb		-dest strogg_ap_turret_damaged.md5anim 				-range 113 123
+	anim	SAP_anims.mb		-dest strogg_ap_turret_disabled.md5anim 			-range 120 155
+
+	anim	SAP_anims.mb		-dest strogg_ap_turret_disabled_to_damaged.md5anim 	-range 123 123
+	anim	SAP_anims.mb		-dest strogg_ap_turret_damaged_to_idle.md5anim 		-range 80 80
+	anim	SAP_anims.mb		-dest strogg_ap_turret_fly.md5anim 					-range 23 23
+
+//	anim	SAP_anims_nerve.mb	-dest strogg_ap_turret_fire.md5anim 				-range 108 110
+*/
+}
+
+
+// Models
+// ========================================================================
+//
+
+model deployable_antipersonnel_strogg {
+
+	mesh							models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret.md5mesh
+
+	anim undeployed					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_idle.md5anim {
+	}
+
+	anim deploy 					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_deploy.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim pre_ik						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_pre_ik.md5anim {
+	}
+
+	anim post_ik					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_post_ik.md5anim {
+
+	}
+
+	anim base						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_idle.md5anim {
+	}
+
+	anim damaged					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_damaged.md5anim {
+	}
+
+	anim destroyed					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_disabled.md5anim {
+	}
+
+	anim fire						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_fire.md5anim {
+	}
+
+	anim reload						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_reload.md5anim {
+	}
+
+	anim disabled_to_damaged		models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_disabled_to_damaged.md5anim {
+	}
+
+	anim damaged_to_idle			models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_damaged_to_idle.md5anim {
+	}
+
+	anim fly	 					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_fly.md5anim {
+	}
+
+}
+
+
+
+// ao: wrong num joints:
+//'models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_salvage.md5mesh''s joint names don't match anim 'models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_idle.md5anim''s
+model deployable_antipersonnel_strogg_salvage {
+
+	mesh							models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_salvage.md5mesh
+
+
+	anim base						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_idle.md5anim {
+	}
+
+	anim damaged					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_damaged.md5anim {
+	}
+
+	anim destroyed					models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_disabled.md5anim {
+	}
+
+	anim fire						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_fire.md5anim {
+	}
+
+	anim reload						models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_reload.md5anim {
+	}
+
+	anim disabled_to_damaged		models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_disabled_to_damaged.md5anim {
+	}
+
+	anim damaged_to_idle			models/structures/strogg/deployables/weapons/antipersonnel_turret/strogg_ap_turret_damaged_to_idle.md5anim {
+	}
+
+
+}
+
+// Entity Def
+// ========================================================================
+//
+
+deployObject deployobject_antipersonnel_strogg {
+	"name"							"apt"
+	"title"							"game/deploy/apt_long"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_antipersonnel_strogg"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					"deployitem_antipersonnel_strogg_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"defences"
+}
+
+stringMap deployitem_antipersonnel_strogg_placement_model {
+	"model"							"models/structures/strogg/deployables/weapons/antipersonnel_turret/antipersonnel_turret.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+// ========================================================================
+
+stringMap deployable_antipersonnel_strogg_aimer {
+	"joint_yaw"						"pivot"
+	"joint_pitch"					"pitch"
+	"joint_barrel"					"proxy_muzzle"
+
+	"min_yaw_turn"					"120"
+	"max_yaw_turn"					"180"
+
+	"min_pitch_turn"				"120"
+	"max_pitch_turn"				"180"
+
+	"min_pitch"						"-75"
+	"max_pitch"						"16"
+
+	"deployed_anim"					"base"
+}
+
+entityDef deployable_antipersonnel_strogg {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_strogg"
+
+	"title"							"game/deploy/apt_long"
+
+	"collection_gui_count"			"deployable_antipersonnel_strogg"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The Strogg Anti Personnel Turret."
+	"editor_mins"					"-32 -64 0"
+	"editor_maxs"					"32 64 64"
+
+	"spawnclass"					"sdDefenceTurret"
+	"scriptobject"					"deployable_antipersonnel"
+
+	"model"							"deployable_antipersonnel_strogg"
+	"cm_model"						"models/structures/strogg/deployables/weapons/antipersonnel_turret/collision_model.lwo"
+
+	"stat_name"						"antipersonnel_strogg"
+
+	"task_name"						"game/deploy/apt"
+
+	"ch_name"						"game/deploy/apt_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 128"
+//	"option_usable_interface"		"1"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"defense_turret"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_def_deploy"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_def_deploy"
+
+	"mtr_color"						"guis/assets/deploy/icons/strogg_ap"
+	"mtr_desat"						"guis/assets/deploy/icons/strogg_ap_desat"
+	"mtr_half_desat"				"guis/assets/deploy/icons/strogg_ap_half_desat"
+	"mtr_full_desat"				"guis/assets/deploy/icons/strogg_ap_full_desat"
+
+	"icon_size_cm"					"8"
+
+	"health"						"4000"
+	"repair_multiplier"				"1.5"
+
+	"upgrade_bonus"					"0.75"
+
+	"joint_barrel"					"proxy_muzzle"
+
+	"fireRate"						"0.15"
+	"spread"						"1"
+	"charge_time"					"10"
+	"charge_per_shot"				"0.03"
+	"overheat_penalty"				"5"
+
+	"missile_velocity"				"1"
+
+	"range_min"						"5"
+	"range_firing"					"75"
+	"range_max"						"85"
+
+	"str_aim_data"					"deployable_antipersonnel_strogg_aimer"
+
+	"def_projectile"				"projectile_deployable_antipersonnel_strogg"
+
+	"snd_deploy"					"sounds/deployables/apt_strogg/deploy"
+/*
+	"num_ik"						"6"
+	"str_ik0"						"sounds/deployables/apt_strogg/leg_1_ik"
+	"str_ik1"						"sounds/deployables/apt_strogg/leg_2_ik"
+	"str_ik2"						"sounds/deployables/apt_strogg/leg_3_ik"
+	"str_ik3"						"sounds/deployables/apt_strogg/leg_4_ik"
+	"str_ik4"						"sounds/deployables/apt_strogg/leg_5_ik"
+	"str_ik5"						"sounds/deployables/apt_strogg/leg_6_ik"
+*/
+	"fx_death"						"effects/deployables/antipersonnel_destroy"
+	"fx_fire"						"effects/deployables/antipersonnel_strogg_fire"
+	"fx_muzzle"						"effects/deployables/antipersonnel_muzzleflash_strogg"
+	"fx_tracer"						"effects/base/tracers_strogg"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"hull"
+
+	"effectchance fx_tracer"		"1"
+	"num_tracerjoints"				"12"
+	"joint_tracer1"					"left_gun_upper_a"
+	"joint_tracer2"					"left_gun_upper_b"
+	"joint_tracer3"					"left_gun_upper_c"
+	"joint_tracer4"					"left_gun_lower_a"
+	"joint_tracer5"					"left_gun_lower_b"
+	"joint_tracer6"					"left_gun_lower_c"
+	"joint_tracer7"					"right_gun_upper_a"
+	"joint_tracer8"					"right_gun_upper_b"
+	"joint_tracer9"					"right_gun_upper_c"
+	"joint_tracer10"				"right_gun_lower_a"
+	"joint_tracer11"				"right_gun_lower_b"
+	"joint_tracer12"				"right_gun_lower_c"
+
+	"ti_target_info"				"target_player_all"
+
+	"do_object"						"deployobject_antipersonnel_strogg"
+
+//	"num_positions"					"1"
+//	"str_position0"					"deployable_apt_strogg_position_0"
+//	"crosshair"						"blank"
+//	"gui_usable_overlay"			"guis/game/deployables/strogg/antipersonnel"
+
+	"tt_turret_enter"				"apt_intro_enter"
+
+	"numDamageJoints"				"30"
+	"damageJoint0"					"rear_right_foot"
+	"damageJoint1"					"front_left_leg"
+	"damageJoint2"					"front_left_knee"
+	"damageJoint3"					"front_left_foot"
+	"damageJoint4"					"front_right_leg"
+	"damageJoint5"					"front_right_knee"
+	"damageJoint6"					"front_right_foot"
+	"damageJoint7"					"mid_left_leg"
+	"damageJoint8"					"mid_left_knee"
+	"damageJoint9"					"mid_left_foot"
+	"damageJoint10"					"mid_right_leg"
+	"damageJoint11"					"mid_right_knee"
+	"damageJoint12"					"mid_right_foot"
+	"damageJoint13"					"left_gun_lower_a"
+	"damageJoint14"					"left_gun_lower_b"
+	"damageJoint15"					"left_gun_lower_c"
+	"damageJoint16"					"left_gun_upper_a"
+	"damageJoint17"					"left_gun_upper_b"
+	"damageJoint18"					"left_gun_upper_c"
+	"damageJoint19"					"right_gun_lower_a"
+	"damageJoint20"					"right_gun_lower_b"
+	"damageJoint21"					"right_gun_lower_c"
+	"damageJoint22"					"right_gun_upper_a"
+	"damageJoint23"					"right_gun_upper_b"
+	"damageJoint24"					"right_gun_upper_c"
+	"damageJoint25"					"rear_left_leg"
+	"damageJoint26"					"rear_left_knee"
+	"damageJoint27"					"rear_left_foot"
+	"damageJoint28"					"rear_right_leg"
+	"damageJoint29"					"rear_right_knee"
+
+	"deployable_type"				"8"
+
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/aptspotted"
+	
+	"trace_offset_pct"				"40"
+
+	"deploybonus_requireactive"		"1"
+	"prof_deploybonus"				"pro_constructor_deploy_bonus"
+
+	"prof_hack"						"pro_covertops_hack_deployable_big"
+	
+	"no_damage_feedback"			"1"
+	
+	// center of bbox is target lock-on position
+	"selection_mins"				"-162 -120 -19"
+	"selection_maxs"				"180 140 220"
+	
+	"retribution_delay"				"1.5"
+}
+
+/*
+stringMap sounds/deployables/apt_strogg/leg_1_ik {
+	"joint_upper"					"front_right_leg"
+	"joint_middle"					"front_right_foot"
+	"joint_lower"					"front_right_ik"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/apt_strogg/leg_2_ik {
+	"joint_upper"					"front_left_leg"
+	"joint_middle"					"front_left_foot"
+	"joint_lower"					"front_left_ik"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/apt_strogg/leg_3_ik {
+	"joint_upper"					"mid_right_leg"
+	"joint_middle"					"mid_right_foot"
+	"joint_lower"					"mid_right_ik"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/apt_strogg/leg_4_ik {
+	"joint_upper"					"mid_left_leg"
+	"joint_middle"					"mid_left_foot"
+	"joint_lower"					"mid_left_ik"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+
+stringMap sounds/deployables/apt_strogg/leg_5_ik {
+	"joint_upper"					"rear_right_leg"
+	"joint_middle"					"rear_right_foot"
+	"joint_lower"					"rear_right_ik"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+
+stringMap sounds/deployables/apt_strogg/leg_6_ik {
+	"joint_upper"					"rear_left_leg"
+	"joint_middle"					"rear_left_foot"
+	"joint_lower"					"rear_left_ik"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"20"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"0.99"
+}
+*/
+stringMap deployable_apt_strogg_position_0 {
+	"thirdperson"					"0"
+	"thirdperson_distance"			"0"
+	"thirdperson_height"			"0"
+
+	"joint_view"					"cam"
+	"fov"							"90"
+	"show_player"					"1"
+	"player_anim"					"DeployableStroggAntipersonnel"
+	"attach_joint"					"pilot"
+	"weapon_name"					"game/deploy/apt_long"
+	"take_damage"					"1"
+	"hide_decoy_info"				"1"
+	"show_targeting_info"			"1"
+
+	"clamp_pitch"					"-75 16"
+}
+
+// Projectile
+// ========================================================================
+
+entityDef projectile_deployable_antipersonnel_strogg {
+	"spawnclass"					"idProjectile"
+	"inherit"						"projectile_bullet_base_big"
+
+	"tracer_chance"					"0"
+	"tracer_interval"				"2"
+	"fx_tracer"						"effects/weapons/hyperblaster_tracer"
+
+  	"fx_explode"				"effects/impacts/blaster_big/impact_default"
+	"fx_explode_pavement"		"effects/impacts/blaster_big/impact_pavement"
+ 	"fx_explode_stone"			"effects/impacts/blaster_big/impact_stone"
+  	"fx_explode_concrete"		"effects/impacts/blaster_big/impact_stone"
+	"fx_explode_dirt"			"effects/impacts/blaster_big/impact_dirt"
+	"fx_explode_mud"			"effects/impacts/blaster_big/impact_dirt"
+	"fx_explode_flesh"			"effects/impacts/blaster_big/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/blaster_big/impact_glass"
+	"fx_explode_ice"			"effects/impacts/blaster_big/impact_glass"
+ 	"fx_explode_gravel"			"effects/impacts/blaster_big/impact_stone"
+	"fx_explode_metal"			"effects/impacts/blaster_big/impact_metal"
+	"fx_explode_metal_thick"	"effects/impacts/blaster_big/impact_metal"
+	"fx_explode_dusty_road"		"effects/impacts/blaster_big/impact_sand"
+	"fx_explode_sand"			"effects/impacts/blaster_big/impact_sand"
+	"fx_explode_snow"			"effects/impacts/blaster_big/impact_snow"
+	"fx_explode_wood"			"effects/impacts/blaster_big/impact_wood"
+	"fx_explode_wood_thick"		"effects/impacts/blaster_big/impact_wood"
+ 	"fx_explode_liquid"			"effects/impacts/blaster_big/impact_liquid"
+  	"fx_explode_water"			"effects/impacts/blaster_big/impact_liquid"
+	"fx_explode_forcefield"		"effects/base/bullets/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/blaster_big/impact_grass"
+ 	"fx_explode_plastic"		"effects/impacts/blaster_big/impact_plastic"
+
+	"range"							"4096"
+
+	"dmg_damage"					"damage_deployable_antipersonnel_strogg"
+	"dmg_realistic_damage"				"realistic_damage_deployable_antipersonnel_strogg"
+}
+
+damageDef damage_deployable_antipersonnel_strogg {
+	damage							"damage_deployable_antipersonnel"
+
+	prof_damage						"pro_constructor_turret_damage"
+
+	knockback						10
+	kick_time						100
+	kick_amplitude					0
+	kickDir							( 1 0 0 )
+	no_complaint
+
+	stat_name						"antipersonnel_strogg"
+
+	tt_obituary						"tooltips/killmsgs/turrets/apt"
+	tt_obituary_self				"tooltips/killmsgs/turrets/apt/self"
+	tt_obituary_team_kill			"tooltips/killmsgs/turrets/apt/teamkill"
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/apt/self"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_deployable_antipersonnel_strogg {
+	inherit							"damage_deployable_antipersonnel_strogg"
+	damage							"realistic_damage_deployable_antipersonnel"
+}

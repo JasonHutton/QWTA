@@ -1,0 +1,452 @@
+// ========================================================================
+// Export
+/*
+reexportmodels vehicles/hornet.def
+testmodel vehicle_hornet
+*/
+
+#include <quickchat/avdbits.include>
+
+export hauser {
+	options -prefix HORN_ 	-rotate -270 -sourcedir models/vehicles/strogg_hornet/dev_sd -destdir models/vehicles/strogg_hornet -nomerge -keep main carrier_driver carrier_gunner1 cockpit_attacher rear front_left_leg_1 front_left_leg_2 front_left_leg_3 front_left_leg_placement rear_left_leg_1 rear_left_leg_2 rear_left_leg_3 rear_left_leg_placement front_right_leg_1 front_right_leg_2 front_right_leg_3 front_right_leg_placement rear_right_leg_1 rear_right_leg_2 rear_right_leg_3 rear_right_leg_placement front_left_thruster_1 front_left_thruster_2 front_left_thruster_effects front_right_thruster_1 front_right_thruster_2 front_right_thruster_effects rear_left_thruster_1 rear_left_thruster_2 rear_left_thruster_effects rear_right_thruster_1 rear_right_thruster_2 rear_right_thruster_effects missile_1 missile_2 gunbase gun_cam gunarm1 gunarm2 gun_muzzle cockpit camera_gunner camera gun gun_muzzle nose front_left_exit front_right_exit rear_left_exit rear_right_exit -parent cockpit main -parent gun_cam main -parent missile_1 cockpit -parent missile_2 cockpit
+
+	anim landing_gear_fixed.mb 	-dest landing.md5anim		-range 21 40
+	anim landing_gear_fixed.mb 	-dest takeoff.md5anim		-range 1  20
+	anim landing_gear_fixed.mb 	-dest flying.md5anim		-range 20 20
+	anim landing_gear_fixed.mb	-dest landed.md5anim		-range 1 1
+	anim hornet_base.mb 	-dest example.md5anim
+	anim hornet_base.mb		-dest example2.md5anim
+
+	anim bank_backwards.mb	-dest bank_backwards.md5anim -range 1 1
+	anim bank_forwards.mb   -dest bank_forwards.md5anim  -range 1 1
+	anim turn_left.mb		-dest turn_left.md5anim		 -range 1 1
+	anim turn_right.mb		-dest turn_right.md5anim	 -range 1 1
+
+	anim bank_backwards_left.mb		-dest bank_backwards_left.md5anim 	-range 1 1
+	anim bank_backwards_right.mb	-dest bank_backwards_right.md5anim 	-range 1 1
+
+	anim bank_forwards_left.mb   	-dest bank_forwards_left.md5anim  	-range 1 1
+	anim bank_forwards_right.mb   	-dest bank_forwards_right.md5anim  	-range 1 1
+
+	anim idle.mb			-dest idle.md5anim -xyzprecision 0.000001
+
+}
+
+//MESHES
+export hauser {
+
+	options -prefix HORN_	-rotate -270 -sourcedir models/vehicles/strogg_hornet/dev_sd -destdir models/vehicles/strogg_hornet /*-nomerge*/ -keep main carrier_driver carrier_gunner1 cockpit_attacher rear front_left_leg_1 front_left_leg_2 front_left_leg_3 front_left_leg_placement rear_left_leg_1 rear_left_leg_2 rear_left_leg_3 rear_left_leg_placement front_right_leg_1 front_right_leg_2 front_right_leg_3 front_right_leg_placement rear_right_leg_1 rear_right_leg_2 rear_right_leg_3 rear_right_leg_placement front_left_thruster_1 front_left_thruster_2 front_left_thruster_effects front_right_thruster_1 front_right_thruster_2 front_right_thruster_effects rear_left_thruster_1 rear_left_thruster_2 rear_left_thruster_effects rear_right_thruster_1 rear_right_thruster_2 rear_right_thruster_effects missile_1 missile_2 gunbase gun_cam gunarm1 gunarm2 gun_muzzle cockpit camera_gunner camera gun gun_muzzle nose front_left_exit front_right_exit rear_left_exit rear_right_exit -parent cockpit main  -parent gun_cam main -parent missile_1 cockpit -parent missile_2 cockpit
+	addoptions 												-keepmesh gunarm1_mesh gunarm2_mesh gunarm_base gunbase_mesh gunarm_base_side gunarm_base_side2 s_cockpit s_nose s_gun s_front_right_thruster_2 s_front_right_leg_1 s_front_right_leg_3 s_front_left_thruster_2 s_front_left_leg_3 s_rear_right_thruster_2 s_rear_right_leg_1 s_rear_right_leg_3 s_rear_left_thruster_2 s_rear_left_leg_1 s_rear_left_leg_3 s_front_left_leg_1 s_rear_left_leg_2 s_rear_right_leg_2 s_front_right_leg_2 s_front_left_leg_2 s_rear_right_thruster_1 s_rear_left_thruster_1 s_front_left_thruster_1 s_front_right_thruster_1 s_main mesh_cockpit mesh_nose mesh_gun mesh_front_right_thruster_2 mesh_front_right_leg_1 mesh_front_right_leg_2 mesh_front_right_leg_3 mesh_front_left_thruster_2 mesh_front_left_leg_1 mesh_front_left_leg_2 mesh_front_left_leg_3 mesh_rear_right_thruster_2 mesh_rear_right_leg_1 mesh_rear_right_leg_2 mesh_rear_right_leg_3 mesh_rear_left_thruster_2 mesh_rear_left_leg_1 mesh_rear_left_leg_3 mesh_rear_left_leg_2 mesh_rear_left_spike mesh_rear_right_spike mesh_front_left_spike mesh_front_right_spike mesh_front_right_thruster_1 mesh_rear_right_thruster_1 mesh_front_left_thruster_1 mesh_left_neck_spike mesh_right_neck_spike mesh_rear_left_thruster_1 mesh_main
+
+	mesh hornet_base.mb 	-dest hornet.md5mesh
+
+	anim landing_gear_fixed.mb 	-dest hornet.md5anim -range 1 1
+
+
+	options -prefix HORN_	-rotate -270 -sourcedir models/vehicles/strogg_hornet/dev_sd -destdir models/vehicles/strogg_hornet -keep main carrier_driver carrier_gunner1 cockpit_attacher rear front_left_leg_1 front_left_leg_2 front_left_leg_3 front_left_leg_placement rear_left_leg_1 rear_left_leg_2 rear_left_leg_3 rear_left_leg_placement front_right_leg_1 front_right_leg_2 front_right_leg_3 front_right_leg_placement rear_right_leg_1 rear_right_leg_2 rear_right_leg_3 rear_right_leg_placement front_left_thruster_1 front_left_thruster_2 front_left_thruster_effects front_right_thruster_1 front_right_thruster_2 front_right_thruster_effects rear_left_thruster_1 rear_left_thruster_2 rear_left_thruster_effects rear_right_thruster_1 rear_right_thruster_2 rear_right_thruster_effects missile_1 missile_2 gunbase gun_cam gunarm1 gunarm2 gun_muzzle cockpit camera_gunner camera gun gun_muzzle nose front_left_exit front_right_exit rear_left_exit rear_right_exit -parent cockpit main  -parent gun_cam main -parent missile_1 cockpit -parent missile_2 cockpit
+	addoptions -noJoints 									-keepmesh gunarm1_mesh gunarm2_mesh gunbase_mesh gunarm_base_side gunarm_base_side2 s_cockpit s_nose s_gun s_front_right_thruster_2 s_front_right_leg_1 s_front_right_leg_3 s_front_left_thruster_2 s_front_left_leg_3 s_rear_right_thruster_2 s_rear_right_leg_1 s_rear_right_leg_3 s_rear_left_thruster_2 s_rear_left_leg_1 s_rear_left_leg_3 s_front_left_leg_1 s_rear_left_leg_2 s_rear_right_leg_2 s_front_right_leg_2 s_front_left_leg_2 s_rear_right_thruster_1 s_rear_left_thruster_1 s_front_left_thruster_1 s_front_right_thruster_1 s_main lod1mesh_cockpit lod1mesh_nose lod1mesh_gun lod1mesh_front_right_thruster_2 lod1mesh_front_right_leg_1 lod1mesh_front_right_leg_2 lod1mesh_front_right_leg_3 lod1mesh_front_left_thruster_2 lod1mesh_front_left_leg_2 lod1mesh_front_left_leg_3 lod1mesh_rear_right_thruster_2 lod1mesh_rear_right_leg_1 lod1mesh_rear_right_leg_2 lod1mesh_rear_right_leg_3 lod1mesh_rear_left_thruster_2 lod1mesh_rear_left_leg_1 lod1mesh_rear_left_leg_3 lod1mesh_rear_left_leg_2 lod1mesh_front_left_leg_1 lod1mesh_rear_left_thruster_1 lod1mesh_front_left_thruster_1 lod1mesh_front_right_thruster_1 lod1mesh_rear_right_thruster_1 lod1mesh_rear_left_spike lod1mesh_rear_right_spike lod1mesh_front_left_spike lod1mesh_left_neck_spike lod1mesh_right_neck_spike lod1mesh_main lod1mesh_front_right_spike
+
+	mesh hornet_base.mb		-dest hornet_lod1.md5mesh
+
+
+	options -prefix HORN_	-rotate -270 -sourcedir models/vehicles/strogg_hornet/dev_sd -destdir models/vehicles/strogg_hornet  -keep main carrier_driver carrier_gunner1 cockpit_attacher rear front_left_leg_1 front_left_leg_2 front_left_leg_3 front_left_leg_placement rear_left_leg_1 rear_left_leg_2 rear_left_leg_3 rear_left_leg_placement front_right_leg_1 front_right_leg_2 front_right_leg_3 front_right_leg_placement rear_right_leg_1 rear_right_leg_2 rear_right_leg_3 rear_right_leg_placement front_left_thruster_1 front_left_thruster_2 front_left_thruster_effects front_right_thruster_1 front_right_thruster_2 front_right_thruster_effects rear_left_thruster_1 rear_left_thruster_2 rear_left_thruster_effects rear_right_thruster_1 rear_right_thruster_2 rear_right_thruster_effects missile_1 missile_2 gunbase gun_cam gunarm1 gunarm2 gun_muzzle cockpit camera_gunner camera gun gun_muzzle nose front_left_exit front_right_exit rear_left_exit rear_right_exit -parent cockpit main -parent gun_cam main -parent missile_1 cockpit -parent missile_2 cockpit
+	addoptions -noJoints 									-keepmesh gunarm1_mesh gunarm2_mesh gunbase_mesh gunarm_base_side gunarm_base_side2 s_cockpit s_nose s_gun s_front_right_thruster_2 s_front_right_leg_1 s_front_right_leg_3 s_front_left_thruster_2 s_front_left_leg_3 s_rear_right_thruster_2 s_rear_right_leg_1 s_rear_right_leg_3 s_rear_left_thruster_2 s_rear_left_leg_1 s_rear_left_leg_3 s_front_left_leg_1 s_rear_left_leg_2 s_rear_right_leg_2 s_front_right_leg_2 s_front_left_leg_2 s_rear_right_thruster_1 s_rear_left_thruster_1 s_front_left_thruster_1 s_front_right_thruster_1 s_main lod2mesh_cockpit lod2mesh_nose lod2mesh_gun lod2mesh_front_right_thruster_2 lod2mesh_front_right_leg_1 lod2mesh_front_right_leg_3 lod2mesh_front_left_thruster_2 lod2mesh_front_left_leg_3 lod2mesh_rear_right_thruster_2 lod2mesh_rear_right_leg_1 lod2mesh_rear_right_leg_3 lod2mesh_rear_left_thruster_2 lod2mesh_rear_left_leg_1 lod2mesh_rear_left_leg_3 lod2mesh_front_left_leg_1 lod2mesh_rear_left_leg_2 lod2mesh_rear_right_leg_2 lod2mesh_front_right_leg_2 lod2mesh_rear_right_spike lod2mesh_rear_left_spike lod2mesh_front_right_left lod2mesh_front_right_thruster lod2mesh_rear_right_thruster lod2mesh_front_left_thruster lod2mesh_rear_left_thruster lod2mesh_front_right_spike  lod2mesh_right_neck_spike lod2mesh_left_neck_spike lod2mesh_main lod2mesh_front_left_leg_2
+
+ 	mesh hornet_base.mb		-dest hornet_lod2.md5mesh
+
+
+	options -prefix HORN_	-rotate -270 -sourcedir models/vehicles/strogg_hornet/dev_sd -destdir models/vehicles/strogg_hornet  -keep main carrier_driver carrier_gunner1 cockpit_attacher rear front_left_leg_1 front_left_leg_2 front_left_leg_3 front_left_leg_placement rear_left_leg_1 rear_left_leg_2 rear_left_leg_3 rear_left_leg_placement front_right_leg_1 front_right_leg_2 front_right_leg_3 front_right_leg_placement rear_right_leg_1 rear_right_leg_2 rear_right_leg_3 rear_right_leg_placement front_left_thruster_1 front_left_thruster_2 front_left_thruster_effects front_right_thruster_1 front_right_thruster_2 front_right_thruster_effects rear_left_thruster_1 rear_left_thruster_2 rear_left_thruster_effects rear_right_thruster_1 rear_right_thruster_2 rear_right_thruster_effects missile_1 missile_2 gunbase gun_cam gunarm1 gunarm2 gun_muzzle cockpit camera_gunner camera gun gun_muzzle nose front_left_exit front_right_exit rear_left_exit rear_right_exit -parent cockpit main -parent gun_cam main -parent missile_1 cockpit -parent missile_2 cockpit
+ 	addoptions -noJoints 									-keepmesh gunarm1_mesh gunarm2_mesh gunbase_mesh gunarm_base_side gunarm_base_side2 s_cockpit s_nose s_gun s_front_right_thruster_2 s_front_right_leg_1 s_front_right_leg_3 s_front_left_thruster_2 s_front_left_leg_3 s_rear_right_thruster_2 s_rear_right_leg_1 s_rear_right_leg_3 s_rear_left_thruster_2 s_rear_left_leg_1 s_rear_left_leg_3 s_front_left_leg_1 s_rear_left_leg_2 s_rear_right_leg_2 s_front_right_leg_2 s_front_left_leg_2 s_rear_right_thruster_1 s_rear_left_thruster_1 s_front_left_thruster_1 s_front_right_thruster_1 s_main lod3mesh_cockpit lod3mesh_nose lod3mesh_gun lod3mesh_front_right_thruster_2 lod3mesh_front_right_leg_1 lod3mesh_front_right_leg_3 lod3mesh_front_left_thruster_2 lod3mesh_front_left_leg_3 lod3mesh_rear_right_thruster_2 lod3mesh_rear_right_leg_1 lod3mesh_rear_right_leg_3 lod3mesh_rear_left_thruster_2 lod3mesh_rear_left_leg_1 lod3mesh_rear_left_leg_3 lod3mesh_front_left_leg_1 lod3mesh_rear_left_leg_2 lod3mesh_rear_left_leg_4 lod3mesh_rear_right_leg_4 lod3mesh_rear_right_leg_2 lod3mesh_front_right_leg_2 lod3mesh_front_right_leg_4 lod3mesh_front_left_leg_2 lod3mesh_front_left_leg_4 lod3mesh_rear_right_thruster_1 lod3mesh_rear_left_thruster_1 lod3mesh_front_left_thruster_1 lod3mesh_front_right_thruster_1 lod3mesh_main
+
+	mesh hornet_base.mb		-dest hornet_lod3.md5mesh
+
+}
+
+
+
+/*
+    mesh hornet_lod1.mb		-dest hornet_lod1_boned.md5mesh
+	mesh hornet_lod2.mb		-dest hornet_lod2_boned.md5mesh
+	mesh hornet_lod3.mb		-dest hornet_lod3_boned.md5mesh
+*/
+
+// ========================================================================
+// Models
+//
+
+model vehicle_hornet {
+	mesh							models/vehicles/strogg_hornet/hornet.md5mesh
+	anim ik_pose					models/vehicles/strogg_hornet/landed.md5anim
+	anim base						models/vehicles/strogg_hornet/landed.md5anim
+	anim initial					models/vehicles/strogg_hornet/landed.md5anim
+	anim idle						models/vehicles/strogg_hornet/idle.md5anim
+}
+
+// ========================================================================
+// Entity Def
+//
+
+deployObject deployobject_hornet {
+	"name"							"hornet"
+	"title"							"Hornet"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_hornet"
+	"def_deployable_carrier"		"vehicle_strogg_drop"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+	"rank_required"					"third_lieutenant"
+	"force_escalation_required"		"80"
+	"logistics_points_required"		"70"
+	"avdbit"						AVDBIT_TORMENTOR
+	"terrain_disallowed"			"2"
+}
+
+entityDef vehicle_hornet {
+	"inherit"						"vehicle_base_strogg"
+
+	"maxVisDist"					"16384"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Flying Thingy."
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_hornet"
+
+	"model"							"vehicle_hornet"
+	"vs_vehicleScript"				"hornet"
+
+	"control_context"				"g_bind_context_hornet"
+
+	"angular_friction"				"1" // turning
+	"linear_friction"				"0.6" // moving
+	"bouncyness"					"0.1"
+
+	"health"						"1200"
+	"max_enter_distance"			"180"
+
+	"repair_multiplier"				"0.5"
+
+	"info_name"						"game/vec/hornet"
+	"mass"							"100000"
+
+	"joint_rotordroop"				"rotor_droop"
+
+	"snd_engine_start"				"sounds/vehicles/hornet/start"
+	"snd_engine_stop"				"sounds/vehicles/hornet/stop"
+	"snd_throttle"					"sounds/vehicles/hornet/engine_throttle"
+	"snd_hover"						"sounds/vehicles/hornet/engine_hover"
+	"snd_overdrive"					"sounds/vehicles/misc/strogg/overdrive_start"
+	"snd_overdrive_stop"			"sounds/vehicles/misc/strogg/overdrive_stop"
+	"snd_strocket_recharge"			"sounds/vehicles/goliath/recharge_nonsiege"
+
+	"snd_health_warn"				"sounds/vehicles/misc/warning/air/strogg"
+
+	"decay_time"					"40"
+
+	"icon_size_cm"					"21"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"tt_enter"						"vehicle_hornet_enter"
+
+	"landing_threshold_distance"	"5"
+	"landing_threshold_speed"		"5"
+	"landing_gear_threshold_speed"	"0"
+
+	"dmg_collide"					"damage_hornet_collide"
+	"collide_dot_limit"				"-2"
+
+	"mtr_attitude_pitch"			"guis/assets/qet/hud_attitude_pitch_strogg"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"collective_min"				"-0.6"
+	"collective_max"				"0.3"
+	"collective_rate"				"0.75"
+
+	"overdrive_time"				"10"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"10"
+
+	"joint_damage_smoke"			"rear"
+	"joint_damage_fire"				"rear"
+
+	"aor_layout"					"air_vehicles"
+
+	"fx_destroy"					"effects/vehicles/anansi_explosion"
+
+	"fx_cannon_muzzle"				"effects/weapons/plasmacannon/muzzle_small"
+	"fx_cannon_muzzle_local"		"effects/weapons/plasmacannon/muzzle_small_hornet"
+	"fx_strockets_muzzle"			"effects/weapons/strocket/fire"
+
+	"fx_hyperblaster_fire"			"effects/weapons/hyperblaster_fire_hornet"			
+	"fx_hyperblaster_muzzle"		"effects/weapons/hyperblaster_muzzleflash_vehicle"
+	"fx_hyperblaster_tracer"		"effects/base/tracers_strogg"
+	"effectchance fx_hyperblaster_tracer"	"1.0"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_hornet"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_hornet"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_hornet"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_hornet"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"left_thrust_effect_joint"		"rear_left_thruster_effects"
+	"right_thrust_effect_joint"		"rear_right_thruster_effects"
+
+	"fx_thruster_left"				"effects/vehicles/hornet/thruster_left"
+	"fx_thruster_right"				"effects/vehicles/hornet/thruster_right"
+//	"fx_thruster_reverse_left"		"effects/vehicles/hornet/thruster_left"
+//	"fx_thruster_reverse_right"		"effects/vehicles/hornet/thruster_right"
+
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"main"
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"gui_vehicle"					"guis/vehicles/strogg_hornet"
+
+	"task_name"						"game/vec/hornet"
+	"waypoint_offset"				"0 0 256"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_trojan_antiair"		"trojan_antiair"
+
+	"fx_engines"					"effects/vehicles/hornet/engine"
+
+
+
+	"give_consent"					"1"
+	"try_keep_driver"				"1"
+
+	"input_mode"					"helicopter"
+	"vehicle_control"				"hornet"
+
+	"drone_orbit_radius"			"220"
+
+	"wake_center_width"				"0 0"
+	"wake_edge_width"				"0 0"
+
+	"spiral_health"					"200"
+
+	"fx_groundeffect_none"			"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_grass"			"effects/vehicles/anansi/groundeffect_grass"
+	"fx_groundeffect_stone"			"effects/vehicles/anansi/groundeffect_stone"
+	"fx_groundeffect_sand"			"effects/vehicles/anansi/groundeffect_sand"
+	"fx_groundeffect_pavement"		"effects/vehicles/anansi/groundeffect_pavement"
+	"fx_groundeffect_dirt"			"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_dusty_road"	"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_gravel"		"effects/vehicles/anansi/groundeffect_stone"
+	"fx_groundeffect_default"		"effects/vehicles/anansi/groundeffect_dirt"
+	"fx_groundeffect_water"			"effects/vehicles/anansi/groundeffect_water"
+	"fx_groundeffect_snow"			"effects/vehicles/anansi/groundeffect_snow"
+
+
+	"groundeffects_threshhold"		"300"
+
+//	"joints_up_sparks"					"rear_right_thruster_effects;rear_left_thruster_effects;front_left_thruster_effects;front_right_thruster_effects"
+//	"fx_up_sparks"						"effects/rich/bullet_sparks"
+
+
+ 	"fx_decoy_extra"				"effects/weapons/flare_extra_strogg"
+	"extra_decoy_count"				"3"
+	"extra_decoy_delay"				"0.3"		// in seconds1
+//	"fx_decoy"						"effects/weapons/flare_extra"
+	"def_projectile_decoy"			"projectile_decoy_hornet"
+	"projectile_decoy_rate"			"6"
+	"projectile_decoy_velocity"		"0 0 -300"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"6"
+	
+	"projectile_decoy_ammo_max"		"15"
+	"projectile_decoy_ammo_per_use"	"1"
+	
+	"careen_speed"					"700"
+	"careen_height"					"1024"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"hornet"
+	"vehicle_team"					"1"
+	"vehicle_flags"					"8"
+
+	// hack the inertia tensor to be symmetric, so that there is no cross-linking between pitch yaw and roll controls
+	"do_not_modify_ito"				"0 0 0"
+
+	"qc_spotted"					"quickchat/context/attack/aircraftspotted"
+	
+	"validate_drop"					"1"
+}
+
+entityDef vehicle_hornet_cockpit {
+	"model" 			"models/vehicles/strogg_hornet/cockpit.lwo"
+	"joint_attach" 		"camera"
+	"offset" 			"-10 0 0"
+	"largeFov"			"-6 0 0"
+	"weaponDepthHack"			"1"
+
+	"gui3"				"guis/models/vehicles/hornet/cockpit"
+	"gui2"				"guis/models/vehicles/hornet/cockpit_center"
+}
+
+entityDef vehicle_hornet_cockpit_gunner {
+//	"model" 			"viewmodel_mounted_gpmg_1stperson"
+	"joint_attach" 		"camera"
+	"offset" 			"-24 0 0"
+	"weapon_name"		"hyperblaster"
+	"surface_name"		"gunarm2_mesh, gunarm1_mesh, gunarm_base"
+
+	"joint_muzzle"		"muzzle"
+	"passenger_id"		"2"
+}
+
+
+damageDef damage_hornet_collide {
+	damage							"damage_hornet_collide"
+
+	prof_damage						"pro_vehicle_damage"
+
+	team_kill_cvar					"g_allowComplaint_vehicles"
+
+	stat_name						"hornet_weapons"
+
+	tt_obituary						"tooltips/killmsgs/vehicles/hornet"
+	tt_obituary_unknown				"tooltips/killmsgs/vehicles/hornet/empty"
+	tt_obituary_team_kill			"tooltips/killmsgs/vehicles/hornet/teamkill"
+	tt_obituary_self				"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_hornet_collide {
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+	type {
+		target	"target_veh_all"
+		damage	200
+	}
+	type {
+		target	"target_deployables_all"
+		damage	200
+	}	
+}
+
+toolTip vehicle_hornet_enter {
+	length	5
+	text	"game/tt/hornet" // "Press %k(_vehiclecamera) to change view and %k(_activate) to switch seats. The pilot aims the weapons until consent is given, use the mousewheel to cycle weapons."
+}
+
+entityDef projectile_strocket {
+	"inherit"							"projectile_law"
+
+	"fx_explode"						"effects/vehicles/hornet/strogget"
+	"fx_explode_metal"					"effects/vehicles/hornet/strogget"
+
+	"velocity"							"2500 0 0"
+	"fuse"								"4"
+	"fx_trail"							"effects/weapons/stroggket_fly"
+	"model"								""
+	"dmg_damage"						"damage_strocket"
+	"dmg_splash_damage"					"damage_strocket_splash"
+}
+
+damageDef damage_strocket {
+	damage								"damage_strocket"
+
+	stat_name							"hornet_weapons"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/strocket"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/strocket/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/strocket/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef damage_strocket_splash {
+	damage								"damage_strocket_splash"
+	radius								512
+	knockback							0
+	push								10000000
+
+	stat_name							"hornet_weapons"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	stat_name							"hornet_weapons"
+
+	tt_obituary							"tooltips/killmsgs/weapons/strocket"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/strocket/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/strocket/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageFilter damage_strocket {
+	type {
+		target							"target_player_all"
+		damage							300
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							1000
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							350
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+
+damageFilter damage_strocket_splash {
+	type {
+		target							"target_player_all"
+		damage							135
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							1000
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							350
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}

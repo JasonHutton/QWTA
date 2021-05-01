@@ -1,0 +1,127 @@
+effect effects/items/forceshield_absorb
+{
+	size	177
+
+	spawner "sparkles"
+	{
+		count		30,40
+		locked
+		attenuateEmitter
+		attenuation	200,2000
+
+		sprite
+		{
+			duration	1,2
+			blend	add
+			persist
+			material	"textures/particles/sparks/sparkflash03b"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere 0,-100,-100,100,100,100 surface }
+				velocity { box -20,-20,-20,-20,20,20 }
+				friction { point 0,200,200 }
+				size { point 30,30 }
+				tint { point 0.682353,0.184314,0.0705882 }
+				fade { point 0.5 }
+			}
+
+			motion
+			{
+				size { envelope senetable3 count 4,4 }
+				tint { envelope bathroomtable }
+				fade { envelope linear }
+				angle { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { point 10,10 }
+				tint { point 0.592157,0.301961,0.0823529 }
+				rotate { point 0.5 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "weapon_heat"
+	{
+		count		30,40
+		locked
+		attenuateEmitter
+		attenuation	100,1000
+
+		sprite
+		{
+			duration	1,2
+			persist
+			material	"textures/particles/muzzleflash_haze"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere 0,-100,-100,100,100,100 surface }
+				size { point 20,20 }
+				rotate { point -1 }
+			}
+
+			motion
+			{
+				size { envelope senetable3 }
+				tint { envelope jrad_cmzoom }
+				rotate { envelope senetable3 }
+			}
+
+			end
+			{
+				size { point 20,20 }
+				rotate { point 1 relative }
+			}
+			lineHit
+		}
+	}
+	spawner "fog"
+	{
+		count		30,40
+		locked
+		attenuateEmitter
+		attenuation	200,2000
+
+		sprite
+		{
+			duration	3,3
+			persist
+			material	"particles/fire5a"
+			trailRepeat	1
+
+			start
+			{
+				position { sphere 0,-100,-100,100,100,100 surface }
+				size { line 20,20,30,30 }
+				tint { line 0.192157,0.0666667,0.0431373,0.337255,0.192157,0.00784314 }
+				fade { line 0.2,0.6 }
+				offset { line -5,-5,-5,5,5,5 }
+				rotate { box 0.5,-0.5 }
+			}
+
+			motion
+			{
+				size { envelope linear }
+				tint { envelope linear }
+				fade { envelope linear }
+				rotate { envelope linear }
+			}
+
+			end
+			{
+				size { line 30,30,40,40 }
+				rotate { box -0.5,0.5 relative }
+			}
+			lineHit
+		}
+	}
+}
+
+
+

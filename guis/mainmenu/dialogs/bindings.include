@@ -1,0 +1,419 @@
+// ================================================================================
+// Bindings Dialog
+// ================================================================================
+#define BIND_MOVEMENT 	0
+#define BIND_WEAPONS 	1
+#define BIND_VEHICLES 	2
+#define BIND_MISC 		3
+#define BIND_DEV 		4
+_dialog( keyBindings, localize( "guis/mainmenu/controls" ), PADDING, 44, ( gui.desktop.rect.w ) - $evalfloat( PADDING * 2 ), _fill_to_bottom_of( desktop ) - BUTTON_HEIGHT, "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( keyBindings )
+
+	events {
+		onNamedEvent "onShow" {
+		    callSuper();
+		    gui.lstKeyBindings.bindCategory = "";
+			gui.lstKeyBindings.bindCategory = "etqw/movement";
+			_set_tab_page( BindCategories, BIND_MOVEMENT )
+		}
+	}
+
+	_tab_container( BindCategories, BIND_MOVEMENT, _left( dlgKeyBindings ), _top( dlgKeyBindings ), _fill_to_right_of( dlgKeyBindings ), _fill_to_top_of( grpKeyBindings_Mouse ) )
+		properties {
+			float fixedWidth = 120;
+		}
+		windowDef lytBindCategories {
+			type layoutHorizontal;
+			properties {
+				rect rect = 0, 0, gui.tabcBindCategories.rect.w, BUTTON_HEIGHT;
+				vec4 margins = 2, 0, 0, 0;
+				vec2 spacing = 0, 0;			
+			}
+			
+		   _tab_page( keyBindings_Movement, localize( "guis/mainmenu/movement" ), BindCategories, BIND_MOVEMENT, 0, 0 )
+		   		events {
+		   			onPropertyChanged "visible" {
+		   				if( visible ) {
+							gui.lstKeyBindings.bindCategory = "etqw/movement";
+							gui.focusedWindow = "lstKeyBindings";
+						}
+		   			}
+		   		}
+		   _end_tab_page
+	
+		   _tab_page( keyBindings_Weapons, localize( "guis/mainmenu/weapons" ), BindCategories, BIND_WEAPONS, 0, 0 )
+		   		events {
+		   			onPropertyChanged "visible" {
+		   				if( visible ) {
+							gui.lstKeyBindings.bindCategory = "etqw/weapons";
+							gui.focusedWindow = "lstKeyBindings";
+						}
+		   			}
+		   		}
+		   _end_tab_page
+	
+		   _tab_page( keyBindings_Vehicles, localize( "guis/mainmenu/vehicles" ), BindCategories, BIND_VEHICLES, 0, 0 )
+		   		events {
+		   			onPropertyChanged "visible" {
+		   				if( visible ) {
+							gui.lstKeyBindings.bindCategory = "etqw/vehicles";
+							gui.focusedWindow = "lstKeyBindings";
+						}
+		   			}
+		   		}
+		   _end_tab_page
+		   
+		   _tab_page( keyBindings_Misc, localize( "guis/mainmenu/misc" ), BindCategories, BIND_MISC, 0, 0 )
+		   		events {
+		   			onPropertyChanged "visible" {
+		   				if( visible ) {
+							gui.lstKeyBindings.bindCategory = "etqw/misc";
+							gui.focusedWindow = "lstKeyBindings";
+						}
+		   			}
+		   		}
+		   _end_tab_page
+		}
+
+		windowDef lstKeyBindings {
+			type list;
+			_list_properties
+			_list_draw_selected_item
+			_list_scrollbar( KeyBindings )
+	
+			properties {
+				rect rect = 0, BUTTON_HEIGHT, gui.tabpKeyBindings_MovementContent.rect.w, gui.tabpKeyBindings_MovementContent.rect.h;
+				string bindCategory;
+				vec2 itemPos;
+				vec2 itemSel;
+				vec4 itemColor;
+				vec4 itemRect;
+				float rowSpacing = 1;
+				float initialized = false;
+				float flags = immediate( flags ) | WF_TRUNCATE_TEXT;
+			}
+			events {
+				onQueryToolTip {
+					itemPos = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+					if( itemPos.y == 1 || itemPos.y == 2 ) {
+						tooltipText = localizeArgs( "guis/mainmenu/bindlistprompt" );
+					} else {
+						tooltipText = gui.blankWStr;
+					}
+				}
+				onEnterItem {
+					itemSel.x = gui.scriptGetFloatResult();
+					itemSel.y = gui.scriptGetFloatResult();
+					if( itemSel.x >= 0 && itemSel.y == 1 || itemSel.y == 2 ) {
+						itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, foreColor, itemSel.x, itemSel.y );
+						transitionItemVec4( LTP_FORECOLOR, itemColor, "1,1,1,1", ACTIVATE_TRANSITION_TIME, "", itemSel.x, itemSel.y );
+	
+						itemColor = getItemTransitionVec4Result( LTP_BACKCOLOR, "1,1,1,1", itemSel.x, itemSel.y );
+						transitionItemVec4( LTP_BACKCOLOR, itemColor, "0.1, 0.16, 0.22, 1", ACTIVATE_TRANSITION_TIME, "", itemSel.x, itemSel.y );
+	
+						itemColor = getItemTransitionVec4Result( LTP_PROPERTY_0, COLOR_INVISIBLE, itemSel.x, itemSel.y );
+						transitionItemVec4( LTP_PROPERTY_0, itemColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME, "", itemSel.x, itemSel.y );
+					}
+					gui.playSound( "boop" );
+				}
+	
+				onExitItem {
+					itemSel.x = gui.scriptGetFloatResult();
+					itemSel.y = gui.scriptGetFloatResult();
+					if( itemSel.x >= 0 && itemSel.y == 1 || itemSel.y == 2 ) {
+						itemColor = getItemTransitionVec4Result( LTP_FORECOLOR, "1,1,1,1", itemSel.x, itemSel.y );
+						transitionItemVec4( LTP_FORECOLOR, itemColor, foreColor, ACTIVATE_TRANSITION_TIME, "", itemSel.x, itemSel.y );
+	
+						itemColor = getItemTransitionVec4Result( LTP_BACKCOLOR, "1,1,1,1", itemSel.x, itemSel.y );
+						transitionItemVec4( LTP_BACKCOLOR, itemColor, COLOR_INVISIBLE, ACTIVATE_TRANSITION_TIME, "", itemSel.x, itemSel.y );
+	
+						itemColor = getItemTransitionVec4Result( LTP_PROPERTY_0, COLOR_INVISIBLE, itemSel.x, itemSel.y );
+						transitionItemVec4( LTP_PROPERTY_0, itemColor, COLOR_INVISIBLE, ACTIVATE_TRANSITION_TIME, "", itemSel.x, itemSel.y );
+					}
+				}
+	
+				onDrawItem {
+					itemSel.x = gui.scriptGetFloatResult();
+					itemSel.y = gui.scriptGetFloatResult();
+	
+					if( itemSel.y == 1 || itemSel.y == 2 ) {
+						itemRect = getItemRect( itemSel.x, itemSel.y, GIR_COLUMN );
+						itemColor = getItemTransitionVec4Result( LTP_BACKCOLOR, COLOR_WHITE, itemSel.x, itemSel.y );
+						drawCachedMaterial( gui.wndFillMaterial, itemRect, itemColor );
+	
+						itemColor = getItemTransitionVec4Result( LTP_PROPERTY_0, COLOR_INVISIBLE, itemSel.x, itemSel.y );
+						drawCachedMaterial( gui.wndLineMaterial, itemRect, itemColor );
+					}
+					gui.scriptPushFloat( true );
+				}
+	
+				onDrawItemBackground {
+					itemSel.x = gui.scriptGetFloatResult();
+					itemColor = gui.scriptGetVec4Result();
+					itemRect = gui.scriptGetVec4Result();
+					if( ( itemSel.x % 2 ) == 0 ) {
+						itemColor = COLOR_LIST_ALTERNATE_ROW;
+					}
+					drawCachedMaterial( gui.whiteMaterial, itemRect, itemColor );
+				}
+	
+				onAccept {
+					gui.bindCatcher.bindIndex = 0;
+					postNamedEvent( "activateBinder" );
+				}
+				onDoubleClick "mouse1" {
+					itemPos = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+					if( itemPos.y < 1 ) {
+						gui.bindCatcher.bindIndex = 0;
+					} else {
+						gui.bindCatcher.bindIndex = itemPos.y - 1;
+					}
+
+					postNamedEvent( "activateBinder" );
+				}
+				onNamedEvent "activateBinder" {
+					if( currentSelection >= 0 && currentSelection < numItems ) {
+						gui.bindCatcher.bindCommand = getItemText( currentSelection, 3 );
+						if( wcompare( gui.bindCatcher.bindCommand, gui.blankWStr ) == false ) {
+							_show_input( keyBinder )
+						}
+					}
+				}
+				onNamedEvent "reloadBindings" {
+					if( initialized == false ) {
+						self.insertColumn( toWStr( "<width = 50%>" ), 0, 0 );	// Action
+						self.insertColumn( toWStr( "<width = 25%>" ), 0, 1 );	// Key 1
+						self.insertColumn( toWStr( "<width = 25%>" ), 0, 2 );	// Key 2
+						self.insertColumn( gui.blankWStr, 0, 3 );				// Command
+						initialized = true;
+					}
+					fillFromEnumerator( "keyBindings" );
+					if( currentSelection < 0 ) {
+						currentSelection = 0;
+					}
+					setItemFlags( toWStr( "<flags customDraw>" ), -1, -1 );
+				}
+				onPropertyChanged "bindCategory" {
+					postNamedEvent( "reloadBindings" );
+				}
+				onGainFocus {
+					if( currentSelection < 0 ) {
+						currentSelection = 0;
+					}
+				}
+			}
+		}
+	_end_tab_container
+/*
+	_button( keyBindings_Dev, _right( dlgKeyBindings ), PADDING, $evalfloat( 0.75 * BUTTON_WIDTH ), BUTTON_HEIGHT )
+		_button_action(
+			gui.lstKeyBindings.bindCategory = "etqw/dev";
+			gui.focusedWindow = "lstKeyBindings";
+		)
+		properties {
+			wstring text = toWStr( "Dev" );
+			float visible = gui.getCVarBool( "developer" );
+		}
+	_end_button
+*/
+	_button( KeyBindings_Defaults, _right( dlgKeyBindings ), _bottom( dlgKeyBindings ), $evalfloat( BUTTON_WIDTH ), BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/defaults" );
+			string keyConfig;
+		}
+		_button_action(
+			_setup_confirmation_yesno( "guis/mainmenu/resetdefaultkeys", name, "onYes", "onNo" )
+			_show_popup( confirmation )
+		)
+		events {
+			onNamedEvent "onYes" {
+				_close_popup
+				keyConfig = gui.getCVar( "sys_lang" );
+				gui.consoleCommand( "exec localization/" + keyConfig + "/defaultbinds.cfg" + _newline );
+				timeline.default.active = true;
+				timeline.default.resetTime( 0 );
+				gui.broadcastEventToDescendants( "grpKeyBindings_Mouse", "resetCVar" );
+				gui.focusedWindow = "lstKeyBindings";
+			}
+			onNamedEvent "onNo" {
+				_close_popup
+				gui.focusedWindow = "lstKeyBindings";
+			}
+		}
+		timeline {
+			properties {
+				float active = false;
+			}
+			onTime 50 {
+				gui.lstKeyBindings.postNamedEvent( "reloadBindings" );
+			}
+		}
+	_end_button	
+
+	_group_box_vertical( KeyBindings_Mouse, PADDING, _above( btnKeyBindings_Defaults ) - PADDING , gui.lstKeyBindings.rect.w, $evalfloat( ( BUTTON_HEIGHT * 6 ) + ( PADDING * 3 ) ) )
+		properties {
+			string 	material = "_frame window_line";
+			color	borderColor = COLOR_BOX_LINES;
+		}
+		_label_localized( gameSettings_Movement, localize( "guis/mainmenu/movement" ), 0, 0, gui.grpKeyBindings_Mouse.rect.w - $evalint( PADDING * 2 ), BUTTON_HEIGHT, COLOR_WHITE )
+			properties {
+				vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			}
+		_end_label
+
+		_check( gameSettings_ToggleSprint, localize( "guis/mainmenu/togglesprint" ), 0, 0, 120 )
+			_cvar_bool( "in_toggleSprint" )
+			events {
+				onNamedEvent "resetCVar" {
+					gui.resetCVar( "in_toggleSprint" );
+				}
+			}
+		_end_check
+
+		_label_localized( gameSettings_Mouse, localize( "guis/mainmenu/mouse" ), 0, 0, gui.grpKeyBindings_Mouse.rect.w - $evalint( PADDING * 2 ), BUTTON_HEIGHT, COLOR_WHITE )
+			properties {
+				vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			}
+		_end_label
+
+		_check( gameSettings_InvertMouse, localize( "guis/mainmenu/invertmouse" ), 0, 0, 120 )
+			_flip_cvar_sign( "m_pitch" )
+			events {
+				onNamedEvent "resetCVar" {
+					gui.resetCVar( "m_pitch" );
+				}
+			}
+		_end_check
+		
+		_check( gameSettings_InvertMenuMouse, localize( "guis/mainmenu/invertmenumouse" ), 0, 0, 120 )
+			_cvar_bool( "gui_invertMenuPitch" )
+			events {
+				onNamedEvent "resetCVar" {
+					gui.resetCVar( "gui_invertMenuPitch" );
+				}
+			}
+		_end_check
+
+
+		_check( gameSettings_InvertFlightMouse, localize( "guis/mainmenu/invertflightmouse" ), 0, 0, 120 )
+			_flip_cvar_sign( "m_helicopterPitch" )
+			events {
+				onNamedEvent "resetCVar" {
+					gui.resetCVar( "m_helicopterPitch" );
+				}
+			}
+		_end_check
+
+		_slider( gameSettings_Sensitivity, localize( "guis/mainmenu/sensitivity" ), 0, 0, 0, 20, 100, 100 )
+			_cvar_slider( "sensitivity" )
+			_slider_draw_value( 1.0, 1 )
+			events {
+				onNamedEvent "resetCVar" {
+					gui.resetCVar( "sensitivity" );
+				}
+			}
+		_end_slider
+	_end_group_box_vertical
+_end_dialog
+
+// ================================================================================
+// Bind Key dialog
+// ================================================================================
+_dialog( keyBinder, localize( "guis/mainmenu/bindkey" ), _center( desktop, width ), _center( desktop, height ), 280, 140, "noMove", "dim" )
+	_input_dialog( keyBinder )
+	properties {
+		float showToolTips;
+	}
+	events {
+		onShow {
+			gui.lblKeyBinderPrompt.text = localizeArgs( "guis/mainmenu/keybindingprompt", _get_current_list_text( keyBindings, 0 ) );
+			gui.focusedWindow = "bindCatcher";
+			gui.bindContext = "bindmenu";
+
+			showToolTips = immediate( gui.flags & GUI_TOOLTIPS );
+			gui.flags = immediate( gui.flags ) & ~GUI_TOOLTIPS;
+			gui.bindCatcher.bindMessage = gui.blankWStr;
+		}
+		onHide {
+			gui.bindContext = "menu";
+			gui.focusedWindow = "bindCatcher";
+			if( showToolTips ) {
+				gui.flags = immediate( gui.flags ) | GUI_TOOLTIPS;
+			}
+		}
+		onCancel {
+			_close_input
+			gui.focusedWindow = "lstKeyBindings";
+		}
+	}
+
+	_label_literal( keyAlreadyBound, gui.bindCatcher.bindMessage, _left( dlgKeyBinder ), _top( dlgKeyBinder, height ), _client_dimension( dlgKeyBinder, width ), _client_dimension( dlgKeyBinder, height ) * 0.5, "1,1,1,1" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT;
+		}
+	_end_label
+
+	_label_literal( keyBinderPrompt, gui.blankWStr, _left( dlgKeyBinder ), _center( dlgKeyBinder, height ), _client_dimension( dlgKeyBinder, width ), _client_dimension( dlgKeyBinder, height ) * 0.5, "1,1,1,1" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT;
+		}
+	_end_label
+
+	_button( KeyBinderOk, _to_left_of( btnKeyBinderCancel ) - 3, _bottom( dlgKeyBinder ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/ok" );
+		}
+		_button_action(
+			gui.bindCatcher.applyBinding();
+		)
+	_end_button
+
+	_button( KeyBinderCancel, _to_left_of( btnKeyBinderUnbind ) - 3, _bottom( dlgKeyBinder ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/cancel" );
+		}
+		_button_action(
+			_close_input
+			gui.focusedWindow = "lstKeyBindings";
+		)
+	_end_button
+
+	_button( KeyBinderUnbind, _right( dlgKeyBinder ), _bottom( dlgKeyBinder ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/unbind" );
+		}
+		_button_action(
+			gui.bindCatcher.unbindBinding();
+			gui.bindCatcher.postNamedEvent( "bindsChanged" );
+		)
+	_end_button
+
+
+	windowDef bindCatcher {
+		type binder;
+		properties {
+			float lastSelection = -1;
+		}
+		events {
+			onBindComplete {
+				postNamedEvent( "bindsChanged" );
+			}
+			onNamedEvent "bindsChanged" {
+				_close_input
+				gui.lstKeyBindings.storeVisualState();
+				lastSelection = immediate( gui.lstKeyBindings.currentSelection );
+				bindMessage = gui.blankWStr;
+
+				gui.focusedWindow = gui.lstKeyBindings.name;
+				gui.lstKeyBindings.postNamedEvent( "reloadBindings" );
+
+				gui.lstKeyBindings.currentSelection = immediate( lastSelection );
+				gui.lstKeyBindings.restoreVisualState();
+
+				gui.bindContext = "menu";
+				gui.playSound( "accept" );
+			}
+		}
+	}
+_end_dialog

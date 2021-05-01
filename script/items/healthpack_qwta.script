@@ -1,0 +1,66 @@
+
+object healthpack_qwta : healthpack {
+	void				preinit();
+	void				OnPickup( entity o );
+	
+	boolean				isHealth;
+}
+
+void healthpack_qwta::preinit() {
+	isHealth			= getIntKey( "is_health" );
+}
+
+void healthpack_qwta::OnPickup( entity o ) {
+	player p = o;
+	if ( p != $null_entity ) {
+
+		if ( !sys.isClient() ) {
+			p.setPlayerItemState( self, true ); //mal: someone picked up the health pack, let the bots know.
+		}
+
+		if ( p == sys.getLocalPlayer() ) {
+			// FIXME: localization
+			//sys.consoleCommand( "addChatLine \"" + pickupText + "\"\n" );
+		}
+		
+		if ( isHealth ) {
+			p.ShowHealthParentBox( 2.f );
+		}
+
+		if ( isAmmo ) {
+			p.OnAmmoPickup();
+			p.ShowAmmoParentBox( 2.f );
+		}
+	}
+
+	entity owner = getOwner();
+	if ( owner == $null_entity ) {
+		return;
+	}
+	
+	if ( ignoreAbility != "" ) {
+		if ( p.hasAbility( ignoreAbility ) ) {
+			return;
+		}
+	}
+	
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		// gdf/strogg specific uses
+		string statName = team.getName() + "_healthpack_uses";
+		sys.increaseStatInt( sys.allocStatInt( statName ), owner.getEntityNumber(), 1 );
+
+		// total uses
+		statName = "healthpack_uses";
+		sys.increaseStatInt( sys.allocStatInt( statName ), owner.getEntityNumber(), 1 );
+
+		if ( giveBonus ) {
+			if ( pickupProficiency != -1 ) {
+				owner.giveProficiency( pickupProficiency, 1.f, $null, "heal success" );
+			}
+		}
+	}
+}
+
+object stroyentcells_qwta : healthpack_qwta {
+}

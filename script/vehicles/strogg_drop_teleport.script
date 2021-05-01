@@ -1,0 +1,176 @@
+#define STROGG_DROP_TELEPORT_TRANSITION_TIME	2
+
+object strogg_drop_teleport : strogg_drop {
+	void			preinit();
+	void			Idle();
+	void			SetupItem();
+	
+	string			fxStart;
+	string			fxEnd;
+}
+
+void strogg_drop_teleport::preinit() {
+	fxStart			= "";
+	fxEnd			= "";
+}
+
+void strogg_drop_teleport::Idle() {
+	float height;
+	float flightTime;
+	float teleportTime;
+	float dropTime;
+	float endTime;
+	float soundTime;
+	vector currentPos;
+	//float savedBouncyness;
+
+	// FeaRog: wait for the server to synchronise the launch info through to avoid weirdness
+	while( launchTime < 0 ) {
+		sys.waitFrame();
+	}
+
+	playEffect( "fx_trail", "", 1 );
+
+	//if ( item != $null_entity ) {
+	//	savedBouncyness = item.getBouncyness();
+	//	item.setBouncyness( 0.6 );
+	//}
+
+	//
+	// Part 1 parabolic reentry
+	//
+	flightTime = sys.getTime() - launchTime;
+	while ( flightTime < STROGG_DROP_PARABOLE_TIME ) {
+		sys.waitFrame();
+		flightTime = sys.getTime() - launchTime;
+
+		if ( STROGG_DROP_PARABOLE_TIME < flightTime ) {
+			break;
+		}
+
+		currentPos_x	= startPos_x;
+		currentPos_y	= startPos_y + (STROGG_DROP_PARABOLE_TIME - flightTime) * 1000;
+		currentPos_z	= startPos_z + sys.sqrt( (STROGG_DROP_PARABOLE_TIME - flightTime) * 1000 ) * 100;
+		setOrigin( currentPos );
+		item.setOrigin( currentPos );
+	}
+	playEffect( "fx_booster", "", false );
+
+	if ( validateDrop ) {
+		// Workaround for icarus-through-the-wall exploiting.
+		vector testPos = itemTargetPos;
+		while ( testPos_z < startPos_z ) {
+			if ( sys.fabs( testPos_z - itemTargetPos_z ) > 128 ) {
+				sys.waitFrame();
+
+				stopEffect( "fx_trail" );
+				stopEffect( "fx_booster" );
+
+				if ( !sys.isClient() ) {
+					player pTemp = sys.getClient( deployPlayerIndex );
+					objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), pTemp );
+				}
+
+				ClearRequest();
+
+				if( !sys.isClient() ) {
+					item.remove();
+					remove();
+				}
+
+				return;
+			}
+			if ( !sys.checkContents( testPos, item.getMins(), item.getMaxs(), CONTENTS_SOLID | CONTENTS_MOVEABLECLIP | CONTENTS_PLAYERCLIP, $null_entity ) ) {
+				itemTargetPos = testPos;
+				break;
+			}
+			testPos_z += 1.;
+		}
+	}
+
+	stopEffect( "fx_trail" );
+	playEffect( fxStart, "", false );
+	teleportTime = sys.getTime();
+
+	//
+	// Part 2 just a linear fall
+	//
+	dropTime = sys.getTime() - teleportTime;//launchTime;
+	while ( dropTime < STROGG_DROP_TELEPORT_TRANSITION_TIME ) {
+		sys.waitFrame();
+		dropTime = sys.getTime() - teleportTime;//launchTime;
+
+		if( !ContinueDrop() ) {
+			// player switched teams before we've deployed
+			stopEffect( "fx_trail" );
+			stopEffect( "fx_booster" );
+			stopEffect( fxStart );
+
+			if ( !sys.isClient() ) {
+				player p = sys.getClient( deployPlayerIndex );
+				objManager.PlaySoundForPlayer( getKey( "snd_cancel_deploy" ), p );
+			}
+
+			ClearRequest();
+
+			if( !sys.isClient() ) {
+				item.remove();
+				remove();
+			}
+
+			return;
+		}
+	}
+
+	setOrigin( itemTargetPos );
+	
+	vector anglesTemp;
+	anglesTemp_y = itemRotation;
+	
+	playOriginEffect( fxEnd, "", itemTargetPos, sys.angToForward( anglesTemp ), false );
+	//playEffect( fxEnd, "", false );
+	
+	if ( fxEnd != "fx_teleport_end_default" ) {
+		sys.wait( 0.5 );
+	}
+	item.setAngles( anglesTemp );
+	item.setOrigin( itemTargetPos );
+
+	//stopEffect( "fx_trail" );
+	stopEffect( "fx_booster" );
+	playEffect( "fx_hitground", "", false );
+	startSound( "snd_impact", SND_VEHICLE_IDLE );
+
+	ClearRequest();
+
+	if ( item != $null_entity ) {
+		sys.waitFrame();
+		item.setOrigin( itemTargetPos );
+		item.setAngles( getAngles() );
+		item.vOnDeploy();
+		//item.setBouncyness( savedBouncyness );
+	}
+
+	sys.wait( 5.f );
+
+	if ( !sys.isClient() ) {
+		remove();
+	}
+}
+
+void strogg_drop_teleport::SetupItem() {
+	SetupItem_Base();
+	
+	string vehicleName = item.getKey( "vehicle_num" );
+	if ( vehicleName == "" ) {
+		vehicleName = "default";
+	}
+	fxStart = "fx_teleport_start_" + vehicleName;
+	fxEnd = "fx_teleport_end_" + vehicleName;
+	
+	if ( getKey( fxStart ) == "" || getKey( fxEnd ) == "" ) {
+		vehicleName = "default";
+		fxStart = "fx_teleport_start_" + vehicleName;
+		fxEnd = "fx_teleport_end_" + vehicleName;
+	}
+}

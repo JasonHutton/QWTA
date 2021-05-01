@@ -1,0 +1,112 @@
+
+#if !defined( SD_DEMO_BUILD )	
+	#include <guis/common/stats/achievements.include>
+#else
+	#include <guis/common/stats/achievements_demo.include>
+#endif
+
+_tab_page( Players, localize( "guis/limbo/persistentstats" ), gameInfo, GI_STATS, _to_right_of( tabpCampaign ), 0 )	
+	_tab_container( Stats, PS_OVERVIEW, PADDING, PADDING, _fill_to_right_of( tabpPlayersContent ), _fill_to_bottom_of( tabpPlayersContent ) )
+#if !defined( SD_DEMO_BUILD )	
+		properties {
+			float visible = gui.statsOverlay.visible == false;
+		}
+#endif
+		_stat_contents
+
+#if defined( SD_DEMO_BUILD )		
+		properties {
+			rect rankRect1	= absoluteRect.x + ( ( absoluteRect.w - $evalfloat( 4 * 52 ) ) * 0.5 ), absoluteRect.y + 270, 36, 36;		
+			rect medalRect1	= absoluteRect.x + ( ( absoluteRect.w - $evalfloat( 4 * 60 ) ) * 0.5 ), absoluteRect.y + 322, 44, 88;
+		}
+#endif		
+	_end_tab_container
+	
+#if !defined( SD_DEMO_BUILD )	
+	windowDef btnRefreshStats {
+		properties {
+			rect	rect 			= $evalfloat( PADDING * 3 ), _bottom( tabpPlayersContent ) - PADDING, _fill_to_right_of( tabpPlayersContent ) - $evalfloat( PADDING * 2 ), 24;
+			handle	localizedText	= localize( "guis/limbo/refreshstats" );
+			color	gradColor		= COLOR_BLACK;
+
+			float	statsTaskActive	= false;
+			float	visible			= gui.tabcStats.visible;
+			color	foreColor		= 1, 1, 1, 0.5;
+		}
+		_fadable
+		_button_disable_if( "statsTaskActive", statsTaskActive == true )		
+		
+		events {
+			onCreate {
+				gradColor.a = 0;
+			}
+			onNamedEvent "onShow" {
+				callSuper();
+				if( statsTaskActive == false ) {
+					postNamedEvent( "onAction" );
+				}
+			}
+			onNamedEvent "onActivate" {
+				callSuper();
+				postNamedEvent( "onAction" );
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_RESPAWN_FILL );
+				drawCachedMaterial( gui.gradMaterial, absoluteRect, gradColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_RESPAWN_LINE );
+
+				drawLocalizedText( localizedText, absoluteRect, foreColor, 12, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE );
+
+				gui.scriptPushFloat( false );
+			}
+			onMouseEnter {
+				gradColor = transition( gradColor, COLOR_ACTIVE_RESPAWN_FILL, ACTIVATE_TRANSITION_TIME );
+				foreColor.a = transition( foreColor.a, 1, ACTIVATE_TRANSITION_TIME );
+				gui.playGameSound( "boop" );
+			}
+			onMouseExit {
+				gradColor = transition( gradColor, COLOR_BLACK, ACTIVATE_TRANSITION_TIME );
+				foreColor.a = transition( foreColor.a, 0.75, ACTIVATE_TRANSITION_TIME );
+			}
+			onKeyDown "mouse1" {
+				postNamedEvent( "onAction" );
+				gui.playGameSound( "accept" );
+			}
+			onNamedEvent "onAction" {
+				if( sdnet.requestStats( false ) ) {
+					statsTaskActive = true;
+				}
+			}
+			onPropertyChanged "sdnet.statsRequestState" {
+				if( statsTaskActive ) {
+					if( sdnet.statsRequestState == SR_REQUESTING ) {
+						return;
+					}
+					if( sdnet.statsRequestState == SR_COMPLETED ) {
+						statsTaskActive = false;
+						gui.focusedWindow = gui.statsPlayerBanner.lastSelectedMedalList;
+						gui.broadcastEventToDescendants( gui.getParentName( name ), "statsUpdated" );
+						return;
+					}
+					if( sdnet.statsRequestState == SR_FAILED ) {
+						statsTaskActive = false;
+					}
+				}
+			}
+		}
+	}
+	windowDef statsOverlay {
+		properties {
+			float visible = sdnet.activeUserState != US_ONLINE;
+			handle localizedText = localize( "guis/mainmenu/signin_to_view_stats" );
+			float fontSize = 14;
+			rect rect = PADDING, PADDING, _fill_to_right_of( tabpPlayersContent ), _fill_to_bottom_of( tabpPlayersContent );
+		}
+	}
+#endif		
+	_end_tab_page_content
+
+#if !defined( SD_DEMO_BUILD )		
+	_button_disable_if( "sdnet.hasAccount", sdnet.hasAccount == false )
+#endif
+_end_tab_page_button

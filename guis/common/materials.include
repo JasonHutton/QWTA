@@ -1,0 +1,37 @@
+
+#ifndef __rankmaterials__
+#define __rankmaterials__
+
+$template _crosshair_materials
+	materials {
+		"indicator_bar_left"			"guis/assets/crosshair/elements, rect( 96, 64, 32, 32 ), flipX"
+		"indicator_bar_right"			"guis/assets/crosshair/elements, rect( 96, 64, 32, 32 )"
+
+		"grenade_status_ring"			"guis/assets/crosshair/elements, rect( 128, 64, 63, 63 )"
+
+		"small_calibre_horizontal"		"guis/assets/crosshair/elements, rect( 200, 80, 32, 15 )"
+		"small_calibre_vertical"		"guis/assets/crosshair/elements, rect( 80, 88, 15, 32 )"
+		
+		"large_calibre_horizontal"		"guis/assets/crosshair/elements, rect( 200, 65, 47, 15 )"
+		"large_calibre_vertical"		"guis/assets/crosshair/elements, rect( 64, 73, 15, 47 )"
+		
+		"shell_topleft"					"guis/assets/crosshair/elements, rect( 192, 96, 32, 32 )"
+		"shell_topright"				"guis/assets/crosshair/elements, rect( 192, 96, 32, 32 ), flipX"
+		"shell_bottomleft"				"guis/assets/crosshair/elements, rect( 192, 96, 32, 32 ), flipY"
+		"shell_bottomright"				"guis/assets/crosshair/elements, rect( 192, 96, 32, 32 ), flipX flipY"
+		
+		"explosive_topleft"				"guis/assets/crosshair/elements, rect( 224, 96, 32, 32 )"
+		"explosive_topright"			"guis/assets/crosshair/elements, rect( 224, 96, 32, 32 ), flipX"
+		"explosive_bottomleft"			"guis/assets/crosshair/elements, rect( 224, 96, 32, 32 ), flipY"
+		"explosive_bottomright"			"guis/assets/crosshair/elements, rect( 224, 96, 32, 32 ), flipX flipY"
+
+		"damage_s"						"guis/assets/hud/gdf/hitring_small"
+		"damage_m"						"guis/assets/hud/gdf/hitring_medium"
+		"damage_l"						"guis/assets/hud/gdf/hitring_large"
+                                		
+		"hit"							"guis/assets/crosshairs/hit"
+		"dot"							"guis/assets/crosshair/elements, rect( 0, 0, 32, 32 )"
+	}
+$endtemplate
+
+#endif // !__rankmaterials__

@@ -1,0 +1,783 @@
+
+vehicleDef "anansi" {
+
+	// main body
+	part {
+		"mins"				"-300 -42 48"
+		"maxs"				"214 42 136"
+		"mass"				"1500"
+		"health"			"-1"
+
+		"contactFriction"	"0.4 0.4 0.4"
+	}
+
+	// mid wing
+	part {
+		"mins"				"-44 -130 28"
+		"maxs"				"32 130 80"
+		"mass"				"600"
+		"health"			"-1"
+
+		"contactFriction"	"0.4 0.4 0.4"
+	}
+
+	// rear wing
+	part {
+		"mins"				"-265 -80 40"
+		"maxs"				"-205 80 72"
+		"mass"				"150"
+		"health"			"-1"
+
+		"contactFriction"	"0.4 0.4 0.4"
+	}
+
+	// jets
+	part {
+		"mins"				"-104 -80 80"
+		"maxs"				"40 80 136"
+		"mass"				"750"
+		"health"			"-1"
+
+		"contactFriction"	"0.4 0.4 0.4"
+	}
+
+	// underside
+	hurtzone {
+		"mins"				"-280 -54 -16"
+		"maxs"				"194 54 48"
+	}
+
+	mass {
+		"origin"			"0 0 -80"
+		"mass"				"1000"
+	}
+
+	rotor {
+		"health"			"-1"
+
+		"joint"				"center_rotor"
+
+		"rotortype"			"main"
+
+		"num_blades"		"1"
+
+		"blade1_joint"		"center_rotor"
+		"blade1_speedScale"	"1"
+
+		"lift"				"1"
+		"cyclicPitchRate"	"500000"
+		"cyclicBankRate"	"150000"
+
+		"force_side_scale"	"2"
+
+		// dead zone
+		"maxPitchDeflect"	"5"
+		"maxYawDeflect"		"5"
+	}
+
+	// tail rotor section
+	rotor {
+		"health"			"-1"
+		"joint"				"tail_rotor"
+
+		"num_blades"		"1"
+
+		"blade1_joint"		"tail_rotor"
+		"blade1_speedScale"	"1"
+
+		"rotortype"			"tail"
+		"lift"				"-4000000"
+		"z_offset"			"-7"
+
+		"noCollision"		"1"
+	}
+
+	simplePart {
+		"name"				"left_front_thruster"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_left_front_thruster"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"right_front_thruster"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_right_front_thruster"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"left_tail_wing"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_left_tail_wing"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"right_tail_wing"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_right_tail_wing"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"right_wing"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_right_wing"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"left_wing"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_left_wing"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"main"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_main"
+		"health" 			"0"
+		"flip_master"		"1"
+		"flip_power"		"40"
+	}
+
+	simplePart {
+		"name"				"tail"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_tail"
+		"health" 			"0"
+	}
+
+	// Penta: These can actually be shot off the vehicle, and it will still seem somewhat flyable
+	simplePart {
+		"name"				"front_left_detachable_1"
+		"surface1"			"M_front_left_detachable_1"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_left_front_detachable"
+		"health" 			"5"
+	}
+
+	simplePart {
+		"name"				"front_left_detachable_2"
+		"surface1"			"M_front_left_detachable_2"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_left_front_detachable_2"
+		"health" 			"5"
+	}
+
+	simplePart {
+		"name"				"front_right_detachable_1"
+		"surface1"			"M_front_right_detachable_1"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_right_front_detachable"
+		"health" 			"5"
+	}
+
+	simplePart {
+		"name"				"front_right_detachable_2"
+		"surface1"			"M_front_right_detachable_2"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_anansi_right_front_detachable_2"
+		"health" 			"5"
+	}
+
+
+
+
+	//////////////////////////
+
+
+	cockpit main {
+		"def_cockpit"		"vehicle_anansi_cockpit"
+		"scriptobject"		"vehicle_anansi_cockpit"
+	}
+
+	cockpit gunner {
+		"def_cockpit"		"vehicle_anansi_cockpit_gunner"
+		"scriptobject"		"vehicle_gatling_cockpit"
+	}
+
+	positionDef {
+		name				"guis/vehicles/anansi_driver"
+		hudname				"guis/vehicles/anansi_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"gunner_position"
+			"player_anim"			"VehicleAnansiPilot"
+			"show_player"			"1"
+			"cockpit"				"main"
+			"stat_name"				"anansi_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+		}
+
+		// first-person + cockpit
+		view {
+			eyeJoint			"pilot_cam"
+			foliageDepthHack 200
+			sensitivityPitch	"m_helicopterPitch"
+			sensitivityYaw		"m_helicopterYaw"
+			sensitivityPitchScale	"m_helicopterPitchScale"
+			sensitivityYawScale		"m_helicopterYawScale"
+			hidevehicle
+			tophatRequired
+			showCockpit
+			autoCenter
+			interior
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+
+			clamp pitch {
+				min		-30
+				max		10
+			}
+
+			clamp yaw {
+				min		-65
+				max		65
+			}
+		}
+
+		view {
+			eyeJoint			"pilot_cam"
+			sensitivityPitch	"m_helicopterPitch"
+			sensitivityYaw		"m_helicopterYaw"
+			sensitivityPitchScale	"m_helicopterPitchScale"
+			sensitivityYawScale		"m_helicopterYawScale"
+			cameraDistance 		800
+			cameraHeight		250
+			cameraFocusHeight	250
+			thirdperson
+			tophatRequired
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+
+			clamp pitch {
+				min		-60
+				max		60
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_anansi_weapon2"
+			type			"sdVehicleWeaponLocked"
+		}
+
+		weapon {
+			weapon			"vehicle_anansi_weapon1"
+			type			"sdVehicleWeaponLocked"
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/anansi_gunner"
+		hudname				"guis/vehicles/anansi_gunner"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"pilot_position"
+			"player_anim"			"VehicleAnansiGunner"
+			"show_player"			"1"
+			"cockpit"				"gunner"
+			"stat_name"				"anansi_gunner"
+			"joint_icon"			"carrier_gunner1"
+		}
+
+		view {
+			eyeJoint		"gpmg_cam"
+			type			"freepivot"
+			followYaw
+			followPitch
+		//	hidevehicle
+			showCockpit
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+			hideDecoyInfo
+			showTargetingInfo
+
+			clamp pitch {
+				min		5
+				max		65
+			}
+		}
+
+		view {
+			eyeJoint			"pilot_cam"
+			cameraDistance 		800
+			cameraHeight		150
+			thirdperson
+			dampCopyFactor		( 0 0 0 )
+			dampSpeed			0.1
+
+
+			clamp pitch {
+				min		5
+				max		65
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_anansi_weapon3"
+			type			"sdVehicleWeaponLocked"
+		}
+
+		ik {
+			type		"sdVehicleIKArms"
+			parms {
+				"jointWrist"		"gpmg_pivot"
+				"jointElbow"		"gpmg_mount"
+				"jointMuzzle"		"gpmg_muzzle"
+				"weapon"			"minigun"
+			}
+		}
+	}
+
+	// rear wheel
+	wheel {
+		"name"							"Rear Wheel"
+		"joint"							"rear_wheel"
+		"suspension"					"vehicle_anansi_rear_suspension"
+
+		"contactFriction"				"0.005 0.8 0.005"
+		"brakingFriction"				"0.8 0.8 0.8"
+		"brakingFrictionTime"			"0.1"
+
+		"health"						"-1"
+
+		"radius"						"10"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"40"
+		"suspensionDownTrace"			"14"
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"200000"
+		"suspensionVelocityScale"		"100"
+		"suspensionBase"				"500000"
+		"suspensionRange"				"16"
+		"aggressiveDampening"			"1"
+	}
+
+	// front right wheel
+	wheel {
+		"name"							"Front Right Wheel"
+		"joint"							"front_right_wheel"
+		"suspension"					"vehicle_anansi_front_right_suspension"
+		"brakingFriction"				"0.8 0.8 0.8"
+		"brakingFrictionTime"			"0.1"
+
+		"contactFriction"				"0.005 0.8 0.005"
+
+		"health"						"-1"
+		"noRotation"					"1"
+
+		"radius"						"10"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"40"
+		"suspensionDownTrace"			"24"
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"200000"
+		"suspensionVelocityScale"		"100"
+		"suspensionBase"				"500000"
+		"suspensionRange"				"16"
+		"aggressiveDampening"			"1"
+	}
+
+	// front left wheel
+	wheel {
+		"name"							"Front Left Wheel"
+		"joint"							"front_left_wheel"
+		"suspension"					"vehicle_anansi_front_left_suspension"
+
+		"brakingFriction"				"0.8 0.8 0.8"
+		"brakingFrictionTime"			"0.1"
+
+		"contactFriction"				"0.005 0.8 0.005"
+
+		"health"						"-1"
+		"noRotation"					"1"
+
+		"radius"						"10"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"40"
+		"suspensionDownTrace"			"24"
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"200000"
+		"suspensionVelocityScale"		"100"
+		"suspensionBase"				"500000"
+		"suspensionRange"				"16"
+		"aggressiveDampening"			"1"
+	}
+
+	exitDef {
+		joint					"exit_left_2"
+	}
+
+	exitDef {
+		joint					"exit_right_2"
+	}
+
+	exitDef {
+		joint					"exit_left_1"
+	}
+
+	exitDef {
+		joint					"exit_right_1"
+	}
+
+	thruster {
+		"direction"				"1 0 0"
+		"origin"				"-28 64 44.95"
+		"force"					"400000"
+		"name"					"left_thruster"
+	}
+
+	thruster {
+		"direction"				"1 0 0"
+		"origin"				"-28 -64 44.95"
+		"force"					"400000"
+		"name"					"right_thruster"
+	}
+
+	airBrake {
+		"name"					"air_brake"
+		"factor"				"0.75"
+		"max_speed"				"100"
+	}
+}
+
+stringMap vehicle_anansi_front_left_suspension {
+	"type"						"vertical"
+	"joint"						"front_left_upper_wheel_brace"
+}
+
+stringMap vehicle_anansi_front_right_suspension {
+	"type"						"vertical"
+	"joint"						"front_right_upper_wheel_brace"
+}
+
+stringMap vehicle_anansi_rear_suspension {
+	"type"						"vertical"
+	"joint"						"rear_wheel_brace"
+}
+
+stringMap vehicle_anansi_weapon1 {
+	"gunName"					"game/weapons/fafff"
+	"weapon_name"				"fafff"
+
+	"charge_max"				"10"
+	"charge_per_use"			"19.5"
+	"overheat_penalty"			"2"
+	"use_heat_bar"				"1"
+
+	"weapon1_muzzle"			"left_law"
+	"weapon2_muzzle"			"right_law"
+
+	"muzzle_pos0"				"left_law"
+	"muzzle_pos1"				"right_law"
+	
+	"canaim_joint_1"			"left_law"
+	"canaim_joint_2"			"right_law"
+
+	"exhaust_pos0"				"left_law_exit"
+	"exhaust_pos1"				"right_law_exit"
+
+	"muzzle_flash"				"fx_fafff_muzzle"
+	"exhaust_flash"				"fx_fafff_muzzle"
+
+	"velocity"					"4000 0 0"
+	"fire_rate"					"0.35"
+	"spread"					"1"
+	"scriptobject"				"vehicle_weapon_rockets"
+	"def_projectile"			"projectile_fafff"
+
+//	"no_tophat_crosshair"		"1"
+
+	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
+	
+	"ammo_max"					"38"
+	"ammo_per_use"				"1"
+	"low_ammo"					"2"
+}
+
+stringMap vehicle_anansi_weapon2 {
+	"gunName"					"game/weapons/law"
+	"weapon_name"				"law"
+
+	"charge_max"				"3"
+	"charge_per_use"			"100"
+	"overheat_penalty"			"0"
+	"use_heat_bar"				"0"
+
+	"lock_enabled"				"1"
+	"lock_distance"				"8192"
+	"lock_filter"				"target_lock_filter"
+
+	"lock_clamp_pitch_min"		"-30"
+	"lock_clamp_pitch_max"		"10"
+
+	"lock_clamp_yaw_min"		"-65"
+	"lock_clamp_yaw_max"		"65"
+
+	"snd_target_locking"		"sounds/weapons/misc/target_track_short"
+	"snd_target_locked"			"sounds/weapons/misc/target_lock"
+
+	"weapon1_muzzle"			"right_haw_1"
+
+	"missile_pos0"				"left_haw_3"
+	"missile_surface0"			"M_left_haw_3"
+
+	"missile_pos1"				"right_haw_3"
+	"missile_surface1"			"M_right_haw_4"
+
+	"missile_pos2"				"left_haw_4"
+	"missile_surface2"			"M_left_haw_4"
+
+	"missile_pos3"				"right_haw_4"
+	"missile_surface3"			"M_right_haw_3"
+
+	"missile_pos4"				"left_haw_1"
+	"missile_surface4"			"M_left_haw_1"
+
+	"missile_pos5"				"right_haw_1"
+	"missile_surface5"			"M_right_haw_2"
+
+	"missile_pos6"				"left_haw_2"
+	"missile_surface6"			"M_left_haw_2"
+
+	"missile_pos7"				"right_haw_2"
+	"missile_surface7"			"M_right_haw_1"
+
+	"muzzle_flash"				"fx_haw_muzzle"
+
+	"canaim_joint_1"			"left_haw_1"
+	"canaim_joint_2"			"right_haw_1"
+	"canaim_joint_3"			"left_haw_2"
+	"canaim_joint_4"			"right_haw_2"
+	"canaim_joint_5"			"left_haw_3"
+	"canaim_joint_6"			"right_haw_3"
+	"canaim_joint_7"			"left_haw_4"
+	"canaim_joint_8"			"right_haw_4"
+
+	"velocity"					"2000 0 0"
+	"fire_rate"					"3"
+	"scriptobject"				"vehicle_weapon_law"
+	"def_projectile"			"projectile_anansi_law"
+
+	"canaim_origin_offset"		"0 0 -64"
+	
+//	"no_tophat_crosshair"		"1"
+
+	"crosshair"					"explosive"
+	"disabled_crosshair"		"explosive"
+
+	"num_missiles"				"8"
+	
+	"ammo_max"					"8"
+	"ammo_per_use"				"1"
+	
+	"external_ordinance"		"1"
+}
+
+stringMap vehicle_anansi_weapon3 {
+	"gunName"					"game/weapons/gatling"
+	"weapon_name"				"minigun"
+
+	"charge_max"				"15"
+	"charge_per_use"			"2.5"
+	"realistic_charge_per_use"	"1"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"muzzle"					"gpmg_muzzle"
+	"spin_joint"				"minigun_barrel"
+
+	"muzzle_flash"				"fx_minigun_muzzle"
+
+	"fire_start_sound"			"snd_gatling_fire_start"
+	"fire_stop_sound"			"snd_gatling_fire_stop"
+	"barrel_loop_sound"			"snd_gatling_barrel_loop"
+	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
+	"brass_start_sound"			"snd_gatling_brass_start"
+	"brass_stop_sound"			"snd_gatling_brass_stop"
+
+	"spin_fire"					"720"
+	"spin_stop"					"30"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08" // 12.5 RPS // 750 RPM
+	"realistic_fire_rate"		"0.04" // 25.0 RPS // 1500 RPM
+	"trigger_delay"				"0.5"
+	"spread"					"0.5"
+	"scriptobject"				"vehicle_weapon_gatling"
+	"def_projectile"			"projectile_gatling_anansi"
+	"client_projectile"			"projectile_gatling_anansi"
+
+	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
+	"low_ammo"					"10"
+}
+
+entityDef part_vehicle_anansi_left_front_thruster {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/left_front_thruster.lwo",
+			"100 1200 1000",
+			"0 0 -15",
+			"vehicles/misc/debris/metal_med"
+		>
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"0"
+}
+
+entityDef part_vehicle_anansi_right_front_thruster {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/right_front_thruster.lwo",
+			"100 -1100 1000",
+			"0 0 15",
+			"vehicles/misc/debris/metal_med"
+		>
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_anansi_left_tail_wing {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/left_tail_wing.lwo",
+			"-100 -1000 200",
+			"0 100 15"
+		>
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_anansi_right_tail_wing {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/right_tail_wing.lwo",
+			"-100 1000 200",
+			"2 50 -18"
+		>
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_anansi_left_wing {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/left_wing.lwo",
+			"0 -250 200",
+			"-2 40 -4"
+		>
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"2"
+}
+
+entityDef part_vehicle_anansi_right_wing {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/right_wing.lwo",
+			"0 325 200",
+			"2 100 4"
+		>
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"2"
+}
+
+entityDef part_vehicle_anansi_main {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/main.lwo",
+			"0 0 2000",
+			"0 10 20",
+			"vehicles/misc/debris/metal_large",
+			"0.25",
+			"0.5",
+			"0.01",
+			"effects/vehicles/generic_debris_large"
+		>
+
+	"fx_firstbounce"				"effects/vehicles/anansi_explosion_impact"
+	"gravity"						"800"
+	"climate_skin_key"				"anansi"
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_anansi_tail {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/tail.lwo",
+			"-1000 0 1000",
+			"-20 0 0",
+		>
+	"gravity"						"700"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"1"
+}
+
+entityDef part_vehicle_anansi_right_front_detachable {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/right_front_detachable.lwo",
+			"-1000 0 1000",
+			"-20 0 0",
+		>
+	"gravity"						"700"
+	"climate_skin_key"				"anansi"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_anansi_left_front_detachable {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/left_front_detachable.lwo",
+			"-1000 0 1000",
+			"-20 0 0",
+		>
+	"gravity"						"700"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"0"
+}
+
+entityDef part_vehicle_anansi_right_front_detachable_2 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/right_front_detachable_2.lwo",
+			"-1000 0 1000",
+			"-20 0 0",
+		>
+	"gravity"						"700"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"0"
+}
+
+entityDef part_vehicle_anansi_left_front_detachable_2 {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/edf_anansi/parts/left_front_detachable_2.lwo",
+			"-1000 0 1000",
+			"-20 0 0",
+		>
+	"gravity"						"700"
+	"climate_skin_key"				"anansi"
+	
+	"priority"						"0"
+}
+

@@ -1,0 +1,400 @@
+// ========================================================================
+// Export
+/*
+reexportmodels vehicles/titan.def
+testmodel vehicle_titan
+*/
+
+#include <quickchat/avdbits.include>
+
+export karateka {
+	options -prefix TITAN_ -nomerge -scale 0.75 -rotate 90 -sourcedir models/vehicles/edf_titan/dev_sd -destdir models/vehicles/edf_titan/
+
+	addoptions 		 -keep left_hand_ik right_hand_ik gunner_vid_cam carrier_driver carrier_gunner1 gpmp_ejector gunner_cam gunner_gun gunner_attachment pilot_gun pilot_cam aft_gun_mount exit_point_01 exit_point_02 exit_point_03 exit_point_04 exit_point_05 exit_point_06 exit_point_07 exit_point_08 gpmg_root fore_hatch gpmg_muzzle gpmg_cam left_wheel_dynamix_01 left_wheel_dynamix_02 left_wheel_dynamix_03 left_wheel_dynamix_04 left_wheel_dynamix_05 left_wheel_dynamix_07 left_wheel_dynamix_08 right_wheel_dynamix_01 right_wheel_dynamix_02 right_wheel_dynamix_03 right_wheel_dynamix_04 right_wheel_dynamix_05 right_wheel_dynamix_07 right_wheel_dynamix_08 muzzle -parent gpmg_root aft_gun_mount
+
+	addoptions 		 -noAnimate m_left_wheel_dynamix_08 m_left_wheel_dynamix_01 m_right_wheel_dynamix_01 m_right_wheel_dynamix_08 m_left_wheel_dynamix_02 m_left_wheel_dynamix_03 m_left_wheel_dynamix_04 m_left_wheel_dynamix_05 m_left_wheel_dynamix_07 m_right_track_gaurd m_left_track_gaurd m_right_wheel_dynamix_07 m_right_wheel_dynamix_05 m_right_wheel_dynamix_04 m_right_wheel_dynamix_03 m_right_wheel_dynamix_02 m_left_side_skirt05 m_left_side_skirt04 m_left_side_skirt03 m_left_side_skirt02 m_left_side_skirt01 m_right_side_skirt05 m_right_side_skirt04 m_right_side_skirt03 m_right_side_skirt02 m_right_side_skirt01 m_hull m_right_rear_lights m_left_rear_lights m_pilotbox m_right_side_bin m_left_side_bin m_spade m_axe   s_right_track_gaurd s_left_track_gaurd  s_left_side_skirt05 s_left_side_skirt04 s_left_side_skirt03 s_left_side_skirt02 s_left_side_skirt01 s_right_side_skirt05 s_right_side_skirt04 s_right_side_skirt03 s_right_side_skirt02 s_right_side_skirt01 s_hull s_right_rear_lights s_left_rear_lights   s_right_side_bin s_left_side_bin
+
+    mesh titan_lod0.mb 		-dest titan.md5mesh
+ 	anim titan_lod0.mb 		-dest titan.md5anim -range 1 1
+ 	anim titan_lod0.mb 		-dest titan_fire.md5anim -range 2 30
+/*
+    mesh titan_lod1.mb		-dest titan_lod1_boned.md5mesh
+	mesh titan_lod2.mb		-dest titan_lod2_boned.md5mesh
+	mesh titan_lod3.mb		-dest titan_lod3_boned.md5mesh
+*/
+	addoptions 		-noJoints
+
+	mesh titan_lod3.mb		-dest titan_lod1.md5mesh
+ 	mesh titan_lod3.mb		-dest titan_lod2.md5mesh
+	mesh titan_lod3.mb		-dest titan_lod3.md5mesh
+
+
+}
+
+// ========================================================================
+// Models
+//
+
+model vehicle_jupiter {
+	mesh					models/vehicles/edf_titan/titan_mk2.md5mesh
+	anim base				models/vehicles/edf_titan/titan_mk2.md5anim
+	anim idle				models/vehicles/edf_titan/titan_mk2.md5anim
+	anim fire				models/vehicles/edf_titan/titan_mk2_fire.md5anim
+	anim ik_pose			models/vehicles/edf_titan/titan_mk2.md5anim
+}
+
+// ========================================================================
+// Entity Def
+//
+
+deployObject deployobject_jupiter {
+	"name"							"jupiter"
+	"title"							"game/vec/jupiter"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_jupiter"
+	"def_deployable_carrier"		"vehicle_magog_npc"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+	"rank_required"					"captain"
+	"force_escalation_required"		"120"
+	"logistics_points_required"		"100"
+	"avdbit"						AVDBIT_JUPITER
+	"terrain_disallowed"			"2"
+}
+
+entityDef vehicle_jupiter {
+	"inherit"						"vehicle_base_gdf"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_ragdoll"				"1"
+	"editor_usage"					"Vehicle."
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_jupiter"
+
+	"health"						"3500"
+
+	"info_name"						"game/vec/jupiter"
+
+	"model"							"vehicle_titan"
+
+	"vs_vehicleScript"				"jupiter"
+
+	"control_context"				"g_bind_context_jupiter"
+
+	"angular_friction"				"0.2"
+	"linear_friction"				"0.1"
+	"angular_friction_water"		"0.99"
+	"linear_friction_water"			"0.99"
+	"bouncyness"					"0.2"
+
+	"decay_time"					"40"
+
+	"repair_multiplier"				"3"
+
+	"tt_repaired"					""
+	"tt_enter"						"vehicle_jupiter_enter"
+
+	"table_gears"					"titan_gear_speedchangetable"
+	"table_gearforces"				"titan_gear_forcetable"
+	"table_gearspeeds"				"titan_gear_speedtable"
+
+	"manualgear_next"				"0.5"
+	"manualgear_length"				"10"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"1.2"
+	"allow_overdrive"				"0"
+
+	"gravity"						"1066"
+
+	"icon_size_cm"					"21"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"snd_engine_start"				"sounds/vehicles/titan/engine/start"
+	"snd_engine_start_interior"		""
+	"snd_engine_stop"				"sounds/vehicles/titan/engine/stop"
+	"snd_engine_stop_interior"		""
+	"snd_engine_drive"				"sounds/vehicles/titan/engine/drive"
+	"snd_engine_drive_interior"		""
+	"snd_engine_hardaccel"			"sounds/vehicles/titan/engine/hardaccel"
+	"snd_engine_hardaccel_interior"	""
+	"snd_engine_idle"				"sounds/vehicles/titan/engine/idle"
+	"snd_engine_idle_interior"		""
+
+	"snd_tracks"					"sounds/vehicles/titan/tracks"
+	"snd_treads"					"sounds/vehicles/titan/treads"
+	"snd_overdrive"					"sounds/vehicles/titan/overdrive_start"
+	"snd_overdrive_stop"			"sounds/vehicles/titan/overdrive_stop"
+	"snd_cockpit"					""
+	"snd_tracks_interior"			""
+
+	"snd_gatling_fire_start"		"sounds/weapons/gatling/fire/start"
+	"snd_gatling_fire_stop"			"sounds/weapons/gatling/fire/stop"
+	"snd_gatling_barrel_loop"		"sounds/weapons/gatling/barrel/loop"
+	"snd_gatling_barrel_loop_low"	"sounds/weapons/gatling/barrel/loop_low"
+	"snd_gatling_brass_start"		"sounds/weapons/gatling/brass/start"
+	"snd_gatling_brass_stop"		"sounds/weapons/gatling/brass/stop"
+
+	"snd_reload_start"				"sounds/weapons/sbc/reload_start"
+	"snd_reload_done"				"sounds/weapons/sbc/reload_done"
+	"snd_casing"					"sounds/weapons/sbc/casing"
+
+	"engine_pitch_low"				"1"
+	"engine_pitch_high"				"1.2"
+	"engine_speed_low"				"10"
+	"engine_speed_high"				"50"
+
+	//----------------------------------------------------------
+	// Engine sound crossfade settings
+
+	"engine_accel_spool_time"		"0.17"
+	"engine_decel_spool_time"		"0.25"
+
+	"engine_idle_min_speed"			"29.3"
+	"engine_idle_max_speed"			"40.0"
+	"engine_idle_min_vol"			"0.0"
+	"engine_idle_max_vol"			"-15.0"
+	"engine_idle_power"				"1.0"
+	"engine_idle_fade_time"			"0.066"
+
+	"engine_drive_min_speed"		"0.0"
+	"engine_drive_max_speed"		"40.0"
+	"engine_drive_min_vol"			"-10.0"
+	"engine_drive_max_vol"			"5.0"
+	"engine_drive_power"			"0.5"
+	"engine_drive_fade_time"		"0.066"
+
+	"engine_accel_pitch_mult"		"3.0"
+	"engine_accel_pitch_offset"		"1.0"
+
+	"engine_accel_min_speed"		"0.0"
+	"engine_accel_mid_speed"		"6.665"
+	"engine_accel_max_speed"		"40.0"
+	"engine_accel_min_vol"			"-10.0"
+	"engine_accel_mid_vol"			"5.0"
+	"engine_accel_max_vol"			"-10.0"
+	"engine_accel_power_low"		"0.1"
+	"engine_accel_power_high"		"3.0"
+	"engine_accel_fade_time"		"0.0"
+
+	"engine_accel_yaw_vol"			"30.0"
+	"engine_accel_yaw_vol_mult"		"5.0"
+	"engine_accel_yaw_pitch"		"60.0"
+	"engine_accel_yaw_pitch_mult"	"0.08"
+	
+	//----------------------------------------------------------
+	
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/gdf"
+
+	"sound_control"					"tracked"
+
+	"climate_skin_key"				"titan"
+
+	"crash_threshold_0"				"10"
+	"crash_threshold_1"				"250"
+	"crash_threshold_2"				"500"
+	"jump_threshold_0"				"5"
+	"jump_threshold_1"				"20"
+	"jump_threshold_2"				"40"
+
+	"steering_angle"				"45"
+	"steering_speed_scale"			"150"
+	"steering_speed_max"			"40"	// upper limit of steering scale
+	"steering_speed_min"			"10"	// lower limit of steering scale
+	"steering_return_factor"		"1"		// percentage of the max speed used to return the wheels to a straight position
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"joint_damage_smoke"			"hull"
+	"joint_damage_fire"				"hull"
+
+	"fx_explode"					"effects/base/explosion"
+	"fx_gatling_muzzle"				"effects/weapons/gatling_muzzleflash"
+
+	//"fx_cannon_fire"				"effects/weapons/sbc_fire"
+	//"fx_cannon_fire_local"			"effects/weapons/sbc_fire_local"
+	//"fx_cannon_muzzle"				"effects/weapons/sbc_muzzleflash"
+	
+	"snd_bfg_firesound"				"sounds/weapons/bfg/fire"
+	"snd_bfg_firesound_local"		"sounds/weapons/bfg/fire/local"
+	"fx_bfg_muzzlefire"				"effects/weapons/bfg/muzzle_fire"
+	
+	"snd_bfg_chargesound"				"sounds/weapons/bfg/charge"
+	"snd_bfg_chargesound_local"			"sounds/weapons/bfg/charge/local"
+	"fx_bfg_muzzlecharge"				"effects/weapons/bfg/muzzle_charge"
+	
+	//"fx_bfg_muzzlefizzle"				"effects/weapons/bfg/muzzle_fizzle"
+	//"snd_bfg_dryfire"					"sounds/weapons/bfg/dryfire"
+
+	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid"						"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_none"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_none"				"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_none"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_grass"			"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheelspin_grass"			"effects/vehicles/dust/tire_spin_grass"
+ 	"fx_skid_grass"					"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheeldust_stone"			"effects/vehicles/dust/tire_dust_stone"
+ 	"fx_wheelspin_stone"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_stone"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_sand"				"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_sand"				"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_sand"					"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_pavement"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_wheeldust_pavement"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_skid_pavement"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_dirt"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_dirt"				"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_dirt"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_dusty_road"		"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_dusty_road"		"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_dusty_road"			"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheeldust_gravel"			"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_gravel"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_gravel"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_default"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_default"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_default"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_snow"				"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheelspin_snow"				"effects/vehicles/dust/tire_spin_snow"
+	"fx_skid_snow"					"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheeldust_concrete"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_concrete"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_concrete"				"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_water"			"effects/vehicles/dust/tire_dust_water"
+	"fx_wheelspin_water"			"effects/vehicles/dust/tire_spin_water"
+	"fx_skid_water"					"effects/vehicles/dust/tire_dust_water"
+	
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_titan"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_titan"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_titan"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_titan"
+
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"turret"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"dmg_collide"					"damage_jupiter_collide"
+
+	"gui_vehicle"					"guis/vehicles/edf_titan"
+
+	"task_name"						"game/vec/jupiter"
+	"waypoint_offset"				"0 0 192"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_heavy"		"vehicles_heavy"
+	"collection_vehicles_gdf"		"vehicles_gdf"
+
+	"no_drop"						"0"
+
+	"input_mode"					"car"
+	"vehicle_control"				"titan"
+
+	"min_gear_speed"				"5"
+	"max_gear_speed"				"35"
+
+	"parachute_offset"				"0 0 70"
+
+	"wake_point_0"					"180 80 0"
+	"wake_point_1"					"180 -80 0"
+	"wake_point_2"					"-110 -70 0"
+	"wake_point_3"					"-110 70 0"
+
+	"aor_layout"					"keep_anims"
+
+//DECOY STUFF
+
+	"def_projectile_decoy"			"projectile_decoy_titan"
+	"projectile_decoy_joint"		"aft_gun_mount"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+	"projectile_decoy_velocity"		"0 0 500"
+	
+	"projectile_decoy_ammo_max"		"20"
+	"projectile_decoy_ammo_per_use"	"1"
+
+// 	"fx_decoy_extra"				"effects/weapons/flare_titan"
+//	"extra_decoy_count"				"1"
+//	"extra_decoy_delay"				"0.3"		// in seconds1
+//	"fx_decoy"						"effects/weapons/flare_titan"
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"jupiter"
+	"vehicle_team"					"0"
+	"vehicle_flags"					"6"
+	
+	"qc_spotted"					"quickchat/context/attack/armorspotted"
+	
+	"validate_drop"					"1"
+	
+	"timer_powerup"					"powerup_bfg"
+	"powerup_per_shot"				"0.1"
+	"powerup_length"				"5.0"
+	//"powerup_per_shot"				"0.5"
+	//"powerup_length"				"20.0"
+	//"fx_bfg_cleanexplode"			"effects/weapons/bfg/explode"
+}
+
+damageDef damage_jupiter_collide {
+	damage								"damage_jupiter_collide"
+
+	prof_damage							"pro_vehicle_damage"
+
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	stat_name							"titan_weapons"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/jupiter"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/jupiter/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/jupiter/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_jupiter_collide {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	500
+	}
+	type {
+		target	"target_supply_crate"
+		damage	800
+	}
+	type {
+		target	"target_deployables_all"
+		damage	500
+	}	
+}
+
+toolTip vehicle_jupiter_enter {
+	length	5
+	text	"game/tt/jupiter"
+}

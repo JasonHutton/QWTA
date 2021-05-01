@@ -1,0 +1,89 @@
+
+object vehicle_weapon_sbc : vehicle_weapon_base {
+	void			preinit();
+	void			init();
+	void			Fire();
+
+	void			ReloadSoundsThread();
+
+	string			muzzleFlashFX;
+	string			muzzleSound;
+	string			muzzleSoundLocal;
+
+	float			spread;
+	float			projectileIndex;
+
+	float			jointHandle;
+	float			jointHandleParent;
+	float			feedback;
+
+	vector			velocity;
+
+	entity			vehicle;
+};
+
+void vehicle_weapon_sbc::preinit() {
+	projectileIndex		= GetEntityDef( getKey( "def_projectile" ) );
+
+	vehicle				= getVehicle();
+
+	jointHandle			= vehicle.getJointHandle( getKey( "muzzle" ) );
+	jointHandleParent	= vehicle.getJointHandle( getKey( "muzzle_parent" ) );
+
+	muzzleFlashFX		= getKey( "muzzle_flash" );
+	muzzleSound			= getKey( "muzzle_sound" );
+	muzzleSoundLocal	= getKey( "muzzle_sound_local" );
+
+	spread				= getFloatKey( "spread" );
+	velocity			= getVectorKey( "velocity" );
+	feedback			= getFloatKey( "feedback" );
+}
+
+void vehicle_weapon_sbc::init() {
+}
+
+
+void vehicle_weapon_sbc::Fire() {
+	vector origin = vehicle.getJointPos( jointHandle );
+	
+	boolean allowFire = true;
+	
+	if ( jointHandleParent != INVALID_JOINT ) {
+		vector muzzleCheckOrigin = vehicle.getJointPos( jointHandleParent );		
+		if ( sys.tracePoint( muzzleCheckOrigin, origin, MASK_PROJECTILE, vehicle ) != 1.f ) {
+			allowFire = false;
+		}
+	}
+
+	if ( allowFire ) {
+		RemoveCharge();
+		RemoveAmmo();
+
+		vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, -1, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
+
+		vehicle.applyImpulse( origin, -feedback * vehicle.getJointAxis( jointHandle, 0 ) );
+		vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+		if( user == sys.getLocalPlayer() ) {
+			vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
+		} else {
+			vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+		}
+
+		thread ReloadSoundsThread();
+	} else {
+		// Gordon: FIXME: Play error sound/tooltip
+	}
+
+	GoToIdle();
+}
+
+void vehicle_weapon_sbc::ReloadSoundsThread() {
+
+	sys.wait( 0.4f );
+	vehicle.startSound( "snd_reload_start", SND_WEAPON_RELOAD );
+	sys.wait( 0.4f );
+	vehicle.startSound( "snd_casing", SND_WEAPON_BRASS );
+	sys.wait( 0.9f );
+	vehicle.startSound( "snd_reload_done", SND_WEAPON_RELOAD );
+	sys.wait( 1.f );
+}

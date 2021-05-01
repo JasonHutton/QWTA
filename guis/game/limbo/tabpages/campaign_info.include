@@ -1,0 +1,316 @@
+_tab_page( Campaign, localize( "guis/limbo/campaign" ), gameInfo, GI_CAMPAIGN, 2, 0 )
+   windowDef commandMap {
+	    properties {
+			rect	rect 		= _center( tabpCampaignContent, width ), $evalfloat( PADDING + 15 ) , 334, 334;
+			rect	cmRect		= absoluteRect.x + 2, absoluteRect.y + 2, absoluteRect.w - 4, absoluteRect.h - 4;
+	        float 	flags 		= immediate( flags ) | WF_CLIP_TO_RECT;
+
+			handle	cm			= cacheRenderCallback( "commandMap" );
+			handle	cmIcons		= cacheRenderCallback( "commandMapIcons" );
+	    }
+	    events {
+	    	onActivate {
+    			gui.tabcCommandMaps.currentPage = limbo.defaultPlayZone;
+	    	}
+	    	onCreate {
+	    		attachInputHandler( "commandMap" );
+	    		gui.setShaderParm( 11, 1 );
+	    	}
+	    	onPropertyChanged "gui.tabcCommandMaps.currentPage" {
+				gui.playZone = gui.tabcCommandMaps.currentPage;
+	    	}
+	         onPreDraw {
+	         	drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_DIALOG_FILL );
+
+				drawRenderCallback( cm, cmRect );
+				drawRenderCallback( cmIcons, cmRect );
+
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_DIALOG_LINES );
+				gui.scriptPushFloat( false );
+	         }
+	    }
+	    
+	    // fixes the odd timing issue that results in the second tab
+	    // transitioning to a full-screen rect rather than its final size upon the first activation the limbo menu
+	    // this happens as a result of the "popDown" event
+	    timeline {
+	    	onTime 100 {
+    			gui.tabpCommandMaps_1.postNamedEvent( "fixRects" );	    	
+	    	}
+	    }
+	}
+   _tab_container( CommandMaps, 0, gui.commandMap.rect.x, gui.commandMap.rect.y - 17, gui.commandMap.rect.w, 16 )
+		properties {
+			float fixedWidth = 120;
+		}
+	   	properties {
+	   		float visible = limbo.availablePlayZones > 1;
+	   	}
+	   _tab_page( CommandMaps_0, gui.tabpCommandMaps_0Content.localizedText, commandMaps, 0, 2, 0 )
+	   		properties {
+	   			float visible = 0;
+	   		}
+	   		events {
+	   			onActivate {
+	   				localizedText = gui.getCommandMapTitle( 0 );
+	   			}
+	   		}
+	   _end_tab_page
+
+	   _tab_page( CommandMaps_1, gui.tabpCommandMaps_1Content.localizedText, commandMaps, 1, _to_right_of( tabpCommandMaps_0 ), 0 )
+	   		properties {
+	   			float visible = 0;
+	   		}
+	   		events {
+	   			onActivate {
+	   				localizedText = gui.getCommandMapTitle( 1 );
+	   			}
+	   		}
+	   _end_tab_page
+	_end_tab_container
+
+	_tab_container( UserInfo, PI_INFO, PADDING, _to_bottom_of( commandMap ) + 2, _fill_to_right_of( tabpCampaignContent ), _fill_to_bottom_of( tabpCampaignContent ) )
+		properties {
+			float fixedWidth = 120;
+		}
+		_tab_page( UserInfo_Objectives, localize( "guis/limbo/mapinfo" ), userInfo, PI_INFO, 2, 0 )
+			events {
+				onCreate {
+					gui.tabpUserInfo_Objectives.textParmLocal = floatToHandle( -1 );
+					gui.tabpUserInfo_Objectives.textLocal = globals.campaignInfo.mapName;
+				}
+			}
+			windowDef lstObjectives {
+				type list;
+				properties {
+					rect rect = 0, 0, gui.tabpUserInfo_ObjectivesContent.rect.w,  gui.tabpUserInfo_ObjectivesContent.rect.h;
+					handle obj1 = gui.cacheMaterial( "obj01", "obj01" );
+					handle obj2 = gui.cacheMaterial( "obj02", "obj02" );
+					handle obj3 = gui.cacheMaterial( "obj03", "obj03" );
+					handle obj4 = gui.cacheMaterial( "obj04", "obj04" );
+					handle obj5 = gui.cacheMaterial( "obj05", "obj05" );
+				}
+				_list_scrollbar( Objectives )
+				properties {
+					float 	itemRow;
+					float 	itemCol;
+					rect	itemRect;
+					float	index;
+					handle	scratchText;
+					float	completed;
+					float	fixedRowHeight = 16;
+					color	drawColor;
+					float	firstPass = false;
+					vec2	measure;
+					float	visible = icompare( gui.teamSelection, "spec" ) == false;
+					float	internalBorderWidth = 4;
+					rect	scratchRect;
+					handle	scratchMat;
+					handle	highlightMat = gui.cacheMaterial( "objective_highlight", "objective_highlight" );
+					float	highlightItem = -1;
+					float	highlightAlpha = 0;
+				}
+				events {
+					onCreate {
+						self.insertColumn( toWStr( "<width = 100%>" ), 0, 0 );	// title
+					}
+					onActivate {
+						postNamedEvent( "updateObjectives" );
+					}
+					onPropertyChanged "gui.teamSelection" {
+						postNamedEvent( "updateObjectives" );
+					}
+					onNamedEvent "updateObjectives" {
+						clearItems();
+						firstPass = true;
+						if( visible ) {
+							insertBlankItems( globals.mapInfo.numObjectives );
+							setItemText( toWStr( "<flags customDraw>" ), -1, 0 );
+						}
+					}
+					onPreDraw {
+						index = 0;
+						gui.scriptPushFloat( true );
+					}
+					onDrawItem {
+						itemRow = gui.scriptGetFloatResult();
+						itemCol = gui.scriptGetFloatResult();
+						itemRect = getItemRect( itemRow, itemCol, GIR_COLUMN );
+
+						scratchText = floatToHandle( toFloat( gui.getStringForProperty( "globals.mapInfo." + gui.teamSelection + "Objective" + toString( index, 0 ), "-1" ) ) );
+						scratchRect = itemRect;
+
+						if( globals.mapInfo.currentObjective == index ) {
+							drawColor = COLOR_WHITE;
+						} else {
+							drawColor = COLOR_ICON_DIM;
+						}
+						
+						scratchMat = gui.cacheMaterial( "objMat", "::" + gui.getStringForProperty( "globals.mapInfo." + gui.teamSelection + "ObjectiveMat" + toString( index, 0 ), "-1" ) );
+						drawCachedMaterial( scratchMat, "scratchRect.x + 4, scratchRect.y, 16, 16", drawColor );					
+
+						if ( highlightItem == itemRow ) {
+							drawCachedMaterial( highlightMat, "scratchRect.x + 4, scratchRect.y, 16, 16", "1, 1, 1, highlightAlpha" );
+						}
+
+						scratchMat = floatToHandle( toFloat( gui.getStringForProperty( "gui." + name + ".obj" + toString( index + 1, 0 ), "-1" ) ) );
+						drawCachedMaterial( scratchMat, "scratchRect.x, scratchRect.y - 2, 12, 12", drawColor );						
+
+						scratchRect.x = immediate( scratchRect.x ) + 22;
+
+						if( firstPass ) {
+							measure = measureLocalizedText( scratchText, itemRect, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+							setItemDataInt( measure.x, itemRow, itemCol );
+						} else {
+							measure.x = getItemDataInt( itemRow, itemCol, 0.0f );
+						}
+
+						drawLocalizedText( scratchText, scratchRect, drawColor, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER );
+
+						// cross it out
+						if( globals.mapInfo.currentObjective > index ) {
+							drawRect( "itemRect.x + 22, itemRect.y + ( 0.5 * itemRect.h ) - 2, measure.x, 1", COLOR_ICON_DIM, 1 );
+						}
+
+						index = immediate( index + 1 );
+
+						gui.scriptPushFloat( false );
+					}
+					onPostDraw {
+						firstPass = false;
+					}
+				}
+				timeline highlight {
+					properties {
+						float active = false;
+					}
+					onTime 5000 {
+						highlightItem = 0;
+						highlightAlpha = transition( 1, 0, 700 );
+					}
+					onTime 6000 {
+						highlightItem = 1;
+						highlightAlpha = transition( 1, 0, 700 );
+					}
+					onTime 7000 {
+						highlightItem = 2;
+						highlightAlpha = transition( 1, 0, 700 );
+					}
+					onTime 8000 {
+						highlightItem = 3;
+						highlightAlpha = transition( 1, 0, 700 );
+					}
+					onTime 9000 {
+						highlightItem = -1;
+					}
+				}
+			}
+			_scrollable_localized_text( MapOverview, globals.campaignInfo.mapBriefing, gui.lstObjectives.rect.x, gui.lstObjectives.rect.y, gui.lstObjectives.rect.w, gui.lstObjectives.rect.h, "noborder" )
+				properties {
+					float	visible = icompare( gui.teamSelection, "spec" );
+				}
+				events {
+					// reset back to beginning
+					onActivate {
+						gui.lstMapOverviewScrollbar.position = 0;
+					}
+				}
+			_end_scrollable_text
+		_end_tab_page
+
+		_tab_page( userInfo_Chat, localize( "guis/limbo/globalchat" ), userInfo, PI_CHAT, _to_right_of( tabpUserInfo_Objectives ), 0 )
+			__chat( tabpUserInfo_ChatContent )
+			events {
+				onPropertyChanged "visible" {
+					if( visible ) {
+						gui.focusedWindow = "edtChat";
+					}
+				}
+			}
+		_end_tab_page
+	_end_tab_container
+
+	windowDef lytSpawnPointsStatic {
+		properties {
+			rect rect = ( gui.commandMap.rect.x + gui.commandMap.rect.w - ( rect.w + PADDING ) ), ( gui.commandMap.rect.y + gui.commandMap.rect.h - ( rect.h + PADDING ) ), 150, BUTTON_HEIGHT;
+		}
+	    _dropdown( SpawnPoints, localize( "blank" ), 0, 0, 0, 150, $evalfloat( BUTTON_HEIGHT * 6 ), "right" )
+	    	properties {
+	    		float flags = immediate( flags ) | WF_AUTO_SIZE_HEIGHT | WF_TRUNCATE_TEXT;
+	    		string 	lastHighlightedPoint;
+	    	}
+	    	events {
+	    		onCreate {
+	    			insertColumn( toWStr( "<width = 100%>" ), 0, 0 );		// location
+	    			insertColumn( toWStr( "<align = right>" ), 0, 1 );		// number of players
+	    			insertColumn( gui.blankWStr, 0, 2 );					// entity name
+	    			gui.lblSpawnPointsValue.text = limbo.spawnLocation;
+	    		}
+	    		onPropertyChanged "limbo.spawnLocation" {
+	    			gui.lblSpawnPointsValue.text = limbo.spawnLocation;
+	    		}
+	    		onPropertyChanged "visible" {
+	    			if( visible ) {
+						postNamedEvent( "updateList" );
+	    			}
+	    		}
+	    		onActivate {
+	    			if( compare( limbo.teamName, "spec" ) ) {
+	    				gui.lytSpawnPointsStatic.visible = false;
+	    			}
+	    		}
+	    		onNamedEvent "updateList" {
+	    			if( compare( limbo.teamName, "spec" ) ) {
+	    				gui.lytSpawnPointsStatic.visible = false;
+	    				return;
+	    			}
+	    			gui.lytSpawnPointsStatic.visible = true;
+    				gui.scriptPushString( limbo.teamName );
+    				fillFromEnumerator( "spawnLocations" );
+    				if( currentSelection >= 0 ) {
+				    	gui.lblSpawnPointsValue.text = limbo.spawnLocation;
+		   			}
+	    		}
+	    		onPropertyChanged "limbo.teamName" {
+					postNamedEvent( "updateList" );
+				}
+	    		onPropertyChanged "visible" {
+	    			callSuper();
+	    			if( visible == false ) {
+	    				gui.highlightSpawnPoint( lastHighlightedPoint, gui.teamSelection, false );
+	    			}
+	    		}
+	    		
+	    		onSelectItem {
+    				gui.highlightSpawnPoint( lastHighlightedPoint, gui.teamSelection, false );
+	    			lastHighlightedPoint = toStr( getItemText( currentSelection, 2 ) );
+	    			if( isVisible() ) {
+	    				gui.highlightSpawnPoint( lastHighlightedPoint, gui.teamSelection, true );
+	    				gui.playGameSound( "boop" );
+	    			}
+	    		}
+				onNamedEvent "onSelected" {
+	    			gui.setSpawnPoint( toStr( getItemText( currentSelection, 2 ) ) );
+    				gui.highlightSpawnPoint( lastHighlightedPoint, gui.teamSelection, false );
+    				lastHighlightedPoint = "";
+    				gui.playGameSound( "spawnSelect" );
+	    		}	    		
+	    		onNamedEvent "nextPoint" {
+	    			if( gui.tabpCampaign.isVisible() == false ) {
+	    				return;
+	    			}
+	    			visible = false;
+	    			postNamedEvent( "toggleVisible" );
+	    		}
+	    		onNamedEvent "prevPoint" {
+	    			if( gui.tabpCampaign.isVisible() == false ) {
+	    				return;
+	    			}
+	    			visible = false;
+	    			postNamedEvent( "toggleVisible" );
+	    		}
+	    		
+	    	}
+	    _end_dropdown
+	}
+_end_tab_page

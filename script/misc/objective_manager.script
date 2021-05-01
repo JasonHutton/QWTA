@@ -1,0 +1,849 @@
+
+void G_SetObjectiveManager( object o );
+
+object mapObject_Base {
+	void			InitObjectives() { }
+	void			CompleteObjective( float index, entity p ) { }
+	handle			GetObjectiveMessage( float index );
+
+	void			OnConstructionComplete( entity obj ) { }
+	void			OnDestructionComplete( entity obj ) { }
+	void			OnHackComplete( entity obj ) { }
+	void			OnMCPSpawned( entity obj ) { }
+	void			OnMCPDestroyed( entity obj, vector newLocation, vector newAngles ) { }
+	void			OnMCPDelivered( entity obj ) { }
+	void			OnShieldDeployed( entity obj, entity trigger ) { }
+	void			OnShieldDestroyedScud( entity trigger ) { }
+	void			OnMiningLaserDeployed( entity obj ) { }
+	void			OnMiningLaserConstructed( entity obj ) { }	
+	void			OnTimeLimitHit() { }
+
+	void			RunBotMCPMapScript( float actionGroupOff, float actionGroupOn ) { }
+	void			OnCarryableItemStolen( string actionName ) { }
+	void			OnCarryableItemReturned( string actionName ) { }
+	void			OnSpawnCaptured( string actionName ) { }
+	void			OnSpawnLiberated( string actionName ) { }
+	void			OnDeployableDeployed() { }
+	
+	vector			GetGDFBasePosition() { return g_vectorZero; }
+	void			ScudExploded( entity scud ) {}
+	void			SendMapToolTip() {}
+
+	entity			GetSpectateEntity() { return $null_entity; }
+}
+
+object objectiveManager {
+	void			preinit();
+	void			destroy();
+
+	void			CountdownVO();
+
+	void			OnMapStart();
+	void			OnMapShutdown();
+	void			OnLocalMapRestart();
+	void			OnNetworkEvent();
+	void			OnGameStateChange( float newState );	
+	void			OnWriteInitialReliableMessages( float clientIndex, float isRepeaterClient );
+
+	void			HandleCenterPrint();
+	void			HandleObjectiveEntity();
+
+	void			CompleteObjective( float index, entity p );
+	void			CompleteObjectiveAdvanced( float index, entity p, boolean silent );
+	
+	void			SendObjectiveChangedEvent( entity ent, float clientIndex, float index, boolean isRepeater );
+	void			SetObjectiveEntity( entity ent, float index );
+	void			DoSetObjectiveEntity( entity ent, float index );
+	void			RefreshObjectiveEntity();
+
+	void			OnConstructionComplete( entity obj );
+	void			OnDestructionComplete( entity obj );
+	void			OnHackComplete( entity obj );
+	void			OnMCPSpawned( entity obj );
+	void			OnMCPDestroyed( entity obj, vector newLocation, vector newAngles );
+	void			OnMCPDelivered( entity obj );
+	void			OnShieldDeployed( entity obj, entity trigger );
+	void			OnShieldDestroyedScud( entity trigger );
+	void			OnMiningLaserDeployed( entity obj );
+	void			OnMiningLaserConstructed( entity obj );
+	void			OnTimeLimitHit();
+
+	void			RunBotMCPMapScript( float actionGroupOff, float actionGroupOn );
+	void			OnCarryableItemStolen( string actionName );
+	void			OnCarryableItemReturned( string actionName );
+	void			OnSpawnCaptured( string actionName );
+	void			OnSpawnLiberated( string actionName );
+	void			OnDeployableDeployed();
+	
+	
+	void			PlaySound( string soundShader, object team );
+	void			PlaySoundRanged( string soundShader, object team, vector org, float maxRange );
+	void 			PlaySoundForPlayer( string soundShader, entity p );
+
+	void			OnNextObjectiveSet( object team, float objectiveIndex );
+
+					// initialize the limbo menu with objective information	
+	void			InitObjectiveUI( float index, handle descriptionGDF, handle descriptionStrogg, 
+													handle miniDescriptionGDF, handle miniDescriptionStrogg,
+													string materialGDF, string materialStrogg );
+	vector			GetGDFBasePosition();
+
+	void			ScudExploded( entity scud );
+
+	mapObject_Base	mapObject;
+	
+	void			PushCPrintString( string arg );
+	void			PushCPrintHandle( handle h );	
+	void			CPrintEvent( handle h, object team );
+	void			CPrintEventRanged( handle h, object team, vector org, float maxRange );
+	
+	void			SetupCPrintHUD( wstring text, float endTime );
+	
+	float			GetCountdownTime();
+	
+	void			PlayCountdownVO( string sound, float seconds );
+
+	string			printArgs;
+	float			numPrintArgs;
+	
+	entity			currentPrimaryObjective;
+	
+	float			gameState;
+	
+	void			CreateCriticalClassCheckThread();
+	void			KillCriticalClassCheckThread();
+	void			CriticalClassCheckThread();
+	void			SendToolTipToolTip();
+
+	entity			GetSpectateEntity();
+
+	boolean			sentToolTipToolTip;
+	float			lastObjectiveCompleted;
+}
+
+objectiveManager objManager;
+
+void LocalPlayerUpdateThread();
+
+void objectiveManager::preinit() {
+	G_SetObjectiveManager( self );
+}
+
+#define MIN2SEC( x ) ( x * 60 )
+
+float objectiveManager::GetCountdownTime() {
+	return sys.getMatchTimeRemaining() - 1;
+}
+
+void objectiveManager::CountdownVO() {
+	sys.threadName( "CountdownThread" );
+	
+	// need to wait for the time to be set in countdown mode
+	sys.waitFrame();
+	
+	// don't attempt to play all the sounds if warmup-time is really low
+	if ( GetCountdownTime() < 6.5 ) {
+		return;
+	}
+	
+	while( GetCountdownTime() > MIN2SEC( 10 ) ) {
+		sys.waitFrame();
+	}
+
+	
+	PlayCountdownVO( "snd_countdown_10m", MIN2SEC( 10 ) );
+
+	while( GetCountdownTime() > MIN2SEC( 5 ) ) {		
+		sys.waitFrame();
+	}
+	
+	PlayCountdownVO( "snd_countdown_5m", MIN2SEC( 5 ) );
+
+	while( GetCountdownTime() > MIN2SEC( 2 ) ) {		
+		sys.waitFrame();
+	}
+
+	PlayCountdownVO( "snd_countdown_2m", MIN2SEC( 2 ) );
+
+	while( GetCountdownTime() > MIN2SEC( 1 ) ) {		
+		sys.waitFrame();
+	}
+
+	PlayCountdownVO( "snd_countdown_1m", MIN2SEC( 1 ) );
+
+	while( GetCountdownTime() > 30 ) {		
+		sys.waitFrame();
+	}
+
+	PlayCountdownVO( "snd_countdown_30s", 30 );
+
+	while( GetCountdownTime() > 10 ) {		
+		sys.waitFrame();
+	}
+
+	PlayCountdownVO( "snd_countdown_10s", 10 );
+
+	while( GetCountdownTime() > 5 ) {		
+		sys.waitFrame();
+	}
+
+	PlayCountdownVO( "snd_countdown_5s", 5 );
+}
+
+void objectiveManager::OnMapStart() {
+	delete mapObject;
+
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.successTextTime", 0.f );	
+	}
+
+	if ( !sys.isClient() ) {
+		mapObject = createMapScript();
+		if ( mapObject == $null_entity ) {
+			sys.error( "objectiveManager::OnMapStart No Map Script" );
+		}
+		mapObject.InitObjectives();
+	}
+
+	if ( sys.doClientSideStuff() ) {
+		sys.killThread( "LocalPlayerUpdateThread" );
+		thread LocalPlayerUpdateThread();
+	}
+
+	CreateCriticalClassCheckThread();
+}
+
+void objectiveManager::OnMapShutdown() {
+	sentToolTipToolTip = false;
+	delete mapObject;
+	
+	KillCriticalClassCheckThread();
+}
+
+void objectiveManager::OnLocalMapRestart() {
+	entity worldspawn = sys.getEntity( "worldspawn" );
+
+	float count = worldspawn.entitiesOfCollection( "maprestartwatch" );
+
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity ent = worldspawn.getBoundsCacheEntity( i );
+		ent.vOnLocalMapRestart();
+	}
+	
+	CreateCriticalClassCheckThread();
+	lastObjectiveCompleted = 0;
+}
+
+void objectiveManager::OnGameStateChange( float newState ) {
+	gameState = newState;
+
+	// kill any previous countdowns
+	sys.killThread( "CountdownThread" );
+	
+	if ( newState == GS_COUNTDOWN || newState == GS_GAMEON ) {
+		thread CountdownVO(); 
+	}
+	
+	if ( newState == GS_GAMEREVIEW ) {
+		entity worldspawn = sys.getEntity( "worldspawn" );
+		float count = worldspawn.entitiesOfCollection( "gamereviewwatch" );
+		float cacheHandle = worldspawn.saveCachedEntities();
+
+		float i;
+		for ( i = 0; i < count; i++ ) {
+			entity ent = worldspawn.getSavedCacheEntity( cacheHandle, i );
+			ent.vOnEndGame();
+		}
+		
+		worldspawn.freeSavedCache( cacheHandle );
+	}
+}
+
+void objectiveManager::destroy() {
+	OnMapShutdown();
+}
+
+void objectiveManager::CompleteObjective( float index, entity p ) {
+	CompleteObjectiveAdvanced( index, p, false );
+}
+
+void objectiveManager::CompleteObjectiveAdvanced( float index, entity p, boolean silent ) {
+	if ( index >= 0 ) {
+		lastObjectiveCompleted = sys.getTime();
+	}
+
+	if ( sys.isClient() ) {		
+		return;
+	}
+	
+	logObjectiveCompletion( index );
+	
+	// send a message out with the message
+	if ( p == $null_entity ) {
+		PushCPrintHandle( g_locStr_Someone );
+	} else {
+		PushCPrintString( p.getUserName() );
+	}
+	if ( !silent ) {
+		CPrintEvent( mapObject.GetObjectiveMessage( index ), $null );
+	}
+	
+	gdfTeam.IncreaseRespawnTimeChange();
+	stroggTeam.IncreaseRespawnTimeChange();
+	
+	mapObject.CompleteObjective( index, p );
+}
+
+void objectiveManager::OnConstructionComplete( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+	
+	mapObject.OnConstructionComplete( obj );
+}
+
+void objectiveManager::OnDestructionComplete( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnDestructionComplete( obj );
+}
+
+void objectiveManager::OnHackComplete( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnHackComplete( obj );
+}
+
+void objectiveManager::OnMCPSpawned( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnMCPSpawned( obj );
+}
+
+void objectiveManager::OnMCPDestroyed( entity obj, vector newLocation, vector newAngles ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	PlaySound( obj.getKey( "snd_vo_off_course_0_gdf" ), gdfTeam );
+	PlaySound( obj.getKey( "snd_vo_off_course_0_strogg" ), stroggTeam );
+	CPrintEvent( sys.localizeString( "maps/generic/mcp/destroyed" ), $null );
+	
+	mapObject.OnMCPDestroyed( obj, newLocation, newAngles );
+}
+
+void objectiveManager::OnMCPDelivered( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnMCPDelivered( obj );
+}
+
+void objectiveManager::OnShieldDestroyedScud( entity trigger ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnShieldDestroyedScud( trigger );
+}
+
+
+void objectiveManager::OnShieldDeployed( entity obj, entity trigger ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnShieldDeployed( obj, trigger );
+}
+
+void objectiveManager::OnMiningLaserDeployed( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnMiningLaserDeployed( obj );
+}
+
+void objectiveManager::OnMiningLaserConstructed( entity obj ) {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnMiningLaserConstructed( obj );
+}
+
+void objectiveManager::OnTimeLimitHit() {
+	if ( sys.isClient() ) {		
+		return;
+	}
+
+	mapObject.OnTimeLimitHit();
+}
+
+void objectiveManager::RunBotMCPMapScript( float actionGroupOff, float actionGroupOn ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	mapObject.RunBotMCPMapScript( actionGroupOff, actionGroupOn );
+}
+
+void objectiveManager::OnCarryableItemStolen( string actionName ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	mapObject.OnCarryableItemStolen( actionName );
+} 
+
+
+void objectiveManager::OnCarryableItemReturned( string actionName ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	mapObject.OnCarryableItemReturned( actionName );
+}
+
+void objectiveManager::OnSpawnCaptured( string actionName ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	mapObject.OnSpawnCaptured( actionName );
+}
+
+
+void objectiveManager::OnSpawnLiberated( string actionName ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	mapObject.OnSpawnLiberated( actionName );
+}
+
+void objectiveManager::OnDeployableDeployed() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	mapObject.OnDeployableDeployed();
+}
+
+void objectiveManager::PlaySound( string soundShader, object team ) {
+	PlaySoundRanged( soundShader, team, vec3_origin, -1.f );
+}
+
+void objectiveManager::PlaySoundRanged( string soundShader, object team, vector org, float maxRange ) {
+	if ( sys.isClient() ) { // Gordon: this function really should only be called for things the client cannot predict
+		return;
+	}
+
+	if ( soundShader == "" ) {
+		return;
+	}
+
+	float shaderIndex = GetSoundShader( soundShader );
+	if ( shaderIndex == -1 ) {
+		sys.warning( "objectiveManager::PlaySound - couldn't find shader for sound " + soundShader );
+		return;
+	}
+	
+	entity p;
+	
+	if ( sys.isServer() ) {
+		float rangeSqr = maxRange * maxRange;
+
+		string message = "s " + shaderIndex;
+
+		float maxClients = sys.getMaxClients();
+		float index;
+		for ( index = 0; index < maxClients; index++ ) {
+			p = sys.getClient( index );
+			if ( p == $null_entity ) {
+				continue;
+			}
+			
+			if ( team != $null ) {
+				if ( team != p.getGameTeam() ) {
+					continue;
+				}
+			}
+			
+			if ( maxRange > 0.f ) {
+				if ( sys.vecLengthSquared( p.getWorldOrigin() - org ) > rangeSqr ) {
+					continue;
+				}
+			}
+
+			sendNetworkEvent( index, false, message );
+		}
+		
+		if ( team == $null && maxRange <= 0.f ) {
+			sendNetworkEvent( -1, true, message );
+		}
+	} else {
+		// FIXME: This doesn't do range checks
+		p = sys.getLocalPlayer();
+		if ( p != $null_entity ) {
+			if ( team == p.getGameTeam() || team == $null_entity ) {
+				sys.startSoundDirect( soundShader, SND_PLAYER_VO );
+			}
+		}
+	}
+}
+
+void objectiveManager::PlaySoundForPlayer( string soundShader, entity p ) {
+	if ( sys.isClient() ) { // Gordon: this function really should only be called for things the client cannot predict
+		return;
+	}
+
+	if ( soundShader == "" || p == $null_entity ) {
+		return;
+	}
+	
+	float index = GetSoundShader( soundShader );
+	if ( index == -1 ) {
+		sys.warning( "objectiveManager::PlaySoundForPlayer: couldn't find shader for sound " + soundShader );
+		return;
+	}
+	
+	if ( sys.getLocalPlayer() == p ) {
+		sys.startSoundDirect( soundShader, SND_PLAYER_VO );
+	} else {
+		sendNetworkEvent( p.getEntityNumber(), false, "s " + index );
+	}
+}
+
+
+void objectiveManager::OnNextObjectiveSet( object team, float objectiveIndex ) {
+	if( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "mapinfo.currentObjective", objectiveIndex );
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "mapinfo.gdfCurrentObjective", objManager.getShortDescription( gdfTeam, objectiveIndex ) );
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "mapinfo.stroggCurrentObjective", objManager.getShortDescription( stroggTeam, objectiveIndex ) );
+	}
+}
+
+void objectiveManager::HandleObjectiveEntity() {
+	entity ent = sys.getEntityByID( sys.argv( 1 ) );
+	float index = sys.argvf( 2 );
+	DoSetObjectiveEntity( ent, index );
+}
+
+void objectiveManager::DoSetObjectiveEntity( entity ent, float index ) {
+	G_SetPrimaryObjectiveIndex( index );
+	
+	if ( currentPrimaryObjective != $null_entity ) {
+		currentPrimaryObjective.vMakePrimaryObjective( false );
+	}
+	
+	currentPrimaryObjective = ent;
+	
+	if ( currentPrimaryObjective != $null_entity ) {		
+		currentPrimaryObjective.vMakePrimaryObjective( true );		
+	}
+}
+
+void objectiveManager::HandleCenterPrint() {
+	handle h = sys.stringToHandle( sys.argv( 1 ) );
+	float endTime = sys.argvf( 2 );
+
+	float index;
+	float count = sys.argc() - 3;
+	for ( index = 0; index < count; index++ ) {
+		string ident = sys.strLeft( sys.argv( 3 + index ), 1 );
+		string value = sys.strSkip( sys.argv( 3 + index ), 1 );
+		
+		if ( ident == "P" ) {
+			// plain text, likely a player name
+			sys.pushLocString( sys.toWStr( value ) );
+			continue;
+		}
+		
+		if ( ident == "H" ) {
+			// localisation handle
+			sys.pushLocStringIndex( sys.stringToHandle( value ) );
+			continue;
+		}
+	}
+	
+	SetupCPrintHUD( sys.localizeStringIndexArgs( h ), endTime );
+}
+
+void objectiveManager::OnNetworkEvent() {
+	string message = sys.argv( 0 );
+	
+	if ( message == "cp" ) {
+		HandleCenterPrint();
+		return;
+	}
+	
+	if ( message == "s" ) {
+		sys.startSoundDirect( GetSoundShaderName( sys.argvf( 1 ) ), SND_PLAYER_VO );
+		return;
+	}
+	
+	if ( message == "oe" ) {
+		if ( !sys.isServer() ) {
+			HandleObjectiveEntity();
+		}
+		return;
+	}
+}
+
+void objectiveManager::InitObjectiveUI( float index, handle descriptionGDF, handle descriptionStrogg, handle miniDescriptionGDF, handle miniDescriptionStrogg, string materialGDF, string materialStrogg ) {
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "mapinfo.stroggObjective" + index, descriptionStrogg );
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "mapinfo.gdfObjective" + index, descriptionGDF );
+		
+		sys.setGUIString( GUI_GLOBALS_HANDLE, "mapinfo.stroggObjectiveMat" + index, materialStrogg );
+		sys.setGUIString( GUI_GLOBALS_HANDLE, "mapinfo.gdfObjectiveMat" + index, materialGDF );
+	}
+		
+	// tell the game what the short descriptions are
+	objManager.setShortDescription( gdfTeam, index, miniDescriptionGDF );
+	objManager.setShortDescription( stroggTeam, index, miniDescriptionStrogg );	
+}
+
+vector objectiveManager::GetGDFBasePosition() {
+	return mapObject.GetGDFBasePosition();
+}
+
+void objectiveManager::SetupCPrintHUD( wstring text, float endTime ) {
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.successTextTime", endTime );	
+		sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.successText", text );
+	}
+}
+
+void objectiveManager::PushCPrintString( string arg ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	numPrintArgs = numPrintArgs + 1;
+	printArgs = printArgs + " \"P" + arg + "\"";
+}
+
+void objectiveManager::PushCPrintHandle( handle h ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	numPrintArgs = numPrintArgs + 1;
+	printArgs = printArgs + " H" + sys.handleToString( h );
+}
+
+void objectiveManager::RefreshObjectiveEntity() {
+	entity old = currentPrimaryObjective;
+	float oldIndex = g_primaryObjectiveIndex;
+	SetObjectiveEntity( $null_entity, -1 );
+	SetObjectiveEntity( old, oldIndex );
+}
+
+void objectiveManager::SetObjectiveEntity( entity ent, float index ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+	
+	if ( currentPrimaryObjective == ent ) {
+		return;
+	}
+	
+	if ( sys.isServer() ) {
+		SendObjectiveChangedEvent( ent, -1, index, false );
+		SendObjectiveChangedEvent( ent, -1, index, true );
+	}
+	
+	DoSetObjectiveEntity( ent, index );
+}
+
+void objectiveManager::SendObjectiveChangedEvent( entity ent, float clientIndex, float index, boolean isRepeater ) {
+	string spawnId;
+	if ( ent == $null_entity ) {
+		spawnId = "0";
+	} else {
+		spawnId = ent.getSpawnID();
+	}
+	
+	string message = "oe " + spawnId + " " + index;
+	
+	if ( sys.isServer() ) {
+		sendNetworkEvent( clientIndex, isRepeater, message );
+	} else {
+		// Just for devmap
+		if ( clientIndex == -1 && !isRepeater ) {
+			sys.setActionCommand( message );
+			OnNetworkEvent();
+		}
+	}
+}
+
+
+void objectiveManager::CPrintEvent( handle h, object team ) {
+	CPrintEventRanged( h, team, vec3_origin, -1.f );
+}
+
+void objectiveManager::CPrintEventRanged( handle h, object team, vector org, float maxRange ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	float endTime = ( sys.toGuiTime( sys.getTime() ) + 10 ) * 1000;
+	
+	string message = "cp\"" + sys.handleToString( h ) + "\"" + endTime + printArgs; // Gordon: printargs should always be last, as it is variable length
+	
+	numPrintArgs = 0.f;
+	printArgs = "";
+
+	if ( sys.isServer() ) {	
+		float rangeSqr = maxRange * maxRange;
+
+		float maxClients = sys.getMaxClients();
+		float index;
+		for ( index = 0; index < maxClients; index++ ) {
+			entity p = sys.getClient( index );
+			if ( p == $null_entity ) {
+				continue;
+			}
+			
+			if ( team != $null ) {
+				if ( team != p.getGameTeam() ) {
+					continue;
+				}
+			}
+			
+			if ( maxRange > 0.f ) {
+				if ( sys.vecLengthSquared( p.getWorldOrigin() - org ) > rangeSqr ) {
+					continue;
+				}				
+			}
+
+			sendNetworkEvent( index, false, message );
+		}
+		
+		if ( team == $null && maxRange <= 0.f ) {
+			sendNetworkEvent( -1, true, message );
+		}
+	} else {
+		// this is solely for the benefit of devmap
+		entity local = sys.getLocalPlayer();
+		if ( local != $null_entity ) {
+			if ( team == $null || local.getGameTeam() == team ) {
+				sys.setActionCommand( message );
+				OnNetworkEvent();
+			}
+		}
+	}
+}
+
+void objectiveManager::ScudExploded( entity scud ) {
+	if ( mapObject != $null_entity ) {
+		entity team = scud.getGameTeam();
+		mapObject.ScudExploded( scud );
+	}
+}
+
+void objectiveManager::OnWriteInitialReliableMessages( float clientIndex, float isRepeaterClient ) {
+	SendObjectiveChangedEvent( currentPrimaryObjective, clientIndex, g_primaryObjectiveIndex, isRepeaterClient );
+}
+
+void objectiveManager::PlayCountdownVO( string sound, float seconds ) {
+	if ( GetCountdownTime() > seconds - 2.f ) {
+		PlaySound( gdfTeam.getKey( sound ), gdfTeam );
+		PlaySound( stroggTeam.getKey( sound ), stroggTeam );
+	}
+}
+
+
+void objectiveManager::CreateCriticalClassCheckThread() {
+	KillCriticalClassCheckThread();
+	thread CriticalClassCheckThread();
+}
+
+void objectiveManager::KillCriticalClassCheckThread() {
+	sys.killThread( "CriticalClassCheckThread" );
+}
+
+void objectiveManager::CriticalClassCheckThread() {
+	sys.threadName( "CriticalClassCheckThread" );
+	
+	while ( objManager.gameState != GS_GAMEON ){
+		sys.wait( 1.0f );
+	}
+
+	// check every 20 seconds or so if there is someone of the critical class
+	while ( true ) {
+		sys.wait( 20.0f );
+
+		if ( sys.getTime() - lastObjectiveCompleted < 30 ) {
+			continue;
+		}
+
+		player localPlayer = sys.getLocalPlayer();
+		if ( localPlayer != $null_entity ) {
+			float team = NOTEAM;
+			team_base playerTeam = localPlayer.getGameTeam();
+			if ( playerTeam == gdfTeam ) {
+				team = GDF;
+			}
+			if ( playerTeam == stroggTeam ) {
+				team = STROGG;
+			}
+			
+			if ( team != NOTEAM ) {
+				float criticalClass = getBotCriticalClass( team );
+				if ( criticalClass != NOCLASS ) {
+					float num = getNumClassPlayers( team, criticalClass );
+					if ( num == 0 ) {
+						localPlayer.sendToolTip( playerTeam.criticalClassToolTip );
+					}
+				}
+			}
+		}
+	}
+}
+
+void objectiveManager::SendToolTipToolTip() {
+	if ( !sentToolTipToolTip ) {
+		player localPlayer = sys.getLocalPlayer();
+		float toolTip = GetToolTip( localPlayer.getKey( "tt_tooltip" ) );
+		localPlayer.sendToolTip( toolTip );
+		sentToolTipToolTip = true;
+	}
+}
+
+entity objectiveManager::GetSpectateEntity() {
+	return mapObject.GetSpectateEntity();
+}
+
+
+
+
+void G_SetObjectiveManager( object o ) {
+	objManager = o;
+}
+
+handle mapObject_Base::GetObjectiveMessage( float index ) {
+	return sys.localizeString( "maps/obj/complete_obj_generic" );
+}
+
+
+
+
+// Gordon: putting this here sucks
+void team_base::PlayIntelRepairedMessage() {
+	objManager.PlaySound( getKey( "snd_intel_repaired" ), self );
+}
+
+void team_base::PlayIntelDamagedMessage() {
+	objManager.PlaySound( getKey( "snd_intel_damaged" ), self );
+}

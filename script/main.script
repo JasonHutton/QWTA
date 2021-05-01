@@ -1,0 +1,448 @@
+/***********************************************************************
+
+main.script
+
+This is the main script that is loaded before any level scripts load.
+
+***********************************************************************/
+
+// base defines and util functions
+
+#include "script/defs.script"
+#include "script/events.script"
+#include "script/util.script"
+
+#include "script/default.script"
+
+#include "script/teams/base.script"
+
+#include "script/misc/objective_manager.script"
+#include "script/misc/objective.script"
+#include "script/misc/firesupport_marker.script"
+
+// tasks
+#include "script/tasks/task.script"
+#include "script/tasks/task_manager.script"
+
+// player
+#include "script/player/player.script"
+
+// base scripts
+#include "script/weapons/base.script"
+#include "script/deployables/firesupportstate.script"
+#include "script/deployables/base.script"
+#include "script/structures/base.script"
+#include "script/vehicles/base.script"
+
+#include "script/misc/waypoint.script"
+#include "script/misc/direction_marker.script"
+
+// weapons
+#include "script/weapons/misc.script"
+#include "script/weapons/clipweapon.script"
+#include "script/weapons/fists.script"
+#include "script/weapons/grenade.script"
+#include "script/weapons/shotgun.script"
+#include "script/weapons/pistol.script"
+#include "script/weapons/pistol_akimbo.script"
+#include "script/weapons/blaster.script"
+#include "script/weapons/sniperrifle.script"
+#include "script/weapons/railgun.script"
+#include "script/weapons/machinepistol.script"
+#include "script/weapons/lightningpistol.script"
+#include "script/weapons/law.script"
+#include "script/weapons/assaultrifle.script"
+#include "script/weapons/assaultrifle_gren.script"
+#include "script/weapons/assaultrifle_scope.script"
+#include "script/weapons/gpmg.script"
+#include "script/weapons/hyperblaster.script"
+#include "script/weapons/lacerator.script"
+#include "script/weapons/lacerator_gren.script"
+#include "script/weapons/lacerator_scope.script"
+#include "script/weapons/obliterator.script"
+#include "script/weapons/nailgun.script"
+#include "script/weapons/dummy.script"
+
+// tools
+#include "script/tools/targeting.script"
+#include "script/tools/binoculars.script"
+#include "script/tools/deploytool.script"
+#include "script/tools/pliers.script"
+#include "script/tools/trinoculars.script"
+#include "script/tools/defibrillator.script"
+#include "script/tools/repair_drone.script"
+#include "script/tools/force_shield.script"
+#include "script/tools/spike_meditech.script"
+
+// items
+#include "script/items/hecharge.script"
+#include "script/items/smoke_grenade.script"
+#include "script/items/plasmacharge.script"
+#include "script/items/landmine.script"
+#include "script/items/supplypack.script"
+#include "script/items/third_eye.script"
+#include "script/items/carryable_item.script"
+#include "script/items/flyerhive.script"
+#include "script/items/healthpack.script"
+
+// projectiles
+#include "script/projectiles/missile.script"
+#include "script/projectiles/grenade.script"
+#include "script/projectiles/armable.script"
+#include "script/projectiles/homingmissile.script"
+#include "script/projectiles/targetedmissile.script"
+#include "script/projectiles/landmine.script"
+#include "script/projectiles/charge.script"
+#include "script/projectiles/emp.script"
+#include "script/projectiles/ssm.script"
+#include "script/projectiles/scud.script"
+#include "script/projectiles/ssg.script"
+#include "script/projectiles/teleporter.script"
+#include "script/projectiles/airstrike_marker.script"
+#include "script/projectiles/supply_marker.script"
+
+// tools (that are dependent on their projectiles)
+#include "script/tools/teleporter.script"
+
+// structures
+#include "script/structures/cc.script"
+#include "script/structures/domihub.script"
+
+// deployables
+#include "script/deployables/artillery.script"
+#include "script/deployables/turret.script"
+#include "script/deployables/antiarmour.script"
+#include "script/deployables/antipersonnel.script"
+#include "script/deployables/antissg.script"
+#include "script/deployables/deployzone.script"
+#include "script/deployables/fielddrop.script"
+#include "script/deployables/intelligence.script"
+#include "script/deployables/ssm.script"
+#include "script/deployables/ssg.script"
+#include "script/deployables/plasmamortar.script"
+#include "script/deployables/autodeployer.script"
+#include "script/deployables/mount.script"
+#include "script/deployables/shield_generator.script"
+#include "script/deployables/basedefence.script"
+#include "script/deployables/drop_caller.script"
+
+// vehicles
+#include "script/vehicles/anansi.script"
+#include "script/vehicles/badger.script"
+#include "script/vehicles/vampire.script"
+#include "script/vehicles/violator.script"
+#include "script/vehicles/bumblebee.script"
+#include "script/vehicles/desecrator.script"
+#include "script/vehicles/goliath.script"
+#include "script/vehicles/hog.script"
+#include "script/vehicles/hornet.script"
+#include "script/vehicles/husky.script"
+#include "script/vehicles/magog.script"
+#include "script/vehicles/jotun.script"
+#include "script/vehicles/mcp.script"
+#include "script/vehicles/titan.script"
+#include "script/vehicles/trojan.script"
+#include "script/vehicles/icarus.script"
+#include "script/vehicles/strogg_drop.script"
+#include "script/vehicles/platypus.script"
+#include "script/vehicles/weapons/base.script"
+#include "script/vehicles/weapons/gpmg.script"
+#include "script/vehicles/weapons/gpmg_twin.script"
+#include "script/vehicles/weapons/rockets.script"
+#include "script/vehicles/weapons/sbc.script"
+#include "script/vehicles/weapons/plasmacannon.script"
+#include "script/vehicles/weapons/cannon_twin.script"
+#include "script/vehicles/weapons/law.script"
+#include "script/vehicles/weapons/antiair.script"
+#include "script/vehicles/weapons/stroybomb.script"
+#include "script/vehicles/parts/base.script"
+#include "script/vehicles/cockpits/basic.script"
+#include "script/vehicles/cockpits/strogg.script"
+#include "script/vehicles/cockpits/badger.script"
+#include "script/vehicles/cockpits/icarus.script"
+#include "script/vehicles/cockpits/anansi.script"
+#include "script/vehicles/cockpits/trojan.script"
+#include "script/vehicles/cockpits/mcp.script"
+#include "script/vehicles/cockpits/platypus.script"
+#include "script/vehicles/cockpits/hog.script"
+#include "script/vehicles/cockpits/desecrator.script"
+#include "script/vehicles/cockpits/gpmg.script"
+#include "script/vehicles/cockpits/gatling.script"
+#include "script/vehicles/cockpits/husky.script"
+
+// misc
+#include "script/misc/doors.script"
+#include "script/misc/supply_crate.script"
+#include "script/misc/animtest.script"
+#include "script/misc/spawn_master.script"
+#include "script/projectiles/decoy.script"
+#include "script/misc/auto_respawn.script"
+#include "script/misc/atmosphere.script"
+#include "script/misc/rules.script"
+#include "script/misc/item_capturepoint.script"
+#include "script/misc/flag.script"
+#include "script/misc/lightning.script"
+#include "script/misc/mcp_marker.script"
+#include "script/misc/parachute.script"
+#include "script/misc/capturable_spawn.script"
+#include "script/misc/maskeditor.script"
+#include "script/misc/mcp_trigger.script"
+#include "script/misc/bot_mcp_trigger.script"
+#include "script/misc/syncedeffect.script"
+#include "script/misc/noplant.script"
+#include "script/misc/particle_trigger.script"
+
+// screenshot placement stuff
+#include "script/placement/player.script"
+#include "script/placement/weapon.script"
+#include "script/placement/vehicle.script"
+#include "script/placement/rotator.script"
+
+// teams!
+#include "script/teams/gdf.script"
+#include "script/teams/strogg.script"
+
+// map objectives
+#include "script/maps/generic/constructible_objective.script"
+#include "script/maps/generic/destructible_objective.script"
+#include "script/maps/generic/hackable_objective.script"
+#include "script/maps/generic/zappor.script"
+#include "script/maps/generic/scud_trigger.script"
+#include "script/maps/generic/navmodule.script"
+
+#include "script/maps/island/console.script"
+#include "script/maps/slipgate/effects.script"
+
+// generic map stuff
+#include "script/maps/generic/jumppad.script"
+#include "script/maps/generic/towers.script"
+
+
+// context sensitive stuff
+#include "script/player/player_context.script"
+
+// maps
+#include "script/maps/base.script"
+#include "script/maps/default.script"
+#include "script/maps/ark.script"
+#include "script/maps/area22.script"
+#include "script/maps/canyon.script"
+#include "script/maps/dm.script"
+#include "script/maps/outskirts.script"
+#include "script/maps/island.script"
+#include "script/maps/quarry.script"
+#include "script/maps/refinery.script"
+#include "script/maps/salvage.script"
+#include "script/maps/sewer.script"
+#include "script/maps/slipgate.script"
+#include "script/maps/valley.script"
+#include "script/maps/vehicletrack.script"
+#include "script/maps/volcano.script"
+#include "script/maps/screenshots/empty.script"
+#include "script/maps/bottest2.script"
+#include "script/maps/routeconstraint.script"
+#include "script/maps/misctestmaps.script"
+#include "script/map.script"
+
+// QWTA stuff begins
+
+// Vehicles
+#include "script/vehicles/weapons/vrof.script"
+#include "script/vehicles/weapons/siegeweapon.script"
+#include "script/vehicles/weapons/hyperblaster.script"
+#include "script/projectiles/homingnail.script"
+#include "script/projectiles/flamethrower.script"
+#include "script/projectiles/fluidic.script"
+#include "script/vehicles/strogg_drop_teleport.script"
+#include "script/vehicles/jupiter.script"
+#include "script/vehicles/abaddon.script"
+#include "script/vehicles/cockpits/abaddon.script"
+#include "script/projectiles/bfg.script"
+//#include "script/vehicles/weapons/powerup.script"
+#include "script/vehicles/weapons/chargeshot.script"
+//#include "script/vehicles/weapons/chargeshot2.script"
+#include "script/vehicles/weapons/streamshot.script"
+#include "script/vehicles/weapons/flamethrower.script"
+#include "script/vehicles/weapons/flamethrower2.script"
+#include "script/vehicles/weapons/plasmabeam.script"
+
+// Weapons
+#include "script/projectiles/radiation.script"
+#include "script/projectiles/ssm_qwta.script"
+
+// Items
+#include "script/items/smoke_grenade_qwta.script"
+#include "script/tools/force_shield_qwta.script"
+#include "script/misc/spawn_host_qwta.script"
+#include "script/items/healthpack_qwta.script"
+#include "script/items/supplypack_qwta.script"
+#include "script/misc/supply_crate_qwta.script"
+
+// Maps
+#include "script/maps/tactical_volcano.script"
+#include "script/maps/tactical_valley.script"
+
+// QWTA stuff ends
+
+void game_main() {
+	SetupColors();
+
+	vec3_up_z		= 1.f;
+	vec3_down_z		= -1.f;
+
+	wstr_empty		= sys.toWStr( "" );
+	invalid_handle	= sys.stringToHandle( "FFFFFFFF" );
+
+	g_ammoStroyent				= GetAmmoType( "stroyent" );
+	g_ammoStroyentPacket		= GetAmmoType( "stroyent_packet" );
+	g_ammoMachinePistol			= GetAmmoType( "machinepistol" );
+	g_ammoAssaultRifle			= GetAmmoType( "assaultrifle" );
+	g_ammoGrenade				= GetAmmoType( "grenade" );
+	g_ammoShotgun				= GetAmmoType( "shotgun" );
+	g_ammoSniperRifle			= GetAmmoType( "sniperrifle" );
+	g_ammoPistol				= GetAmmoType( "pistol" );
+	g_ammoRocketLauncher		= GetAmmoType( "rocketlauncher" );
+	g_ammoGPMG					= GetAmmoType( "gpmg" );
+
+	g_proficiencyLightWeapons	= GetProficiencyType( "weapon_handling" );
+
+	g_proficiencyBattleSense	= GetProficiencyType( "battlesense" );
+
+	g_proficiencyFieldOps		= GetProficiencyType( "fieldops" );
+	g_proficiencyMedic			= GetProficiencyType( "medic" );
+	g_proficiencyEngineer		= GetProficiencyType( "engineer" );
+	g_proficiencyCovertOps		= GetProficiencyType( "covertops" );
+	g_proficiencySoldier		= GetProficiencyType( "soldier" );
+
+	g_proficiencyOppressor		= GetProficiencyType( "fieldops" );
+	g_proficiencyTechnician		= GetProficiencyType( "medic" );
+	g_proficiencyConstructor	= GetProficiencyType( "engineer" );
+	g_proficiencyInfiltrator	= GetProficiencyType( "covertops" );
+	g_proficiencyAggressor		= GetProficiencyType( "soldier" );
+
+	g_proficiencyVehicle		= GetProficiencyType( "vehicle" );
+
+	g_playerClassSoldier		= GetPlayerClass( "soldier" );
+	g_playerClassMedic			= GetPlayerClass( "medic" );
+	g_playerClassCovertOps		= GetPlayerClass( "covertops" );
+	g_playerClassEngineer		= GetPlayerClass( "engineer" );
+	g_playerClassFieldOps		= GetPlayerClass( "fieldops" );
+
+	g_playerClassAggressor		= GetPlayerClass( "aggressor" );
+	g_playerClassTechnician		= GetPlayerClass( "technician" );
+	g_playerClassConstructor	= GetPlayerClass( "constructor" );
+	g_playerClassOppressor		= GetPlayerClass( "oppressor" );
+	g_playerClassInfiltrator	= GetPlayerClass( "infiltrator" );
+
+	g_disableVehicleSpawns		= sys.getCVar( "g_disableVehicleSpawns", "0" );
+	pm_thirdperson				= sys.getCVar( "pm_thirdperson", "0" );
+	bse_projectileEffect		= sys.getCVar( "bse_projectileEffect", "" );
+	g_maxProficiency			= sys.getCVar( "g_maxProficiency", "" );
+	g_friendlyColor				= sys.getCVar( "g_friendlyColor", "0 1 0 1" );
+	g_neutralColor				= sys.getCVar( "g_neutralColor", "0.75 0.75 0.75" );
+	g_enemyColor				= sys.getCVar( "g_enemyColor", "1 0 0 1" );
+	g_fasterSpawn				= sys.getCVar( "g_fasterSpawn", "1" );
+	si_rules					= sys.getCVar( "si_rules", "" );
+	g_noVehicleSpawnInvulnerability	= sys.getCVar( "g_noVehicleSpawnInvulnerability", "" );
+	g_objectiveDecayTime		= sys.getCVar( "g_objectiveDecayTime", "5" );
+	g_allowMineTriggerWarning	= sys.getCVar( "g_allowMineTriggerWarning", "0" );
+	g_allowAPTWarning			= sys.getCVar( "g_allowAPTWarning", "0" );
+	g_aptWarning				= sys.getCVar( "g_aptWarning", "3" );
+
+	g_drawMineIcons				= sys.getCVar( "g_drawMineIcons", "" );
+	g_allowMineIcons			= sys.getCVar( "g_allowMineIcons", "" );
+	g_mineIconSize				= sys.getCVar( "g_mineIconSize", "" );
+	g_mineIconAlphaScale		= sys.getCVar( "g_mineIconAlphaScale", "" );
+
+	g_useRealisticWeapons		= sys.getCVar( "g_useRealisticWeapons", "" );
+	g_useBaseETQW12Shotguns		= sys.getCVar( "g_useBaseETQW12Shotguns", "" );
+	g_useQuake4DarkMatter		= sys.getCVar( "g_useQuake4DarkMatter", "" );
+	g_useAwardJackOfAllTrades	= sys.getCVar( "g_useAwardJackOfAllTrades", "" );
+	g_artilleryWarning			= sys.getCVar( "g_artilleryWarning", "" );
+	g_useReverseAirstrikes		= sys.getCVar( "g_useReverseAirstrikes", "" );
+	g_useShieldAbsorber			= sys.getCVar( "g_useShieldAbsorber", "" );
+	g_useNuclearHammer			= sys.getCVar( "g_useNuclearHammer", "" );
+	g_useQuake4Hyperblaster		= sys.getCVar( "g_useQuake4Hyperblaster", "" );
+	g_advancedVehicleDrops		= sys.getCVar( "g_advancedVehicleDrops", "" );
+	g_vehicleDropsUseFE			= sys.getCVar( "g_vehicleDropsUseFE", "" );
+	g_vehicleDropsUseLP			= sys.getCVar( "g_vehicleDropsUseLP", "" );
+	g_huskyIcarusDropsIgnoreFE	= sys.getCVar( "g_huskyIcarusDropsIgnoreFE", "" );
+	g_huskyIcarusDropsIgnoreLP	= sys.getCVar( "g_huskyIcarusDropsIgnoreLP", "" );
+	g_useBaseETQWVehicleCredits	= sys.getCVar( "g_useBaseETQWVehicleCredits", "" );
+	g_vehicleSpawnsUseFE		= sys.getCVar( "g_vehicleSpawnsUseFE", "" );
+	
+	g_disableVehicleRespawns	= sys.getCVar( "g_disableVehicleRespawns", "" );
+	g_disablePlayerRespawns		= sys.getCVar( "g_disablePlayerRespawns", "" );
+	
+	g_allowCrosshairs		=	sys.getCVar( "g_allowCrosshairs", "" );
+	g_useBaseETQW12SniperTrail	= sys.getCVar( "g_useBaseETQW12SniperTrail", "" );
+//	g_useStraightRockets		= sys.getCVar( "g_useStraightRockets", "" );
+//	g_allowTimerCircles			= sys.getCVar( "g_allowTimerCircles", "" );
+//	g_hideHud					= sys.getCVar( "g_hideHud", "" );
+	g_useVehicleAmmo			= sys.getCVar( "g_useVehicleAmmo", "" );
+	g_useVehicleDecoyAmmo		= sys.getCVar( "g_useVehicleDecoyAmmo", "" );
+	g_allowEMPFriendlyFire		= sys.getCVar( "g_allowEMPFriendlyFire", "" );
+	g_allowRadFriendlyFire		= sys.getCVar( "g_allowRadFriendlyFire", "" );
+	g_blood						= sys.getCVar( "g_blood", "" );
+	
+	g_vehicleSpawnMinPlayersHusky	= sys.getCVar( "g_vehicleSpawnMinPlayersHusky", "" );
+	g_vehicleSpawnMinPlayersPlatypus	= sys.getCVar( "g_vehicleSpawnMinPlayersPlatypus", "" );
+	g_vehicleSpawnMinPlayersArmadillo	= sys.getCVar( "g_vehicleSpawnMinPlayersArmadillo", "" );
+	g_vehicleSpawnMinPlayersTrojan	= sys.getCVar( "g_vehicleSpawnMinPlayersTrojan", "" );
+	g_vehicleSpawnMinPlayersBumblebee	= sys.getCVar( "g_vehicleSpawnMinPlayersBumblebee", "" );
+	g_vehicleSpawnMinPlayersTitan	= sys.getCVar( "g_vehicleSpawnMinPlayersTitan", "" );
+	g_vehicleSpawnMinPlayersAnansi	= sys.getCVar( "g_vehicleSpawnMinPlayersAnansi", "" );
+	
+	g_vehicleSpawnMinPlayersIcarus	= sys.getCVar( "g_vehicleSpawnMinPlayersIcarus", "" );
+	g_vehicleSpawnMinPlayersHog	= sys.getCVar( "g_vehicleSpawnMinPlayersHog", "" );
+	g_vehicleSpawnMinPlayersDesecrator	= sys.getCVar( "g_vehicleSpawnMinPlayersDesecrator", "" );
+	g_vehicleSpawnMinPlayersCyclops	= sys.getCVar( "g_vehicleSpawnMinPlayersCyclops", "" );
+	g_vehicleSpawnMinPlayersTormentor	= sys.getCVar( "g_vehicleSpawnMinPlayersTormentor", "" );
+
+	g_vehicleSpawnMinPlayersJupiter	= sys.getCVar( "g_vehicleSpawnMinPlayersJupiter", "" );
+	g_vehicleSpawnMinPlayersAbaddon	= sys.getCVar( "g_vehicleSpawnMinPlayersAbaddon", "" );
+
+	g_locStr_Destroyed			= sys.localizeString( "game/destroyed" );
+	g_locStr_Disabled			= sys.localizeString( "game/disabled" );
+	g_locStr_Range 				= sys.localizeString( "game/range_text" );
+	g_locStr_Meters 			= sys.localizeString( "game/meters" );
+	g_locStr_Capture 			= sys.localizeString( "game/spawns/capture" );
+	g_locStr_SpawnHost 			= sys.localizeString( "game/misc/spawn_host" );
+	g_locStr_Supplies 			= sys.localizeString( "game/supplies" );
+	g_locStr_Unconscious 		= sys.localizeString( "game/unconscious" );
+	g_locStr_Dead 				= sys.localizeString( "game/dead" );
+	g_locStr_Hacking 			= sys.localizeString( "game/prog_bar/hacking" );
+	g_locStr_Arming 			= sys.localizeString( "game/prog_bar/arming" );
+	g_locStr_Disarming			= sys.localizeString( "game/prog_bar/disarming" );
+	g_locStr_Repairing 			= sys.localizeString( "game/prog_bar/repairing" );
+	g_locStr_Constructing 		= sys.localizeString( "game/prog_bar/constructing" );
+	g_locStr_Capturing 			= sys.localizeString( "game/prog_bar/capturing" );
+	g_locStr_Liberating			= sys.localizeString( "game/prog_bar/liberating" );
+	g_locStr_Implanting			= sys.localizeString( "game/prog_bar/implanting" );
+	g_locStr_Disguising			= sys.localizeString( "game/prog_bar/disguising" );
+	g_locStr_Spotting			= sys.localizeString( "game/prog_bar/spotting" );
+	g_locStr_Reviving			= sys.localizeString( "game/prog_bar/reviving" );
+	g_locStr_Charge 			= sys.localizeString( "game/charge" );
+	g_locStr_Landmine 			= sys.localizeString( "game/landmine" );
+	g_locStr_Tripmine 			= sys.localizeString( "game/tripmine" );
+	g_locStr_Proxmine 			= sys.localizeString( "game/prox_mine" );
+	g_locStr_Scrambler			= sys.localizeString( "game/scrambler_trap" );
+	g_locStr_DoNotOwnTerritory 	= sys.localizeString( "game/guis/tools/not_own_territory" );
+	g_locStr_NoCharge		 	= sys.localizeString( "game/guis/tools/no_charge" );
+	g_locStr_Dismantle 			= sys.localizeString( "game/guis/tools/dismantle" );
+	g_locStr_Drone 				= sys.localizeString( "game/vec/drone" );
+	g_locStr_Scud 				= sys.localizeString( "game/vec/mcp/scud" );
+	g_locStr_Airstrike 			= sys.localizeString( "game/airstrike" );
+	g_locStr_Completed			= sys.localizeString( "game/completed" );
+	g_locStr_Objective			= sys.localizeString( "game/objective" );
+	g_locStr_UnarmedTripmine	= sys.localizeString( "game/unarmedtripmine" );
+	g_locStr_UnarmedProxymine	= sys.localizeString( "game/unarmedproxmine" );
+	g_locStr_SelfArmingTripmine	= sys.localizeString( "game/selfarmingtripmine" );
+	g_locStr_SelfArmingProxymine	= sys.localizeString( "game/selfarmingproxmine" );
+	g_locStr_TeleportBeacon		= sys.localizeString( "game/teleport_beacon" );
+	g_locStr_BadObjective		= sys.localizeString( "game/bad_objective" );
+	g_locStr_Someone			= sys.localizeString( "game/someone" );
+}
+
+void game_shutdown() {
+}

@@ -1,0 +1,394 @@
+// ========================================================================
+// Export
+/*
+reexportmodels vehicles/hog.def
+testmodel vehicle_hog
+*/
+
+#include <quickchat/avdbits.include>
+
+export shamus {
+	options -nomerge -prefix hog_ -rotate 90 -scale 0.66 -sourcedir models/vehicles/strogg_hog/dev_sd -destdir models/vehicles/strogg_hog/
+
+	addoptions 		-keep front_right_shoulder carrier_driver carrier_gunner1 front_left_shoulder pilot_gun pilot_cam gun_root gun gun_cam gun_muzzle exit_point_01 exit_point_02 exit_point_03 exit_point_04 exit_point_05 exit_point_06 exit_point_07 exit_point_08 -parent gun_cam gun
+
+	addoptions 		-noAnimate mesh_hog_front_right_elbow2 mesh_hog_front_left_elbow2 mesh_hog_left_hip2 mesh_hog_right_hip2 mesh_hog_front_right_shoulder mesh_hog_front_left_shoulder mesh_hog_hull mesh_hog_gun_root s_hog_hull s_hog_gun_root
+
+	mesh hog_lod0.mb 		-dest hog.md5mesh
+	anim hog_lod0.mb		-dest hog.md5anim -range 1 1
+/*
+  	mesh hog_lod3.mb		-dest hog_lod1_boned.md5mesh
+	mesh hog_lod3.mb		-dest hog_lod2_boned.md5mesh
+	mesh hog_lod3.mb		-dest hog_lod3_boned.md5mesh
+*/
+	addoptions 		-noJoints
+
+	mesh hog_lod3.mb		-dest hog_lod1.md5mesh
+ 	mesh hog_lod3.mb		-dest hog_lod2.md5mesh
+	mesh hog_lod3.mb		-dest hog_lod3.md5mesh
+
+}
+
+// ========================================================================
+// Models
+//
+
+model vehicle_hog {
+	mesh						models/vehicles/strogg_hog/hog.md5mesh
+	anim base					models/vehicles/strogg_hog/hog.md5anim {
+	}
+	anim idle					models/vehicles/strogg_hog/hog.md5anim {
+	}
+	anim ik_pose				models/vehicles/strogg_hog/hog.md5anim {
+	}
+}
+
+model vehicle_hog_lod1 {
+	mesh						models/vehicles/strogg_hog/hog_lod1_boned.md5mesh
+}
+
+model vehicle_hog_lod2 {
+	mesh						models/vehicles/strogg_hog/hog_lod2_boned.md5mesh
+}
+
+model vehicle_hog_lod3 {
+	mesh						models/vehicles/strogg_hog/hog_lod3_boned.md5mesh
+}
+
+// ========================================================================
+// Entity Def
+//
+
+deployObject deployobject_hog {
+	"name"							"hog"
+	"title"							"Hog"
+	"wait_time"						"1000"
+	"def_deployable"				"vehicle_hog"
+	"def_deployable_carrier"		"vehicle_strogg_drop_teleport"
+	"str_placement"					""
+	"mask"							"dm_default"
+	"object_radius"					"2048"
+	"category"						"vehicles"
+	"credit_required"				"1"
+	"rank_required"					"lance_corporal"
+	"force_escalation_required"		"25"
+	"logistics_points_required"		"20"
+	"avdbit"						AVDBIT_HOG
+	"terrain_disallowed"			"2"
+}
+
+entityDef vehicle_hog {
+	"inherit"						"vehicle_base_strogg"
+
+	"editor_color"					"1 .5 0"
+	"editor_mins"					"-8 -8 -8"
+	"editor_maxs"					"8 8 8"
+	"editor_usage"					"Strogg Hog Truck."
+
+	"spawnclass"					"sdVehicle_RigidBody"
+	"scriptObject"					"vehicle_hog"
+	"vs_vehicleScript"				"hog"
+
+	"control_context"				"g_bind_context_hog"
+
+	"angular_friction"				"0.5"
+	"linear_friction"				"0.1"
+	"bouncyness"					"0.4"
+
+	"health"						"1000"
+
+	"info_name"						"game/vec/hog"
+
+	"model"							"vehicle_hog"
+
+	"snd_engine_start"				"sounds/vehicles/hog/engine_start"
+	"snd_engine_stop"				"sounds/vehicles/hog/engine_stop"
+	"snd_engine_idle"				"sounds/vehicles/hog/engine_idle"
+	"snd_engine_drive"				"sounds/vehicles/hog/engine_idle"
+	"snd_engine_hardaccel"			"sounds/vehicles/hog/engine_harmonics"
+	"snd_overdrive"					"sounds/vehicles/misc/strogg/overdrive_start"
+	"snd_overdrive_stop"			"sounds/vehicles/misc/strogg/overdrive_stop"
+	"snd_horn_loop"					"sounds/vehicles/misc/honk"
+	"snd_horn_stop"					"sounds/vehicles/misc/honk/stop"
+
+	"engine_pitch_low"				"0.95"
+	"engine_pitch_high"				"1.2"
+	"engine_speed_low"				"20"
+	"engine_speed_high"				"80"
+
+	//----------------------------------------------------------
+	// Engine sound crossfade settings
+
+	"engine_accel_spool_time"		"0.033"
+	"engine_decel_spool_time"		"0.033"
+
+	"engine_idle_min_speed"			"22.0"
+	"engine_idle_max_speed"			"80.0"
+	"engine_idle_min_vol"			"0.0"
+	"engine_idle_max_vol"			"-15.0"
+	"engine_idle_power"				"1.0"
+	"engine_idle_fade_time"			"0.066"
+
+	"engine_drive_min_speed"		"0.0"
+	"engine_drive_max_speed"		"80.0"
+	"engine_drive_min_vol"			"-10.0"
+	"engine_drive_max_vol"			"0.0"
+	"engine_drive_power"			"0.5"
+	"engine_drive_fade_time"		"0.066"
+
+	"engine_accel_pitch_mult"		"1.3"
+	"engine_accel_pitch_offset"		"0.92"
+
+	"engine_accel_min_speed"		"0.0"
+	"engine_accel_mid_speed"		"10.0"
+	"engine_accel_max_speed"		"80.0"
+	"engine_accel_min_vol"			"-5.0"
+	"engine_accel_mid_vol"			"5.0"
+	"engine_accel_max_vol"			"-2.0"
+	"engine_accel_power_low"		"0.1"
+	"engine_accel_power_high"		"5.0"
+	"engine_accel_fade_time"		"0.0"
+
+	"engine_accel_yaw_vol"			"30.0"
+	"engine_accel_yaw_vol_mult"		"0.0"
+	"engine_accel_yaw_pitch"		"60.0"
+	"engine_accel_yaw_pitch_mult"	"0.0"
+	
+	//----------------------------------------------------------
+	
+	"snd_health_warn"				"sounds/vehicles/misc/warning/ground/strogg"
+
+	"crash_threshold_0"				"20"
+	"crash_threshold_1"				"500"
+	"crash_threshold_2"				"1000"
+	"jump_threshold_0"				"5"
+	"jump_threshold_1"				"20"
+	"jump_threshold_2"				"50"
+
+	"steering_angle"				"40"
+	"steering_speed_scale"			"100"
+	"steering_speed_max"			"180"	// upper limit of steering scale
+	"steering_speed_min"			"60"	// lower limit of steering scale
+	"steering_return_factor"		"0.85"	// percentage of the max speed used to return the wheels to a straight position
+	"steering_ramp_power"			"4"
+	"steering_ramp_offset"			"0.7"
+
+	"sound_control"					"badger"
+
+	"simplesteer_forward_speed"				"2.0"
+	"simplesteer_reverse_speed"				"-4.0"
+	"simplesteer_centering_speed_min"		"2.0"
+	"simplesteer_centering_speed_max"		"15.0"
+	"simplesteer_centering_speed_air"		"0.5"
+	"simplesteer_centering_ramp_threshold"	"20.0"		// beneath this speed the centering will ramp up from min to max
+	"simplesteer_reverse_angle_scale"		"-0.5"
+
+	"brake_threshold"				"50"
+
+	"decay_time"					"40"
+
+	"dmg_collide"					"damage_hog_collide"
+
+	"tt_enter"						"vehicle_hog_enter"
+
+	"icon_size_cm"					"16"
+	"mtr_commandmap"				"guis/assets/commandmap/icon_vehicle"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_vehicle"
+
+	"table_gears"					"hog_gear_speedchangetable"
+	"table_gearforces"				"hog_gear_forcetable"
+	"table_gearspeeds"				"hog_gear_speedtable"
+
+	"manualgear_next"				"0.5"
+	"manualgear_length"				"10"
+
+	"option_combat_model"			"1"
+	"option_selection_combat_model"	"1"
+	"option_task_interface"			"1"
+
+	"joint_damage_smoke"			"hull"
+	"joint_damage_fire"				"hull"
+
+	"fx_explode"					"effects/base/explosion"
+
+//	"fx_wheeldust"					"effects/vehicles/dust/tire_dust"
+//	"fx_wheelspin"					"effects/vehicles/dust/tire_spin"
+
+	"fx_hyperblaster_fire"			"effects/weapons/hyperblaster_fire_hog"			// For Xian: Hyperblaster sound goes in here
+	"fx_hyperblaster_muzzle"		"effects/weapons/hyperblaster_muzzleflash_vehicle"
+	"fx_hyperblaster_tracer"		"effects/base/tracers_strogg"
+	"effectchance fx_hyperblaster_tracer"	"1.0"
+	
+	"muzzle_flash_interval"			"0"
+
+ 	"fx_damage_level1"				"effects/vehicles/vehicle_flames_small_hog"
+ 	"fx_damage_level2"				"effects/vehicles/vehicle_flames_medium_hog"
+ 	"fx_damage_level3"				"effects/vehicles/vehicle_flames_large_hog"
+	"fx_damage_level_smoke"			"effects/vehicles/vehicle_smoke_hog"
+
+	"damage_smoke"					"70"
+	"damage_level1"					"60"
+	"damage_level2"					"45"
+	"damage_level3"					"20"
+
+	"fx_wheeldust"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin"					"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid"						"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_none"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_none"				"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_none"					"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_grass"			"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheelspin_grass"			"effects/vehicles/dust/tire_spin_grass"
+ 	"fx_skid_grass"					"effects/vehicles/dust/tire_dust_grass"
+ 	"fx_wheeldust_stone"			"effects/vehicles/dust/tire_dust_stone"
+ 	"fx_wheelspin_stone"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_stone"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_sand"				"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_sand"				"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_sand"					"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_pavement"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_wheeldust_pavement"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_skid_pavement"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_dirt"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_dirt"				"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_dirt"					"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_dusty_road"		"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheelspin_dusty_road"		"effects/vehicles/dust/tire_spin_sand"
+	"fx_skid_dusty_road"			"effects/vehicles/dust/tire_dust_sand"
+	"fx_wheeldust_gravel"			"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheelspin_gravel"			"effects/vehicles/dust/tire_spin_stone"
+	"fx_skid_gravel"				"effects/vehicles/dust/tire_dust_stone"
+	"fx_wheeldust_default"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_default"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_default"				"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheeldust_snow"				"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheelspin_snow"				"effects/vehicles/dust/tire_spin_snow"
+	"fx_skid_snow"					"effects/vehicles/dust/tire_dust_snow"
+	"fx_wheeldust_concrete"			"effects/vehicles/dust/tire_dust_pavement"
+	"fx_wheelspin_concrete"			"effects/vehicles/dust/tire_spin_pavement"
+	"fx_skid_concrete"				"effects/vehicles/dust/tire_dust_pavement"
+	
+	"fx_wheeldust_water"			"effects/vehicles/dust/tire_dust_water"
+	"fx_wheelspin_water"			"effects/vehicles/dust/tire_spin_water"
+	"fx_skid_water"					"effects/vehicles/dust/tire_dust_water"
+	
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"hull"
+
+	"stroggTread"					"1"
+	
+	"overdrive_time"				"5"
+	"overdrive_chargetime"			"30"
+	"overdrive_deadlength"			"2"
+	"overdrive_factor"				"2"
+	"ram_damage_scale"				"5"
+	"hit_damage_scale"				"2"
+
+	"gravity"						"1066"
+
+	"autoRightRollSpeed"			"12"
+	"autoRightPitchSpeed"			"12"
+	"autoRightRaiseSpeed"			"192"
+	"autoRightHeight"				"32"
+
+	"gui_vehicle"					"guis/vehicles/strogg_hog"
+
+	"task_name"						"game/vec/hog"
+
+	"collection_antivehicle"		"antivehicle"
+	"collection_vehicles_light"		"vehicles_light"
+
+	"def_ram"						"ram_hog"
+
+	"def_projectile_decoy"			"projectile_decoy_hog"
+	"projectile_decoy_rate"			"3"
+	"projectile_decoy_joint"		"gun"
+	"projectile_decoy_charge"		"100"
+	"projectile_decoy_max"			"3"
+	"projectile_decoy_velocity"		"0 0 500"
+	
+	"projectile_decoy_ammo_max"		"5"
+	"projectile_decoy_ammo_per_use"	"1"
+
+
+	"input_mode"					"car"
+	"vehicle_control"				"hog"
+
+	"min_gear_speed"				"10"
+	"max_gear_speed"				"70"
+	"power_curve_scale"				"1.5"
+
+	"wake_point_0"					"80 40 0"
+	"wake_point_1"					"80 -40 0"
+	"wake_point_2"					"-110 -70 0"
+	"wake_point_3"					"-110 70 0"
+
+	"collide_dot_limit"				"-0.01"
+	
+	"always_drop"					"1"
+	"validate_drop"					"1"
+
+	// If you value your sanity, DO NOT MODIFY THESE.
+	// They are only here to prevent collision model modifications
+	// from upsetting already tuned handling. If you want to re-tune handling
+	// then comment these out and modify the parameters in the vscript.
+	"do_not_modify_itd"				"3948000 5843467 3604800"
+	"do_not_modify_ito"				"0 -288000 0"
+	"waypoint_offset"				"0 0 64"
+
+
+
+//mal: give the bots an easy means of identifying a vehicle and its traits
+	"vehicle_num"					"hog"
+	"vehicle_team"					"1"
+	"vehicle_flags"					"2"
+	
+	"qc_spotted"					"quickchat/context/attack/vehiclespotted"
+}
+
+entityDef ram_hog {
+	"spawnclass"				"sdClientAnimated"
+	"scriptobject"				"default"
+	"model" 					"models/vehicles/strogg_hog/hog_ram.lwo"
+}
+
+damageDef damage_hog_collide {
+	damage								"damage_hog_collide"
+
+	prof_damage							"pro_vehicle_damage"
+
+	stat_name							"hog_weapons"
+
+	team_kill_cvar						"g_allowComplaint_vehicles"
+
+	tt_obituary							"tooltips/killmsgs/vehicles/hog"
+	tt_obituary_unknown					"tooltips/killmsgs/vehicles/hog/empty"
+	tt_obituary_team_kill				"tooltips/killmsgs/vehicles/hog/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/vehicles/driving"
+}
+
+damageFilter damage_hog_collide {
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+	type {
+		target	"target_veh_all"
+		damage	500
+	}
+	type {
+		target	"target_supply_crate"
+		damage	250
+	}
+	type {
+		target	"target_deployables_all"
+		damage	200
+	}
+}
+
+toolTip vehicle_hog_enter {
+	length	5
+	text	"game/tt/hog"
+}

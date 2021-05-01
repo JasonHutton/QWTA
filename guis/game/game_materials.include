@@ -1,0 +1,88 @@
+#ifndef __game_materials__
+#define __game_materials__
+
+$template _player_upgrade_icons
+	materials {
+		"weapons/gdf/reward1" 				"hud/icons/proficiency_rewards, rect( 0, 	320, 64, 64 )"
+		"weapons/gdf/reward2" 				"hud/icons/proficiency_rewards, rect( 64, 	320, 64, 64 )"
+		"weapons/gdf/reward3" 				"hud/icons/proficiency_rewards, rect( 128, 	320, 64, 64 )"
+		"weapons/gdf/reward4" 				"hud/icons/proficiency_rewards, rect( 192, 	320, 64, 64 )"
+		                                	
+		"weapons/strogg/reward1" 			"hud/icons/proficiency_rewards, rect( 256, 	320, 64, 64 )"
+		"weapons/strogg/reward2" 			"hud/icons/proficiency_rewards, rect( 320, 	320, 64, 64 )"
+		"weapons/strogg/reward3" 			"hud/icons/proficiency_rewards, rect( 384, 	320, 64, 64 )"
+		"weapons/strogg/reward4" 			"hud/icons/proficiency_rewards, rect( 448, 	320, 64, 64 )"
+		
+		"battlesense/gdf/reward1" 			"hud/icons/proficiency_rewards, rect( 0, 	384, 64, 64 )"
+		"battlesense/gdf/reward2" 			"hud/icons/proficiency_rewards, rect( 64, 	384, 64, 64 )"
+		"battlesense/gdf/reward3" 			"hud/icons/proficiency_rewards, rect( 128, 	384, 64, 64 )"
+		"battlesense/gdf/reward4" 			"hud/icons/proficiency_rewards, rect( 192, 	384, 64, 64 )"
+		
+		"battlesense/strogg/reward1" 		"hud/icons/proficiency_rewards, rect( 256, 	384, 64, 64 )"
+		"battlesense/strogg/reward2" 		"hud/icons/proficiency_rewards, rect( 320, 	384, 64, 64 )"
+		"battlesense/strogg/reward3" 		"hud/icons/proficiency_rewards, rect( 384, 	384, 64, 64 )"
+		"battlesense/strogg/reward4" 		"hud/icons/proficiency_rewards, rect( 448, 	384, 64, 64 )"
+		
+		"vehicles/gdf/reward1" 				"hud/icons/proficiency_rewards, rect( 0, 	448, 64, 64 )"
+		"vehicles/gdf/reward2" 				"hud/icons/proficiency_rewards, rect( 64, 	448, 64, 64 )"
+		"vehicles/gdf/reward3" 				"hud/icons/proficiency_rewards, rect( 128, 	448, 64, 64 )"
+		"vehicles/gdf/reward4" 				"hud/icons/proficiency_rewards, rect( 192, 	448, 64, 64 )"
+		
+		"vehicles/strogg/reward1" 			"hud/icons/proficiency_rewards, rect( 256, 	448, 64, 64 )"
+		"vehicles/strogg/reward2" 			"hud/icons/proficiency_rewards, rect( 320, 	448, 64, 64 )"
+		"vehicles/strogg/reward3" 			"hud/icons/proficiency_rewards, rect( 384, 	448, 64, 64 )"
+		"vehicles/strogg/reward4" 			"hud/icons/proficiency_rewards, rect( 448, 	448, 64, 64 )"
+		
+		"soldier/reward1" 					"hud/icons/proficiency_rewards, rect( 0, 	0, 64, 64 )"
+		"soldier/reward2" 					"hud/icons/proficiency_rewards, rect( 64, 	0, 64, 64 )"
+		"soldier/reward3" 					"hud/icons/proficiency_rewards, rect( 128, 	0, 64, 64 )"
+		"soldier/reward4" 					"hud/icons/proficiency_rewards, rect( 192, 	0, 64, 64 )"
+		                                	
+		"aggressor/reward1" 				"hud/icons/proficiency_rewards, rect( 256, 	0, 64, 64 )"
+		"aggressor/reward2" 				"hud/icons/proficiency_rewards, rect( 320, 	0, 64, 64 )"
+		"aggressor/reward3" 				"hud/icons/proficiency_rewards, rect( 384, 	0, 64, 64 )"
+		"aggressor/reward4" 				"hud/icons/proficiency_rewards, rect( 448, 	0, 64, 64 )"
+		
+		"medic/reward1" 					"hud/icons/proficiency_rewards, rect( 0, 	64, 64, 64 )"
+		"medic/reward2" 					"hud/icons/proficiency_rewards, rect( 64, 	64, 64, 64 )"
+		"medic/reward3" 					"hud/icons/proficiency_rewards, rect( 128, 	64, 64, 64 )"
+		"medic/reward4" 					"hud/icons/proficiency_rewards, rect( 192, 	64, 64, 64 )"
+		                                	
+		"technician/reward1" 				"hud/icons/proficiency_rewards, rect( 256, 	64, 64, 64 )"
+		"technician/reward2" 				"hud/icons/proficiency_rewards, rect( 320, 	64, 64, 64 )"
+		"technician/reward3" 				"hud/icons/proficiency_rewards, rect( 384, 	64, 64, 64 )"
+		"technician/reward4" 				"hud/icons/proficiency_rewards, rect( 448, 	64, 64, 64 )"
+		
+		"engineer/reward1" 					"hud/icons/proficiency_rewards, rect( 0, 	128, 64, 64 )"
+		"engineer/reward2" 					"hud/icons/proficiency_rewards, rect( 64, 	128, 64, 64 )"
+		"engineer/reward3" 					"hud/icons/proficiency_rewards, rect( 128, 	128, 64, 64 )"
+		"engineer/reward4" 					"hud/icons/proficiency_rewards, rect( 192, 	128, 64, 64 )"
+		                                	
+		"constructor/reward1" 				"hud/icons/proficiency_rewards, rect( 256, 	128, 64, 64 )"
+		"constructor/reward2" 				"hud/icons/proficiency_rewards, rect( 320, 	128, 64, 64 )"
+		"constructor/reward3" 				"hud/icons/proficiency_rewards, rect( 384, 	128, 64, 64 )"
+		"constructor/reward4" 				"hud/icons/proficiency_rewards, rect( 448, 	128, 64, 64 )"		
+		
+		"fieldops/reward1" 					"hud/icons/proficiency_rewards, rect( 0, 	192, 64, 64 )"
+		"fieldops/reward2" 					"hud/icons/proficiency_rewards, rect( 64, 	192, 64, 64 )"
+		"fieldops/reward3" 					"hud/icons/proficiency_rewards, rect( 128, 	192, 64, 64 )"
+		"fieldops/reward4" 					"hud/icons/proficiency_rewards, rect( 192, 	192, 64, 64 )"
+		                                	
+		"oppressor/reward1" 				"hud/icons/proficiency_rewards, rect( 256, 	192, 64, 64 )"
+		"oppressor/reward2" 				"hud/icons/proficiency_rewards, rect( 320, 	192, 64, 64 )"
+		"oppressor/reward3" 				"hud/icons/proficiency_rewards, rect( 384, 	192, 64, 64 )"
+		"oppressor/reward4" 				"hud/icons/proficiency_rewards, rect( 448, 	192, 64, 64 )"				
+		
+		"covertops/reward1" 				"hud/icons/proficiency_rewards, rect( 0, 	248, 64, 64 )"
+		"covertops/reward2" 				"hud/icons/proficiency_rewards, rect( 64, 	248, 64, 64 )"
+		"covertops/reward3" 				"hud/icons/proficiency_rewards, rect( 128, 	248, 64, 64 )"
+		"covertops/reward4" 				"hud/icons/proficiency_rewards, rect( 192, 	248, 64, 64 )"
+		                                	
+		"infiltrator/reward1" 				"hud/icons/proficiency_rewards, rect( 256,  248, 64, 64 )"
+		"infiltrator/reward2" 				"hud/icons/proficiency_rewards, rect( 320,  248, 64, 64 )"
+		"infiltrator/reward3" 				"hud/icons/proficiency_rewards, rect( 384,  248, 64, 64 )"
+		"infiltrator/reward4" 				"hud/icons/proficiency_rewards, rect( 448,  248, 64, 64 )"		
+	}
+$endtemplate
+
+#endif // !__game_materials__

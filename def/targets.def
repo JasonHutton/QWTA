@@ -1,0 +1,227 @@
+/***********************************************************************
+
+ target decls
+
+***********************************************************************/
+
+targetInfo target_all {
+	include collection "deployables"
+	include collection "players"
+	include collection "vehicles"
+}
+
+targetInfo target_doors_all {
+	include class "idDoor"
+	exclude collection "he"
+	exclude collection "arty"
+	exclude collection "ss"
+}
+
+targetInfo target_player_all {
+	include collection "players"
+}
+
+targetInfo target_trojan_antiair {
+	include collection "trojan_antiair"
+}
+
+targetInfo target_veh_all {
+	include collection "vehicles"
+	include collection "decoy"
+}
+
+targetInfo target_veh_heavy_all {
+	include collection "vehicles_heavy"
+	include collection "decoy"
+}
+
+targetInfo target_veh_light_all {
+	include collection "vehicles_light"
+	include collection "decoy"
+}
+
+targetInfo target_deployables_all {
+	include collection "deployables"
+}
+
+targetInfo target_player_veh_all {
+	include collection "players"
+	include collection "vehicles"
+}
+
+targetInfo target_veh_str_all {
+	include collection "deployables"
+	include collection "vehicles"
+}
+
+targetInfo target_antiair {
+	include collection "antiair"
+}
+
+targetInfo target_antissg {
+	include collection "antissg"
+}
+
+targetInfo target_antissm {
+	include collection "antissm"
+}
+
+targetInfo target_explodable {
+	include collection "explodable"
+	include collection "mountables"
+}
+
+targetInfo target_deploy_kill {
+	include collection "players"
+	include collection "vehicles"
+	include collection "deploykill"
+	include class "sdDeployZone"
+	include class "idStaticEntity"
+	exclude collection "mcp"
+}
+
+targetInfo target_lightning_attractor {
+	include collection "deployables"
+	include collection "vehicles"
+}
+
+targetInfo target_mdfExport {
+	include collection "deployables"
+	include collection "mountables"
+	include collection "players"
+	include collection "vehicles"
+	include collection "mdfExport"
+}
+
+targetInfo target_objectives_he {
+	include collection "he"
+}
+
+targetInfo target_objectives_ss {
+	include collection "ss"
+}
+
+targetInfo target_objectives_scud {
+	include collection "scud"
+}
+
+targetInfo target_objectives_zappor {
+	include collection "zappor"
+}
+
+targetInfo target_objectives_arty {
+	include collection "arty"
+}
+
+targetInfo target_deployables {
+	include collection "deployables"
+}
+
+targetInfo target_repair_drone_targets {
+	include collection "deployables"
+	include collection "mountables"
+	include collection "vehicles"
+	include collection "repairable"
+
+	require need_repair
+}
+
+targetInfo target_lock_filter_trojan_antiair {
+	include collection "trojan_antiair"
+
+	require alive
+}
+
+targetInfo target_lock_filter {
+	include collection "deployables"
+	include collection "mountables"
+	include collection "vehicles"
+	exclude collection "nolock"
+
+	require alive
+}
+
+targetInfo target_lock_filter_hyperblaster {
+	include collection "deployables"
+	include collection "players"
+	include collection "mountables"
+	include collection "vehicles"
+	exclude collection "nolock"
+
+	require alive
+}
+
+targetInfo target_oob_damage {
+	include collection "oob"
+}
+
+targetInfo target_emp_kill {
+	include collection "emp_kill"
+}
+
+targetInfo target_explodable_emp {
+	include reference "target_explodable"
+	exclude collection "mine"
+}
+
+targetInfo target_mountables {
+	include collection "mountables"
+}
+
+
+targetInfo target_content_bounds {
+	include collection "deployables"
+	include collection "vehicles"
+	include collection "content_bounds"
+}
+
+targetInfo target_camera {
+	include collection "camera"
+}
+
+// =============================================
+// MAP STUFF
+// =============================================
+
+// Refinery
+targetInfo target_strogg_basewall {
+	include collection "vehicles_gdf"
+	include collection "firesupport_gdf"
+}
+
+// Salvage
+targetInfo target_salvage_mine {
+	include collection "vehicles"
+}
+
+// Slipgate
+targetInfo target_strogg_slipgate {
+	include collection "vehicles_gdf"
+}
+
+// Valley
+targetInfo target_strogg_doorshield {
+	include collection "vehicles_gdf"
+	include collection "firesupport_gdf"
+}
+
+// Volcano
+targetInfo target_flyer_damage {
+	include collection "flyer_damage"
+}
+
+targetInfo target_spawn_host {
+	include collection "spawn_host"
+}
+
+targetInfo target_supply_crate {
+	include collection "supply_crate"
+}
+
+targetInfo target_nuke {
+	include collection "nuke"
+}
+
+targetInfo target_flyer_hive {
+	include collection "flyer_hive"
+}

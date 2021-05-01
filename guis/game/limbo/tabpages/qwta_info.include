@@ -1,0 +1,29 @@
+
+#ifndef __qwta_info__
+#define __qwta_info__
+
+// QWTA Info
+#define QWTA_DOCS	1
+#define QWTA_SETTINGS	2
+
+
+
+_tab_page( QWTAInfo, localize( "guis/limbo/qwta" ), gameInfo, GI_QWTAINFO, _to_right_of( tabpAdmin ), 0 )
+	_label_literal( QWTATitle, localizeArgs( "guis/limbo/qwta/longname" ), $evalfloat( PADDING * 2 ), PADDING, _fill_to_right_of( tabpQWTAInfoContent ), 12, COLOR_WHITE )
+		properties {
+			vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		}
+	_end_label
+	_tab_container( QWTAInfo, 1, PADDING, _to_bottom_of( lblQWTATitle ) + 3, _fill_to_right_of( tabpQWTAInfoContent ), _fill_to_bottom_of( tabpQWTAInfoContent ) )
+		#include <guis/game/limbo/tabpages/qwta_info_docs.include>
+		#include <guis/game/limbo/tabpages/qwta_info_settings.include>	
+	_end_tab_container
+	
+	
+
+	//properties {
+	//	float visible = true;//player.serverIsRepeater == false;
+	//}
+_end_tab_page
+
+#endif

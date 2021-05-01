@@ -1,0 +1,67 @@
+
+entityDef projectiles/force_shield_qwta {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"projectile_forceshield_qwta"
+
+	"mins"							"-4 -4 -1.5"
+	"maxs"							"4 4 1.5"
+
+	"model" 						"models/tools/force_shield/force_shield_small.lwo"
+
+	"option_write_bind"					"1"
+	"option_simple_rigid_body_physics"	"1"
+	"option_unlock_interpolate"			"1"
+
+	"linear_friction"				"0.8"
+	"angular_friction"				"0.8"
+	"contact_friction"				"0.8"
+	"bouncyness"					"0"
+	"mass"							"10"
+	"gravity"						"1066"
+	"stick_on_contact"				"0"
+	"velocity"						"400 0 0"
+	"angular_velocity"				"0 0 0"
+
+	"def_shield"					"projectiles/force_shield_shield_qwta"
+}
+
+entityDef projectiles/force_shield_mega_qwta {
+	"inherit"						"projectiles/force_shield_qwta"
+	"def_shield"					"projectiles/force_shield_shield_mega_qwta"
+}
+
+entityDef projectiles/force_shield_shield_qwta {
+	"spawnclass"					"sdScriptEntity"
+	"scriptObject"					"force_shield_qwta"
+
+	"model"							"models/tools/force_shield/force_shield.lwo"
+	"cm_model"						"models/tools/force_shield/force_shield.lwo"
+
+	"option_write_bind"				"1"
+
+	"health"						"450"
+	"collection_vehicles"			"vehicles"
+	"collection_vehicles_light"		"vehicles_light"
+	"collection_emp_kill"			"emp_kill"
+
+	"life_time"						"40"
+	"blink_start"					"5"
+	"blink_multiplier"				"0.2"
+	"blink_max_off"					"0.2"
+
+	"fx_hit"						"effects/base/bullets/impact_forcefield"
+	"sticks_to_entities"			"0"
+
+	"prof_damage"					"pro_oppressor_force_shield"
+
+	"snd_start"						"sounds/tools/forceshield/start"
+	"snd_stop"						"sounds/tools/forceshield/stop"
+	
+	"fx_absorb"						"effects/items/forceshield_absorb"
+}
+
+entityDef projectiles/force_shield_shield_mega_qwta {
+	"inherit"						"projectiles/force_shield_shield_qwta"
+	"health"						"600"
+	"skin"							"sfx/forceshield_mega"
+}

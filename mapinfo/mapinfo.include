@@ -1,0 +1,13 @@
+
+#ifndef __mapinfo_template__
+#define __mapinfo_template__
+
+$template _default_mapinfo( MapName )
+	data {
+		"megatexture"			"megatextures/" ## MapName
+		"heightmap"				"heightmaps/" ## MapName ## ".tga"
+		"gridsize"				"256"
+    }
+$endtemplate
+   
+#endif 

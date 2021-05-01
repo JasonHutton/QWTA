@@ -1,0 +1,169 @@
+
+entityDef spawn_host {
+	"spawnclass"					"sdDynamicSpawnPoint"
+	"scriptobject"					"spawn_host_qwta"
+	
+	"mins"							"-18 -8 0"
+	"maxs"							"8 8 16"
+	
+	"health"						"50"
+	"collection_nolock"				"nolock"
+
+	"model"							"models/techkits/spawnhost_on.lwo"
+	"model_selected"				"models/techkits/spawnhost_off.lwo"
+
+	"spawn_priority_gdf"			"-100"
+	"spawn_priority_strogg"			"-100"
+
+	"option_crosshair_interface"	"1"
+	"option_combat_model"			"1"
+	"option_interactive_interface"	"1"		
+
+	"mtr_icon_gdf"					"hud/commandmap/spawn_edf"
+	"mtr_icon_strogg"				"hud/commandmap/spawn_edf"
+	"mtr_icon_selected"				"hud/commandmap/spawn_host_select"
+	"mtr_icon_default"				"hud/commandmap/spawn_host_select"
+	"option_inhibit_decals"			"1"
+
+	"str_icon_taken"				"spawn_host_taken_icon"
+	"str_icon_available"			"spawn_host_available_icon"
+					
+	"fx_fizzle"						"effects/vehicles/generic_smoke"
+
+	"icon_size_cm"					"24"
+	"icon_sort_cm"					"-25"
+	"icon_sort_selected_cm"			"-26"
+	
+	"waypoint_offset"				"0 0 32"
+	
+	"task_select"					"strogg_select_spawnhost"
+	"task_destroy"					"medic_destroy_spawnhost"
+
+	"tt_intro_gdf_1"				"tooltip_spawnhost_gdf_1"
+	"tt_intro_gdf_2"				"tooltip_spawnhost_gdf_2"
+	"tt_intro_strogg_use"			"tooltip_spawnhost_strogg_use"
+	"tt_strogg_destroyed"			"tooltip_spawnhost_destroyed"
+	"tt_strogg_select"				"tooltip_spawnhost_strogg_select"
+	"tt_strogg_already_selected_1"	"tooltip_spawnhost_strogg_already_selected_1"
+	"tt_strogg_already_selected_2"	"tooltip_spawnhost_strogg_already_selected_2"
+	
+	"collection_localteamwatch"		"localteamwatch"
+	"collection_spawn_host"			"spawn_host"
+
+	"require1"						"team_strogg"
+	"prof_used"						"pro_technician_spawn_host_used"
+	
+	"contextmenu_quickchat_friendly" ""
+	"contextmenu_quickchat_enemy"	 "quickchat/context/spawnhost_destroy"
+	
+	"vo_created_delay"				"2"
+
+	"snd_spawn_created"				"sounds/vo/strogg/nexus/alerts/spawnhost/created"
+}
+
+
+
+tooltip tooltip_spawnhost_gdf_1 {
+	text "game/tt/intro/spawn_host/gdf_1"
+}
+
+tooltip tooltip_spawnhost_gdf_2 {
+	text "game/tt/intro/spawn_host/gdf_2"
+}
+
+tooltip tooltip_spawnhost_strogg_use {
+	text "game/tt/intro/spawn_host/strogg_use"
+}
+
+toolTip tooltip_spawnhost_destroyed {
+	length	5
+	alwaysPlay
+	sound 	"sounds/ui/main/bad"
+	text	"game/tt/spawn_host_destroyed"
+}
+
+toolTip tooltip_spawnhost_strogg_select {
+	length	5
+	alwaysPlay
+	sound 	"sounds/ui/main/neutral"
+	text	"game/tt/spawn_host_select"
+}
+
+toolTip tooltip_spawnhost_strogg_already_selected_1 {
+	length	5
+	alwaysPlay
+	sound 	"sounds/ui/main/cannot"
+	text	"game/tt/spawn_host_already_selected_1"
+}
+
+toolTip tooltip_spawnhost_strogg_already_selected_2 {
+	length	5
+	alwaysPlay
+	sound 	"sounds/ui/main/cannot"
+	text	"game/tt/spawn_host_already_selected_2"
+}
+
+entityDef dead_body_gdf {
+	"spawnclass"					"sdPlayerBody"
+
+	"max_possess_count"				"35"
+	"max_spawnhost_count"			"20"
+	
+	"bleed"							"1"
+	"mtr_wound_bullet"				"textures/decals/gore_splat/hurt02"
+	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
+	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
+	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
+	"mtr_splat4"					"textures/decals/gore_splat/dsplat11"
+	"mtr_wound_slash"				"textures/decals/gore_splat/knifescratch"
+	
+	"mtr_wound_explosive"			"textures/decals/gore_splat/splat2_fade"
+	
+	"fx_bleed_explode"				"effects/impacts/gib"
+	"fx_bleed_explode_small"		"effects/impacts/gib_small"
+	
+	"climate_key"					"body_gdf"
+	
+	"task_create_spawn_host"		"technician_create_spawnhost"
+
+	"tt_intro_use_me_1_disguise"	"dead_body_intro_disguise"
+
+	"tt_intro_use_me_1_spawnhost"	"dead_body_intro_spawnhost_1"
+	"tt_intro_use_me_2_spawnhost"	"dead_body_intro_spawnhost_2"
+}
+
+entityDef dead_body_strogg {
+	"spawnclass"					"sdPlayerBody"
+
+	"climate_key"					"body_strogg"
+	
+	"bleed"							"1"
+	"mtr_wound_bullet"				"textures/decals/gore_splat/hurt02"
+	"mtr_splat"						"textures/decals/gore_splat/dsplat2"
+	"mtr_splat2"					"textures/decals/gore_splat/dsplat5"
+	"mtr_splat3"					"textures/decals/gore_splat/dsplat7"
+	"mtr_splat4"					"textures/decals/gore_splat/dsplat11"
+	"mtr_wound_slash"				"textures/decals/gore_splat/knifescratch"
+	
+	"mtr_wound_explosive"			"textures/decals/gore_splat/splat2_fade"
+	
+	"fx_bleed_explode"				"effects/impacts/gib"
+	"fx_bleed_explode_small"		"effects/impacts/gib_small"
+	
+	"max_possess_count"				"35"
+	"max_spawnhost_count"			"20"
+
+	"tt_intro_use_me_1_disguise"	"dead_body_intro_disguise"
+}
+
+tooltip dead_body_intro_disguise {
+	text "game/tt/intro/dead_body/disguise"
+}
+
+tooltip dead_body_intro_spawnhost_1 {
+	text "game/tt/intro/dead_body/spawnhost_1"
+}
+
+tooltip dead_body_intro_spawnhost_2 {
+	text "game/tt/intro/dead_body/spawnhost_2"
+}

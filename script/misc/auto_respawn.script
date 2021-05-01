@@ -1,0 +1,263 @@
+/*
+
+	auto_respawn.script
+	handles the automatic repawning of vehicles around bases
+
+*/
+
+
+object auto_respawn {
+
+	void			preinit();
+	void			init();
+	void			destroy();
+
+	boolean			SpawnVehicle();
+	boolean			CheckSpawn();
+	boolean			MinClientsForSpawn( float numClients );
+
+	void			UpdateThread( float initialWait );
+
+	void			vOnVehicleDestroyed();
+
+	void			vOnUnDeploy();
+	void			vOnDeploy();
+
+	void			StartThread( float delay );
+	void			StopThread();
+
+	void			KillVehicle();
+
+	float			updateThreadHandle;
+	entity			vehicle;
+	float			waitTime;
+	float			delayTime;
+	
+	boolean			active;
+
+	float			vehicleType;
+	float			playerType;
+	
+	boolean			bHasSpawnedOnce;
+}
+
+void auto_respawn::preinit() {
+	waitTime = gameRules.GetFloatKeyWithSuffix( self, "wait_time", 0 );
+	delayTime = getFloatKeyWithDefault( "delay_time", 0.5 );
+	
+	playerType	= sys.getTypeHandle( "idPlayer" );
+	vehicleType	= sys.getTypeHandle( "sdTransport" );
+
+	setGameTeam( sys.getTeam( getKey( "team" ) ) );
+	
+	updateThreadHandle = -1;
+	active = getIntKeyWithDefault( "start_active", false );
+
+	setContents( CONTENTS_TRIGGER );
+	
+	bHasSpawnedOnce = false;
+}
+
+void auto_respawn::init() {
+	if ( active ) {
+		StartThread( delayTime );
+	}
+}
+
+void auto_respawn::KillVehicle() {
+	if ( vehicle != $null_entity ) {
+		if ( vehicle.getNumOccupiedPositions() <= 0 ) {
+			// get the distance away that it is
+			float distSquared = sys.vecLengthSquared( vehicle.getWorldOrigin() - getWorldOrigin() );
+			if ( distSquared < 102400 ) {
+				// less than ~10m away
+				vector up;
+				up_z = 1.f;
+				vehicle.setTakesDamage( true );
+				vehicle.setIconEnabled( false );
+				vehicle.applyDamage( $null_entity, $null_entity, up, GetDamage( "damage_magog_npc_collide" ), 10000.f, $null_entity );
+			}
+		}
+	}
+}
+
+void auto_respawn::destroy() {
+	KillVehicle();
+}
+
+void auto_respawn::UpdateThread( float initialWait ) {
+	sys.wait( initialWait );
+
+	while ( true ) {
+		if ( SpawnVehicle() ) {
+			break;
+		}
+		sys.waitFrame();
+	}
+	updateThreadHandle = -1;
+}
+
+boolean auto_respawn::SpawnVehicle() {
+	if ( CheckSpawn() ) {
+		vehicle = sys.spawn( getKey( "def_construction" ) );
+		vehicle.setGameTeam( getGameTeam() );
+		vehicle.setOrigin( getOrigin() );
+		vehicle.setAngles( getAngles() );
+		vehicle.vSetDeployer( self );
+		bHasSpawnedOnce = true;
+		return true;
+	}
+	return false;
+}
+
+boolean auto_respawn::CheckSpawn() {
+	team_base team = getGameTeam();
+
+	if ( sys.getTime() < team.GetNextVehicleSpawnTime() ) {
+		return false;
+	}
+
+	if ( g_disableVehicleSpawns.getBoolValue() ) {
+		return false;
+	}
+	
+	if ( g_disableVehicleRespawns.getBoolValue() && bHasSpawnedOnce ) {
+		return false;
+	}
+	
+	if( !MinClientsForSpawn( sys.getNumClients() ) ) {
+		return false;
+	}
+
+	float count = entitiesInBounds( getMins(), getMaxs(), CONTENTS_VEHICLECLIP | CONTENTS_BODY | CONTENTS_SLIDEMOVER | CONTENTS_MONSTER | CONTENTS_SOLID, 0 );
+	float index;
+	entity other;
+	if ( count ) {
+		for( index = 0; index < count; index++ ) {
+			other = getBoundsCacheEntity( index );
+			if ( other == $null_entity ) {
+				continue;
+			}
+			if ( other.vBlockVehicleSpawn() ) {
+				return false;
+			}
+		}
+	}
+	
+	float currentForceEscalation = sys.getForceEscalation();
+	float requiredForceEscalation = getFloatKeyWithDefault( "force_escalation_required", 0.0 );
+	if ( g_vehicleSpawnsUseFE.getBoolValue() && currentForceEscalation < requiredForceEscalation ) {
+		return false;
+	}
+
+	return true;
+}
+
+boolean auto_respawn::MinClientsForSpawn( float numClients ) {
+	
+	// GDF BaseETQW
+	
+	if ( getKey( "def_construction" ) == "vehicle_husky" && numClients < g_vehicleSpawnMinPlayersHusky.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_platypus" && numClients < g_vehicleSpawnMinPlayersPlatypus.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_badger" && numClients < g_vehicleSpawnMinPlayersArmadillo.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_trojan" && numClients < g_vehicleSpawnMinPlayersTrojan.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_bumblebee" && numClients < g_vehicleSpawnMinPlayersBumblebee.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_titan" && numClients < g_vehicleSpawnMinPlayersTitan.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_anansi" && numClients < g_vehicleSpawnMinPlayersAnansi.getIntValue() ) {
+		return false;
+	}
+	
+	// Strogg BaseETQW
+	
+	if ( getKey( "def_construction" ) == "vehicle_icarus" && numClients < g_vehicleSpawnMinPlayersIcarus.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_hog" && numClients < g_vehicleSpawnMinPlayersHog.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_desecrator" && numClients < g_vehicleSpawnMinPlayersDesecrator.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_goliath" && numClients < g_vehicleSpawnMinPlayersCyclops.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_hornet" && numClients < g_vehicleSpawnMinPlayersTormentor.getIntValue() ) {
+		return false;
+	}
+	
+	// QWTA Vehicles
+	
+	if ( getKey( "def_construction" ) == "vehicle_jupiter" && numClients < g_vehicleSpawnMinPlayersJupiter.getIntValue() ) {
+		return false;
+	}
+	
+	if ( getKey( "def_construction" ) == "vehicle_abaddon" && numClients < g_vehicleSpawnMinPlayersAbaddon.getIntValue() ) {
+			return false;
+	}
+	
+	return true;
+}
+
+void auto_respawn::vOnVehicleDestroyed() {
+	vehicle = $null_entity;
+
+	StopThread();
+
+	if ( active ) {
+		StartThread( waitTime );
+	}
+}
+
+void auto_respawn::StartThread( float delay ) {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( vehicle != $null_entity ) {
+		return;
+	}
+
+	if ( updateThreadHandle == -1 ) {
+		updateThreadHandle = thread UpdateThread( delay );
+	}
+}
+
+void auto_respawn::StopThread() {
+	if ( updateThreadHandle != -1 ) {
+		sys.terminate( updateThreadHandle );
+		updateThreadHandle = -1;
+	}
+}
+
+void auto_respawn::vOnUnDeploy() {
+	active = false;
+	StopThread();
+	KillVehicle();
+}
+
+void auto_respawn::vOnDeploy() {
+	active = true;
+	StartThread( delayTime );
+}

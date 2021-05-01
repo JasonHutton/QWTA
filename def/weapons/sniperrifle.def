@@ -1,0 +1,478 @@
+/***********************************************************************
+
+	N38 Sniperrifle
+	weapons/sniperrifle.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix SNIPER_ -sourcedir models/weapons/gdf_sniper_rifle/dev_sd -destdir models/weapons/gdf_sniper_rifle/ -keep  muzzle
+
+
+	mesh	sniper_base_file.mb						-dest models/weapons/gdf_sniper_rifle/sniper_rifle_view.md5mesh
+	anim	sniper_idle.mb							-dest models/weapons/gdf_sniper_rifle/sniper_rifle_idle.md5anim
+	anim	sniper_raise.mb							-dest models/weapons/gdf_sniper_rifle/sniper_rifle_raise.md5anim
+ 	anim	sniper_lower.mb							-dest models/weapons/gdf_sniper_rifle/sniper_rifle_lower.md5anim
+   	anim	sniper_fire.mb							-dest models/weapons/gdf_sniper_rifle/sniper_rifle_fire.md5anim
+
+ 	anim	sniper_reload.mb						-dest models/weapons/gdf_sniper_rifle/sniper_rifle_reload.md5anim
+
+ 	anim	sniper_zoom_in.mb						-dest models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_in.md5anim
+ 	anim	sniper_zoom_out.mb						-dest models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_out.md5anim
+
+ 	anim	sniper_zoom_idle.mb						-dest models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_idle.md5anim
+
+ 	anim	sniper_start_sprint.mb					-dest models/weapons/gdf_sniper_rifle/sniper_rifle_start_sprint.md5anim
+ 	anim	sniper_leave_sprint.mb					-dest models/weapons/gdf_sniper_rifle/sniper_rifle_leave_sprint.md5anim
+
+
+}
+
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_sniperrifle {
+	mesh					models/weapons/gdf_sniper_rifle/sniper_rifle_view.md5mesh
+
+	anim idle				models/weapons/gdf_sniper_rifle/sniper_rifle_idle.md5anim {
+	}
+
+	anim idle_empty			models/weapons/gdf_sniper_rifle/sniper_rifle_idle.md5anim {
+	}
+
+	anim fire				models/weapons/gdf_sniper_rifle/sniper_rifle_fire.md5anim  {
+		frame 14				sound_channel snd_weapon_reload snd_chamber
+	}
+
+	anim putaway 			models/weapons/gdf_sniper_rifle/sniper_rifle_lower.md5anim {
+	}
+
+	anim raise 				models/weapons/gdf_sniper_rifle/sniper_rifle_raise.md5anim {
+		frame 1					sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim reload 			models/weapons/gdf_sniper_rifle/sniper_rifle_reload.md5anim {
+		frame 14				sound_channel snd_weapon_reload snd_reload
+		frame 65				sound_channel snd_weapon_reload snd_chamber
+	}
+
+	anim zoomin				models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_in.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_sights_up
+	}
+
+	anim zoomout			models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_out.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_sights_down
+	}
+
+	anim idle_zoom			models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_idle.md5anim {
+	}
+
+	anim fire_zoom			models/weapons/gdf_sniper_rifle/sniper_rifle_zoom_idle.md5anim {
+	}
+
+	anim start_sprint		models/weapons/gdf_sniper_rifle/sniper_rifle_start_sprint.md5anim {
+	}
+
+	anim leave_sprint		models/weapons/gdf_sniper_rifle/sniper_rifle_leave_sprint.md5anim {
+	}
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_sniper {
+	mesh		 				models/weapons/gdf_sniper_rifle/sniper_world.md5mesh
+	anim raise					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+	anim idle 					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+	anim aim					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+	anim fire 					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+	anim fire1 					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+	anim reload					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+	anim noammo					models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+ 	anim putaway				models/weapons/gdf_sniper_rifle/sniper_world.md5anim
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/sniperrifle {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/sniperrifle" // "Sniper Rifle"
+	model								"models/weapons/gdf_sniper_rifle/sniper_rifle_person.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_sniperrifle"
+		"model_world" 					"worldmodel_sniper"
+		"anim_limbomenu"				"menu_sniper"
+
+		"view_offset"					"1 -0.5 -1"
+		"view_foreshorten"				"0.9"
+
+
+		"joint_attach"					"weapon"
+		"anim_prefix"					"sniper"
+		"anim_prefix_class"				"machinegun"
+
+		"weapon_scriptobject"			"weapon_sniperrifle"
+
+		"recoilTime"					"1000"
+		"recoilAngles"					"-0.2 0 0"
+		"kickback"						"2"
+		"kickback_prone"				"0.2"
+
+		"fx_muzzle_flash_world"			"effects/weapons/sniperrifle_muzzleflash_world"
+		"fx_muzzle_flash_novisuals" 	"effects/weapons/sniperrifle_muzzleflash_view_novisuals"
+		"fx_muzzle_flash"				"effects/weapons/sniperrifle_muzzleflash_view"
+
+		"snd_fire"						"sounds/weapons/sniperrifle/fire"
+		"snd_fire_far"					"sounds/weapons/sniperrifle/fire/far"
+		"snd_fire_local"				"sounds/weapons/sniperrifle/fire/local"
+		"snd_reload"					"sounds/weapons/sniperrifle/reload"
+		"snd_chamber"					"sounds/weapons/sniperrifle/chamber"
+		"snd_cock"						"sounds/weapons/sniperrifle/cock"
+		"snd_raise"						"sounds/weapons/sniperrifle/raise"
+		"snd_lower"						"sounds/weapons/sniperrifle/lower"
+		"snd_zoomin"					"sounds/weapons/sniperrifle/zoom/in"
+		"snd_zoomout"					"sounds/weapons/sniperrifle/zoom/out"
+		"snd_sights_up"					"sounds/weapons/sniperrifle/sights/up"
+		"snd_sights_down"				"sounds/weapons/sniperrifle/sights/down"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+
+		"fire_rate"						"2"
+		"num_projectiles"				"1"
+		"low_ammo"						"4"
+
+		"show_single_reload_time"		"1"
+
+		"tt_intro_1"					"sniperrifle_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_scope"				"sniperrifle_scope"
+		"tt_intro_reload"				"generic_weapon_reload"
+		"tt_intro_scope_up_1"			"sniperrifle_scoped_1"
+		"tt_intro_scope_up_2"			"sniperrifle_scoped_2"
+
+		"stat_name"						"sniperrifle"
+
+		"def_scopemodel"				"scope_sniperrifle"
+		"gui_sniper_scope"				"game/sights/sniper_scope"
+		"hud_sort"						"999"
+		"num_zoom_levels"				"4"
+
+		"zoom_fov_1"					"45"
+		"zoom_fov_2"					"30"
+		"zoom_fov_3"					"20"
+		"zoom_fov_4"					"10"
+
+		"zoom_time"						"0.2"
+
+		"fov_speed"						"0.5"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/sniperrifle"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"hide_crosshair"				"0"
+		"crosshair"						"small"
+		"crosshair_secondary"			"none"
+		"disabled_crosshair_secondary"	"none"
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"3"
+		"crosshair_spread_scale"		"3"
+
+		"spread_min"					"2"
+		"spread_max"					"20"
+		"spread_inc"					"20"
+
+		"spread_viewrate_min"			"2"
+		"spread_viewrate_max"			"20"
+		"spread_viewrate_inc"			"20"
+
+		"spread_max_settle_time"		"1200"
+
+		"spread_crouch_min"				"1.5"
+		"spread_crouch_max"				"15"
+		"spread_crouch_inc"				"15"
+
+		"spread_crouch_viewrate_min"	"1.5"
+		"spread_crouch_viewrate_max"	"15"
+		"spread_crouch_viewrate_inc"	"15"
+
+		"spread_crouch_max_settle_time"	"1100"
+
+		"spread_prone_min"				"1"
+		"spread_prone_max"				"10"
+		"spread_prone_inc"				"10"
+
+		"spread_prone_viewrate_min"		"1"
+		"spread_prone_viewrate_max"		"10"
+		"spread_prone_viewrate_inc"		"10"
+
+		"spread_prone_max_settle_time"	"1000"
+
+		"zoom_pitch_amplitude"			"0.5"
+		"zoom_pitch_frequency"			"0.24"
+		"zoom_pitch_min_amplitude"		"0.13"
+		"zoom_yaw_amplitude"			"3.2"
+		"zoom_yaw_frequency"			"0.12"
+		"zoom_yaw_min_amplitude"		"0.23"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"15"
+	}
+
+	clip {
+		"projectile"					"projectile_sniperrifle"
+		"type"							"sniperrifle"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"10"
+	}
+
+	clip {
+		"projectile"					"projectile_sniperrifle_scoped"
+		"type"							"sniperrifle"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"10"
+	}
+}
+
+entityDef projectile_sniperrifle {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"16384"
+	"min_damage_percent"				"25"
+
+	"dmg_damage"						"damage_sniperrifle"
+	"dmg_realistic_damage"					"realistic_damage_sniperrifle"
+
+	"fx_explode"						"effects/sniperrifle/bullets/impacts/pavement"
+	"fx_explode_flesh"					"effects/sniperrifle/bullets/impacts/flesh"
+	"fx_explode_forcefield"				"effects/sniperrifle/bullets/impacts/forcefield"
+	"fx_explode_glass"					"effects/sniperrifle/bullets/impacts/glass"
+	"fx_explode_grass"					"effects/sniperrifle/bullets/impacts/grass"
+	"fx_explode_ice"					"effects/sniperrifle/bullets/impacts/glass"
+	"fx_explode_metal"					"effects/sniperrifle/bullets/impacts/metal"
+	"fx_explode_pavement"				"effects/sniperrifle/bullets/impacts/pavement"
+	"fx_explode_plastic"				"effects/sniperrifle/bullets/impacts/plastic"
+	"fx_explode_sand"					"effects/sniperrifle/bullets/impacts/sand"
+	"fx_explode_snow"					"effects/sniperrifle/bullets/impacts/snow"
+	"fx_explode_stone"					"effects/sniperrifle/bullets/impacts/stone"
+	"fx_explode_water"					"effects/sniperrifle/bullets/impacts/liquid"
+	"fx_explode_water_interior"			"effects/sniperrifle/bullets/impacts/liquid"
+	"fx_explode_wood"					"effects/sniperrifle/bullets/impacts/wood"
+	"fx_ricochet"						"effects/sniperrifle/bullets/ricochet"
+
+	"tracer_chance"						"1"
+	"tracer_server_only"				"1"
+	"fx_tracer"							"effects/weapons/sniperrifle_trail"
+	"fx_baseETQW12_tracer"				"effects/weapons/sniperrifle_trail_baseetqw12"
+}
+
+entityDef projectile_sniperrifle_scoped {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"16384"
+	"min_damage_percent"				"25"
+
+	"dmg_damage"						"damage_sniperrifle_scoped"
+	"dmg_realistic_damage"					"realistic_damage_sniperrifle_scoped"
+
+	"fx_explode"						"effects/sniperrifle/bullets/impacts/pavement"
+	"fx_explode_flesh"					"effects/sniperrifle/bullets/impacts/flesh"
+	"fx_explode_forcefield"				"effects/sniperrifle/bullets/impacts/forcefield"
+	"fx_explode_glass"					"effects/sniperrifle/bullets/impacts/glass"
+	"fx_explode_grass"					"effects/sniperrifle/bullets/impacts/grass"
+	"fx_explode_ice"					"effects/sniperrifle/bullets/impacts/glass"
+	"fx_explode_metal"					"effects/sniperrifle/bullets/impacts/metal"
+	"fx_explode_pavement"				"effects/sniperrifle/bullets/impacts/pavement"
+	"fx_explode_plastic"				"effects/sniperrifle/bullets/impacts/plastic"
+	"fx_explode_sand"					"effects/sniperrifle/bullets/impacts/sand"
+	"fx_explode_snow"					"effects/sniperrifle/bullets/impacts/snow"
+	"fx_explode_stone"					"effects/sniperrifle/bullets/impacts/stone"
+	"fx_explode_water"					"effects/sniperrifle/bullets/impacts/liquid"
+	"fx_explode_water_interior"			"effects/sniperrifle/bullets/impacts/liquid"
+	"fx_explode_wood"					"effects/sniperrifle/bullets/impacts/wood"
+	"fx_ricochet"						"effects/sniperrifle/bullets/ricochet"
+
+	"tracer_chance"						"1"
+	"tracer_server_only"				"1"
+	"fx_tracer"							"effects/weapons/sniperrifle_trail"
+	"fx_baseETQW12_tracer"				"effects/weapons/sniperrifle_trail_baseetqw12"
+}
+
+entityDef scope_sniperrifle {
+	"spawnclass"				"sdClientAnimated"
+	"scriptobject"				"default"
+	"model" 					"models/scopes/scope_rifle.lwo"
+	"fov"						"157"
+}
+
+
+damageDef damage_sniperrifle {
+	damage								"damage_sniperrifle"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.5
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							80
+
+	push								30000
+
+	stat_name							"sniperrifle"
+
+	record_hit_stats
+
+	prof_damage							"pro_covertops_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/sniperrifle"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sniperrifle/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_sniperrifle {
+	inherit								"damage_sniperrifle"
+	damage								"realistic_damage_sniperrifle"
+}
+
+damageDef damage_sniperrifle_scoped {
+	damage								"damage_sniperrifle_scoped"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						1
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							80
+
+	push								30000
+
+	stat_name							"sniperrifle"
+
+	record_hit_stats
+
+	prof_damage							"pro_covertops_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/sniperrifle"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sniperrifle/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_sniperrifle_scoped {
+	inherit								"damage_sniperrifle_scoped"
+	damage								"realistic_damage_sniperrifle_scoped"
+}
+
+damageFilter damage_sniperrifle {
+
+	type {
+		target							"target_player_all"
+		damage							70
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							150
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							150
+	}
+}
+
+damageFilter realistic_damage_sniperrifle {
+
+	type {
+		target							"target_player_all"
+		damage							90
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							150
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							150
+	}
+}
+
+damageFilter damage_sniperrifle_scoped {
+
+	type {
+		target							"target_player_all"
+		damage							70
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							150
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							150
+	}
+}
+
+damageFilter realistic_damage_sniperrifle_scoped {
+
+	type {
+		target							"target_player_all"
+		damage							90
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							150
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							150
+	}
+}
+
+toolTip sniperrifle_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/sniperrifle_1"
+}
+
+toolTip sniperrifle_scope {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/scope_weapon"
+}
+
+toolTip sniperrifle_scoped_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/zoom_scope"
+}
+
+toolTip sniperrifle_scoped_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/descope_weapon"
+}

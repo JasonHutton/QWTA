@@ -1,0 +1,102 @@
+
+#ifndef __damage_def__
+#define __damage_def__
+
+$template _vehicle_mg_damage( STATNAME )
+	damage								"damage_gpmg"
+	kickDir								( 1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							3
+
+	push								10000
+
+	stat_name							STATNAME
+
+	kick_time							400
+	kick_amplitude						0.25
+
+	prof_damage							"pro_vehicle_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/mg"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/mg/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+$endtemplate
+
+$template _templates/vehicles/weapons/hyperblaster/damage( STATNAME, PROFICIENCY )
+	damage								"damage_hyperblaster"
+
+	knockback							3
+	push								10000
+
+	prof_damage							PROFICIENCY
+
+	stat_name							STATNAME
+
+	knockback							10
+	kick_time							100
+	kick_amplitude						0
+	kickDir								( 1 0 0 )
+
+	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+$endtemplate
+
+$template _templates/vehicles/weapons/hyperblaster_qwta/damage( STATNAME, PROFICIENCY )
+	damage								"damage_hyperblaster_qwta"
+
+	push								10000
+
+	prof_damage							PROFICIENCY
+
+	stat_name							STATNAME
+
+	knockback							30
+	kick_time							100
+	kick_amplitude						0
+	kickDir								( 1 0 0 )
+	
+	noheadshot
+
+	tt_obituary							"tooltips/killmsgs/weapons/hyperblaster"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+$endtemplate
+
+$template _templates/vehicles/weapons/hyperblaster_qwta/damage_splash( STATNAME, PROFICIENCY )
+	damage								"damage_hyperblaster_qwta_splash"
+
+	push								10000
+
+	prof_damage							PROFICIENCY
+
+	stat_name							STATNAME
+
+	radius								75
+	knockback							30
+	kick_time							100
+	kick_amplitude						0
+	kickDir								( 1 0 0 )
+	
+	noheadshot
+
+	tt_obituary						"tooltips/killmsgs/weapons/hyperblaster"
+	tt_obituary_team_kill					"tooltips/killmsgs/weapons/hyperblaster/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/hyperblaster/self"
+	tt_obituary_unknown					"tooltips/killmsgs/weapons/hyperblaster/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+$endtemplate
+
+#endif // !__damage_def__

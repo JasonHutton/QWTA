@@ -1,0 +1,64 @@
+
+#ifndef __quickchat__
+#define __quickchat__
+
+$template _chat_item( team, data, key )
+	item team ## "/quickchat/" ## data {
+		"data" 		"quickchat/" ## data
+		"key"		key
+		"command"	"quickChat"
+	}
+$endtemplate
+
+$template _chat_item_icon( team, data, key, numberKey, drawCallback )
+	item team ## "/quickchat/" ## data {
+		"data" 		"quickchat/" ## data
+		"key"		key
+		"numberKey"	numberKey
+		"command"	"quickChat"
+		"draw"		drawCallback
+	}
+$endtemplate
+
+$template _chat_item_script( team, data, key, callback, callbackParm )
+	item team ## "/quickchat/" ## data {
+		"data" 		"quickchat/" ## data
+		"key"		key
+		"scriptUpdate"		callback
+		"scriptUpdateParm"	callbackParm
+	}
+$endtemplate
+
+$template _chat_item_script_icon( team, data, key, numberKey, callback, callbackParm, drawCallback )
+	item team ## "/quickchat/" ## data {
+		"data" 		"quickchat/" ## data
+		"data1"		icon
+		"key"		key
+		"numberKey"	numberKey
+		"scriptUpdate"		callback
+		"scriptUpdateParm"	callbackParm
+		"draw"		drawCallback
+	}
+$endtemplate
+
+$template _chat_page( pageDef, pageNum, key )
+	item pageDef {
+		"data" 			pageNum
+		"key"			key
+		"command"		"setPage"
+		"drawChevron" 	"1"
+	}	
+$endtemplate
+
+// handle pageNum through script callback
+$template _chat_page_script( pageDef, pageNum, key, callback, callbackParm )
+	item pageDef {
+		"key"			key
+		"command"		"setPage"
+		"drawChevron" 	"1"
+		"scriptUpdate"		callback
+		"scriptUpdateParm"	#pageNum ## callbackParm
+	}
+$endtemplate
+
+#endif // !__quickchat__

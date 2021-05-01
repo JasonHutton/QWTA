@@ -1,0 +1,76 @@
+
+#ifndef __common_utility__
+#define __common_utility__
+
+$template _to_right_of( windowParm )
+	( gui.windowParm.rect.x + gui.windowParm.rect.w )
+$endtemplate
+
+$template _to_left_of( windowParm )
+	( gui.windowParm.rect.x - rect.w )
+$endtemplate
+
+$template _to_bottom_of( windowParm )
+	( gui.windowParm.rect.y + gui.windowParm.absoluteRect.h )
+$endtemplate
+
+$template _above( windowParm )
+	( gui.windowParm.rect.y - rect.h )
+$endtemplate
+
+$template _client_dimension( windowName, orientation )
+	( gui.windowName.rect.orientation - $evalfloat( 2 * PADDING ) )
+$endtemplate
+
+$template _fill_to_right_of( windowName )
+	( ( gui.windowName.rect.width - rect.x ) - ( PADDING ) )
+$endtemplate
+
+$template _fill_to_bottom_of( windowName )
+	( ( gui.windowName.rect.height - rect.y ) - ( PADDING ) )
+$endtemplate
+
+$template _fill_to_left_of( windowName )
+	( ( gui.windowName.rect.x - rect.x ) - ( PADDING ) )
+$endtemplate
+
+$template _fill_to_top_of( windowName )
+	( ( gui.windowName.rect.y - rect.y ) - ( PADDING ) )
+$endtemplate
+
+$template _center( windowName, orientation )
+	( ( gui.windowName.rect.orientation * 0.5 ) - ( rect.orientation * 0.5 ) )
+$endtemplate
+
+$template _top( windowName )
+	( $evalfloat( PADDING + DIALOG_CAPTION_HEIGHT ) )
+$endtemplate
+
+$template _bottom( windowName )
+	( ( gui.windowName.rect.height - rect.h ) - PADDING )
+$endtemplate
+
+$template __right( windowName, padding )
+	( ( gui.windowName.rect.width - rect.width ) - padding )
+$endtemplate
+
+$template _right( windowName )
+	__right( windowName, PADDING )
+$endtemplate
+
+$template _left( windowName )
+	( PADDING )
+$endtemplate
+
+$template _monitor_music_volume
+	events {
+		onCVarChanged "s_volumeMusic_dB" {
+			gui.fadeSoundClass( 1, gui.getCVarFloat( "s_volumeMusic_dB" ), 500 );
+		}
+	}
+$endtemplate
+
+#define LEVELSHOT "levelshots/__scratch.tga"
+#define CAMPAIGNSHOT "levelshots/campaigns/__scratch.tga"
+
+#endif // !__common_utility__

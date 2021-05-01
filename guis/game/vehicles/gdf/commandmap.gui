@@ -1,0 +1,38 @@
+
+gui guis/models/vehicles/gdf/cockpit_cm {
+	materials {
+		"guis/assets/common/outershadow"		"guis/assets/common/outershadow"
+		"guis/assets/common/bglow"			"guis/assets/common/bglow"
+		"guis/assets/common/addhighlight"		"guis/assets/common/addhighlight"
+		"guis/assets/badger/background2"		"guis/assets/badger/background2"
+	}
+	properties {
+		float 	mapZoomLevel = 0.15;
+		float 	drawSquare = 1;
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+	}
+	
+	windowDef desktop {
+		properties {
+			color backColor 	= 1,0.8,0.7,1;
+			string material 	= "guis/assets/badger/background2";
+		}
+
+	}
+	windowDef mapCLIP {
+		properties {
+			rect rect 			= 10,34,490,410;
+			float flags 		= immediate( flags ) | WF_CLIP_TO_RECT;
+			handle cm			= cacheRenderCallback( "commandMap" );
+		}
+		events {
+			onCreate {
+				gui.setShaderParm( 11, 1 );
+			}
+			onPreDraw {
+				drawRenderCallback( cm, absoluteRect );
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+}

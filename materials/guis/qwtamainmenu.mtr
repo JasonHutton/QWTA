@@ -1,0 +1,8 @@
+material guis/assets/mainmenu/qwta_logo {
+	sort gui
+	{
+		blend blend
+		map clamp linear nopicmip textures/guis/assets/mainmenu/qwta_logo.tga
+		vertexColor
+	}
+}

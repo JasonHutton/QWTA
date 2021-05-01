@@ -1,0 +1,59 @@
+
+#ifndef __component_progress__
+#define __component_progress__
+
+#define PROGRESS_HEIGHT 10
+
+$template _progress_timeline( NameParm ) 
+	timeline NameParm {
+		onTime 0 {
+			gui.NameParm.offset = transition( 0, gui.NameParm.rect.w - ( gui.NameParm.progressRect.w + 4 ), 2500, "0.2, 0.8" );
+		}
+		
+		onTime 2500 {
+			gui.NameParm.offset = transition( gui.NameParm.offset, 0, 2500, "0.2, 0.8" );
+		}
+		onTime 5000 {
+			resetTime( 0 );
+		}
+	}
+$endtemplate
+
+$template _progress_indefinite( NameParm, XPos, YPos, WidthParm )
+	windowDef prg##NameParm {
+
+		properties {
+			rect	rect					= XPos, YPos, WidthParm, PROGRESS_HEIGHT;
+			float	allowEvents				= false;
+
+			float	offset					= 0 ;
+			rect	progressRect			= absoluteRect.x + ( 2 + offset ), absoluteRect.y + 2, 32, absoluteRect.h - 4;
+            float   flags                   = immediate( flags ) | WF_AUTO_SIZE_WIDTH;
+			handle 	gradMaterial 			= gui.cacheMaterial( "grad", "_st button_grad_c" );
+			color	fillColor				= COLOR_PROGRESS_FILL;
+			color	lineColor				= COLOR_PROGRESS_LINES;
+			color	miniColor				= COLOR_PROGRESS_MINI_FILL;
+			color	gradColor				= COLOR_PROGRESS_MINI_FILL;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( gui.btnFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.btnLineMaterial, absoluteRect, lineColor );
+	
+				drawCachedMaterial( gui.btnFillMaterial, progressRect, miniColor );
+				drawCachedMaterial( gradMaterial, progressRect, gradColor );
+	
+				gui.scriptPushFloat( true );	// continue normal windowDef drawing
+			}
+			onNamedEvent "onShow" {
+				//timeline.default.resetTime( 0 );
+			}
+		}
+
+$endtemplate
+
+$template _end_progress_indefinite
+	}
+$endtemplate
+
+#endif // !__component_progress__

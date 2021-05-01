@@ -1,0 +1,548 @@
+/***********************************************************************
+
+	weapons/pistol.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+/*
+export karateka {
+	options -prefix PISTOL_ -sourcedir models/weapons/gdf_pistol/dev_sd -destdir models/weapons/gdf_pistol/ -keep muzzle silencer_muzzle -keepmesh left_arm left_hand left_arm_gui_holder pplane1 right_arm right_hand Pistol pistol_trigger pistol_clip pistol_slide pistol_slide_catch
+
+	mesh	pistol_base_file.mb		-dest models/weapons/n2_pistol/view.md5mesh
+
+
+
+ 	mesh	pistol_base_file.mb		-dest models/weapons/n2_pistol/silenced_view.md5mesh -keep muzzle silencer_muzzle -keepmesh m_l_arm m_l_hand m_l_gui_mount m_l_gui_cover r_arm r_hand Pistol pistol_trigger pistol_clip pistol_slide pistol_silencer pistol_slide_catch
+}
+
+*/
+ //=====================================
+ // pistol
+ //=====================================
+
+export hauser {
+	options -prefix PISTOL_ -sourcedir models/weapons/gdf_pistol/dev_sd -destdir models/weapons/gdf_pistol/ -keep muzzle silencer_muzzle -keepmesh left_arm_mesh left_hand_mesh right_arm_mesh right_hand_mesh Pistol pistol_trigger pistol_clip pistol_slide pistol_slide_catch slide_sight front_sight
+/*
+
+	mesh	pistol_base_file.mb					-dest models/weapons/gdf_pistol/view.md5mesh
+
+	anim	pistol_idle.mb						-dest models/weapons/gdf_pistol/idle.md5anim
+	anim	pistol_raise.mb						-dest models/weapons/gdf_pistol/raise.md5anim
+ 	anim	pistol_lower.mb						-dest models/weapons/gdf_pistol/lower.md5anim
+
+   	anim	pistol_fire.mb						-dest models/weapons/gdf_pistol/fire.md5anim -xyzprecision 0.001
+ 	anim	pistol_fire2.mb						-dest models/weapons/gdf_pistol/fire2.md5anim -xyzprecision 0.001
+   	anim	pistol_fire3.mb						-dest models/weapons/gdf_pistol/fire3.md5anim -xyzprecision 0.001
+
+ 	anim	pistol_zoom_in_outofammo.mb			-dest models/weapons/gdf_pistol/zoom_in_outofammo.md5anim
+ 	anim	pistol_zoom_out_outofammo.mb		-dest models/weapons/gdf_pistol/zoom_out_outofammo.md5anim
+ 	anim	pistol_idle_zoom_outofammo.mb		-dest models/weapons/gdf_pistol/idle_zoom_outofammo.md5anim -xyzprecision 0.001
+ 	anim	pistol_start_sprint_outofammo.mb	-dest models/weapons/gdf_pistol/start_sprint_outofammo.md5anim
+ 	anim	pistol_leave_sprint_outofammo.mb	-dest models/weapons/gdf_pistol/leave_sprint_outofammo.md5anim
+
+ 	anim	pistol_reload.mb					-dest models/weapons/gdf_pistol/reload.md5anim
+ 	anim	pistol_start_sprint.mb				-dest models/weapons/gdf_pistol/start_sprint.md5anim
+ 	anim	pistol_leave_sprint.mb				-dest models/weapons/gdf_pistol/leave_sprint.md5anim
+ 	anim	pistol_zoom_in.mb					-dest models/weapons/gdf_pistol/zoom_in.md5anim
+ 	anim	pistol_zoom_out.mb					-dest models/weapons/gdf_pistol/zoom_out.md5anim
+ 	anim	pistol_idle_zoom.mb					-dest models/weapons/gdf_pistol/idle_zoom.md5anim -xyzprecision 0.001
+ 	anim	pistol_fire_zoom.mb					-dest models/weapons/gdf_pistol/fire_zoom.md5anim
+
+	anim	pistol_fire_silenced.mb				-dest models/weapons/n2_pistol/fire_silenced.md5anim
+
+
+
+ 	anim	pistol_fire_last.mb					-dest models/weapons/gdf_pistol/fire_last.md5anim
+ 	anim	pistol_idle_outofammo.mb			-dest models/weapons/gdf_pistol/idle_outofammo.md5anim
+*/
+ 	anim	pistol_fire_zoom_last.mb			-dest models/weapons/gdf_pistol/fire_zoom_last.md5anim
+/*
+
+ //=====================================
+ // pistol silenced
+ //=====================================
+
+ 	mesh	pistol_base_file.mb			-dest models/weapons/n2_pistol/silenced_view.md5mesh -keep muzzle silencer_muzzle -keepmesh left_arm_mesh left_hand_mesh right_arm_mesh right_hand_mesh Pistol pistol_trigger pistol_clip pistol_slide pistol_silencer pistol_slide_catch slide_sight front_sight
+*/
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_pistol {
+	mesh							models/weapons/gdf_pistol/view.md5mesh
+	anim idle						models/weapons/gdf_pistol/idle.md5anim {
+	}
+	anim raise						models/weapons/gdf_pistol/raise.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+		frame 7							sound_channel snd_weapon_cock snd_cock
+	}
+	anim putaway					models/weapons/gdf_pistol/lower.md5anim {
+	}
+ 	anim fire1						models/weapons/gdf_pistol/fire.md5anim {
+		frame begin						sound_channel snd_weapon_mech snd_mech
+	}
+
+	anim fire2						models/weapons/gdf_pistol/fire2.md5anim {
+		frame begin						sound_channel snd_weapon_mech snd_mech
+	}
+
+	anim fire3					models/weapons/gdf_pistol/fire3.md5anim {
+		frame begin						sound_channel snd_weapon_mech snd_mech
+	}
+ 	anim reload						models/weapons/gdf_pistol/reload.md5anim {
+		frame 6							sound_channel snd_weapon_temp1 snd_mag_out
+		frame 28						sound_channel snd_weapon_temp2 snd_mag_in
+		frame 32						sound_channel snd_weapon_temp3 snd_release
+ 	}
+ 	anim zoomin						models/weapons/gdf_pistol/zoom_in.md5anim {
+		frame 1						sound_channel snd_weapon_foley snd_sights_up
+ 	}
+	anim zoomout					models/weapons/gdf_pistol/zoom_out.md5anim {
+		frame 1						sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim start_sprint				models/weapons/gdf_pistol/start_sprint.md5anim {
+	}
+	anim leave_sprint				models/weapons/gdf_pistol/leave_sprint.md5anim {
+	}
+	anim idle_zoom					models/weapons/gdf_pistol/idle_zoom.md5anim {
+	}
+	anim fire_zoom					models/weapons/gdf_pistol/fire_zoom.md5anim {
+	}
+	anim fire_zoom_last				models/weapons/gdf_pistol/fire_zoom_last.md5anim {
+	}
+	anim fire_last					models/weapons/gdf_pistol/fire_last.md5anim {
+	}
+	anim idle_outofammo				models/weapons/gdf_pistol/idle_outofammo.md5anim {
+	}
+	anim start_sprint_outofammo		models/weapons/gdf_pistol/start_sprint_outofammo.md5anim {
+	}
+	anim leave_sprint_outofammo		models/weapons/gdf_pistol/leave_sprint_outofammo.md5anim {
+	}
+	anim zoomin_outofammo			models/weapons/gdf_pistol/zoom_in_outofammo.md5anim {
+		frame begin						sound_channel snd_weapon_foley snd_sights_up
+	}
+	anim zoomout_outofammo			models/weapons/gdf_pistol/zoom_out_outofammo.md5anim {
+		frame begin						sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim idle_zoom_outofammo		models/weapons/gdf_pistol/idle_zoom_outofammo.md5anim {
+	}
+
+}
+
+model viewmodel_pistol_silenced {
+	mesh							models/weapons/gdf_pistol/silenced_view.md5mesh
+	anim idle						models/weapons/gdf_pistol/idle.md5anim {
+	}
+	anim raise						models/weapons/gdf_pistol/raise.md5anim {
+		frame begin						sound_channel snd_weapon_raise snd_raise
+		frame 7						sound_channel snd_weapon_cock snd_cock
+	}
+	anim putaway					models/weapons/gdf_pistol/lower.md5anim {
+	}
+ 	anim fire1						models/weapons/gdf_pistol/fire.md5anim {
+		frame begin				sound_channel snd_weapon_mech snd_mech
+	}
+ 	anim reload						models/weapons/gdf_pistol/reload.md5anim {
+		frame 6							sound_channel snd_weapon_temp1 snd_mag_out
+		frame 28						sound_channel snd_weapon_temp2 snd_mag_in
+		frame 32						sound_channel snd_weapon_temp3 snd_release
+ 	}
+ 	anim zoomin						models/weapons/gdf_pistol/zoom_in.md5anim {
+		frame 1								sound_channel snd_weapon_foley snd_sights_up
+ 	}
+	anim zoomout					models/weapons/gdf_pistol/zoom_out.md5anim {
+		frame 1							sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim start_sprint				models/weapons/gdf_pistol/start_sprint.md5anim {
+	}
+	anim leave_sprint				models/weapons/gdf_pistol/leave_sprint.md5anim {
+	}
+	anim idle_zoom					models/weapons/gdf_pistol/idle_zoom.md5anim {
+	}
+	anim fire_zoom					models/weapons/gdf_pistol/fire_zoom.md5anim {
+	}
+	anim fire_zoom_last				models/weapons/gdf_pistol/fire_zoom_last.md5anim {
+	}
+	anim fire_last					models/weapons/gdf_pistol/fire_last.md5anim {
+	}
+	anim idle_outofammo				models/weapons/gdf_pistol/idle_outofammo.md5anim {
+	}
+	anim start_sprint_outofammo		models/weapons/gdf_pistol/start_sprint_outofammo.md5anim {
+	}
+	anim leave_sprint_outofammo		models/weapons/gdf_pistol/leave_sprint_outofammo.md5anim {
+	}
+	anim zoomin_outofammo			models/weapons/gdf_pistol/zoom_in_outofammo.md5anim {
+		frame 1							sound_channel snd_weapon_foley snd_sights_up
+	}
+	anim zoomout_outofammo			models/weapons/gdf_pistol/zoom_out_outofammo.md5anim {
+		frame 1							sound_channel snd_weapon_foley snd_sights_down
+	}
+	anim idle_zoom_outofammo		models/weapons/gdf_pistol/idle_zoom_outofammo.md5anim {
+	}
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_pistol {
+	mesh		 		models/weapons/gdf_pistol/pistol_world.md5mesh
+
+	anim raise			models/weapons/gdf_pistol/pistol_world.md5anim
+	anim idle 			models/weapons/gdf_pistol/pistol_world.md5anim
+	anim aim			models/weapons/gdf_pistol/pistol_world.md5anim
+	anim fire 			models/weapons/gdf_pistol/pistol_world.md5anim
+	anim fire1 			models/weapons/gdf_pistol/pistol_world.md5anim
+	anim reload			models/weapons/gdf_pistol/pistol_world.md5anim
+	anim noammo			models/weapons/gdf_pistol/pistol_world.md5anim
+ 	anim putaway		models/weapons/gdf_pistol/pistol_world.md5anim
+}
+
+model worldmodel_pistol_silenced {
+	mesh		 		models/weapons/gdf_pistol/pistol_world_silenced.md5mesh
+
+	anim raise			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+	anim idle 			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+	anim aim			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+	anim fire 			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+	anim fire1 			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+	anim reload			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+	anim noammo			models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+ 	anim putaway		models/weapons/gdf_pistol/pistol_world_silenced.md5anim
+}
+
+
+
+// ========================================================================
+// Entity DEFS
+//
+
+template inventory/weapons/pistol_template {
+	parameters < STATNAME >
+    text {
+		data {
+			"model_view" 						"viewmodel_pistol"
+
+			"model_world" 						"worldmodel_pistol"
+
+			"view_offset"						"-2 2 -1"
+ 			"view_foreshorten"					"0.8"
+
+			"joint_attach"						"RightHand"
+
+			"num_world_models"					"2"
+
+			"anim_prefix"						"pistol"
+			"anim_prefix_class"					"onehanded"
+
+			"speed_mod"							"1.1"
+
+			"weapon_scriptobject"				"weapon_pistol"
+
+			"recoilTime"						"120"
+			"recoilAngles"						"-0.25 0 0"
+			"kickback"							"1"
+			"kickback_prone"					"0.5"
+
+			"stat_name"							"STATNAME"
+
+			"snd_fire"							"sounds/weapons/pistol/fire"
+			"snd_fire_far"						"sounds/weapons/pistol/fire/far"
+			"snd_fire_local"					"sounds/weapons/pistol/fire/local"
+			"snd_cock"							"sounds/weapons/pistol/cock"
+			"snd_reload"						"sounds/weapons/pistol/reload"
+			"snd_mech"							"sounds/weapons/pistol/mech"
+			"snd_mag_out"						"sounds/weapons/pistol/mag_out"
+			"snd_mag_in"						"sounds/weapons/pistol/mag_in"
+			"snd_release"						"sounds/weapons/pistol/release"
+			"snd_raise"							"sounds/weapons/pistol/raise"
+			"snd_sights_up"						"sounds/weapons/pistol/sights/up"
+			"snd_sights_down"					"sounds/weapons/pistol/sights/down"
+			"snd_lowammo"						"sounds/weapons/misc/ammo_warning"
+			"snd_dryfire"						"sounds/weapons/misc/dryfire"
+
+			"fx_muzzle_flash"					"effects/weapons/pistol_muzzleflash_view"
+			"fx_muzzle_flash_world"				"effects/weapons/pistol_muzzleflash_world"
+
+			"fov_zoom"							"60"
+			"fov_time"							"0.25"
+			"fov_speed"							"0.5"
+			"fov_spread"						"0.5"
+			"realistic_fov_spread"				"0.125"
+
+			"fire_rate"							"0.12"
+			"low_ammo"							"4"
+
+			"tt_intro_1"						"pistol_intro_1"
+			"tt_intro_2"						"generic_weapon_fire"
+			"tt_intro_ironsights_1"				"pistol_ironsights"
+			"tt_intro_ironsights_2"				"generic_weapon_ironsights"
+			"tt_intro_reload"					"generic_weapon_reload"
+
+			"climate_skin_key"					"weapon_gdf"
+
+			"crosshair"							"small"
+
+			"crosshair_spread_min"				"-0.5"
+			"crosshair_spread_max"				"4"
+			"crosshair_spread_scale"			"2"
+
+			"spread_min"						"1"
+			"spread_max"						"10"
+			"spread_inc"						"2"
+
+			"spread_viewrate_min"				"1"
+			"spread_viewrate_max"				"10"
+			"spread_viewrate_inc"				"5"
+
+			"spread_max_settle_time"			"1200"
+
+			"spread_crouch_min"					"0.75"
+			"spread_crouch_max"					"8"
+			"spread_crouch_inc"					"1.75"
+
+			"spread_crouch_viewrate_min"		"0.75"
+			"spread_crouch_viewrate_max"		"8"
+			"spread_crouch_viewrate_inc"		"5"
+
+			"spread_crouch_max_settle_time"		"1000"
+
+			"spread_prone_min"					"0.5"
+			"spread_prone_max"					"4"
+			"spread_prone_inc"					"1.5"
+
+			"spread_prone_viewrate_min"			"0.5"
+			"spread_prone_viewrate_max"			"4"
+			"spread_prone_viewrate_inc"			"5"
+
+			"spread_prone_max_settle_time"		"800"
+
+			"autoswitch_priority"				"10"
+
+			"player_weapon_num"					"1"
+		}
+    }
+}
+
+template inventory/weapons/pistol_clip_template {
+	parameters < PROJECTILE >
+    text {
+		clip {
+			"projectile"						"PROJECTILE"
+			"client_projectile"					"projectile_bullet"
+			"type"								"pistol"
+			"ammo_per_shot"						"1"
+			"max_ammo"							"10"
+		}
+	}
+}
+
+invItemDef inventory/weapons/pistol {
+	type									"weapon"
+	slot									"sidearm"
+	name									"game/weapons/pistol"
+	model									"models/weapons/gdf_pistol/pistol_player.lwo"
+	joint									"RightUpLeg"
+
+	useTemplate inventory/weapons/pistol_template< "pistol" >
+	useTemplate	inventory/weapons/pistol_clip_template< "projectile_pistol" >
+
+	data {
+		"mtr_weaponmenu"					"guis/assets/icons/weapons/pistol"
+	}
+}
+
+invItemDef inventory/weapons/pistol/silenced {
+	type									"weapon"
+	slot									"sidearm"
+	name									"game/weapons/pistol_silenced"
+	model									"models/weapons/gdf_pistol/pistol_player.lwo"
+	joint									"RightUpLeg"
+
+	useTemplate inventory/weapons/pistol_template< "pistol_silenced" >
+
+	data {
+		"model_view" 						"viewmodel_pistol_silenced"
+		"model_world"						"worldmodel_pistol_silenced"
+
+		"view_offset"						"-2 2 -1"
+ 		"view_foreshorten"					"0.8"
+
+		"snd_fire"							"sounds/weapons/pistol/fire/silenced"
+		"snd_fire_far"						"silence"
+		"snd_fire_local"					"sounds/weapons/pistol/fire/silenced/local"
+		"snd_mech"							"sounds/weapons/pistol/mech"
+
+		"fx_muzzle_flash"					"effects/weapons/pistol_muzzleflash_silenced_view"
+		"fx_muzzle_flash_world"				"effects/weapons/pistol_muzzleflash_silenced_world"
+
+		"mtr_weaponmenu"					"guis/assets/icons/weapons/silencedpistol"
+
+		"tt_intro_1"						"silencedpistol_intro_1"
+		"tt_intro_2"						"generic_weapon_fire"
+		"tt_intro_ironsights_1"				"silencedpistol_ironsights"
+		"tt_intro_ironsights_2"				"generic_weapon_ironsights"
+		"tt_intro_reload"					"generic_weapon_reload"
+	}
+
+	useTemplate inventory/weapons/pistol_clip_template< "projectile_pistol_silenced" >
+}
+
+toolTip silencedpistol_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/silencedpistol_1"
+}
+
+toolTip silencedpistol_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}
+
+toolTip pistol_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/pistol_1"
+}
+
+toolTip pistol_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}
+
+entityDef projectile_pistol {
+	"spawnclass"							"idProjectile"
+	"inherit"								"projectile_bullet_base"
+
+	"range"									"4096"
+	"min_damage_percent"					"10"
+
+	"dmg_damage"							"damage_pistol"
+	"dmg_realistic_damage"						"realistic_damage_pistol"
+}
+
+damageDef damage_pistol {
+	damage									"damage_pistol"
+	kickDir									( 1 0 0 )
+
+	mtr_blob								"genericDamage"
+	blob_time								300
+	blob_offset_x							400
+
+	knockback								1
+
+	push									5000
+
+	kick_time								400
+	kick_amplitude							0.25
+
+	stat_name								"pistol"
+
+	record_hit_stats
+
+	prof_damage								"pro_light_weapons_damage"
+
+	tt_obituary								"tooltips/killmsgs/weapons/pistol"
+	tt_obituary_team_kill					"tooltips/killmsgs/weapons/pistol/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_pistol {
+	inherit									"damage_pistol"
+	damage									"realistic_damage_pistol"
+}
+
+entityDef projectile_pistol_silenced {
+	"spawnclass"							"idProjectile"
+	"inherit"								"projectile_bullet_base"
+
+	"range"									"4096"
+	"min_damage_percent"					"10"
+
+	"dmg_damage"							"damage_pistol_silenced"
+	"dmg_realistic_damage"						"realistic_damage_pistol_silenced"
+}
+
+damageDef damage_pistol_silenced {
+	damage									"damage_pistol"
+	kickDir									( 1 0 0 )
+
+	mtr_blob								"genericDamage"
+	blob_time								300
+	blob_offset_x							400
+
+	knockback								1
+
+	push									5000
+
+	kick_time								400
+	kick_amplitude							0.25
+
+	stat_name								"pistol_silenced"
+
+	record_hit_stats
+
+	prof_damage								"pro_light_weapons_damage"
+
+	tt_obituary								"tooltips/killmsgs/weapons/pistol/silenced"
+	tt_obituary_team_kill					"tooltips/killmsgs/weapons/pistol/silenced/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_pistol_silenced {
+	inherit									"damage_pistol_silenced"
+	damage									"realistic_damage_pistol"
+}
+
+damageFilter damage_pistol {
+
+	type {
+		target								"target_player_all"
+		damage								14
+	}
+
+	type {
+		target								"target_veh_light_all"
+		damage								14
+	}
+
+	type {
+		target								"target_veh_heavy_all"
+		damage								7
+	}
+
+	type {
+		target								"target_deployables_all"
+		damage								14
+	}
+}
+
+damageFilter realistic_damage_pistol {
+
+	type {
+		target								"target_player_all"
+		damage								21
+	}
+
+	type {
+		target								"target_veh_light_all"
+		damage								7
+	}
+
+	type {
+		target								"target_veh_heavy_all"
+		damage								0
+	}
+
+	type {
+		target								"target_deployables_all"
+		damage								7
+	}
+}

@@ -1,0 +1,108 @@
+//
+// desecrator cockpits
+//=================================================================================================
+
+export hauser {
+		options -prefix DESCOCKPIT_ -nomerge -sourcedir models/vehicles/strogg_desecrator/cockpit/dev_sd -destdir models/vehicles/strogg_desecrator/cockpit/ -keepmesh joystick driver_cockpit_main driver_cockpit_window strogg_right_arm_mesh strogg_left_arm_mesh gui_plane_bottom gui_panel_main poly_behind_gui gui3 behindgui pplane1 -noanimate driver_cockpit_main driver_cockpit_window gui_plane_bottom gui_panel_main poly_behind_gui
+
+		mesh desecrator_driver_cockpit.mb 		-dest driver_cockpit.md5mesh
+		anim desecrator_driver_cockpit.mb 		-dest driver_cockpit_center.md5anim -range 0 0
+
+		anim desecrator_driver_cockpit.mb 		-dest driver_cockpit_forward.md5anim -range 0 15
+		anim desecrator_driver_cockpit.mb 		-dest driver_cockpit_backward.md5anim -range 30 45
+		anim desecrator_driver_cockpit.mb 		-dest driver_cockpit_left.md5anim -range 60 75
+		anim desecrator_driver_cockpit.mb 		-dest driver_cockpit_right.md5anim -range 90 105
+
+		anim desecrator_driver_cockpit.mb 		-dest driver_cockpit_fire.md5anim -range 125 140
+
+
+
+}
+
+export hauser {
+		options -prefix DESCOCKPIT_ -nomerge -sourcedir models/vehicles/strogg_desecrator/cockpit/dev_sd -destdir models/vehicles/strogg_desecrator/cockpit/ -keepmesh window front_part gunner joystick strogg_right_arm_mesh strogg_left_arm_mesh gui_plane_bottom gui_plane_main poly_behind_gui gui3 behindgui gui4 behindgui4 -noanimate gui_plane_main window front_part gunner gui_plane_bottom poly_behind_gui gui3 behindgui gui4 behindgui4
+
+		mesh desecrator_gunner_cockpit.mb 		-dest gunner_cockpit.md5mesh
+		anim desecrator_gunner_cockpit.mb 		-dest gunner_cockpit_center.md5anim -range 0 0
+		anim desecrator_gunner_cockpit.mb 		-dest gunner_cockpit_fire.md5anim -range 2 2
+
+
+}
+
+//==================================================================================================
+
+model vehicle_abaddon_cockpit_driver {
+	mesh					models/vehicles/strogg_desecrator/cockpit/driver_cockpit.md5mesh
+
+	anim center				models/vehicles/strogg_desecrator/cockpit/driver_cockpit_center.md5anim {
+	}
+
+	anim left				models/vehicles/strogg_desecrator/cockpit/driver_cockpit_left.md5anim {
+	}
+
+	anim right				models/vehicles/strogg_desecrator/cockpit/driver_cockpit_right.md5anim {
+	}
+
+	anim forward			models/vehicles/strogg_desecrator/cockpit/driver_cockpit_forward.md5anim {
+	}
+
+	anim backward			models/vehicles/strogg_desecrator/cockpit/driver_cockpit_backward.md5anim {
+	}
+	anim fire				models/vehicles/strogg_desecrator/cockpit/driver_cockpit_fire.md5anim {
+	}
+
+
+	channel head			( *l_upper_arm *joint2 )
+	channel legs			( *r_upper_arm )
+}
+
+
+model vehicle_abaddon_cockpit_gunner {
+	mesh					models/vehicles/strogg_desecrator/cockpit/gunner_cockpit.md5mesh
+
+	anim center				models/vehicles/strogg_desecrator/cockpit/gunner_cockpit_center.md5anim {
+	}
+	anim fire				models/vehicles/strogg_desecrator/cockpit/gunner_cockpit_fire.md5anim {
+	}
+
+	//anim left				models/vehicles/strogg_desecrator/cockpit/gunner_cockpit_left.md5anim {
+	//}
+
+	//anim right				models/vehicles/strogg_desecrator/cockpit/gunner_cockpit_right.md5anim {
+	//}
+}
+
+entityDef vehicle_abaddon_cockpit_gunner {
+	"model"						"models/vehicles/strogg_desecrator/cockpit.lwo"
+	"joint_attach"				"turret_camera"
+
+	//"gui"						"guis/models/vehicles/desecrator/cockpit_g"
+	//"gui2"						"guis/models/vehicles/desecrator/cockpit_cm_g"
+
+	"passenger_id"				"2"
+
+	// x = towards(-)/away(+)
+	// y = left(-)/right(+)
+	// z = up(-)/down(+)
+	"offset" 					"10 0 -1"
+}
+
+entityDef vehicle_abaddon_cockpit_driver {
+	"model"						"models/vehicles/strogg_desecrator/cockpit.lwo"
+	"joint_attach" 				"base"
+
+	"gui"						"guis/models/vehicles/desecrator/cockpit"
+	"gui2"						"guis/models/vehicles/desecrator/cockpit_center"
+	
+	"surface_name0"				"mesh_turret_1"
+	"surface_name1"				"mesh_gun_2"
+	"passenger_id"				"1"
+
+	"depthHack"					"5"
+	// x = towards(-)/away(+)
+	// y = left(-)/right(+)
+	// z = up(-)/down(+)
+	"offset"				"-10 0 0"
+	"largeFov"				"-5 0 0"
+	"weaponDepthHack"			"1"
+}

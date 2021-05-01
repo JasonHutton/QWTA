@@ -1,0 +1,160 @@
+
+#ifndef __strogg_scope__
+#define __strogg_scope__
+
+$template __scope_init( FadeAlpha )
+	materials {
+		"textures/sfx/railgunScope"					"textures/sfx/railgunScope"
+		"postprocess/heatsight"						"postprocess/heatsight"		
+		
+		"binocs"									"guis/assets/qet/binocs"
+		"guis/assets/vehicles/strogg/bgfade"		"guis/assets/vehicles/gdf/bgedge"
+	
+		"fade_tl"				"guis/assets/vehicles/gdf/bgedge"
+		"fade_tr"				"guis/assets/vehicles/gdf/bgedge, flipX"
+
+		"fade_bl"				"guis/assets/vehicles/gdf/bgedge, flipY"
+		"fade_br"				"guis/assets/vehicles/gdf/bgedge, flipX flipY"
+
+		"optiveins_tl"			"guis/assets/vehicles/strogg/optiveins"
+		"optiveins_tr"			"guis/assets/vehicles/strogg/optiveins, flipX"
+
+		"optiveins_bl"			"guis/assets/vehicles/strogg/optiveins, flipY"
+		"optiveins_br"			"guis/assets/vehicles/strogg/optiveins, flipX flipY"
+
+		"optiveins2_tl"			"guis/assets/vehicles/strogg/optiveins2"
+		"optiveins2_tr"			"guis/assets/vehicles/strogg/optiveins2, flipX"
+
+		"optiveins2_bl"			"guis/assets/vehicles/strogg/optiveins2, flipY"
+		"optiveins2_br"			"guis/assets/vehicles/strogg/optiveins2, flipX flipY"
+
+		"circle_tl"				"guis/assets/weapons/sniper/circle"
+		"circle_tr"				"guis/assets/weapons/sniper/circle, flipX"
+
+		"circle_bl"				"guis/assets/weapons/sniper/circle, flipY"
+		"circle_br"				"guis/assets/weapons/sniper/circle, flipX flipY"	
+	}
+	
+	properties {
+		float borderWidth = ceil( SCREEN_WIDTH - VIRTUAL_WIDTH ) * 0.5f;
+		float fadeAlpha = FadeAlpha;
+	}
+$endtemplate
+
+$template __underlays( ScopeEffect )
+	$if( ScopeEffect == "effect" )
+	windowDef scopeEffect {
+		properties {
+			color backColor = min( gui.focusFactor + 0.7 * gui.zoomCycleFocusTransitionLerp, 0.8 ), 1, 1, 1;
+			string material = "textures/sfx/railgunScope";
+			rect rect = gui.borderWidth * -1, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+		
+		events {
+			onCreate {
+				attachRenderCallback( "postProcess" );
+				globals.gameHud.visionEnhancer = "none";
+			}		
+		
+			onPropertyChanged "globals.gameHud.visionEnhancer" {
+				if ( compare( globals.gameHud.visionEnhancer, "heatSight" ) ) {
+					material = "postprocess/heatsight";
+				} else {
+					material = "textures/sfx/railgunScope";
+				}
+			}			
+		}
+	}
+	$endif
+	
+	windowDef binoculars {
+		properties {
+			handle white 	= gui.cacheMaterial( "white", "white" );
+			handle binocs 	= gui.cacheMaterial( "binocs", "binocs" );
+			color backColor = transition( "0,0,0,0", "0,0,0,gui.fadeAlpha", 250 );
+			color circleColor = transition( "0.6, 0.1, 0, 0", "0.6, 0.1, 0, 0.2", 250 );
+
+			handle circleTL	= gui.cacheMaterial( "circleTL", "circle_tl" );
+			handle circleBL	= gui.cacheMaterial( "circleBL", "circle_bl" );
+			handle circleTR	= gui.cacheMaterial( "circleTR", "circle_tr" );
+			handle circleBR	= gui.cacheMaterial( "circleBR", "circle_br" );
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( white, "0, 0, gui.borderWidth + 40, gui.screenDimensions.y", backColor );
+				drawCachedMaterial( binocs, "gui.borderWidth + 40, 0, gui.screenDimensions.x - 2 * ( gui.borderWidth + 40 ), gui.screenDimensions.y", backColor );
+				drawCachedMaterial( white, "gui.screenDimensions.x - ( gui.borderWidth + 40 ), 0, gui.borderWidth + 40, gui.screenDimensions.y", backColor );
+
+				drawCachedMaterial( circleTL, "gui.borderWidth - 30, -104.5,350,345", circleColor );
+				drawCachedMaterial( circleTR, "gui.borderWidth + 320, -104.5,350,345", circleColor );
+				drawCachedMaterial( circleBL, "gui.borderWidth - 30, 240,350,345", circleColor );
+				drawCachedMaterial( circleBR, "gui.borderWidth + 320, 240,350,345", circleColor );
+
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+
+	windowDef veinEffects {
+		properties {
+			handle fadeTL = gui.cacheMaterial( "fadeTL", "fade_tl" );
+			handle fadeTR = gui.cacheMaterial( "fadeTR", "fade_tr" );
+			handle fadeBL = gui.cacheMaterial( "fadeBL", "fade_bl" );
+			handle fadeBR = gui.cacheMaterial( "fadeBR", "fade_br" );
+
+			handle optiveinsTL = gui.cacheMaterial( "optiveinsTL", "optiveins_tl" );
+			handle optiveinsTR = gui.cacheMaterial( "optiveinsTR", "optiveins_tr" );
+			handle optiveinsBL = gui.cacheMaterial( "optiveinsBL", "optiveins_bl" );
+			handle optiveinsBR = gui.cacheMaterial( "optiveinsBR", "optiveins_br" );
+
+			handle optiveins2TL = gui.cacheMaterial( "optiveins2TL", "optiveins2_tl" );
+			handle optiveins2TR = gui.cacheMaterial( "optiveins2TR", "optiveins2_tr" );
+			handle optiveins2BL = gui.cacheMaterial( "optiveins2BL", "optiveins2_bl" );
+			handle optiveins2BR = gui.cacheMaterial( "optiveins2BR", "optiveins2_br" );
+
+			color veins	= transition( "0,0,0,1", "0.3,0.3,0.3,1", 300, "1, 0" );
+			color veins2;
+
+			float center = CENTER_X;
+		}
+		events {
+			onPreDraw {
+				drawCachedMaterial( fadeTL, "0,-30,center,270", "0,0,0,0.5" );
+				drawCachedMaterial( fadeTR, "center,-30,center,270", "0,0,0,0.5" );
+				drawCachedMaterial( fadeBL, "0,240,center,270", "0,0,0,0.5" );
+				drawCachedMaterial( fadeBR, "center,240,center,270", "0,0,0,0.5" );
+
+				drawCachedMaterial( optiveinsTL, "0,0,center,240", veins );
+				drawCachedMaterial( optiveinsTR, "center,0,center,240", veins );
+				drawCachedMaterial( optiveinsBL, "0,240,center,240", veins );
+				drawCachedMaterial( optiveinsBR, "center,240,center,240", veins );
+
+				drawCachedMaterial( optiveins2TL, "0,0,center,240", veins2 );
+				drawCachedMaterial( optiveins2TR, "center,0,center,240", veins2 );
+				drawCachedMaterial( optiveins2BL, "0,240,center,240", veins2 );
+				drawCachedMaterial( optiveins2BR, "center,240,center,240", veins2 );
+				gui.scriptPushFloat( false );
+			}
+		}
+		timeline veins {
+			onTime 300 {
+				veins = transition( "0.28,0.28,0.28,2", "0.2,0.2,0.2,1", 500 );
+			}
+			onTime 800 {
+				veins = transition( "0.2,0.2,0.2,1", "0.28,0.28,0.28,1", 300 );
+				timeline.veins.resetTime( 0 );
+			}
+		}
+		timeline veins2 {
+			onTime 200 {
+				veins2 = transition( "0.18,0.18,0.18,2", "0.1,0.1,0.1,1", 350 );
+			}
+			onTime 550 {
+				veins2 = transition( "0.1,0.1,0.1,1", "0.18,0.18,0.18,1", 200 );
+				timeline.veins2.resetTime( 0 );
+			}
+		}
+	}
+
+$endtemplate
+#endif // !__strogg_scope__

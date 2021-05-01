@@ -1,0 +1,87 @@
+//===============================================================
+//	MessageTeam Popup
+//===============================================================
+_dialog( MessageTeam, localize( "guis/mainmenu/broadcastmessage" ), _center( desktop, width ), _center( desktop, height ), 280, 180, "noMove", "dim" )
+	_input_dialog( MessageTeam )
+	_on_default( MessageTeamOk, MessageTeamCancel )
+	
+    _label_literal( MessageTeamName, toWStr( sdnet.teamName ), _left( dlgMessageTeam ), _top( dlgMessageTeam ), _client_dimension( dlgMessageTeam, width ), BUTTON_HEIGHT, "1,1,1,0.5" )
+        properties {
+            vec2 textAlignment = TA_LEFT, TA_VCENTER;
+        }
+    _end_label
+    
+    events {
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( visible ) {
+    			_close_input
+    		}
+    	}    
+    }
+
+    _editw_scroll( MessageTeamMessage, PADDING, _to_bottom_of( lblMessageTeamName ) + 3, _fill_to_right_of( dlgMessageTeam ), _fill_to_top_of( btnMessageTeamCancel ) )        
+        properties {
+        	vec2 textAlignment = TA_LEFT, TA_VCENTER;
+			float	maxTextLength = 512;
+        }
+		events {
+			onPropertyChanged "gui.dlgMessageTeam.visible" {
+				if ( gui.dlgMessageTeam.visible > 0 ) {
+					editText = gui.blankWStr;
+					gui.focusedWindow = "edtMessageTeamMessage";
+				}
+			}
+		}
+    _end_editw_scroll
+
+    _button( MessageTeamOk, _to_left_of( btnMessageTeamCancel ) - 3, _bottom( dlgMessageTeam ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        properties {
+            handle	localizedText = localize( "guis/mainmenu/ok" );
+            float	taskActive = 0;
+        }
+		_button_disable_if( "gui.edtMessageTeamMessage.editText",  gui.edtMessageTeamMessage.isWhitespace() )
+		_button_disable_if( "gui.dlgMessageTeam.visible",  gui.edtMessageTeamMessage.isWhitespace() )
+        _button_action(
+
+			if( gui.edtMessageTeamMessage.isWhitespace() ) {
+				return;
+			}
+			taskActive = 1;
+			sdnet.broadcastTeamMessage( gui.edtMessageTeamMessage.editText );
+			_show_popup( sdNetProgress )
+        )
+
+        events {
+            onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+                    if ( taskActive == 1 ) {
+						_close_input;
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							taskActive = 0;
+							_close_input;
+							gui.lstTeam.postNamedEvent( "requestUpdate" );
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage )
+						_show_popup( confirmation )
+						return;
+					}
+				}
+			}
+        }
+    _end_button
+
+    _button( MessageTeamCancel, _right( dlgMessageTeam ), _bottom( dlgMessageTeam ), BUTTON_WIDTH, BUTTON_HEIGHT )
+        
+        properties {
+            handle	localizedText = localize( "guis/mainmenu/cancel" );
+        }
+        _button_action( _close_input; gui.lstTeam.postNamedEvent( "requestUpdate" ); )
+
+    _end_button
+_end_dialog

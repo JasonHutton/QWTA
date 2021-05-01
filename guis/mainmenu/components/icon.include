@@ -1,0 +1,23 @@
+
+#ifndef __component_icon__
+#define __component_icon__
+
+$template _icon( NameParm, Material, XPos, YPos, Width, Height, ColorParm )
+	windowDef ico##NameParm {
+		properties {
+			rect rect 			= XPos, YPos, Width, Height;
+			handle icon			= gui.cacheMaterial( name + "icon", Material );
+			color iconColor 	= ColorParm;
+		}
+		events {
+			onPostDraw {
+				drawCachedMaterial( icon, absoluteRect, iconColor );
+			}
+		}
+$endtemplate
+
+$template _end_icon
+	}
+$endtemplate
+
+#endif // !__component_icon__

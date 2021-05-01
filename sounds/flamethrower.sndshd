@@ -1,0 +1,8 @@
+sound sounds/weapons/flamethrower/stream {
+	volume	-5
+	minDistance	25
+	maxDistance 175
+	looping
+	
+	sounds/weapons/flamethrower/stream.wav
+}

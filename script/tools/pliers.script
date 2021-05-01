@@ -1,0 +1,431 @@
+/***********************************************************************
+
+tool_pliers.script
+
+***********************************************************************/
+
+// blend times
+#define PLIERS_IDLE_TO_LOWER		4
+#define PLIERS_IDLE_TO_PUNCH		0
+#define PLIERS_RAISE_TO_IDLE		4
+#define PLIERS_PUNCH_TO_IDLE		1
+
+#define GUI_STATE_IDLE				0
+#define GUI_STATE_ARMING			1
+#define	GUI_STATE_CONNECTED			2
+
+object tool_pliers : weapon_base {
+
+	void		preinit();
+	void		init();
+	void		destroy();
+	void		Lower();
+	void		Idle();
+
+	void		Attack();
+	boolean		CheckAttack( float mask );
+	void		StartFireEffect();
+	void		StopFireEffect();
+	boolean		fireEffectOn;
+
+	boolean		AttackValid();
+
+	void		ToolTipThread_Raise();
+
+	void		Repair();
+	void		Arm();
+	void		Disarm();
+	void		Construct();
+	void		Hack();
+	void		Possess();
+
+	void		UpdateGUI();
+	
+	handle		GetTextHandleForState( float state );
+
+	float		fireRate;
+	float		repairCount;
+	float		count;
+
+	float		meleeDistance;
+
+	entity		cachedEntity;
+	float		cachedAction;
+
+	boolean		disarmCharge;
+	boolean		armCharge;
+	boolean		armNormal;
+	boolean		canRepair;
+	boolean		canConstruct;
+	boolean		canHack;
+	boolean		canDisguise;
+
+	boolean		playingFireSound;
+	
+	float		nextActionFailMessageTime;
+
+	float		guiHandle;
+	handle		guiTextHandle;
+}
+
+void tool_pliers::preinit() {
+	meleeDistance	= getFloatKey( "melee_distance" );
+
+	armNormal		= getIntKey( "can_arm_normal" );
+	armCharge		= getIntKey( "can_arm_charge" );
+	disarmCharge	= getIntKey( "can_disarm_charge" );
+	canRepair		= getIntKey( "can_repair" );
+	canConstruct	= getIntKey( "can_construct" );
+	canHack			= getIntKey( "can_hack" );
+	canDisguise		= getIntKey( "can_disguise" );
+	
+	fireRate		= getFloatKeyWithDefault( "fire_rate", 0.1f );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	repairCount		= getFloatKeyWithDefault( "repair_count", 5.f );
+
+	if ( sys.doClientSideStuff() ) {
+		guiHandle		= getGUI( "0" );
+	}
+}
+
+void tool_pliers::init() {
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+
+	weaponState( "Raise", 0 );
+}
+
+void tool_pliers::destroy() {
+	if ( myPlayer != $null_entity ) {
+		myPlayer.AI_HOLD_WEAPON = false;
+	}
+	stopAllEffects();
+	DestroySound();
+
+	if ( playingFireSound ) {
+		playingFireSound = false;
+		startSound( "snd_stop", SND_WEAPON_FIRE );
+	}
+}
+
+void tool_pliers::Lower() {
+	StopFireEffect();
+	
+	if ( playingFireSound ) {
+		playingFireSound = false;
+		startSound( "snd_stop", SND_WEAPON_FIRE );
+	}
+		
+	startSound( "snd_lower", SND_WEAPON_IDLE );
+
+	Base_Lower();
+}
+
+boolean tool_pliers::AttackValid() {
+	boolean performAction = CheckAttack( MASK_VEHICLESOLID | CONTENTS_PLAYERCLIP );
+
+	if ( !performAction ) {
+		performAction = CheckAttack( CONTENTS_TRIGGER );
+	}
+
+	if ( !performAction ) {
+		performAction = CheckAttack( CONTENTS_RENDERMODEL );
+	}
+
+	return performAction;
+}
+
+void tool_pliers::Idle() {
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+	StopFireEffect();
+
+	UpdateCharge();
+
+	while ( true ) {
+		UpdateGUI();
+
+		if ( WEAPON_LOWERWEAPON ) {
+			SetProgressBarVisible( false );
+			weaponState( "Lower", PLIERS_IDLE_TO_LOWER );
+		}
+
+		if ( WEAPON_ATTACK ) {
+			if ( AttackValid() ) {
+				if ( !playingFireSound ) {
+					playingFireSound = true;
+					startSound( "snd_start", SND_WEAPON_FIRE );
+				}
+				
+				nextActionFailMessageTime = sys.getTime() + 2.f;
+
+				weaponState( "Attack", PLIERS_IDLE_TO_PUNCH );
+			} else {
+				if ( !myPlayer.isToolTipPlaying() ) {
+					if ( sys.getTime() > nextActionFailMessageTime ) {
+						nextActionFailMessageTime = sys.getTime() + 5.f;
+						if ( cachedAction == AC_NONE ) {
+							myPlayer.sendToolTip( GetToolTip( getKey( "tt_action_failed" ) ) );
+						} else if ( cachedAction == AC_ENEMY_REPAIR ) {
+							myPlayer.sendToolTip( GetToolTip( getKey( "tt_enemy_repair" ) ) );
+						}
+					}
+				}
+			}
+		}
+
+		if ( playingFireSound ) {
+			playingFireSound = false;
+			startSound( "snd_stop", SND_WEAPON_FIRE );
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void tool_pliers::StartFireEffect() {
+	if ( !fireEffectOn ) {
+		playEffect( "fx_fire", idleEffectJoint, 1 );
+		fireEffectOn = true;
+	}
+}
+
+void tool_pliers::StopFireEffect() {
+	if ( fireEffectOn ) {
+		stopEffect( "fx_fire" );
+		fireEffectOn = false;
+	}
+}
+
+void tool_pliers::Attack() {
+	myPlayer.AI_HOLD_WEAPON = true;
+
+	float currentCachedAction = cachedAction;
+	
+	if ( getFloatKey( "has_startfire_anim" ) > 0 ) {
+		playAnim( ANIMCHANNEL_ALL, "fire_start" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+	}
+
+	StartFireEffect();
+	
+	while ( true ) {
+		UpdateGUI();
+
+		if ( cachedAction == AC_REPAIR ) {
+			Repair();
+		} else if ( cachedAction == AC_ARM || cachedAction == AC_ARM_CHARGE ) {
+			Arm();
+		} else if ( cachedAction == AC_DISARM || cachedAction == AC_DISARM_CHARGE ) {
+			Disarm();
+		} else if ( cachedAction == AC_CONSTRUCT ) {
+			Construct();
+		} else if ( cachedAction == AC_HACK ) {
+			Hack();
+		} else if ( cachedAction == AC_POSSESS ) {
+			Possess();
+		}
+
+		float finishTime = sys.getTime() + fireRate;
+
+		while ( sys.getTime() < finishTime ) {
+			if ( animDone( ANIMCHANNEL_ALL, PLIERS_PUNCH_TO_IDLE ) ) {
+				playAnim( ANIMCHANNEL_ALL, "fire" );
+			}
+
+			sys.waitFrame();
+		}
+		
+		// re-enable running for any player that had it disabled AFTER the animation (otherwise it's pointless)
+		myPlayer.disableRun( 0.f );
+
+		if ( !WEAPON_ATTACK ) {
+			break;
+		}
+		
+		if ( WEAPON_LOWERWEAPON ) {
+			break;
+		}
+
+		if ( !AttackValid() ) {
+			break;
+		}
+	}
+
+	if ( getFloatKey( "has_endfire_anim" ) > 0 ) {
+		playAnim( ANIMCHANNEL_ALL, "fire_end" );
+		waitUntil( animDone( ANIMCHANNEL_ALL, 0 ) );
+	}
+
+	myPlayer.AI_HOLD_WEAPON = false;
+
+	nextActionFailMessageTime = sys.getTime() + 2.f;
+
+	weaponState( "Idle", PLIERS_PUNCH_TO_IDLE );
+}
+
+boolean tool_pliers::CheckAttack( float mask ) {
+	cachedEntity = myPlayer.getCrosshairEntity();
+	cachedAction = AC_NONE;
+
+	if ( myPlayer.getCrosshairDistance( true ) > meleeDistance ) {
+		cachedEntity = $null_entity;
+		return false;
+	}
+
+	if ( cachedEntity == $null_entity ) {
+		// there is no crosshair entity to take priority
+		// try doing a melee trace
+		melee( mask, meleeDistance, false, false );
+		cachedEntity = getMeleeEntity();
+
+		if ( cachedEntity == $null_entity ) {
+			return false;
+		}
+	}
+
+	if ( armCharge ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_ARM_CHARGE ) ) {
+			cachedAction = AC_ARM_CHARGE;
+			return true;
+		}
+	}
+
+	if ( disarmCharge ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_DISARM_CHARGE ) ) {
+			cachedAction = AC_DISARM_CHARGE;
+			return true;
+		}
+	}
+
+	if ( canRepair ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_REPAIR ) ) {
+			cachedAction = AC_REPAIR;
+			return true;
+		} else if ( cachedEntity.vCheckActionCode( myPlayer, AC_ENEMY_REPAIR ) ) {
+			cachedAction = AC_ENEMY_REPAIR;
+			return false;
+		}
+	}
+
+	if ( armNormal ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_ARM ) ) {
+			cachedAction = AC_ARM;
+			return true;
+		}
+
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_DISARM ) ) {
+			cachedAction = AC_DISARM;
+			return true;
+		}
+	}
+
+	if ( canConstruct ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_CONSTRUCT ) ) {
+			cachedAction = AC_CONSTRUCT;
+			return true;
+		}
+	}
+
+	if ( canHack ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_HACK ) ) {
+			cachedAction = AC_HACK;
+			return true;
+		}
+	}
+	
+	if ( canDisguise ) {
+		if ( cachedEntity.vCheckActionCode( myPlayer, AC_POSSESS ) ) {
+			cachedAction = AC_POSSESS;
+			return true;
+		}
+	}
+
+	return false;
+}
+
+void tool_pliers::Construct() {
+	myPlayer.disableRun( 1.f );
+	cachedEntity.vConstruct( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_CONSTRUCT );
+}
+
+void tool_pliers::Hack() {
+	myPlayer.disableRun( 1.f );
+	cachedEntity.vHack( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_HACK );
+}
+
+void tool_pliers::Possess() {
+	myPlayer.disableRun( 1.f );
+	cachedEntity.vPossess( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_POSSESS );
+}
+
+void tool_pliers::Repair() {
+	myPlayer.disableRun( 1.f );
+	
+	float scale = 1.f;
+	team_base team = myPlayer.getGameTeam();
+	if ( team.HasRepairBonus( myPlayer ) ) {
+		scale = 1.20f;
+	}
+	
+	cachedEntity.vRepair( repairCount * scale, myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_REPAIR );
+}
+
+void tool_pliers::Disarm() {
+	cachedEntity.vArm( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_DISARM );
+}
+
+void tool_pliers::Arm() {
+	cachedEntity.vArm( myPlayer );
+	myPlayer.ShowProgressBar( cachedEntity, AC_ARM );
+}
+
+void tool_pliers::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+}
+
+void tool_pliers::UpdateGUI() {
+	if ( myPlayer != sys.getLocalViewPlayer() || guiHandle == GUI_INVALID ) {
+		return;
+	}
+
+	float guiState = GUI_STATE_IDLE;
+	if ( myPlayer.AI_HOLD_WEAPON ) {
+		guiState = GUI_STATE_ARMING;
+	} else if ( CheckAttack( MASK_VEHICLESOLID | CONTENTS_PLAYERCLIP ) ) {
+		if ( cachedAction == AC_ARM || cachedAction == AC_ARM_CHARGE ) {
+			guiState = GUI_STATE_CONNECTED;
+		}
+	}
+
+	guiTextHandle = GetTextHandleForState( guiState );
+	sys.setGUIHandle( GUI_GLOBALS_HANDLE, "armTool.statusTextHandle", guiTextHandle );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "armTool.isSearching", guiState == GUI_STATE_IDLE );
+}
+
+handle tool_pliers::GetTextHandleForState( float state ) {
+	if ( state == GUI_STATE_ARMING ) {					return sys.localizeString( "game/arm/arming" );
+	} else if ( state == GUI_STATE_CONNECTED ) {		return sys.localizeString( "game/arm/connected" );
+	} else if ( state == GUI_STATE_IDLE ) {				return sys.localizeString( "game/arm/search" );
+	} else {											sys.assert( 0 );
+	}
+	return 0;
+}

@@ -1,0 +1,400 @@
+
+entityDef projectile_plasmacannon {
+	"spawnclass"				"idProjectile_RigidBody"
+	"scriptObject"				"projectile_missile"
+
+	"aor_layout"				"missile"
+
+	"mins"						"-8 -8 -8"
+	"maxs"						"8 8 8"
+	"cone"						"3"
+	"scale"						"1"
+	"noshadows"					"1"
+
+	"model" 					""
+
+	"launchFromBarrel"			"1"
+	"health"					"0"
+	"velocity"					"0 0 0"
+	"angular_velocity"			"0 0 0"
+	"bounce"					"0"
+	"mass"						"1"
+	"gravity"					"0"
+	"fuse"						"1.6"
+
+	"detonate_on_fuse"			"1"
+	"detonate_on_death"			"0"
+	"detonate_on_world"			"1"
+	"detonate_on_actor"			"1"
+
+	"fx_splash"					"effects/base/impact_water_large"
+	"fx_trail"					"effects/weapons/plasmacannon/bolt"
+	"fx_explode"				"effects/weapons/plasmacannon/explode"
+	"fx_explode_sand"			"effects/weapons/plasmacannon/explode"
+	"fx_explode_water"					"effects/water/explosion"
+	//"snd_fly"					"sounds/weapons/plasmacannon/fly"
+	"snd_fly"					"sounds/deployables/ssg/fly"
+}
+
+
+// -------------------------------------------
+
+entityDef projectile_plasmacannon_desecrator {
+	"inherit"					"projectile_plasmacannon"
+	"dmg_damage"				"damage_plasmacannon_desecrator"
+	"dmg_realistic_damage"			"realistic_damage_plasmacannon_desecrator"
+	"dmg_splash_damage"			"damage_plasmacannon_splash_desecrator"
+	"dmg_realistic_splash_damage"		"realistic_damage_plasmacannon_splash_desecrator"
+}
+
+damageDef damage_plasmacannon_desecrator {
+	useTemplate templates/vehicles/weapons/plasmacannon/damage< "desecrator_weapons", "pro_vehicle_damage_heavy" >
+}
+
+damageDef realistic_damage_plasmacannon_desecrator {
+	inherit							"damage_plasmacannon_desecrator"
+	damage							"realistic_damage_plasmacannon"
+}
+
+damageDef damage_plasmacannon_splash_desecrator {
+	useTemplate templates/vehicles/weapons/plasmacannon/damage/splash< "desecrator_weapons", "pro_vehicle_damage_heavy" >
+}
+
+damageDef realistic_damage_plasmacannon_splash_desecrator {
+	inherit							"damage_plasmacannon_splash_desecrator"
+	damage							"realistic_damage_plasmacannon_splash"
+}
+
+// -------------------------------------------
+
+entityDef projectile_plasmacannon_goliath {
+	"inherit"					"projectile_plasmacannon"
+	"dmg_damage"				"damage_plasmacannon_goliath"
+	"dmg_realistic_damage"			"realistic_damage_plasmacannon_goliath"
+	"dmg_splash_damage"			"damage_plasmacannon_splash_goliath"
+	"dmg_realistic_splash_damage"		"realistic_damage_plasmacannon_splash_goliath"
+}
+
+damageDef damage_plasmacannon_goliath {
+	useTemplate templates/vehicles/weapons/plasmacannon/damage< "goliath_weapons", "pro_vehicle_damage_heavy" >
+}
+
+damageDef realistic_damage_plasmacannon_goliath {
+	inherit							"damage_plasmacannon_goliath"
+	damage							"realistic_damage_plasmacannon"
+}
+
+damageDef damage_plasmacannon_splash_goliath {
+	useTemplate templates/vehicles/weapons/plasmacannon/damage/splash< "goliath_weapons", "pro_vehicle_damage_heavy" >
+}
+
+damageDef realistic_damage_plasmacannon_splash_goliath {
+	inherit							"damage_plasmacannon_splash_goliath"
+	damage							"realistic_damage_plasmacannon_splash"
+}
+
+// -------------------------------------------
+
+template templates/vehicles/weapons/plasmacannon/damage {
+	parameters< STATNAME, PROFDAMAGE >
+	text {
+		damage						"damage_plasmacannon"
+		
+		stat_name					"goliath_weapons"
+
+		prof_damage					"PROFDAMAGE"
+		
+		stat_name					"STATNAME"
+		
+		push						20000000
+
+		team_kill_cvar				"g_allowComplaint_explosives"
+
+		noheadshot
+		
+		tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
+		tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
+		tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+		
+		bleed
+		bleedWoundType						"explosive"
+		bleedExplode
+	}
+}
+
+template templates/vehicles/weapons/plasmacannon/damage/splash {
+	parameters< STATNAME, PROFDAMAGE >
+	text {
+		damage						"damage_plasmacannon_splash"
+		radius						320
+		
+		knockback					100
+		push						20000000
+
+		team_kill_cvar				"g_allowComplaint_explosives"
+
+		noheadshot
+		
+		prof_damage					"PROFDAMAGE"
+
+		stat_name					"STATNAME"
+
+		tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
+		tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
+		tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+		
+		bleed
+		bleedWoundType						"explosive"
+		bleedExplode
+	}
+}
+
+damageFilter damage_plasmacannon {
+
+	type {
+		target	"target_player_all"
+		damage	150
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	700
+	}
+
+	type {
+		target	"target_explodable"
+		damage	400
+	}
+}
+
+damageFilter realistic_damage_plasmacannon {
+
+	type {
+		target	"target_player_all"
+		damage	300
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	700
+	}
+
+	type {
+		target	"target_explodable"
+		damage	400
+	}
+}
+
+damageFilter damage_plasmacannon_splash {
+
+	type {
+		target	"target_player_all"
+		damage	150
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	500
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	350
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter realistic_damage_plasmacannon_splash {
+
+	type {
+		target	"target_player_all"
+		damage	300
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	500
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	350
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+entityDef projectile_plasmacannon_small {
+	"inherit"					"projectile_plasmacannon"
+
+	"dmg_damage"				"damage_plasmacannon_small"
+	"dmg_realistic_damage"			"realistic_damage_plasmacannon_small"
+	"dmg_splash_damage"			"damage_plasmacannon_small_splash"
+	"dmg_realistic_splash_damage"		"realistic_damage_plasmacannon_small_splash"
+
+	"fx_explode"				"effects/weapons/plasmacannon/explode_small"
+	"fx_trail"					"effects/weapons/plasmacannon/bolt_small"
+	
+	"use_air_burst"						"1"
+	"fx_airburst"						"effects/weapons/plasmacannon/explode_small_air"
+}
+
+damageDef damage_plasmacannon_small {
+	damage						"damage_plasmacannon_small"
+	
+	stat_name					"hornet_weapons"
+
+	prof_damage					"pro_vehicle_damage"
+
+	noheadshot
+	
+	team_kill_cvar				"g_allowComplaint_explosives"
+
+	tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_plasmacannon_small {
+	inherit						"damage_plasmacannon_small"
+	damage						"realistic_damage_plasmacannon_small"
+}
+
+damageDef damage_plasmacannon_small_splash {
+	damage						"damage_plasmacannon_small_splash"
+	radius						256
+
+	noheadshot
+	
+	stat_name					"hornet_weapons"
+
+	prof_damage					"pro_vehicle_damage"
+
+	team_kill_cvar				"g_allowComplaint_explosives"
+
+	tt_obituary					"tooltips/killmsgs/weapons/plasmacannon"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/plasmacannon/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/plasmacannon/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_plasmacannon_small_splash {
+	inherit						"damage_plasmacannon_small_splash"
+	damage						"realistic_damage_plasmacannon_small_splash"
+}
+
+damageFilter damage_plasmacannon_small {
+
+	type {
+		target	"target_player_all"
+		damage	150
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	300
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	150
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter realistic_damage_plasmacannon_small {
+
+	type {
+		target	"target_player_all"
+		damage	300
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	300
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	150
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter damage_plasmacannon_small_splash {
+
+	type {
+		target	"target_player_all"
+		damage	100
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	150
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	150
+	}
+
+	type {
+		target	"target_explodable"
+		damage	100
+	}
+}
+
+damageFilter realistic_damage_plasmacannon_small_splash {
+
+	type {
+		target	"target_player_all"
+		damage	200
+	}
+
+	type {
+		target	"target_veh_all"
+		damage	150
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	150
+	}
+
+	type {
+		target	"target_explodable"
+		damage	100
+	}
+}

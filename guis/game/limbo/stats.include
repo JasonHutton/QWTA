@@ -1,0 +1,14 @@
+
+#ifndef _limbo_stats_
+#define _limbo_stats_
+
+#define	STATS_ROW_HEIGHT			15
+
+#include <guis/common/stats/overview.include>
+#include <guis/common/stats/class.include>
+#include <guis/common/stats/deployables.include>
+#include <guis/common/stats/tools.include>
+#include <guis/common/stats/vehicles.include>
+#include <guis/common/stats/weapons.include>
+
+#endif // !_limbo_stats_

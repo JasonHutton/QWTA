@@ -1,0 +1,50 @@
+// ================================================================================
+// Connect to IP dialog
+// ================================================================================
+_dialog( ConnectIP, localize( "guis/mainmenu/connectip" ), _center( desktop, width ), _center( desktop, height ), 220, 100, "noMove", "dim" )
+	_input_dialog( connectIP )
+	_on_default( connectIP_Ok, connectIP_Cancel )
+
+	events {
+		onNamedEvent "onShow" {
+			callSuper();
+			setTabStop( 0 );
+		}
+	}
+
+	_edit( ConnectIP, _right( dlgConnectIP ), _top( dlgConnectIP ), 100, BUTTON_HEIGHT )
+		_clear_on_show
+		_draw_right_edit_label( localize( "guis/mainmenu/ip" ), COLOR_TEXT, 60 )
+	_end_edit
+
+	_edit( ConnectIP_Port, gui.edtConnectIP.rect.x, _to_bottom_of( edtConnectIP ) + 3, 40, BUTTON_HEIGHT )
+		_draw_right_edit_label( localize( "guis/mainmenu/port" ), COLOR_TEXT, 60 )
+		properties {
+			float 	flags 			= immediate( flags ) | EF_INTEGERS_ONLY;
+			float	maxTextLength 	= 5;
+		}
+		events {
+			onNamedEvent "onShow" {
+				callSuper();
+				editText = "27733";
+			}
+		}
+	_end_edit
+
+	_button( ConnectIP_Ok, _to_left_of( btnConnectIP_Cancel ) - 6, _bottom( dlgConnectIP ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/ok" );
+			float allowAction = compare( gui.edtConnectIP.editText, "" ) == false && compare( gui.edtConnectIP_Port.editText, "" ) == false;
+		}
+		_button_disable_if( "allowAction", allowAction == false )
+		_button_action(
+			gui.consoleCommand( "connect " + _quote + gui.edtConnectIP.editText + ":" + gui.edtConnectIP_Port.editText + _quote + _newline );
+			_close_input
+		)
+	_end_button
+
+	_button( ConnectIP_Cancel, _right( dlgConnectIP ), _bottom( dlgConnectIP ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties { handle localizedText = localize( "guis/mainmenu/cancel" );	}
+		_button_action( _close_input )
+	_end_button
+_end_dialog

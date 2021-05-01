@@ -1,0 +1,69 @@
+
+object vehicle_weapon_law : vehicle_weapon_base {
+	void					preinit();
+	void					Fire();
+
+	string	muzzleFlashFX;
+
+	float	jointHandle;
+	float	surfHandle;
+	float	fireRate;
+	float	spread;
+	float	projectileIndex;
+	float	feedback;
+	float	currentWeaponIndex;
+
+	vector	velocity;
+
+	entity	vehicle;
+	
+	float	externalOrdinance;
+};
+
+void vehicle_weapon_law::preinit() {
+	projectileIndex		= GetEntityDef( getKey( "def_projectile" ) );
+
+	vehicle				= getVehicle();
+
+	muzzleFlashFX		= getKey( "muzzle_flash" );
+
+	fireRate			= getFloatKey( "fire_rate" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	spread				= getFloatKey( "spread" );
+	velocity			= getVectorKey( "velocity" );
+	feedback			= getFloatKey( "feedback" );
+	
+	externalOrdinance	= getFloatKeyWithDefault( "external_ordinance", 0.f );
+}
+
+void vehicle_weapon_law::Fire() {
+	RemoveCharge();
+	RemoveAmmo();
+	
+	jointHandle = vehicle.getJointHandle( getKey( "missile_pos" + currentWeaponIndex ) );
+	vector origin = vehicle.getJointPos( jointHandle );
+	
+	vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), projectileIndex, -1, spread, origin, vehicle.jointToWorldSpace( jointHandle, velocity ) );
+	vehicle.applyImpulse( origin, -feedback * vehicle.getJointAxis( jointHandle, 0 ) );
+
+	vehicle.playJointEffect( muzzleFlashFX, jointHandle, 0 );
+
+	if ( externalOrdinance ) {
+		surfHandle = vehicle.getSurfaceId( getKey ( "missile_surface" + currentWeaponIndex ) );
+		if ( !vehicle.isSurfaceHidden( surfHandle ) ) {
+			vehicle.hideSurface( surfHandle );
+		}
+	}
+
+	currentWeaponIndex++;
+
+	if( currentWeaponIndex == getFloatKey( "num_missiles" ) ) {
+		currentWeaponIndex = 0;
+	}
+
+	AddReFireDelay( fireRate );
+
+	GoToIdle();
+}

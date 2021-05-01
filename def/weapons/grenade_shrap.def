@@ -1,0 +1,316 @@
+
+// ========================================================================
+// Shrap Grenade
+//
+export hauser {
+	options -prefix SHRAP_ -sourcedir models/weapons/strogg_shrap_grenade/dev_sd -destdir  models/weapons/grenades
+
+		mesh	shrap_grenade_base_file.mb			-dest models/weapons/grenades/shrap_grenade_view.md5mesh
+		anim	shrap_grenade_idle.mb				-dest models/weapons/grenades/shrap_grenade_idle.md5anim
+	 	anim	shrap_grenade_raise.mb				-dest models/weapons/grenades/shrap_grenade_raise.md5anim
+	 	anim	shrap_grenade_lower.mb				-dest models/weapons/grenades/shrap_grenade_lower.md5anim
+
+	 	anim	shrap_grenade_throw_quick.mb		-dest models/weapons/grenades/shrap_grenade_fire.md5anim
+	 	anim	shrap_grenade_throw.mb				-dest models/weapons/grenades/shrap_grenade_throw_start.md5anim -range 12 20
+ 		anim	shrap_grenade_throw.mb				-dest models/weapons/grenades/shrap_grenade_throw.md5anim -range 21 37
+
+
+	 	anim	shrap_grenade_alt_start_throw.mb	-dest models/weapons/grenades/shrap_grenade_alt_start_throw.md5anim -range 1 9
+	 	anim	shrap_grenade_alt_quick_throw.mb	-dest models/weapons/grenades/shrap_grenade_alt_throw.md5anim
+	 	anim	shrap_grenade_alt_quick_throw.mb	-dest models/weapons/grenades/shrap_grenade_alt_quick_throw.md5anim
+
+
+}
+
+// ========================================================================
+// view Models
+//
+model viewmodel_shrap_grenade {
+	mesh	 		  		models/weapons/grenades/shrap_grenade_view.md5mesh
+	anim	idle	  			models/weapons/grenades/shrap_grenade_idle.md5anim {
+		frame 9			sound_channel snd_weapon_mech snd_snip1
+		frame 27			sound_channel snd_weapon_reload snd_snip2
+
+		frame 36			sound_channel snd_weapon_temp1 snd_servo4
+		frame 38			sound_channel snd_weapon_temp2 snd_servo3
+
+		frame 50			sound_channel snd_weapon_mech snd_snip1
+		frame 55			sound_channel snd_weapon_reload snd_snip2
+
+		frame 58			sound_channel snd_weapon_mech snd_snip1
+		frame 60			sound_channel snd_weapon_reload snd_snip2
+
+		frame 65			sound_channel snd_weapon_temp1 snd_servo3
+		frame 68			sound_channel snd_weapon_temp2 snd_servo2
+
+		frame 90			sound_channel snd_weapon_temp1 snd_servo6
+		frame 130			sound_channel snd_weapon_temp2 snd_servo1
+
+		frame 115			sound_channel snd_weapon_mech snd_snip1
+		frame 135			sound_channel snd_weapon_reload snd_snip2
+
+//		frame 80			sound_channel snd_weapon_mech snd_snip1
+//		frame 90			sound_channel snd_weapon_reload snd_snip2
+//		frame 100			sound_channel snd_weapon_mech snd_snip1
+//		frame 110			sound_channel snd_weapon_reload snd_snip2
+//		frame 120			sound_channel snd_weapon_mech snd_snip1
+//		frame 130			sound_channel snd_weapon_reload snd_snip2
+//		frame 140			sound_channel snd_weapon_mech snd_snip1
+//		frame 150			sound_channel snd_weapon_reload snd_snip2
+//		frame 160			sound_channel snd_weapon_mech snd_snip1
+//		frame 170			sound_channel snd_weapon_reload snd_snip2
+
+	}
+ 	anim	raise	  			models/weapons/grenades/shrap_grenade_raise.md5anim {
+ 		frame	 1					sound_channel snd_weapon_foley snd_gren_raise
+ 	}
+ 	anim	putaway	  			models/weapons/grenades/shrap_grenade_lower.md5anim
+ 	anim	fire	  			models/weapons/grenades/shrap_grenade_fire.md5anim
+ 	anim    throw_start 		models/weapons/grenades/shrap_grenade_throw_start.md5anim {
+ 		frame	1					sound_channel snd_weapon_reload snd_gren_up
+	}
+ 	anim    throw 				models/weapons/grenades/shrap_grenade_throw.md5anim {
+ 		frame	3					sound_channel snd_weapon_mech snd_throw
+ 	}
+ 	anim    throw_quick 		models/weapons/grenades/shrap_grenade_fire.md5anim {
+ 		//frame	1					sound_channel snd_weapon_reload snd_gren_up
+ 		frame	11					sound_channel snd_weapon_mech snd_throw
+ 	}
+
+ 	anim    alt_throw_start 		models/weapons/grenades/shrap_grenade_alt_start_throw.md5anim {
+	 	frame	1					sound_channel snd_weapon_reload snd_gren_up
+	}
+	anim    alt_throw 				models/weapons/grenades/shrap_grenade_alt_throw.md5anim {
+	 	frame	3					sound_channel snd_weapon_mech snd_throw
+	}
+	anim    alt_throw_quick 		models/weapons/grenades/shrap_grenade_alt_quick_throw.md5anim {
+	 	//frame	1					sound_channel snd_weapon_reload snd_gren_up
+	 	frame	11					sound_channel snd_weapon_mech snd_throw
+	}
+
+}
+
+invItemDef inventory/weapons/grenades/shrap {
+	type						"grenade"
+	slot						"grenade"
+	name						"game/weapons/grenade_shrap"
+
+	data {
+		"model_view"			"viewmodel_shrap_grenade"
+		"model_world" 			"models/weapons/grenades/shrap_grenade_thirdperson.lwo"
+
+		"joint_attach"			"LeftHand"
+		"view_offset"			"-5 2 -3"
+		"view_angles"			"0 180 180"
+
+		"anim_prefix"			"hands_grenades"
+		"anim_prefix_class"		"hands"
+
+		"speed_mod"				"1.1"
+
+		"stat_name"				"grenade_shrap"
+
+		"allow_alt_fire"		"1"
+
+		"weapon_scriptobject"	"weapon_grenade"
+
+		"def_explode_inhand"	"projectile_grenade_frag"
+
+		"snd_reload"			"sounds/weapons/grenades/reload"
+		"snd_warning"			"sounds/weapons/grenades/sgrenade_warning"
+		"snd_grenade_timer"		"sounds/weapons/grenades/stroggtimer"
+		"snd_gren_up"			"sounds/weapons/grenades/strogg_up"
+		"snd_gren_raise"		"sounds/weapons/grenades/strogg_raise"
+		"snd_gren_prime"		"sounds/weapons/grenades/strogg_prime2"
+		"snd_throw"				"sounds/weapons/grenades/throw"
+		"snd_snip1"				"sounds/weapons/grenades/strogg_snip1"
+		"snd_snip2"				"sounds/weapons/grenades/strogg_snip2"
+		"snd_servo1"			"sounds/weapons/grenades/gservo1"
+		"snd_servo2"			"sounds/weapons/grenades/gservo2"
+		"snd_servo3"			"sounds/weapons/grenades/gservo3"
+		"snd_servo4"			"sounds/weapons/grenades/gservo4"
+		"snd_servo5"			"sounds/weapons/grenades/gservo5"
+		"snd_servo6"			"sounds/weapons/grenades/gservo6"
+		"snd_fireinthehole"		"sounds/players/strogg/botchat/generic/grenade"
+
+		"tt_intro_1"			"grenade_shrap_intro_1"
+		"tt_intro_2"			"generic_weapon_grenade_fire"
+
+		"num_projectiles"		"1"
+		"hide_clip"				"1"
+		"show_all_ammo"			"1"
+		"clip_based"			"0"
+
+		"mtr_weaponmenu"		"guis/assets/icons/weapons/shrapgrenade"
+		"crosshair"				"none"
+
+		"crosshair_spread_min"			"0.1"
+		"crosshair_spread_max"			"0.1"
+		"crosshair_spread_scale"		"1"
+
+		"spread_min"					"0"
+		"spread_max"					"0"
+
+		"spread_crouch_min"				"0"
+		"spread_crouch_max"				"0"
+
+		"spread_prone_min"				"0"
+		"spread_prone_max"				"0"
+
+		"spread_jump_min"				"0"
+		"spread_jump_max"				"0"
+
+		"fx_idle"					"effects/weapons/grenades/shrap/idle"
+		"idle_effect_joint"				"joint10"
+
+		"fire_rate"					"1"
+
+		
+
+		"player_weapon_num"		"3"
+	}
+
+	clip {
+		"projectile"			"projectile_grenade_shrap"
+		"type"					"grenade"
+		"ammo_per_shot"			"1"
+		"max_ammo"				"5"
+	}
+
+	clip { // uses clip 0 for info
+		"projectile"			"projectile_grenade_shrap_sticky"
+		"type"					"grenade"
+		"ammo_per_shot"			"1"
+		"max_ammo"				"0"
+	}
+}
+
+toolTip grenade_shrap_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/grenade_shrap_1"
+}
+
+entityDef projectile_grenade_shrap {
+	"inherit"					"projectile_grenade"
+
+	"mins"						"-4 -4 -4"
+	"maxs"						"4 4 4"
+
+	"model" 					"models/weapons/grenades/shrap_grenade_world.lwo"
+
+	"buoyancy"					"0"
+
+	"detonate_upwards"			"1"
+
+	"dmg_splash_damage"			"damage_grenade_shrap_splash"
+	"dmg_realistic_splash_damage"		"realistic_damage_grenade_shrap_splash"
+
+	"snd_pre_delay"				"sounds/weapons/grenades/sgrenade_warning"
+
+	"removeTrailAtRest"			"1"
+  	"fx_explode"				"effects/impacts/shrap/explosion_default"
+	"fx_explode_pavement"		"effects/impacts/shrap/explosion_pavement"
+ 	"fx_explode_stone"			"effects/impacts/shrap/explosion_pavement"
+ 	"fx_explode_concrete"		"effects/impacts/shrap/explosion_pavement"
+	"fx_explode_dirt"			"effects/impacts/shrap/explosion_dirt"
+	"fx_explode_mud"			"effects/impacts/shrap/explosion_dirt"
+	"fx_explode_glass"			"effects/impacts/shrap/explosion_metal"
+	"fx_explode_ice"			"effects/impacts/shrap/explosion_metal"
+	"fx_explode_metal"			"effects/impacts/shrap/explosion_metal"
+	"fx_explode_metal_thick"	"effects/impacts/shrap/explosion_metal"
+	"fx_explode_dusty_road"		"effects/impacts/shrap/explosion_sand"
+	"fx_explode_sand"			"effects/impacts/shrap/explosion_sand"
+	"fx_explode_snow"			"effects/impacts/shrap/explosion_snow"
+ 	"fx_explode_liquid"			"effects/impacts/frag/explosion_water"
+ 	"fx_explode_water"			"effects/impacts/frag/explosion_water"
+ 	"fx_explode_water_interior"	"effects/impacts/frag/explosion_water_interior"
+	"fx_explode_grass"			"effects/impacts/shrap/explosion_grass"
+
+	"is_nade"					"1"
+	
+	"has_postthink"				"1"
+	
+	"pre_delay_time"			"1.5"
+}
+
+entityDef projectile_grenade_shrap_sticky {
+	"inherit"					"projectile_grenade_shrap"
+	"velocity"					"250 0 0"
+	"stick_on_contact"			"1"
+}
+
+damageDef damage_grenade_shrap_splash {
+	damage						"damage_grenade_shrap_splash"
+	radius						320
+	knockback					100
+
+	push						20000000
+
+	noheadshot
+
+	stat_name					"grenade_shrap"
+
+	prof_damage					"pro_light_weapons_damage"
+
+	team_kill_cvar				"g_allowComplaint_explosives"
+
+	tt_obituary					"tooltips/killmsgs/weapons/grenades/shrap"
+	tt_obituary_team_kill		"tooltips/killmsgs/weapons/grenades/shrap/teamkill"
+	tt_obituary_self			"tooltips/killmsgs/weapons/grenades/shrap/self"
+	tt_obituary_unknown			"tooltips/killmsgs/weapons/grenades/shrap/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_grenade_shrap_splash {
+	inherit						"damage_grenade_shrap_splash"
+	damage						"realistic_damage_grenade_shrap_splash"
+}
+
+damageFilter damage_grenade_shrap_splash {
+
+	type {
+		target	"target_player_all"
+		damage	192
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	600
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	600
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}
+
+damageFilter realistic_damage_grenade_shrap_splash {
+
+	type {
+		target	"target_player_all"
+		damage	384
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	600
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	600
+	}
+
+	type {
+		target	"target_explodable"
+		damage	200
+	}
+}

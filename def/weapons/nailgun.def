@@ -1,0 +1,379 @@
+/***********************************************************************
+
+	weapons/nailgun.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export
+//
+
+export hauser {
+	options -prefix NAILGUN_ -sourcedir models/weapons/strogg_nailgun/dev_sd -destdir models/weapons/strogg_nailgun/ -keep muzzle
+
+
+	mesh	strogg_nailgun_base_file.mb	-dest models/weapons/strogg_nailgun/view.md5mesh
+
+	anim	strogg_nailgun_base_file.mb	-dest models/weapons/strogg_nailgun/base.md5anim
+	anim	strogg_nailgun_idle.mb		-dest models/weapons/strogg_nailgun/idle.md5anim
+ 	anim	strogg_nailgun_raise.mb		-dest models/weapons/strogg_nailgun/raise.md5anim
+ 	anim	strogg_nailgun_lower.mb		-dest models/weapons/strogg_nailgun/lower.md5anim
+ 	anim	strogg_nailgun_fire.mb		-dest models/weapons/strogg_nailgun/fire.md5anim
+ 	anim	strogg_nailgun_reload.mb	-dest models/weapons/strogg_nailgun/reload.md5anim
+ 	anim	strogg_nailgun_start_sprint.mb	-dest models/weapons/strogg_nailgun/start_sprint.md5anim
+ 	anim	strogg_nailgun_leave_sprint.mb	-dest models/weapons/strogg_nailgun/leave_sprint.md5anim
+}
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_nailgun {
+	mesh						models/weapons/strogg_nailgun/view.md5mesh
+
+	anim idle		 			models/weapons/strogg_nailgun/idle.md5anim {
+	}
+	anim raise					models/weapons/strogg_nailgun/raise.md5anim {
+		frame 7						sound_channel snd_weapon_raise snd_nails
+		frame 11					sound_channel snd_weapon_cock snd_cock
+	}
+	anim putaway				models/weapons/strogg_nailgun/lower.md5anim {
+	}
+	anim fire	 				models/weapons/strogg_nailgun/fire.md5anim {
+		frame 7 					sound_channel snd_weapon_mech snd_breech
+		frame 14					sound_channel snd_weapon_cock snd_cock
+	}
+	anim overheat				models/weapons/strogg_nailgun/reload.md5anim {
+		frame 6						sound_channel snd_weapon_raise snd_motor
+		frame 12					effect fx_overheat nailgun_shell_joint
+		frame	10					sound_channel snd_weapon_raise snd_motor
+		frame 18					sound_channel snd_weapon_foley snd_breech
+		frame 20					sound_channel snd_weapon_cock snd_cock
+		frame 36					sound_channel snd_weapon_foley snd_rebreech
+		frame 40					sound_channel snd_weapon_cock snd_recock
+		frame	45					sound_channel snd_weapon_mech snd_rebreech
+		frame 48					sound_channel snd_weapon_foley snd_recock
+		frame 54					sound_channel snd_weapon_cock snd_rebreech
+		frame	57					sound_channel snd_weapon_mech snd_recock
+		frame	65					sound_channel snd_weapon_foley snd_rebreech
+		frame	85					sound_channel snd_weapon_mech snd_cock
+		frame	90					sound_channel snd_weapon_foley snd_endclack
+	}
+	anim start_sprint			models/weapons/strogg_nailgun/start_sprint.md5anim {
+	}
+	anim leave_sprint			models/weapons/strogg_nailgun/leave_sprint.md5anim {
+	}
+	anim zoomout				models/weapons/strogg_nailgun/base.md5anim {
+	}
+	anim zoomin					models/weapons/strogg_nailgun/base.md5anim {
+		frame 1					sound_channel snd_weapon_foley snd_initzoom
+	}
+	anim idle_zoom	 			models/weapons/strogg_nailgun/idle.md5anim {
+	}
+	anim fire_zoom 				models/weapons/strogg_nailgun/fire.md5anim {
+		frame 12					sound_channel snd_weapon_mech snd_breech
+		frame 17					sound_channel snd_weapon_cock snd_cock
+	}
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_nailgun {
+	mesh		 				models/weapons/strogg_nailgun/nail_gun.md5mesh
+
+	anim raise					models/weapons/strogg_nailgun/nail_gun.md5anim{
+	}
+	anim idle 					models/weapons/strogg_nailgun/nail_gun.md5anim{
+	}
+	anim aim					models/weapons/strogg_nailgun/nail_gun.md5anim{
+	}
+	anim fire1 					models/weapons/strogg_nailgun/nail_gun.md5anim{
+	}
+	anim overheat				models/weapons/strogg_nailgun/nail_gun.md5anim{
+	}
+	anim noammo					models/weapons/strogg_nailgun/nail_gun.md5anim{
+	}
+ 	anim putaway				models/weapons/strogg_nailgun/nail_gun.md5anim{
+ 	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/nailgun {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/nailgun"
+	model								"models/weapons/strogg_nailgun/nailgun_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_nailgun"
+		"model_world" 					"worldmodel_nailgun"
+		"anim_limbomenu"				"menu"
+		"joint_attach"					"weapon_attach"
+		"view_offset"					"5.2 1 -1"
+		"view_foreshorten"				"0.85"
+		"anim_prefix"					"2h_nailgun"
+		"anim_prefix_class"				"2h"
+
+		"weapon_scriptobject"			"weapon_nailgun"
+
+		"stat_name"						"nailgun"
+
+		"recoilTime"					"500"
+		"recoilAngles"					"-0.3 0 0"
+		"kickback"						"1"
+		"kickbac_prone"					"0.5"
+
+		"fx_overheat"					"effects/weapons/nailgun_overheat"
+		"fx_overheat_world"				"effects/weapons/nailgun_overheat"
+		"fx_muzzle_flash"				"effects/weapons/nailgun_muzzleflash"
+		"fx_muzzle_flash_world"				"effects/weapons/nailgun_muzzleflash_world"
+
+		"snd_fire"						"sounds/weapons/nailgun/fire"
+		"snd_fire_far"					"sounds/weapons/nailgun/fire/far"
+		"snd_fire_local"				"sounds/weapons/nailgun/fire/local"
+		
+		"snd_cock"						"sounds/weapons/nailgun/cock"
+		"snd_breech"					"sounds/weapons/nailgun/breech"
+
+		"snd_recock"					"sounds/weapons/nailgun/recock"
+		"snd_rebreech"					"sounds/weapons/nailgun/rebreech"
+		"snd_motor"						"sounds/weapons/nailgun/motor"
+
+		
+		"snd_nails"						"sounds/weapons/nailgun/nails"
+		"snd_reload"					"sounds/weapons/shotgun/reload"
+		"snd_steam"						"sounds/weapons/blaster/steam"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_endclack"					"sounds/weapons/nailgun/endclack"
+		"snd_initzoom"					"sounds/weapons/railgun/init"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+		
+		"fov_zoom"						"60"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.75"
+		"fov_spread"					"0.6"
+
+		"reload_ammo"					"1"
+		"fire_rate"						"0.75"
+		"baseETQW12_fire_rate"			"0.825"
+
+		"num_projectiles"				"8"
+		"baseETQW12_num_projectiles"	"10"
+		"low_ammo"						"3"
+		"hide_clip"						"1"
+		"show_all_ammo"					"1"
+		"clip_based"					"0"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/nailgun"
+		"gui_sniper_scope"				"guis/game/sights/generic_scope"
+		"hud_sort"						"999"
+
+		"tt_intro_1"					"nailgun_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"nailgun_ironsights"
+		"tt_intro_ironsights_2"			"generic_weapon_ironsights"
+		"tt_intro_heat"					"generic_weapon_heat"
+
+		"crosshair"						"shell"
+		"disabled_crosshair_secondary"	"shell"
+		"crosshair_spread_min"			"-2.3"
+		"crosshair_spread_max"			"2"
+		"crosshair_spread_scale"		"3.7"
+
+		"spread_min"						"5"
+		"spread_max"						"8"
+		"spread_inc"						"5"
+
+		"spread_viewrate_min"				"5"
+		"spread_viewrate_max"				"8"
+		"spread_viewrate_inc"				"5"
+
+		"spread_max_settle_time"			"600"
+
+		"spread_crouch_min"					"4"
+		"spread_crouch_max"					"6"
+		"spread_crouch_inc"					"4"
+
+		"spread_crouch_viewrate_min"		"4"
+		"spread_crouch_viewrate_max"		"6"
+		"spread_crouch_viewrate_inc"		"4"
+
+		"spread_crouch_max_settle_time"		"600"
+
+		"spread_prone_min"					"4"
+		"baseETQW12_spread_prone_min"		"3"
+		"spread_prone_max"					"5"
+		"spread_prone_inc"					"4"
+		"baseETQW12_spread_prone_inc"		"3"
+
+		"spread_prone_viewrate_min"			"4"
+		"baseETQW12_spread_prone_viewrate_min"	"3"
+		"spread_prone_viewrate_max"			"5"
+		"spread_prone_viewrate_inc"			"4"
+		"baseETQW12_spread_prone_viewrate_inc"	"3"
+
+		"spread_prone_max_settle_time"		"600"
+
+		"spread_jump_min"					"8"
+		"spread_jump_max"					"8"
+		"spread_jump_inc"					"8"
+
+		"spread_jump_max_settle_time"		"600"
+
+		"overheat_length"				"4"
+		"overheat_per_shot"				"1.25"
+		"timer_heat"					"heat_nailgun"
+
+		"autoswitch_priority"			"5"
+
+		"hide_crosshair"				"0"
+
+		"player_weapon_num"				"11"
+	}
+
+	clip {
+		"projectile"					"projectile_nailgun"
+		"client_projectile"				"projectile_bullet"
+		"type"							"stroyent"
+		"ammo_per_shot"					"20"
+		"max_ammo"						"-1"
+	}
+}
+
+entityDef projectile_nailgun {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"4096"
+	"min_damage_percent"				"1"
+	"baseETQW12_min_damage_percent"		"10"
+
+	"dmg_damage"						"damage_nailgun"
+	"dmg_realistic_damage"					"realistic_damage_nailgun"
+
+	"tracer_chance"						"1"
+	"fx_tracer"							"effects/weapons/nailgun_tracer"
+
+  	"fx_explode"				"effects/impacts/nailgun/impact_default"
+	"fx_explode_pavement"		"effects/impacts/nailgun/impact_default"
+ 	"fx_explode_stone"			"effects/impacts/nailgun/impact_default"
+  	"fx_explode_concrete"		"effects/impacts/nailgun/impact_default"
+	"fx_explode_dirt"			"effects/impacts/nailgun/impact_default"
+	"fx_explode_mud"			"effects/impacts/nailgun/impact_default"
+	//"fx_explode_flesh"			"effects/impacts/lacerator/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/nailgun/impact_default"
+	"fx_explode_ice"			"effects/impacts/nailgun/impact_default"
+ 	"fx_explode_gravel"			"effects/impacts/nailgun/impact_default"
+	"fx_explode_metal"			"effects/impacts/nailgun/impact_default"
+	"fx_explode_metal_thick"	"effects/impacts/nailgun/impact_default"
+	"fx_explode_dusty_road"		"effects/impacts/nailgun/impact_default"
+	"fx_explode_sand"			"effects/impacts/nailgun/impact_default"
+	"fx_explode_snow"			"effects/impacts/nailgun/impact_default"
+	//"fx_explode_wood"			"effects/impacts/lacerator/impact_wood"
+	//"fx_explode_wood_thick"		"effects/impacts/lacerator/impact_wood"
+ 	//"fx_explode_liquid"			"effects/impacts/lacerator/impact_liquid"
+  	//"fx_explode_water"			"effects/impacts/lacerator/impact_liquid"
+  	//"fx_explode_water_interior"	"effects/impacts/lacerator/impact_liquid"
+	"fx_explode_forcefield"		"effects/base/bullets/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/nailgun/impact_default"
+ 	"fx_explode_plastic"		"effects/impacts/nailgun/impact_default"
+}
+
+damageDef damage_nailgun {
+	damage								"damage_nailgun"
+	kickDir								( 1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							10
+
+	kick_time							400
+	kick_amplitude						0.5
+
+	push								5000
+	
+	noheadshot
+
+	stat_name							"nailgun"
+	
+	record_hit_stats
+
+	prof_damage							"pro_light_weapons_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/nailgun"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/nailgun/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_nailgun {
+	inherit								"damage_nailgun"
+	damage								"realistic_damage_nailgun"
+}
+
+damageFilter damage_nailgun {
+	type {
+		target							"target_player_all"
+		damage							9
+		baseETQW12_damage				10
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							9
+		baseETQW12_damage				10
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							7
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							10
+	}
+}
+
+damageFilter realistic_damage_nailgun {
+	type {
+		target							"target_player_all"
+		damage							18
+		baseETQW12_damage				20
+	}
+
+	type {
+		target							"target_veh_light_all"
+		damage							18
+		baseETQW12_damage				20
+	}
+
+	type {
+		target							"target_veh_heavy_all"
+		damage							0
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							10
+	}
+}
+
+toolTip nailgun_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/nailgun_1"
+}
+
+toolTip nailgun_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}

@@ -1,0 +1,84 @@
+material textures/effects/weapons/boomboom
+{
+	noatmosphere
+	noshadows
+	translucent
+	discrete
+	nonsolid
+	{ 
+		blend add
+		map clamp textures/effects/weapons/boomboom
+		vertexcolor
+	}
+}
+
+material textures/effects/weapons/boomboom2
+{
+	noatmosphere
+	noshadows
+	translucent
+	discrete
+	nonsolid
+	{
+		blend add
+		map clamp textures/effects/weapons/boomboom2
+		vertexcolor				
+	}
+}
+
+material textures/effects/weapons/boomboom3
+{
+	noatmosphere
+	noshadows
+	translucent
+	discrete
+	nonsolid
+	{
+		blend add
+		map clamp textures/effects/weapons/boomboom3
+		vertexcolor
+	}
+}
+
+material textures/effects/weapons/boomboom4
+{
+	noatmosphere
+	noshadows	
+	translucent
+	discrete
+	nonsolid
+	{
+		blend add
+		map clamp textures/effects/weapons/boomboom4
+		vertexcolor
+	}
+}
+
+material textures/effects/weapons/bfgballblast
+{
+	noatmosphere
+	noshadows
+	translucent
+	discrete
+	nonsolid
+	{ 
+		blend add
+		map clamp textures/effects/weapons/bfgballblast
+		vertexcolor
+	}
+}
+
+material textures/effects/weapons/bfgballblast2
+{
+	noatmosphere
+	noshadows
+	translucent
+	discrete
+	nonsolid
+	twosided
+	{ 
+		blend add
+		map clamp textures/effects/weapons/bfgballblast
+		vertexcolor
+	}
+}

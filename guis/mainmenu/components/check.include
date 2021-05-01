@@ -1,0 +1,106 @@
+
+#ifndef __component_check__
+#define __component_check__
+
+#define CHECK_WIDTH     12
+#define CHECK_HEIGHT    12
+
+$template _chk_init
+	properties {
+		handle	chkFillMaterial		= cacheMaterial( "_chkFill", "_st checkbox" );
+		handle	chkLineMaterial		= cacheMaterial( "_chkLine", "_st checkbox_lines" );   
+		handle	chkCheckMaterial	= cacheMaterial( "_chkCheck", "_st checkbox_check" );
+	}
+$endtemplate
+
+$template _check( NameParm, TextParm, xPos, yPos, WidthParm )
+
+	windowDef chk##NameParm {
+		properties {
+			rect 	rect 			= xPos, yPos, WidthParm, CHECK_HEIGHT;
+			rect	buttonRect		= absoluteRect.x, absoluteRect.y, CHECK_WIDTH, CHECK_HEIGHT;
+			rect	textRect		= absoluteRect.x + $evalint( CHECK_WIDTH + 3 ), absoluteRect.y, absoluteRect.w - $evalint( CHECK_WIDTH + 3 ), absoluteRect.h;
+			
+			float   checked     	= false;
+			
+			color	fillColor		= COLOR_CHECK_FILL;
+			color	lineColor		= COLOR_CHECK_LINES;
+			color	checkColor		= COLOR_CHECK_HI_LINES;
+			color	foreColor		= COLOR_TEXT;
+			handle	localizedText	= TextParm;
+			float	flags			= immediate( flags ) | WF_INHERIT_PARENT_COLORS;
+		}
+		_tab_stop
+		
+		events {
+			onPreDraw {
+				drawLocalizedText( localizedText, textRect, foreColor, 12, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+				drawCachedMaterial( gui.chkFillMaterial, buttonRect, fillColor );
+				drawCachedMaterial( gui.chkLineMaterial, buttonRect, lineColor );
+				drawCachedMaterial( gui.chkCheckMaterial, buttonRect, checkColor );
+				gui.scriptPushFloat( false );
+			}
+			onPropertyChanged "allowEvents" {
+				if( allowEvents == false ) {
+					foreColor.a = 0.25;			
+				} else {
+					foreColor.a = 1;
+				}
+   			}
+		    onCreate {
+		    	callSuper();
+				checkColor.a = 0;
+			}
+			onKeyDown "mouse1" "space" {
+				postNamedEvent( "onAction" );
+			}
+			
+			onNamedEvent "onAction" {
+			    if( checked ) {
+					checked = false;
+				} else {
+					checked = true;
+				}
+				gui.playSound( "accept" );
+			}
+			onPropertyChanged "checked" {
+			    if( checked ) {
+			    	checkColor.a = transition( checkColor.a, 1, ACTIVATE_TRANSITION_TIME );
+				} else {
+					checkColor.a = transition( checkColor.a, 0, ACTIVATE_TRANSITION_TIME );
+				}
+				postOptionalNamedEvent( "checkChanged" );
+			}
+			onMouseEnter {
+		    	postNamedEvent( "highlight" );
+		    	gui.playSound( "boop" );
+			}
+			onMouseExit {
+	    		postNamedEvent( "unhighlight" );
+			}			
+			onGainFocus {
+			    if( allowEvents ) {
+			    	postNamedEvent( "highlight" );
+				}
+			}
+			onLoseFocus {
+				if( allowEvents ) {
+		    		postNamedEvent( "unhighlight" );
+				}
+			}
+			onNamedEvent "highlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_HI_LINES, ACTIVATE_TRANSITION_TIME );
+				foreColor = transition( foreColor, COLOR_TEXT_HIGHLIGHT, ACTIVATE_TRANSITION_TIME );
+			}
+			onNamedEvent "unhighlight" {
+				lineColor = transition( lineColor, COLOR_BUTTON_LINES, ACTIVATE_TRANSITION_TIME );
+				foreColor = transition( foreColor, COLOR_TEXT, ACTIVATE_TRANSITION_TIME );
+			}
+		}
+$endtemplate
+
+$template _end_check
+	}
+$endtemplate
+
+#endif // !__component_check__

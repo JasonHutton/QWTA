@@ -1,0 +1,717 @@
+
+
+#include <def/damage.include>
+
+/***********************************************************************
+
+	N93 GPMG
+
+***********************************************************************/
+
+// ========================================================================
+// Export rework version
+//
+
+
+export hauser {
+	options -prefix GPMG_ -sourcedir models/weapons/gdf_gpmg/dev_sd -destdir models/weapons/gdf_gpmg/ -keep muzzle joint1 joint2 joint18 joint17 shell11_bone shell10_bone shell09_bone shell08_bone shell07_bone shell06_bone shell05_bone shell04_bone shell03_bone shell02_bone shell01_bone ammo_cover_bone joint6 ammo_cover_latch_bone l_upper_arm l_elbow l_elbow_2 l_wrist l_finger_1_1 l_finger_1_2 l_finger_1_3 l_finger_2_1 l_finger_2_2 l_finger_2_3 l_finger_3_1 l_finger_3_2 l_finger_3_3 l_finger_4_1 l_finger_4_2 l_finger_4_3 l_thumb_1 l_thumb_2 l_thumb_3 effector2 r_upper_arm r_elbow r_elbow_2 r_wrist r_finger_1_1 r_finger_1_2 r_finger_1_3 r_finger_2_1 r_finger_2_2 r_finger_2_3 r_finger_3_1 r_finger_3_2 r_finger_3_3 r_finger_4_1 r_finger_4_2 r_finger_4_3 r_thumb_1 r_thumb_2 r_thumb_3 r_palm //-keepmesh rest1 rest2 gpmg ammo_cover_lock gpmg_charge_handle gpmg_ammo_cover gpmg_ammo_bucket_mesh shell11_mesh shell08_mesh shell07_mesh shell06_mesh shell09_mesh shell10_mesh shell12_mesh shell13_mesh shell05_mesh shell04_mesh shell03_mesh shell02_mesh shell01_mesh left_arm left_hand right_arm right_hand
+
+
+	mesh	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/view.md5mesh
+/*
+
+	anim	gpmg_rework_idle.mb			-dest models/weapons/gdf_gpmg/idle.md5anim     						-xyzprecision 0.0001
+	anim	gpmg_rework_raise.mb				-dest models/weapons/gdf_gpmg/raise.md5anim					-xyzprecision 0.0001
+ 	anim	gpmg_rework_lower.mb				-dest models/weapons/gdf_gpmg/lower.md5anim
+
+   	anim	gpmg_rework_fire.mb					-dest models/weapons/gdf_gpmg/fire.md5anim					-range 1 16
+
+  	anim	gpmg_rework_fire.mb					-dest models/weapons/gdf_gpmg/fire_end.md5anim				-range 5 16 -xyzprecision 0.0001
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last12.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last11.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last10.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last9.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last8.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last7.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last6.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last5.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last4.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last3.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last2.md5anim
+   	anim	gpmg_rework_base_file.mb			-dest models/weapons/gdf_gpmg/fire_last1.md5anim
+
+
+
+
+	anim	gpmg_rework_reload2.mb				-dest models/weapons/gdf_gpmg/reload.md5anim
+
+	anim	gpmg_rework_zoom.mb			-dest models/weapons/gdf_gpmg/idle_zoom.md5anim -range 9 9
+	anim	gpmg_rework_zoom_fire.mb					-dest models/weapons/gdf_gpmg/fire_zoom.md5anim
+	anim	gpmg_rework_zoom.mb					-dest models/weapons/gdf_gpmg/zoom_out.md5anim -range 9 17
+	anim	gpmg_rework_zoom.mb					-dest models/weapons/gdf_gpmg/zoom_in.md5anim -range 1 9
+
+
+	anim 	gpmg_rework_sprint.mb			-dest models/weapons/gdf_gpmg/start_sprint.md5anim -range 1 8
+	anim 	gpmg_rework_sprint.mb			-dest models/weapons/gdf_gpmg/leave_sprint.md5anim	-range 8 14
+
+*/
+}
+
+
+/*
+export hauser {
+	options -prefix GPMG_ -sourcedir models/weapons/gdf_gpmg/dev_sd -destdir models/weapons/gdf_gpmg/ -keep joint1 joint2 joint18 joint17 shell11_bone shell10_bone shell09_bone shell08_bone shell07_bone shell06_bone shell05_bone shell04_bone shell03_bone shell02_bone shell01_bone ammo_cover_bone joint6 charge_handle_bone ammo_cover_latch_bone gui_arm_joint1 gui_arm_joint1_parentConstraint1 gui_arm_joint2 gui_arm_joint2_parentConstraint1 l_upper_arm l_elbow l_elbow_2 l_wrist l_finger_1_1 l_finger_1_2 l_finger_1_3 l_finger_2_1 l_finger_2_2 l_finger_2_3 l_finger_3_1 l_finger_3_2 l_finger_3_3 l_finger_4_1 l_finger_4_2 l_finger_4_3 l_thumb_1 l_thumb_2 l_thumb_3 effector2 r_upper_arm r_elbow r_elbow_2 r_wrist r_finger_1_1 r_finger_1_2 r_finger_1_3 r_finger_2_1 r_finger_2_2 r_finger_2_3 r_finger_3_1 r_finger_3_2 r_finger_3_3 r_finger_4_1 r_finger_4_2 r_finger_4_3 r_thumb_1 r_thumb_2 r_thumb_3 r_palm //-keepmesh rest1 rest2 gpmg ammo_cover_lock gpmg_charge_handle gpmg_ammo_cover gpmg_ammo_bucket_mesh shell11_mesh shell08_mesh shell07_mesh shell06_mesh shell09_mesh shell10_mesh shell12_mesh shell13_mesh shell05_mesh shell04_mesh shell03_mesh shell02_mesh shell01_mesh left_arm left_hand right_arm right_hand
+
+	mesh	gpmg_base_file.mb			-dest models/weapons/gdf_gpmg/view.md5mesh
+	anim	gpmg_idle.mb				-dest models/weapons/gdf_gpmg/idle.md5anim -xyzprecision 0.001
+	anim	gpmg_raise.mb				-dest models/weapons/gdf_gpmg/raise.md5anim
+ 	anim	gpmg_lower.mb				-dest models/weapons/gdf_gpmg/lower.md5anim
+   	anim	gpmg_fire.mb				-dest models/weapons/gdf_gpmg/fire.md5anim
+   	anim	gpmg_fire_last12.mb			-dest models/weapons/gdf_gpmg/fire_last12.md5anim
+   	anim	gpmg_fire_last11.mb			-dest models/weapons/gdf_gpmg/fire_last11.md5anim
+   	anim	gpmg_fire_last10.mb			-dest models/weapons/gdf_gpmg/fire_last10.md5anim
+   	anim	gpmg_fire_last9.mb			-dest models/weapons/gdf_gpmg/fire_last9.md5anim
+   	anim	gpmg_fire_last8.mb			-dest models/weapons/gdf_gpmg/fire_last8.md5anim
+   	anim	gpmg_fire_last7.mb			-dest models/weapons/gdf_gpmg/fire_last7.md5anim
+   	anim	gpmg_fire_last6.mb			-dest models/weapons/gdf_gpmg/fire_last6.md5anim
+   	anim	gpmg_fire_last5.mb			-dest models/weapons/gdf_gpmg/fire_last5.md5anim
+   	anim	gpmg_fire_last4.mb			-dest models/weapons/gdf_gpmg/fire_last4.md5anim
+   	anim	gpmg_fire_last3.mb			-dest models/weapons/gdf_gpmg/fire_last3.md5anim
+   	anim	gpmg_fire_last2.mb			-dest models/weapons/gdf_gpmg/fire_last2.md5anim
+   	anim	gpmg_fire_last1.mb			-dest models/weapons/gdf_gpmg/fire_last1.md5anim
+
+
+
+   	anim	gpmg_fire_end.mb			-dest models/weapons/gdf_gpmg/fire_end.md5anim -xyzprecision 0.0001
+	anim	gpmg_reload.mb				-dest models/weapons/gdf_gpmg/reload.md5anim
+	anim	gpmg_idle_zoom.mb			-dest models/weapons/gdf_gpmg/idle_zoom.md5anim
+	anim	gpmg_fire_zoom.mb			-dest models/weapons/gdf_gpmg/fire_zoom.md5anim
+	anim	gpmg_zoom_out.mb			-dest models/weapons/gdf_gpmg/zoom_out.md5anim
+	anim	gpmg_zoom_in.mb				-dest models/weapons/gdf_gpmg/zoom_in.md5anim
+
+
+	anim 	gpmg_start_sprint.mb		-dest models/weapons/gdf_gpmg/start_sprint.md5anim
+	anim 	gpmg_leave_sprint.mb		-dest models/weapons/gdf_gpmg/leave_sprint.md5anim
+}
+
+*/
+/*
+export hauser {
+		options -prefix GPMG_ -sourcedir models/weapons/gdf_gpmg/dev_sd -dest models/weapons/gdf_gpmg -keep muzzle left_hand_ik right_hand_ik -rotate 90
+
+	mesh	gpmg_mount.mb 					-dest models/weapons/gdf_gpmg/gpmg_mount.md5mesh
+
+	anim 	gpmg_mount.mb					-dest models/weapons/gdf_gpmg/gpmg_mount_low.md5anim -range 1 1
+	anim 	gpmg_mount.mb 					-dest models/weapons/gdf_gpmg/gpmg_mount_high.md5anim -range 11 11
+
+	anim 	gpmg_mount.mb  					-dest models/weapons/gdf_gpmg/gpmg_mount_raise.md5anim -range 1 10
+	anim 	gpmg_mount.mb  					-dest models/weapons/gdf_gpmg/gpmg_mount_lower.md5anim -range 21 30
+	anim 	gpmg_mount.mb  					-dest models/weapons/gdf_gpmg/gpmg_mount_damage.md5anim -range 11 15
+	anim 	gpmg_mount.mb  					-dest models/weapons/gdf_gpmg/gpmg_mount_damaged.md5anim -range 15 15
+	anim 	gpmg_mount.mb 					-dest models/weapons/gdf_gpmg/gpmg_mount_repaired.md5anim -range 17 20
+}
+*/
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_gpmg {
+	mesh 								models/weapons/gdf_gpmg/view.md5mesh
+
+	anim idle 							models/weapons/gdf_gpmg/idle.md5anim {
+	}
+
+	anim fire							models/weapons/gdf_gpmg/fire.md5anim {
+	}
+
+	//anim fire_end						models/weapons/gdf_gpmg/fire_end.md5anim {
+	//}
+
+	anim fire_last12					models/weapons/gdf_gpmg/fire_last12.md5anim {
+	}
+
+	anim fire_last11					models/weapons/gdf_gpmg/fire_last11.md5anim {
+	}
+
+	anim fire_last10					models/weapons/gdf_gpmg/fire_last10.md5anim {
+	}
+
+	anim fire_last9						models/weapons/gdf_gpmg/fire_last9.md5anim {
+	}
+
+	anim fire_last8						models/weapons/gdf_gpmg/fire_last8.md5anim {
+	}
+
+	anim fire_last7						models/weapons/gdf_gpmg/fire_last7.md5anim {
+	}
+
+	anim fire_last6						models/weapons/gdf_gpmg/fire_last6.md5anim {
+	}
+
+	anim fire_last5						models/weapons/gdf_gpmg/fire_last5.md5anim {
+	}
+
+	anim fire_last4						models/weapons/gdf_gpmg/fire_last4.md5anim {
+	}
+
+	anim fire_last3						models/weapons/gdf_gpmg/fire_last3.md5anim {
+	}
+
+	anim fire_last2						models/weapons/gdf_gpmg/fire_last2.md5anim {
+	}
+
+	anim fire_last1						models/weapons/gdf_gpmg/fire_last1.md5anim {
+	}
+
+	anim reload							models/weapons/gdf_gpmg/reload.md5anim {
+		frame 1								sound_channel snd_weapon_reload snd_reload
+	}
+	anim raise							models/weapons/gdf_gpmg/raise.md5anim {
+		frame 1								sound_channel snd_weapon_raise snd_raise
+	}
+
+	anim putaway						models/weapons/gdf_gpmg/lower.md5anim {
+	}
+
+	anim zoomin							models/weapons/gdf_gpmg/zoom_in.md5anim {
+		frame 1								sound_channel snd_weapon_foley snd_sights_up
+	}
+
+	anim zoomout						models/weapons/gdf_gpmg/zoom_out.md5anim {
+		frame 1								sound_channel snd_weapon_foley snd_sights_down
+	}
+
+	anim idle_zoom 						models/weapons/gdf_gpmg/idle_zoom.md5anim {
+	}
+
+	anim fire_zoom						models/weapons/gdf_gpmg/fire_zoom.md5anim {
+	}
+
+	anim start_sprint					models/weapons/gdf_gpmg/start_sprint.md5anim {
+	}
+
+	anim leave_sprint					models/weapons/gdf_gpmg/leave_sprint.md5anim {
+	}
+}
+
+model mountable_gdf_gpmg {
+	mesh								models/weapons/gdf_gpmg/gpmg_mount.md5mesh
+	anim base							models/weapons/gdf_gpmg/gpmg_mount_high.md5anim
+
+	anim low							models/weapons/gdf_gpmg/gpmg_mount_low.md5anim
+	anim high 							models/weapons/gdf_gpmg/gpmg_mount_high.md5anim
+
+	anim raise  						models/weapons/gdf_gpmg/gpmg_mount_raise.md5anim
+	anim lower  						models/weapons/gdf_gpmg/gpmg_mount_lower.md5anim
+	anim damage  						models/weapons/gdf_gpmg/gpmg_mount_damage.md5anim
+	anim damaged  						models/weapons/gdf_gpmg/gpmg_mount_damaged.md5anim
+	anim repaired 						models/weapons/gdf_gpmg/gpmg_mount_repaired.md5anim
+}
+
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_gpmg {
+	mesh 								models/weapons/gdf_gpmg/gpmg_world.md5mesh
+
+	anim idle 							models/weapons/gdf_gpmg/gpmg_world.md5anim {
+	}
+	anim aim							models/weapons/gdf_gpmg/gpmg_world.md5anim {
+	}
+	anim fire 							models/weapons/gdf_gpmg/gpmg_world.md5anim {
+	}
+	anim fire1 							models/weapons/gdf_gpmg/gpmg_world.md5anim {
+	}
+	anim reload							models/weapons/gdf_gpmg/gpmg_world.md5anim {
+	}
+	anim noammo							models/weapons/gdf_gpmg/gpmg_world.md5anim {
+	}
+ 	anim putaway						models/weapons/gdf_gpmg/gpmg_world.md5anim {
+ 	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/gpmg {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/gpmg"
+	model								"models/weapons/gdf_gpmg/gpmg_player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_gpmg"
+		"model_world" 					"worldmodel_gpmg"
+		"anim_limbomenu"				"menu_gpmg"
+
+		"view_offset"					"-1.8 0.83 0.47"
+ 		"view_foreshorten"				"0.75"
+
+		"joint_attach"					"weapon"
+		"anim_prefix"					"gpmg"
+
+		"weapon_scriptobject"			"weapon_gpmg"
+
+		"recoilTime"					"100"
+		"recoilAngles"					"-0.5 0 0"
+		"kickback"						"0.5"
+		"kickback_prone"				"0.01"
+
+		"fx_muzzle_flash_world"			"effects/weapons/gpmg_muzzleflash_world"
+		"fx_muzzle_flash"				"effects/weapons/gpmg_muzzleflash_view"
+
+		"stat_name"						"gpmg"
+
+		"fx_tracer"						"effects/base/tracers_large"
+		"effectchance fx_tracer"		"1"
+
+		"snd_fire"						"sounds/weapons/gpmg/fire"
+		"snd_fire_far"					"sounds/weapons/gpmg/fire/far"
+		"snd_fire_local"				"sounds/weapons/gpmg/fire/local"
+		"snd_reload"					"sounds/weapons/gpmg/reload"
+		"snd_brass_loop"				"sounds/weapons/gpmg/brass/loop"
+		"snd_brass_stop"				"sounds/weapons/gpmg/brass/stop"
+		"snd_raise"						"sounds/weapons/gpmg/raise"
+		"snd_sights_up"					"sounds/weapons/gpmg/sights/up"
+		"snd_sights_down"				"sounds/weapons/gpmg/sights/down"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_dryfire"					"sounds/weapons/misc/dryfire"
+
+		"surface_bullet_0"				"shell00_mesh"
+		"surface_bullet_1"				"shell01_mesh"
+		"surface_bullet_2"				"shell02_mesh"
+		"surface_bullet_3"				"shell03_mesh"
+		"surface_bullet_4"				"shell04_mesh"
+		"surface_bullet_5"				"shell05_mesh"
+		"surface_bullet_6"				"shell06_mesh"
+		"surface_bullet_7"				"shell07_mesh"
+		"surface_bullet_8"				"shell08_mesh"
+		"surface_bullet_9"				"shell09_mesh"
+		"surface_bullet_10"				"shell10_mesh"
+		"surface_bullet_11"				"shell12_mesh, shell11_mesh"
+
+		"num_final_bullets"				"12"
+
+		"speed_mod"						"0.85"
+
+ 		"fov_zoom"						"45"
+		"fov_time"						"0.25"
+		"fov_speed"						"0.5"
+		"fov_spread"					"0.1"
+		"realistic_fov_spread"			"0.025"
+
+		"trigger_delay"					"0"
+		"fire_rate"						"0.10" // 10.0 RPS // 600 RPM
+		"realistic_fire_rate"			"0.063" // 15.8 RPS // 948 RPM
+		"num_projectiles"				"1"
+
+		"zoomFov"						"60"
+		"low_ammo"						"5"
+
+		"gui_sight"						"game/sights/assaultrifle_scope"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/gpmg"
+
+		"tt_intro_1"					"gpmg_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_ironsights_1"			"gpmg_ironsights"
+		"tt_intro_ironsights_2"			"generic_weapon_ironsights"
+		"tt_intro_reload"				"generic_weapon_reload"
+
+		"climate_skin_key"				"weapon_gdf"
+
+		"crosshair"						"large"
+
+		"crosshair_spread_min"			"-0.45"
+		"crosshair_spread_max"			"2.3"
+		"crosshair_spread_scale"		"2.3"
+
+		"spread_min"					"3"
+		"spread_max"					"10"
+		"spread_inc"					"3"
+
+		"spread_viewrate_min"			"3"
+		"spread_viewrate_max"			"10"
+		"spread_viewrate_inc"			"10"
+
+		"spread_max_settle_time"		"1000"
+
+		"spread_crouch_min"				"1"
+		"spread_crouch_max"				"3"
+		"spread_crouch_inc"				"0.5"
+
+		"spread_crouch_viewrate_min"	"1"
+		"spread_crouch_viewrate_max"	"3"
+		"spread_crouch_viewrate_inc"	"2"
+
+		"spread_crouch_max_settle_time"	"450"
+
+		"spread_prone_min"				"0.25"
+		"spread_prone_max"				"1"
+		"spread_prone_inc"				"0.25"
+
+		"spread_prone_viewrate_min"		"0.25"
+		"spread_prone_viewrate_max"		"1"
+		"spread_prone_viewrate_inc"		"2"
+
+		"spread_prone_max_settle_time"	"250"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"6"
+	}
+
+	clip {
+		"projectile"					"projectile_gpmg"
+		"client_projectile"				"projectile_bullet"
+		"type"							"gpmg"
+		"ammo_per_shot"					"1"
+		"max_ammo"						"100"
+	}
+}
+
+stringMap mountable_gdf_gpmg_ik {
+	"helper_type"						"playerIK"
+
+	"joint_left"						"left_hand_ik"
+	"joint_right"						"right_hand_ik"
+}
+
+// Mountable version of the gun
+entityDef mountable_gdf_gpmg {
+	"spawnclass"						"sdScriptEntity"
+
+	"model"								"mountable_gdf_gpmg"
+
+	"mount_joint"						"mount"
+	"scriptobject"						"weapon_mounted"
+
+	"snd_fire"							"sounds/weapons/gpmg/fire"
+	"snd_fire_far"						"sounds/weapons/gpmg/fire/far"
+	"snd_fire_local"					"sounds/weapons/gpmg/fire/local"
+	"snd_overheat"						"sounds/weapons/misc/overheat"
+
+	"def_projectile"					"projectile_gpmg_mount"
+	"client_projectile"					"projectile_gpmg_mount"
+
+	"fx_muzzle_flash"					"effects/weapons/gpmg_muzzleflash"
+	"fx_tracer"							"effects/base/tracers_large"
+	"effectchance fx_tracer"			"0.1"
+
+	"fire_rate"							"0.1" // 10.0 RPS
+	"realistic_fire_rate"				"0.063" // 15.8 RPS
+	"spread"							"0.2"
+	"range"								"8192"
+	"muzzle"							"muzzle"
+
+	"fire_charge"						"1.66"
+	"recharge_time"						"5"
+
+	"fire_lower_bound"					"0.1"
+	"fire_lower_bound_delay"			"2"
+
+	"health"							"300"
+
+	"option_combat_model"				"1"
+	"option_crosshair_interface"		"1"
+	"option_interactive_interface"		"1"
+
+	"crosshair"							"none"
+
+	"collection_mountables"				"mountables"
+
+	"fx_damaged"						"effects/generic_smoke"
+
+	"object_name"						"game/weapons/gpmg"
+
+	"str_playerik"						"mountable_gdf_gpmg_ik"
+}
+
+entityDef projectile_gpmg {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base_big"
+
+	"range"								"8192"
+	"min_damage_percent"				"10"
+
+	"dmg_damage"						"damage_gpmg"
+	"dmg_realistic_damage"					"realistic_damage_gpmg"
+}
+
+entityDef projectile_gpmg_mount {
+	"inherit"							"projectile_gpmg"
+	"dmg_damage"						"damage_gpmg_mount"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_mount"
+}
+
+entityDef projectile_gpmg_vehicle {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base_big"
+	"range"								"8192"
+	"min_damage_percent"				"10"
+}
+
+entityDef projectile_gpmg_badger {
+	"inherit"							"projectile_gpmg_vehicle"
+	"dmg_damage"						"damage_gpmg_badger"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_badger"
+}
+
+entityDef projectile_gpmg_trojan {
+	"inherit"							"projectile_gpmg_vehicle"
+	"dmg_damage"						"damage_gpmg_trojan"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_trojan"
+}
+
+entityDef projectile_gpmg_titan {
+	"inherit"							"projectile_gpmg_vehicle"
+	"dmg_damage"						"damage_gpmg_titan"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_titan"
+}
+
+entityDef projectile_gpmg_platypus {
+	"inherit"							"projectile_gpmg_vehicle"
+	"dmg_damage"						"damage_gpmg_platypus"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_platypus"
+}
+
+entityDef projectile_gpmg_mcp {
+	"inherit"							"projectile_gpmg_vehicle"
+	"dmg_damage"						"damage_gpmg_mcp"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_mcp"
+}
+
+entityDef projectile_gpmg_aircraft {
+	"spawnclass"						"idProjectile"
+	"inherit"						    "projectile_gpmg_vehicle"
+
+	"fx_explode"						"effects/minigun/sand"
+	"fx_explode_sand"					"effects/minigun/sand"
+	"fx_explode_pavement"				"effects/minigun/sand"
+	"fx_explode_stone"					"effects/minigun/sand"
+	"fx_explode_snow"					"effects/minigun/snow"
+}
+
+entityDef projectile_gpmg_anansi {
+	"inherit"							"projectile_gpmg_aircraft"
+	"dmg_damage"						"damage_gpmg_anansi"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_anansi"
+}
+
+entityDef projectile_gpmg_bumblebee {
+	"inherit"							"projectile_gpmg_aircraft"
+	"dmg_damage"						"damage_gpmg_bumblebee"
+	"dmg_realistic_damage"					"realistic_damage_gpmg_bumblebee"
+}
+
+damageDef damage_gpmg_badger {
+	_vehicle_mg_damage( "badger_weapons" )
+}
+
+damageDef realistic_damage_gpmg_badger {
+	inherit							"damage_gpmg_badger"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_trojan {
+	_vehicle_mg_damage( "trojan_weapons" )
+}
+
+damageDef realistic_damage_gpmg_trojan {
+	inherit							"damage_gpmg_trojan"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_titan {
+	_vehicle_mg_damage( "titan_weapons" )
+}
+
+damageDef realistic_damage_gpmg_titan {
+	inherit							"damage_gpmg_titan"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_anansi {
+	_vehicle_mg_damage( "anansi_weapons" )
+}
+
+damageDef realistic_damage_gpmg_anansi {
+	inherit							"damage_gpmg_anansi"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_bumblebee {
+	_vehicle_mg_damage( "bumblebee_weapons" )
+}
+
+damageDef realistic_damage_gpmg_bumblebee {
+	inherit							"damage_gpmg_bumblebee"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_platypus {
+	_vehicle_mg_damage( "platypus_weapons" )
+}
+
+damageDef realistic_damage_gpmg_platypus {
+	inherit							"damage_gpmg_platypus"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_mcp {
+	_vehicle_mg_damage( "mcp_weapons" )
+}
+
+damageDef realistic_damage_gpmg_mcp {
+	inherit							"damage_gpmg_mcp"
+	damage							"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg {
+	damage								"damage_gpmg"
+	kickDir								( 1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							3
+
+	record_hit_stats
+
+	push								10000
+
+	stat_name							"gpmg"
+
+	kick_time							400
+	kick_amplitude						0.25
+
+	prof_damage							"pro_soldier_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/gpmg"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gpmg/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_gpmg {
+	inherit								"damage_gpmg"
+	damage								"realistic_damage_gpmg"
+}
+
+damageDef damage_gpmg_mount {
+	damage								"damage_gpmg_mount"
+	kickDir								( 1 0 0 )
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							3
+
+	push								10000
+
+	stat_name							"gpmg_mount"
+
+	kick_time							400
+	kick_amplitude						0.25
+
+	prof_damage							"pro_soldier_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/gpmg"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/gpmg/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_gpmg_mount {
+	inherit								"damage_gpmg_mount"
+	damage								"realistic_damage_gpmg_mount"
+}
+
+damageFilter damage_gpmg {
+
+	type {
+		target							"target_player_all"
+		damage							17
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							25
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							25
+	}
+}
+
+damageFilter realistic_damage_gpmg {
+
+	type {
+		target							"target_player_all"
+		damage							26
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							12
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							12
+	}
+}
+
+damageFilter damage_gpmg_mount {
+	type {
+		target							"target_player_all"
+		damage							21
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							30
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							30
+	}
+}
+
+damageFilter realistic_damage_gpmg_mount {
+	type {
+		target							"target_player_all"
+		damage							32
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							15
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							15
+	}
+}
+
+toolTip gpmg_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/gpmg_1"
+}
+
+toolTip gpmg_ironsights {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/ironsights_1"
+}

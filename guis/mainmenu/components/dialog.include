@@ -1,0 +1,356 @@
+
+#include <guis/mainmenu/effects.include>
+
+#ifndef __component_dialog__
+#define __component_dialog__
+
+#ifndef PADDING
+#define PADDING 8
+#endif
+
+$template _dlg_init
+	properties {
+		handle	dlgGradMaterial		= cacheMaterial( "_dlgGrad", "_frame dialog_grad" );	
+		handle	dlgFillMaterial		= cacheMaterial( "_dlgFill", "_frame dialog" );		
+		handle	dlgLineMaterial		= cacheMaterial( "_dlgLine", "_frame dialog_line" );
+	}
+$endtemplate
+
+#define DIALOG_CAPTION_HEIGHT 16
+
+$template _dialog_container
+	properties {
+		string	  	activePane;
+		string	  	activeDialog;
+		string	  	activePopup;
+		string    	activeInput;
+
+		float     	inputActive = compare( activeInput, "" ) != true;
+		float     	popupActive = compare( activePopup, "" ) != true;
+		float     	modalDialogActive = inputActive || popupActive;
+	}
+$endtemplate
+
+// ----------------------
+// State management - use in event handlers
+// ----------------------
+
+// ----------------------
+// Activate a top-level pane
+// ----------------------
+$template _push_page( page )
+		gui.pushGeneralString( "menu", #page );
+		gui.activePane = #page;
+$endtemplate
+
+// ----------------------
+// Deactivate a top-level pane
+// ----------------------
+$template _pop_page
+		if( gui.generalStringAvailable( "menu" ) ) {
+			if( compare( gui.getGeneralString( "menu" ), gui.activePane) ) {
+				gui.popGeneralString( "menu" );
+			} else {
+				return;
+			}
+		}
+		if( gui.generalStringAvailable( "menu" ) ) {
+			gui.activePane = gui.getGeneralString( "menu" );
+		}
+$endtemplate
+
+// ----------------------
+// Dialog State management
+// ----------------------
+$template __close_top_dialog( TargetProperty )
+	gui.TargetProperty = "";
+$endtemplate
+
+
+// ----------------------
+// *_dialog items manage general panes, like the server browser
+// ----------------------
+$template _close_top_dialog
+	__close_top_dialog( activeDialog )
+$endtemplate
+
+$template __show_dialog( NameParm, TargetProperty )
+	gui.TargetProperty = #NameParm;
+	gui.broadcastEvent( "dlg" ## #NameParm, "onShow" );
+	gui.broadcastEventToDescendants( "dlg" ## #NameParm, "onShow" );	
+$endtemplate
+
+$template _show_single_dialog( NameParm )
+	gui.clearGeneralStrings( "dialog" );
+	__show_dialog( NameParm, activeDialog )
+$endtemplate
+
+// ----------------------
+// *_popup items manage a single popup, like the create user dialog
+// ----------------------
+$template _show_popup( NameParm )
+	__show_dialog( NameParm, activePopup )
+$endtemplate
+
+$template _close_popup
+	__close_top_dialog( activePopup )
+$endtemplate
+
+// ----------------------
+// *_input items manage a single input popup that can be active over the top
+// of dialogs and
+// like the create user dialog
+// ----------------------
+$template _show_input( NameParm )
+	__show_dialog( NameParm, activeInput )
+$endtemplate
+
+$template _close_input
+	__close_top_dialog( activeInput )
+$endtemplate
+
+$template _closable_subdialog
+	events {
+		onShow {
+			callSuper();
+			gui.focusedWindow = name;
+		}
+	}
+$endtemplate
+
+$template __draw_dialog_frame( TextDrawer, TextParm, UseGradient, FillColor, LineColor, GradColor )
+	properties {
+		rect	textRect			= absoluteRect.x + PADDING, ( absoluteRect.y ) + 4, absoluteRect.w - $evalfloat( 2 * PADDING ), DIALOG_CAPTION_HEIGHT;
+		color	lineColor			= LineColor;
+		color	fillColor			= FillColor;
+		color	captionColor		= COLOR_WHITE;
+		$if( #TextDrawer == "drawText" )
+		wstring	text				= TextParm;
+		$endif
+		$if( #TextDrawer == "drawLocalizedText" )
+		handle	localizedText		= TextParm;
+		$endif
+		$if( UseGradient == "gradient" )
+		color	gradientColor		= GradColor;
+		$endif
+	}
+	_fadable
+	
+	events {
+		onPreDraw {
+			callSuper();
+			drawCachedMaterial( gui.dlgFillMaterial, absoluteRect, fillColor );
+			$if( UseGradient == "gradient" )
+			drawCachedMaterial( gui.dlgGradMaterial, absoluteRect, gradientColor );
+			$endif			
+			pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1, true );
+			drawCachedMaterial( gui.dlgLineMaterial, absoluteRect, lineColor );
+			popColor();
+			
+			$if( #TextDrawer == "drawText" )
+			TextDrawer( text, textRect, captionColor, 14, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+			$endif
+			$if( #TextDrawer == "drawLocalizedText" )
+			TextDrawer( localizedText, textRect, captionColor, 14, DTF_LEFT | DTF_VCENTER | DTF_SINGLELINE );
+			$endif
+		
+			
+			gui.scriptPushFloat( false );
+		}	
+	}
+$endtemplate
+
+$template _draw_dialog_frame( TextDrawer, TextParm, UseGradient )
+	__draw_dialog_frame( TextDrawer, TextParm, UseGradient, COLOR_DIALOG_FILL, COLOR_DIALOG_LINES, COLOR_DIALOG_GRADIENT )
+$endtemplate
+
+// ----------------------
+// Dialog template
+// Main window: dlgNameParm
+// optional events
+// 	"onClose" - called when the "X" is clicked
+// ----------------------
+$template _dialog( NameParm, TextParm, XPos, YPos, widthParm, heightParm, allowMove, allowDim )
+	$if( allowDim == "dim" ) 
+	windowDef dlg##NameParm##Underlay {
+		properties {
+			color backColor = 0,0,0,0;
+			rect rect = 0, 0, SCREEN_WIDTH, SCREEN_HEIGHT;
+		}
+		events {
+			onCreate {
+				setParent( "desktop" );
+			}
+		}
+	}
+	$endif
+	
+	windowDef dlg##NameParm {
+		_draw_dialog_frame( drawLocalizedText, TextParm, "gradient" )
+		_tabstop_container	
+		properties {
+			rect rect = XPos, YPos, widthParm, heightParm;
+		}
+		events {
+			onCreate {
+				callSuper();
+				postOptionalNamedEvent( "onFadeIn" );
+				setParent( "desktop" );
+			}
+			onAccept {
+                postOptionalNamedEvent( "onOk" );
+            }
+            onNamedEvent "moveToFront" {
+            	$if( allowDim == "dim" ) 
+                gui.dlg##NameParm##Underlay.backColor.a = transition( gui.dlg##NameParm##Underlay.backColor.a, 0.8, 300 );
+                gui.dlg##NameParm##Underlay.changeZOrder( ZO_BACK );
+                $endif
+                changeZOrder( ZO_BACK );
+            }
+			onPropertyChanged "visible" {
+				callSuper();
+                if( visible ) {
+                	postNamedEvent( "moveToFront" );
+                } else {
+                	$if( allowDim == "dim" ) 
+                    gui.dlg##NameParm##Underlay.backColor.a = transition( gui.dlg##NameParm##Underlay.backColor.a, 0, 200 );
+                    $endif                                        
+                }
+            }   
+		}
+$endtemplate
+
+$template _end_dialog
+	}
+$endtemplate
+
+
+$template _single_dialog( NameParm )
+	properties {
+		float visible = icompare( gui.activeDialog, #NameParm ) == true;
+		float allowEvents = gui.modalDialogActive == false;
+		float allowChildEvents = gui.modalDialogActive == false;
+	}
+$endtemplate
+
+$template _input_dialog( NameParm )
+	properties {
+		float visible = icompare( gui.activeInput, #NameParm ) == true;
+		float allowEvents = gui.popupActive == false;
+		float allowChildEvents = gui.popupActive == false;		
+	}
+$endtemplate
+
+$template _draggable( targetWindow )
+	properties {
+		vec2 anchor;
+	}
+	events {
+		onKeyDown "mouse1" {
+			anchor.x = immediate( gui.cursorPos.x );
+			anchor.y = immediate( gui.cursorPos.y );
+			flags = immediate( flags ) | WF_CAPTURE_MOUSE ;
+		}
+		onMouseMove {
+			if( flags & WF_CAPTURE_MOUSE ) {
+				gui.targetWindow.rect.x = immediate( gui.targetWindow.rect.x + ( gui.cursorPos.x - anchor.x ) );
+				gui.targetWindow.rect.y = immediate( gui.targetWindow.rect.y + ( gui.cursorPos.y - anchor.y ) );
+
+				anchor.x = immediate( gui.cursorPos.x );
+				anchor.y = immediate( gui.cursorPos.y );
+			}
+		}
+		onKeyUp "mouse1" {
+			flags = immediate( flags ) & ~WF_CAPTURE_MOUSE ;
+			gui.targetWindow.rect.x = immediate( gui.targetWindow.rect.x );
+			gui.targetWindow.rect.y = immediate( gui.targetWindow.rect.y );
+		}
+	}
+$endtemplate
+
+$template _sizable( targetWindow, minWidth, minHeight )
+	properties {
+		vec2 anchor;
+		vec2 delta;
+		float temp;
+	}
+	events {
+		onKeyDown "mouse1" {
+			anchor.x = immediate( gui.cursorPos.x );
+			anchor.y = immediate( gui.cursorPos.y );
+			flags = immediate( flags ) | WF_CAPTURE_MOUSE;
+		}
+		onMouseMove {
+			if( flags & WF_CAPTURE_MOUSE ) {
+				delta.x = gui.cursorPos.x - anchor.x;
+				delta.y = gui.cursorPos.y - anchor.y;
+				temp = gui.targetWindow.rect.w + delta.x;
+
+				if( temp >= minWidth ) {
+					gui.targetWindow.rect.w = immediate( temp );
+				} else {
+					gui.cursorPos.x = immediate( gui.cursorPos.x - delta.x );
+				}
+
+				temp = gui.targetWindow.rect.h + delta.y;
+				if( temp >= minHeight ) {
+					gui.targetWindow.rect.h = immediate( temp );
+				} else {
+					gui.cursorPos.y = immediate( gui.cursorPos.y - delta.y );
+				}
+
+				anchor.x = immediate( gui.cursorPos.x );
+				anchor.y = immediate( gui.cursorPos.y );
+			}
+		}
+		onKeyUp "mouse1" {
+			flags = immediate( flags ) & ~WF_CAPTURE_MOUSE;
+			gui.targetWindow.rect.w = immediate( gui.targetWindow.rect.w );
+			gui.targetWindow.rect.h = immediate( gui.targetWindow.rect.h );
+		}
+	}
+$endtemplate
+
+// ----------------------
+// Tab Navigation
+// ----------------------
+$template _tabstop_container
+	properties {
+		float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+	}
+	events {
+		onNavForward {
+			gui.focusedWindow = nextTabStop( gui.focusedWindow );
+		}
+		onNavBackward {
+			gui.focusedWindow = prevTabStop( gui.focusedWindow );
+		}
+	}
+$endtemplate
+
+$template _tab_stop
+	properties {
+		float flags = immediate( flags ) | WF_TAB_STOP;
+	}
+$endtemplate
+
+// ----------------------
+// Default action callbacks
+// ----------------------
+$template _on_default( OkButtonName, CancelButtonName )
+	properties {
+		float flags = immediate( flags ) | WF_CAPTURE_KEYS;
+	}
+	events {
+	    onAccept {
+	    	callSuper();
+			gui.btn##OkButtonName.postNamedEvent( "onAction" );
+		}
+		onCancel {
+			callSuper();
+            gui.btn##CancelButtonName.postNamedEvent( "onAction" );
+		}
+	}
+$endtemplate
+
+#endif // !__component_dialog__

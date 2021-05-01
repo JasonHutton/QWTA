@@ -1,0 +1,3602 @@
+
+/***********************************************************************
+
+This script contains any player specific code.
+
+***********************************************************************/
+
+object parachute_base {
+}
+
+object team_gdf : team_base {
+}
+
+object team_strogg : team_base {
+}
+
+object waypoint_info {
+	void			Show( entity _owner, vector pos );
+}
+
+object deployable_base;
+object dead_body;
+
+object player {
+	void		preinit();
+	void		init();
+	void		destroy();
+	void		syncFields();
+
+				// Gamecode callbacks
+	void		OnProficiencyChanged( float type, float oldLevel, float newLevel );
+	void 		OnSpawn( boolean isRevived, boolean parachute );
+	void		OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location );
+	void		OnPain( entity inflictor, entity attacker, float damage, vector direction, float location );
+	void		OnEnterVehicle( entity vehicle, float positionIndex, float oldPositionIndex );
+	void		OnExitVehicle( entity vehicle, float positionIndex );
+	void		OnNewModel();
+	void		OnFullyKilled();
+	float		OnUpdateCrosshairInfo( entity p );
+	void		OnClassChanged();
+	void		OnSetTeam( object oldTeam, object newTeam );
+	float		OnActivate( entity p, float distance );
+	float		GetActivateCode( entity p, float distance );
+	void		OnConsumeHealth();
+	void		OnConsumeStroyent();
+	void		OnHitActivate();
+	void		OnJumpHeld();
+	void		OnDisguised( entity p );
+	void		OnRankChanged( float rankLevel );
+	void		OnFireTeamJoined();
+	void		OnFireTeamBecomeLeader();
+	void		OnTeleportEntityChanged( entity other );
+	void		OnEnterView();
+	void		OnExitView();
+	void		OnWeaponFired();
+	void		OnSendingVoice( boolean sending );
+	void		OnNewTask( entity newTask, boolean isMission );
+	void		OnBurningChanged( entity attacker, boolean burning );
+
+	boolean		NeedsParachute();
+
+	boolean		vCheckActionCode( entity p, float actionCode );
+
+	boolean		vShouldCreateSpawnHost( entity p );
+	boolean		vCreateSpawnHost( entity other, string hostName );
+
+	boolean		vNeedsRevive( entity p );
+	boolean		vRevive( entity p, float healthScale );
+	void		vForceRespawn();
+	void		vOnSpawnWavePassed();
+	
+	void		vBlind( vector origin, float radius, float time, boolean bAccountForFacing );
+	float		GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing );
+	void		vIrradiate( float amount );
+	
+	void		CreateRadThread();
+	void		RadThread();
+	void		KillRadThread();
+
+	void		vGiveSpotProficiency();
+
+	void		LocalViewerUpdate();
+	void		ScanForMines();
+
+	boolean		EnergyBar_Remove( float amount );
+	boolean		EnergyBar_Add( float amount );
+	boolean		EnergyBar_CanRemove( float amount );
+	float		EnergyBar_CalcChargeUsed();
+
+	void		DestroyBinObjects();
+	void		DestroyMines();
+
+	void		vHideNormalChargeBar( boolean h );
+
+	entity		vGetCarryableItem();
+
+	void		vDelayDeployment( float delay );
+
+	void		InitReviveTask();
+	void		FreeReviveTask();
+	void		CompleteReviveTask( entity p );
+
+	void		RegenThread();
+	void		KillRegenThread();
+	void		vStartRegenThread();
+
+	void		InitWaypointObject( vector pos );
+	void		FreeWaypointObject();
+	object		FindWaypointObject();
+
+				// Command map
+	void		SetupCommandMapIcons( boolean useViewPlayer );
+	void		FreeCommandMapIcons();
+	void		SetupMedicIcon();
+	void		FreeMedicIcon();
+
+	void		SetupRequestIcon( string key, string requirement );
+	void		FreeRequestIcon();
+
+	void		AllocHealTask();
+	void		AllocSupplyTask();
+	void		AllocPickupTask();
+	void		FreeRequestTask();
+
+	void		AllocSpawnHostTask();
+	void		FreeSpawnHostTask();
+
+	void		AllocKillTask();
+	void		FreeEnemyRequestTask();
+
+
+	boolean		HasSpawnHostTask();
+
+	void		vOnContextSpawnHost( entity p );
+	void		vOnContextKill( entity p );
+
+	void		vOnRemovePlayersKillTask( player p );
+
+	void		OnScopeStateChanged();
+
+				// utilities
+	boolean		IsGDF();
+	boolean		IsStrogg();
+
+	wstring		GetDisguisedTitle( entity p );
+
+	void		ChooseStance( float animChannel );
+
+	boolean		CanStab( entity stabbee );
+	object 		GetDisguisedTeam();
+
+	boolean		IsReviveTask( task t );
+	boolean		IsHealTask( task t );
+	boolean		IsSupplyTask( task t );
+	void		OnHealed( float oldHealth, float health );
+	void		OnAmmoPickup();
+	void		OnWeaponChanged();
+
+	float		vGetPliersProgressBarValue( float action );
+
+	boolean		vDisablePlantCharge() { return true; }
+
+	float		vGetVehicleCredit();
+	void		vUseVehicleCredit( float fraction );
+
+	void		NewRankVOThread( float rank );
+
+	void		SetTargetingItem( deployable_base item );
+
+	void		ObjectiveFlashThread();
+
+	void		MissionToolTipThread();
+
+	void		vTargetLockAlarm( entity other );
+	void		vStopTargetLockAlarm( entity other );
+	void		vTargetLockAttack( entity other );
+	void		vMineWarning( entity other );
+	
+	void		ShowAmmoParentBox( float duration );
+	void		ShowHealthParentBox( float duration );
+	
+	
+	float		GetRandomBurnJoint2( string option1, string option2 );
+	float		GetRandomBurnJoint3( string option1, string option2, string option3 );
+	float		GetRandomBurnJoint4( string option1, string option2, string option3, string option4 );
+	void		BurningThread( entity attacker );
+	void		FreeBurning();
+
+	float		reviveQuickChat; 				// FIXME: Move to team
+	float		reviveQuickChatAck;
+	float		declinedQuickChat;
+	float		vehicleWarningQuickChat;
+	boolean		reviveReward;
+
+	task		enemyRequestTask;
+	player		killTaskRequestee;
+
+	task		requestTask;
+
+	task		spawnHostTask;
+
+	boolean		playingReviveMeAnimLegs;
+	boolean		playingReviveMeAnimTorso;
+
+	boolean		playingReviveAnimLegs;
+	boolean		playingReviveAnimTorso;
+
+	boolean		proxyFiringWeapon;
+	boolean		proxyFiringWeaponStart;
+
+	boolean		targetingPointValid;
+	vector		lastValidTarget;
+
+	float		chargeTimer;
+	boolean		hideNormalChargeBar;
+
+	float		commandMapArcInfo;
+	float		commandMapRoleInfo;
+	float		commandMapFireTeamInfo;
+	float		commandMapMedicIcon;
+	float		commandMapRequest;
+	float		commandMapTrackingIcon;
+
+	float		energyChargeTime;
+
+	float 		stroyentPerTransfer;
+	float		healthPerTransfer;
+
+	float		fireTeamLeaderToolTip;
+
+	float		complaintCount;
+
+	float		lastRespawnTime;
+
+	float		nextDeploymentTime;
+
+	deployable_base targetingItem;
+
+	boolean		respawningChute;
+
+	void		BreatheThread();
+	void		KillBreatheThread();
+	void		CreateBreatheThread();
+
+	void		FallSoundThread( boolean create );
+	void		KillFallSoundThread();
+	void		CreateFallSoundThread();
+
+	void		ShowProgressBar( entity target, float action );
+	float		progressBarHideTime;
+
+	boolean		spawnHostSpawned;
+	void		vSetSpawnHostSpawned() { spawnHostSpawned = true; }
+
+	boolean		vBlockVehicleSpawn() { return true; }
+
+	parachute_base	GetParachute();
+
+	void		vPlayFFWarning( string sound, float nextTime );
+
+	void		FlashCMIcon( entity p, float requiredTeam, float flashTime );
+
+	float		reviveCount;
+
+	float		nextFFWarningTime;
+
+	boolean		sniperScopeUp;
+	void		SetSniperScopeUp( boolean up );
+	boolean		IsSniperScopeUp() { return sniperScopeUp; }
+
+	boolean 	isPanting;
+	boolean  	PlayerIsPanting() { return isPanting; }
+
+	boolean		ironSightUp;
+	void		SetIronSightUp( boolean up );
+	boolean		IsIronSightUp() { return ironSightUp; }
+
+	float		CalcTooltipWait();
+
+	boolean		waitedForRevive;
+
+	float		nextStroyentTransferTime;
+
+	float		vehicleCreditTimer;
+	float		vehicleCreditChargeTime;
+
+	boolean		vTriggerTripmine() { return true; }
+
+	void		RemoveOldestMine();
+
+	float		parachuteSpeed;
+
+	float		fallSoundThreadId;
+	boolean		playingFallSound;
+
+	float		hudObjectiveFlashThread;
+
+	float		gatlingSpeed;
+	boolean		teleportSucceeded;
+
+	float		missionToolTipThreadId;
+
+	float		targetLockCount;
+
+	float		unconsciousTime;
+	float		deadTime;
+	float		blindTime;
+	
+	float		radThreadId;
+	float		radAmount;
+	float		radCheckTime;
+	
+	handle		burningEffectHandle0;
+	handle		burningEffectHandle1;
+	handle		burningEffectHandle2;
+	handle		burningEffectHandle3;
+	handle		burningEffectHandle4;
+	handle		burningEffectHandle5;
+	handle		burningEffectHandle6;
+	boolean		burningThreadActive;
+	
+	float		livesRemaining;
+	
+	float		vGetStartingLives() { return getFloatKey( "starting_lives" ); }
+	float		vGetLivesRemaining() { return livesRemaining; }
+	void		vSetLivesRemaining( float lives );
+	void		vDecreaseAvailableLives();
+	void		vIncreaseAvailableLives();
+	
+	float		lastHealthParentTime;
+	float		lastAmmoParentTime;
+}
+
+void player::vSetLivesRemaining( float lives ) {
+	livesRemaining = lives;
+}
+
+/*
+================
+SetProgressBarVisible
+================
+*/
+void SetProgressBarVisible( boolean s ) {
+	if ( sys.doClientSideStuff() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "progressBar.visible", s );
+	}
+}
+
+/*
+=====================
+player::SetupCommandMapIcons
+=====================
+*/
+void player::SetupCommandMapIcons( boolean useViewPlayer ) {
+	FreeCommandMapIcons();
+
+	player localPlayer = sys.getLocalPlayer();
+	if ( localPlayer == self ) {
+		if ( getGameTeam() == $null_entity ) {
+			localPlayer = sys.getLocalViewPlayer();
+			if ( localPlayer == self || !useViewPlayer ) {
+				commandMapRoleInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_self_cm" ) );
+				sys.setCMIconMaterial( commandMapRoleInfo, GetMaterial( getKey( "mtr_commandmapicon_self_spectating" ) ) );
+				sys.setCMIconDrawMode( commandMapRoleInfo, DM_MATERIAL );
+				sys.setCMIconFlag( commandMapRoleInfo, CMF_ALWAYSKNOWN );
+				sys.setCMIconSize( commandMapRoleInfo, 8.0f );
+				return;
+			}
+		}
+	}
+
+	if ( useViewPlayer ) {
+		localPlayer = sys.getLocalViewPlayer();
+	}
+
+	if ( localPlayer == $null_entity || getGameTeam() == $null_entity ) {
+		return;
+	} else if ( localPlayer.getGameTeam() == $null_entity ) {
+		return;
+	}
+
+	string classKey;
+	if ( self == localPlayer ) {
+		commandMapRoleInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_self_cm" ) );
+		sys.setCMIconUnknownMaterial( commandMapRoleInfo, GetMaterial( getKey( "mtr_commandmapicon_self" ) ) );
+		sys.setCMIconMaterial( commandMapRoleInfo, GetMaterial( getKey( "mtr_commandmapicon_self" ) ) );
+		sys.setCMIconDrawMode( commandMapRoleInfo, DM_ROTATED_MATERIAL );
+		sys.setCMIconSize( commandMapRoleInfo, 16.0f );
+		sys.setCMIconFlag( commandMapRoleInfo, CMF_FOLLOWROTATION | CMF_PLAYERROTATIONONLY );
+
+		commandMapArcInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_self_arc_cm" ) );
+		sys.setCMIconUnknownMaterial( commandMapArcInfo, GetMaterial( getKey( "mtr_commandmapicon_self_arc" ) ) );
+		sys.setCMIconMaterial( commandMapArcInfo, GetMaterial( getKey( "mtr_commandmapicon_self_arc" ) ) );
+		sys.setCMIconDrawMode( commandMapArcInfo, DM_ROTATED_MATERIAL );
+		sys.setCMIconSize( commandMapArcInfo, 96.0f );
+		sys.setCMIconFlag( commandMapArcInfo, CMF_FOLLOWROTATION | CMF_FOLLOWREMOTECAMERAORIGIN );
+
+		commandMapTrackingIcon = sys.allocCMIcon( self, getFloatKey( "icon_sort_self_cm" ) );
+		sys.setCMIconDrawMode( commandMapTrackingIcon, DM_CROSSHAIR );
+		sys.setCMIconFlag( commandMapTrackingIcon, CMF_ONLYSHOWONFULLVIEW );
+		sys.setCMIconMaterial( commandMapTrackingIcon, GetMaterial( getKey( "mtr_commandmapicon_tracking" ) ) );
+		sys.setCMIconColor( commandMapTrackingIcon, g_colorYellow, 0.5 );
+	} else {
+		float allegiance = getEntityAllegiance( localPlayer );
+
+		boolean showIcon = true;
+		if ( allegiance == TA_ENEMY && !isDisguised() ) { // we always want to show the icon if they are disguised, otherwise it'd give them away
+			team_base otherTeam = getGameTeam();
+			if ( otherTeam != $null ) {
+				if ( otherTeam.HasPersonalJammer( self ) ) {
+					showIcon = false;
+				}
+			}
+		}
+
+		if ( showIcon ) {
+			entity disguiseClient = getDisguiseClient();
+			entity classEntity = disguiseClient;
+			if ( allegiance == TA_FRIEND || disguiseClient == $null_entity ) {
+				classEntity = self;
+			}
+
+			commandMapRoleInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
+			sys.setCMIconUnknownMaterial( commandMapRoleInfo, GetMaterial( classEntity.getClassKey( "mtr_cm_icon" ) ) );
+			sys.setCMIconMaterial( commandMapRoleInfo, GetMaterial( classEntity.getClassKey( "mtr_cm_icon" ) ) );
+			sys.setCMIconFireteamMaterial( commandMapRoleInfo, GetMaterial( classEntity.getClassKey( "mtr_icon_class" ) ) );
+			sys.setCMIconDrawMode( commandMapRoleInfo, DM_ROTATED_MATERIAL );
+			sys.setCMIconSize( commandMapRoleInfo, 12.0f );
+			sys.setCMIconUnknownSize( commandMapRoleInfo, 12.0f );
+			sys.setCMIconFlag( commandMapRoleInfo, CMF_FIRETEAMKNOWN | CMF_FIRETEAMCOLORING );
+
+			if ( disguiseClient != $null_entity ) {
+				sys.setCMIconFlag( commandMapRoleInfo, CMF_ALWAYSKNOWN );
+				sys.setCMIconColorMode( commandMapRoleInfo, CM_FRIENDLY );
+			} else {
+				sys.setCMIconColorMode( commandMapRoleInfo, CM_ALLEGIANCE );
+			}
+
+			if ( !classEntity.sameFireTeam( localPlayer ) ) {
+				sys.setCMIconFlag( commandMapRoleInfo, CMF_FOLLOWROTATION );
+			}
+
+			commandMapFireTeamInfo = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm_ftring" ) );
+			sys.setCMIconMaterial( commandMapFireTeamInfo, GetMaterial( getKey( "mtr_icon_team_ring" ) ) );
+			sys.setCMIconSize( commandMapFireTeamInfo, 12.0f * getFloatKey( "team_ring_size" ) );
+			sys.setCMIconFlag( commandMapFireTeamInfo, CMF_FOLLOWROTATION | CMF_FIRETEAMONLY | CMF_FIRETEAMKNOWN );
+			sys.setCMIconDrawMode( commandMapFireTeamInfo, DM_ROTATED_MATERIAL );
+			sys.setCMIconColorMode( commandMapFireTeamInfo, CM_NORMAL );
+			sys.setCMIconColor( commandMapFireTeamInfo, g_colorWhite, 1.0f );
+			if ( disguiseClient != $null_entity ) {
+				sys.setCMIconFlag( commandMapFireTeamInfo, CMF_ALWAYSKNOWN );
+			}
+		}
+
+		if ( getVehicle() != $null_entity ) {
+			if ( commandMapRoleInfo != -1 ) {
+				sys.hideCMIcon( commandMapRoleInfo );
+			}
+			if ( commandMapFireTeamInfo != -1 ) {
+				sys.hideCMIcon( commandMapFireTeamInfo );
+			}
+		}
+	}
+
+
+}
+
+/*
+=====================
+player::FreeCommandMapIcons
+=====================
+*/
+void player::FreeCommandMapIcons() {
+
+	if ( commandMapRoleInfo != -1 ) {
+		sys.freeCMIcon( self, commandMapRoleInfo );
+		commandMapRoleInfo = -1;
+	}
+
+	if( commandMapArcInfo != -1 ) {
+		sys.freeCMIcon( self, commandMapArcInfo );
+		commandMapArcInfo = -1;
+	}
+
+	if ( commandMapFireTeamInfo != -1 ) {
+		sys.freeCMIcon( self, commandMapFireTeamInfo );
+		commandMapFireTeamInfo = -1;
+	}
+
+	if ( commandMapTrackingIcon != -1 ) {
+		sys.freeCMIcon( self, commandMapTrackingIcon );
+		commandMapTrackingIcon = -1;
+	}
+
+	FreeRequestIcon();
+}
+
+/*
+=====================
+player::SetupRequestIcon
+=====================
+*/
+void player::SetupRequestIcon( string key, string requirement ) {
+	FreeRequestIcon();
+
+	commandMapRequest = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm_request" ) );
+
+	sys.setCMIconMaterial( commandMapRequest, GetMaterial( getClassKey( key ) ) );
+	sys.setCMIconUnknownMaterial( commandMapRequest, GetMaterial( getClassKey( key ) ) );
+	sys.addCMIconRequirement( commandMapRequest, getClassKey( requirement ) );
+	sys.setCMIconColorMode( commandMapRequest, CM_NORMAL );
+	sys.setCMIconDrawMode( commandMapRequest, DM_ROTATED_MATERIAL );
+	sys.setCMIconSize( commandMapRequest, 24.0f );
+	sys.setCMIconUnknownSize( commandMapRequest, 16.0f );
+	sys.setCMIconColor( commandMapRequest, '1 1 1', 1.0f );
+	sys.flashCMIcon( commandMapRequest, -1, SPOTTED_FLASH_TIME, -1 );
+}
+
+/*
+=====================
+player::FreeRequestIcon
+=====================
+*/
+void player::FreeRequestIcon() {
+	if( commandMapRequest != -1 ) {
+		sys.freeCMIcon( self, commandMapRequest );
+		commandMapRequest = -1;
+	}
+	sys.killThread( "RequestIcon_" + getName() );
+}
+
+/*
+=====================
+player::SetupMedicIcon
+=====================
+*/
+void player::SetupMedicIcon() {
+
+	commandMapMedicIcon = sys.allocCMIcon( self, getFloatKey( "icon_sort_cm" ) );
+	sys.setCMIconMaterial( commandMapMedicIcon, GetMaterial( getClassKey( "mtr_cm_icon_need_revive" ) ) );
+	sys.setCMIconUnknownMaterial( commandMapMedicIcon, GetMaterial( getClassKey( "mtr_cm_icon_need_revive" ) ) );
+	sys.addCMIconRequirement( commandMapMedicIcon, getClassKey( "require_view_revive" ) );
+	sys.setCMIconColorMode( commandMapMedicIcon, CM_NORMAL );
+	sys.setCMIconDrawMode( commandMapMedicIcon, DM_ROTATED_MATERIAL );
+	sys.setCMIconSize( commandMapMedicIcon, 24.0f );
+	sys.setCMIconUnknownSize( commandMapMedicIcon, 16.0f );
+}
+
+/*
+=====================
+player::FreeMedicIcon
+=====================
+*/
+void player::FreeMedicIcon() {
+	if( commandMapMedicIcon != -1 ) {
+		sys.freeCMIcon( self, commandMapMedicIcon );
+		commandMapMedicIcon = -1;
+	}
+}
+
+/*
+=====================
+player::OnScopeStateChanged
+=====================
+*/
+void player::OnScopeStateChanged() {
+	entity weapon = getWeaponEntity();
+	if ( weapon != $null_entity ) {
+		weapon.vSetScopeState( sniperScopeUp );
+	}
+}
+
+/*
+=====================
+player::syncFields
+=====================
+*/
+void player::syncFields() {
+	sync( "reviveCount" );
+
+	syncBroadcast( "AI_HOLD_WEAPON" );
+	syncBroadcast( "sniperScopeUp" );
+	syncCallback( "sniperScopeUp", "OnScopeStateChanged" );
+
+	syncBroadcast( "ironSightUp" );
+
+	sync( "teleportSucceeded" );
+}
+
+/*
+=====================
+player::preinit
+=====================
+*/
+void player::preinit() {
+	targetingPointValid 	= false;
+
+	commandMapRoleInfo 		= -1;
+	commandMapTrackingIcon	= -1;
+	commandMapArcInfo		= -1;
+
+	commandMapFireTeamInfo	= -1;
+	commandMapMedicIcon 	= -1;
+	commandMapRequest 		= -1;
+
+	reviveQuickChat			= -1;
+	reviveQuickChatAck		= -1;
+	declinedQuickChat 		= -1;
+	vehicleWarningQuickChat = -1;
+	spawnHostSpawned		= false;
+	chargeTimer				= -1;
+	vehicleCreditTimer		= sys.allocTargetTimer( VEHICLECREDIT_TIMER_NAME );
+	vehicleCreditChargeTime		= GetGlobalFloat( VEHICLECREDIT_TIMER_NAME + "_time" );
+
+	fireTeamLeaderToolTip		= GetToolTip( getKey( "tt_fireteam_become_leader" ) );
+
+	parachuteSpeed				= getFloatKey( "parachute_speed" );
+
+	setPrefix( ANIMCHANNEL_TORSO, AP_CHANNEL_NAME, "torso" );
+	setPrefix( ANIMCHANNEL_LEGS, AP_CHANNEL_NAME, "legs" );
+
+	isPanting				= false;
+	fallSoundThreadId		= -1;
+	missionToolTipThreadId	= -1;
+	targetLockCount			= 0;
+
+	if ( sys.getLocalPlayer() == self ) {
+		hudObjectiveFlashThread = thread ObjectiveFlashThread();
+		sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", wstr_empty );
+	} else {
+		hudObjectiveFlashThread = -1;
+	}
+
+	unconsciousTime			= -1;
+	deadTime				= -1;
+	blindTime				= -1;
+	
+	radThreadId				= -1;
+	radAmount				= 0;
+	radCheckTime			= 0;
+	
+	burningEffectHandle0	= 0;
+	burningEffectHandle1	= 0;
+	burningEffectHandle2	= 0;
+	burningEffectHandle3	= 0;
+	burningEffectHandle4	= 0;
+	burningEffectHandle5	= 0;
+	burningEffectHandle6	= 0;
+	burningThreadActive		= false;
+	
+	livesRemaining			= vGetStartingLives();
+	
+	lastHealthParentTime	= 0;
+	lastAmmoParentTime		= 0;
+}
+
+void player::vDecreaseAvailableLives() {
+	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
+		//sys.print("vDecreaseAvailableLives() called: Lives before call: " + livesRemaining + "\n");
+		livesRemaining = livesRemaining - 1.f;
+		if ( livesRemaining < 0.f ) {
+			sys.warning( "player::vDecreaseAvailableLives(): livesRemaining < 0: " + livesRemaining + "\n" );
+			livesRemaining = 0.f;
+		}
+	}
+}
+
+void player::vIncreaseAvailableLives() {
+	if ( g_disablePlayerRespawns.getBoolValue() && objManager.gameState == GS_GAMEON ) {
+		//sys.print("vIncreaseAvailableLives() called: Lives before call: " + livesRemaining + "\n");
+ 		livesRemaining = livesRemaining + 1.f;
+ 		if ( livesRemaining > vGetStartingLives() ) {
+			sys.warning( "player::vIncreaseAvailableLives(): livesRemaining > " + vGetStartingLives() + ": " + livesRemaining + "\n" );
+			livesRemaining = vGetStartingLives();
+		}
+	}
+}
+
+/*
+=====================
+player::destroy
+=====================
+*/
+void player::destroy() {
+	FreeCommandMapIcons();
+	FreeMedicIcon();
+	FreeReviveTask();
+	FreeWaypointObject();
+	FreeRequestTask();
+	FreeEnemyRequestTask();
+	FreeSpawnHostTask();
+	FreeBurning();
+	OnClassChanged(); // Gordon: destroys stuff the player owned
+	sys.startSoundDirect( "", SND_PLAYER_FALL );
+
+	if ( hudObjectiveFlashThread != -1 ) {
+		sys.terminate( hudObjectiveFlashThread );
+	}
+
+	if ( missionToolTipThreadId != -1 ) {
+		sys.terminate( missionToolTipThreadId );
+	}
+}
+
+/*
+=====================
+player::OnWeaponChanged
+=====================
+*/
+void player::OnWeaponChanged() {
+	entity w = getWeaponEntity();
+
+	string energyKey = w.getKeyWithDefault( "timer_charge", "energy_timer" );
+	chargeTimer = sys.allocTargetTimer( energyKey );
+	energyChargeTime = GetGlobalFloat( energyKey + "_time" );
+	if ( energyChargeTime <= 0.f ) {
+		energyChargeTime = 1.f;
+	}
+}
+
+/*
+=====================
+player::InitWaypointObject
+=====================
+*/
+void player::InitWaypointObject( vector pos ) {
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		FreeWaypointObject();
+		waypoint_info wayPoint = sys.spawn( team.getKey( "def_waypoint" ) );
+		wayPoint.Show( self, pos );
+		binAdd( wayPoint );
+	}
+}
+
+/*
+=====================
+player::FreeWaypointObject
+=====================
+*/
+void player::FreeWaypointObject() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	waypoint_info waypoint = FindWaypointObject();
+	if ( waypoint != $null ) {
+		binRemove( waypoint );
+		waypoint.remove();
+	}
+}
+
+/*
+=====================
+player::FindWaypointObject
+=====================
+*/
+object player::FindWaypointObject() {
+	float i;
+	for ( i = 0; i < binGetSize(); i++ ) {
+		waypoint_info waypoint = binGet( i );
+		if ( waypoint != $null_entity ) {
+			return waypoint;
+		}
+	}
+
+	return $null;
+}
+
+/*
+=====================
+player::InitReviveTask
+=====================
+*/
+void player::InitReviveTask() {
+	if ( IsReviveTask( requestTask ) ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		float reviveTaskInfo = GetPlayerTask( team.getKey( "task_revive" ) );
+		if ( reviveTaskInfo != -1 ) {
+			FreeRequestTask();
+			requestTask = taskManager.allocEntityTask( reviveTaskInfo, self );
+		}
+	}
+}
+
+/*
+=====================
+player::FreeReviveTask
+=====================
+*/
+void player::FreeReviveTask() {
+	if ( IsReviveTask( requestTask ) ) {
+		requestTask.free();
+		requestTask = $null;
+	}
+}
+
+/*
+=====================
+player::CompleteReviveTask
+=====================
+*/
+void player::CompleteReviveTask( entity p ) {
+	if ( IsReviveTask( requestTask ) ) {
+		if ( reviveReward ) {
+			team_base team = getGameTeam();
+			team.GiveReviveProficiency( p );
+
+			if ( waitedForRevive ) {
+				team.GiveReviveWaitProficiency( self );
+			}
+		}
+
+		requestTask.complete();
+		requestTask.free();
+		requestTask = $null;
+	}
+}
+
+/*
+=====================
+player::vForceRespawn
+=====================
+*/
+void player::vForceRespawn() {
+	forceRespawn();
+}
+
+/*
+=====================
+player::vNeedsRevive
+=====================
+*/
+boolean player::vNeedsRevive( entity p ) {
+	if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+		return false;
+	}
+
+	if ( !needsRevive() ) {
+		return false;
+	}
+
+	return true;
+}
+
+/*
+=====================
+player::vRevive
+=====================
+*/
+boolean player::vRevive( entity p, float healthScale ) {
+	if ( !vNeedsRevive( p ) ) {
+		return false;
+	}
+
+	float count = 1;
+
+	team_base team = p.getGameTeam();
+	if ( team.HasFastRevive( p ) ) {
+		count = count * 1.25f;
+	}
+
+	reviveCount = reviveCount + count;
+
+	if ( reviveCount < team.GetMaxReviveCount() ) {
+		return false;
+	}
+
+	if ( p.isLocalPlayer() ) {
+		sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", wstr_empty );
+	}
+
+	if ( !sys.isClient() ) {
+		if ( HasSpawnHostTask() ) {
+			FreeSpawnHostTask();
+		}
+
+		CompleteReviveTask( p );
+
+		if ( p != $null_entity ) {
+			sys.increaseStatInt( sys.allocStatInt( team.getName() + "_revive_uses" ), p.getEntityNumber(), 1 );
+			sys.increaseStatInt( sys.allocStatInt( team.getName() + "_players_revived" ), p.getEntityNumber(), 1 );
+		}
+
+//		objManager.PushCPrintString( p.getUserName() );
+//		objManager.CPrintEvent( sys.localizeString( "game/revive/completed" ) );
+
+		revive( p, healthScale );
+	}
+
+	return true;
+}
+
+/*
+=====================
+player::init
+=====================
+*/
+void player::init() {
+	stroyentPerTransfer = getFloatKeyWithDefault( "stroyent_per_transfer", 80 );
+	healthPerTransfer = getFloatKeyWithDefault( "health_per_transfer", 10 );
+
+	OnNewModel();
+
+	if ( isLocalPlayer() ) {
+		float count = entitiesOfCollection( "objective_markers" );
+		float index;
+		for ( index = 0; index < count; index++ ) {
+			entity other = getBoundsCacheEntity( index );
+			other.vOnDeploy();
+		}
+
+		objManager.RefreshObjectiveEntity();
+	}
+}
+
+/*
+=====================
+player::OnNewModel
+=====================
+*/
+void player::OnNewModel() {
+	setPrefix( ANIMCHANNEL_TORSO, AP_CHANNEL_NAME, "torso" );
+	setPrefix( ANIMCHANNEL_LEGS, AP_CHANNEL_NAME, "legs" );
+
+	if ( getProxyEntity() == $null_entity && getHealth() > 0 ) {
+		animState( ANIMCHANNEL_TORSO, "Torso_Spawn", 0 );
+		animState( ANIMCHANNEL_LEGS, "Legs_Spawn", 0 );
+	}
+
+	SetupCommandMapIcons( true );
+}
+
+/*
+================
+player::KillBreatheThread
+================
+*/
+void player::KillBreatheThread() {
+	sys.killThread( "BreatheThread_" + getName() );
+}
+
+/*
+================
+player::CreateBreatheThread
+================
+*/
+void player::CreateBreatheThread() {
+	if ( sys.getLocalPlayer() == $null_entity ) {
+		return;
+	}
+
+	KillBreatheThread();
+	thread BreatheThread();
+}
+
+/*
+================
+player::FallSoundThread
+================
+*/
+void player::FallSoundThread( boolean create ) {
+	if ( create ) {
+		playingFallSound = true;
+		sys.startSoundDirect( getClassKey( "snd_freefall" ), SND_PLAYER_FALL );
+	} else {
+		playingFallSound = false;
+		sys.startSoundDirect( "", SND_PLAYER_FALL );
+	}
+	fallSoundThreadId = -1;
+}
+
+/*
+================
+player::KillFallSoundThread
+================
+*/
+void player::KillFallSoundThread() {
+	if ( playingFallSound ) {
+		if ( fallSoundThreadId != -1 ) {
+			sys.terminate( fallSoundThreadId );
+			fallSoundThreadId = -1;
+		}
+		fallSoundThreadId = thread FallSoundThread( false );
+	}
+}
+
+/*
+================
+player::CreateFallSoundThread
+================
+*/
+void player::CreateFallSoundThread() {
+	if ( sys.getLocalPlayer() != self || sys.getLocalPlayer() == $null_entity || playingFallSound ) {
+		return;
+	}
+
+	if ( fallSoundThreadId == -1 ) {
+		fallSoundThreadId = thread FallSoundThread( true );
+	}
+}
+
+/*
+================
+player::OnProficiencyChanged
+================
+*/
+void player::OnProficiencyChanged( float type, float oldLevel, float newLevel ) {
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		team.OnProficiencyUpgrade( self, type, oldLevel, newLevel );
+	}
+
+	entity weapon = getWeaponEntity();
+	if ( weapon != $null_entity ) {
+		weapon.vCheckProficiency();
+	}
+
+	if ( targetingItem != $null_entity ) {
+		targetingItem.vCheckProficiency();
+	}
+
+	entity vehicle = getVehicle();
+	if ( vehicle != $null_entity ) {
+		vehicle.vCheckProficiency();
+	}
+
+	if( self == sys.getLocalViewPlayer() ) {
+		if ( team != $null_entity ) {
+			sys.startSoundDirect( team.getKey( "snd_prof_unlock" ), SND_ANY );
+		}
+	}
+}
+
+/*
+================
+player::OnRankChanged
+================
+*/
+void player::OnRankChanged( float rankLevel ) {
+	if( self == sys.getLocalViewPlayer() && getGameTeam() != $null_entity ) {
+		if ( rankLevel > 0 ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.newRank", 0 );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.newRank", 1 );
+			thread NewRankVOThread( rankLevel );
+		}
+	}
+}
+
+void player::vResetAvailableLives() {
+	vSetLivesRemaining( vGetStartingLives() );
+}
+
+/*
+================
+player::OnSpawn
+================
+*/
+void player::OnSpawn( boolean isRevived, boolean parachute ) {
+	lastRespawnTime = sys.getTime();
+	isPanting = false;
+	hideNormalChargeBar = false;
+
+	playingReviveMeAnimTorso = false;
+	playingReviveMeAnimLegs = false;
+	
+	if ( !spawnHostSpawned && !isRevived ) {
+		if ( objManager.gameState == GS_GAMEON ) {
+			vDecreaseAvailableLives();
+		}
+	}
+	
+	if ( spawnHostSpawned || isRevived ) {
+		makeInvulnerable( 2.f );
+	} else if ( parachute ) {
+		makeInvulnerable( 8.f );
+	} else {
+		makeInvulnerable( 5.f );
+	}
+	spawnHostSpawned = false;
+
+	FreeReviveTask();
+	FreeMedicIcon();
+	FreeBurning();
+	SetupCommandMapIcons( true );
+
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		string teamName = team.getName();
+		//playOriginEffect( "fx_spawn_" + teamName, "", getJointPos( getJointHandle( "origin" ) ), getWorldAxis( 2 ), 0 );
+
+		reviveQuickChat		= GetQuickChat( "qc_" + teamName + "_" + getClassName() + "_" + getKey( "qc_revive" ) );
+		reviveQuickChatAck	= GetQuickChat( "qc_" + teamName + "_" + getClassName() + "_" + getKey( "qc_revive_ack" ) );
+		declinedQuickChat	= GetQuickChat( teamName + "/quickchat/responses/declined" );
+		vehicleWarningQuickChat	= GetQuickChat( teamName + "/quickchat/responses/acknowledged" );
+	}
+
+	if ( !isRevived ) {
+		if ( team != $null_entity ) {
+			team.GiveSpawnItems( self );
+		}
+
+		if ( !sys.isClient() ) {
+			float baseHealth = 100.f;
+
+			float boost = 0;
+			if ( team != $null_entity ) {
+				boost = team.GetHealthBoost( self );
+			}
+			setMaxHealth( baseHealth + boost );
+			setHealth( baseHealth + boost );
+		}
+
+		if ( g_maxProficiency.getBoolValue() ) {
+			giveProficiency( GetProficiency( "pro_soldier_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_medic_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_engineer_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_fieldops_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_covertops_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_vehicle_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_light_weapons_test" ), 15.f, $null, "MAX PROFICIENCY" );
+			giveProficiency( GetProficiency( "pro_battlesense_test" ), 15.f, $null, "MAX PROFICIENCY" );
+		}
+	}
+
+	if( !sys.isClient() ) {
+		if ( parachute ) {
+			respawningChute = true;
+			if ( !NeedsParachute() ) {
+				sys.print( "failed\n" );
+			}
+			OnHitActivate();
+		}
+	}
+
+	if ( team != $null_entity ) {
+		CreateBreatheThread();
+	}
+
+	progressBarHideTime = 0.0f;
+
+	if( self == sys.getLocalPlayer() ) {
+		float hudHandle = getGUI( "hud" );
+		if ( hudHandle != GUI_INVALID ) {
+			sys.guiPostNamedEvent( hudHandle, "", "OnSpawn" );
+		}
+	}
+
+	sniperScopeUp = false;
+
+	if ( team != $null_entity ) {
+		team.CreatePersonnelAuras( self );
+	}
+
+	if ( isLocalPlayer() ) {
+		sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", wstr_empty );
+		if ( !isRevived ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags", CF_CROSSHAIR | CF_PLAYER_ICONS | CF_TASKS | CF_OBJ_MIS  );
+		}
+	}
+	
+	ShowHealthParentBox( 5.f );
+	ShowAmmoParentBox( 5.f );
+
+	unconsciousTime = -1;
+	deadTime = -1;
+	blindTime = -1;
+}
+
+/*
+================
+player::OnKilled
+================
+*/
+void player::OnKilled( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	waitedForRevive = false;
+
+	boolean spectating;
+	team_base team = getGameTeam();
+	if ( team == $null_entity ) {
+		spectating = true;
+	}
+
+	KillRegenThread();
+	FreeRequestTask();
+	FreeEnemyRequestTask();
+
+	reviveReward = getEntityAllegiance( inflictor ) != TA_FRIEND;
+	reviveCount = 0;
+
+	entity other;
+	float count;
+	float index;
+
+	boolean toolTipSent;
+
+	if ( isLocalPlayer() ) {
+		sys.startSoundDirect( "", SND_PLAYER_ALARM );
+
+		if ( objManager.gameState == GS_GAMEON ) {
+			if ( inflictor != $null_entity ) {
+				if ( !toolTipSent && inflictor.inCollection( "mine" ) ) {
+					if ( !isSinglePlayerToolTipPlaying() ) {
+						toolTipSent = true;
+						cancelToolTips();
+						sendToolTip( GetToolTip( getKey( "tt_killed_by_mine" ) ) );
+					}
+				}
+			}
+
+			if ( !spectating ) {
+				if ( !toolTipSent ) {
+					if( getHealth() > LIMBO_FORCE_HEALTH ) { // FIXME: MAKE FUNCTION
+						if ( !isSinglePlayerToolTipPlaying() ) {
+							toolTipSent = true;
+							cancelToolTips();
+							sendToolTip( team.unconsciousToolTip );
+						}
+					}
+				}
+			}
+
+			player pAttacker = attacker;
+			if ( pAttacker != $null_entity ) {
+				if ( !toolTipSent && pAttacker.isDisguised() ) {
+					if ( !isSinglePlayerToolTipPlaying() ) {
+						toolTipSent = true;
+						cancelToolTips();
+						sendToolTip( team.killedByDisguisedToolTip );
+					}
+				}
+			}
+		}
+
+		sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", wstr_empty );
+	}
+
+	// see if we're in limbo
+	if( getHealth() > LIMBO_FORCE_HEALTH ) { // FIXME: MAKE FUNCTION
+		// broadcast a "Medic!" quickchat
+		if ( !sys.isClient() ) {
+			entitiesOfClass( sys.getTypeHandle( "idPlayer" ), 0 );
+			count = filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
+
+			for ( index = 0; index < count; index++ ) {
+				other = getBoundsCacheEntity( index );
+				if ( other != self && other.hasAbility( "revive" ) ) {
+					sys.sendQuickChat( self, reviveQuickChat, other );
+				}
+			}
+		}
+
+		FreeCommandMapIcons();
+		SetupMedicIcon();
+		InitReviveTask();
+	}
+
+	if ( !spectating ) {
+		playOriginEffect( "fx_killed", "", getJointPos( getJointHandle( "origin" ) ), getWorldAxis( 2 ), 0 );
+	}
+
+	entity next;
+	entity current;
+	for ( current = getNextTeamEntity(); current != $null_entity; current = next ) {
+		next = current.getNextTeamEntity();
+		current.vOnBindMasterDestroyed();
+	}
+
+	count = entitiesOfCollection( "playerkilledwatch" );
+	for ( index = 0; index < count; index++ ) {
+		other = getBoundsCacheEntity( index );
+		other.vOnPlayerKilled( self );
+	}
+
+	other = GetParachute();
+	if ( other != $null_entity ) {
+		other.vCancel();
+	}
+
+	if ( !spectating ) {
+		team.OnPlayerDied( self );
+	}
+
+	KillBreatheThread();
+	isPanting = false;
+
+	unconsciousTime = sys.getTime();
+}
+
+/*
+================
+player::OnPain
+================
+*/
+void player::OnPain( entity inflictor, entity attacker, float damage, vector direction, float location ) {
+	// pass this through to the vehicle
+	entity proxy = getProxyEntity();
+	if ( proxy != $null_entity ) {
+		proxy.vOnPassengerPain( inflictor, attacker, damage, direction, location );
+	}
+
+	// pass this through to the remote camera
+	entity remoteCamera = getRemoteCamera();
+	if ( remoteCamera != $null_entity ) {
+		remoteCamera.vOnPassengerPain( inflictor, attacker, damage, direction, location );
+	}
+
+	float health = getHealth();
+	if ( health < 45 && health > 0 ) {
+		if ( isLocalPlayer() ) {
+			if ( !isSinglePlayerToolTipPlaying() ) {
+				cancelToolTips();
+				float playerClass = getPlayerClass();
+				team_base team = getGameTeam();
+				if ( playerClass == g_playerClassMedic || playerClass == g_playerClassTechnician ) {
+					sendToolTip( team.lowHealthSelfToolTip );
+				} else {
+					sendToolTip( team.lowHealthToolTip );
+				}
+			}
+		}
+	}
+}
+
+/*
+================
+player::OnUpdateCrosshairInfo
+================
+*/
+float player::OnUpdateCrosshairInfo( entity p ) {
+	if ( !sys.doClientSideStuff() ) {
+		return 1.f;
+	}
+
+	float allegiance = getEntityAllegiance( p );
+	if ( allegiance == TA_ENEMY ) {
+		if ( isDisguised() ) {
+			allegiance = TA_FRIEND;
+		}
+	}
+
+	vector color = GetAllegianceColor( allegiance );
+	string title;
+	float distance = chGetDistance();
+	float range = InchesToMetres( distance );
+
+	vector up;
+	up_z = 16.f;
+
+	chSetNumLines( 0 );
+	float index;
+
+	index = chAddLine();
+	chSetLineText( index, GetDisguisedTitle( p ) );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	if ( needsRevive() ) {
+		index = chAddLine();
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+		chSetLineTextIndex( index, g_locStr_Unconscious );
+		chSetLineColor( index, color, 1.f );
+
+		up_z = 32.f;
+	} else if ( getHealth() <= 0 ) {
+		index = chAddLine();
+		chSetLineType( index, CI_TEXT );
+		chSetLineSize( index, 0, 0 );
+		chSetLineTextIndex( index, g_locStr_Dead );
+ 		chSetLineColor( index, color, 1.f );
+
+		up_z = 32.f;
+	} else {
+		boolean showHealth;
+		if ( allegiance == TA_FRIEND ) {
+			showHealth = distance < 2048;
+		} else {
+			showHealth = distance < 1024;
+		}
+		if ( showHealth ) {
+			index = chAddLine();
+			chSetLineType( index, CI_BAR );
+			chSetLineSize( index, 50, CROSSHAIR_INFO_BAR_HEIGHT );
+			chSetLineFraction( index, getHealth() / getMaxHealth() );
+			chSetLineColor( index, color, 0.5f );
+		}
+	}
+
+	index = chAddLine();
+	chSetLineText( index, G_BuildRangeStr( range ) );
+	chSetLineColor( index, color, 1.f );
+	chSetLineType( index, CI_TEXT );
+	chSetLineSize( index, 0, 0 );
+
+	team_base team = getGameTeam();
+
+	if ( p != $null_entity ) {
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE ) {
+			if ( p.vHasActionItem( code ) ) {
+				index = chAddLine();
+				chSetLineMaterial( index, p.vGetActionIcon( code ) );
+				chSetLineType( index, CI_IMAGE );
+				chSetLineSize( index, 64, 64 );
+				chSetLineColor( index, g_colorWhite, 0.9f );
+
+				if ( p.isLocalPlayer() ) {
+					if ( !p.isToolTipPlaying() ) {
+						if ( sys.getTime() - p.getCrosshairStartTime() > 1.f ) {
+							if ( code == AK_REVIVE ) {
+								if ( p.getCurrentWeapon() != p.vGetActionItem( code ) ) {
+									p.sendToolTip( team.reviveMeToolTip1 );
+								} else {
+									p.sendToolTip( team.reviveMeToolTip2 );
+								}
+							} else if ( code == AK_SPAWNHOST ) {
+								if ( p.getCurrentWeapon() != p.vGetActionItem( code ) ) {
+									p.sendToolTip( team.spawnHostMeToolTip1 );
+								} else {
+									p.sendToolTip( team.spawnHostMeToolTip2 );
+								}
+							}
+						}
+					}
+				}
+			}
+		} else if ( p.vHasActionItem( AK_DISGUISE ) && p.vGetCarryableItem() != $null_entity ) {
+			if ( distance < 128.f ) {
+				if ( sys.getTime() - p.getCrosshairStartTime() > 1.f ) {
+					if ( !p.isToolTipPlaying() ) {
+						p.sendToolTip( GetToolTip( p.getKey( "tt_nodisguise_carryable" ) ) );
+					}
+				}
+			}
+		}
+	}
+
+	return 1.f;
+}
+
+/*
+================
+player::GetDisguisedTitle
+================
+*/
+wstring player::GetDisguisedTitle( entity p ) {
+	if ( isDisguised() && getEntityAllegiance( p ) == TA_ENEMY ) {
+		return getCrosshairTitle( true );
+	}
+
+	return getCrosshairTitle( false );
+}
+
+/*
+================
+player::LocalViewerUpdate
+================
+*/
+void player::LocalViewerUpdate() {
+	team_base team = getGameTeam();
+	if( team != $null_entity ) {
+		sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.teamMineStatus", sys.toWStr( team.GetMineLimit() - G_CountMinesOwnedByEntity( self ) ) );
+	}
+
+	if ( !hideNormalChargeBar ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 - EnergyBar_CalcChargeUsed() );
+	}
+
+	entity proxy = getProxyEntity();
+	if ( proxy != $null_entity ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockCount", proxy.vGetTargetLockCount() );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockCountBasedefence", proxy.vGetTargetLockCountBasedefence() );
+	} else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockCountDeployable", targetLockCount );
+	}
+
+	if( targetingItem != $null_entity ) {
+		targetingItem.vUpdateFiringStatusObject( self );
+	}
+
+	if ( unconsciousTime > -1.f ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.unconsciousTime", sys.getTime() - unconsciousTime );
+	}
+	else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.unconsciousTime", unconsciousTime );
+	}
+	if ( deadTime > -1.f ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.deadTime", sys.getTime() - deadTime );
+	}
+	else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.deadTime", deadTime );
+	}
+	if ( blindTime > -1.f ) {
+		if ( blindTime > sys.getTime() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.blindTime", blindTime - sys.getTime() );
+		} else {
+			blindTime = -1.f;
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.blindTime", blindTime );
+		}
+	}
+	else {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.blindTime", blindTime );
+	}
+}
+
+/*
+================
+player::ScanForMines
+================
+*/
+void player::ScanForMines() {
+	entitiesOfCollection( "mine" );
+	filterEntitiesByAllegiance( TA_FLAG_ENEMY, 1 );
+	float count = filterEntitiesByRadius( getWorldOrigin(), 512.f, 1 );
+
+	float time = sys.getTime();
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity ent = getBoundsCacheEntity( index );
+		ent.vSetSpotTime( time );
+	}
+}
+
+/*
+================
+LocalPlayerUpdateThread
+================
+*/
+void LocalPlayerUpdateThread() {
+	player viewer;
+	player localPlayer;
+	boolean needsParachute;
+	boolean usingParachute;
+	boolean useParachuteToolTip;
+	team_base team;
+
+	sys.threadName( "LocalPlayerUpdateThread" );
+
+	while( true ) {
+		sys.waitFrame();
+
+		viewer = sys.getLocalViewPlayer();
+		if ( viewer == $null_entity ) {
+			continue;
+		}
+
+		localPlayer = sys.getLocalPlayer();
+		team = $null;
+		if ( localPlayer != $null_entity ) {
+			team = localPlayer.getGameTeam();
+		}
+
+		viewer.LocalViewerUpdate();
+		if ( viewer.progressBarHideTime < sys.getTime() ) {
+			SetProgressBarVisible( false );
+		}
+
+		needsParachute = false;
+		usingParachute = false;
+
+		if ( localPlayer != $null_entity ) {
+			if ( localPlayer == viewer ) {
+				needsParachute = localPlayer.NeedsParachute();
+			}
+
+			if ( localPlayer.getProficiency( g_proficiencyBattleSense ) >= 3 ) {
+				localPlayer.ScanForMines();
+			}
+
+			if ( localPlayer.GetParachute() != $null_entity ) {
+				usingParachute = true;
+				useParachuteToolTip = false;
+			}
+
+			if ( needsParachute && !usingParachute ) {
+				if ( !useParachuteToolTip ) {
+					localPlayer.cancelToolTips();
+					localPlayer.sendToolTip( team.parachuteToolTip );
+					useParachuteToolTip = true;
+				}
+			}
+			
+			if ( localPlayer == viewer ) {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "vehicles.vehicle_charge", localPlayer.vGetVehicleCredit() );
+			}
+		}
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.needsParachute", needsParachute );
+		if ( team == $null_entity && viewer == localPlayer ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.spectatingRespawnTime", 0 );
+		}
+
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.parachuteActive", usingParachute );
+	}
+}
+
+/*
+================
+player::EnergyBar_Remove
+================
+*/
+boolean player::EnergyBar_Remove( float amount ) {
+	if ( chargeTimer == -1 ) {
+		return false;
+	}
+
+	float chargeUsed = EnergyBar_CalcChargeUsed();
+
+	if ( ( chargeUsed + amount ) > 1.f ) {
+		return false;
+	}
+
+	chargeUsed = chargeUsed + amount;
+	sys.setTargetTimerValue( chargeTimer, self, sys.getTime() + ( chargeUsed * energyChargeTime ) );
+
+	chargeUsed = EnergyBar_CalcChargeUsed();
+
+	return true;
+}
+
+/*
+================
+player::EnergyBar_Add
+================
+*/
+boolean player::EnergyBar_Add( float amount ) {
+	if ( chargeTimer == -1 ) {
+		return false;
+	}
+
+	float chargeUsed = EnergyBar_CalcChargeUsed();
+
+	chargeUsed = chargeUsed - amount;
+	if ( chargeUsed < 0.f ) {
+		chargeUsed = 0.f;
+	}
+	sys.setTargetTimerValue( chargeTimer, self, sys.getTime() + ( chargeUsed * energyChargeTime ) );
+
+	chargeUsed = EnergyBar_CalcChargeUsed();
+
+	return true;
+}
+
+/*
+================
+player::EnergyBar_CanRemove
+================
+*/
+boolean player::EnergyBar_CanRemove( float amount ) {
+	float chargeUsed = EnergyBar_CalcChargeUsed();
+
+	if( ( chargeUsed + amount ) > 1.f ) {
+		return false;
+	}
+
+	return true;
+}
+
+
+/*
+================
+player::EnergyBar_CalcChargeUsed
+================
+*/
+float player::EnergyBar_CalcChargeUsed() {
+	float chargeUsed = sys.getTargetTimerValue( chargeTimer, self ) - sys.getTime();
+	if ( chargeUsed < 0 ) {
+		return 0;
+	}
+
+	return chargeUsed / energyChargeTime;
+}
+
+/*
+================
+player::vHideNormalChargeBar
+================
+*/
+void player::vHideNormalChargeBar( boolean h ) {
+	hideNormalChargeBar = h;
+}
+
+/*
+================
+player::OnEnterVehicle
+================
+*/
+void player::OnEnterVehicle( entity vehicle, float positionIndex, float oldPositionIndex ) {
+	hideNormalChargeBar = true;
+	if ( sys.getLocalViewPlayer() == self ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyBarCharge", 1 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.energyAvailable", 1 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "weapons.cooling", 0 );
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponShowCharge", 1 );
+	}
+
+	// hide our icons if we're in a vehicle
+	if ( self != sys.getLocalViewPlayer() ) {
+		if ( commandMapRoleInfo != -1 ) {
+			sys.hideCMIcon( commandMapRoleInfo );
+		}
+		if ( commandMapFireTeamInfo != -1 ) {
+			sys.hideCMIcon( commandMapFireTeamInfo );
+		}
+	}
+}
+
+/*
+================
+player::OnExitVehicle
+================
+*/
+void player::OnExitVehicle( entity vehicle, float positionIndex ) {
+	hideNormalChargeBar = false;
+
+	if ( self != sys.getLocalPlayer() ) {
+		if ( commandMapRoleInfo != -1 ) {
+			sys.showCMIcon( commandMapRoleInfo );
+		}
+		if ( commandMapFireTeamInfo != -1 ) {
+			sys.showCMIcon( commandMapFireTeamInfo );
+		}
+	}
+}
+
+/*
+================
+player::IsGDF
+================
+*/
+boolean player::IsGDF() {
+	team_gdf team = getGameTeam();
+	return team != $null_entity;
+}
+
+/*
+================
+player::IsStrogg
+================
+*/
+boolean player::IsStrogg() {
+	team_strogg team = getGameTeam();
+	return team != $null_entity;
+}
+
+/*
+================
+player::OnFullyKilled
+================
+*/
+void player::OnFullyKilled() {
+	FreeEnemyRequestTask();
+	FreeReviveTask();
+	FreeSpawnHostTask();
+	FreeMedicIcon();
+	FreeBurning(); // Stop the damage thread. The effects can continue.
+	KillRadThread();
+	radAmount = 0;
+
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		team.OnPlayerTapOut( self );
+	}
+
+	deadTime = sys.getTime();
+}
+
+/*
+================
+player::DestroyMines
+================
+*/
+void player::DestroyMines() {
+	float count = entitiesOfCollection( "mine" );
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity mine = getBoundsCacheEntity( index );
+		if ( mine.vGetOwner() == self ) {
+			mine.vSetOwner( $null_entity );
+		}
+	}
+}
+
+/*
+================
+player::DestroyBinObjects
+================
+*/
+void player::DestroyBinObjects() {
+	float i;
+	float num = binGetSize();
+
+	for ( i = 0; i < num; i++ ) {
+		entity other = binGet( i );
+		if ( other != $null_entity ) {
+			other.vRemoveObject();
+		}
+	}
+}
+
+/*
+================
+player::OnClassChanged
+================
+*/
+void player::OnClassChanged() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	float count = entitiesOfCollection( "deliver" );
+	float i = 0;
+	for ( ; i < count; i++ ) {
+		entity e = getBoundsCacheEntity( i );
+		e.vCancelDeployForPlayer( getEntityNumber() );
+	}
+
+	if ( targetingItem != $null_entity ) {
+		targetingItem.vDismantle( self );
+		SetTargetingItem( $null_entity );
+	}
+
+	sys.clearDeployRequest( getEntityNumber() );
+
+	entity other;
+	count = entitiesOfCollection( "carryables" );
+	for ( i = 0; i < count; i++ ) {
+		other = getBoundsCacheEntity( i );
+		other.vOnPlayerKilled( self );
+	}
+
+	DestroyBinObjects();
+	DestroyMines();
+}
+
+/*
+================
+player::OnSetTeam
+================
+*/
+void player::OnSetTeam( object oldTeam, object newTeam ) {
+	stopSound( SND_PLAYER_MOVE );
+
+	FreeWaypointObject();
+	FreeEnemyRequestTask();
+	FreeBurning();
+	DestroyBinObjects();
+	DestroyMines();
+
+	if ( targetingItem != $null_entity ) {
+		targetingItem.vDismantle( self );
+		SetTargetingItem( $null_entity );
+	}
+
+	team_base team = newTeam;
+	if ( team != $null_entity ) {
+		team.OnPlayerJoined( self );
+	}
+
+	if ( isLocalPlayer() ) {
+		// Gordon: certain things are based on the local player's team
+		float index;
+		float count = entitiesOfCollection( "localteamwatch" );
+		for ( index = 0; index < count; index++ ) {
+			entity other = getBoundsCacheEntity( index );
+			other.vOnLocalTeamChanged();
+		}
+	}
+
+	SetupCommandMapIcons( true );
+}
+
+/*
+================
+player::OnActivate
+================
+*/
+float player::OnActivate( entity p, float distance ) {
+	if ( sys.isClient() ) {
+		return 0.f;
+	}
+
+	float action = GetActivateCode( p, distance );
+	if ( distance < 128.f ) {
+		if ( p.vSelectActionItem( action ) ) {
+			return 1.f;
+		}
+	}
+
+	return 0.f;
+}
+
+/*
+================
+player::vPossess
+================
+*/
+void player::vPossess( entity p ) {
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		sys.broadcastToolTip( team.possessingMeToolTip, self, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+	}
+
+	forceRespawn();
+}
+
+/*
+================
+player::CanStab
+================
+*/
+boolean player::CanStab( entity stabbee ) {
+	if ( stabbee.isInvulnerable() ) {
+		return false;
+	}
+
+	team_base team = getGameTeam();
+	if ( team == $null ) {
+		return false;
+	}
+
+	if ( !team.CanStab( self ) ) {
+		return false;
+	}
+
+	if ( stabbee.isInWater() > 0.5f ) {
+		return false;
+	}
+
+	if ( stabbee.getHealth() <= 0 ) {
+		return false;
+	}
+
+	if ( getEntityAllegiance( stabbee ) == TA_FRIEND ) {
+		return false;
+	}
+
+	vector myAngles;
+	vector stabAngles;
+
+	if ( getProxyEntity() != $null_entity ) {
+		myAngles = getRenderViewAngles();
+	} else {
+		myAngles = getViewAngles();
+	}
+
+	stabAngles = stabbee.getViewAngles();
+
+	// ignore pitch
+	myAngles_x = 0;
+	stabAngles_x = 0;
+
+	vector myForwards = sys.angToForward( myAngles );
+	vector stabForwards = sys.angToForward( stabAngles );
+
+	vector delta = stabbee.getWorldOrigin() - getWorldOrigin();
+	if ( myForwards * delta > 0.0f && myForwards * stabForwards > 0.174f ) {
+		if ( sys.vecLength( delta ) < 64.0f ) {
+			return true;
+		}
+	}
+
+	return false;
+}
+
+/*
+================
+player::GetActivateCode
+================
+*/
+float player::GetActivateCode( entity p, float distance ) {
+	if ( p.getViewingEntity() != p ) {
+		return AK_NONE;
+	}
+
+	if ( p.getHealth() <= 0 ) {
+		return AK_NONE;
+	}
+
+	team_base team = p.getGameTeam();
+	float allegiange = getEntityAllegiance( p );
+
+	if ( distance < 128.f ) {
+		if ( needsRevive() ) {
+			if ( allegiange == TA_FRIEND ) {
+				return AK_REVIVE;
+			}
+
+			if ( allegiange == TA_ENEMY ) {
+				if ( team.HasActionItem( p, AK_SPAWNHOST ) ) {
+					return AK_SPAWNHOST;
+				}
+
+				if ( p.vGetCarryableItem() == $null_entity ) {
+					return AK_DISGUISE;
+				}
+			}
+		}
+	}
+
+	if ( distance < 128.f ) {
+		if ( allegiange == TA_ENEMY ) {
+			if ( !isDisguised() ) {
+				player playerOther = p;
+				if ( playerOther.CanStab( self ) ) {
+					return AK_STAB;
+				}
+			}
+		}
+	}
+
+	return AK_NONE;
+}
+
+/*
+================
+player::OnDisguised
+================
+*/
+void player::OnDisguised( entity p ) {
+	SetupCommandMapIcons( true );
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		team.UpdateStealth( self );
+	}
+}
+
+/*
+================
+player::OnConsumeHealth
+transfer health to stroyent
+================
+*/
+void player::OnConsumeHealth() {
+	team_base team = getGameTeam();
+	if ( !team.CanTransferStroyent( self ) ) {
+		return;
+	}
+
+	if ( sys.getTime() < nextStroyentTransferTime ) {
+		sys.broadcastToolTip( GetToolTip( getKey( "tt_stroytransfer_fail" ) ), self, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+		return;
+	}
+
+	float health = getHealth();
+
+	// get the stroyent
+	float stroySauce = getAmmo( g_ammoStroyent );
+	float maxStroy = getMaxAmmo( g_ammoStroyent );
+	float refillAmount = maxStroy - stroySauce;
+	if ( refillAmount > stroyentPerTransfer ) {
+		refillAmount = stroyentPerTransfer;
+	}
+
+	float healthAmount = refillAmount * healthPerTransfer / stroyentPerTransfer;
+
+	refillAmount *= 0.8f;
+
+	if ( health >= healthAmount + 1 && stroySauce < maxStroy ) {
+		if ( unheal( healthAmount ) > 0 ) {
+			nextStroyentTransferTime = sys.getTime() + 0.2;
+			setAmmo( g_ammoStroyent, stroySauce + refillAmount );
+		}
+	}
+	
+	ShowHealthParentBox( 1.5f );
+	ShowAmmoParentBox( 1.5f );
+}
+
+/*
+================
+player::OnConsumeStroyent
+transfer stroyent to health
+================
+*/
+void player::OnConsumeStroyent() {
+	team_base team = getGameTeam();
+	if ( !team.CanTransferStroyent( self ) ) {
+		return;
+	}
+
+	if ( sys.getTime() < nextStroyentTransferTime ) {
+		sys.broadcastToolTip( GetToolTip( getKey( "tt_stroytransfer_fail" ) ), self, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+		return;
+	}
+
+	// get the stroyent
+	float stroySauce = getAmmo( g_ammoStroyent );
+	float health = getHealth();
+	float maxHealth = getMaxHealth();
+	float healAmount = maxHealth - health;
+	if ( healAmount > healthPerTransfer ) {
+		healAmount = healthPerTransfer;
+	}
+
+	float stroy = healAmount * stroyentPerTransfer / healthPerTransfer;
+
+	healAmount *= 0.8f;
+
+	if ( stroySauce >= stroy && health < maxHealth ) {
+		if ( heal( healAmount ) > 0 ) {
+			nextStroyentTransferTime = sys.getTime() + 0.2;
+			setAmmo( g_ammoStroyent, stroySauce - stroy );
+		}
+	}
+	
+	ShowHealthParentBox( 1.5f );
+	ShowAmmoParentBox( 1.5f );
+}
+
+/*
+================
+player::vCheckActionCode
+================
+*/
+boolean player::vCheckActionCode( entity p, float actionCode ) {
+	if ( actionCode == AC_SPAWNHOST || actionCode == AC_POSSESS ) {
+		if ( getHealth() > 0 ) {
+			return false;
+		}
+
+		if ( getEntityAllegiance( p ) == TA_FRIEND ) {
+			return false;
+		}
+
+		return true;
+	}
+
+	return false;
+}
+
+/*
+================
+player::vSelectActionItem
+================
+*/
+boolean player::vSelectActionItem( float code ) {
+	if ( getHealth() <= 0 ) {
+		return false;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		return team.SelectActionItem( self, code );
+	}
+
+	return false;
+}
+
+/*
+================
+player::vHasActionItem
+================
+*/
+boolean player::vHasActionItem( float code ) {
+	if ( getHealth() <= 0 ) {
+		return false;
+	}
+
+	if ( getViewingEntity() != self ) {
+		return false;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		return team.HasActionItem( self, code );
+	}
+
+	return false;
+}
+
+/*
+================
+player::vGetActionItem
+================
+*/
+string player::vGetActionItem( float code ) {
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		return team.GetActionItem( self, code );
+	}
+
+	return "";
+}
+
+/*
+================
+player::vGetActionIcon
+================
+*/
+string player::vGetActionIcon( float code ) {
+	if ( getHealth() <= 0 ) {
+		return "";
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		return team.GetActionIcon( self, code );
+	}
+
+	return "";
+}
+
+/*
+================
+player::GetParachute
+================
+*/
+parachute_base player::GetParachute() {
+	float i = 0;
+	for ( i = 0; i < binGetSize(); i++ ) {
+		parachute_base p = binGet( i );
+		if ( p != $null_entity ) {
+			return p;
+		}
+	}
+
+	return $null_entity;
+}
+
+/*
+================
+player::NeedsParachute
+================
+*/
+boolean player::NeedsParachute() {
+	if ( getProxyEntity() != $null_entity ) {
+		return false;
+	}
+
+	if ( getHealth() <= 0 ) {
+		return false;
+	}
+
+	team_base team = getGameTeam();
+	if ( team == $null ) {
+		return false;
+	}
+
+	if ( GetParachute() != $null_entity ) {
+		if ( respawningChute ) {
+			sys.print( "eep!\n" );
+		}
+		return false;
+	}
+
+	if ( respawningChute ) {
+		return true;
+	}
+
+	vector linearVelocity = InchesToMetres( getLinearVelocity() );
+	if ( linearVelocity_z > -parachuteSpeed ) {
+		return false;
+	}
+
+	// check if theres enough space below the owner to spawn a parachute
+	// ie, if the player has a fair way to fall
+	// use a vector that accounts for some of the forward velocity
+	float parachuteHeight = getFloatKey( "parachute_height" );
+
+	vector direction = sys.vecNormalize( linearVelocity );
+	direction = direction * parachuteHeight * 0.5f;
+	direction_z = -parachuteHeight;
+	vector origin = getWorldOrigin();
+
+	if ( sys.tracePoint( origin, origin + direction, MASK_PLAYERSOLID, self ) < 1.0f ) {
+		return false;
+	}
+
+	return true;
+}
+
+/*
+================
+player::OnHitActivate
+================
+*/
+void player::OnHitActivate() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( !NeedsParachute() ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+
+	string paraDef = team.getKey( "def_parachute" );
+	if ( paraDef != "" ) {
+		entity parachute = sys.spawn( paraDef );
+		if ( parachute != $null_entity ) {
+			parachute.vSetOwner( self );
+			if ( respawningChute ) {
+				parachute.vSetDelay( 0.8f );
+			}
+			respawningChute = false;
+		}
+	}
+}
+
+/*
+================
+player::OnJumpHeld
+================
+*/
+void player::OnJumpHeld() {
+	OnHitActivate();
+}
+
+#include "script/player/mocap_player_state_machine.script"
+#include "script/player/player_requests.script"
+#include "script/player/player_state_machine_vehicles.script"
+#include "script/player/player_state_machine_husky.script"
+#include "script/player/dead_body.script"
+
+
+/*
+================
+player::BreatheThread
+================
+*/
+void player::BreatheThread() {
+	float breathing = 0.0f;
+	float soundEndTime = 0.0f;
+	float lastSoundLength = 0.0f;
+	isPanting = false;
+	while( true ) {
+		float oldBreathing = breathing;
+
+		//
+		// Logic for adjusting the breathing "bar"
+		//
+
+		float increase = 0.0f;
+		float decrease = 0.0f;
+		float frameTime = sys.getFrameTime();
+		boolean fiftyLimit = false;
+
+		vector velocity = getLinearVelocity();
+		velocity_z = 0.0f;
+		boolean moving = false;
+		float speed = sys.vecLength( velocity );
+		if ( speed > 10.0f ) {
+			moving = true;
+		}
+
+		// TODO: Move all the increase/decrease timing values into the defs, or at least precalculate them.
+		if ( AI_JUMP ) {
+			increase = 0.1f;
+		} else if ( !moving ) {
+			decrease = ( 1.0f / 5.0f ) * frameTime;
+		} else if ( !AI_ONGROUND ) {
+			decrease = ( 1.0f / 10.0f ) * frameTime;
+		} else if ( AI_CROUCH || AI_PRONE ) {
+			decrease = ( 1.0f / 5.0f ) * frameTime;
+		} else {
+			if ( AI_SPRINT ) {
+				increase = ( 1.0f / 20.0f ) * frameTime;
+			} else if ( AI_RUN ) {
+				if ( breathing <= 0.5f ) {
+					fiftyLimit = true;
+					increase = ( 1.0f / 40.0f ) * frameTime;
+				} else {
+					decrease = ( 1.0f / 5.0f ) * frameTime;
+				}
+			} else {
+				decrease = ( 1.0f / 5.0f ) * frameTime;
+			}
+		}
+
+		breathing = breathing + increase - decrease;
+		if ( fiftyLimit && breathing > 0.5f ) {
+			breathing = 0.5f;
+		}
+		if ( breathing < 0.0f ) {
+			breathing = 0.0f;
+		}
+		if ( breathing > 1.0f ) {
+			breathing = 1.0f;
+		}
+
+		//
+		// Sound hookups
+		//
+		float time = sys.getTime();
+		string sound = "";
+		if ( breathing >= 0.6f && breathing <= 0.8f ) {
+			sound = "snd_breathe";
+		} else if ( breathing > 0.8f ) {
+			sound = "snd_breathe_heavy";
+			isPanting = true;
+		}
+
+		if ( sound != "" && time > soundEndTime ) {
+			object team = getGameTeam();
+			if ( team != $null_entity ) {
+				sound = sound + "_" + team.getName();
+				lastSoundLength = startSound( sound, SND_PLAYER );
+				soundEndTime = time + lastSoundLength;
+			}
+		}
+
+		sys.waitFrame();
+	}
+}
+
+/*
+================
+player::ShowProgressBar
+================
+*/
+void player::ShowProgressBar( entity target, float action ) {
+	float value;
+	if ( sys.getLocalViewPlayer() == self ) {
+		value = target.vGetPliersProgressBarValue( action );
+
+		handle text = invalid_handle;
+		if ( action == AC_HACK ) {
+			text = g_locStr_Hacking;
+		} else if ( action == AC_ARM || action == AC_ARM_CHARGE ) {
+			text = g_locStr_Arming;
+		} else if ( action == AC_DISARM || action == AC_DISARM_CHARGE ) {
+			text = g_locStr_Disarming;
+			value = 1 - value;
+		} else if ( action == AC_REPAIR ) {
+			text = g_locStr_Repairing;
+		} else if ( action == AC_CONSTRUCT ) {
+			text = g_locStr_Constructing;
+		} else if ( action == AC_CAPTURE ) {
+			text = g_locStr_Capturing;
+		} else if ( action == AC_LIBERATE ) {
+			text = g_locStr_Liberating;
+		} else if ( action == AC_SPAWNHOST ) {
+			text = g_locStr_Implanting;
+		} else if ( action == AC_POSSESS ) {
+			text = g_locStr_Disguising;
+		} else if ( action == AC_REVIVE ) {
+			text = g_locStr_Reviving;
+		}
+
+		//if ( g_allowTimerCircles.getBoolValue() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "progressBar.percent", value );
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "progressBar.text", text );
+			SetProgressBarVisible( true );
+		//}
+	} else if ( target == sys.getLocalPlayer() ) {
+		if ( action == AC_REVIVE ) {
+			value = target.vGetPliersProgressBarValue( action );
+			sys.pushLocString( sys.toWStr( getUserName() ) );
+
+			//if ( g_allowTimerCircles.getBoolValue() ) {
+				sys.setGUIWString( GUI_GLOBALS_HANDLE, "gameHud.reviveText", sys.localizeStringArgs( "game/revive_by" ) );
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, "progressBar.percent", value );
+				SetProgressBarVisible( true );
+			//}
+		}
+	}
+
+	progressBarHideTime = sys.getTime() + 0.25f;
+}
+
+/*
+================
+player::SetSniperScopeUp
+================
+*/
+void player::SetSniperScopeUp( boolean up ) {
+	if ( !sys.isClient() ) {
+		sniperScopeUp = up;
+	}
+}
+
+/*
+================
+player::SetIronSightUp
+================
+*/
+void player::SetIronSightUp( boolean up ) {
+	if ( !sys.isClient() ) {
+		ironSightUp = up;
+	}
+}
+
+/*
+================
+player::GetDisguisedTeam
+================
+*/
+object player::GetDisguisedTeam() {
+	team_base team = getGameTeam();
+	if ( !isDisguised() ) {
+		return team;
+	}
+
+	if ( team == gdfTeam ) {
+		return stroggTeam;
+	}
+
+	return gdfTeam;
+}
+
+object vehicle_base {
+	void CheckFireTeamInfo( boolean localExiting );
+}
+
+/*
+================
+player::OnFireTeamJoined
+================
+*/
+void player::OnFireTeamJoined() {
+	SetupCommandMapIcons( true );
+
+	entitiesOfClass( sys.getTypeHandle( "idPlayer" ), 0 );
+	float count = filterEntitiesByAllegiance( TA_FLAG_FRIEND, 1 );
+
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		player other = getBoundsCacheEntity( index );
+		if ( other != self ) {
+			vehicle_base vehicle = other.getVehicle();
+			if ( vehicle != $null_entity ) {
+				vehicle.CheckFireTeamInfo( false );
+			}
+		}
+	}
+
+	if ( !sys.isClient() ) {
+		count = binGetSize();
+		for ( index = 0; index < count; index++ ) {
+			entity ent = binGet( index );
+			if ( ent.inCollection( "waypoint" ) ) {
+				ent.remove();
+			}
+		}
+	}
+}
+
+/*
+================
+player::OnFireTeamBecomeLeader
+================
+*/
+void player::OnFireTeamBecomeLeader() {
+	sendToolTip( fireTeamLeaderToolTip );
+}
+
+/*
+=====================
+player::vShouldCreateSpawnHost
+=====================
+*/
+boolean player::vShouldCreateSpawnHost( entity p ) {
+	if ( getEntityAllegiance( p ) != TA_ENEMY ) {
+		return false;
+	}
+
+	if ( !needsRevive() ) {
+		return false;
+	}
+
+	return true;
+}
+
+/*
+=====================
+player::vCreateSpawnHost
+=====================
+*/
+boolean player::vCreateSpawnHost( entity other, string hostName ) {
+	team_base team = getGameTeam();
+	if ( team != $null_entity ) {
+		sys.broadcastToolTip( team.spawnhostingMeToolTip, self, wstr_empty, wstr_empty, wstr_empty, wstr_empty );
+	}
+
+	forceRespawn();
+	return false;
+}
+
+/*
+=====================
+player::AllocHealTask
+=====================
+*/
+void player::AllocHealTask() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( requestTask != $null_entity ) {
+		if ( !requestTask.isUserCreated() ) {
+			return;
+		}
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		float healTaskInfo = GetPlayerTask( team.getKey( "task_heal" ) );
+		if ( healTaskInfo != -1 ) {
+			FreeRequestTask();
+			requestTask  = taskManager.allocEntityTask( healTaskInfo, self );
+		}
+	}
+}
+
+/*
+=====================
+player::AllocSupplyTask
+=====================
+*/
+void player::AllocSupplyTask() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		float supplyTaskInfo = GetPlayerTask( team.getKey( "task_supply" ) );
+		if ( supplyTaskInfo != -1 ) {
+			FreeRequestTask();
+			requestTask = taskManager.allocEntityTask( supplyTaskInfo, self );
+		}
+	}
+}
+
+/*
+=====================
+player::AllocPickupTask
+=====================
+*/
+void player::AllocPickupTask() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		float pickupTaskInfo = GetPlayerTask( team.getKey( "task_pickup" ) );
+		if ( pickupTaskInfo != -1 ) {
+			FreeRequestTask();
+			requestTask = taskManager.allocEntityTask( pickupTaskInfo, self );
+		}
+	}
+}
+
+/*
+=====================
+player::FreeRequestTask
+=====================
+*/
+void player::FreeRequestTask() {
+	if ( requestTask != $null ) {
+		requestTask.free();
+		requestTask = $null;
+	}
+}
+
+/*
+=====================
+player::AllocSpawnHostTask
+=====================
+*/
+void player::AllocSpawnHostTask() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	if ( HasSpawnHostTask() ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		float spawnHostTaskInfo = GetPlayerTask( team.getKey( "task_create_spawn_host" ) );
+		if ( spawnHostTaskInfo != -1 ) {
+			spawnHostTask = taskManager.allocEntityTask( spawnHostTaskInfo, self );
+		}
+	}
+}
+
+/*
+=====================
+player::FreeSpawnHostTask
+=====================
+*/
+void player::FreeSpawnHostTask() {
+	if ( spawnHostTask != $null ) {
+		spawnHostTask.free();
+		spawnHostTask = $null;
+	}
+}
+
+/*
+=====================
+player::AllocKillTask
+=====================
+*/
+void player::AllocKillTask() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		float killTaskInfo = GetPlayerTask( team.getKey( "task_kill" ) );
+		if ( killTaskInfo != -1 ) {
+			FreeEnemyRequestTask();
+			enemyRequestTask = taskManager.allocEntityTask( killTaskInfo, self );
+		}
+	}
+}
+
+/*
+=====================
+player::FreeEnemyRequestTask
+=====================
+*/
+void player::FreeEnemyRequestTask() {
+	killTaskRequestee = $null_entity;
+	if ( enemyRequestTask != $null ) {
+		enemyRequestTask.free();
+		enemyRequestTask = $null;
+	}
+}
+
+/*
+=====================
+player::HasSpawnHostTask
+=====================
+*/
+boolean player::HasSpawnHostTask() {
+	task_create_spawnhost other = spawnHostTask;
+	return other != $null;
+}
+
+/*
+=====================
+player::vOnContextSpawnHost
+=====================
+*/
+void player::vOnContextSpawnHost( entity p ) {
+	AllocSpawnHostTask();
+}
+
+/*
+=====================
+player::vOnContextKill
+=====================
+*/
+void player::vOnContextKill( entity p ) {
+	if ( enemyRequestTask == $null ) {
+		AllocKillTask();
+		killTaskRequestee = p;
+	}
+
+	FlashCMIcon( p, TA_ENEMY, -1 );
+}
+
+/*
+=====================
+player::vOnRemovePlayersKillTask
+=====================
+*/
+void player::vOnRemovePlayersKillTask( player p ) {
+	if ( p == killTaskRequestee ) {
+		FreeEnemyRequestTask();
+	}
+}
+
+/*
+=====================
+player::IsReviveTask
+=====================
+*/
+boolean	player::IsReviveTask( task t ) {
+	task_revive_player_strogg stroggRevive = t;
+	if ( stroggRevive != $null ) {
+		return true;
+	}
+
+	task_revive_player_gdf gdfRevive = t;
+	if ( gdfRevive != $null ) {
+		return true;
+	}
+
+	return false;
+}
+
+/*
+=====================
+player::IsHealTask
+=====================
+*/
+boolean player::IsHealTask( task t ) {
+	task_heal_player other = t;
+	return other != $null;
+}
+
+/*
+=====================
+player::IsSupplyTask
+=====================
+*/
+boolean player::IsSupplyTask( task t ) {
+	task_supply_player_strogg stroggSupply = t;
+	if ( stroggSupply != $null ) {
+		return true;
+	}
+
+	task_supply_player_gdf gdfSupply = t;
+	if ( gdfSupply != $null ) {
+		return true;
+	}
+
+	return false;
+}
+
+
+/*
+=====================
+player::OnHealed
+=====================
+*/
+void player::OnHealed( float oldHealth, float health ) {
+	if ( health >= getMaxHealth() ) {
+		if ( IsHealTask( requestTask ) ) {
+			FreeRequestTask();
+		}
+	}
+}
+
+/*
+=====================
+player::OnAmmoPickup
+=====================
+*/
+void player::OnAmmoPickup() {
+	if ( IsSupplyTask( requestTask ) ) {
+		FreeRequestTask();
+	}
+}
+
+/*
+=====================
+player::CalcTooltipWait
+=====================
+*/
+float player::CalcTooltipWait() {
+	float t = 5.f - ( sys.getTime() - lastRespawnTime );
+	if ( t < 2.f ) {
+		return 2.f;
+	}
+	return t;
+}
+
+/*
+=====================
+player::vGetPliersProgressBarValue
+=====================
+*/
+float player::vGetPliersProgressBarValue( float action ) {
+	if ( action == AC_REVIVE ) {
+		team_base team = getGameTeam();
+		return reviveCount / team.GetMaxReviveCount();
+	}
+
+	return 0.f;
+}
+
+/*
+=====================
+player::RegenThread
+=====================
+*/
+void player::RegenThread() {
+	team_base team = getGameTeam();
+
+	while ( true ) {
+		team.RegenPulse( self );
+
+		sys.wait( 5.f );
+	}
+}
+
+/*
+=====================
+player::KillRegenThread
+=====================
+*/
+void player::KillRegenThread() {
+	sys.killThread( "RegenThread_" + getName() );
+}
+
+/*
+=====================
+player::vStartRegenThread
+=====================
+*/
+void player::vStartRegenThread() {
+	KillRegenThread();
+	if ( !sys.isClient() ) {
+		thread RegenThread();
+	}
+}
+
+/*
+=====================
+player::vGiveSpotProficiency
+=====================
+*/
+void player::vGiveSpotProficiency() {
+	team_base team = getGameTeam();
+	if ( team != $null ) {
+		team.GiveSpottingProficiency( self );
+	}
+}
+
+/*
+=====================
+player::vOnSpawnWavePassed
+=====================
+*/
+void player::vOnSpawnWavePassed() {
+	waitedForRevive = true;
+}
+
+void player::vBlind( vector origin, float radius, float time, boolean bAccountForFacing ) {
+
+	float facing = GetFacingAngle( origin, vec3_origin, true );
+	
+	float workRadius = radius / 2.f;
+	float dist = sys.vecLength( getWorldOrigin() - origin );
+	float reduction = workRadius / dist;
+	if ( reduction > 1.5f ) {
+		reduction = 1.5f;
+	}
+	
+	if ( bAccountForFacing ) {
+		reduction = reduction * ( facing / 180.f / 1.5f );
+
+		if ( facing < 120.f ) { // This is reversed, so it's actually more like > 120
+			reduction = reduction / 1.5f;
+		}
+	}
+
+	time = time * reduction;
+	if ( time > 0.f ) {
+		if ( blindTime < 0.f || ( blindTime - sys.getTime() ) < time ) {
+			blindTime = sys.getTime() + time;
+		}
+	}
+}
+
+float player::GetFacingAngle( vector origin, vector offset, boolean bOppositeFacing ) {
+	
+	vector vecOrigins;
+	
+	if ( bOppositeFacing ) {
+		// Check if we're facing away from something, instead. 0 = facing away, 180 = facing toward
+		vecOrigins = sys.vecNormalize( getOrigin() - ( origin + offset ) );
+	} else {
+		// 0 = facing toward, 180 = facing away
+		vecOrigins = sys.vecNormalize( ( origin + offset ) - getOrigin() );
+	}
+	vector vecAngles = sys.vecNormalize( sys.angToForward( getViewAngles() ) );
+	
+	float dot = dotproduct( vecOrigins, vecAngles );
+	
+	return sys.acos( dot );
+}
+
+void player::vIrradiate( float amount ) {
+	radAmount = radAmount + amount;
+	radCheckTime = sys.getTime() + 2.f;
+	if ( radThreadId == -1 ) {
+		CreateRadThread();
+	}
+}
+
+void player::KillRadThread() {
+	sys.killThread( "RadThread_" + getName() );
+	radThreadId = -1;
+}
+
+void player::CreateRadThread() {
+	if ( isLocalPlayer() ) {
+		KillRadThread();
+		radThreadId = thread RadThread();
+	}
+}
+
+void player::RadThread() {
+	while( radAmount > 0.f ) {
+		float lastSoundLength;
+		float randomResult;
+		
+		randomResult = int( sys.random( 6.4 ) );
+		stopSound( SND_PLAYER_ALARM2 );
+		lastSoundLength = startSound( "snd_geiger" + randomResult, SND_PLAYER_ALARM2 );
+		
+		if ( sys.getTime() > radCheckTime ) {
+			radAmount = radAmount - 5.f;
+		} else {
+			radAmount = radAmount - 1.f;
+		}
+		
+		sys.wait( lastSoundLength + ( sys.random( 0.1f ) - 0.05f ) );
+	}
+
+	radAmount = 0;
+	radThreadId = -1;
+}
+
+/*
+=====================
+player::vGetCarryableItem
+=====================
+*/
+entity player::vGetCarryableItem() {
+	// check that the player doesn't have an item already
+	float count = entitiesOfCollection( "carryables" );
+	float i;
+	for ( i = 0; i < count; i++ ) {
+		entity currentEnt = getBoundsCacheEntity( i );
+		if ( currentEnt.vGetCarrier() == self ) {
+			return currentEnt;
+		}
+	}
+
+	return $null_entity;
+}
+
+/*
+=====================
+player::RemoveOldestMine
+=====================
+*/
+void player::RemoveOldestMine() {
+	if ( sys.isClient() ) {
+		return;
+	}
+
+	float bestTime = -1;
+	entity bestMine;
+
+	float count = entitiesOfCollection( "mine" );
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity mine = getBoundsCacheEntity( index );
+		if ( mine.vGetOwner() == self ) {
+			float launchTime = mine.vGetMineCreationTime();
+
+			if ( bestTime == -1 ) {
+				bestMine = mine;
+				bestTime = mine.vGetMineCreationTime();
+			} else if ( launchTime < bestTime ) {
+				bestTime = launchTime;
+				bestMine = mine;
+			}
+		}
+	}
+
+	if ( bestTime != -1 ) {
+		bestMine.vSetOwner( $null_entity );
+	}
+}
+
+
+/*
+=====================
+player::vGetVehicleCredit
+=====================
+*/
+float player::vGetVehicleCredit() {
+//	return self.getVehicleCredit();
+
+	float chargeUsed = sys.getTargetTimerValue( vehicleCreditTimer, self ) - sys.getTime();
+
+	if ( chargeUsed < 0 ) {
+		return 1.f;
+	}
+
+	return 1 - ( chargeUsed / vehicleCreditChargeTime );
+}
+
+/*
+=====================
+player::vUseVehicleCredit
+=====================
+*/
+void player::vUseVehicleCredit( float fraction ) {
+//	self.useVehicleCredit( fraction );
+
+	float newFrac = vGetVehicleCredit() - fraction;
+	if ( newFrac < 0.f ) {
+		newFrac = 0.f;
+	}
+
+	sys.setTargetTimerValue( vehicleCreditTimer, self, sys.getTime() + ( ( 1 - newFrac ) * vehicleCreditChargeTime ) );
+}
+
+
+/*
+=====================
+player::NewRankVOThread
+=====================
+*/
+void player::NewRankVOThread( float rank ) {
+	team_base team = getGameTeam();
+	sys.startSoundDirect( team.getKey( "snd_newrank" ), SND_ANY );
+	sys.wait( 1.0f );
+	sys.startSoundDirect( team.getKey( "snd_promotion_" + rank ), SND_PLAYER_VO );
+}
+
+/*
+=====================
+player::OnTeleportEntityChanged
+=====================
+*/
+void player::OnTeleportEntityChanged( entity other ) {
+	float flags;
+	if ( other != $null_entity ) {
+		entity weapon = getWeaponEntity();
+		if ( weapon != $null_entity ) {
+			weapon.vCancelFire();
+		}
+
+		if ( self == sys.getLocalPlayer() ) {
+			flags = sys.getGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags" );
+			flags = flags & ~( CF_TASKS | CF_OBJ_MIS );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags", flags );
+		}
+	} else {
+		if ( self == sys.getLocalPlayer() ) {
+			flags = sys.getGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags" );
+			flags = flags | CF_TASKS | CF_OBJ_MIS;
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.activeCrosshairInfoFlags", flags );
+		}
+	}
+}
+
+/*
+=====================
+player::OnEnterView
+=====================
+*/
+void player::OnEnterView() {
+	if ( sys.getLocalPlayer() == self || sys.getLocalPlayer() == $null_entity ) {
+		return;
+	}
+
+	player p = sys.getLocalPlayer();
+	p.SetupCommandMapIcons( true );
+
+	SetupCommandMapIcons( true );
+
+	team_base team = getGameTeam();
+	team.OnNextRespawnTimeChanged();
+}
+
+/*
+=====================
+player::OnExitView
+=====================
+*/
+void player::OnExitView() {
+	if ( sys.getLocalPlayer() == self || sys.getLocalPlayer() == $null_entity ) {
+		return;
+	}
+
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "vehicles.drivingMCP", 0 );
+	sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.weaponGrenadeExpireTime", 0 );
+
+	// Use localPlayer instead of viewPlayer as we are exiting viewPlayers view.
+	SetupCommandMapIcons( false );
+
+	player p = sys.getLocalPlayer();
+	p.SetupCommandMapIcons( false );
+}
+
+/*
+=====================
+player::vDelayDeployment
+=====================
+*/
+void player::vDelayDeployment( float delay ) {
+	nextDeploymentTime = sys.getTime() + delay;
+}
+
+/*
+=====================
+player::vPlayFFWarning
+=====================
+*/
+void player::vPlayFFWarning( string sound, float nextTime ) {
+	if ( sys.getTime() > nextFFWarningTime ) {
+		objManager.PlaySoundForPlayer( sound, self );
+		nextFFWarningTime = sys.getTime() + nextTime;
+	}
+}
+
+/*
+=====================
+player::FlashCMIcon
+=====================
+*/
+void player::FlashCMIcon( entity p, float requiredTeam, float flashTime ) {
+	entity local = sys.getLocalViewPlayer();
+	if ( local == $null_entity || local == self ) {
+		return;
+	}
+
+	if ( flashTime == -1 ) {
+		flashTime = SPOTTED_FLASH_TIME;
+	}
+
+	if ( getEntityAllegiance( local ) == requiredTeam ) {
+		if ( requiredTeam == TA_ENEMY ) {
+			float flags = sys.getCMIconFlags( commandMapRoleInfo );
+			flags = flags | CMF_ENEMYALWAYSKNOWN;
+			float materialIndex = GetMaterial( getClassKey( "mtr_cm_icon" ) + "_flash" );
+			sys.flashCMIcon( commandMapRoleInfo, materialIndex, flashTime, flags );
+		} else {
+			sys.flashCMIcon( commandMapRoleInfo, -1, flashTime, -1 );
+		}
+	}
+}
+
+/*
+=====================
+player::SetTargetingItem
+=====================
+*/
+void player::SetTargetingItem( deployable_base item ) {
+	targetingItem = item;
+}
+
+/*
+=====================
+player::ObjectiveFlashThread
+=====================
+*/
+void player::ObjectiveFlashThread() {
+	while ( true ) {
+		boolean flash = false;
+		float dist = getCrosshairDistance( true );
+		float time = getCrosshairStartTime();
+
+		entity ent = getCrosshairEntity();
+		if ( ent != $null_entity && getCrosshairDistance( true ) < 2024.0f && getCrosshairDistance( true ) > 192.0f ) {
+			string flashStr = ent.vGetObjectiveString();
+			if ( flashStr != "" && ent.vIsPrimaryObjective() ) {
+				sys.setGUIFloat( GUI_GLOBALS_HANDLE, flashStr + ".flash", 1.f );
+				flash = true;
+			}
+		}
+
+		if ( !flash ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "constructObjective.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "hackObjective.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "destroyObjective1.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "destroyObjective2.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "mcpObjective.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "docObjective.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "docObjective2.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "docObjective3.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "goalObjective.flash", 0.f );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "flyerhiveObjective.flash", 0.f );
+		}
+
+		sys.wait( 0.2f );
+	}
+}
+
+/*
+=====================
+player::OnWeaponFired
+=====================
+*/
+void player::OnWeaponFired() {
+	nextStroyentTransferTime = sys.getTime() + 2.f;
+}
+
+/*
+=====================
+player::OnSendingVoice
+=====================
+*/
+void player::OnSendingVoice( boolean sending ) {
+	float flashTime = 0;
+
+	if ( sending ) {
+		flashTime = 3600;
+	}
+
+	FlashCMIcon( $null_entity, TA_FRIEND, flashTime );
+}
+
+/*
+=====================
+player::OnNewTask
+=====================
+*/
+void player::OnNewTask( entity newTask, boolean isMission ) {
+	if ( isMission && objManager.gameState == GS_WARMUP ) {
+		if ( missionToolTipThreadId == -1 ) {
+			//missionToolTipThreadId = thread MissionToolTipThread();
+		}
+	}
+}
+
+void player::OnBurningChanged( entity attacker, boolean burning ) {
+	if ( burning ) {
+		if ( !burningThreadActive) {
+			thread BurningThread( attacker );
+			burningThreadActive = true;
+		}
+	} else {
+		FreeBurning();
+	}
+}
+
+float player::GetRandomBurnJoint2( string option1, string option2 ) {
+	float joint = INVALID_JOINT;
+	
+	if ( sys.random( 2.f ) > 1.f ) {
+		joint = getJointHandle( option1 );
+	} else {
+		joint = getJointHandle( option2 );
+	}
+	
+	return joint;
+}
+
+float player::GetRandomBurnJoint3( string option1, string option2, string option3 ) {
+	float result = sys.random( 3.f );
+	float joint = INVALID_JOINT;
+	
+	if ( result > 2.f ) {
+		joint = getJointHandle( option1 );
+	} else if ( result > 1.f ) {
+		joint = getJointHandle( option2 );
+	} else {
+		joint = getJointHandle( option3 );
+	}
+	
+	return joint;
+}
+
+float player::GetRandomBurnJoint4( string option1, string option2, string option3, string option4 ) {
+	float result = sys.random( 4.f );
+	float joint = INVALID_JOINT;
+		
+	if ( result > 3.f ) {
+		joint = getJointHandle( option1 );
+	} else if ( result > 2.f ) {
+		joint = getJointHandle( option2 );
+	} else if ( result > 1.f ) {
+		joint = getJointHandle( option3 );
+	} else {
+		joint = getJointHandle( option4 );
+	}
+	
+	return joint;
+}
+
+void player::BurningThread( entity attacker ) {
+	if ( isInWater() < 0.5f ) {
+		if ( !burningEffectHandle0 ) {
+			float burnJoint0 = getJointHandle( "hips" );
+
+			if ( burnJoint0 != INVALID_JOINT ) {
+				burningEffectHandle0 = playJointEffect( "fx_burning_smoke", burnJoint0, 1 );
+			}
+		}
+
+		if ( !burningEffectHandle1 && !burningEffectHandle2 && !burningEffectHandle3 && !burningEffectHandle4 && !burningEffectHandle5 && !burningEffectHandle6 ) {
+			float burnJoint1 = GetRandomBurnJoint4( "righthand", "rightarm", "rightshoulder", "" );
+			float burnJoint2 = GetRandomBurnJoint4( "lefthand", "leftarm", "leftshoulder", "" );
+			float burnJoint3 = GetRandomBurnJoint3( "neck", "head", "" );
+			float burnJoint4 = GetRandomBurnJoint3( "hips", "spine", "" );
+			float burnJoint5 = GetRandomBurnJoint3( "rightfoot", "rightleg", "" );
+			float burnJoint6 = GetRandomBurnJoint3( "leftfoot", "leftleg", "" );
+
+			if ( burnJoint1 == INVALID_JOINT && burnJoint2 == INVALID_JOINT ) {
+				burnJoint1 = GetRandomBurnJoint4( "rightarm", "rightshoulder", "leftarm", "leftshoulder" );
+			}
+
+			if ( burnJoint1 != INVALID_JOINT && burnJoint2 != INVALID_JOINT ) {
+				if ( sys.random( 2.f ) > 1.f ) {
+					if ( sys.random( 2.f ) > 1.f ) {
+						burnJoint1 = INVALID_JOINT;
+					} else {
+						burnJoint2 = INVALID_JOINT;
+					}
+				}
+			}
+
+			if ( burnJoint3 == INVALID_JOINT && burnJoint4 == INVALID_JOINT ) {
+				burnJoint3 = GetRandomBurnJoint4( "neck", "head", "hips", "spine" );
+			}
+
+			if ( burnJoint3 != INVALID_JOINT && burnJoint4 != INVALID_JOINT ) {
+				if ( sys.random( 2.f ) > 1.f ) {
+					if ( sys.random( 2.f ) > 1.f ) {
+						burnJoint3 = INVALID_JOINT;
+					} else {
+						burnJoint4 = INVALID_JOINT;
+					}
+				}
+			}
+
+			if ( burnJoint5 == INVALID_JOINT && burnJoint6 == INVALID_JOINT ) {
+				burnJoint5 = GetRandomBurnJoint4( "rightfoot", "rightleg", "leftfoot", "leftleg" );
+			}
+
+			if ( burnJoint5 != INVALID_JOINT && burnJoint6 != INVALID_JOINT ) {
+				if ( sys.random( 3.f ) < 1.f ) {
+					if ( sys.random( 2.f ) > 1.f ) {
+						burnJoint5 = INVALID_JOINT;
+					} else {
+						burnJoint6 = INVALID_JOINT;
+					}
+				}
+			}
+
+			if ( burnJoint1 != INVALID_JOINT ) {
+				burningEffectHandle1 = playJointEffect( "fx_burning_small", burnJoint1, 1 );
+			}
+			if ( burnJoint2 != INVALID_JOINT ) {
+				burningEffectHandle2 = playJointEffect( "fx_burning_small", burnJoint2, 1 );
+			}
+			if ( burnJoint3 != INVALID_JOINT ) {
+				burningEffectHandle3 = playJointEffect( "fx_burning_small", burnJoint3, 1 );
+			}
+			if ( burnJoint4 != INVALID_JOINT ) {
+				burningEffectHandle4 = playJointEffect( "fx_burning_small", burnJoint4, 1 );
+			}
+			if ( burnJoint5 != INVALID_JOINT ) {
+				burningEffectHandle5 = playJointEffect( "fx_burning_small", burnJoint5, 1 );
+			}
+			if ( burnJoint6 != INVALID_JOINT ) {
+				burningEffectHandle6 = playJointEffect( "fx_burning_small", burnJoint6, 1 );
+			}
+		}
+
+		while ( isInWater() < 0.5f ) {
+			applyDamage( $null_entity, attacker, g_vectorZero, GetDamage( "damage_flamethrower_burning" ), 1.f, $null_entity );
+			sys.waitFrame();
+		}
+	}
+
+	burningThreadActive = false;	
+	FreeBurning();
+}
+
+void player::FreeBurning() {	
+	if ( burningEffectHandle0 ) {
+		stopEffectHandle( burningEffectHandle0 );
+		burningEffectHandle0 = 0;
+	}
+	if ( burningEffectHandle1 ) {
+		stopEffectHandle( burningEffectHandle1 );
+		burningEffectHandle1 = 0;
+	}
+	if ( burningEffectHandle2 ) {
+		stopEffectHandle( burningEffectHandle2 );
+		burningEffectHandle2 = 0;
+	}
+	if ( burningEffectHandle3 ) {
+		stopEffectHandle( burningEffectHandle3 );
+		burningEffectHandle3 = 0;
+	}
+	if ( burningEffectHandle4 ) {
+		stopEffectHandle( burningEffectHandle4 );
+		burningEffectHandle4 = 0;
+	}
+	if ( burningEffectHandle5 ) {
+		stopEffectHandle( burningEffectHandle5 );
+		burningEffectHandle5 = 0;
+	}
+	if ( burningEffectHandle6 ) {
+		stopEffectHandle( burningEffectHandle6 );
+		burningEffectHandle6 = 0;
+	}
+	if ( burningThreadActive ) {
+		sys.killThread( "BurningThread_" + getName() );
+		burningThreadActive = false;
+	}
+}
+
+/*
+=====================
+player::MissionToolTipThread
+=====================
+*/
+void player::MissionToolTipThread() {
+	sys.wait( 6 );
+	waitUntil( !isToolTipPlaying() && getProxyEntity() == $null_entity );
+	float toolTip = GetToolTip( getKey( "tt_new_mission" ) );
+	sendToolTip( toolTip );
+	missionToolTipThreadId = -1;
+}
+
+/*
+=====================
+player::vTargetLockAlarm
+=====================
+*/
+void player::vTargetLockAlarm( entity other ) {
+	if ( targetLockCount == 0 ) {
+		if ( isLocalPlayer() && g_allowAPTWarning.getBoolValue() ) {
+			if ( g_aptWarning.getIntValue() == 2 || g_aptWarning.getIntValue() == 3 ) {
+				sys.startSoundDirect( getKey( "snd_target_lock_alarm" ), SND_PLAYER_ALARM );
+			}
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockDeployableAttack", 0.0f );
+		}
+	}
+
+	if ( g_allowAPTWarning.getBoolValue() ) {
+		if ( g_aptWarning.getIntValue() == 1 || g_aptWarning.getIntValue() == 3 ) {
+			targetLockCount++;
+		}
+	}
+}
+
+/*
+=====================
+player::vStopTargetLockAlarm
+=====================
+*/
+void player::vStopTargetLockAlarm( entity other ) {
+	targetLockCount--;
+
+	if ( targetLockCount <= 0 ) {
+		if ( isLocalPlayer() ) {
+			sys.startSoundDirect( "", SND_PLAYER_ALARM );
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockDeployableAttack", 0.0f );
+		}
+		targetLockCount = 0; // with warning beep only, we will get negative values for lock count.
+	}
+}
+
+/*
+=====================
+player::vTargetLockAttack
+=====================
+*/
+void player::vTargetLockAttack( entity other ) {
+	if ( targetLockCount > 0 ) {
+		if ( isLocalPlayer() && g_allowAPTWarning.getBoolValue() ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.targetLockDeployableAttack", 1.0f );
+		}
+	}
+}
+
+/*
+=====================
+player::vMineWarning
+=====================
+*/
+void player::vMineWarning( entity other ) {
+	if ( isLocalPlayer() && g_allowMineTriggerWarning.getBoolValue() ) {
+		sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.mineWarningTime", sys.getTime() );
+	}
+}
+
+void player::ShowAmmoParentBox( float duration ) {
+	if ( isLocalPlayer() && self != $null_entity && self == sys.getLocalViewPlayer() ) {
+		
+		if ( sys.getTime() + duration > lastAmmoParentTime ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.ammoParentBoxTime", duration );
+			float hudHandle = getGUI( "hud" );	
+			if ( hudHandle != GUI_INVALID ) {
+				sys.guiPostNamedEvent( hudHandle, "AmmoParentBox", "updateAmmoParentBoxTime" );
+			}
+			lastAmmoParentTime = sys.getTime() + duration;
+		}
+	}
+}
+
+void player::ShowHealthParentBox( float duration ) {
+	if ( isLocalPlayer() && self != $null_entity && self == sys.getLocalViewPlayer() ) {
+		
+		if ( sys.getTime() + duration > lastHealthParentTime ) {
+			sys.setGUIFloat( GUI_GLOBALS_HANDLE, "gameHud.healthParentBoxTime", duration );
+			float hudHandle = getGUI( "hud" );	
+			if ( hudHandle != GUI_INVALID ) {
+				sys.guiPostNamedEvent( hudHandle, "healthParentBox", "updateHealthParentBoxTime" );
+			}
+			lastHealthParentTime = sys.getTime() + duration;
+		}
+	}
+}

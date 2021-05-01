@@ -1,0 +1,35 @@
+// ================================================================================
+// Account Settings Dialog
+// ================================================================================
+_dialog( Account, localize( "guis/mainmenu/account" ), PADDING, 44, _client_dimension( desktop, width ) * 0.585, $evalfloat( 6 * BUTTON_HEIGHT ), "noMove", "noDim" )
+	_closable_subdialog
+	_single_dialog( Account )
+
+    _check( Account_SavePassword, localize( "guis/mainmenu/savepassword" ), PADDING, _top( dlgAccount ), gui.btnAccount_ChangePassword.rect.w )
+    	events {
+    		onNamedEvent "onShow" {
+    			checked = compare( sdnet.getProfileString( "savePassword", "0" ), "1" );
+    		}
+    		onNamedEvent "onAction" {
+    			callSuper();
+    			sdnet.setProfileString( "savePassword", toString( checked, 0 ) );
+    		}
+    	}
+    _end_check	
+
+	_button( Account_ChangePassword, PADDING, _to_bottom_of( chkAccount_SavePassword ) + 6, $evalfloat( 2 * BUTTON_WIDTH ), BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/changepassword" );
+		}
+		_button_action( _show_input( changePassword ) )
+	_end_button
+	
+/*
+	_button( account_ChangeDetails, PADDING, _to_bottom_of( btnAccount_ChangePassword ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/changedetails" );
+		}
+		_button_action( _show_input( changeDetails ) )
+	_end_button
+*/
+_end_dialog

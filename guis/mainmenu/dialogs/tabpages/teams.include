@@ -1,0 +1,490 @@
+
+// ================================================================================
+// Teams management
+// ================================================================================
+
+#define TEAMS_NO_TASK 0
+#define TEAMS_DISBAND_1 1
+#define TEAMS_REMOVE_MEMBER_1 2
+#define TEAMS_DEMOTE_MEMBER_1 3
+#define TEAMS_PROMOTE_MEMBER_1 4
+#define TEAMS_TRANSFER_OWNERSHIP_1 5
+#define TEAMS_LEAVE_1 6
+#define TEAMS_INVITE_FRIEND_1 7
+
+_tab_page( teams, localize( "guis/mainmenu/clan" ), userLists, USER_TEAMS, _to_right_of( tabpFriends ), 0 )
+#if !defined( SD_DEMO_BUILD )
+	events {
+		onPropertyChanged "visible" {
+			callSuper();
+			if( visible ) {
+				gui.lstTeam.postNamedEvent( "requestUpdate" );
+			}
+		}
+	}
+		
+	windowDef lstTeam {
+		type list;
+		properties {
+			rect	rect			=  0, 0, gui.tabpTeamsContent.rect.w, gui.tabpTeamsContent.rect.h;
+			float flags 			= immediate( flags ) | WF_TRUNCATE_TEXT | LF_SHOW_HEADINGS | LF_COLUMN_SORT;
+			float	initialized 	= false;
+			float	contextAction 	= TCA_NONE;
+			string 	currentUser		= "";
+			float 	visible 		= sdnet.activeUserState == US_ONLINE;
+			float	taskActive		= TEAMS_NO_TASK;
+			wstring lastSelection;
+			wstring	toolTipText 	= localizeArgs( "guis/mainmenu/rightclickteams" );
+			float	currentFriendPending = false;
+			vec2	selection;
+			vec4 	textRect 		= absoluteRect.x, absoluteRect.y + ( ( absoluteRect.h * 0.5 ) - ( textRect.h * 0.5 ) ), absoluteRect.w, 60;
+			vec2 	measure;
+			handle statusIcon 		= gui.cacheMaterial( "teamonline", "_st friends/online" );
+			handle levelIcon 		= gui.cacheMaterial( "teamowner", "_st teams/owner" );
+			float drawColumn;
+			vec4 scratchVec4;
+			float	numIMs			= 0;
+			float	needMeasure		= true;
+			float	allowEvents		= sdnet.initializingTeams == false;
+			float	hasEvents		= false;
+			float	serverIndex		= -1;
+		}
+		_list_scrollbar( Team )
+		_list_highlight_full_items
+		_list_highlight_header
+		_list_properties
+		_list_draw_selected_item
+		
+		_progress_indefinite( TeamsProgress, _left( lstTeam ), _bottom( lstTeam ), _fill_to_right_of( lstTeam ) )
+			properties {
+				float visible = sdnet.initializingTeams;
+			}		
+		_end_progress_indefinite
+		
+		events {
+			onDrawColumn {
+				scratchVec4 = gui.scriptGetVec4Result();
+				drawColumn = gui.scriptGetFloatResult();
+				if( drawColumn == 0 ) {
+					scratchVec4.y = immediate( scratchVec4.y + 4 );
+					scratchVec4.w = 12;
+					scratchVec4.h = 12;
+					drawCachedMaterial( statusIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 0 ) );
+					gui.scriptPushFloat( false );
+					return;
+				}
+				if( drawColumn == 1 ) {
+					scratchVec4.y = immediate( scratchVec4.y + 4 );
+					scratchVec4.w = 12;
+					scratchVec4.h = 12;
+					drawCachedMaterial( levelIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 1 ) );
+					gui.scriptPushFloat( false );
+					return;
+				}
+				gui.scriptPushFloat( true );
+			}
+			onPropertyChanged "sdnet.initializingTeams" {
+				if( sdnet.initializingTeams ) {
+					toolTipText = localizeArgs( "guis/mainmenu/loadingteams" );
+				} else {
+					toolTipText = localizeArgs( "guis/mainmenu/rightclickteams" );
+				}
+				needMeasure		= true;
+			}	
+			onQueryTooltip {
+				selection = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( selection.x != -1 ) {
+					toolTipText = getItemText( selection.x, 0 );
+				} else {
+					if( sdnet.initializingTeams ) {
+						toolTipText = localizeArgs( "guis/mainmenu/loadingteams" );
+					} else {
+						toolTipText = localizeArgs( "guis/mainmenu/rightclickteams" );
+					}
+					needMeasure		= true;
+				}
+			}					
+			onNamedEvent "onShow" {
+				if ( initialized == false ) {
+					// because onCreate doesn't always run before this
+					initialized = true;
+
+					insertColumn( toWStr( "<flags customdraw numeric>" ), 12, 0 );			// Team Rank Icon
+					insertColumn( toWStr( "<flags customdraw numeric>" ), 12, 1 );			// Status Icon
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/clanmember'><width = 100%>" ), 0, 2 );	// Friend Name
+					insertColumn( gui.blankWStr, 0, 3 );				// Pending state
+					needMeasure = true;
+				}
+
+				postNamedEvent( "requestUpdate" );
+			}
+			onPostDraw {
+				if( needMeasure ) {
+					measure = measureText( toolTipText, textRect, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+					textRect.h = measure.y;
+					needMeasure = false;
+				}			
+				if( numItems == 0 ) {
+					drawText( toolTipText, textRect, COLOR_WHITE, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+				}
+			}		
+			onPropertyChanged "sdnet.teamName" {
+				postNamedEvent( "requestUpdate" );
+			}
+			onNamedEvent "reviewInvites" {
+				_show_input( reviewTeamInvites )
+			}
+			onNamedEvent "onContextAction" {
+				numIMs = -1;
+				if( currentSelection == -1 ) {
+					return;
+				}
+
+				currentUser = toStr( getItemText( currentSelection, 2 ) );			
+				contextAction = sdnet.chooseTeamContextAction( currentUser );
+				
+				if( contextAction == TCA_NONE ) {		
+					numIMs = 0;
+					return;
+				}
+
+				if( contextAction == TCA_SEND_IM || contextAction == TCA_READ_IM ) {
+					_show_input( MessageMember );
+				}
+				
+				if( contextAction == TCA_NOTIFY_OWNER ) {
+					_setup_confirmation_ok_dismiss( "guis/mainmenu/promotetoowner" )
+					_show_popup( confirmation )					
+				}
+				
+				if( contextAction == TCA_NOTIFY_ADMIN ) {
+					_setup_confirmation_ok_dismiss( "guis/mainmenu/promotetoadmin" )
+					_show_popup( confirmation )
+				}						
+				
+				if( contextAction == TCA_SESSION_INVITE ) {
+					gui.dlgReviewServerInvitation.currentUser = immediate( currentUser );
+					gui.dlgReviewServerInvitation.callbackWindow = name;
+                	_show_input( ReviewServerInvitation )                	
+				}
+				
+				if( contextAction == TCA_READ_IM || contextAction == TCA_NOTIFY_OWNER || 
+					contextAction == TCA_NOTIFY_ADMIN ) {
+					// remove the message from the server
+					sdnet.deleteActiveMessage();					
+				}
+				numIMs = sdnet.numAvailableTeamIMs( currentUser );
+				postNamedEvent( "requestUpdate" );			
+			}
+			
+			onAccept {
+				postNamedEvent( "onContextAction" );
+			}
+			
+			onDoubleClick "mouse1" {
+				postNamedEvent( "onContextAction" );
+			}
+			
+			onNamedEvent "onJoinSession" {
+				_close_input
+				sdnet.joinSession();
+				sdnet.deleteActiveMessage();
+			}
+			
+			onNamedEvent "onCancelJoinSession" {
+				_close_input
+				sdnet.deleteActiveMessage();
+			}		
+			
+			onNamedEvent "followToServer" {
+				sdnet.followMemberToServer( currentUser );
+			}				
+			
+			onNamedEvent "selectServer" {
+				sdnet.addUnfilteredSession( sdnet.getMemberServerIP( currentUser ) );				
+				gui.lstDWServers.postNamedEvent( "newServerList" );
+				gui.lstDWServers.postNamedEvent( "updateServerList" );
+				
+				gui.lstDWServers.currentSelection = gui.lstDWServers.findItem( toWStr( sdnet.getMemberServerIP( currentUser ) ), 0 );
+			}		
+			
+			onKeyDown "mouse2" {
+				selection = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				currentSelection = selection.x;
+				if( currentSelection >= 0 && currentSelection < numItems ) {
+					currentUser = toStr( getItemText( currentSelection, 2 ) );
+					currentFriendPending = wcompare( getItemText( currentSelection, 3 ), toWStr( "1" ) );
+				} else {
+					currentUser = "";
+					currentFriendPending = false;
+				}
+				gui.mnuTeamsContext.postNamedEvent( "showMenu" );
+			}
+			
+			onNamedEvent "requestUpdate" {
+				if( sdnet.initializingTeams ) {
+					clearItems();
+					return;
+				}
+				if( currentSelection >= 0 && currentSelection < numItems ) {
+					lastSelection = getItemText( currentSelection, 2 );
+				} else {
+					lastSelection = gui.blankWStr;
+				}
+				storeVisualState();
+
+  				fillFromEnumerator( "sdnetTeam" );  				
+  				
+  				if( numItems > 0 ) {
+  					setItemMaterialSize( "12,12", -1, 0 );  				
+					setItemMaterialSize( "12,12", -1, 1 );
+				}
+  				
+				if( wcompare( lastSelection, gui.blankWStr ) == false ) {
+					currentSelection = findItem( lastSelection, 2 );
+				}
+				restoreVisualState();
+			}
+						
+			onNamedEvent "leaveTeam" {
+                _setup_confirmation_yesno_literal( localizeArgs( "guis/mainmenu/leaveteamprompt", toWStr( sdnet.teamName ) ), name, "onLeaveTeam", "onCancelLeaveTeam" )
+				_show_popup( confirmation )
+			}
+			
+			onNamedEvent "onLeaveTeam" {
+				_close_popup
+				taskActive = TEAMS_LEAVE_1;
+				sdnet.leaveTeam( "" );
+			}
+			onNamedEvent "onCancelLeaveTeam" {
+				_close_popup
+			}
+			
+			onNamedEvent "createTeam" {
+				_show_input( createTeam );
+			}
+			
+			onNamedEvent "disbandTeam" {
+				if( sdnet.teamMemberStatus != MS_OWNER ) {
+					postNamedEvent( "leaveTeam" );
+					return;
+				}
+                _setup_confirmation_yesno( "guis/mainmenu/disbandteam_prompt", name, "onDisbandTeam", "onCancelDisbandTeam" )
+				_show_popup( confirmation )
+			}
+			
+			onNamedEvent "onDisbandTeam" {
+				_close_popup
+				taskActive = TEAMS_DISBAND_1;
+				sdnet.disbandTeam();
+			}
+			onNamedEvent "onCancelDisbandTeam" {
+				_close_popup
+			}	
+
+			onNamedEvent "messageMember" {
+				if( currentSelection < 0 ) {
+					return;
+				}
+				_show_input( MessageMember );
+			}
+			
+			onNamedEvent "broadcastMessage" {
+				_show_input( MessageTeam );
+			}
+			
+			onNamedEvent "inviteMember" {
+				_show_input( ProposeMembership );
+			}
+			
+			onNamedEvent "promoteMember" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				currentUser = toStr( getItemText( currentSelection, 2 ) );
+							
+				taskActive = TEAMS_PROMOTE_MEMBER_1;
+				sdnet.promoteMember( currentUser );
+			}
+			
+			onNamedEvent "demoteMember" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				currentUser = toStr( getItemText( currentSelection, 2 ) );
+							
+				taskActive = TEAMS_DEMOTE_MEMBER_1;
+				sdnet.demoteMember( currentUser );
+			}
+									
+			onNamedEvent "transferOwnership" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				currentUser = toStr( getItemText( currentSelection, 2 ) );
+							
+			    _setup_confirmation_yesno_literal( localizeArgs( "guis/mainmenu/transferownershipprompt", toWStr( currentUser ) ), name, "doTransfer", "cancelTransfer" )
+				_show_popup( confirmation )	
+			}
+			
+			onNamedEvent "doTransfer" {
+				_close_popup
+				taskActive = TEAMS_TRANSFER_OWNERSHIP_1;
+				sdnet.transferOwnership( currentUser );
+			}
+			
+			onNamedEvent "cancelTransfer" {
+				_close_popup
+			}
+			
+			onNamedEvent "removeMember" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				currentUser = toStr( getItemText( currentSelection, 2 ) );
+                _setup_confirmation_yesno_literal( localizeArgs( "guis/mainmenu/removememberprompt", toWStr( currentUser ) ), name, "onRemoveMember", "onCancelRemoveMember" )
+				_show_popup( confirmation )				
+			}
+			onNamedEvent "onRemoveMember" {
+				_close_popup
+				taskActive = TEAMS_REMOVE_MEMBER_1;
+				_show_popup( sdNetProgress )
+				sdnet.removeMember( currentUser );
+			}
+			
+			onNamedEvent "onCancelRemoveMember" {
+				_close_popup
+			}
+			
+			onNamedEvent "inviteMemberToServer" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				currentUser = toStr( getItemText( currentSelection, 2 ) );
+				taskActive = TEAMS_INVITE_FRIEND_1;
+				_show_popup( sdNetProgress )
+				sdnet.inviteMember( currentUser );
+			}	
+			onNamedEvent "addFriend" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				
+				currentUser = toStr( getItemText( currentSelection, 2 ) );
+				_show_input( AddFriend )
+				gui.edtAddFriend.editText = currentUser;
+				gui.dlgAddFriend.autoClose = true;
+				gui.btnAddFriendOk.postNamedEvent( "onAction" );
+			}		
+			
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( 	taskActive == TEAMS_DISBAND_1 || taskActive == TEAMS_REMOVE_MEMBER_1 || 
+							taskActive == TEAMS_DEMOTE_MEMBER_1 || taskActive == TEAMS_PROMOTE_MEMBER_1 ||
+							TEAMS_TRANSFER_OWNERSHIP_1 || taskActive == TEAMS_LEAVE_1 || taskActive == TEAMS_INVITE_FRIEND_1 ) {
+						taskActive = TEAMS_NO_TASK;
+						postNamedEvent( "requestUpdate" );
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {							
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage )
+						_show_popup( confirmation )
+						return;
+					}
+				}
+			}					
+		}
+		timeline {
+			onTime 1000 {
+				if( isVisible() ) {
+					postNamedEvent( "requestUpdate" );
+				}
+				resetTime( 0 );
+			}
+		}		
+	_end_list
+#else 
+	_label_literal( TeamsDemoMessage, toWStr( "Buy the full game for integrated buddy list, messaging and clan management." ), 0, _center( tabpTeamsContent, height ), gui.tabpTeamsContent.rect.w, gui.tabpTeamsContent.rect.h, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+		}
+	_end_label
+#endif
+
+_end_tab_page_content
+#if !defined( SD_DEMO_BUILD )
+	_button_disable_if( "allowAction", allowAction == false  )
+	properties {
+		handle pendingIcon = gui.cacheMaterial( "pendingClan", "_st friends/newevent" );
+		handle statusIcon = gui.cacheMaterial( "clanStatus", "_st teams/member" );
+		
+		rect iconRect = drawRect.x + drawRect.w - 14, drawRect.y + 4, 12, 12;
+		rect statusRect = drawRect.x + 2, drawRect.y + 4, 12, 12;
+		
+		color iconColor = 0.5, 0.5, 0.5, 1;
+		float allowAction = sdnet.hasAccount == true && sdnet.activeUserState == US_ONLINE;
+	}
+	events {
+		onCreate {
+			callSuper();
+			postNamedEvent( "updateStatusIcon" );
+		}
+		onPropertyChanged "sdnet.teamMemberStatus" {
+			postNamedEvent( "updateStatusIcon" );
+		}
+		onNamedEvent "updateStatusIcon" {
+			if( sdnet.teamMemberStatus == MS_OWNER ) {
+				statusIcon = gui.cacheMaterial( "clanStatus", "_st teams/owner" );
+				return;
+			}
+			if( sdnet.teamMemberStatus == MS_ADMIN ) {
+				statusIcon = gui.cacheMaterial( "clanStatus", "_st teams/admin" );
+				return; 
+			}
+			statusIcon = gui.cacheMaterial( "clanStatus", "_st teams/member" );
+		}
+		onPostDraw {
+			callSuper();
+			if( sdnet.hasPendingTeamEvents ) {
+				drawCachedMaterial( pendingIcon, iconRect, iconColor );
+			}
+			if( compare( sdnet.teamName, "" ) == false ) {
+				drawCachedMaterial( statusIcon, statusRect, COLOR_WHITE );
+			}
+		}
+		onDoubleClick "mouse1" {
+			if( sdnet.numPendingClanInvites > 0 && containsPoint( iconRect, gui.cursorPos.x, gui.cursorPos.y ) ) {
+				gui.lstTeam.postNamedEvent( "reviewInvites" );
+			}
+		}
+		onQueryTooltip {
+			if( allowAction == false || compare( sdnet.teamName, "" ) ) {
+				tooltipText = gui.blankWStr;
+				return;
+			}
+			
+			tooltipText = localizeArgs( "guis/mainmenu/tooltips/onlinestates", toWString( sdnet.numOnlineClanmates, 0 ), toWString( sdnet.numClanmates, 0 ) );
+		}			
+	}
+	timeline icon {
+		properties {
+			float active = sdnet.hasPendingTeamEvents;
+		}
+		onTime 0 {
+			iconColor = transition( iconColor, COLOR_WHITE, 500 );
+		}
+		onTime 500 {
+			iconColor = transition( iconColor, "0.5, 0.5, 0.5, 1", 500 );
+		}
+		onTime 1000 {
+			resetTime( 0 );
+		}
+	}
+#else
+	//_button_disable_if( "", true  )
+#endif
+_end_tab_page_button

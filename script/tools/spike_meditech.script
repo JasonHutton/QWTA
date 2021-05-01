@@ -1,0 +1,281 @@
+
+/***********************************************************************
+
+spike_meditech.script
+
+***********************************************************************/
+
+object spike_meditech : weapon_base {
+
+	void		init();
+	void		destroy();
+
+	void		Raise();
+	void		Idle();
+	void		Attack();
+	
+	boolean		CheckAttack();
+
+	void		Implant();
+	void		Revive();
+
+	void		LeaveSprint( string newState, float blend );
+	void		Sprint();
+	void		Shock();
+	
+	void		ToolTipThread_Raise();
+
+	float		meleeDistance;
+	
+	string		spawnHostDef;
+	
+	entity		targetPlayer;
+	float		fireRate;
+	
+	float		cachedAction;
+}
+
+void spike_meditech::init() {
+	meleeDistance		= getFloatKey( "melee_distance" );
+	fireRate			= getFloatKeyWithDefault( "fire_rate", 0.1 );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate		= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	spawnHostDef		= getKey( "def_spawn_host" );
+
+	if ( myPlayer.isLocalPlayer() ) {
+		thread ToolTipThread_Raise();
+	}
+	
+	weaponState( "Raise", 0 );
+}
+
+void spike_meditech::destroy() {
+	if ( myPlayer != $null_entity ) {
+		myPlayer.AI_HOLD_WEAPON = false;
+		myPlayer.SetFireAnim( "" );
+	}
+}
+
+void spike_meditech::Raise() {
+	UpdateCharge();
+
+	Base_Raise();
+}
+
+void spike_meditech::LeaveSprint( string newState, float blend ) {
+	playAnim( ANIMCHANNEL_ALL, "raise" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	weaponState( newState, blend );
+}
+
+void spike_meditech::Sprint() {
+	playAnim( ANIMCHANNEL_ALL, "putaway" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 4 ) );
+	weaponReady();
+
+	while ( true ) {
+		if ( !myPlayer.AI_SPRINT ) {
+			LeaveSprint( "Idle", 4 );
+		}
+
+		if ( WEAPON_LOWERWEAPON ) {
+			LeaveSprint( "Lower", 4 );
+		}
+
+		sys.waitFrame();
+	}
+}
+
+void spike_meditech::Idle() {
+	weaponReady();
+	playCycle( ANIMCHANNEL_ALL, "idle" );
+	while( 1 ) {
+		if ( WEAPON_LOWERWEAPON ) {
+			SetProgressBarVisible( false );
+			weaponState( "Lower", 4 );
+		}
+		if ( WEAPON_ATTACK ) {
+			weaponState( "Attack", 0 );
+		}
+		if ( WEAPON_ALTFIRE ) {
+			if ( myPlayer.getProficiency( g_proficiencyTechnician ) >= 2 ) {
+				if ( !CanRemove( chargePerUse ) ) {
+					G_NotifyNoCharge( myPlayer );
+				} else {
+					weaponState( "Shock", 0 );
+				}
+			}
+		}
+
+		if ( myPlayer.AI_SPRINT ) {
+			weaponState( "Sprint", 4 );
+		}
+		
+		UpdateCharge();
+		
+		sys.waitFrame();
+	}
+}
+
+boolean spike_meditech::CheckAttack() {
+	if ( !melee( MASK_SHOT_BOUNDINGBOX | MASK_SHOT_RENDERMODEL | CONTENTS_BODY | CONTENTS_SLIDEMOVER, meleeDistance, true, true ) ) {
+		return false;
+	}
+	
+	targetPlayer = getMeleeEntity();
+	
+	if ( targetPlayer != $null_entity ) {
+		if ( targetPlayer.vNeedsRevive( myPlayer ) ) {
+			cachedAction = AC_REVIVE;
+			return true;
+		}
+	
+		// spawn host them
+		if ( targetPlayer.vShouldCreateSpawnHost( myPlayer ) ) {
+			cachedAction = AC_SPAWNHOST;
+			return true;
+		}
+	}
+	
+	return false;
+}
+
+void spike_meditech::Implant() {
+	if ( targetPlayer.vCreateSpawnHost( myPlayer, spawnHostDef ) ) {
+		if ( !sys.isClient() ) {
+			targetPlayer.vForceRespawn();
+
+			// This just goes into the same slot as revive stats
+			team_base team = myPlayer.getGameTeam();
+			sys.increaseStatInt( sys.allocStatInt( team.getName() + "_revive_uses" ), myPlayer.getEntityNumber(), 1 );
+			sys.increaseStatInt( sys.allocStatInt( team.getName() + "_spawnhosts_created" ), myPlayer.getEntityNumber(), 1 );
+		}
+	}
+	myPlayer.ShowProgressBar( targetPlayer, AC_SPAWNHOST );
+}
+
+void spike_meditech::Revive() {
+	float healthScale = 0.5f;
+	if ( myPlayer.getProficiency( g_proficiencyTechnician ) >= 4 ) {
+		healthScale = 1.f;
+	}
+
+	targetPlayer.vRevive( myPlayer, healthScale );
+	myPlayer.ShowProgressBar( targetPlayer, AC_REVIVE );
+}
+
+void spike_meditech::Attack() {
+	myPlayer.AI_HOLD_WEAPON = true;
+	
+	playAnim( ANIMCHANNEL_ALL, "fire_start" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+			
+	boolean attackValid;
+
+	float reFire;
+	float nextAttackTime = sys.getTime() + 0.1;
+	while ( true ) {
+		if ( sys.getTime() > reFire ) {
+			attackValid = CheckAttack();
+			if ( attackValid ) {
+				if ( cachedAction == AC_SPAWNHOST ) {
+					Implant();
+				} else if ( cachedAction == AC_REVIVE ) {
+					Revive();
+				}
+			}
+
+			reFire = sys.getTime() + fireRate;
+ 		}
+
+		if ( !WEAPON_ATTACK ) {
+			break;
+		}
+
+		if ( WEAPON_LOWERWEAPON ) {
+			break;
+		}
+
+		if ( animDone( ANIMCHANNEL_ALL, PLIERS_PUNCH_TO_IDLE ) ) {
+			playAnim( ANIMCHANNEL_ALL, "fire" );
+			if ( nextAttackTime == 0.f ) {
+				nextAttackTime = sys.getTime() + 0.1f;
+			}
+		}
+		
+		if ( nextAttackTime != 0.f && sys.getTime() > nextAttackTime ) {
+			nextAttackTime = 0.f;
+
+			if ( !attackValid ) {
+				melee( MASK_SHOT_RENDERMODEL | CONTENTS_BODY | CONTENTS_SLIDEMOVER, meleeDistance, true, true );
+				player meleeEnt = getMeleeEntity();
+
+				float hit = meleeAttack( 1.0f );
+				myPlayer.AI_WEAPON_FIRED = false; // Gordon: melee attack will set this, but we've already triggered the animation anyway, so reset it
+				if ( !sys.isClient() ) {
+					if ( meleeEnt != $null_entity ) {
+						if ( myPlayer.getEntityAllegiance( meleeEnt ) == TA_ENEMY ) {
+							float maxAmmo = myPlayer.getMaxAmmo( g_ammoStroyent );
+							float current = myPlayer.getAmmo( g_ammoStroyent ) + 20;
+							if ( current > maxAmmo ) {
+								current = maxAmmo;
+							}
+							myPlayer.setAmmo( g_ammoStroyent, current );
+						}
+					}
+				}
+			}
+		}
+
+		sys.waitFrame();
+	}
+	
+	myPlayer.AI_HOLD_WEAPON = false;
+
+	playAnim( ANIMCHANNEL_ALL, "fire_end" );
+	waitUntil( animDone( ANIMCHANNEL_ALL, 1 ) );
+
+	weaponState( "Idle", 1 );
+}
+
+void spike_meditech::ToolTipThread_Raise() {
+	sys.wait( myPlayer.CalcTooltipWait() );
+	while ( myPlayer.isSinglePlayerToolTipPlaying() ) {
+		sys.wait( 1.0f );
+	}
+	myPlayer.cancelToolTips();
+
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_1" ) ) );
+	
+	WAIT_FOR_TOOLTIP;
+	myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_2" ) ) );
+
+	if ( myPlayer.getProficiency( g_proficiencyTechnician ) >= 2 ) {
+		WAIT_FOR_TOOLTIP;
+		myPlayer.sendToolTip( GetToolTip( getKey( "tt_intro_3" ) ) );
+	}
+}
+
+void spike_meditech::Shock() {
+	myPlayer.SetFireAnim( "shock_self" );
+
+	Remove( chargePerUse );
+
+	fired();
+	playAnim( ANIMCHANNEL_ALL, "reload" );
+//	playAnim( ANIMCHANNEL_ALL, "shock" );
+	
+	sys.wait( 0.7 );
+
+	myPlayer.setHealth( myPlayer.getHealth() + 20.f ); // Gordon: this allows > maxhealth
+
+	while ( !animDone( ANIMCHANNEL_ALL, 4 ) ) {
+		sys.waitFrame();
+	}
+
+	myPlayer.SetFireAnim( "" );
+
+	weaponState( "Idle", 1 );
+}

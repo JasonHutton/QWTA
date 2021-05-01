@@ -1,0 +1,415 @@
+// ================================================================================
+// Friends management
+// ================================================================================
+
+#define FRIENDS_NO_TASK             0
+#define FRIENDS_DELETE_MESSAGE_1 	1
+#define FRIENDS_INVITE_FRIEND_1	 	2
+
+		
+_tab_page( Friends, localize( "guis/mainmenu/friends" ), userLists, USER_FRIENDS, 2, 0 )
+#if !defined( SD_DEMO_BUILD )	
+	_button( FriendsLogin, _center( tabpFriendsContent, width ), _center( tabpFriendsContent, height ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText 	= localize( "guis/mainmenu/login" );
+			float visible 			= sdnet.activeUserState != US_ONLINE;
+		}
+		_button_disable_if_not( "sdnet.hasAccount", sdnet.hasAccount )
+
+		_button_action( _signin_button( name, "" ) )
+		_signin_procedure
+	_end_button
+
+	windowDef lstFriends {
+		type list;
+		_list_scrollbar( Friends )
+		_list_highlight_full_items
+		_list_highlight_header
+		_list_draw_selected_item
+		_list_properties
+		
+		_progress_indefinite( FriendProgress, _left( lstFriends ), _bottom( lstFriends ), _fill_to_right_of( lstFriends ) )
+			properties {
+				float visible = sdnet.initializingFriends;
+			}		
+		_end_progress_indefinite
+		
+		properties {
+			rect rect = 0, 0, gui.tabpFriendsContent.rect.w, gui.tabpFriendsContent.rect.h;
+			float	flags			= immediate( flags ) | WF_TRUNCATE_TEXT | LF_SHOW_HEADINGS | LF_COLUMN_SORT;
+			float	initialized 	= false;
+			float	contextAction 	= FCA_NONE;
+			float	taskActive 		= FRIENDS_NO_TASK;
+			string 	currentUser		= "";
+			float 	visible 		= sdnet.activeUserState == US_ONLINE;
+			wstring	lastSelection;
+			wstring	toolTipText 	= localizeArgs( "guis/mainmenu/rightclickfriends" );
+			float	currentFriendPending = false;
+			float	currentFriendInvited = false;
+			vec2	selection;
+			vec4 	textRect 		= absoluteRect.x, absoluteRect.y + ( ( absoluteRect.h * 0.5 ) - ( textRect.h * 0.5 ) ), absoluteRect.w, 60;
+			vec2	measure;
+			float	numIMs			= 0;
+			
+			handle statusIcon 		= gui.cacheMaterial( "online", "_st friends/online" );
+			float drawColumn;
+			vec4 scratchVec4;
+			float needMeasure		= true;
+			float	allowEvents		= sdnet.initializingFriends == false;
+			float	hasEvents		= false;
+			float	serverIndex		= -1;
+		}
+		events {
+			onDrawColumn {
+				scratchVec4 = gui.scriptGetVec4Result();
+				drawColumn = gui.scriptGetFloatResult();
+				if( drawColumn == 0 ) {
+					scratchVec4.y = immediate( scratchVec4.y + 4 );
+					scratchVec4.w = 12;
+					scratchVec4.h = 12;
+					drawCachedMaterial( statusIcon, scratchVec4, getColumnTransitionVec4Result( LTP_FORECOLOR, foreColor, 0 ) );
+					gui.scriptPushFloat( false );
+					return;
+				}
+				gui.scriptPushFloat( true );
+			}
+			onNamedEvent "onShow" {
+				if ( initialized == false ) {
+					// because onCreate doesn't always run before this
+					initialized = true;
+
+					insertColumn( toWStr( "<flags numeric customdraw>" ), 12, 0 );			// Icon
+					insertColumn( toWStr( "<loc = 'guis/mainmenu/friend'><width = 100%>" ), 0, 1 );	// Friend Name
+				}
+				needMeasure = true;
+ 				postNamedEvent( "requestUpdate" );
+			}
+			onPropertyChanged "sdnet.initializingFriends" {
+				if( sdnet.initializingFriends ) {
+					toolTipText = localizeArgs( "guis/mainmenu/loadingfriends" );
+				} else {
+					toolTipText = localizeArgs( "guis/mainmenu/rightclickfriends" );
+				}
+				needMeasure		= true;
+			}
+			onQueryTooltip {
+				selection = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				if( selection.x != -1 ) {
+					toolTipText = getItemText( selection.x, 0 );
+				} else {
+					if( sdnet.initializingFriends ) {
+						toolTipText = localizeArgs( "guis/mainmenu/loadingfriends" );
+					} else {
+						toolTipText = localizeArgs( "guis/mainmenu/rightclickfriends" );
+					}
+					needMeasure		= true;
+				}
+			}
+			onPostDraw {
+				if( needMeasure ) {
+					measure = measureText( toolTipText, textRect, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+					textRect.h = measure.y;
+					needMeasure = false;
+				}
+				if( numItems == 0 ) {
+					drawText( toolTipText, textRect, COLOR_WHITE, fontSize, DTF_CENTER | DTF_VCENTER | DTF_WORDWRAP );
+				}
+			}
+			onNamedEvent "onContextAction" {
+				numIMs = -1;
+				if( currentSelection == -1 ) {
+					return;
+				}
+
+				currentUser = toStr( getItemText( currentSelection, 1 ) );
+				contextAction = sdnet.chooseContextActionForFriend( currentUser );
+
+				if( contextAction == FCA_SEND_IM || contextAction == FCA_READ_IM ) {
+					_show_input( messageFriend );
+					if( contextAction == FCA_READ_IM ) {
+						// remove the message from the server
+						sdnet.deleteActiveMessage();
+					}
+					numIMs = sdnet.numAvailableIMs( currentUser );
+					return;
+				}
+
+				if( contextAction == FCA_RESPOND_TO_PROPOSAL ) {                    
+					_show_input( ReviewInvitation )
+					return;
+				}
+				
+				if( contextAction == FCA_BLOCKED ) {
+                    _setup_confirmation_ok_dismiss_literal( localizeArgs( "guis/mainmenu/youhavebeenblocked", toWStr( currentUser ) ) )
+					_show_popup( confirmation )
+					sdnet.deleteActiveMessage();
+					return;
+				}
+				if( contextAction == FCA_UNBLOCKED ) {
+                    _setup_confirmation_ok_dismiss_literal( localizeArgs( "guis/mainmenu/youhavebeenunblocked", toWStr( currentUser ) ) )
+					_show_popup( confirmation )
+					sdnet.deleteActiveMessage();
+					return;
+				}
+				
+				if( contextAction == FCA_RESPOND_TO_INVITE ) {
+					gui.dlgReviewServerInvitation.currentUser = immediate( currentUser );
+					gui.dlgReviewServerInvitation.callbackWindow = name;
+					_show_input( ReviewServerInvitation )
+					return;
+				}															
+			}
+			onAccept {
+				postNamedEvent( "onContextAction" );
+			}
+			onDoubleClick "mouse1" {
+				postNamedEvent( "onContextAction" );
+			}
+			onKeyDown "mouse2" {
+				selection = getItemAtPoint( gui.cursorPos.x, gui.cursorPos.y );
+				currentSelection = selection.x;
+				if( currentSelection >= 0 && currentSelection < numItems) {
+					currentUser = toStr( getItemText( currentSelection, 1 ) );
+					currentFriendPending = sdnet.isPendingFriend( currentUser );
+					currentFriendInvited = sdnet.isInvitedFriend( currentUser );
+				} else {
+					currentUser = "";
+					currentFriendPending = false;
+					currentFriendInvited = false;
+				}
+				gui.mnuFriendsContext.postNamedEvent( "showMenu" );
+			}
+			onNamedEvent "acceptProposal" {
+				sdnet.acceptProposal( currentUser );
+				sdnet.deleteActiveMessage();
+				_close_input
+				postNamedEvent( "requestUpdate" );
+			}
+			onNamedEvent "rejectProposal" {
+				sdnet.rejectProposal( currentUser );
+				sdnet.deleteActiveMessage();
+				_close_input
+			}
+			
+			onNamedEvent "onJoinSession" {
+				_close_input
+				sdnet.joinSession();
+				sdnet.deleteActiveMessage();
+			}
+			
+			onNamedEvent "onCancelJoinSession" {
+				_close_input
+				sdnet.deleteActiveMessage();
+			}
+			
+			onNamedEvent "followToServer" {
+				sdnet.followFriendToServer( currentUser );
+			}
+			
+			onNamedEvent "selectServer" {
+				sdnet.addUnfilteredSession( sdnet.getFriendServerIP( currentUser ) );
+				gui.lstDWServers.postNamedEvent( "newServerList" );
+				gui.lstDWServers.postNamedEvent( "updateServerList" );
+				
+				gui.lstDWServers.currentSelection = gui.lstDWServers.findItem( toWStr( sdnet.getFriendServerIP( currentUser ) ), 0 );				
+			}		
+
+			onNamedEvent "requestUpdate" {
+				if( sdnet.initializingFriends ) {
+					clearItems();
+					return;
+				}
+				if( currentSelection >= 0 && currentSelection < numItems ) {
+					lastSelection = getItemText( currentSelection, 1 );
+				} else {
+					lastSelection = gui.blankWStr;
+				}
+				storeVisualState();
+								
+				fillFromEnumerator( "sdnetFriends" );
+				
+				if( numItems > 0 ) {
+					setItemMaterialSize( "12,12", -1, 0 );
+				}
+				
+				if( wcompare( lastSelection, gui.blankWStr ) == false ) {
+					currentSelection = findItem( lastSelection, 1 );
+				}
+				restoreVisualState();
+			}
+
+			onNamedEvent "messageFriend" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				_show_input( messageFriend );
+			}
+			
+			onNamedEvent "inviteFriend" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				currentUser = toStr( getItemText( currentSelection, 1 ) );
+				taskActive = FRIENDS_INVITE_FRIEND_1;
+				_show_popup( sdNetProgress )
+				sdnet.inviteFriend( currentUser );
+			}
+
+			onNamedEvent "blockFriend" {
+				if( currentSelection == -1 ) {
+					return;
+				}
+				_show_input( blockFriend );
+			}
+			onNamedEvent "addFriend" {
+				_show_input( addFriend );
+			}
+			onNamedEvent "inviteToClan" {
+				currentUser = toStr( getItemText( currentSelection, 1 ) );
+				_show_input( ProposeMembership )
+				gui.edtProposeMembership.editText = currentUser;
+				gui.dlgProposeMembership.autoClose = true;
+				gui.btnProposeMembershipOk.postNamedEvent( "onAction" );
+			}
+
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == FRIENDS_DELETE_MESSAGE_1 ) {
+						taskActive = FRIENDS_NO_TASK;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							sdnet.deleteActiveMessage();
+							postNamedEvent( "requestUpdate" );
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage )
+						_show_popup( confirmation )
+						return;
+					}
+					
+					if ( taskActive == FRIENDS_INVITE_FRIEND_1 ) {
+						taskActive = FRIENDS_NO_TASK;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							postNamedEvent( "requestUpdate" );
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage )
+						_show_popup( confirmation )
+						return;
+					}					
+				}
+			}
+		}
+		timeline {
+			onTime 1000 {
+				if( isVisible() ) {
+					postNamedEvent( "requestUpdate" );
+				}
+				resetTime( 0 );
+			}
+		}
+	_end_list
+	
+// Listener for friend removal
+	windowDef removeFriend {
+		properties {
+			float	taskActive = 0;
+		}
+
+        events {
+			onNamedEvent "removeFriend" {
+				if( gui.lstFriends.currentSelection == -1 ) {
+					return;
+				}
+
+                _setup_confirmation_yesno( "guis/mainmenu/removefriendconfirmation", name, "doRemoveFriend", "cancelRemoveFriend" )
+				_show_popup( confirmation )
+			}
+			onNamedEvent "doRemoveFriend" {
+				taskActive = 1;
+				sdnet.removeFriend( toStr( gui.lstFriends.getItemText( gui.lstFriends.currentSelection, 1 ) ) );
+				_show_popup( sdNetProgress )
+			}
+			onNamedEvent "cancelRemoveFriend" {
+				_close_popup
+			}
+
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == 1 ) {
+						taskActive = 0;
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+							gui.lstFriends.postNamedEvent( "requestUpdate" );
+							return;
+						}
+
+						// process error
+                        _setup_confirmation_ok_error( sdnet.taskResultMessage )
+			            _show_popup( confirmation )
+						return;
+					}
+				}
+			}
+		}
+	}
+#else 
+	_label_literal( friendDemoMessage, toWStr( "Buy the full game for integrated buddy list, messaging and clan management." ), 0, _center( tabpFriendsContent, height ), gui.tabpFriendsContent.rect.w, gui.tabpFriendsContent.rect.h, "1,1,1,0.5" )
+		properties {
+			float flags = immediate( flags ) | WF_WRAP_TEXT | WF_AUTO_SIZE_HEIGHT;
+		}
+	_end_label
+#endif
+_end_tab_page_content
+#if !defined( SD_DEMO_BUILD )
+	_button_disable_if( "allowAction", allowAction == false )
+	properties {
+		handle pendingIcon = gui.cacheMaterial( "pendingClan", "_st friends/newevent" );
+		
+		rect iconRect = drawRect.x + drawRect.w - 14, drawRect.y + 4, 12, 12;
+		
+		color iconColor = 0.5, 0.5, 0.5, 1;
+		float allowAction = sdnet.hasAccount == true && sdnet.activeUserState == US_ONLINE;
+	}
+	events {
+		onPostDraw {
+			callSuper();
+			if( sdnet.hasPendingFriendEvents ) {
+				drawCachedMaterial( pendingIcon, iconRect, iconColor );
+			}
+		}
+		onQueryTooltip {
+			if( allowAction == false ) {
+				tooltipText = gui.blankWStr;
+				return;
+			}
+			
+			tooltipText = localizeArgs( "guis/mainmenu/tooltips/onlinestates", toWString( sdnet.numOnlineFriends, 0 ), toWString( sdnet.numFriends, 0 ) );
+		}
+	}
+	timeline icon {
+		properties {
+			float active = sdnet.hasPendingFriendEvents;
+		}
+		onTime 0 {
+			iconColor = transition( iconColor, COLOR_WHITE, 500 );
+		}
+		onTime 500 {
+			iconColor = transition( iconColor, "0.5, 0.5, 0.5, 1", 500 );
+		}
+		onTime 1000 {
+			resetTime( 0 );
+		}
+	}
+#else
+	//_button_disable_if( "", true  )
+#endif	
+_end_tab_page_button

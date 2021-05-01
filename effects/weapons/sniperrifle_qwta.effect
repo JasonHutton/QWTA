@@ -1,0 +1,41 @@
+effect effects/weapons/sniperrifle_trail_baseetqw12
+{
+	size	54
+
+	spawner "Vapour trail2"
+	{
+		count		1,1
+
+		line
+		{
+			duration	2,2
+			material	"particles/dust_spike3"
+			tiling	100
+			fadeIn
+			windDeviationAngle 5.000000
+			trailRepeat	1
+
+			start
+			{
+				position { point 50,0,0 }
+				size { point 1.25 }
+				fade { point 0 }
+				windStrength { line 0.02,0.03 }
+				length { line 0,0,0,0,0,0 useEndOrigin }
+			}
+
+			motion
+			{
+				size { envelope exp_x2 }
+				fade { envelope shamus_fastinslowout }
+			}
+
+			end
+			{
+				size { point 4 }
+				fade { point 0.5 }
+			}
+			lineHit
+		}
+	}
+}

@@ -1,0 +1,517 @@
+// ========================================================================
+// Export
+/*
+reexportmodels deployables/antiarmour_edf.def
+testmodel deployable_antiarmour_gdf
+*/
+
+export hauser {
+	options -prefix AA_ -rotate 90 -sourcedir models/structures/edf/deployables/weapons/anti_armour_turret/dev_sd -destdir  models/structures/edf/deployables/weapons/anti_armour_turret -keep origin turret_start joint07 joint08 joint09 joint10 joint11 joint12 joint16 leg_joint turret_base turret_pilot turret_top turret_cam turret_muzzle joint1 joint2 joint3 joint4 joint5 joint6 -keepmesh polySurface7 polySurface13 polySurface18 polySurface85 polySurface90 polySurface129 polySurface138 polySurface144 polySurface150 polySurface186 polySurface185 polySurface184 polySurface183 polySurface181 polySurface179 polySurface178 polySurface177 polySurface176 polySurface175 polySurface174 polySurface187 polySurface189 polySurface192 lod0_shadow_mesh01 lod0_shadow_mesh02 lod0_shadow_mesh03 lod0_shadow_mesh04 lod0_shadow_mesh05 lod0_shadow_mesh06 lod0_shadow_mesh07 lod0_shadow_mesh08 lod0_shadow_mesh09 lod0_shadow_mesh10 lod0_shadow_mesh11 lod0_shadow_mesh12 lod0_shadow_mesh13 lod0_shadow_mesh14 lod0_shadow_mesh15 -parent joint1 joint2 -parent joint2 joint3 -parent joint3 joint16 -parent joint4 joint5 -parent joint5 joint6 -parent joint6 joint12
+/*
+	mesh	aa_turret_reference_file_rework.mb			-dest aa_turret.md5mesh			-range 77 77
+
+
+	anim	aa_turret_reference_file_rework.mb			-dest aa_undeployed.md5anim 			-range 1 1
+	anim	aa_turret_reference_file_rework.mb			-dest aa_deploy.md5anim 				-range 1 77
+
+*/
+
+	anim	aa_turret_reference_file_rework.mb			-dest aa_preik.md5anim 					-range 1 37
+	anim	aa_turret_reference_file_rework.mb			-dest aa_postik.md5anim 				-range 38 77
+/*
+
+	anim	aa_turret_reference_file_rework.mb			-dest aa_idle.md5anim 					-range 77 77
+	anim	aa_turret_reference_file_rework.mb			-dest aa_reload.md5anim 				-range 77 77
+
+	anim	aa_turret_reference_file_rework.mb			-dest aa_fire.md5anim 					-range 77 83
+
+	anim	aa_turret_damaged.mb						-dest aa_damaged.md5anim				-range 84 100
+	anim	aa_turret_reference_file_rework.mb			-dest aa_disabled.md5anim 				-range 84 130
+
+	anim	aa_turret_reference_file_rework.mb			-dest aa_disabled_to_damaged.md5anim 	-range 85 85
+	anim	aa_turret_reference_file_rework.mb			-dest aa_damaged_to_idle.md5anim 		-range 77 77
+*/
+}
+
+/*
+export hauser {
+	options -prefix AA_ -rotate 90 -sourcedir models/structures/edf/deployables/weapons/anti_armour_turret/dev_sd -destdir  models/structures/edf/deployables/weapons/anti_armour_turret -keep origin turret_start joint07 joint08 joint09 joint10 joint11 joint12 joint16 leg_joint turret_base turret_pilot turret_top turret_cam turret_muzzle joint1 joint2 joint3 joint4 joint5 joint6 -keepmesh polySurface194 polySurface195 polySurface197 polySurface200 polySurface202 polySurface206 polySurface234 polySurface251 polySurface250 polySurface249 polySurface248 polySurface247 polySurface246 polySurface245 polySurface236 polySurface241 polySurface252 polySurface253 lod2_shadow_mesh06 lod2_shadow_mesh07 lod2_shadow_mesh08 lod2_shadow_mesh04 lod2_shadowlegright lod2_shadowfootright lod2_shadowfootleft lod2_shadowlegleft lod2_shadow_mesh09 lod2_shadow_mesh010 -parent joint1 joint2 -parent joint2 joint3 -parent joint3 joint16 -parent joint4 joint5 -parent joint5 joint6 -parent joint6 joint12
+
+addoptions -nojoints
+	mesh	aa_turret_reference_file_rework.mb			-dest aa_turret_lod1.md5mesh	-range 77 77
+	mesh	aa_turret_reference_file_rework.mb			-dest aa_turret_lod2.md5mesh	-range 77 77
+	mesh	aa_turret_reference_file_rework.mb			-dest aa_turret_lod3.md5mesh	-range 77 77
+}
+*/
+// Models
+// ========================================================================
+
+model deployable_antiarmour_gdf {
+	mesh							models/structures/edf/deployables/weapons/anti_armour_turret/aa_turret.md5mesh
+
+	anim base						models/structures/edf/deployables/weapons/anti_armour_turret/aa_idle.md5anim {
+	}
+
+	anim undeployed					models/structures/edf/deployables/weapons/anti_armour_turret/aa_undeployed.md5anim {
+	}
+
+	anim deploy						models/structures/edf/deployables/weapons/anti_armour_turret/aa_deploy.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim pre_ik						models/structures/edf/deployables/weapons/anti_armour_turret/aa_preik.md5anim {
+		frame 1							sound_channel snd_deployable_deploy snd_deploy
+	}
+
+	anim post_ik					models/structures/edf/deployables/weapons/anti_armour_turret/aa_postik.md5anim {
+	}
+
+	anim fire						models/structures/edf/deployables/weapons/anti_armour_turret/aa_fire.md5anim {
+	}
+
+	anim reload						models/structures/edf/deployables/weapons/anti_armour_turret/aa_idle.md5anim {
+	}
+
+	anim damaged					models/structures/edf/deployables/weapons/anti_armour_turret/aa_damaged.md5anim {
+	}
+
+	anim destroyed					models/structures/edf/deployables/weapons/anti_armour_turret/aa_disabled.md5anim {
+	}
+
+	anim disabled_to_damaged		models/structures/edf/deployables/weapons/anti_armour_turret/aa_disabled_to_damaged.md5anim {
+	}
+
+	anim damagaed_to_idle			models/structures/edf/deployables/weapons/anti_armour_turret/aa_damaged_to_idle.md5anim {
+	}
+}
+
+
+// Entity Def
+// ========================================================================
+
+deployObject deployobject_antiarmour_gdf {
+	"name"							"avt"
+	"title"							"game/deploy/avt_long"
+	"wait_time"						"10000"
+	"def_deployable"				"deployable_antiarmour_gdf"
+	"def_deployable_carrier"		"vehicle_cargoplane"
+	"str_placement"					"deployitem_antiarmour_gdf_placement_model"
+	"mask"							"dm_default"
+	"max_height_diff"				"512"
+	"object_radius"					"2048"
+	"ti_kill_filter"				"target_deploy_kill"
+	"category"						"defences"
+}
+
+stringMap deployitem_antiarmour_gdf_placement_model {
+	"model"							"models/structures/edf/deployables/weapons/anti_armour_turret/anti_armour_turret.lwo"
+	"skin"							"deployEffect"
+	"maxVisDist"					"2560"
+	"pushIntoOutsideAreas"			"1"
+}
+
+stringMap deployable_antiarmour_gdf_aimer {
+	"min_yaw_turn"					"90"
+	"max_yaw_turn"					"240"
+
+	"min_pitch_turn"				"90"
+	"max_pitch_turn"				"240"
+
+	"min_pitch"						"-89"
+	"max_pitch"						"25"
+
+	"joint_yaw"						"turret_base"
+	"joint_pitch"					"turret_top"
+	"joint_barrel"					"turret_muzzle"
+
+	"deployed_anim"					"base"
+}
+
+entityDef deployable_antiarmour_gdf {
+	"inherit"						"deployable_base"
+	"inherit1"						"deployable_gdf"
+
+	"title"							"game/deploy/avt_long"
+
+	"climate_skin_key"				"deployable_aa"
+
+	"collection_gui_count"			"deployable_antiarmour_gdf"
+
+	"editor_color"					".3 .3 1"
+	"editor_usage"					"The GDF Anti Vehicle Turret."
+	"editor_mins"					"-128 -144 0"
+	"editor_maxs"					"168 144 512"
+
+	"spawnclass"					"sdDefenceTurret"
+	"scriptobject"					"deployable_antiarmour"
+
+	"model"							"deployable_antiarmour_gdf"
+	"cm_model"						"models/structures/edf/deployables/weapons/anti_armour_turret/clipmodel.lwo"
+
+	"task_name"						"game/deploy/avt"
+
+	"stat_name"						"antivehicle_gdf"
+
+	"str_aim_data"					"deployable_antiarmour_gdf_aimer"
+
+	"ch_name"						"game/deploy/avt_long"
+	"option_combat_model"			"1"
+	"option_crosshair_interface"	"1"
+	"option_commandmap_interface"	"1"
+	"option_crosshair_offset"		"0 0 128"
+//	"option_usable_interface"		"1"
+	"option_no_inhibit_physics"		"1"
+
+	"option_allow_abilities"		"1"
+	"ability_1"						"defense_turret"
+
+	// jotun parachuting stuff
+	"option_simple_physics"			"1"
+	"drop_snap"						"1"
+	"freeze_on_spawn"				"1"
+	"parachute_offset"				"0 0 150"
+	"gravity"						"800"
+
+	"mtr_commandmap"				"guis/assets/commandmap/icon_def_deploy"
+	"mtr_commandmap_unknown"		"guis/assets/commandmap/icon_def_deploy"
+
+	"mtr_color"						"guis/assets/deploy/icons/gdf_av"
+	"mtr_desat"						"guis/assets/deploy/icons/gdf_av_desat"
+	"mtr_half_desat"				"guis/assets/deploy/icons/gdf_av_half_desat"
+	"mtr_full_desat"				"guis/assets/deploy/icons/gdf_av_full_desat"
+
+	"icon_size_cm"					"8"
+
+	"health"						"4000"
+	"repair_multiplier"				"1.5"
+
+	"joint_barrel"					"turret_muzzle"
+
+	"num_ik"						"2"
+	"str_ik0"						"sounds/deployables/avt_gdf/leg_1_ik"
+	"str_ik1"						"sounds/deployables/avt_gdf/leg_2_ik"
+	//"str_ik2"						"sounds/deployables/avt_gdf/leg_3_ik"
+	//"str_ik3"						"sounds/deployables/avt_gdf/leg_4_ik"
+
+	"use_tracers"					"0"
+
+	"fireRate"						"1.25"
+	"fireDelay"						"4"
+	"charge_time"					"10"
+	"charge_per_shot"				"0.6"
+
+	"spread"						"0"
+	"numProjectiles"				"1"
+
+	"missile_velocity"				"2000"
+
+	"range_min"						"10"
+	"range_firing"					"100"
+	"range_max"						"115"
+
+	"num_muzzlejoints"				"1"
+	"joint_muzzle1"					"turret_muzzle"
+
+	"def_projectile"				"projectile_deployable_antiarmour"
+	"def_projectile_dumb"			"projectile_deployable_antiarmour_dumb"
+
+	"fx_fire"						"effects/deployables/gdf_anti_armour_fire"
+	"fx_death"						"effects/deployables/gdf_anti_armour_destroy"
+	"fx_hitground"					"effects/deployables/landfall_hitground_small"
+	"fx_emped"						"effects/generic_smoke/emp"
+	
+	"emp_effect_joint"				"turret_base"
+
+	"ti_target_info"				"target_veh_all"
+	"target_delta"					"0.9"
+
+	"tt_turret_enter"				"avt_intro_enter"
+
+	"do_object"						"deployobject_antiarmour_gdf"
+
+//	"num_positions"					"1"
+//	"str_position0"					"deployable_antiarmour_gdf_position_0"
+//	"crosshair"						"blank"
+//	"gui_usable_overlay"			"guis/game/deployables/gdf/antiarmor"
+
+	"deployable_type"				"16"
+
+	"snd_deploy"					"sounds/deployables/avt_gdf/deploy"
+
+	"play_hitground_effect"			"1"
+
+	"contextmenu_quickchat_enemy"	"quickchat/context/attack/avtspotted"
+
+	"deploybonus_requireactive"		"1"
+	"prof_deploybonus"				"pro_engineer_deploy_bonus"
+
+	"prof_hack"						"pro_infiltrator_hack_deployable_big"
+}
+
+
+
+
+stringMap sounds/deployables/avt_gdf/leg_1_ik {
+	"joint_upper"					"joint3"
+	"joint_middle"					"joint2"
+	"joint_lower"					"joint1"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"17"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"1.5"
+}
+
+stringMap sounds/deployables/avt_gdf/leg_2_ik {
+	"joint_upper"					"joint6"
+	"joint_middle"					"joint5"
+	"joint_lower"					"joint4"
+
+	"direction"						"0 0 -1"
+
+	"max_up_trace"					"40"
+	"max_down_trace"				"17"
+
+	"helper_type"					"legIK"
+
+	"blend_rate"					"1.5"
+}
+
+
+toolTip avt_intro_enter {
+	maxPlayCount 	5
+	nextShowDelay	5
+
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/avt/enter"
+}
+
+stringMap deployable_antiarmour_gdf_position_0 {
+	"thirdperson"					"0"
+	"thirdperson_distance"			"32"
+	"thirdperson_height"			"32"
+
+	"joint_view"					"turret_cam"
+	"fov"							"90"
+	"show_player"					"1"
+	"player_anim"					"VehicleDefault"
+	"attach_joint"					"turret_pilot"
+
+	"snd_target_locking"			"sounds/weapons/misc/target_track_short"
+	"snd_target_locked"				"sounds/weapons/misc/target_lock"
+	"lock_enabled"					"1"
+	"lock_distance"					"12288"
+	"lock_filter"					"target_lock_filter"
+	"weapon_name"					"game/deploy/avt_long"
+	"take_damage"					"1"
+	"hide_decoy_info"				"1"
+	"show_targeting_info"			"1"
+
+	"clamp_pitch"					"-89 25"
+}
+
+// Projectile
+// ========================================================================
+
+entityDef projectile_deployable_antiarmour_dumb {
+	"inherit"						"projectile_rocket_base"
+
+	"spawnclass"					"sdProjectile_Parabolic"
+	"scriptObject"					"projectile_missile"
+
+	"dmg_damage"					"damage_deployable_antiarmour"
+	"dmg_realistic_damage"				"realistic_damage_deployable_antiarmour"
+	"dmg_splash_damage"				"damage_deployable_antiarmour_splash"
+	"dmg_realistic_splash_damage"			"realistic_damage_deployable_antiarmour_splash"
+
+	"health"						"1"
+	"angular_velocity"				"0 0 0"
+	"face_velocity"					"1"
+	"gravity"						"120"
+	"fuse"							"10"
+
+	"detonate_on_death"				"0"
+
+	"mtr_detonate"					"textures/decals/blastmark"
+
+	"snd_fly"						"sounds/weapons/haw/fire"
+}
+
+entityDef projectile_deployable_antiarmour {
+	"inherit"						"projectile_rocket_base"
+
+	"spawnclass"					"idProjectile_RigidBody"
+	"scriptObject"					"projectile_homingmissile"
+
+	"dmg_damage"					"damage_deployable_antiarmour"
+	"dmg_realistic_damage"				"realistic_damage_deployable_antiarmour"
+	"dmg_splash_damage"				"damage_deployable_antiarmour_splash"
+	"dmg_realistic_splash_damage"			"realistic_damage_deployable_antiarmour_splash"
+
+	"health"						"1"
+	"angular_velocity"				"0 0 0"
+	"face_velocity"					"1"
+	"gravity"						"0"
+	"fuse"							"10"
+	"has_thrust"					"1"
+
+	"detonate_on_death"				"0"
+
+	"mtr_detonate"					"textures/decals/blastmark"
+
+	"target_forget"					"5"
+
+	"snd_fly"						"sounds/weapons/haw/fire"
+
+	"collection_decoy_target"		"decoy_target"
+	
+	"no_damage_feedback"			"1"
+}
+
+// ========================================================================
+
+damageDef damage_deployable_antiarmour {
+	damage							"damage_deployable_antiarmour"
+	no_complaint
+
+	prof_damage						"pro_engineer_turret_damage_avt"
+
+	stat_name						"antivehicle_gdf"
+
+	tt_obituary						"tooltips/killmsgs/turrets/avt"
+	tt_obituary_self				"tooltips/killmsgs/turrets/avt/self"
+	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_deployable_antiarmour {
+	inherit							"damage_deployable_antiarmour"
+	damage							"realistic_damage_deployable_antiarmour"
+}
+
+damageDef damage_deployable_antiarmour_splash {
+	damage							"damage_deployable_antiarmour_splash"
+	push							10000000
+	radius							256
+	no_complaint
+
+	prof_damage						"pro_engineer_turret_damage_avt"
+
+	stat_name						"antivehicle_gdf"
+
+	tt_obituary						"tooltips/killmsgs/turrets/avt"
+	tt_obituary_self				"tooltips/killmsgs/turrets/avt/self"
+	tt_obituary_team_kill			"tooltips/killmsgs/turrets/avt/teamkill"
+	tt_obituary_unknown				"tooltips/killmsgs/turrets/avt/unknown"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_deployable_antiarmour_splash {
+	inherit							"damage_deployable_antiarmour_splash"
+	damage							"realistic_damage_deployable_antiarmour_splash"
+}
+
+// ========================================================================
+
+damageFilter damage_deployable_antiarmour {
+
+	type {
+		target							"target_player_all"
+		damage							150
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							750
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							500
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+damageFilter realistic_damage_deployable_antiarmour {
+
+	type {
+		target							"target_player_all"
+		damage							300
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							750
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							500
+	}
+
+	type {
+		target							"target_explodable"
+		damage							400
+	}
+}
+
+damageFilter damage_deployable_antiarmour_splash {
+
+	type {
+		target							"target_player_all"
+		damage							150
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							375
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							250
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}
+
+damageFilter realistic_damage_deployable_antiarmour_splash {
+
+	type {
+		target							"target_player_all"
+		damage							300
+	}
+
+	type {
+		target							"target_veh_all"
+		damage 							375
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							250
+	}
+
+	type {
+		target							"target_explodable"
+		damage							200
+	}
+}

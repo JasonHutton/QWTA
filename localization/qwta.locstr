@@ -1,0 +1,322 @@
+// str_qwta_00000061
+
+/*
+=================
+ game code messages
+=================
+*/
+
+locString teams/messages/toomanyofclass {
+	text "#str_qwta_00000017"
+}
+
+locString game/vec/jupiter {
+	text "#str_qwta_00000015" // "Jupiter"
+}
+
+locString game/vec/abaddon {
+	text "#str_qwta_00000037" // "Abaddon"
+}
+
+locString game/weapons/bfg10k {
+	text "#str_qwta_00000016" // "BFG10k"
+}
+
+locString game/voicechat/thisdisabled {
+	text "#str_qwta_00000025" // "This Voice Chat is disabled."
+}
+
+/*
+=================
+ GUIs
+=================
+*/
+
+locString guis/vehicles/jupiter_driver { 
+	text "#str_qwta_00000021" // "Jupiter Driver"
+}
+
+locString guis/vehicles/abaddon_driver { 
+	text "#str_qwta_00000038" // "Abaddon Driver"
+}
+
+locString guis/vehicles/jupiter_gunner { 
+	text "#str_qwta_00000022" // "Jupiter Gunner"
+}
+
+locString guis/vehicles/abaddon_gunner { 
+	text "#str_qwta_00000039" // "Abaddon Gunner"
+}
+
+locString guis/vehicles/jupiter_passenger { 
+	text "#str_qwta_00000023" // "Jupiter Passenger"
+}
+
+locString guis/game/scoreboard/fe { 
+	text "#str_qwta_00000024" // "FE"
+}
+
+locString guis/hud/dead {
+	text "#str_qwta_00000049" // "You are dead.\nPress ^1%1[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/hud/unconscious {
+	text "#str_qwta_00000050" // "You have been wounded too badly to continue. You must wait for a medic.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/hud/unconscious_strogg {
+	text "#str_qwta_00000051" // "You have been wounded too badly to continue. You must wait for a technician.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/hud/unconscious_strogg_spawnhost {
+	text "#str_qwta_00000053" // "You have been wounded too badly to continue, but have a spawnhost available.\nYou will deploy in the next reinforcement wave.\nPress ^1%1[key]^0 to wait for a technician.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 2
+}
+
+locString guis/hud/unconscious_strogg_spawnhost_nospawn {
+	text "#str_qwta_00000052" // "You have been wounded too badly to continue, but have a spawnhost available.\nYou are waiting for a technician.\nPress ^1%1[key]^0 to deploy with the next wave of reinforcements.\nPress ^1%2[limbo menu key]^0 for the Limbo Menu."
+	arguments 2
+}
+
+locString guis/hud/dead_spawnhost {
+	text "#str_qwta_00000054" // "You are dead, but have a spawnhost available.\nYou will deploy in the next reinforcement wave.\nPress ^1%1[limbo menu key]^0 for the Limbo Menu."
+	arguments 1
+}
+
+locString guis/game/scoreboard/lp { 
+	text "#str_qwta_00000060" // "LP"
+}
+
+locString guis/hud/decoyammo { 
+	text "#str_qwta_00000061" // "Decoys:"
+}
+
+
+/*
+==================
+ GDF Vehicles
+==================
+*/
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_husky  {
+	//text "#str_0200101" // "Request Husky"
+	text "#str_qwta_00000055" // "Request Husky"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_armadillo  {
+	text "#str_qwta_00000002" // "Request Armadillo"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_trojan  {
+	text "#str_qwta_00000003" // "Request Trojan"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_titan  {
+	text "#str_qwta_00000004" // "Request Titan"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_anansi  {
+	text "#str_qwta_00000005" // "Request Anansi"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_bumblebee  {
+	text "#str_qwta_00000006" // "Request Bumblebee"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops  {
+	text "#str_qwta_00000012" // "Vehicle Drops"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_platypus  {
+	text "#str_qwta_00000007" // "Request Platypus"
+}
+
+locString gdf/quickchat/vehicles/vehicledrops/nv_jupiter {
+	text "#str_qwta_00000014" // "Request Jupiter"
+}
+
+/*
+==================
+ Strogg Vehicles
+==================
+*/
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_icarus  {
+	//text "#str_0201101" // "Request Icarus"
+	text "#str_qwta_00000056" // "Request Icarus"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_hog  {
+	text "#str_qwta_00000008" // "Request Hog"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_desecrator  {
+	text "#str_qwta_00000009" // "Request Desecrator"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_cyclops  {
+	text "#str_qwta_00000010" // "Request Cyclops"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_tormentor  {
+	text "#str_qwta_00000011" // "Request Tormentor"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops/nv_abaddon  {
+	text "#str_qwta_00000036" // "Request Abaddon"
+}
+
+locString strogg/quickchat/vehicles/vehicledrops  {
+	text "#str_qwta_00000013" // "Vehicle Drops"
+}
+
+/*
+==================
+ Obituaries
+==================
+*/
+
+locString game/obit/bfg10k {
+	text "#str_qwta_00000018" // "%b^0 [BFG10k] %a"
+}
+
+locString game/obit/bfg10k_self {
+	text "#str_qwta_00000019" // "^1[BFG10k] ^0%a"
+}
+
+locString game/obit/bfg10k_unknown {
+	text "#str_qwta_00000019" // "^1[BFG10k] ^0%a"
+}
+
+locString game/obit/bfg10k_team {
+	text "#str_qwta_00000020" // "%b^1 [BFG10k] ^0%a"
+}
+
+locString game/obit/hyper_self {
+	text "#str_qwta_00000001" // "^1[Hyperblaster] ^0%a"
+}
+
+locString game/obit/hyper_unknown {
+	text "#str_qwta_00000001" // "^1[Hyperblaster] ^0%a"
+}
+
+locString game/obit/jupiter {
+	text "#str_qwta_00000026" // "%b^7 [Jupiter] %a"
+}
+
+locString game/obit/jupiter_empty {
+	text "#str_qwta_00000027" // "[Jupiter] %a"
+}
+
+locString game/obit/jupiter_team {
+	text "#str_qwta_00000028" // "%b^1 [Jupiter] ^7%a"
+}
+
+locString game/obit/abaddon {
+	text "#str_qwta_00000033" // "%b^7 [Abaddon] %a"
+}
+
+locString game/obit/abaddon_empty {
+	text "#str_qwta_00000034" // "[Abaddon] %a"
+}
+
+locString game/obit/abaddon_team {
+	text "#str_qwta_00000035" // "%b^1 [Abaddon] ^7%a"
+}
+
+locString game/obit/flamethrower {
+	text "#str_qwta_00000042" // "%b^0 [Flamethrower] %a"
+}
+
+locString game/obit/flamethrower_self {
+	text "#str_qwta_00000043" // "^1[Flamethrower] ^0%a"
+}
+
+locString game/obit/flamethrower_unknown {
+	text "#str_qwta_00000043" // "^1[Flamethrower] ^0%a"
+}
+
+locString game/obit/flamethrower_team {
+	text "#str_qwta_00000044" // "%b^1 [Flamethrower] ^0%a"
+}
+
+locString game/obit/plasmabeam {
+	text "#str_qwta_00000046" // "%b^0 [Plasma Beam] %a"
+}
+
+locString game/obit/plasmabeam_self {
+	text "#str_qwta_00000047" // "^1[Plasma Beam] ^0%a"
+}
+
+locString game/obit/plasmabeam_unknown {
+	text "#str_qwta_00000047" // "^1[Plasma Beam] ^0%a"
+}
+
+locString game/obit/plasmabeam_team {
+	text "#str_qwta_00000048" // "%b^1 [Plasma Beam] ^0%a"
+}
+
+locString game/obit/veh_exp {
+	text "#str_qwta_00000057" // "%b^0 [Vehicle Explosion] %a"
+}
+
+locString game/obit/veh_exp_self {
+	text "#str_qwta_00000058" // "^1[Vehicle Explosion] ^0%a"
+}
+
+locString game/obit/veh_exp_unknown {
+	text "#str_qwta_00000058" // "^1[Vehicle Explosion] ^0%a"
+}
+
+locString game/obit/veh_exp_team {
+	text "#str_qwta_00000059" // "%b^1 [Vehicle Explosion] ^0%a"
+}
+
+/*
+==================
+ Tooltips
+==================
+*/
+
+locString game/tt/jupiter {
+	text "#str_qwta_00000029"
+}
+
+locString game/tt/abaddon {
+	text "#str_qwta_00000040"
+}
+
+/*
+==================
+ Gametypes
+==================
+*/
+
+locString game/gametype/tactical {
+	text "#str_qwta_00000030" // "Tactical"
+}
+
+locString votes/settactical {
+	text "#str_qwta_00000031" // "Set Tactical Mode"
+}
+
+locString votes/settactical/text {
+	text "#str_qwta_00000032" // "Set Tactical Mode: %a[tactical name]?"
+}
+
+/*
+=========
+ Weapons
+=========
+*/
+
+locString game/weapons/flamethrower {
+	text "#str_qwta_00000041" // "Flamethrower"
+}
+
+locString game/weapons/plasmabeam {
+	text "#str_qwta_00000045" // "Plasma Beam"
+}

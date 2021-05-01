@@ -1,0 +1,111 @@
+
+
+object spawn_host_qwta : spawn_host {
+	void		destroy();
+	void		OnPlayerSpawned( entity p );
+	float		OnActivate( entity p, float distance );
+	void		Fizzle();
+}
+
+void spawn_host_qwta::destroy() {
+	if ( !sys.isClient() ) {
+		if ( owner != $null_entity ) {
+			owner.setPlayerSpawnHostState( self, true );
+		}
+ 	}
+
+	ClearCommandmapIcon();
+	FreeDestroyTask();
+	FreeSelectTask();
+
+	if ( spawner != $null_entity ) {
+		spawner.setSpawnPoint( $null_entity );
+		spawner.vDecreaseAvailableLives();
+	}
+}
+
+void spawn_host_qwta::OnPlayerSpawned( entity p ) {
+	if ( owner != $null_entity ) {
+		owner.giveProficiency( usedProficiency, 1.f, $null, "spawnhost used" );
+	}
+
+	p.vSetSpawnHostSpawned();
+
+	p.setSpawnPoint( $null_entity );
+	p.vDecreaseAvailableLives();
+
+	remove();
+}
+
+float spawn_host_qwta::OnActivate( entity p, float distance ) {
+	if ( distance > 128.f ) {
+		return 0.f;
+	}
+
+	if ( p.getViewingEntity() != p ) {
+		return 0.0f;
+	}
+
+	if ( p.getHealth() <= 0.f ) {
+		return 0.f;
+	}
+
+	if ( p.getGameTeam() == gdfTeam ) {
+		float code = GetActivateCode( p, distance );
+		if ( code != AK_NONE ) {
+			p.vSelectActionItem( code );
+		}
+
+		return 1.0f;
+	}
+
+	if ( getEntityAllegiance( p ) != TA_FRIEND ) {
+		return 0.0f;
+	}
+
+	if ( spawner != $null_entity ) {
+		if( p.isLocalPlayer() ) {
+			if ( !p.isToolTipPlaying() ) {
+				if ( p != spawner ) {
+					p.sendToolTip( toolTip_strogg_already_selected_1 );
+				} else {
+					p.sendToolTip( toolTip_strogg_already_selected_2 );
+				}
+			}
+		}
+		return 0.0f;
+	}
+
+	spawn_host shTest = p.getSpawnPoint();
+	if ( shTest != $null_entity ) {
+		p.vDecreaseAvailableLives();
+	}
+	p.setSpawnPoint( self );
+	p.vIncreaseAvailableLives();
+	if( p.isLocalPlayer() ) {
+		if ( !p.isToolTipPlaying() ) {
+			p.sendToolTip( toolTip_strogg_select );
+		}
+	}
+
+	return 1.f;
+}
+
+void spawn_host_qwta::Fizzle() {
+	playEffect( "fx_fizzle", "", 0 );
+
+	if ( spawnerLocal ) {
+		entity p = sys.getLocalPlayer();
+		p.sendToolTip( toolTip_strogg_destroyed );
+	}
+
+	if ( spawner != $null_entity ) {
+		spawner.setSpawnPoint( $null_entity );
+		spawner.vDecreaseAvailableLives();
+	}
+
+	if ( !sys.isClient() ) {
+		thread RemoveThread( 0.5 );
+	}
+}
+

@@ -1,0 +1,105 @@
+
+#ifndef __stats_overview__
+#define __stats_overview__
+
+$template _overview_class_stats_table( NameParm )
+	properties {
+		float totalL1;
+		float totall2;
+		float totalL3;
+		float totalL4;
+		
+		float index;		
+		float lookup;
+		
+		float flags = immediate( flags ) | LF_SHOW_HEADINGS | WF_AUTO_SIZE_HEIGHT;
+		float allowEvents = false;
+		float fixedRowHeight	= STATS_ROW_HEIGHT;
+	}
+	events {
+		onCreate {
+			callSuper();
+			insertColumn( toWStr( "<loc = 'guis/limbo/"## #NameParm ##"'><width = 30%>" ), 0, 0 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/l1stars'><width = 17.5%>" ), 0, 1 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/l2stars'><width = 17.5%>" ), 0, 2 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/l3stars'><width = 17.5%>" ), 0, 3 );
+			insertColumn( toWStr( "<loc = 'guis/mainmenu/l4stars'><width = 17.5%>" ), 0, 4 );
+			
+			postNamedEvent( "statsUpdated" );
+		}
+		onNamedEvent "statsUpdated" {
+			clearItems();
+			totalL1 = 0;
+			totalL2 = 0;
+			totalL3 = 0;
+			totalL4 = 0;
+$endtemplate
+
+$template _end_overview_class_stats_table
+		}
+	}
+$endtemplate
+
+$template _overview_class_totals
+	index = insertItem( toWStr( "<material = 'stats_separator'>" ), -1, 0 );
+	setItemMaterialSize( "rect.w - 4, 16", index, 0 );
+	
+	index = insertItem( toWStr( "<loc ='guis/mainmenu/totals'>" ), -1, 0 );
+	setItemText( toWString( totalL1, 0 ), index, 1 );
+	setItemText( toWString( totalL2, 0 ), index, 2 );
+	setItemText( toWString( totalL3, 0 ), index, 3 );
+	setItemText( toWString( totalL4, 0 ), index, 4 );
+$endtemplate
+
+
+$template _add_overview_class_stat( ClassParm )
+	index = insertItem( toWStr( "<loc ='game/classes/combined/" ## #ClassParm ## "'>" ), -1, 0 );
+	
+	// Level 1 Stars
+	lookup = sdnet.getStat( #ClassParm ## "_level_1" );
+	totalL1 = immediate( totalL1 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 1 );
+	
+	// Level 2 Stars
+	lookup = sdnet.getStat( #ClassParm ## "_level_2" );
+	totalL2 = immediate( totalL2 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 2 );
+	
+	// Level 3 Stars
+	lookup = sdnet.getStat( #ClassParm ## "_level_3" );
+	totalL3 = immediate( totalL3 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 3 );
+
+	// Level 4 Stars
+	lookup = sdnet.getStat( #ClassParm ## "_level_4" );
+	totalL4 = immediate( totalL4 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 4 );
+	
+$endtemplate
+
+$template _add_overview_prof_stat( ProfParm )
+	index = insertItem( toWStr( "<loc ='game/proficiency/" ## #ProfParm ## "'>" ), -1, 0 );
+	
+	// Level 1 Stars
+	lookup = sdnet.getStat( #ProfParm ## "_level_1" );
+	totalL1 = immediate( totalL1 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 1 );
+	
+	// Level 2 Stars
+	lookup = sdnet.getStat( #ProfParm ## "_level_2" );
+	totalL2 = immediate( totalL2 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 2 );
+	
+	// Level 3 Stars
+	lookup = sdnet.getStat( #ProfParm ## "_level_3" );
+	totalL3 = immediate( totalL3 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 3 );
+
+	// Level 4 Stars
+	lookup = sdnet.getStat( #ProfParm ## "_level_4" );
+	totalL4 = immediate( totalL4 + lookup );
+	setItemText( toWString( lookup, 0 ), index, 4 );
+	
+$endtemplate
+
+#endif // !__stats_class__

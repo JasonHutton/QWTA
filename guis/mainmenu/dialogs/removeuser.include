@@ -1,0 +1,299 @@
+// ================================================================================
+// Remove User Dialog
+// ================================================================================
+_dialog( RemoveUser, localize( "guis/mainmenu/removeuser" ), _center( desktop, width ), _center( desktop, height ), 260, 121, "noMove", "dim" )
+	_single_dialog( RemoveUser )
+	_on_default( RemoveUserNext,RemoveUserCancel )
+
+	properties {
+		string 	username 			= "";
+		float 	activeWizardPage 	= 0;
+		float	taskActive			= 0;
+	}
+	events {
+		onNamedEvent "onShow" {
+			setTabStop( 0 );
+		}
+	}
+
+	windowDef wzdRemoveUser_Page_0 {
+		properties {
+			rect rect = 0, 0, gui.dlgRemoveUser.rect.width, gui.dlgRemoveUser.rect.height;
+			float visible = ( gui.dlgRemoveUser.activeWizardPage == 0 );
+		}
+        _label_literal( RemoveUserProfileName, toWStr( sdnet.activeUsername ), _left( dlgRemoveUser ), _top( dlgRemoveUser ), _client_dimension( dlgRemoveUser, width ), BUTTON_HEIGHT, "1,1,1,0.5" )
+            properties {
+                vec2 textAlignment = TA_LEFT, TA_VCENTER;
+            }
+        _end_label
+
+		_group_box_vertical( RemoveUser_RemoveOnline, PADDING, _to_bottom_of( lblRemoveUserProfileName ) + 3, gui.dlgRemoveUser.rect.width - $evalfloat( PADDING * 2 ), $evalfloat( 42 + PADDING ) )
+			properties {
+				float	selectedOption 	= 0;
+				float 	flags 			= immediate( flags ) | VLF_DYNAMIC_CHILDREN;
+			}
+
+			_radio( RemoveUser_OnlineAndOffline, localize( "guis/mainmenu/removeonline_0" ), 0, 0,  gui.grpRemoveUser_RemoveOnline.rect.width - 12 )
+				_button_disable_if( "sdnet.hasAccount", sdnet.hasAccount == 0 )
+				_button_action( callSuper(); gui.lytRemoveUser_RemoveOnline.selectedOption = 0; )
+				
+				events {
+					onCreate {
+						callSuper();
+						checked = ( gui.lytRemoveUser_RemoveOnline.selectedOption == 0 );
+					}
+                    onPropertyChanged "allowEvents"{
+                        if( allowEvents == false ) {
+                            gui.lytRemoveUser_RemoveOnline.selectedOption = 1;
+                        }
+                    }
+                }
+			_end_radio
+
+			_radio( RemoveUser_Offline, localize( "guis/mainmenu/removeonline_1" ), 0, 0, gui.grpRemoveUser_RemoveOnline.rect.width - 12 )
+				_button_action( callSuper(); gui.lytRemoveUser_RemoveOnline.selectedOption = 1; )
+				events {
+					onCreate {
+						callSuper();
+						checked = ( gui.lytRemoveUser_RemoveOnline.selectedOption == 1 );
+					}
+				}
+			_end_radio
+		_end_group_box_vertical
+	}
+
+	// ================================================================================
+	// Page 1
+	// ================================================================================
+	windowDef wzdRemoveUser_Page_1 {
+		properties {
+			rect rect = 0, 0, gui.dlgRemoveUser.rect.width, gui.dlgRemoveUser.rect.height;
+			float visible = ( gui.dlgRemoveUser.activeWizardPage == 1 );
+		}
+		windowDef lytRemoveUser_Page_1 {
+			type layoutVertical;
+			properties {
+				rect rect = 0, _top( wzdRemoveUser_Page_1 ), gui.dlgRemoveUser.rect.width, gui.dlgRemoveUser.rect.height;
+				vec4 margins = PADDING, PADDING, PADDING, PADDING;
+			}
+
+			_edit( RemoveUserUserNameName, 100, 0, 100, BUTTON_HEIGHT )
+				_draw_right_edit_label( localize( "guis/mainmenu/username" ), COLOR_TEXT, 100 )
+				properties {
+					vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+					float 	readOnly = true;
+					string	editText = sdnet.accountUsername;
+				}
+			_end_label
+
+			_edit( RemoveUserPassword, 100, 0, 100, BUTTON_HEIGHT )
+				_clear_on_show
+				_draw_right_edit_label( localize( "guis/mainmenu/password" ), COLOR_TEXT, 100 )
+				properties {
+				    float	maxTextLength = 20;
+					float	password = 1;
+					vec2 	textAlignment = TA_LEFT, TA_VCENTER;
+				}
+				events {
+					onPropertyChanged "gui.wzdRemoveUser_Page_1.visible" {
+						if ( gui.wzdRemoveUser_Page_1.visible > 0 ) {
+							gui.focusedWindow = name;
+						}
+					}
+				}
+			_end_edit
+		}
+	}
+
+	// ================================================================================
+	// Page 2
+	// ================================================================================
+	windowDef wzdRemoveUser_Page_2 {
+		properties {
+			rect rect = 0, 0, gui.dlgRemoveUser.rect.width, gui.dlgRemoveUser.rect.height;
+			float visible = ( gui.dlgRemoveUser.activeWizardPage == 2 );
+			float	fontSize = 12;
+			handle	localizedText = localize( "guis/mainmenu/removeuserfinished" );
+		}
+	}
+
+// ================================================================================
+// Next / Finish / Cancel buttons
+// ================================================================================
+
+	// ================================================================================
+	// Next Button
+	// ================================================================================
+	_button( RemoveUserNext, _to_left_of( btnRemoveUserCancel ) - 3, _bottom( dlgRemoveUser ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle 	localizedText 	= localize( "guis/mainmenu/next" );
+			float 	visible 		= ( gui.dlgRemoveUser.activeWizardPage < 2 );
+		}
+
+		events {
+			onPropertyChanged "gui.dlgRemoveUser.activeWizardPage" "gui.edtRemoveUserPassword.editText" {
+				callSuper();
+				if( ( gui.dlgRemoveUser.activeWizardPage == 1 && compare( gui.edtRemoveUserPassword.editText, "" ) ) ) {
+					allowEvents = false;
+					foreColor.a = 0.25;
+				} else {
+					allowEvents = true;
+					foreColor.a = 1;
+				}
+			}
+		}
+
+		_button_action(
+			// ================================================================================
+			// Page 0
+			// ================================================================================
+			if ( gui.dlgRemoveUser.activeWizardPage == 0 ) {
+				if ( gui.lytRemoveUser_RemoveOnline.selectedOption == 0 ) {
+					gui.dlgRemoveUser.activeWizardPage = 1;
+				} else {
+					_setup_confirmation_yesno( "guis/mainmenu/removeuserconfirmation", "dlgRemoveUser", "removeLocalUser", "OnNo" )
+					_show_popup( confirmation )
+					gui.focusedWindow = "btnConfirmationNo";					
+				}
+				return;
+			}
+
+			// ================================================================================
+			// Page 1
+			// ================================================================================
+			if ( gui.dlgRemoveUser.activeWizardPage == 1 ) {
+				_setup_confirmation_yesno( "guis/mainmenu/removeuserconfirmation", "dlgRemoveUser", "removeAccount", "OnNo" )
+				_show_popup( confirmation )
+				gui.focusedWindow = "btnConfirmationNo";
+
+				return;
+			}
+
+			if ( gui.dlgRemoveUser.activeWizardPage == 2 ) {
+				_show_single_dialog( login )
+				return;
+			}
+		)
+	_end_button
+
+	// ================================================================================
+	// Cancel Button
+	// ================================================================================
+	_button( RemoveUserCancel, _right( dlgRemoveUser ) - 3, _bottom( dlgRemoveUser ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle localizedText = localize( "guis/mainmenu/cancel" );
+		}
+
+		events {
+			onPropertyChanged "gui.dlgRemoveUser.activeWizardPage" {
+				if( gui.dlgRemoveUser.activeWizardPage == 2 ) {
+					localizedText = localize( "guis/mainmenu/finish" );
+				} else {
+					localizedText = localize( "guis/mainmenu/cancel" );
+				}
+			}
+		}
+
+		_button_action (
+			if( gui.dlgRemoveUser.activeWizardPage == 2 ) {
+				_show_single_dialog( login )
+				return;
+			}
+			if ( sdnet.hasActiveUser > 0 ) {
+				sdnet.deactivateUser();
+			}
+			_show_single_dialog( login )
+			_close_popup
+		)
+	_end_button
+
+	events {
+		onNamedEvent "removeLocalUser" {
+			_show_popup( sdNetProgress )
+
+			username = immediate( sdnet.activeUsername );
+			sdnet.deactivateUser();
+			sdnet.deleteUser( sdnet.makeRawUsername( username ) );
+
+			_close_popup;
+
+			gui.dlgRemoveUser.activeWizardPage = 2;
+		}
+		onNamedEvent "OnNo" {
+			_close_popup;
+		}
+		onNamedEvent "removeAccount" {
+			if ( sdnet.state != SS_ONLINE ) {
+				if ( sdnet.connect() == 0 ) {
+					// process error
+					_setup_confirmation_ok_error( localize( "guis/mainmenu/failedtoconnect" ) )
+					_show_popup( confirmation )
+					return;
+				}
+				_show_popup( sdNetProgress );
+				taskActive = 1;
+			} else {
+				taskActive = 2;
+				_show_popup( sdNetProgress )
+				sdnet.deleteAccount( gui.edtRemoveUserPassword.editText );
+			}
+		}
+		onPropertyChanged "visible" {
+			callSuper();
+			if ( visible > 0 ) {
+				taskActive = 0;
+				gui.dlgRemoveUser.activeWizardPage = 0;
+			}
+		}
+		onPropertyChanged "sdnet.state" {
+			if ( sdnet.state == SS_ONLINE ) {
+				if ( taskActive == 1 ) {
+					taskActive = 2;
+					_show_popup( sdNetProgress )
+					sdnet.deleteAccount( gui.edtRemoveUserPassword.editText );
+				}
+			}
+		}
+		onPropertyChanged "sdnet.taskActive" {
+			if ( sdnet.taskActive == 0 ) {
+				if ( taskActive == 1 ) {
+					taskActive = 0;
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						taskActive = 2;
+						_show_popup( sdNetProgress )
+						sdnet.deleteAccount( gui.edtRemoveUserPassword.editText );
+						return;
+					}
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					sdnet.accountSetPassword( "" );
+
+					gui.edtRemoveUserPassword.editText = "";
+					gui.focusedWindow = "edtRemoveUserPassword";
+				}
+				if ( taskActive == 2 ) {
+					taskActive = 0;
+
+					// process result
+					if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+						postNamedEvent( "removeLocalUser" );
+						return;
+					}
+
+					// process error
+					_setup_confirmation_ok_error( sdnet.taskResultMessage )
+					_show_popup( confirmation )
+
+					sdnet.accountSetPassword( "" );
+
+					gui.edtRemoveUserPassword.editText = "";
+					gui.focusedWindow = "edtRemoveUserPassword";
+
+					return;
+				}
+			}
+		}
+	}
+_end_dialog

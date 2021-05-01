@@ -1,0 +1,95 @@
+sound sounds/weapons/bfg/explode {
+	minDistance	50
+	maxDistance 175
+	shakes	0.1
+	volume	2
+	
+	no_dups
+
+	sounds/weapons/bfg/bfg_explode1.wav
+	sounds/weapons/bfg/bfg_explode2.wav
+	sounds/weapons/bfg/bfg_explode3.wav
+	sounds/weapons/bfg/bfg_explode4.wav
+}
+
+sound sounds/weapons/bfg/fly {
+	minDistance	15
+	maxDistance	35
+	volume		-2
+	
+	looping
+
+	sounds/weapons/bfg/bfg_fly.wav
+}
+
+sound sounds/weapons/bfg/arc {
+	minDistance	30
+	maxDistance	75
+	volume		0
+	looping
+	sounds/weapons/bfg/arc_1.wav
+	sounds/weapons/bfg/arc_3.wav
+	sounds/weapons/bfg/arc_4.wav
+}
+
+sound sounds/weapons/bfg/charge {
+	volume -3
+	minDistance	10
+	maxDistance 75
+	occlude_once
+	
+	sounds/weapons/bfg/bfg_firebegin.wav
+}
+
+sound sounds/weapons/bfg/charge/local {
+	volume	-3
+	minDistance	10
+	maxDistance 50
+	occlude_once
+	
+	sounds/weapons/bfg/bfg_firebegin_local.wav
+}
+
+sound sounds/weapons/bfg/fire {
+	minDistance	25
+	maxDistance 200
+	occlude_once
+	
+	sounds/weapons/bfg/bfg_fire.wav
+}
+
+sound sounds/weapons/bfg/fire/local {
+	minDistance	10
+	maxDistance	50
+	occlude_once
+	
+	sounds/weapons/bfg/bfg_fire_local.wav
+}
+
+sound sounds/weapons/bfg/dryfire {
+	minDistance	15
+	maxDistance	35
+	volume		-2
+
+	sounds/weapons/bfg/bfg_dryfire.wav
+}
+
+sound sounds/weapons/bfg/idle {
+	minDistance	15
+	maxDistance	35
+	volume		-2
+	
+	looping
+
+	sounds/weapons/bfg/bfg_idle.wav
+}
+
+sound sounds/weapons/bfg/fizzle {
+	minDistance	30
+	maxDistance	75
+	volume		0
+
+	sounds/weapons/bfg/arc_1.wav
+	sounds/weapons/bfg/arc_3.wav
+	sounds/weapons/bfg/arc_4.wav
+}

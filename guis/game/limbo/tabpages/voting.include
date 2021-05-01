@@ -1,0 +1,197 @@
+
+_tab_page( Vote, localize( "guis/limbo/vote" ), gameInfo, GI_VOTE, _to_right_of( tabpPlayers ), 0 )
+	_list( Votes, PADDING, PADDING, ( _client_dimension( tabpVoteContent, width ) - 3 ) * 0.5, _client_dimension( tabpVoteContent, height ) * 0.5 )
+		properties {
+			float flags = immediate( flags ) | LF_SHOW_HEADINGS | LF_COLUMN_SORT;
+			float visible = gui.voteOverlay.visible == false && gui.lblNextVoteTime.visible == false;
+			float initialized = false;
+			wstring stored;
+		}
+		_list_draw_column_sort( "default" )
+		events {
+			onCreate {
+				insertColumn( toWStr( "<loc = 'guis/mainmenu/votes'><width = 100%>< flags customdraw>" ), 0 , 0 );
+				initialized = true;
+			}
+			onPropertyChanged "gui.voteOverlay.visible" {
+				if( gui.voteOverlay.visible == false && initialized ) {
+					fillFromEnumerator( "callVoteList" );
+				} else {
+					clearItems();
+					gui.lstVoteOptions.clearItems();				
+				}
+			}
+			onNamedEvent "onShow" {
+				if( gui.voteOverlay.visible == false && initialized ) {
+					if( currentSelection != -1 ) {
+						stored = getItemText( currentSelection, 0 );
+					}
+					fillFromEnumerator( "callVoteList" );
+					currentSelection = findItem( stored, 0 );
+					if( currentSelection != -1 ) {
+						gui.lstVoteOptions.postNamedEvent( "optionSelected" );
+					}
+				}
+			}
+			onPropertyChanged "player.nextVoteTime" {
+				if( player.nextVoteTime <= 0 && initialized ) {
+					fillFromEnumerator( "callVoteList" );
+				} else {
+					clearItems();
+					gui.lstVoteOptions.clearItems();
+				}
+			}
+			
+			onSelectItem {
+				gui.lstVoteOptions.postNamedEvent( "optionSelected" );
+			}
+		}
+	_end_list
+
+	_list( VoteOptions, _to_right_of( lstVotes ) + 3, PADDING, ( _client_dimension( tabpVoteContent, width ) - 3 ) * 0.5, _client_dimension( tabpVoteContent, height ) * 0.5 )
+		properties {
+			float flags = immediate( flags ) | LF_SHOW_HEADINGS | LF_COLUMN_SORT;
+			float visible = gui.voteOverlay.visible == false && gui.lblNextVoteTime.visible == false;
+			float allowEvents = false;
+			wstring stored;
+		}
+		_list_draw_column_sort( "default" )
+
+		events {
+			onCreate {
+				insertColumn( toWStr( "<loc = 'guis/mainmenu/options'><width = 100%><flags customdraw>" ), 0, 0 );
+				insertColumn( gui.blankWStr, 0, 1 );	// Material
+				insertColumn( gui.blankWStr, 0, 2 );	// Aspect ratio hint
+				colorMultiplier.a = 0.25;				
+			}
+			onPropertyChanged "numItems" {
+				if( numItems == 0 ) {
+					colorMultiplier.a = transition( colorMultiplier.a, 0.25, ACTIVATE_TRANSITION_TIME );
+					allowEvents = false;
+				} else {
+					colorMultiplier.a = transition( colorMultiplier.a, 1, ACTIVATE_TRANSITION_TIME );
+					allowEvents = true;
+				}
+				gui.grpVoteMapPreviewImage.postNamedEvent( "updateImage" );
+			}
+
+			onNamedEvent "optionSelected" {
+				if( gui.lstVotes.currentSelection < 0 || gui.lstVotes.currentSelection >= gui.lstVotes.numItems ) {
+					return;
+				}
+				if( currentSelection != -1 ) {
+					stored = getItemText( currentSelection, 0 );
+				}
+        		gui.scriptPushFloat( gui.lstVotes.getItemDataInt( gui.lstVotes.currentSelection, 0, -1 ) );
+				fillFromEnumerator( "callVoteListOptions" );
+				currentSelection = findItem( stored, 0 );
+				if( currentSelection == -1 && numItems > 0 ) {
+					currentSelection = 0;
+				}
+				gui.grpVoteMapPreviewImage.postNamedEvent( "updateImage" );
+			}
+			onSelectItem {
+				gui.grpVoteMapPreviewImage.postNamedEvent( "updateImage" );
+			}
+			
+		}
+	_end_list
+	
+	_button( VoteExecute, _to_right_of( lstVoteOptions ) - rect.w, _to_bottom_of( lstVotes ) + 3, BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			handle	localizedText = localize( "guis/mainmenu/callvote" );
+			float visible = gui.voteOverlay.visible == false && gui.lblNextVoteTime.visible == false;
+			float allowAction = player.nextVoteTime <= 0 && gui.lstVotes.currentSelection >= 0 && ( gui.lstVoteOptions.currentSelection >= 0 || gui.lstVoteOptions.numItems == 0 );
+		}
+		_button_disable_if( "allowAction", allowAction == false )
+		_button_action(
+       		gui.scriptPushFloat( gui.lstVoteOptions.getItemDataInt( gui.lstVoteOptions.currentSelection, 0, -1 ) );
+       		gui.scriptPushFloat( gui.lstVotes.getItemDataInt( gui.lstVotes.currentSelection, 0, -1 ) );
+			gui.execVote();
+			gui.deactivate();
+		)
+	_end_button
+	
+	windowDef grpVoteMapPreviewImage {	
+		properties {
+			rect rect = _to_right_of( lstVoteOptions ) - rect.w, _to_bottom_of( btnVoteExecute ) + 3, 128, rect.width * 1.0f / ( 1.77777 );
+			rect previewRect = absoluteRect.x + PADDING, absoluteRect.y + PADDING, absoluteRect.width - $evalfloat( 2 * PADDING ), absoluteRect.height - $evalfloat( 2 * PADDING );
+			string materialName;
+			float aspect;
+			float visible = gui.voteOverlay.visible == false && gui.lblNextVoteTime.visible == false;
+			handle previewMaterial;
+		}
+		_fadable
+		events {
+			onPostDraw {				
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_BOX_FILL );
+				pushColorComponents( colorMultiplier.a, colorMultiplier.a, colorMultiplier.a, 1.0f, false );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_BOX_LINES );
+				popColor();
+				if( isValidHandle( previewMaterial ) ) {
+					drawCachedMaterial( previewMaterial, previewRect, COLOR_WHITE );
+				}
+			}
+			onCreate {
+				colorMultiplier.a = 0;
+			}
+			onNamedEvent "updateImage" {
+				if( gui.lstVoteOptions.numItems == 0 ) {
+					_fadeout
+					return;
+				}
+				
+				if( gui.lstVoteOptions.currentSelection < 0 || gui.lstVoteOptions.currentSelection >= gui.lstVoteOptions.numItems ) {
+					_fadeout
+					return;
+				}
+				
+				materialName = toStr( _get_current_list_text( VoteOptions, 1 ) );
+				if( compare( materialName, "" ) ) {
+					_fadeout
+					return;
+				} else {
+					_fadein
+				}				
+				aspect = toFloat( toStr( _get_current_list_text( VoteOptions, 2 ) ) );
+				if( aspect <= 0 ) {
+					aspect = 1.333;
+				}
+				rect.height = rect.width * immediate( 1.0f / ( aspect ) );
+
+				if( abs( aspect - 1.7777 ) < 0.001 ) {					
+					previewMaterial = gui.levelPreview;
+					gui.uploadLevelShot( materialName, LEVELSHOT );					
+				} else {
+					previewMaterial = gui.campaignPreview;
+					gui.uploadLevelShot( materialName, CAMPAIGNSHOT );					
+				}				
+			}
+			onPropertyChanged "player.nextVoteTime" {
+				if( player.nextVoteTime > 0 ) {
+					_fadeout
+				}
+			}	
+		}
+	_end_group_box
+	
+	_label_literal( NextVoteTime, localizeArgs( "guis/limbo/nextvotetime", toWStr( msToHMS( player.nextVoteTime ) ) ), PADDING, PADDING, _fill_to_right_of( tabpVoteContent ), _fill_to_bottom_of( tabpVoteContent ), COLOR_WHITE )
+		properties {
+			float fontSize = 14;
+			float visible = player.nextVoteTime > 0 && gui.voteOverlay.visible == false;
+		}
+	_end_label
+	
+	windowDef voteOverlay {
+		properties {
+			handle localizedText = localize( "guis/mainmenu/votingdisabled" );
+			float fontSize = 14;
+			rect rect = PADDING, PADDING, _fill_to_right_of( tabpVoteContent ), _fill_to_bottom_of( tabpVoteContent );
+			float visible = player.votingAllowed == false;
+		}
+	}	
+_end_tab_page_content
+	properties {
+		float visible = player.serverIsRepeater == false;
+	}
+_end_tab_page_button

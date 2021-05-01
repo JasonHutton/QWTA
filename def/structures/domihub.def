@@ -1,0 +1,141 @@
+// ========================================================================
+// Export for game
+/*
+reexportmodels structures/domihub.def
+testmodel structure_domihub
+*/
+
+export karateka {
+	options -prefix DOM_ -sourcedir models/structures/strogg/domination_hub/dev_sd/ -destdir models/structures/strogg/domination_hub/ -keep base turret toeIK05 toeIK04 toeIK03 toeIK02 toeIK01
+
+	mesh	lod_0.mb		-dest domination_hub.md5mesh
+
+	anim	lod_0.mb		-dest domination_hub.md5anim 	-range 1 	1
+	anim 	lod_0.mb		-dest undeployed.md5anim		-range 1 	1
+	anim	lod_0.mb		-dest deploy.md5anim			-range 1 	110
+	anim	lod_0.mb		-dest deployed.md5anim			-range 110	110
+	anim	lod_0.mb		-dest damage1.md5anim			-range 128 	128
+	anim	lod_0.mb		-dest damage2.md5anim			-range 144  144
+	anim	lod_0.mb		-dest damage3.md5anim			-range 160  160
+
+	mesh	lod_1.mb		-dest domination_hub_lod1_boned.md5mesh
+	mesh	lod_2.mb		-dest domination_hub_lod2_boned.md5mesh
+	mesh	lod_3.mb		-dest domination_hub_lod3_boned.md5mesh
+
+
+	addoptions 	-noJoints
+
+	mesh	lod_1.mb		-dest domination_hub_lod1.md5mesh
+	mesh	lod_2.mb		-dest domination_hub_lod2.md5mesh
+	mesh	lod_3.mb		-dest domination_hub_lod3.md5mesh
+}
+
+// ========================================================================
+// Export for E3
+//
+
+export unknown  {
+	options -prefix DOM_ -sourcedir models/structures/strogg/domination_hub/dev_sd/lods -destdir models/structures/strogg/domination_hub/ -keep turret smoke
+	mesh	animated.mb		-dest domination_hub_test.md5mesh
+	anim	animated.mb		-dest domination_hub_test_base.md5anim -range 100 100
+	anim	animated.mb		-dest domination_hub_test_fall.md5anim -range 1 120
+}
+
+// ========================================================================
+// Models
+//
+/*
+model structure_domihub {
+	mesh				models/structures/strogg/domination_hub/domination_hub.md5mesh
+	anim base			models/structures/strogg/domination_hub/deployed.md5anim {
+	}
+	anim deploy			models/structures/strogg/domination_hub/deploy.md5anim {
+	}
+	anim undeployed  	models/structures/strogg/domination_hub/undeployed.md5anim {
+	}
+	anim deployed		models/structures/strogg/domination_hub/deployed.md5anim {
+	}
+	anim damage1		models/structures/strogg/domination_hub/damage1.md5anim {
+	}
+	anim damage2		models/structures/strogg/domination_hub/damage2.md5anim {
+	}
+	anim damage3		models/structures/strogg/domination_hub/damage3.md5anim {
+	}
+}
+*/
+
+model structure_domihub {
+ 	mesh				models/structures/strogg/replicator/replicator.md5mesh
+	anim base			models/structures/strogg/replicator/deployed.md5anim {
+	}
+	anim deploy			models/structures/strogg/replicator/deploy.md5anim {
+	}
+	anim undeployed  	models/structures/strogg/replicator/undeployed.md5anim {
+	}
+	anim deployed   	models/structures/strogg/replicator/deployed.md5anim {
+	}
+ 	anim damage1 	  	models/structures/strogg/replicator/damage1.md5anim {
+ 	}
+ 	anim damage2   		models/structures/strogg/replicator/damage2.md5anim {
+ 	}
+ 	anim damage3   		models/structures/strogg/replicator/damage3.md5anim {
+ 	}
+}
+
+// ========================================================================
+// Test Models
+//
+
+model structure_domihub_test {
+	mesh				models/structures/strogg/domination_hub/domination_hub_test.md5mesh
+	anim base			models/structures/strogg/domination_hub/domination_hub_test_base.md5anim
+	anim fall			models/structures/strogg/domination_hub/domination_hub_test_fall.md5anim
+		{
+				frame 1  	effect fx_smoke smoke
+	}
+}
+
+// ========================================================================
+// Entity Def
+//
+
+entityDef structure_domihub {
+	"inherit"					"structure_strogg"
+
+	"editor_mins"				"-64 -64 -64"
+	"editor_maxs"				"64 64 64"
+	"editor_usage"				"This is the Strogg Domination Hub."
+
+	"scriptObject"				"structure_domihub"
+
+	"fx_smoke"					"effects/ambient/crater_normal_smoke"
+
+	"type_name"					"game/struct/dominationhub"
+	"mtr_commandmap"			"guis/assets/qet/cm_domihub"
+
+	"model"						"models/structures/strogg/domination_hub/placeholder_domination_hub.lwo"
+	"cm_model"					"models/structures/strogg/domination_hub/placeholder_domination_hub_collision.lwo"
+
+	"health"					"0"
+
+	"vo_prefix"					"cc"
+
+	"option_deploycontrol_interface"	"1"
+	"option_gui_interface"		"1"
+	"option_radar_interface"	"1"
+	"option_crosshair_offset"	"0 0 256"
+	"icon_size_cm"				"16"
+
+	"task_name"					"game/struct/domihub"
+
+	"radar_range"				"7500"
+	"mask"						"3" // bitset: 1 is radar range, 2 is deployable range, 4 is fire support range
+
+	//"snd_alarm"					"strategic_alarm_strogg"
+	"snd_exterior"				"strogg_base"
+	
+	"drone_orbit_underneath"	"1"
+	"drone_orbit_radius"		"600"
+	
+	"repair_multiplier"			"7.5"
+}

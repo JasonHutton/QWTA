@@ -1,0 +1,81 @@
+
+#ifndef __mainmenu_utility__
+#define __mainmenu_utility__
+
+// note that settings the type will clear all callback strings
+
+$template _setup_confirmation_yesno_literal( TextLiteral, TargetWindow, OnYes, OnNo )
+	gui.dlgConfirmation.type 			= MB_YESNO | MB_ICON_QUESTION;
+	gui.lblConfirmation.localizedText 	= floatToHandle( -1 );
+	gui.lblConfirmation.text 			= TextLiteral;
+	gui.dlgConfirmation.window 			= TargetWindow;
+	gui.dlgConfirmation.onYes 			= OnYes;
+	gui.dlgConfirmation.onNo 			= OnNo;
+$endtemplate
+
+$template _setup_confirmation_yesno( TextHandle, TargetWindow, OnYes, OnNo )
+	gui.dlgConfirmation.type 			= MB_YESNO | MB_ICON_QUESTION;	
+	gui.lblConfirmation.localizedText 	= localize( TextHandle );
+	gui.lblConfirmation.text 			= gui.blankWStr;
+	gui.dlgConfirmation.window 			= TargetWindow;
+	gui.dlgConfirmation.onYes 			= OnYes;
+	gui.dlgConfirmation.onNo 			= OnNo;
+$endtemplate
+
+$template _setup_confirmation_yesnocancel_literal( TextLiteral, TargetWindow, OnYes, OnNo, OnCancel )
+	gui.dlgConfirmation.type 			= MB_YESNOCANCEL | MB_ICON_QUESTION;	
+	gui.lblConfirmation.localizedText 	= floatToHandle( -1 );
+	gui.lblConfirmation.text 			= TextLiteral;
+	gui.dlgConfirmation.window 			= TargetWindow;
+	gui.dlgConfirmation.onYes 			= OnYes;
+	gui.dlgConfirmation.onNo 			= OnNo;
+	gui.dlgConfirmation.onCancel		= OnCancel;
+$endtemplate
+
+$template _setup_confirmation_yesnocancel( TextHandle, TargetWindow, OnYes, OnNo, OnCancel )
+	gui.dlgConfirmation.type 			= MB_YESNOCANCEL | MB_ICON_QUESTION;	
+	gui.lblConfirmation.localizedText 	= localize( TextHandle );
+	gui.lblConfirmation.text 			= gui.blankWStr;
+	gui.dlgConfirmation.window 			= TargetWindow;
+	gui.dlgConfirmation.onYes 			= OnYes;
+	gui.dlgConfirmation.onNo 			= OnNo;
+	gui.dlgConfirmation.onCancel		= OnCancel;
+$endtemplate
+
+$template _setup_confirmation_ok( TextHandle, TargetWindow, OnOk )
+	gui.dlgConfirmation.type 			= MB_OK | MB_ICON_INFO;
+	gui.lblConfirmation.localizedText 	= localize( TextHandle );
+	gui.lblConfirmation.text 			= gui.blankWStr;
+	gui.dlgConfirmation.window 			= TargetWindow;
+	gui.dlgConfirmation.onOk			= OnOk;	
+$endtemplate
+
+$template _setup_confirmation_ok_error( TextHandle )
+	gui.dlgConfirmation.type 			= MB_OK | MB_ICON_ERROR;
+	gui.lblConfirmation.localizedText 	= TextHandle;
+	gui.lblConfirmation.text 			= gui.blankWStr;	
+$endtemplate
+
+$template _setup_confirmation_ok_error_literal( TextLiteral )
+	gui.dlgConfirmation.type 			= MB_OK | MB_ICON_ERROR;
+	gui.lblConfirmation.localizedText 	= floatToHandle( -1 );
+	gui.lblConfirmation.text 			= TextLiteral;	
+$endtemplate
+
+$template _setup_confirmation_ok_dismiss( TextHandle )
+	gui.dlgConfirmation.type 			= MB_OK | MB_ICON_INFO;
+	gui.lblConfirmation.localizedText 	= localize( TextHandle );
+	gui.lblConfirmation.text 			= gui.blankWStr;	
+$endtemplate
+
+$template _setup_confirmation_ok_dismiss_literal( TextLiteral )
+	gui.dlgConfirmation.type 			= MB_OK | MB_ICON_INFO;
+	gui.lblConfirmation.localizedText 	= floatToHandle( -1 );
+	gui.lblConfirmation.text 			= TextLiteral;	
+$endtemplate
+
+$template _right_pane 
+	( gui.mainHeader.rectTL.x + gui.mainHeader.rectTL.w ) - ( absoluteRect.w + 8 )
+$endtemplate
+
+#endif // !__mainmenu_utility__

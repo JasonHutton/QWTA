@@ -1,0 +1,384 @@
+
+#ifndef __scoreboard__
+#define __scoreboard__
+
+#define SC_CLASS 0 	
+#define SC_RANK 1
+#define SC_FIRETEAM 2
+#define SC_NAME 3
+#define SC_MISSION 4
+#define SC_XP 5
+#define SC_PING 6
+#define SC_CLIENT 7
+
+$template __team_list_properties( TeamName )
+	properties {
+		color	backColor				= COLOR_DIALOG_FILL;
+		float 	fontSize 				= 12;
+		float	flags					= immediate( flags ) | LF_SHOW_HEADINGS | WF_TRUNCATE_TEXT;
+		float 	columnFontSize 			= 12;
+		float	showScrollbar 			= 0;
+		float	playerCount 			= 0;
+		float	allowEvents				= 0;
+		float	rowSpacing				= 1;
+		float	averagePing;
+		float	averageXP;
+		float	widthFactor				= 0;
+		float	numActualPlayers		= 0;
+		float	fixedRowHeight			= 16;
+		
+		float 	itemIndex;
+		rect 	itemRect;
+		color	itemColor;
+		float	drawNum					= 0;
+		
+		color	highlight				= COLOR_SCOREBOARD_HIGHLIGHT;
+		color	itemColor				= COLOR_SCOREBOARD_ITEM;
+		color 	itemColorAlt			= COLOR_SCOREBOARD_ITEM_ALT;
+		color	drawColor;
+		float	colorCode;
+		
+	}
+	timeline {
+		onTime 0 {
+			if ( isVisible() ) {
+				gui.scriptPushString( #TeamName );
+				fillFromEnumerator( "scoreboardList" );
+				numActualPlayers = gui.scriptGetFloatResult();
+				averagePing = gui.scriptGetFloatResult();
+				averageXP = gui.scriptGetFloatResult();
+				
+				playerCount = numItems;
+				setItemMaterialSize( "16, 16", -1, SC_CLASS );
+				setItemMaterialSize( "14, 14", -1, SC_RANK );
+			}
+		}
+
+		onTime 250 {
+			timeline.default.resetTime( 0 );
+		}
+	}
+	
+	events {
+		onCreate {
+			insertColumn( gui.blankWStr,		16,		SC_CLASS );								// class
+			insertColumn( gui.blankWStr,		16,		SC_RANK );								// rank
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/fireteam'><fore =" + COLOR_YELLOW_TEXT + ">" ),	40, SC_FIRETEAM );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/name'><fore =" + COLOR_YELLOW_TEXT + ">" ),	87, SC_NAME );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/currentmission'><fore =" + COLOR_YELLOW_TEXT + ">" ),	190, SC_MISSION );			
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/xp'><fore =" + COLOR_YELLOW_TEXT + ">" ),	30,	 SC_XP );
+			insertColumn( toWStr( "<loc = 'guis/game/scoreboard/ping'><fore =" + COLOR_YELLOW_TEXT + ">" ),	30,	 SC_PING );
+			insertColumn( gui.blankWStr,	0,	 SC_CLIENT );
+			
+			postNamedEvent( "updateColumnWidths" );		
+		}
+		onNamedEvent "updateColumnWidths" {
+			if( compare( player.teamName, "spectating" ) || player.endgame ) {
+				
+				setColumnWidth( 0, SC_FIRETEAM, false );
+				
+				if( player.endgame ) {					
+					if( compare( player.teamName, TeamName ) ) {
+						setColumnWidth( 16, SC_CLASS, false );
+						setColumnWidth( 199, SC_NAME, false );
+					} else {
+						setColumnWidth( 0, SC_CLASS, false );
+						setColumnWidth( 215, SC_NAME, false );
+					}
+				} else {
+					setColumnWidth( 191, SC_NAME, false );
+					setColumnWidth( 16, SC_CLASS, false );
+				}
+				
+				setColumnWidth( 0, SC_MISSION, false );
+				
+				widthFactor = 0;
+				return;
+			}
+			if( compare( player.teamName, TeamName ) ) {
+				setColumnWidth( 16, SC_CLASS, false );
+				setColumnWidth( 82, SC_NAME, false );
+				setColumnWidth( 40, SC_FIRETEAM, false );
+				setColumnWidth( 190, SC_MISSION, false );
+				widthFactor = 112;
+			} else {
+				setColumnWidth( 0, SC_CLASS, false );
+				setColumnWidth( 0, SC_FIRETEAM, false );
+				setColumnWidth( 98, SC_NAME, false );
+				setColumnWidth( 0, SC_MISSION, false );
+				widthFactor = -112;
+			}
+		}
+		onPreDraw {
+			drawNum = 0;
+			gui.scriptPushFloat( true );
+		}
+		onDrawSelectedBackground {
+			itemIndex = gui.scriptGetFloatResult();
+			itemRect = gui.scriptGetVec4Result();		
+			
+			drawCachedMaterial( gui.whiteMaterial, itemRect, highlight );
+			drawNum = immediate( drawNum + 1 );
+		}
+		onDrawItemBackground {
+			itemIndex = gui.scriptGetFloatResult();
+			itemColor = gui.scriptGetVec4Result();
+			itemRect = gui.scriptGetVec4Result();
+			
+			colorCode = getItemDataInt( itemIndex, 0, 0 );
+			if( colorCode == 0 ) {
+				if( ( drawNum % 2 ) == 0 )  {				
+					drawColor = itemColor;	
+				} else {
+					drawColor = itemColorAlt;
+				}
+			} else {
+				drawColor = colorForIndex( colorCode );
+				if( ( drawNum % 2 ) == 0 )  {				
+					drawColor.a = 0.075;
+				} else {
+					drawColor.a = 0.125;
+				}
+			}
+			
+			drawCachedMaterial( gui.whiteMaterial, itemRect, drawColor );
+			
+			drawNum = immediate( drawNum + 1 );
+		}
+		onPropertyChanged "player.teamName" "player.endgame" {
+			postNamedEvent( "updateColumnWidths" );
+		}
+	}
+$endtemplate
+
+$template _rating_button( NameParm, IconParm, TextParm, StatParm, XPos, YPos )
+	windowDef rat##NameParm {
+		properties {
+			rect rect 				= XPos, YPos, 154, 28;
+			handle 	iconMaterial	= gui.cacheMaterial( "icon" ## #NameParm ## "Rat", "_st " # IconParm );
+			handle 	rankMaterial	= gui.cacheMaterial( "rank" ## #NameParm ## "RatMat", "nodraw" );
+
+			handle	playerHandle;
+			wstring	playerName;
+			wstring playerXP;
+			string	scratchText;
+			wstring	localValue;
+			
+			float isSelf 		= iwcompare( playerName, toWStr( player.name ) );
+			
+			color	fillColor = COLOR_AWARD_FILL;
+			color	lineColor = COLOR_AWARD_LINE;
+			color	gradColor = COLOR_AWARD_GRAD;
+			
+			rect nameRect	= absoluteRect.x + 36, absoluteRect.y + 14, 102, 12;
+			rect xpRect 	= absoluteRect.x + 38, absoluteRect.y + 14, absoluteRect.w - 40, 12;
+			rect selfRect 	= absoluteRect.x + 38, absoluteRect.y + 2, absoluteRect.w - 40, 12;
+			rect iconRect 	= absoluteRect.x, absoluteRect.y + 2, 24, 24;
+			rect rankRect	= absoluteRect.x + 22, absoluteRect.y + 12, 14, 14;
+			rect textRect	= absoluteRect.x + 22, absoluteRect.y + 2, 154, 12;
+			rect gradRect	= absoluteRect.x, absoluteRect.y, absoluteRect.w, absoluteRect.h;
+		}
+
+		events {
+			onActivate {
+				postNamedEvent( "update" );
+			}
+			onNamedEvent "update" {
+				if( globals.mapInfo.statsReady ) {
+					playerName 		= sdnet.getPlayerAward( StatParm, PS_NAME, false );
+					playerXP		= sdnet.getPlayerAward( StatParm, PS_XP, false );
+					
+					localValue		= sdnet.getPlayerAward( StatParm, PS_XP, true );
+
+					scratchText		= toStr( sdnet.getPlayerAward( StatParm, PS_RANK, false ) );
+					if( compare( scratchText, "" ) ) {
+						rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "nodraw" );						
+					} else {
+						rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "_st " + scratchText );
+					}
+				} else {
+					playerName = gui.blankWStr;
+					playerXP = gui.blankWStr;
+					localValue = gui.blankWStr;
+					rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "nodraw" );					
+				}				
+								
+				if( isSelf ) {
+					fillColor = COLOR_AWARD_FILL_SELF;
+				} else {
+					fillColor = COLOR_AWARD_FILL;
+				}	
+				
+				if( isSelf || wcompare( localValue, gui.blankWStr ) ) {
+					toolTipText = gui.blankWStr;
+				} else {
+					toolTipText = localizeArgs( "guis/mainmenu/yourvalue", localValue );
+				}						
+			}
+			onPropertyChanged "globals.mapInfo.statsReady" {			
+				postNamedEvent( "update" );
+			}
+			onPreDraw {
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.btnGradMaterial, gradRect, gradColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+				
+				drawCachedMaterial( iconMaterial, iconRect, COLOR_WHITE );
+				drawCachedMaterial( rankMaterial, rankRect, COLOR_WHITE );
+				
+				drawLocalizedText( TextParm, textRect, COLOR_TEXT, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+				
+				drawText( playerName, 	nameRect, 	COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+				drawText( playerXP, 	xpRect, 	COLOR_WHITE, 14, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );			
+				
+				gui.scriptPushFloat( true );
+			}
+		}
+	}
+$endtemplate
+
+$template _swap_rating_button( NameParm, IconParm, TextParm, StatParm, CVar, IconParm2, TextParm2, StatParm2, XPos, YPos )
+	windowDef rat##NameParm {
+		properties {
+			rect rect 				= XPos, YPos, 154, 28;
+			handle 	iconMaterial	= gui.cacheMaterial( "icon" ## #NameParm ## "Rat", "_st " # IconParm );
+			handle 	iconMaterial2	= gui.cacheMaterial( "icon" ## #NameParm ## "Rat", "_st " # IconParm2 );
+			handle 	rankMaterial	= gui.cacheMaterial( "rank" ## #NameParm ## "RatMat", "nodraw" );
+
+			handle	playerHandle;
+			wstring	playerName;
+			wstring playerXP;
+			string	scratchText;
+			wstring	localValue;
+			
+			float isSelf 		= iwcompare( playerName, toWStr( player.name ) );
+			
+			color	fillColor = COLOR_AWARD_FILL;
+			color	lineColor = COLOR_AWARD_LINE;
+			color	gradColor = COLOR_AWARD_GRAD;
+			
+			rect nameRect	= absoluteRect.x + 36, absoluteRect.y + 14, 102, 12;
+			rect xpRect 	= absoluteRect.x + 38, absoluteRect.y + 14, absoluteRect.w - 40, 12;
+			rect selfRect 	= absoluteRect.x + 38, absoluteRect.y + 2, absoluteRect.w - 40, 12;
+			rect iconRect 	= absoluteRect.x, absoluteRect.y + 2, 24, 24;
+			rect rankRect	= absoluteRect.x + 22, absoluteRect.y + 12, 14, 14;
+			rect textRect	= absoluteRect.x + 22, absoluteRect.y + 2, 154, 12;
+			rect gradRect	= absoluteRect.x, absoluteRect.y, absoluteRect.w, absoluteRect.h;
+			
+			float awardCVar = gui.getCVarBool( #CVar );
+		}
+
+		events {
+			onActivate {
+				postNamedEvent( "update" );
+			}
+			onNamedEvent "update" {
+				if( globals.mapInfo.statsReady ) {
+					if ( awardCVar ) {
+						playerName 		= sdnet.getPlayerAward( StatParm, PS_NAME, false );
+						playerXP		= sdnet.getPlayerAward( StatParm, PS_XP, false );
+
+						localValue		= sdnet.getPlayerAward( StatParm, PS_XP, true );
+
+						scratchText		= toStr( sdnet.getPlayerAward( StatParm, PS_RANK, false ) );
+						
+					} else {
+						playerName 		= sdnet.getPlayerAward( StatParm2, PS_NAME, false );
+						playerXP		= sdnet.getPlayerAward( StatParm2, PS_XP, false );
+
+						localValue		= sdnet.getPlayerAward( StatParm2, PS_XP, true );
+
+						scratchText		= toStr( sdnet.getPlayerAward( StatParm2, PS_RANK, false ) );
+					}
+					if( compare( scratchText, "" ) ) {
+						rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "nodraw" );						
+					} else {
+						rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "_st " + scratchText );
+					}
+				} else {
+					playerName = gui.blankWStr;
+					playerXP = gui.blankWStr;
+					localValue = gui.blankWStr;
+					rankMaterial = gui.cacheMaterial( "rank" ## #NameParm, "nodraw" );					
+				}				
+								
+				if( isSelf ) {
+					fillColor = COLOR_AWARD_FILL_SELF;
+				} else {
+					fillColor = COLOR_AWARD_FILL;
+				}	
+				
+				if( isSelf || wcompare( localValue, gui.blankWStr ) ) {
+					toolTipText = gui.blankWStr;
+				} else {
+					toolTipText = localizeArgs( "guis/mainmenu/yourvalue", localValue );
+				}						
+			}
+			onCVarChanged #CVar {
+				awardCVar = gui.getCVarBool( #CVar );
+				postNamedEvent( "update" );
+			}
+			onPropertyChanged "globals.mapInfo.statsReady" {			
+				postNamedEvent( "update" );
+			}
+			onPreDraw {
+			
+				drawCachedMaterial( gui.wndFillMaterial, absoluteRect, fillColor );
+				drawCachedMaterial( gui.btnGradMaterial, gradRect, gradColor );
+				drawCachedMaterial( gui.wndLineMaterial, absoluteRect, lineColor );
+				
+				if ( awardCVar ) {
+					drawCachedMaterial( iconMaterial, iconRect, COLOR_WHITE );
+					drawCachedMaterial( rankMaterial, rankRect, COLOR_WHITE );
+
+					drawLocalizedText( TextParm, textRect, COLOR_TEXT, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+
+					
+				} else {
+					drawCachedMaterial( iconMaterial2, iconRect, COLOR_WHITE );
+					drawCachedMaterial( rankMaterial, rankRect, COLOR_WHITE );
+
+					drawLocalizedText( TextParm2, textRect, COLOR_TEXT, 12, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+				}
+				drawText( playerName, 	nameRect, 	COLOR_WHITE, 14, DTF_SINGLELINE | DTF_LEFT | DTF_VCENTER | DTF_TRUNCATE );
+				drawText( playerXP, 	xpRect, 	COLOR_WHITE, 14, DTF_SINGLELINE | DTF_RIGHT | DTF_VCENTER );			
+				gui.scriptPushFloat( true );
+			}
+		}
+	}
+$endtemplate
+
+
+$template _map_stat( NameParm, IconParm, StatParm, XPos, YPos )
+	windowDef stat##NameParm {
+		properties {
+			rect	rect				= XPos, YPos, 16, 28;
+			handle 	iconMaterial		= gui.cacheMaterial( "icon" ## #NameParm ## "Map", "_st " # IconParm );
+			rect	iconRect			= absoluteRect.x, absoluteRect.y, 16, 16;
+			rect 	mapRect 			= absoluteRect.x, absoluteRect.y + 16, 16, 16;
+			rect 	totalRect 			= absoluteRect.x, absoluteRect.y + 32, 16, 16;
+			wstring xpTotal				= toWStr( "0" );
+			wstring xpMap				= toWStr( "0" );
+			color 	mapColor			= COLOR_WHITE;
+			color	totalColor			= COLOR_WHITE;
+		}
+		
+		events {
+			onActivate {
+				xpTotal 	= toWStr( sdnet.queryXPStats( StatParm, true ) );
+				xpMap 		= toWStr( sdnet.queryXPStats( StatParm, false ) );							
+			}
+			onPreDraw {
+				drawCachedMaterial( iconMaterial, iconRect, COLOR_WHITE );
+				drawText( xpMap, 	mapRect, 	mapColor, 	12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+				if( globals.campaignInfo.numMaps > 1 ) {
+					drawText( xpTotal, 	totalRect, 	totalColor, 12, DTF_SINGLELINE | DTF_CENTER | DTF_VCENTER );
+				}
+				
+				gui.scriptPushFloat( false );
+			}
+		}
+	}
+$endtemplate
+
+#endif // !__scoreboard__

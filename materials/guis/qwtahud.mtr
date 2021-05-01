@@ -1,0 +1,18 @@
+material textures/sfx/deathblur
+{
+	sort postprocess
+	translucent
+
+	useTemplate postprocess/blur<>
+
+	{
+		destinationBuffer 1 
+		program guiBlur_4x4
+		maskdepth
+	}
+	{
+		program guiBlur
+		map _postProcessBuffer_1
+		maskdepth
+	}
+}

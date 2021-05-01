@@ -1,0 +1,480 @@
+/***********************************************************************
+
+	railgun.def
+
+***********************************************************************/
+
+// ========================================================================
+// Export weapons/misc/nailgun.def
+//
+
+export hauser {
+	options -prefix RAILGUN_ -sourcedir models/weapons/strogg_rail_gun/dev_sd -destdir models/weapons/strogg_rail_gun/ -keep muzzle overheat_left
+/*
+	mesh	railgun_base_file.mb		-dest models/weapons/strogg_rail_gun/view.md5mesh
+	*/
+	anim	railgun_idle.mb				-dest models/weapons/strogg_rail_gun/idle.md5anim -range 7 220
+ 	anim	railgun_idle.mb				-dest models/weapons/strogg_rail_gun/raise.md5anim -range 0 6
+ 	/*
+ 	anim	railgun_lower.mb			-dest models/weapons/strogg_rail_gun/lower.md5anim
+
+ 	*/
+ 	anim	railgun_fire.mb				-dest models/weapons/strogg_rail_gun/fire.md5anim
+ 	/*
+ 	anim	railgun_base_file.mb		-dest models/weapons/strogg_rail_gun/reload.md5anim -range 0 0
+ 	anim	railgun_sprint.mb			-dest models/weapons/strogg_rail_gun/start_sprint.md5anim -range 0 6
+ 	anim	railgun_sprint.mb			-dest models/weapons/strogg_rail_gun/leave_sprint.md5anim -range 6 12
+ 	anim	railgun_zoom_in.mb			-dest models/weapons/strogg_rail_gun/zoom_in.md5anim
+	anim	railgun_zoom_out.mb			-dest models/weapons/strogg_rail_gun/zoom_out.md5anim
+	anim	railgun_zoom_idle.mb		-dest models/weapons/strogg_rail_gun/zoom_idle.md5anim
+*/
+}
+
+
+// ========================================================================
+// VIEW Models
+//
+
+model viewmodel_railgun {
+	mesh						models/weapons/strogg_rail_gun/view.md5mesh
+
+	anim idle 					models/weapons/strogg_rail_gun/idle.md5anim {
+	}
+	anim raise					models/weapons/strogg_rail_gun/raise.md5anim {
+		frame begin					sound_channel snd_weapon_raise snd_raise
+	}
+	anim putaway				models/weapons/strogg_rail_gun/lower.md5anim {
+	}
+	anim fire 					models/weapons/strogg_rail_gun/fire.md5anim {
+	}
+	anim reload					models/weapons/strogg_rail_gun/reload.md5anim {
+	}
+	anim start_sprint			models/weapons/strogg_rail_gun/start_sprint.md5anim {
+	}
+	anim leave_sprint			models/weapons/strogg_rail_gun/leave_sprint.md5anim {
+	}
+	anim zoomin 				models/weapons/strogg_rail_gun/zoom_in.md5anim {
+		frame begin					sound_channel snd_weapon_zoom snd_init
+	}
+	anim zoomout 				models/weapons/strogg_rail_gun/zoom_out.md5anim {
+		frame begin					sound_channel snd_weapon_zoom snd_unzoom
+	}
+
+	anim idle_zoom				models/weapons/strogg_rail_gun/zoom_idle.md5anim {
+	}
+	anim fire_zoom				models/weapons/strogg_rail_gun/zoom_idle.md5anim {
+	}
+
+
+}
+
+// ========================================================================
+// WORLD Models
+//
+
+model worldmodel_railgun {
+	mesh		 				models/weapons/strogg_rail_gun/rail_gun_world.md5mesh
+
+	anim raise					models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+	}
+	anim idle 					models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+	}
+	anim aim					models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+	}
+	anim fire1 					models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+	}
+	anim reload					models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+	}
+	anim noammo					models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+	}
+ 	anim putaway				models/weapons/strogg_rail_gun/rail_gun_world.md5anim {
+ 	}
+}
+
+// ========================================================================
+// Entity DEFS
+//
+
+invItemDef inventory/weapons/railgun {
+	type								"weapon"
+	slot								"twohanded"
+	name								"game/weapons/railgun"
+	model								"models/weapons/strogg_rail_gun/player.lwo"
+	joint								"Spine2"
+
+	data {
+		"model_view" 					"viewmodel_railgun"
+		"model_world" 					"worldmodel_railgun"
+		"anim_limbomenu"				"menu"
+
+		"view_offset"					"-3 -2 -0.3"
+		"view_foreshorten"				"0.78"
+
+		"joint_attach"					"weapon_attach"
+		"anim_prefix"					"2h"
+		"anim_prefix_class"				"hands"
+
+		"weapon_scriptobject"			"weapon_railgun"
+
+		"recoilTime"					"1000"
+		"recoilAngles"					"-0.15 0 0"
+		"kickback"						"2.3"
+		"kickback_prone"				"1.7"
+
+		"fx_muzzle_flash"				"effects/weapons/railgun_muzzleflash"
+		"fx_muzzle_flash_world"			"effects/weapons/railgun_muzzleflash_world"
+
+		"snd_fire"						"sounds/weapons/railgun/fire"
+		"snd_fire_far"					"sounds/weapons/railgun/fire/far"
+		"snd_fire_local"				"sounds/weapons/railgun/fire/local"
+		"snd_fire_local_low"			"sounds/weapons/railgun/fire/local_low"
+		"snd_fire_local_medium"			"sounds/weapons/railgun/fire/local_medium"
+		"snd_reload"					"sounds/weapons/railgun/reload"
+		"snd_chamber"					"sounds/weapons/sniperrifle/chamber"
+		"snd_cock"						"sounds/weapons/sniperrifle/cock"
+		"snd_lowammo"					"sounds/weapons/misc/ammo_warning"
+		"snd_init"						"sounds/weapons/railgun/init"
+		"snd_unzoom"					"sounds/weapons/railgun/unzoom"
+		"snd_zoomin"					"sounds/weapons/railgun/zoomin"
+		"snd_zoomout"					"sounds/weapons/railgun/zoomout"
+		"snd_idle"						"sounds/weapons/railgun/idle_hum"
+		"snd_raise"						"sounds/weapons/railgun/raise"
+		"snd_dryfire"					"sounds/weapons/misc/nostroy"
+		"snd_charge"					"sounds/weapons/railgun/charge"
+
+		"fire_rate"						"1.2"
+		"num_projectiles"				"1"
+		"low_ammo"						"4"
+		"show_all_ammo"					"1"
+		"recharge_time"					"3"
+		"clip_based"					"0"
+
+		"hide_crosshair"				"0"
+
+		"stat_name"						"railgun"
+
+		"gui_sniper_scope"				"game/sights/railgun_scope"
+		"hud_sort"						"999"
+		"num_zoom_levels"				"4"
+
+		"zoom_fov_1"					"45"
+		"zoom_fov_2"					"30"
+		"zoom_fov_3"					"20"
+		"zoom_fov_4"					"10"
+
+		"zoom_scale_1"					"2"
+		"zoom_scale_2"					"5"
+		"zoom_scale_3"					"10"
+		"zoom_scale_4"					"20"
+
+		"zoom_time"						"0.2"
+
+		"fov_speed"						"0.5"
+
+		"tt_intro_1"					"railgun_intro_1"
+		"tt_intro_2"					"generic_weapon_fire"
+		"tt_intro_scope"				"railgun_scope"
+		"tt_intro_reload"				"railgun_charge"
+		"tt_intro_scope_up_1"			"railgun_scoped_1"
+		"tt_intro_scope_up_2"			"railgun_scoped_2"
+
+		"mtr_weaponmenu"				"guis/assets/icons/weapons/railgun"
+		"crosshair"						"small"
+		"disabled_crosshair_secondary"	"small"
+		"crosshair_spread_min"			"-0.5"
+		"crosshair_spread_max"			"3"
+		"crosshair_spread_scale"		"3"
+
+		"spread_min"					"1"
+		"spread_max"					"20"
+		"spread_inc"					"20"
+
+		"spread_viewrate_min"			"1"
+		"spread_viewrate_max"			"20"
+		"spread_viewrate_inc"			"20"
+
+		"spread_max_settle_time"		"1200"
+
+		"spread_crouch_min"				"1"
+		"spread_crouch_max"				"15"
+		"spread_crouch_inc"				"15"
+
+		"spread_crouch_viewrate_min"	"1"
+		"spread_crouch_viewrate_max"	"15"
+		"spread_crouch_viewrate_inc"	"15"
+
+		"spread_crouch_max_settle_time"	"1100"
+
+		"spread_prone_min"				"1"
+		"spread_prone_max"				"10"
+		"spread_prone_inc"				"10"
+
+		"spread_prone_viewrate_min"		"1"
+		"spread_prone_viewrate_max"		"10"
+		"spread_prone_viewrate_inc"		"10"
+
+		"spread_prone_max_settle_time"	"1000"
+
+		"zoom_pitch_amplitude"			"0.5"
+		"zoom_pitch_frequency"			"0.24"
+		"zoom_pitch_min_amplitude"		"0.13"
+		"zoom_yaw_amplitude"			"3.2"
+		"zoom_yaw_frequency"			"0.12"
+		"zoom_yaw_min_amplitude"		"0.23"
+
+		"autoswitch_priority"			"5"
+
+		"player_weapon_num"				"15"
+
+		"fx_idle"						"effects/weapons/railgun_idle"
+	}
+
+	clip {
+		"projectile"					"projectile_railgun"
+		"type"							"stroyent"
+		"ammo_per_shot"					"20"
+		"max_ammo"						"-1"
+	}
+
+	clip {
+		"projectile"					"projectile_railgun_scoped"
+		"type"							"stroyent"
+		"ammo_per_shot"					"20"
+		"max_ammo"						"-1"
+	}
+}
+
+entityDef projectile_railgun {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"16384"
+	"min_damage_percent"				"25"
+
+	"dmg_damage"						"damage_railgun"
+	"dmg_realistic_damage"					"realistic_damage_railgun"
+
+  	"fx_explode"				"effects/impacts/railgun/impact_default"
+	"fx_explode_pavement"		"effects/impacts/railgun/impact_pavement"
+ 	"fx_explode_stone"			"effects/impacts/railgun/impact_stone"
+  	"fx_explode_concrete"		"effects/impacts/railgun/impact_stone"
+	"fx_explode_dirt"			"effects/impacts/railgun/impact_dirt"
+	"fx_explode_mud"			"effects/impacts/railgun/impact_dirt"
+	"fx_explode_flesh"			"effects/impacts/railgun/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/railgun/impact_glass"
+	"fx_explode_ice"			"effects/impacts/railgun/impact_glass"
+ 	"fx_explode_gravel"			"effects/impacts/railgun/impact_stone"
+	"fx_explode_metal"			"effects/impacts/railgun/impact_metal"
+	"fx_explode_metal_thick"	"effects/impacts/railgun/impact_metal"
+	"fx_explode_dusty_road"		"effects/impacts/railgun/impact_sand"
+	"fx_explode_sand"			"effects/impacts/railgun/impact_sand"
+	"fx_explode_snow"			"effects/impacts/railgun/impact_snow"
+	"fx_explode_wood"			"effects/impacts/railgun/impact_wood"
+	"fx_explode_wood_thick"		"effects/impacts/railgun/impact_wood"
+ 	"fx_explode_liquid"			"effects/impacts/railgun/impact_liquid"
+  	"fx_explode_water"			"effects/impacts/railgun/impact_liquid"
+  	"fx_explode_water_interior"	"effects/impacts/railgun/impact_liquid"
+	"fx_explode_forcefield"		"effects/impacts/railgun/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/railgun/impact_grass"
+ 	"fx_explode_plastic"		"effects/impacts/railgun/impact_plastic"
+
+	"fx_ricochet"						"effects/sniperrifle/bullets/ricochet"
+
+	"tracer_chance"						"1"
+	"tracer_server_only"				"1"
+	"fx_tracer"							"effects/weapons/railgun_trail"
+	
+	"punch_through_targets"				"1"
+}
+
+entityDef projectile_railgun_scoped {
+	"spawnclass"						"idProjectile"
+	"inherit"							"projectile_bullet_base"
+
+	"range"								"16384"
+	"min_damage_percent"				"25"
+
+	"dmg_damage"						"damage_railgun_scoped"
+	"dmg_realistic_damage"					"realistic_damage_railgun_scoped"
+
+  	"fx_explode"				"effects/impacts/railgun/impact_default"
+	"fx_explode_pavement"		"effects/impacts/railgun/impact_pavement"
+ 	"fx_explode_stone"			"effects/impacts/railgun/impact_stone"
+  	"fx_explode_concrete"		"effects/impacts/railgun/impact_stone"
+	"fx_explode_dirt"			"effects/impacts/railgun/impact_dirt"
+	"fx_explode_mud"			"effects/impacts/railgun/impact_dirt"
+	"fx_explode_flesh"			"effects/impacts/railgun/impact_flesh"
+	"fx_explode_glass"			"effects/impacts/railgun/impact_glass"
+	"fx_explode_ice"			"effects/impacts/railgun/impact_glass"
+ 	"fx_explode_gravel"			"effects/impacts/railgun/impact_stone"
+	"fx_explode_metal"			"effects/impacts/railgun/impact_metal"
+	"fx_explode_metal_thick"	"effects/impacts/railgun/impact_metal"
+	"fx_explode_dusty_road"		"effects/impacts/railgun/impact_sand"
+	"fx_explode_sand"			"effects/impacts/railgun/impact_sand"
+	"fx_explode_snow"			"effects/impacts/railgun/impact_snow"
+	"fx_explode_wood"			"effects/impacts/railgun/impact_wood"
+	"fx_explode_wood_thick"		"effects/impacts/railgun/impact_wood"
+ 	"fx_explode_liquid"			"effects/impacts/railgun/impact_liquid"
+  	"fx_explode_water"			"effects/impacts/railgun/impact_liquid"
+  	"fx_explode_water_interior"	"effects/impacts/railgun/impact_liquid"
+	"fx_explode_forcefield"		"effects/impacts/railgun/impact_forcefield"
+	"fx_explode_grass"			"effects/impacts/railgun/impact_grass"
+ 	"fx_explode_plastic"		"effects/impacts/railgun/impact_plastic"
+
+	"fx_ricochet"						"effects/sniperrifle/bullets/ricochet"
+
+	"tracer_chance"						"1"
+	"tracer_server_only"				"1"
+	"fx_tracer"							"effects/weapons/railgun_trail"
+	
+	"punch_through_targets"				"1"
+}
+
+damageDef damage_railgun {
+	damage								"damage_railgun"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						0.5
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							80
+
+	push								30000
+
+	stat_name							"railgun"
+
+	record_hit_stats
+
+	prof_damage							"pro_infiltrator_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/railgun"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railgun/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_railgun {
+	inherit								"damage_railgun"
+	damage								"realistic_damage_railgun"
+}
+
+damageDef damage_railgun_scoped {
+	damage								"damage_railgun"
+	kickDir								( 1 0 0 )
+	kick_time							400
+	kick_amplitude						1
+
+	mtr_blob							"genericDamage"
+	blob_time							300
+	blob_offset_x						400
+
+	knockback							80
+
+	push								30000
+
+	stat_name							"railgun"
+
+	record_hit_stats
+
+	prof_damage							"pro_infiltrator_damage"
+
+	tt_obituary							"tooltips/killmsgs/weapons/railgun"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/railgun/teamkill"
+	
+	bleed
+	bleedWoundType						"bullet"
+}
+
+damageDef realistic_damage_railgun_scoped {
+	inherit								"damage_railgun_scoped"
+	damage								"realistic_damage_railgun_scoped"
+}
+
+damageFilter damage_railgun {
+	type {
+		target							"target_player_all"
+		damage							80
+	}
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
+damageFilter realistic_damage_railgun {
+	type {
+		target							"target_player_all"
+		damage							100
+	}
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
+damageFilter damage_railgun_scoped {
+	type {
+		target							"target_player_all"
+		damage							80
+	}
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
+damageFilter realistic_damage_railgun_scoped {
+	type {
+		target							"target_player_all"
+		damage							100
+	}
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
+toolTip railgun_intro_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/railgun_1"
+}
+
+toolTip railgun_charge {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/railgun_charge"
+}
+
+toolTip railgun_scope {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/scope_weapon"
+}
+
+toolTip railgun_scoped_1 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/zoom_scope"
+}
+
+toolTip railgun_scoped_2 {
+	sound "sounds/ui/main/neutral"
+	text "game/tt/intro/generic/descope_weapon"
+}

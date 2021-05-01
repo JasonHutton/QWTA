@@ -1,0 +1,110 @@
+
+damageDef damage_plasmabeam {
+		damage								"damage_plasmabeam"
+	
+		knockback							3
+		push								10000
+		
+		noheadshot
+	
+		prof_damage							"desecrator_weapons"
+	
+		stat_name							"pro_vehicle_damage"
+	
+		knockback							10
+		kick_time							100
+		kick_amplitude						0
+		kickDir								( 1 0 0 )
+	
+		tt_obituary							"tooltips/killmsgs/weapons/plasmabeam"
+		tt_obituary_team_kill				"tooltips/killmsgs/weapons/plasmabeam/teamkill"
+		tt_obituary_self					"tooltips/killmsgs/weapons/plasmabeam/self"
+		tt_obituary_unknown					"tooltips/killmsgs/weapons/plasmabeam/unknown"
+}
+
+damageDef damage_siege_plasmabeam {
+		inherit								"damage_plasmabeam"
+		damage								"damage_siege_plasmabeam"
+}
+
+damageDef realistic_damage_plasmabeam {
+		inherit								"damage_plasmabeam"
+		damage								"realistic_damage_plasmabeam"
+}
+
+damageDef realistic_damage_siege_plasmabeam {
+		inherit								"damage_siege_plasmabeam"
+		damage								"realistic_damage_siege_plasmabeam"
+}
+
+damageFilter damage_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							5
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							70
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							70
+	}
+}
+
+damageFilter damage_siege_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							8
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}
+
+damageFilter realistic_damage_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							10
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							70
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							70
+	}
+}
+
+damageFilter realistic_damage_siege_plasmabeam {
+
+	type {
+		target							"target_player_all"
+		damage							15
+	}
+
+	type {
+		target							"target_veh_all"
+		damage							100
+	}
+
+	type {
+		target							"target_deployables_all"
+		damage							100
+	}
+}

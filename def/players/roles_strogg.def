@@ -1,0 +1,611 @@
+
+#include <def/players/player_includes.include>
+
+//=============================================================================
+//== STROGG WEAPON PACKAGES ===================================================
+//=============================================================================
+
+itemPackageDef package/weapons/obliterator {
+	item					"inventory/weapons/obliterator"
+}
+
+itemPackageDef package/weapons/hyperblaster {
+	item					"inventory/weapons/hyperblaster"
+}
+
+itemPackageDef package/weapons/railgun {
+	item					"inventory/weapons/railgun"
+}
+
+itemPackageDef package/weapons/lightningpistol {
+	item					"inventory/weapons/lightningpistol"
+}
+
+itemPackageDef package/weapons/lacerator {
+	item					"inventory/weapons/lacerator"
+}
+
+itemPackageDef package/weapons/lacerator/scoped {
+	item					"inventory/weapons/lacerator/scoped"
+}
+
+itemPackageDef package/weapons/nailgun {
+	item					"inventory/weapons/nailgun"
+}
+
+itemPackageDef disguise_strogg {
+	item							"inventory/weapons/spikes/gdf"
+	item							"inventory/weapons/lacerator_dummy"
+}
+
+//=============================================================================
+//== STROGG CLASSES ===========================================================
+//=============================================================================
+
+itemPackageDef class_aggressor {
+	item							"inventory/weapons/spikes"
+	//item							"inventory/weapons/blaster"
+	item							"inventory/weapons/lightningpistol"
+	item							"inventory/weapons/grenades/shrap"
+	item							"inventory/tools/spike/charge"
+	item							"inventory/items/plasma_charge"
+	item							"inventory/tools/trinoculars"
+
+	consumable						ammo stroyent			800
+	consumable						ammo stroyent_packet	10
+	consumable						ammo grenade			3
+	consumable						ammo infinite			1 // never used
+}
+
+playerClass aggressor {
+	info {
+		"items"						"class_aggressor"
+		"items_disguised"			"disguise_strogg"
+		"model"						"models/players/strogg/aggressor"
+		"title"						"game/classes/aggressor"
+		"team"						"strogg"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/soldier"
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/trinoculars"
+		"weapon_tool1"				"inventory/tools/spike/charge"
+		"weapon_item1"				"inventory/items/plasma_charge"
+
+		"stat_name"					"aggressor"
+		
+		"class_context_cvar"		"g_class_context_aggressor"
+		"class_context2_cvar"		"g_class_context2_aggressor"
+
+		"player_class_num"			"1"
+		
+		"def_dead_body"				"dead_body_strogg"
+
+		templates/players/request_icons
+		templates/classes/footsteps/strogg
+		templates/classes/pain/strogg
+	}
+
+	proficiency soldier {
+		text		"game/proficiency/aggressor"
+		level 1 {
+			text	"game/proficiency/aggressor/reward1"
+			title	"game/proficiency/aggressor/reward1_title"
+			icon	"aggressor/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/aggressor/reward2"
+			title	"game/proficiency/aggressor/reward2_title"
+			icon	"aggressor/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/aggressor/reward3"
+			title	"game/proficiency/aggressor/reward3_title"
+			icon	"aggressor/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/aggressor/reward4"
+			title	"game/proficiency/aggressor/reward4_title"
+			icon	"aggressor/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+	}
+
+	templates/players/common_proficiencies_strogg
+	
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/strogg_head_offset
+	}
+
+	abilities {
+		aggressor
+	}
+
+	ammoLimits {
+		"stroyent"					"800"
+		"stroyent_packet"			"10"
+		"grenade"					"3"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/weapons/lacerator"
+		"package/weapons/obliterator"
+		"package/weapons/hyperblaster"
+		"package/weapons/nailgun"
+	}
+}
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_technician {
+	item							"inventory/weapons/spikes"
+	item							"inventory/weapons/blaster"
+	//item							"inventory/weapons/lacerator"
+	//item							"inventory/weapons/nailgun"	
+	item							"inventory/weapons/grenades/shrap"
+	item							"inventory/tools/spike_meditech"
+	item							"inventory/items/stroyentcells"
+	item							"inventory/tools/trinoculars"
+
+	consumable						ammo stroyent		800
+	consumable						ammo grenade		2
+	consumable						ammo infinite		1 // never used
+}
+
+playerClass technician {
+	info {
+		"items"						"class_technician"
+		"items_disguised"			"disguise_strogg"
+		"model"						"models/players/strogg/technician"
+		"title"						"game/classes/technician"
+		"team"						"strogg"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/paratech"		
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/trinoculars"
+		"weapon_tool1"				"inventory/tools/spike_meditech"
+		"weapon_item1"				"inventory/items/stroyentcells"
+
+		"stat_name"					"technician"
+		
+		"class_context_cvar"		"g_class_context_technician"
+		"class_context2_cvar"		"g_class_context2_technician"
+
+		"player_class_num"			"0"
+
+		"def_dead_body"				"dead_body_strogg"
+
+		templates/players/request_icons
+		templates/classes/footsteps/strogg
+		templates/classes/pain/strogg
+	}
+
+	proficiency medic {
+		text		"game/proficiency/technician"
+		level 1 {
+			text	"game/proficiency/technician/reward1"
+			title	"game/proficiency/technician/reward1_title"
+			icon	"technician/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/technician/reward2"
+			title	"game/proficiency/technician/reward2_title"
+			icon	"technician/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/technician/reward3"
+			title	"game/proficiency/technician/reward3_title"
+			icon	"technician/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/technician/reward4"
+			title	"game/proficiency/technician/reward4_title"
+			icon	"technician/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}		
+	}
+
+	templates/players/common_proficiencies_strogg
+	
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/strogg_head_offset
+	}
+
+	abilities {
+		revive
+		technician
+		deadview
+		giveAmmo
+		qcItems
+	}
+
+	ammoLimits {
+		"stroyent"					"800"
+		"grenade"					"3"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/constructor/weapons/lacerator"
+		"package/weapons/nailgun"
+	}
+}
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_constructor {
+	item							"inventory/weapons/spikes"
+	item							"inventory/weapons/blaster"
+	item							"inventory/weapons/grenades/shrap"
+	item							"inventory/tools/repair_drone"
+	item							"inventory/tools/deploytool/constructor"
+	item							"inventory/items/landmine_strogg"
+	item							"inventory/tools/trinoculars"
+
+	consumable						ammo stroyent			800
+	consumable						ammo grenade			3
+	consumable						ammo stroyent_packet	5	
+	consumable						ammo infinite			1 // never used
+}
+
+itemPackageDef package/constructor/weapons/lacerator {
+	item							"inventory/weapons/lacerator"
+}
+	
+itemPackageDef package/constructor/weapons/lacerator/grenade {
+	{
+		require						"constructor_level_1 == true"
+		item						"inventory/weapons/lacerator/grenade"
+	}
+}
+
+playerClass constructor {
+	info {
+		"items"						"class_constructor"
+		"items_disguised"			"disguise_strogg"
+		"model"						"models/players/strogg/constructor"
+		"title"						"game/classes/constructor"
+		"team"						"strogg"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/engineer"		
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/trinoculars"
+		"weapon_tool1"				"inventory/tools/repair_drone"
+		"weapon_tool2"				"inventory/tools/deploytool/constructor"
+		"weapon_item1"				"inventory/items/landmine_strogg"
+		
+		"stat_name"					"constructor"
+		
+		"class_context_cvar"		"g_class_context_constructor"
+		"class_context2_cvar"		"g_class_context2_constructor"
+
+		"player_class_num"			"2"
+
+		"def_dead_body"				"dead_body_strogg"
+
+		templates/players/request_icons
+		templates/classes/footsteps/strogg
+		templates/classes/pain/strogg
+	}
+
+	proficiency engineer {
+		text		"game/proficiency/constructor"
+		level 1 {
+			text	"game/proficiency/constructor/reward1"
+			title	"game/proficiency/constructor/reward1_title"
+			icon	"constructor/reward1"
+			tooltip	"proficiency_upgrade_weapselect"
+			sound	"sounds/tooltips/upgrade_new_weapon/info"
+		}
+		level 2 {
+			text	"game/proficiency/constructor/reward2"
+			title	"game/proficiency/constructor/reward2_title"
+			icon	"constructor/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/constructor/reward3"
+			title	"game/proficiency/constructor/reward3_title"
+			icon	"constructor/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/constructor/reward4"
+			title	"game/proficiency/constructor/reward4_title"
+			icon	"constructor/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}		
+	}
+
+	templates/players/common_proficiencies_strogg
+	
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/strogg_head_offset
+	}
+
+	abilities {
+		constructor
+		repair
+		canDeploy
+		qcItems
+	}
+
+	ammoLimits {
+		"stroyent"					"800"
+		"grenade"					"3"
+		"stroyent_packet"			"5"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/constructor/weapons/lacerator"
+		"package/weapons/nailgun"
+		"package/constructor/weapons/lacerator/grenade"
+	}
+}
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_oppressor {
+	item							"inventory/weapons/spikes"
+	item							"inventory/weapons/blaster"
+
+	item							"inventory/weapons/grenades/shrap"
+	item							"inventory/tools/deploytool/oppressor"
+	item							"inventory/tools/trinoculars/oppressor"
+	item							"inventory/tools/force_shield"
+	item							"inventory/weapons/grenades/airstrike_marker_strogg"
+
+	consumable						ammo stroyent		800
+	consumable						ammo grenade		3
+	consumable						ammo infinite		1 // never used
+}
+
+itemPackageDef package/oppressor/weapons/lacerator {
+	item							"inventory/weapons/lacerator"
+}
+	
+itemPackageDef package/oppressor/weapons/lacerator/scoped {
+	{
+		require						"oppressor_level_1 == true"
+		item						"inventory/weapons/lacerator/scoped"
+	}
+}
+playerClass oppressor {
+	info {
+		"items"						"class_oppressor"
+		"items_disguised"			"disguise_strogg"
+		"model"						"models/players/strogg/oppressor"
+		"title"						"game/classes/oppressor"
+		"team"						"strogg"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/fieldops"		
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/trinoculars/oppressor"
+		"weapon_tool1"				"inventory/tools/deploytool/oppressor"
+		"weapon_item1"				"inventory/tools/force_shield"
+		"weapon_item2"				"inventory/weapons/grenades/airstrike_marker_strogg"
+
+		"stat_name"					"oppressor"
+		
+		"class_context_cvar"		"g_class_context_oppressor"
+		"class_context2_cvar"		"g_class_context2_oppressor"
+
+		"player_class_num"			"3"
+
+		"def_dead_body"				"dead_body_strogg"
+
+		templates/players/request_icons
+		templates/classes/footsteps/strogg
+		templates/classes/pain/strogg
+	}
+
+	proficiency fieldops {
+		text		"game/proficiency/oppressor"
+		level 1 {
+			text	"game/proficiency/oppressor/reward1"
+			title	"game/proficiency/oppressor/reward1_title"
+			icon	"oppressor/reward1"
+			tooltip	"proficiency_upgrade_weapselect"
+			sound	"sounds/tooltips/upgrade_new_weapon/info"
+		}
+		level 2 {
+			text	"game/proficiency/oppressor/reward2"
+			title	"game/proficiency/oppressor/reward2_title"
+			icon	"oppressor/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/oppressor/reward3"
+			title	"game/proficiency/oppressor/reward3_title"
+			icon	"oppressor/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/oppressor/reward4"
+			title	"game/proficiency/oppressor/reward4_title"
+			icon	"oppressor/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}		
+	}
+
+	templates/players/common_proficiencies_strogg
+	
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/strogg_head_offset
+	}
+
+	abilities {
+		oppressor
+		canDeploy
+		qcItems
+	}
+
+	ammoLimits {
+		"stroyent"					"800"
+		"grenade"					"3"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/oppressor/weapons/lacerator"
+		"package/oppressor/weapons/lacerator/scoped"
+	}
+}
+
+//=============================================================================
+//=============================================================================
+
+itemPackageDef class_infiltrator {
+	item							"inventory/weapons/spikes"
+	item							"inventory/weapons/blaster"
+	item							"inventory/weapons/grenades/scrambler"
+	item							"inventory/tools/spike_infiltrator"
+	item							"inventory/tools/deploytool/infiltrator"
+	item							"inventory/items/flyer_hive"
+	item							"inventory/items/teleporter"
+	item							"inventory/tools/trinoculars"
+
+	consumable						ammo stroyent		800
+	consumable						ammo grenade		3
+	consumable						ammo infinite		1 // never used
+}
+
+playerClass infiltrator {
+	info {
+		"items"						"class_infiltrator"
+		"items_disguised"			"disguise_strogg"
+		"model"						"models/players/strogg/infiltrator"
+		"title"						"game/classes/infiltrator"
+		"team"						"strogg"
+
+		"mtr_cm_icon"				"guis/assets/commandmap/icon_player"
+		"mtr_icon_class"			"hud/icons/classes/ranger"		
+		"mtr_icon_friendly_arrow"	"hud/icons/player/indicator_team"
+		"mtr_icon_enemy_arrow"		"hud/icons/player/indicator_enemy"
+		"mtr_icon_offscreen"		"hud/icons/player/indicator_side"
+
+		"weapon_binocs"				"inventory/tools/trinoculars"
+		"weapon_tool1"				"inventory/tools/spike_infiltrator"
+		"weapon_tool2"				"inventory/tools/deploytool/infiltrator"
+		"weapon_item1"				"inventory/items/flyer_hive"
+		"weapon_item2"				"inventory/items/teleporter"
+
+		"stat_name"					"infiltrator"
+		
+		"class_context_cvar"		"g_class_context_infiltrator"
+		"class_context2_cvar"		"g_class_context2_infiltrator"
+
+		"player_class_num"			"4"
+
+		"def_dead_body"				"dead_body_strogg"
+
+		templates/players/request_icons
+		templates/classes/footsteps/strogg
+		templates/classes/pain/strogg
+	}
+
+	proficiency covertops {
+		text		"game/proficiency/infiltrator"
+		level 1 {
+			text	"game/proficiency/infiltrator/reward1"
+			title	"game/proficiency/infiltrator/reward1_title"
+			icon	"infiltrator/reward1"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 2 {
+			text	"game/proficiency/infiltrator/reward2"
+			title	"game/proficiency/infiltrator/reward2_title"
+			icon	"infiltrator/reward2"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 3 {
+			text	"game/proficiency/infiltrator/reward3"
+			title	"game/proficiency/infiltrator/reward3_title"
+			icon	"infiltrator/reward3"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}
+		level 4 {
+			text	"game/proficiency/infiltrator/reward4"
+			title	"game/proficiency/infiltrator/reward4_title"
+			icon	"infiltrator/reward4"
+			tooltip	"proficiency_upgrade_now"
+			sound	"sounds/tooltips/upgrade_now_available/info"
+		}		
+	}
+
+	templates/players/common_proficiencies_strogg
+	
+	modelData {
+		templates/players/skeleton_info
+		templates/players/locational_damage_joints
+		templates/players/strogg_head_offset
+	}
+
+	abilities {
+		infiltrator
+		hack
+		canDeploy
+	}
+
+	ammoLimits {
+		"stroyent"					"800"
+		"grenade"					"3"
+		"infinite"					"1"
+	}
+
+	option {
+		"package/weapons/lacerator/scoped"
+		"package/weapons/railgun"
+	}
+}

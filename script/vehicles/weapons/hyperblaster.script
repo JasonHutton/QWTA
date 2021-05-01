@@ -1,0 +1,191 @@
+
+object vehicle_weapon_hyperblaster : vehicle_weapon_base {
+	void				preinit();
+	void				init();
+	void				destroy();
+
+	void				Idle();
+	void				Fire();
+
+	void				OnSetPlayer( entity p );
+
+	string				muzzleFlashFX;
+	string				muzzleSound;
+	string				muzzleSoundLocal;
+
+	float				fireRate;
+	float				q4hyperFireRate;
+	float				spread;
+	float				q4hyperSpread;
+
+	float				projectileIndex;
+	float				q4hyperProjectileIndex;
+
+	float				jointHandle;
+	
+	float				tracerCounter;
+	float				tracerInterval;
+	
+	float				localSurface;
+
+	entity				vehicle;
+
+	boolean				playingOverheat;
+
+	entity				muzzleFX;
+	float				lastMuzzleFX;
+	float				muzzleFlashInterval;
+	
+	vector				q4hyperVelocity;
+}
+
+void vehicle_weapon_hyperblaster::preinit() {
+	muzzleFlashFX			= getKey( "muzzle_flash" );
+	muzzleSound				= getKey( "muzzle_sound" );
+	muzzleSoundLocal		= getKey( "muzzle_sound" );
+
+	fireRate				= getFloatKey( "fire_rate" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		fireRate	= getFloatKeyWithDefault( "realistic_fire_rate", fireRate );
+	}
+	q4hyperFireRate			= getFloatKey( "q4hyper_fire_rate" );
+	if ( g_useRealisticWeapons.getBoolValue() ) {
+		q4hyperFireRate	= getFloatKeyWithDefault( "realistic_q4hyper_fire_rate", q4hyperFireRate );
+	}
+	spread					= getFloatKey( "spread" );
+	q4hyperSpread			= getFloatKey( "q4hyper_spread" );
+
+	projectileIndex			= GetEntityDef( getKey( "def_projectile" ) );
+	q4hyperProjectileIndex	= GetEntityDef( getKey( "q4hyper_projectile" ) );
+	
+	localSurface			= -1;
+	
+	vehicle					= getVehicle();
+
+	string localSurfaceName	= getKey( "surface_name" );
+	if ( localSurfaceName != "" ) {
+		localSurface = vehicle.getSurfaceId( localSurfaceName );
+	}
+	
+	jointHandle				= vehicle.getJointHandle( getKey( "muzzle" ) );
+	tracerCounter			= 0;
+	tracerInterval			= sys.getEntityDefIntKey( projectileIndex, "tracer_interval" );
+	muzzleFlashInterval		= vehicle.getFloatKeyWithDefault( "muzzle_flash_interval", 0.5f );
+	
+	q4hyperVelocity			= getVectorKey( "q4hyper_velocity" );
+}
+
+void vehicle_weapon_hyperblaster::init() {
+}
+
+void vehicle_weapon_hyperblaster::destroy() {
+	if ( muzzleFX != $null_entity ) {
+		muzzleFX.unbind();
+		muzzleFX.endEffect( true );
+		muzzleFX = $null_entity;
+	}
+}
+
+void vehicle_weapon_hyperblaster::Idle() {
+	SetCrosshair();
+
+	while ( true ) {
+		sys.waitFrame();
+
+		UpdateCharge();
+		UpdateAmmo();
+
+		if ( user != $null_entity ) {
+			user.proxyFiringWeaponStart = false;
+			if ( user.getButton( PK_ATTACK ) && !myVehicle.isWeaponEMPed() && !myVehicle.isWeaponDisabled() ) {
+				if ( CanRemoveCharge() && CanRemoveAmmo() ) {
+					if ( sys.getTime() >= fireDelayTime ) {
+						user.proxyFiringWeaponStart = true;
+						if ( sys.getTime() >= reFireTime ) {
+							playingOverheat = false;
+							setState( "Fire" );
+						}
+					} else {
+						if ( !playingOverheat ) {
+							vehicle.startSound( "snd_gpmg_overheat", SND_WEAPON_FIRE_LOCAL );
+							playingOverheat = true;
+						}
+					}
+				}
+			} else if ( muzzleFX != $null_entity ) {
+				muzzleFX.unbind();
+				muzzleFX.endEffect( true );
+				muzzleFX = $null_entity;
+			}
+		}
+	}
+}
+
+void vehicle_weapon_hyperblaster::Fire() {
+	boolean showMuzzle = true;
+	
+	RemoveCharge();
+	RemoveAmmo();
+	
+	if ( localSurface != -1 ) {
+		if ( vehicle.isSurfaceHidden( localSurface ) ) {
+			showMuzzle = false;
+		}
+	}
+
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		vehicle.launchMissileSimple( user, vehicle, user.getEnemy(), q4hyperProjectileIndex, -1, q4hyperSpread, vehicle.getJointPos( jointHandle ), vehicle.jointToWorldSpace( jointHandle, q4hyperVelocity ) );
+	} else {
+		float forceTracer = TRACER_CHANCE;
+		if ( tracerInterval > 0 ) {
+			if ( tracerCounter % tracerInterval == 0 ) {
+				forceTracer = TRACER_FORCE;
+			}
+		}
+
+		vehicle.launchBullet( user, vehicle, projectileIndex, spread, vehicle.getJointPos( jointHandle ), vehicle.getJointAxis( jointHandle, 0 ), forceTracer, true );
+	}
+
+	if ( showMuzzle ) {
+		if ( sys.getTime() - lastMuzzleFX > muzzleFlashInterval ) {
+			if ( muzzleFX != $null_entity ) {
+				muzzleFX.unbind();
+				muzzleFX.endEffect( false );
+				muzzleFX = $null_entity;
+			}
+
+			// spawn explicitly so we can get an entity to call endEffect on.
+			muzzleFX = vehicle.spawnClientEffect( muzzleFlashFX );
+			if ( muzzleFX != $null_entity ) {
+				muzzleFX.bindToJoint( vehicle, getKey( "muzzle" ), 1 );
+			}
+
+			lastMuzzleFX = sys.getTime();
+		}
+	}
+
+	if( user == sys.getLocalPlayer() ) {
+		vehicle.playJointEffect( muzzleSoundLocal, jointHandle, 0 );
+	} else {
+		vehicle.playJointEffect( muzzleSound, jointHandle, 0 );
+	}
+	
+	if ( g_useQuake4Hyperblaster.getBoolValue() ) {
+		AddReFireDelay( q4hyperFireRate );
+	} else {
+		AddReFireDelay( fireRate );
+	}
+
+	tracerCounter++;
+	
+	GoToIdle();
+}
+
+void vehicle_weapon_hyperblaster::OnSetPlayer( entity p ) {
+	OnSetPlayer_Base( p );
+	if ( muzzleFX != $null_entity ) {
+		muzzleFX.unbind();
+		muzzleFX.endEffect( true );
+		muzzleFX = $null_entity;
+	}
+}

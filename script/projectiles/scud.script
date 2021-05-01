@@ -1,0 +1,134 @@
+/***********************************************************************
+
+projectile_scud.script
+
+***********************************************************************/
+
+object projectile_scud : projectile_ssm {
+	void		preinit();
+	void		DoExplodeEffect( entity collisionEnt );
+	
+	void		Idle();
+
+	boolean		InTargetRange();
+	void		DoRadiusDamage();
+	
+	void		BBKillThread();
+	void		KillAllInBoundingBox();
+	void		vSetNewTarget( entity other );
+	
+	boolean		vInhibitStats() { return true; }
+	
+	float		OnCollide( object traceObject, vector velocity, float bodyId );
+	void		SetupContents();
+
+	float		objectiveSplashDamageIndex;
+	
+	float		targetRadius;
+	entity		targetEntity;
+}
+
+void projectile_scud::preinit() {
+	objectiveSplashDamageIndex = GetDamage( getKey( "dmg_splash_damage_objective" ) );
+	targetRadius = getFloatKey( "targetRadius" );
+	
+	if ( !sys.isClient() ) {
+		thread BBKillThread();
+	}
+}
+	
+void projectile_scud::DoExplodeEffect( entity collisionEnt ) {
+	DoExplodeEffect_ssm( collisionEnt );
+	if ( !destroyed ) {
+		objManager.ScudExploded( self );
+	}
+}
+
+void projectile_scud::DoRadiusDamage() {
+	float damageIndex = splashDamageIndex;
+	float objectiveDamageIndex = objectiveSplashDamageIndex;
+	if ( state == MS_AIRBURST ) {
+		damageIndex = airBurstDamageIndex;
+		objectiveDamageIndex = -1;
+	}
+
+	if ( objectiveDamageIndex != -1 ) {
+		sys.applyRadiusDamage( getWorldOrigin(), self, getOwner(), radiusDamageIgnoreEntity, self, objectiveDamageIndex, GetDamagePower(), 1.f );
+	}
+	if ( damageIndex != -1 ) {
+		sys.applyRadiusDamage( getWorldOrigin(), self, self, radiusDamageIgnoreEntity, self, damageIndex, GetDamagePower(), 1.f );
+	}
+}
+
+void projectile_scud::Idle() {
+	startSound( "snd_launch", SND_ANY );
+	playEffect( "fx_trail", "", 1 );
+
+	while ( true ) {
+		sys.waitFrame();
+
+		if ( getLaunchTime() != 0 ) {
+			if ( InTargetRange() ) {
+				Explode( $null_entity, $null_entity );
+			}
+		}
+	}
+}
+
+boolean projectile_scud::InTargetRange() {
+	if ( targetEntity != $null_entity ) {
+		vector targetPos = targetEntity.getWorldOrigin();
+		vector pos = getWorldOrigin();
+		if ( sys.vecLengthSquared( targetPos - pos ) < ( targetRadius * targetRadius ) ) {
+			return true;	
+		}
+	}
+	
+	return false;
+}
+
+void projectile_scud::BBKillThread() {
+	while ( true ) {
+		KillAllInBoundingBox();
+		sys.waitFrame();
+	}
+}
+
+void projectile_scud::KillAllInBoundingBox() {
+	vector mins = getAbsMins();
+	vector maxs = getAbsMaxs();
+			
+	//sys.debugBounds( g_colorRed, mins, maxs, 0.f );
+
+	float count = entitiesInBounds( mins, maxs, MASK_SHOT_RENDERMODEL | MASK_SHOT_BOUNDINGBOX, 1 );
+
+	float i;
+	for( i = 0; i < count; i++ ) {
+		entity ent = getBoundsCacheEntity( i );
+		
+		if ( ent == self ) {
+			continue;
+		}
+
+		if ( isOwner( ent ) ) {
+			continue;
+		}
+
+		if ( ent != $null_entity ) {
+			ent.applyDamage( $null_entity, self, g_vectorUp, GetDamage( "damage_scud_collide" ), 1.f, $null_entity );
+		}
+	}
+}
+
+void projectile_scud::vSetNewTarget( entity other ) {
+	targetEntity = other;
+}
+
+void projectile_scud::SetupContents() {
+	setContents( 0 );
+	setClipmask( 0 );
+}
+
+float projectile_scud::OnCollide( object traceObject, vector velocity, float bodyId ) {
+	return 0.f;
+}

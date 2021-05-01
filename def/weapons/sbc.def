@@ -1,0 +1,203 @@
+/***********************************************************************
+
+	vehicles_weapons_sbc.def
+
+***********************************************************************/
+
+entityDef projectile_sbc {
+	"spawnclass"						"idProjectile_RigidBody"
+	"scriptObject"						"projectile_missile"
+
+	"aor_layout"						"missile"
+
+	"mins"								"-1 -1 -1"
+	"maxs"								"1 1 1"
+	
+	"cone"								"3"
+	"scale"								"0.1"
+	
+	"noshadows"							"1"
+
+	"model" 							"models/weapons/rocketlauncher/rocket.lwo"
+
+	"dmg_damage"						"damage_sbc"
+	"dmg_realistic_damage"					"realistic_damage_sbc"
+	"dmg_splash_damage"					"damage_sbc_splash"
+	"dmg_realistic_splash_damage"				"realistic_damage_sbc_splash"
+
+	"launchFromBarrel"					"0"
+	"health"							"0"
+	"velocity"							"4000 0 0"
+	"angular_velocity"					"0 0 0"
+	"face_velocity"						"1"
+	"bounce"							"0"
+	"mass"								"1"
+	"gravity"							"800"
+	"fuse"								"2.5"
+
+	"detonate_on_fuse"					"1"
+	"detonate_on_death"					"1"
+	"detonate_on_world"					"1"
+	"detonate_on_actor"					"1"
+
+	"weapons/impacts/blood"				"1"
+
+	"snd_fly"							"sounds/weapons/sbc/fly"
+	"fx_splash"							"effects/base/impact_water_large"
+	"fx_trail"							"effects/vehicles/trojan/trojan_rockets_trail"
+	"fx_explode"						"effects/weapons/sbc_explode"
+	"fx_explode_metal"					"effects/weapons/sbc_explode_metal"
+	"fx_explode_snow"					"effects/sbc_explode_snow"
+	"fx_explode_water"					"effects/water/explosion"
+	
+	"collection_mdfExport"				"mdfExport"
+}
+
+damageDef damage_sbc {
+	damage								"damage_sbc"
+	kickDir								( 1 0 0 )
+
+	push								40000000
+
+	noheadshot
+	
+	stat_name							"titan_weapons"
+
+	prof_damage							"pro_vehicle_damage_heavy"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/sbc"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sbc/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/sbc/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_sbc {
+	inherit								"damage_sbc"
+	damage								"realistic_damage_sbc"
+}
+
+damageDef damage_sbc_splash {
+	damage								"damage_sbc_splash"
+	radius								320
+
+	knockback							200
+	push								40000000
+
+	noheadshot
+	
+	stat_name							"titan_weapons"
+
+	prof_damage							"pro_vehicle_damage_heavy"
+
+	team_kill_cvar						"g_allowComplaint_explosives"
+
+	tt_obituary							"tooltips/killmsgs/weapons/sbc"
+	tt_obituary_team_kill				"tooltips/killmsgs/weapons/sbc/teamkill"
+	tt_obituary_self					"tooltips/killmsgs/weapons/sbc/self"
+	
+	bleed
+	bleedWoundType						"explosive"
+	bleedExplode
+}
+
+damageDef realistic_damage_sbc_splash {
+	inherit								"damage_sbc_splash"
+	damage								"realistic_damage_sbc_splash"
+}
+
+damageFilter damage_sbc {
+
+	type {
+		target	"target_player_all"
+		damage	400
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	700
+	}
+
+	type {
+		target	"target_explodable"
+		damage	400
+	}
+}
+
+damageFilter realistic_damage_sbc {
+
+	type {
+		target	"target_player_all"
+		damage	800
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	700
+	}
+
+	type {
+		target	"target_explodable"
+		damage	400
+	}
+}
+
+damageFilter damage_sbc_splash {
+
+	type {
+		target	"target_player_all"
+		damage	400
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	700
+	}
+
+	type {
+		target	"target_explodable"
+		damage	400
+	}
+}
+
+damageFilter realistic_damage_sbc_splash {
+
+	type {
+		target	"target_player_all"
+		damage	800
+	}
+
+	type {
+		target	"target_veh_all"
+		damage 	1000
+	}
+
+	type {
+		target	"target_deployables_all"
+		damage	700
+	}
+
+	type {
+		target	"target_explodable"
+		damage	400
+	}
+}

@@ -1,0 +1,373 @@
+vehicleDef platypus {
+
+	part {
+		"cm_model"		"models/vehicles/gdf_platypus/gdf_platypus_physics.lwo"
+		"offset"			"-72 -77.5 0"
+		"mass"				"2000"
+		"contactFriction"	"0.7 0.7 0.7"
+		"health"			"-1"
+		"buoyancy"			"0.7"
+		"waterDrag"			"0.4"
+	}
+
+	// the fishing rod holder
+	part {
+		"mins"				"-238 -50 40"
+		"maxs"				"-185 50 118"
+		"mass"				"1"
+		"contactFriction"	"0.7 0.7 0.7"
+		"health"			"-1"
+	}
+
+	// mass to balance out the centre of mass and get the thing floating like it should
+	mass {
+		"origin"			"-150 0 50"
+		"mass"				"2000"
+	}
+
+	antiroll {
+		"angle_start"					"0.1"
+		"angle_end"						"30"
+		"strength"						"2"
+	}
+	
+	antipitch {
+		"angle_start"					"0.1"
+		"angle_end"						"5"
+		"strength"						"0.8"
+	}
+
+	thruster {
+		"direction"			"1 0 0"
+		"origin"			"-280 60 0"
+		"force"				"2000000"
+		"need_water"		"1"
+		"name"				"left_thruster"
+	}
+
+	thruster {
+		"direction"			"1 0 0"
+		"origin"			"-280 -60 0"
+		"force"				"2000000"
+		"need_water"		"1"
+		"name"				"right_thruster"
+	}
+
+	dragPlane {
+		"name"				"hull_front"
+		"origin"			"0 0 0"
+		"normal"			"0.3 0 -1"
+		"coefficient"		"120"
+		"max_force"			"1150000"
+
+		"use_angle_scale"	"1"
+	}
+
+	rudder {
+		"name"				"rudder"
+		"origin"			"0 0 0"
+		"normal"			"0 1 0"
+		"coefficient"		"150"
+		"max_force"			"500000"
+		"double_sided"		"1"
+	}
+
+	exitDef {
+		joint				"player_exit_front"
+	}
+
+	exitDef {
+		joint				"player_exit_rear"
+	}
+
+	simplePart {
+		"name"				"main_body"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_platypus_main_body"
+		"health"			"0"
+	}
+
+	simplePart {
+		"name"				"console"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_platypus_console"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"jet"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_platypus_jet"
+		"health" 			"0"
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_platypus_cockpit"
+		"scriptobject"		"vehicle_platypus_cockpit"
+	}
+
+	cockpit gpmg {
+			"def_cockpit"		"vehicle_platypus_gpmg_cockpit"
+			"scriptobject"		"vehicle_gpmg_cockpit"
+		}
+
+
+
+	positionDef {
+		name				"guis/vehicles/platypus_driver"
+		hudname				"guis/vehicles/platypus_driver"
+
+		data {
+			"joint_attach"			"player_pos_rear"
+			"player_anim"			"VehiclePlatypusDriver"
+			"show_player"			"1"
+			"take_damage"			"1"
+			"cockpit"				"main"
+			"stat_name"				"platypus_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+		}
+
+		ik {
+			type					"sdVehicleIK_Steering"
+			parms {
+				"joint_left"		"left_hand_ik"
+				"joint_right"		"right_hand_ik"
+			}
+		}
+
+
+		// first-person + cockpit
+		view {
+			eyeJoint		"player_rear_camera"
+			autocenter
+
+		//	hidevehicle
+			showCockpit
+			zoomTable		"vehicle_default_zoom"
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+
+			clamp pitch {
+				min		-60
+				max		10
+			}
+
+			clamp yaw {
+				min		-135
+				max		135
+			}
+		}
+
+		view {
+			eyeJoint		"player_rear_camera"
+			type			"smooth_locked"
+			cameraDistance	300
+			cameraHeight	75
+			dampSpeed		0.5
+			thirdPerson
+			sensitivityPitchScale	"m_lightVehiclePitchScale"
+			sensitivityYawScale		"m_lightVehicleYawScale"
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/platypus_gunner"
+		hudname				"guis/vehicles/platypus_gunner"
+
+		data {
+			"joint_attach"			"player_pos_front"
+			"player_anim"			"VehicleBadgerGunner"
+			"show_player"			"1"
+			"take_damage"			"1"
+			"cockpit"				"gpmg"
+			"stat_name"				"platypus_gunner"
+			"joint_icon"			"carrier_gunner1"
+
+		}
+
+		ik {
+			type					"sdVehicleIK_Steering"
+			parms {
+				"joint_left"		"gunner_left_hand_ik"
+				"joint_right"		"gunner_right_hand_ik"
+			}
+		}
+
+
+
+		view {
+			eyeJoint		"player_front_gunner_camera"
+			type			"freepivot"
+			followYaw
+			followPitch
+			showcockpit
+			hideDecoyInfo
+			zoomTable		"vehicle_default_zoom"
+
+			clamp pitch {
+				min		-60
+				max		15
+			}
+
+			clamp yaw {
+				min		-155
+				max		155
+			}
+		}
+
+		view {
+			eyeJoint		"player_front_gunner_camera"
+			type			"smooth_free"
+			cameraDistance	400
+			cameraHeight	70
+			thirdPerson
+			hideDecoyInfo
+
+			clamp pitch {
+				min	-60
+				max	15
+			}
+
+			clamp yaw {
+				min		-155
+				max		155
+			}
+		}
+
+		ik {
+			type		"sdVehicleIKArms"
+			parms {
+				"jointWrist"	"gun_pivot_updown_joint"
+				"jointElbow"	"gun_pivot_around_joint"
+				"jointMuzzle"	"muzzle"
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_platypus_weapon1"
+			type			"sdVehicleWeaponFixedMinigun"
+
+			clamp yaw {
+				min		-155
+				max		155
+			}
+			clamp pitch {
+				min	-60
+				max	15
+			}
+		}
+	}
+}
+
+stringMap vehicle_platypus_weapon1 {
+	"gunName"				"game/weapons/mg"
+	"weapon_name"			"gpmg"
+
+	"charge_max"			"10"
+	"charge_per_use"		"2"
+	"realistic_charge_per_use"	"1.5"
+	"overheat_penalty"		"1"
+	"use_heat_bar"			"1"
+
+	"weapon1_muzzle"		"muzzle"
+	"gunJointYaw"			"gun_pivot_around_joint"
+	"gunJointPitch"			"gun_pivot_updown_joint"
+
+	"muzzle"				"muzzle"
+	"muzzle_tracer"			"fx_gpmg_tracer"
+	"muzzle_flash"			"fx_gpmg_muzzle"
+	"muzzle_sound"			"fx_gpmg_fire"
+	"muzzle_sound_local"	"fx_gpmg_fire_local"
+
+	"velocity"				"1 0 0"
+	"fire_rate"				"0.10" // 10.0 RPS // 600 RPM
+	"realistic_fire_rate"	"0.063" // 15.8 RPS // 948 RPM
+	"spread"				"1"
+	"scriptobject"			"vehicle_weapon_gpmg"
+	"def_projectile"		"projectile_gpmg_platypus"
+	"client_projectile"		"projectile_gpmg_platypus"
+
+	"surface_name"			"GPMG1"
+
+	"crosshair"				"nospread"
+	
+	"ammo_max"					"800"
+	"ammo_per_use"				"1"
+	"low_ammo"					"5"
+}
+
+entityDef part_vehicle_platypus_main_body {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_platypus/parts/hull.lwo",
+			"0 100 1000",
+			"10 10 45",
+			"vehicles/misc/debris/metal_large"
+			"0.1"
+		>
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_platypus_console {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_platypus/parts/console.lwo",
+			"0 100 1000",
+			"10 10 45",
+			"vehicles/misc/debris/metal_large"
+			"0.1"
+		>
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_platypus_jet {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_platypus/parts/jet.lwo",
+			"0 100 1000",
+			"10 10 45",
+			"vehicles/misc/debris/metal_large"
+			"0.1"
+		>
+
+	"priority"						"0"
+}
+
+
+entityDef vehicle_platypus_cockpit {
+	"model"						"vehicle_platypus_cockpit"
+	"joint_attach"				"origin"
+	"offset" 					"15 1 2"
+	"depthHack"					"0"
+	"weaponDepthHack"			"1"
+
+	"climate_skin_key"			"weapon_gdf"
+
+		"surface_name0"		"console"
+		"surface_name1"		"steering_wheel"
+		"surface_name2"		"throttle_control"
+
+
+	"gui"						"guis/models/vehicles/gdf/cockpit_cm"
+	"gui2"						"guis/models/vehicles/platypus/cockpit"
+	"gui3"						"guis/models/vehicles/trojan/cockpit_info"
+}
+
+
+
+
+
+entityDef vehicle_platypus_gpmg_cockpit {
+	"model"						"viewmodel_mounted_gpmg_1stperson"
+
+	"passenger_id"				"2"
+
+	"climate_skin_key"			"weapon_gdf"
+
+	"fx_muzzle"					"effects/weapons/gpmg_muzzleflash_vehicle2"
+	"joint_muzzle"				"muzzle"
+
+	"offset"					"-5.3 5.31 1.57"
+
+	"surface_name"				"GPMG1"
+}

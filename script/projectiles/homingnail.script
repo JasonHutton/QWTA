@@ -1,0 +1,145 @@
+/***********************************************************************
+
+projectile_homingnail.script
+
+***********************************************************************/
+
+object projectile_homingnail : projectile_missile {
+	void		preinit();
+	//void		init();
+	//void		Idle();
+	void		destroy();
+	//void		OnSetEnemy( entity oldEnemy, entity newEnemy );
+	void		UpdateFocusedTargeting();
+	void		vSetNewTarget( entity newTarget );
+	entity		vGetCurrentTarget();
+
+	void		OnUpdateTargeting();
+//	void		OnThrustStarted();
+
+	void		syncFields();
+
+	float		spawnTime;
+};
+
+//void projectile_homingnail::OnThrustStarted() {
+//	playEffect( "fx_trail", "", 1 );
+//	startSound( "snd_fly", SND_WEAPON_FIRE );
+//}
+
+void projectile_homingnail::preinit() {
+	if ( !sys.isClient() ) {
+		spawnTime = sys.getTime();
+	}
+}
+
+void projectile_homingnail::syncFields() {
+	syncBroadcast( "spawnTime" );
+	syncBroadcast( "state" );
+	syncCallback( "state", "OnStateChanged" );
+}
+
+//void projectile_homingnail::init() {
+//	SetupContents();
+//
+//	setState( "Idle" );
+//}
+
+void projectile_homingnail::destroy() {
+	setEnemy( $null_entity );
+	if ( !noTrail ) {
+			stopEffect( "fx_trail" );
+		}
+	stopSound( SND_WEAPON_FIRE );
+}
+
+//void projectile_homingnail::Idle() {
+//	startSound( "snd_release", SND_WEAPON_BRASS );
+//}
+
+//void projectile_homingnail::OnSetEnemy( entity oldEnemy, entity newEnemy ) {
+//	if ( oldEnemy != $null_entity ) {
+//		oldEnemy.vStopTargetLockAlarm( self );
+//	}
+//
+//	if ( newEnemy != $null_entity ) {
+//		newEnemy.vTargetLockAlarm( self );
+//	}
+//}
+
+void projectile_homingnail::UpdateFocusedTargeting() {
+}
+
+/*
+void projectile_homingnail::OnUpdateTargeting() {
+	entity enemy = getEnemy();
+
+	vector enemyOrg;
+	vector dir;
+
+	if ( enemy == $null_entity ) {
+		UpdateFocusedTargeting();
+		return;
+	}
+
+	vector absMins = enemy.getVectorKeyWithDefault( "selection_mins", enemy.getMins() );
+	vector absMaxs = enemy.getVectorKeyWithDefault( "selection_maxs", enemy.getMaxs() );
+	absMins = sys.toWorldSpace( absMins, enemy );
+	absMaxs = sys.toWorldSpace( absMaxs, enemy );
+	enemyOrg = ( absMins + absMaxs ) * 0.5f ;
+
+	// lead ahead of the enemy a bit - calculate the time it'll take to get there and adjust
+	vector myCurrentVel = getLinearVelocity();
+	float myCurrentSpeed = sys.vecLength( myCurrentVel );
+	vector delta = enemyOrg - getWorldOrigin(); // adjust for own origin
+	float distance = sys.vecLength( delta );
+	float approxClosingTime = 1;
+	if ( myCurrentSpeed > 0.0001f ) {
+		approxClosingTime = distance / myCurrentSpeed;
+	}
+
+	// estimate where the enemy will be at that time
+	vector enemyCurrentVel = enemy.getLinearVelocity();
+	enemyOrg += enemyCurrentVel * approxClosingTime;
+
+	delta = enemyOrg - getWorldOrigin();
+	dir = sys.vecNormalize( delta );
+
+	turnTowards( dir, 180.f );
+}*/
+
+void projectile_homingnail::OnUpdateTargeting() {
+	entity enemy = getEnemy();
+	
+	vector enemyOrg;
+	vector dir;
+
+	if ( enemy == $null_entity ) {
+		UpdateFocusedTargeting();
+		return;
+	}
+	
+	vector absMins = enemy.getVectorKeyWithDefault( "selection_mins", enemy.getMins() );
+	vector absMaxs = enemy.getVectorKeyWithDefault( "selection_maxs", enemy.getMaxs() );
+	absMins = sys.toWorldSpace( absMins, enemy );
+	absMaxs = sys.toWorldSpace( absMaxs, enemy );
+	enemyOrg = ( absMins + absMaxs ) * 0.5f ;
+	
+	vector delta = enemyOrg - getWorldOrigin();
+	dir = sys.vecNormalize( delta );
+	
+	float maxTurnRate = 135.0f * ( sys.getTime() - spawnTime );
+	if ( maxTurnRate > 180.0f ) {
+		maxTurnRate = 180.0f;
+	}
+	
+	turnTowards( dir, 180 ); //maxTurnRate );
+}
+
+void projectile_homingnail::vSetNewTarget( entity newTarget ) {
+	setEnemy( newTarget );
+}
+
+entity projectile_homingnail::vGetCurrentTarget() {
+	return getEnemy();
+}

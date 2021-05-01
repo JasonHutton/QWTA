@@ -1,0 +1,506 @@
+
+#define ON_UPGRADE( LEVEL ) if ( oldLevel < LEVEL && newLevel >= LEVEL )
+
+#define MAX_HEALTH_BOOST	20.f
+#define HEALTH_BOOST		5.f
+
+object team_base {
+	void	preinit();
+	void	syncFields();
+	void	init();
+	void	destroy();
+
+	void	OnPlayerDied( entity p );
+	void	OnPlayerTapOut( entity p );
+	void	OnPlayerJoined( entity p );
+	void	OnMapStart();
+	void	OnMapStart_Base();
+
+	void	OnNextRespawnTimeChanged() {}
+	
+	boolean	SelectActionItem( entity p, float code );
+	boolean	HasActionItem( entity p, float code );
+	string	GetActionItem( entity p, float code );
+	string	GetActionIcon( entity p, float code );
+
+	void	UpdateStealth( entity p ) { ; }
+
+	void	OnProficiencyUpgrade( entity p, float type, float oldLevel, float newLevel ) { ; }
+	
+	void	RegenPulse( entity p ) { ; }
+
+	void	GiveSpottingProficiency( entity p );
+	void	GiveRadarSpottingProficiency( entity p );
+	void	GiveRepairProficiency( entity p, task t, float scale );
+	void	GiveReviveProficiency( entity p );
+	void	GiveReviveWaitProficiency( entity p );
+	void	GiveBackstabProficiency( entity p );
+
+	float	CountPlayersOfClass( float playerClass );
+	
+	float	GetMaxReviveCount() { return 0.f; }
+
+	void	UpgradeClip( entity p, float clip, float clipCount );
+	void	UpgradeAmmo( entity p, float clip, float clipCount );
+
+	void	PlayIntelRepairedMessage();
+	void	PlayIntelDamagedMessage();
+	
+	float	GetNextVehicleSpawnTime();
+
+	float	GetHealthBoost( entity p ) { return 0.f; }
+	void	GiveSpawnItems( entity p ) { ; }
+		
+	boolean	HasConstructionBonus( entity p ) { return false; }
+	boolean	HasChargeArmBonus( entity p ) { return false; }
+	boolean	HasSelfArmingMines( entity p ) { return false; }
+	boolean	HasRepairBonus( entity p ) { return false; }
+	boolean	HasDisarmBonus( entity p ) { return false; }
+	boolean	HasFastFireSupportLock( entity p ) { return false; }
+	boolean	HasFastFireSupportRecharge( entity p ) { return false; }
+	boolean	HasFastHackBonus( entity p ) { return false; }
+	boolean	HasVehicleArmorBonus( entity p ) { return false; }
+	boolean	CanTransferStroyent( entity p ) { return false; }
+	boolean	HasEnhancedRadar( entity p ) { return false; }
+	boolean	HasPersonalJammer( entity p ) { return false; }
+	boolean	CanRequestVehicle( entity p ) { return false; }
+	boolean	HasEfficientDecoys( entity p ) { return false; }
+	boolean	HasFastRevive( entity p ) { return false; }
+	boolean	HasFastDisguise( entity p ) { return false; }
+	boolean	HasFastTargetLock( entity p ) { return false; }
+	boolean	CanStab( entity p ) { return false; }
+	boolean	HasSpreadBonus( entity p ) { return false; }
+	float	GetMaxSupplies( entity p ) { return 1.f; }
+	
+	void	CreatePersonnelAuras( entity p ) { ; }
+
+	float	GetWeaponSpeedBonus( entity p ) { return 0.f; }
+
+	void	ResetVehicleCredit( entity p );
+	
+	void	SetRespawnWait( float time ) { ; }
+	float	GetRespawnWait();
+	void	LogEmpUsage( entity p );
+
+	
+	void	MarkWaitingPlayers();
+
+	string	repairItem;
+	string	hackItem;
+	string	chargeArmItem;
+	string	chargeDisarmItem;
+	string	armItem;
+	string	constructItem;
+	string	disguiseItem;
+	string	spawnHostItem;
+	string	spawnHostDisarmItem;
+	string	reviveItem;
+	string	stabItem;
+	string	disguisedStabItem;
+	string	plantItem;
+	string	flyerDroneItem;
+	
+	string	repairIcon;
+	string	hackIcon;
+	string	chargeArmIcon;
+	string	chargeDisarmIcon;
+	string	armIcon;
+	string	constructIcon;
+	string	disguiseIcon;
+	string	spawnHostIcon;
+	string	disarmSpawnHostIcon;
+	string	reviveIcon;
+	string	spawnCapIcon;
+	string	stabIcon;
+	string	useIcon;
+	string	plantIcon;
+	string	useVehicleIcon;
+	string	flyerDroneIcon;
+	
+	float	spottingProficiency;
+	float	radarSpottingProficiency;
+	float	repairProficiency;
+	float	reviveProficiency;
+	float	reviveWaitProficiency;
+	float	backstabDisguisedProficiency;
+	
+	float	reviveMeToolTip1;
+	float	reviveMeToolTip2;
+	float	spawnHostMeToolTip1;
+	float	spawnHostMeToolTip2;
+	float	parachuteToolTip;
+	float	spawnhostingMeToolTip;
+	float	possessingMeToolTip;
+	float	killedByDisguisedToolTip;
+	float	lowAmmoToolTip;
+	float	lowHealthToolTip;
+	float	lowAmmoSelfToolTip;
+	float	lowHealthSelfToolTip;
+	float	unconsciousToolTip;
+	float	criticalClassToolTip;
+	
+	float	vehicleRepairTask;
+	float	captureSpawnTask;
+	float	liberateSpawnTaskCovertOnly;
+	float	liberateSpawnTask;
+	
+	float	nextDisableTime;
+	float	nextVehicleSpawnTime;
+	
+	handle	structureName;
+	
+	float	GetMineLimit();
+
+	float	respawnWait;
+	
+	float	respawnTimeChange;
+	void	InitRespawnTimeChange();
+	void	IncreaseRespawnTimeChange();
+	float	GetRespawnTimeChange() { return respawnTimeChange; }
+}
+
+void team_base::preinit() {
+	spottingProficiency			= -1;
+	radarSpottingProficiency	= -1;
+	repairProficiency			= -1;
+	reviveProficiency			= -1;
+	reviveWaitProficiency		= -1;
+	backstabDisguisedProficiency= -1;
+	
+	reviveMeToolTip1			= -1;
+	reviveMeToolTip2			= -1;
+	spawnHostMeToolTip1			= -1;
+	spawnHostMeToolTip2			= -1;
+	parachuteToolTip			= -1;
+	spawnhostingMeToolTip		= -1;
+	possessingMeToolTip			= -1;
+	killedByDisguisedToolTip	= -1;
+	lowAmmoToolTip				= -1;
+	lowHealthToolTip			= -1;
+	lowAmmoSelfToolTip			= -1;
+	lowHealthSelfToolTip		= -1;
+	unconsciousToolTip			= -1;
+	criticalClassToolTip		= -1;
+	
+	vehicleRepairTask			= -1;
+	
+	captureSpawnTask			= -1;
+	liberateSpawnTask			= -1;
+	
+	nextDisableTime				= 0.f;
+	nextVehicleSpawnTime		= 0.f;
+
+	respawnWait					= -1;
+
+	// TODO: Expose these to the defs?
+	repairItem = "";
+	hackItem = "";
+	chargeArmItem = "";
+	chargeDisarmItem = "";
+	armItem = "";
+	constructItem = "";
+	disguiseItem = "";
+	spawnHostItem = "";
+	spawnHostDisarmItem = "";
+	reviveItem = "";
+	stabItem = "";
+	disguisedStabItem = "";
+	plantItem = "";
+	flyerDroneItem = "";
+	
+	repairIcon = getKey( "mtr_repair_icon" );
+	hackIcon =	getKey( "mtr_hack_icon" );
+	chargeArmIcon = getKey( "mtr_chargearm_icon" );
+	chargeDisarmIcon = getKey( "mtr_chargearm_icon" );
+	armIcon = getKey( "mtr_arm_icon" );
+	constructIcon = getKey( "mtr_construct_icon" );
+	disguiseIcon = getKey( "mtr_disguise_icon" );
+	spawnHostIcon = getKey( "mtr_spawnhost_icon" );
+	disarmSpawnHostIcon = getKey( "mtr_disarm_spawnhost_icon" );
+	reviveIcon = getKey( "mtr_revive_icon" );
+	spawnCapIcon = getKey( "mtr_spawncap_icon" );
+	stabIcon = getKey( "mtr_stab_icon" );
+	useIcon = getKey( "mtr_use_icon" );
+	plantIcon = getKey( "mtr_plant_icon" );
+	useVehicleIcon = getKey( "mtr_usevehicle_icon" );
+	flyerDroneIcon = getKey( "mtr_flyerdrone_icon" );
+	
+	InitRespawnTimeChange();
+}
+
+void team_base::init() {
+}
+
+void team_base::syncFields() {
+	syncBroadcast( "nextDisableTime" );
+}
+
+void team_base::destroy() {
+}
+
+void team_base::OnPlayerDied( entity p ) {
+}
+
+void team_base::OnPlayerTapOut( entity p ) {
+}
+
+void team_base::OnPlayerJoined( entity p ) {
+	// reset the player's vehicle request credit
+	ResetVehicleCredit( p );
+}
+
+void team_base::ResetVehicleCredit( entity p ) {
+	p.vUseVehicleCredit( 1.f );
+}
+
+void team_base::OnMapStart() {
+	OnMapStart_Base();
+}
+
+void team_base::OnMapStart_Base() {
+	nextDisableTime			= 0.f;
+	nextVehicleSpawnTime	= 0.f;
+	
+	// reset the vehicle credit of all players
+	float maxClients = sys.getMaxClients();
+	float index;
+	for ( index = 0; index < maxClients; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		team_base team = p.getGameTeam();
+		if ( team != self ) {
+			continue;
+		}
+
+		ResetVehicleCredit( p );
+		
+		player testPlayer = p;
+		if ( testPlayer != $null_entity ) {
+			testPlayer.vResetAvailableLives();
+		}
+	}
+}
+
+float team_base::GetMineLimit() {
+	return 0.f;
+}
+
+boolean team_base::SelectActionItem( entity p, float code ) {
+	string item = GetActionItem( p, code );
+	if ( item != "" ) {
+		if ( !p.hasWeapon( item ) ) {
+			return false;
+		}
+		p.setWeapon( item, 0 );
+		return true;
+	}
+	
+	return false;
+}
+
+boolean team_base::HasActionItem( entity p, float code ) {
+	if ( code == AK_USE || code == AK_USEVEHICLE ) {
+		return true;
+	}
+	
+
+	string item = GetActionItem( p, code );
+	if ( item != "" ) {
+		return p.hasWeapon( item );
+	}
+	return false;
+}
+
+string team_base::GetActionItem( entity p, float code ) {
+	if ( code == AK_REPAIR ) {
+		return repairItem;
+	} else if ( code == AK_HACK ) {
+		return hackItem;
+	} else if ( code == AK_CHARGEARM ) {
+		return chargeArmItem;
+	} else if ( code == AK_CHARGEDISARM ) {	
+		return chargeDisarmItem;
+	} else if ( code == AK_ARM ) {
+		return armItem;
+	} else if ( code == AK_CONSTRUCT ) {
+		return constructItem;
+	} else if ( code == AK_DISGUISE ) {
+		return disguiseItem;
+	} else if ( code == AK_SPAWNHOST ) {
+		return spawnHostItem;
+	} else if ( code == AK_DISARM_SPAWNHOST ) {
+		return spawnHostDisarmItem;
+	} else if ( code == AK_REVIVE ) {
+		return reviveItem;
+	} else if ( code == AK_STAB ) {
+		if ( p.isDisguised() ) {
+			return disguisedStabItem;
+		}
+		return stabItem;
+	} else if ( code == AK_PLANT ) {
+		return plantItem;
+	} else if ( code == AK_FLYERDRONE ) {
+		return flyerDroneItem;
+	}
+	
+	return "";
+}
+
+string team_base::GetActionIcon( entity p, float code ) {
+	if ( code == AK_REPAIR ) {
+		return repairIcon;
+	} else if ( code == AK_HACK ) {
+		return hackIcon;
+	} else if ( code == AK_CHARGEARM ) {
+		return chargeArmIcon;
+	} else if ( code == AK_CHARGEDISARM ) {
+		return chargeDisarmIcon;
+	} else if ( code == AK_ARM ) {
+		return armIcon;
+	} else if ( code == AK_CONSTRUCT ) {
+		return constructIcon;
+	} else if ( code == AK_DISGUISE ) {
+		return disguiseIcon;
+	} else if ( code == AK_SPAWNHOST ) {
+		return spawnHostIcon;
+	} else if ( code == AK_DISARM_SPAWNHOST ) {
+		return disarmSpawnHostIcon;
+	} else if ( code == AK_REVIVE ) {
+		return reviveIcon;
+	} else if ( code == AK_SPAWNCAP ) {
+		return spawnCapIcon;
+	} else if ( code == AK_STAB ) {
+		return stabIcon;
+	} else if ( code == AK_USE ) {
+		return useIcon;
+	} else if ( code == AK_PLANT ) {
+		return plantIcon;
+	} else if ( code == AK_USEVEHICLE ) {
+		return useVehicleIcon;
+	} else if ( code == AK_FLYERDRONE ) {
+		return flyerDroneIcon;
+	}
+	
+	return "";
+}
+
+void team_base::GiveSpottingProficiency( entity p ) {
+	string statName = getName() + "_spotting_success";	
+	sys.increaseStatInt( sys.allocStatInt( statName ), p.getEntityNumber(), 1 );
+	
+	if ( spottingProficiency != -1 ) {
+		p.giveProficiency( spottingProficiency, 1.f, $null, "spotting success" );
+	}
+}
+
+void team_base::GiveRadarSpottingProficiency( entity p ) {
+	string statName = getName() + "_spotting_success";	
+	sys.increaseStatInt( sys.allocStatInt( statName ), p.getEntityNumber(), 1 );
+	
+	if ( radarSpottingProficiency != -1 ) {
+		p.giveProficiency( radarSpottingProficiency, 1.f, $null, "radar spotting success" );
+	}
+}
+
+void team_base::GiveRepairProficiency( entity p, task t, float scale ) {
+	if ( repairProficiency != -1 ) {
+		p.giveProficiency( repairProficiency, scale, t, "repairing" );
+	}
+	sys.increaseStatInt( sys.allocStatInt( getName() + "_damage_repaired" ), p.getEntityNumber(), scale );
+}
+
+void team_base::GiveReviveProficiency( entity p ) {
+	if ( reviveProficiency != -1 ) {
+		p.giveProficiency( reviveProficiency, 1.f, $null, "revive success" );
+	}
+}
+
+void team_base::GiveReviveWaitProficiency( entity p ) {
+	if ( reviveWaitProficiency != -1 ) {
+		p.giveProficiency( reviveWaitProficiency, 1.f, $null, "waited for revive" );
+	}
+}
+
+void team_base::GiveBackstabProficiency( entity p ) {
+	if ( p.isDisguised() ) {
+		if ( backstabDisguisedProficiency != -1 ) {
+			p.giveProficiency( backstabDisguisedProficiency, 1.f, $null, "backstab disguised bonus" );
+		}
+	}
+	sys.increaseStatInt( sys.allocStatInt( getName() + "_backstab_uses" ), p.getEntityNumber(), 1 );
+}
+
+float team_base::GetNextVehicleSpawnTime() {
+	return nextVehicleSpawnTime;
+}
+
+void team_base::UpgradeClip( entity p, float clip, float clipCount ) {
+	float maxAmmo = p.getMaxAmmo( clip );
+	if ( maxAmmo > 0 ) {
+		p.setMaxAmmo( clip, maxAmmo + clipCount );
+	}
+}
+
+void team_base::UpgradeAmmo( entity p, float clip, float clipCount ) {
+	p.setAmmo( clip, p.getAmmo( clip ) + clipCount );
+}
+
+void team_base::MarkWaitingPlayers() {
+	float count = sys.getMaxClients();
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		if ( !p.needsRevive() ) {
+			continue;
+		}
+		
+		if ( p.getGameTeam() != self ) {
+			continue;
+		}
+		
+		p.vOnSpawnWavePassed();
+	}
+}
+
+float team_base::CountPlayersOfClass( float playerClass ) {
+	float classCount;
+
+	float count = sys.getMaxClients();
+	float index;
+	for ( index = 0; index < count; index++ ) {
+		entity p = sys.getClient( index );
+		if ( p == $null_entity ) {
+			continue;
+		}
+		
+		if ( p.getPlayerClass() == playerClass ) {
+			classCount++;
+		}
+	}
+	
+	return classCount;
+}
+
+float team_base::GetRespawnWait() {
+	return respawnWait;
+}
+
+void team_base::InitRespawnTimeChange() {
+	respawnTimeChange = getFloatKey( "spawnTimeChange" );
+}
+
+void team_base::IncreaseRespawnTimeChange() {
+	respawnTimeChange = respawnTimeChange + 60;
+}
+
+void team_base::LogEmpUsage( entity p ) {
+	string statName = getName() + "_emp_uses";
+	sys.increaseStatInt( sys.allocStatInt( statName ), p.getEntityNumber(), 1 );
+}

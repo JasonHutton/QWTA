@@ -1,0 +1,129 @@
+
+object vehicle_abaddon : vehicle_base {
+	void			preinit();
+	void			init();
+
+	void			OnCollision( object traceObject, float velocity, vector mins, vector maxs );
+	void			OnPlayerEntered( entity p, float position );
+	void			OnPlayerExited( entity p, float position );
+
+	void			OnWeaponSelected( entity p, float index );
+
+	void			UpdateSiegeTextThread();
+
+	void			vSetManualDeploy();
+	void			vOnDeploy();
+	void			DoBoundsDamageThread();
+
+	void			vSetDeployableOwner( entity p );
+	void			vRemoveObject();
+
+	float			threadId;
+
+	boolean			manualDeploy;
+}
+
+void vehicle_abaddon::preinit() {
+	float declTableIndex;
+	threadId = -1;
+	manualDeploy = false;
+}
+
+void vehicle_abaddon::init() {
+	setLightsEnabled( 0, false );
+	if ( !sys.isClient() ) {
+		if ( manualDeploy ) {
+			setTakesDamage( false );
+			thread DoBoundsDamageThread();
+		}
+	}
+}
+
+void vehicle_abaddon::OnCollision( object traceObject, float velocity, vector mins, vector maxs ) {
+	OnCollision_Base( traceObject, velocity, mins, maxs );
+}
+
+void vehicle_abaddon::OnWeaponSelected( entity p, float index ) {
+	if ( index == 0 ) {
+		FireDecoy( p );
+	} else if ( index == 1 ) {
+		selectVehicleWeapon( p, "flamethrower" );
+	} else if ( index == 2 ) {
+		selectVehicleWeapon( p, "plasmabeam" );
+	}
+}
+
+void vehicle_abaddon::vOnDeploy() {
+	vector origin = getWorldOrigin();
+	setWorldOrigin( origin + '0 0 32' );
+	setLinearVelocity( vec3_origin );
+	sys.killThread( "DoBoundsDamageThread_" + getName() );
+	setTakesDamage( true );
+}
+
+void vehicle_abaddon::vSetManualDeploy() {
+	manualDeploy = true;
+}
+
+void vehicle_abaddon::DoBoundsDamageThread() {
+	float dmgIndex = GetDamage( getKey( "dmg_falling" ) );
+
+	while ( true ) {
+		BoundsDamage( self, dmgIndex );
+		sys.waitFrame();
+	}
+}
+
+void vehicle_abaddon::vSetDeployableOwner( entity p ) {
+	if ( !sys.isClient() ) {
+		if ( p != $null_entity ) {
+			p.binAdd( self );
+		}
+	}
+}
+
+void vehicle_abaddon::vRemoveObject() {
+	if ( isEmpty() ) {
+		thread DecayThread();
+	}
+}
+
+void vehicle_abaddon::OnPlayerEntered( entity p, float position ) {
+	OnPlayerEntered_Base( p, position );
+
+	if ( p.isLocalPlayer() ) {
+		if ( position == 0 ) {
+			threadId = thread UpdateSiegeTextThread();
+		} else if ( threadId != -1 ) {
+			sys.terminate( threadId );
+			threadId = -1;
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
+		}
+	}
+}
+
+void vehicle_abaddon::OnPlayerExited( entity p, float position ) {
+	OnPlayerExited_Base( p, position );
+
+	if ( p.isLocalPlayer() && position == 0 ) {
+		if ( threadId != -1 ) {
+			sys.terminate( threadId );
+			threadId = -1;
+			sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", invalid_handle );
+		}
+	}
+}
+
+void vehicle_abaddon::UpdateSiegeTextThread() {
+	handle hText;
+	while ( true ) {
+		if ( inSiegeMode() ) {
+			hText = sys.localizeString( "guis/hud/vehicle_siegemode" );
+		} else {
+			hText = sys.localizeString( "guis/hud/vehicle_hovermode" );
+		}
+		sys.setGUIHandle( GUI_GLOBALS_HANDLE, "vehicles.siegeMode", hText );
+		sys.wait( 1.0f );
+	}
+	threadId = -1;
+}

@@ -1,0 +1,149 @@
+//===============================================================
+//	ReviewTeamInvites Popup
+//===============================================================
+_dialog( ReviewTeamInvites, localize( "guis/mainmenu/ReviewTeamInvites" ), _center( desktop, width ), _center( desktop, height ), 280, 180, "noMove", "dim" )
+    _input_dialog( ReviewTeamInvites )
+    _on_default( ReviewTeamInvitesDone, ReviewTeamInvitesDone )
+
+    events {
+    	onNamedEvent "onShow" {
+    		setTabStop( 0 );
+    	}
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( isVisible() ) {
+    			gui.btnReviewTeamInvitesDone.postNamedEvent( "onAction" );
+    		}
+    	}    	
+    }
+    
+	_label_localized( ReviewTeamInvitesInfo, localize( "guis/mainmenu/mustleaveclan" ), $evalfloat( PADDING + 11 ), _top( dlgReviewTeamInvites ), _fill_to_right_of( dlgReviewTeamInvites ), 30, COLOR_WHITE )
+		properties {			
+			float 	visible 	= compare( sdnet.teamName, "" ) == false;
+			float	flags		= immediate( flags ) | WF_WRAP_TEXT;
+		}
+		events {
+			onPostDraw {
+				drawCachedMaterial( gui.infoIcon, "absoluteRect.x - 16, absoluteRect.y + 2, 16, 16", COLOR_WHITE );
+			}	
+		}
+	_end_label    
+    
+    _list( ReviewTeamInvites_List, PADDING, _to_bottom_of( lblReviewTeamInvitesInfo ) + 3, _fill_to_right_of( dlgReviewTeamInvites ), _fill_to_top_of( btnReviewTeamInvitesDone ) )
+    	properties {
+    		string currentUser;
+    		float taskActive = 0;
+    		float flags = immediate( flags ) | LF_SHOW_HEADINGS | WF_TRUNCATE_TEXT;
+    	}
+    	events {
+    		onCreate {
+    			callSuper();
+    			insertColumn( toWStr( "<loc = 'guis/mainmenu/clan'><width = 50%>" ), 0, 0 );	// Team
+    			insertColumn( toWStr( "<loc = 'guis/mainmenu/clanmember'><width = 50%>" ), 0, 1 );	// Member
+    		}
+    		onNamedEvent "onShow" {
+    			callSuper();
+    			fillFromEnumerator( "sdnetTeamInvites" );
+    			if( numItems > 0 ) {
+    				currentSelection = 0;
+    			}
+    		}
+    		
+    		onDoubleClick "mouse1" {
+    			if( currentSelection < 0 || gui.btnReviewTeamInvitesAccept.allowEvents == false ) {
+    				currentUser = "";
+    				return;
+    			}
+    			currentUser = toStr( getItemText( currentSelection, 1 ) ); 
+    			gui.btnReviewTeamInvitesAccept.postNamedEvent( "onAction" );    			
+    		}
+    		
+    		onPropertyChanged "currentSelection" {
+    			if( currentSelection < 0 ) {
+    				currentUser = "";
+    				return;
+    			}
+    			currentUser = toStr( getItemText( currentSelection, 1 ) );    		
+    		}
+    		
+    		onNamedEvent "onAccept" {
+    			_show_popup( sdNetProgress )
+				taskActive = 1;
+				if( sdnet.acceptMembership( currentUser ) == false ) {
+					_close_popup
+					taskActive = 0;
+				} else {
+					sdnet.deleteActiveMessage();
+				}
+    		}
+    		
+    		onNamedEvent "onDecline" {
+    			_show_popup( sdNetProgress )
+    			taskActive = 1;
+    			if( sdnet.rejectMembership( currentUser ) == false ) {
+    				_close_popup
+    				taskActive = 0;
+    			} else {
+    				sdnet.deleteActiveMessage();
+    			}    			
+    		}
+    		    		
+			onPropertyChanged "sdnet.taskActive" {
+				if ( sdnet.taskActive == 0 ) {
+					if ( taskActive == 1 ) {
+						_close_popup;
+						taskActive = 0;
+						
+						fillFromEnumerator( "sdnetTeamInvites" );
+						if( numItems == 0 ) {
+							_close_input
+						}				
+
+						// process result
+						if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {							
+							taskActive = 0;
+							return;
+						}
+
+						// process error
+						_setup_confirmation_ok_error( sdnet.taskResultMessage );
+						_show_popup( confirmation )
+						return;
+					}
+				}
+			}
+    	}
+    _end_list
+    
+	_button( ReviewTeamInvitesAccept, _to_left_of( btnReviewTeamInvitesDecline ) - 3, _bottom( dlgReviewTeamInvites ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle 	localizedText = localize( "guis/mainmenu/accept" );
+			float 	allowAction = gui.lstReviewTeamInvites_List.currentSelection >= 0 && compare( sdnet.teamName, "" ) == true;
+		}
+		_button_disable_if( "allowAction", allowAction == false )
+        _button_action(
+			gui.lstReviewTeamInvites_List.postNamedEvent( "onAccept" );
+        )
+	_end_button
+	
+	_button( ReviewTeamInvitesDecline, _to_left_of( btnReviewTeamInvitesDone ) - 3, _bottom( dlgReviewTeamInvites ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/decline" );
+		}
+		_button_disable_if( "gui.lstReviewTeamInvites_List.currentSelection", gui.lstReviewTeamInvites_List.currentSelection < 0 )
+        _button_action(
+			gui.lstReviewTeamInvites_List.postNamedEvent( "onDecline" );
+        )
+	_end_button
+
+	_button( ReviewTeamInvitesDone, _right( dlgReviewTeamInvites ), _bottom( dlgReviewTeamInvites ), BUTTON_WIDTH, BUTTON_HEIGHT )
+		properties {
+			float	taskActive = 0;
+			handle localizedText = localize( "guis/mainmenu/done" );
+		}
+        _button_action(
+			_close_input;
+        )
+	_end_button
+_end_dialog

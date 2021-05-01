@@ -1,0 +1,214 @@
+//===============================================================
+//	MessageFriend Popup
+//===============================================================
+_dialog( MessageFriend, localize( "guis/mainmenu/messagefriend" ), _center( desktop, width ), _center( desktop, height ), 280, 226, "noMove", "dim" )
+	_input_dialog( messageFriend )
+	_on_default( MessageFriendOk, MessageFriendCancel )
+
+	properties {
+		float keepEditText = false;
+		float keepHistory = false;
+		wstring text;
+	}
+	events {
+        onNamedEvent "onShow" {
+        	callSuper();
+            if( visible ) {           	
+                gui.lblMessageFriendName.text = toWStr( gui.lstFriends.currentUser );
+				text = sdnet.getIMText( gui.lstFriends.currentUser );
+				gui.messageTimeStamp = sdnet.getMessageTimeStamp();
+				
+				if( keepEditText == false ) {
+					gui.edtMessageFriendMessage.editText = gui.blankWStr;
+				}
+				if( wcompare( text, gui.blankWStr ) == false ) {					
+					sdnet.addToMessageHistory( MHS_FRIEND, gui.lstFriends.currentUser, gui.lstFriends.currentUser, text );
+				}
+				gui.lstMessageFriendHistory.postNamedEvent( "update" );
+				gui.focusedWindow = "edtMessageFriendMessage";
+				keepEditText = false;
+				keepHistory = false;
+            }
+        }
+		onPropertyChanged "visible" {
+			if( visible ) {
+	            sdnet.loadMessageHistory( MHS_FRIEND, gui.lstFriends.currentUser );
+            } else {
+            	if( keepEditText == false && keepHistory == false ) {
+            		sdnet.unloadMessageHistory( MHS_FRIEND, gui.lstFriends.currentUser );
+            	}
+            }
+            callSuper();
+        }
+    	onPropertyChanged "gui.onConnectionLost" {
+    		if( visible ) {
+    			_close_input
+    		}
+    	}
+    }
+    
+    timeline checkIMs {
+    	onTime 1000 {
+    		gui.lstFriends.numIMs = sdnet.numAvailableIMs( gui.lstFriends.currentUser );
+    		if( isVisible() ) {
+    			resetTime( 0 );
+    		}
+    	}
+    }
+
+	windowDef lytMessageFriend {
+		type layoutVertical;
+		properties {
+			rect rect = PADDING, _top( dlgMessageFriend ), _fill_to_right_of( dlgMessageFriend ), _fill_to_bottom_of( dlgMessageFriend );
+			vec4 margins = 0, 0, 0, 0;
+		}
+	    _label_literal( MessageFriendName, gui.blankWStr, 0, 0, 100, BUTTON_HEIGHT, "1,1,1,0.5" )
+	        properties {
+	           vec2 textAlignment = TA_LEFT, TA_VCENTER;
+	           float fontSize = 14;
+	        }
+	    _end_label
+	
+		windowDef lstMessageFriendHistory {
+			type list;
+	        properties {
+	        	rect rect = 0, 0, 100, 60;
+	        	float flags = immediate( flags ) | LF_VARIABLE_HEIGHT_ROWS;	        	
+	        }
+	        _list_properties
+	        _list_scrollbar( MessageFriendHistory )
+	        _list_draw_background
+	        
+	        properties {
+	        	color fillColor = COLOR_EDIT_FILL;
+	        }
+	        
+	        events {
+	        	onCreate {
+	        		insertColumn( toWStr( "<width = 100%>" ), 0, 0 );
+	        	}
+	        	onDoubleClick "mouse1" {
+	        		if( currentSelection == -1 ) {
+	        			return;
+	        		}
+	        		gui.copyText( getItemText( currentSelection, 0 ) );
+	        	}
+	        	onNamedEvent "update" {
+	        		gui.scriptPushString( gui.lstFriends.currentUser );
+	        		gui.scriptPushFloat( MHS_FRIEND );
+	        		
+					fillFromEnumerator( "sdnetMessageHistory" );
+					currentSelection = immediate( numItems - 1 );
+	        	}
+	        }
+	    }
+	    _label_literal( MessageFriendTimeStamp, localizeArgs( "guis/mainmenu/sentat", gui.messageTimeStamp ), 0, 0, 100, BUTTON_HEIGHT, COLOR_TEXT )
+		     properties {
+		    	vec2 textAlignment = TA_LEFT, TA_VCENTER;
+		    	float visible = wcompare( gui.messageTimeStamp, gui.blankWStr ) == false;
+		    }
+	    _end_label
+	
+	    _editw_scroll( MessageFriendMessage, 0, 0, 100, 60 )
+	        properties {
+	        	vec2 textAlignment = TA_LEFT, TA_VCENTER;
+				float	maxTextLength = 512;
+	        }
+	    _end_editw_scroll
+	    
+	    _check( MessageFriendKeepOpen, localize( "guis/mainmenu/keepwindowopen" ), 0, 0, 100, BUTTON_HEIGHT )
+	    	events {
+	    		onNamedEvent "onShow" {
+	    			checked = compare( sdnet.getProfileString( "keepFriendMessageWindowOpen", "1" ), "1" );
+	    		}
+				onNamedEvent "onAction" {
+					callSuper();
+					if( checked ) {
+					    sdnet.setProfileString( "keepFriendMessageWindowOpen", "1" );
+					} else {
+						sdnet.setProfileString( "keepFriendMessageWindowOpen", "0" );
+					}
+				}
+	    	}
+	    _end_check
+	    
+		windowDef lytMessageFriendButtons {
+			type layoutHorizontal;
+			properties {
+				rect rect = gui.dlgMessageFriend.rect.w - $evalfloat( ( ( BUTTON_WIDTH * 3 ) + 6 + ( 2 * PADDING ) ) ), 2, 100, BUTTON_HEIGHT;
+				vec4 margins = 0, 0, 0, 0;
+				float flags = VLF_NOSIZE;
+			}
+			_button( MessageFriendOk, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+		        properties {
+		            handle	localizedText = localize( "guis/mainmenu/ok" );
+		            float	taskActive = 0;
+		        }
+				_button_disable_if( "gui.edtMessageFriendMessage.editText", gui.edtMessageFriendMessage.isWhitespace() )
+		        _button_action(
+		        	if( allowEvents == false ) {
+		        		return;
+		        	}
+					taskActive = 1;
+					sdnet.sendIM( gui.dlgMessageFriend.gui.lstFriends.currentUser, gui.edtMessageFriendMessage.editText );
+					_show_popup( sdNetProgress )
+		        )
+		
+		        events {
+		            onPropertyChanged "sdnet.taskActive" {
+						if ( sdnet.taskActive == 0 ) {
+		                    if ( taskActive == 1 ) {
+								taskActive = 0;
+		
+								// process result
+								if ( sdnet.taskErrorCode == SDNET_NO_ERROR ) {
+									sdnet.addToMessageHistory( MHS_FRIEND, gui.lstFriends.currentUser, sdnet.activeUserName, gui.edtMessageFriendMessage.editText );
+									
+									if( gui.chkMessageFriendKeepOpen.checked ) {
+										gui.edtMessageFriendMessage.editText = gui.blankWStr;
+										gui.focusedWindow = "edtMessageFriendMessage";
+										gui.dlgMessageFriend.keepHistory = true;
+									} else {									
+										_close_input;
+									}
+									
+									gui.lstMessageFriendHistory.postNamedEvent( "update" );									
+									gui.lstFriends.postNamedEvent( "requestUpdate" );
+									return;
+								}
+		
+								// process error
+								_setup_confirmation_ok_error( sdnet.taskResultMessage )
+								_show_popup( confirmation )
+								return;
+							}
+						}
+					}
+		        }
+		    _end_button
+		
+		    _button( MessageFriendCancel, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+		        properties {
+		            handle	localizedText = localize( "guis/mainmenu/cancel" );
+		        }
+		        _button_action(
+		        	gui.dlgMessageFriend.keepHistory = false;
+		        	_close_input;
+		        	gui.lstFriends.postNamedEvent( "requestUpdate" );
+		        	)
+		    _end_button
+		
+		    _button( MessageFriendReadNext, 0, 0, BUTTON_WIDTH, BUTTON_HEIGHT )
+		        properties {
+		        	wstring text = localizeArgs( "guis/mainmenu/readnext", toWString( gui.lstFriends.numIMs, 0 ) );
+		        }
+		        _button_action(
+		        	gui.dlgMessageFriend.keepEditText = true;
+		        	_close_input;
+		        	gui.lstFriends.postNamedEvent( "onContextAction" );
+		        )
+		        _button_disable_if( "gui.lstFriends.numIMs", gui.lstFriends.numIMs < 1 )
+		    _end_button			
+		}
+	}
+_end_dialog

@@ -1,0 +1,706 @@
+
+#include <guis/game/vehicles/gdf/cockpits.include>
+
+gui guis/vehicles/edf_mcp {
+	properties {
+		float flags = immediate( flags ) | GUI_FULLSCREEN;
+	}
+
+	materials {
+		"icon"	"guis/assets/hud/gdf/vehicles/mcp"
+	}
+
+	_class_icons
+
+	_base_icon
+	_hud_materials
+	_position( 0, 0, 6 )
+	_position( 1, 2, 16 )
+
+	/*windowDef deployText {
+		properties {
+			rect	rect		= 0, -20, 16, 20;
+			color	foreColor	= ( 1 - globals.mcpObjective.canDeploy ) * 0.7, ( globals.mcpObjective.canDeploy * 0.7 ),0,1;
+			handle	localizedText	= localize( "guis/vehicles/deploy" ); // "Deploy";
+			float	fontSize	= 16;
+			vec2	textAlignment = 0,1;
+		}
+		events {
+			onCreate {
+				setParent( "vehicleIcon" );
+			}
+		}
+	}*/
+}
+
+gui guis/models/vehicles/mcp/cockpit {
+
+	materials {
+		"guis/assets/vehicles/display/health" 		"guis/assets/vehicles/display/health"
+		"guis/assets/vehicles/display/speed"		"guis/assets/vehicles/display/speed"
+		"guis/assets/vehicles/display/left"			"guis/assets/vehicles/display/left"
+		"guis/assets/vehicles/display/warning"		"guis/assets/vehicles/display/warning"
+		"guis/assets/vehicles/display/wire"			"guis/assets/vehicles/display/wire"
+
+		"bg"										"guis/assets/vehicles/mcp/background"
+		"bg2"										"guis/assets/badger/background4"
+		"guis/assets/badger/tach"					"guis/assets/badger/tach"
+		"GPMG"										"guis/assets/badger/gpmg"
+		"Gun"								"guis/assets/vehicles/trojan/flak"
+		"guis/assets/vehicles/anansi/hitbox"		"guis/assets/vehicles/anansi/hitbox"
+
+		"textures/sfx/scanlines"					"textures/sfx/scanlines_nearest"
+		"guis/assets/common/bglow"					"guis/assets/common/bglow_nearest"
+		"guis/assets/common/outerglowbar2"			"guis/assets/common/outerglowbar2_nearest"
+		"guis/assets/common/outerglow"				"guis/assets/common/outerglow"
+		"guis/assets/common/addhighlight"			"guis/assets/common/addhighlight"
+		"guis/assets/ethud/strogg/nesw"				"guis/assets/ethud/strogg/add_nesw"
+		"guis/assets/ethud/strogg/add_mapticks"		"guis/assets/ethud/strogg/add_mapticks"
+		"guis/assets/badger/radial"					"guis/assets/badger/radial"
+		"guis/assets/badger/radial2"				"guis/assets/badger/radial2"
+		"guis/assets/badger/tach_add"				"guis/assets/badger/tach_add"
+		"guis/assets/badger/tach_add_vert"			"guis/assets/badger/tach_add_vert"
+
+		"guis/assets/ethud/bar_add_fillborderedge"	"guis/assets/ethud/bar_add_fillborderedge"
+		"guis/assets/ethud/bar_add_fillbordermid"	"guis/assets/ethud/bar_add_fillbordermid"
+		"guis/assets/ethud/bar_add_filledge"		"guis/assets/ethud/bar_add_filledge"
+		"guis/assets/ethud/bar_add_fillmid"			"guis/assets/ethud/bar_add_fillmid"
+	//	"guis/assets/vehicles/mcp/map"				"guis/assets/vehicles/mcp/map"
+	//	"guis/assets/vehicles/mcp/arrow"			"guis/assets/vehicles/mcp/arrow"
+		"guis/assets/vehicles/mcp/mcp"				"guis/assets/vehicles/mcp/mcp"
+
+	}
+	properties {
+		//string postProcessMaterial = "system/noglare";
+		float flags = immediate( flags ) & ~GUI_SCREENSAVER;
+		/*
+		float 	Gpmg			= icompare( player.weaponName, "GPMG" );
+		float 	Gat				= icompare( player.weaponName, "Gatling Gun" );
+		*/
+	}
+	events {
+	// FIXME: Localization
+	/*
+		onPropertyChanged "player.weaponName" {
+			if ( Gat ) {
+				gui.gat.visible = 1;
+				gui.gpmg.visible = 0;
+			}
+			if ( Gpmg ) {
+				gui.gpmg.visible = 1;
+				gui.gat.visible = 0;
+			}
+		}
+	*/
+	}
+
+	windowDef desktop {
+		properties {
+			color backColor = 0, 0, 0, 0;
+		}
+	}
+
+
+//
+	windowDef BackgroundImage {
+		properties {
+			color backColor = 1,1,1,0.92;
+			string material = "bg";
+			rect	rect		= 0, 240, 640, 240;
+		}
+	}
+	/*
+	windowDef BackgroundMap {
+		properties {
+			color backColor = 1,1,1,0.92;
+			string material = "guis/assets/vehicles/mcp/map";
+			rect	rect		= 555, 337, 70, 120;
+		}
+		windowDef BackgroundMapArrowClip {
+			properties {
+				rect	rect		= 0, 0, 70, 120;
+				float flags = WF_CLIP_TO_RECT;
+			}
+			windowDef BackgroundMapArrow {
+				properties {
+					color backColor = 1,1,1,0.92;
+					string material = "guis/assets/vehicles/mcp/arrow";
+					rect	rect		= 0, 0, 70, 120;
+				}
+			}
+			timeLine {
+				onTime 0 {
+					rect = transition( rect, "0,0,70,0", 1400 , "1,0" );
+
+				}
+				onTime 1500 {
+					rect = transition( "0,120,70,0", "0,0,70,120", 1400, "0,1" );
+					gui.BackgroundMapArrow.rect = transition( "0,-120,70,120", "0,0,70,120", 1400, "0,1" );
+				}
+				onTime 4000 {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+	*/
+
+	windowDef BackgroundMcp {
+		properties {
+			color backColor = 1,1,1,0.92;
+			string material = "guis/assets/vehicles/mcp/mcp";
+			rect	rect		= 14, 375, 90, 90;
+		}
+	}
+
+	windowDef animBarBG1 {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add_vert";
+			rect	rect		= 140, 405, 6, 40;
+		}
+		timeLine {
+			onTime 0 {
+				rect = transition( rect, "140, 415, 6, 20", 500 , "0,1" );
+			}
+			onTime 500 {
+				rect = transition( rect, "140, 423, 6, 4", 500 , "1,0" );
+			}
+			onTime 1000 {
+				if( globals.mcpObjective.canDeploy == 1 ) {
+					rect = transition( rect, "140, 405, 6, 40", 500 , "0,1" );
+				} else {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+	windowDef animBarBG2 {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add_vert";
+			rect	rect		= 160, 405, 6, 40;
+		}
+		timeLine {
+			onTime 100 {
+				rect = transition( rect, "160, 415, 6, 20", 500 , "0,1" );
+			}
+			onTime 600 {
+				rect = transition( rect, "160, 423, 6, 4", 500 , "1,0" );
+			}
+			onTime 1000 {
+				if( globals.mcpObjective.canDeploy == 1 ) {
+					rect = transition( rect, "160, 405, 6, 40", 500 , "0,1" );
+				} else {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+	windowDef animBarBG3 {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add_vert";
+			rect	rect		= 180, 405, 6, 40;
+		}
+		timeLine {
+			onTime 200 {
+				rect = transition( rect, "180, 415, 6, 20", 500 , "0,1" );
+			}
+			onTime 700 {
+				rect = transition( rect, "180, 423, 6, 4", 500 , "1,0" );
+			}
+			onTime 1000 {
+				if( globals.mcpObjective.canDeploy == 1 ) {
+					rect = transition( rect, "180, 405, 6, 40", 500 , "0,1" );
+				} else {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+//
+	windowDef animBarBG4 {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add_vert";
+			rect	rect		= 150, 405, 6, 40;
+		}
+		timeLine {
+			onTime 200 {
+				rect = transition( rect, "150, 415, 6, 20", 405 , "0,1" );
+			}
+			onTime 600 {
+				rect = transition( rect, "150, 423, 6, 4", 405 , "1,0" );
+			}
+			onTime 800 {
+				if( globals.mcpObjective.canDeploy == 1 ) {
+					rect = transition( rect, "150, 405, 6, 40", 405 , "0,1" );
+				} else {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+	windowDef animBarBG5 {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add_vert";
+			rect	rect		= 170, 405, 6, 40;
+		}
+		timeLine {
+			onTime 100 {
+				rect = transition( rect, "170, 415, 6, 20", 405 , "0,1" );
+			}
+			onTime 500 {
+				rect = transition( rect, "170, 423, 6, 4", 405 , "1,0" );
+			}
+			onTime 800 {
+				if( globals.mcpObjective.canDeploy == 1 ) {
+					rect = transition( rect, "170, 405, 6, 40", 405 , "0,1" );
+				} else {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+
+	windowDef animBarBG6 {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add_vert";
+			rect	rect		= 190, 405, 6, 40;
+		}
+		timeLine {
+			onTime 0 {
+				rect = transition( rect, "190, 415, 6, 20", 405 , "0,1" );
+			}
+			onTime 405 {
+				rect = transition( rect, "190, 423, 6, 4", 405 , "1,0" );
+			}
+			onTime 800 {
+				if( globals.mcpObjective.canDeploy == 1 ) {
+					rect = transition( rect, "190, 405, 6, 40", 405 , "0,1" );
+				} else {
+					timeline.default.resetTime( 0 );
+				}
+			}
+		}
+	}
+	windowDef Scanning {
+		properties {
+			rect rect = 70, 395, 198, 0;
+			handle	localizedText = localize( "guis/vehicles/scanning" ); // "SCANNING";
+			float fontSize = 12;
+			color foreColor = 1,1,1,1;
+			vec2 textAlignment = 1, 2;
+			float visible = 1-globals.mcpObjective.canDeploy;
+		}
+	}
+
+	windowDef Online {
+		properties {
+			rect rect = 70, 390, 198, 0;
+			handle	localizedText = localize( "guis/vehicles/online" ); // "ONLINE";
+			float fontSize = 12;
+			color foreColor = 1,1,1,1;
+			vec2 textAlignment = 1, 2;
+			float visible = globals.mcpObjective.canDeploy;
+		}
+	}
+	windowDef SatUplink {
+		properties {
+			rect rect = 72, 469, 198, 0;
+			handle	localizedText = localize( "guis/vehicles/sat_uplink" ); // "SAT. UPLINK";
+			float fontSize = 14;
+			color foreColor = 1,1,1,0.7;
+			vec2 textAlignment = 1, 2;
+		}
+	}
+	windowDef DeployText0 {
+		properties {
+			rect rect = 0, 360, 115, 0;
+			handle	localizedText = localize( "guis/vehicles/deploy_area" ); // "DEPLOY AREA";
+			float fontSize = 12;
+			color foreColor = 1,1,1,0.25;
+			vec2 textAlignment = 1, 2;
+			float visible = 1-globals.mcpObjective.canDeploy;
+		}
+		timeLine {
+			onTime 0 {
+				foreColor.a = transition( foreColor.a, 0, 800 );
+			}
+			onTime 800 {
+				foreColor.a = transition( foreColor.a, 0.25, 800 );
+				localizedText = localize( "guis/vehicles/move_to" ); // "MOVE TO";
+			}
+			onTime 2000 {
+				foreColor.a = transition( foreColor.a, 0, 800 );
+			}
+			onTime 2800 {
+				foreColor.a = transition( foreColor.a, 0.25, 800 );
+				localizedText = localize( "guis/vehicles/deploy_area" ); // "DEPLOY AREA";
+			}
+			onTime 4100 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+	windowDef DeployText1 {
+		properties {
+			rect rect = 18, 360, 198, 0;
+			handle localizedText = localize( "guis/vehicles/deploy_now" ); // "DEPLOY NOW";
+			float fontSize = 12;
+			color foreColor = 1,1,1,1;
+			vec2 textAlignment = 0, 2;
+			float visible = globals.mcpObjective.canDeploy;
+		}
+		timeLine {
+			onTime 0 {
+				foreColor.a = transition( foreColor.a, 0.4, 400 );
+			}
+			onTime 300 {
+				foreColor.a = transition( foreColor.a, 1, 400 );
+			}
+			onTime 800 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef CrewTitle {
+		properties {
+			rect rect = 370, 469, 198, 0;
+			handle localizedText = localize( "guis/vehicles/crew_id" ); // "CREW ID";
+			float fontSize = 14;
+			color foreColor = 1,1,1,0.7;
+			vec2 textAlignment = 1, 2;
+		}
+	}
+
+	windowDef vPlayerList {
+		type list;
+		properties {
+			float 	fontSize 		= 12;
+			float	flags			= immediate( flags ) | WF_AUTO_SIZE_WIDTH | WF_TRUNCATE_TEXT;
+			rect 	rect 			= 440, 415, 75, 150;
+			color	backColor		= 0,0,0,0;
+		}
+		events {
+			onCreate {
+				insertColumn( gui.blankWStr, 0, 0 );	
+				insertColumn( gui.blankWStr, 590, 1 );	
+			}	
+		}
+		timeLine {
+			onTime 250 {
+				fillFromEnumerator( "vehiclePlayerList" );
+				resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef BackgroundImage2 {
+		properties {
+			color backColor = 1,1,1,0.92;
+			string material = "bg2";
+			rect	rect		= 240, 379, 154, 170;
+		}
+	//}
+
+	windowDef vehicleHealthBG {
+		properties {
+			color backColor = 0,0.67,1,1;
+			string material = "guis/assets/badger/tach_add";
+			rect	rect		= 69, 15, 40, 15;
+		}
+		timeLine {
+			onTime 0 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0,0.67,1,1;
+				}
+			}
+			onTime 250 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "0.1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0,0.67,1,1;
+				}
+			}
+			onTime 500 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef vehicleHealthClip {
+		properties {
+			rect	rect		= gui.vehicleHealthBG.rect.x, gui.vehicleHealthBG.rect.y, (player.vehicleHealth * 40), 15;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef vehicleHealth {
+			properties {
+				color backColor = 1,1,1,0.6;
+				string material = "guis/assets/badger/tach_add";
+				rect	rect		= 0, 0, 40, 15;//0, 0, 600, 50;
+			}
+		}
+	}
+
+	windowDef Icon1 {
+		properties {
+			rect	rect = 60, 14, 9, 12;
+			string material = "guis/assets/vehicles/display/health" ;
+			color backColor = 0.73,1,1,1;
+		}
+	}
+
+	windowDef Icon2 {
+		properties {
+			rect	rect = 60, 26, 9, 12;
+			string material = "guis/assets/vehicles/display/speed" ;
+			color backColor = 0.73,1,1,1;
+		}
+	}
+
+
+	windowDef Icon4 {
+		properties {
+			rect	rect = 47, 12, 12, 20;
+			string material = "guis/assets/vehicles/display/warning" ;
+			color backColor = 0.16,0.3,0.3,1;
+		}
+		timeLine {
+			onTime 0 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0.16,0.3,0.3,1;
+				}
+			}
+			onTime 250 {
+				if( player.vehicleHealth < 0.3 ) {
+					backColor = transition( backColor, "0.1, 0, 0, 1", 250 );
+				} else {
+					backcolor = 0.16,0.3,0.3,1;
+				}
+			}
+			onTime 500 {
+				timeline.default.resetTime( 0 );
+			}
+		}
+	}
+
+	windowDef vehicleRadialFade {
+		properties {
+			color backColor = 0.1,0.1,0.1,1;
+			string material = "guis/assets/badger/radial";
+			rect	rect		= 104,18,45,45;
+		}
+	}
+	windowDef vehicleRadial1Fade {
+		properties {
+			color backColor = 0.1,0.1,0.1,1;
+			string material = "guis/assets/badger/radial";
+			rect	rect		= gui.vehicleRadialFade.rect.x+10,gui.vehicleRadialFade.rect.y+10,25,25;//gui.vehicleSpeed.rect.x-4, gui.vehicleSpeed.rect.y+88, 312, 33;
+		}
+	}
+
+	windowDef vehicleRadial1 {
+		properties {
+			color backColor = (player.speed * 0.04),(player.speed * 0.04),(player.speed * 0.04),0.2;
+			string material = "guis/assets/badger/radial";
+			rect	rect		= gui.vehicleRadial1Fade.rect.x,gui.vehicleRadial1Fade.rect.y,25,25;//gui.vehicleSpeed.rect.x-4, gui.vehicleSpeed.rect.y+88, 312, 33;
+		}
+	}
+
+	windowDef vehicleRadial {
+		properties {
+			color backColor 	= 1,1,1,1;
+			rect	rect		= 104,18,45,45;
+		}
+		_speed_arc( "guis/assets/badger/radial", "player.speed / 27" )
+	}
+
+	windowDef vehicleSpeedBack {
+		properties {
+			rect rect = -94, -2, 199, 100;
+			wstring text = toWStr( "000" );
+			float fontSize = 22;
+			string font = "digital";
+			vec2 	textAlignment = 2, 1;
+			color   foreColor = 0.25, 0.25, 0.25, 1.0;
+		}
+		windowDef vehicleSpeed {
+			properties {
+				rect rect = 0, 0, 199, 100;
+				wstring text = toWString( player.speed, 0 );
+				float fontSize = 22;
+				string font = "digital";
+				vec2 	textAlignment = 2, 1;
+			}
+		}
+	}
+/*	windowDef vehicleSpeed {
+		properties {
+			rect rect = -93, -9, 199, 100;
+			wstring text = toWString( player.speed, 0 );
+			float fontSize = 26;
+			vec2 	textAlignment = 2, 1;
+			color forecolor = 1,1,1,0.8;
+		}
+	}*/
+
+	windowDef vehicleSpeedUnits {
+		properties {
+			rect rect = -75, 52, 198, 0;
+			handle localizedText = localize( "guis/vehicles/mph" ); // "MPH";
+			float fontSize = 12;
+			color foreColor = 1,1,1,1;
+			vec2 textAlignment = 2, 2;
+		}
+	}
+
+	windowDef Compass2 {
+		properties {
+			rect	rect = 7, 14, 40, 65;
+			string	material = "guis/assets/ethud/strogg/nesw";
+			color	backColor = 1, 1, 1, 1;
+			float	rotation = ( player.vehicleYaw ) +270;
+		}
+	}
+	windowDef Compass2a {
+		properties {
+			rect	rect = gui.Compass2.rect.x+5, gui.Compass2.rect.y+9, 30, 47;
+			string	material = "guis/assets/ethud/strogg/nesw";
+			color	backColor = 0.25, 0.25, 0.25, 1;
+			float	rotation = ( player.vehicleYaw ) +270;
+		}
+	}
+
+	windowDef vehicleWeapBG {
+		properties {
+			color backColor = 0,0.25,0.4,1;
+			string material = "guis/assets/badger/tach_add";
+			rect	rect		= gui.GPMG.rect.x+20, gui.GPMG.rect.y+13, 48, 15;//20,150,600,50;//gui.vehicleSpeed.rect.x-4, gui.vehicleSpeed.rect.y+88, 312, 33;
+		}
+	}
+
+	windowDef vehicleWeapClip {
+	type progress;
+		properties {
+			rect	rect			= gui.vehicleWeapBG.rect.x, gui.vehicleWeapBG.rect.y, 48 * globals.weapons.energyBarCharge, 15;//gui.vehicleSpeed.rect.x-4, gui.vehicleSpeed.rect.y+88, (player.speed * 3.9), 33;//290
+			float 	position 		= player.weaponClip / player.weaponShotsPerClip;
+			float	flags			= immediate( flags | PF_DRAW_FROM_LOWER_END | WF_CLIP_TO_RECT );
+			color	foreColor		= 1,1,1,0;
+		}
+		windowDef vehicleWeap {
+			properties {
+				color backColor = 0.5,0.6,0.6,0.6;
+				string material = "guis/assets/badger/tach_add";
+				rect	rect		= 0, 0, 48, 15;//0, 0, 600, 50;
+			}
+		}
+	}
+	windowDef GPMG {
+		properties {
+			rect	rect = 47, 51, 36, 25;
+			string	material = "GPMG";
+			color	backColor = 0.75, 0.75, 0.75, 1;
+			float	visible = 0;
+		}
+	}
+	windowDef GatClip {
+		properties {
+			rect	rect = 49, 53, 25, 25;
+			float flags = WF_CLIP_TO_RECT;
+		}
+		windowDef Gat {
+			properties {
+				rect	rect = 0, 0, 36, 25;
+				string	material = "Gun";
+				color	backColor = 0.75, 0.75, 0.75, 1;
+			}
+		}
+	}
+	windowDef WeaponTitle {
+		properties {
+			rect 	rect 				= 1,84,150,10;
+			handle	localizedText		= player.weaponName;
+			float 	fontsize 			= 14;
+			color	foreColor			= 0.8,1,1,0.8;
+			vec2	textAlignment		= 1, 0;
+		}
+	}
+	}
+//
+	windowDef OverlayGlowPulse {
+		properties {
+			rect	rect = -3, -3, 648, 486;
+			string	material = "guis/assets/common/outerglowbar2";
+			color	backColor = 0.3,0.55,0.6,0.6;
+
+		}
+	}
+	windowDef OverlayGlow {
+		properties {
+			rect	rect = 0, 0, 640, 480;
+			string	material = "guis/assets/common/outerglow";
+			color	backColor = 0.8,0.9,1,0.6;
+
+		}
+	}
+
+
+	windowDef OverlayScan {
+		properties {
+			rect	rect = 0, 0, 640, -480;
+			string	material = "textures/sfx/scanlines";
+			color	backColor = 0.02,0.03,0.04,0.2;
+			vec2	materialscale = 0,1.75;
+		}
+	}
+
+/*
+	windowDef latCount {
+		properties {
+			rect rect = 555, 330, 130, 8;
+			color forecolor	= 1,1,1,1;
+			wstring text = toWString( player.position.x, 0 );
+			float fontSize = 12;
+			vec2 textAlignment = 0, 0;
+			color	foreColor = 0.8,1,1,0.6;
+		}
+	}
+	windowDef lonCount {
+		properties {
+			rect rect = 500, 330, 123, 8;
+			color forecolor	= 1,1,1,1;
+			wstring text = toWString( player.position.y, 0 );
+			float fontSize = 12;
+			vec2 textAlignment = 2, 0;
+			color	foreColor = 0.8,1,1,0.6;
+		}
+	}
+*/
+	windowDef mapGlow {
+		properties {
+			rect rect = 20,20,600,440;
+			string	material = "guis/assets/common/bglow";
+			color	backColor = 0.2,0.6,1,0.07;
+		}
+
+	}
+	/*
+	windowDef mapLight {
+		properties {
+			rect rect = 30,55,575,150;
+			string	material = "guis/assets/common/addhighlight";
+			color	backColor = 0.25,0.25,0.25,1;
+		}
+	}
+	*/
+
+}

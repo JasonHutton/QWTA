@@ -1,0 +1,204 @@
+
+#ifndef __component_tab_page__
+#define __component_tab_page__
+
+$template _tabs_init
+	properties {
+		handle	tabcFillMaterial 	= cacheMaterial( "_tabcFill", "_frame tab" );
+		handle	tabcLineMaterial 	= cacheMaterial( "_tabcLine", "_frame tab_line" );
+		handle	tabcGradMaterial 	= cacheMaterial( "_tabcGrad", "_3h tab_grad" );	
+	}
+$endtemplate
+
+$template _tab_tooltip 
+	events {
+		onQuerytooltip {
+			if( isValidHandle( textParmLocal ) ) {
+				toolTipText = localizeHandle( textParmLocal );
+			} else {
+				toolTipText = textLocal;
+			}
+		}
+	}
+$endtemplate
+
+$template _tab_container( NameParm, InitialPage, xPos, yPos, WidthParm, HeightParm )
+	windowDef tabc##NameParm {
+		properties {
+			rect 	rect 		= xPos, yPos, WidthParm, HeightParm;
+			float 	currentPage = -1;	
+			float	numPages	= 0;	
+			float	tabWidth	= 1;
+			float	fixedWidth	= 0;
+			float	fastSwitch	= false;
+		}
+		events {
+			onCreate {
+				currentPage = InitialPage;
+			}
+			onPropertyChanged "numPages" {
+				postNamedEvent( "updateWidths" );
+			}
+			onPropertyChanged "rect" "fixedWidth" {
+				postNamedEvent( "updateWidths" );
+			}
+			onNamedEvent "updateWidths" {
+				if( numPages > 0 && fixedWidth <= 0 ) {
+					tabWidth = ( ( WidthParm ) - 4 ) / numPages;
+				} else {
+					tabWidth = immediate( fixedWidth );
+				}
+			}
+		}
+	
+$endtemplate
+
+$template _end_tab_container
+	}
+$endtemplate
+
+$template _set_tab_page( NameParm, PageIdentifier )
+	gui.tabc##NameParm.currentPage = PageIdentifier;
+$endtemplate
+
+// avoid doing a popDown transition with bad absolute rect.
+$template _set_tab_page_fast( NameParm, PageIdentifier )
+	gui.tabc##NameParm.fastSwitch = true;		
+	gui.tabc##NameParm.currentPage = PageIdentifier;
+	gui.tabc##NameParm.fastSwitch = false;
+$endtemplate
+
+$template _tab_page( NameParm, TextParm, GroupNameParm, PageIdentifier, xPos, yPos )
+	windowDef tabp##NameParm {
+		properties {
+			rect 	rect 			= xPos, yPos, gui.tabc##GroupNameParm.tabWidth, 18;
+			rect	textRectBase	= absoluteRect.x, absoluteRect.y + 1, absoluteRect.w, absoluteRect.h;
+			rect	textRect		= textRectBase;
+			rect	drawRect		= absoluteRect;
+
+			color	fillColor		= COLOR_TAB_FILL;
+			color	gradColor		= COLOR_ACTIVE_TAB_GRADIENT;
+			color	lineColor		= COLOR_TAB_LINE;
+			color	activeColor		= COLOR_ACTIVE_TAB_GRADIENT;
+			float	wasActive		= false;
+			color	foreColor		= COLOR_TAB_TEXT;
+			handle 	textParmLocal	= TextParm;
+			wstring	textLocal;
+		}
+		events {
+			onCreate {
+				gradColor.a = 0;
+				activeColor.a = 0;
+				gui.tabc##GroupNameParm.numPages = immediate( gui.tabc##GroupNameParm.numPages + 1 );
+			}
+			
+			onActivate {
+				postNamedEvent( "fixRects" );
+			}
+			onPropertyChanged "rect" {
+				postNamedEvent( "fixRects" );
+			}
+			onNamedevent "fixRects" {
+				// re-establish the rects that might have been wrecked when resizing the screen
+				if( gui.tabc##GroupNameParm.currentPage == PageIdentifier ) {
+					drawRect = absoluteRect;
+					textRect = textRectBase;				
+				} else {
+					textRect = textRectBase.x + 1, textRectBase.y + 1, textRectBase.w, textRectBase.h;
+					drawRect = absoluteRect.x + 1, absoluteRect.y + 1, absoluteRect.w - 2, absoluteRect.h - 2;
+				}
+			}
+			
+			// draw over children
+			onPostChildDraw {
+				if( allowEvents == false ) {
+					pushColor( "1,1,1,0.25", true );
+				}
+				drawCachedMaterial( gui.tabcFillMaterial, drawRect, fillColor );
+				drawCachedMaterial( gui.tabcGradMaterial, absoluteRect, gradColor );
+				drawCachedMaterial( gui.tabcGradMaterial, absoluteRect, activeColor );
+				drawCachedMaterial( gui.tabcLineMaterial, drawRect, lineColor );
+								
+				if( isValidHandle( textParmLocal ) ) {
+					drawLocalizedText( textParmLocal, textRect, foreColor, 12, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+				} else {
+					drawText( textLocal, textRect, foreColor, 12, DTF_CENTER | DTF_VCENTER | DTF_SINGLELINE | DTF_TRUNCATE );
+				}
+				if( allowEvents == false ) {
+					popColor();
+				}
+			}
+			onKeyDown "mouse1" {
+				gui.tabc##GroupNameParm.currentPage = PageIdentifier;
+				gui.playSound( "click" );
+			}
+			onNamedEvent "popDown" {
+				drawRect = transition( absoluteRect, "absoluteRect.x + 1, absoluteRect.y + 1, absoluteRect.w - 2, absoluteRect.h - 2", ACTIVATE_TRANSITION_TIME );
+				textRect = transition( textRectBase, "textRectBase.x + 1, textRectBase.y + 1, textRectBase.w, textRectBase.h", ACTIVATE_TRANSITION_TIME );
+			}
+			onPropertyChanged "gui.tabc" ## #GroupNameParm ## ".currentPage" {
+				if( gui.tabc##GroupNameParm.currentPage == PageIdentifier ) {
+					fillColor = transition( fillColor, COLOR_ACTIVE_TAB_FILL_LEFT, ACTIVATE_TRANSITION_TIME );
+					lineColor = transition( lineColor, COLOR_ACTIVE_TAB_LINE, ACTIVATE_TRANSITION_TIME );
+					foreColor = transition( foreColor, COLOR_ACTIVE_TAB_TEXT, ACTIVATE_TRANSITION_TIME );
+					activeColor.a = transition( activeColor.a, 1, ACTIVATE_TRANSITION_TIME );
+					changeZOrder( ZO_BACK );
+					drawRect = absoluteRect;
+					textRect = textRectBase;
+					wasActive = true;
+				} else {
+					fillColor = transition( fillColor, COLOR_TAB_FILL, ACTIVATE_TRANSITION_TIME );
+					lineColor = transition( lineColor, COLOR_TAB_LINE, ACTIVATE_TRANSITION_TIME );
+					foreColor = transition( foreColor, COLOR_TAB_TEXT, ACTIVATE_TRANSITION_TIME );
+					activeColor.a = transition( activeColor.a, 0, ACTIVATE_TRANSITION_TIME );
+					
+					if( wasActive && gui.tabc##GroupNameParm.fastSwitch == false ) {
+						postNamedEvent( "popDown" );				
+					}
+					wasActive = false;
+				}
+			}
+			onMouseEnter {
+				gradColor.a = transition( gradColor.a, 0.7, ACTIVATE_TRANSITION_TIME );
+				gui.playSound( "boop" );
+			}
+			
+			onMouseExit {
+				gradColor.a = transition( gradColor.a, 0, ACTIVATE_TRANSITION_TIME );
+			}
+		}
+		windowDef tabp##NameParm##Content {
+			properties {
+				float 	visible = ( PageIdentifier == gui.tabc##GroupNameParm.currentPage );
+				rect	rect	= ( gui.tabc##GroupNameParm.absoluteRect.x - gui.tabp##NameParm.absoluteRect.x ), _to_bottom_of( tabp##NameParm ) - 1, gui.tabc##GroupNameParm.rect.w, ( gui.tabc##GroupNameParm.rect.h - gui.tabp##NameParm.rect.h ) + 2;
+			}
+			events {
+				onPreDraw {
+					drawCachedMaterial( gui.wndFillMaterial, absoluteRect, COLOR_ACTIVE_TAB_FILL_LEFT );
+					drawCachedMaterial( gui.wndLineMaterial, absoluteRect, COLOR_ACTIVE_TAB_LINE );
+					gui.scriptPushFloat( true );
+				}
+				onPropertyChanged "visible" {
+					callSuper();
+					if( visible ) {
+						gui.broadcastEventToDescendants( name, "onShow" );
+					}
+				}
+			}
+$endtemplate
+
+$template _end_tab_page
+		}
+	}
+$endtemplate
+
+$template _end_tab_page_content
+		}
+$endtemplate
+
+$template _end_tab_page_button
+	}
+$endtemplate
+
+
+#endif // !__component_tab_page__

@@ -1,0 +1,12 @@
+
+#ifndef __defs__
+#define __defs__
+
+#define HUD_ELEMENT_OBJECTIVES 	1
+#define HUD_ELEMENT_FIRETEAMS 	2
+#define HUD_ELEMENT_COMMANDMAP	4
+#define HUD_ELEMENT_OBJ_STATUS	8
+#define HUD_ELEMENT_OBITS		16
+#define HUD_ELEMENT_CHAT		32
+
+#endif // ! __defs__

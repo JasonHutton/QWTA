@@ -1,0 +1,877 @@
+
+vehicleDef "bumblebee" {
+
+	part {
+		"cm_model"		"models/vehicles/gdf_bumblebee/parts/collision.lwo"
+		"offset"			"0 0 0"
+		"mass"				"5000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.02"
+	}
+
+	part {
+		"cm_model"		"models/vehicles/gdf_bumblebee/parts/collision_2.lwo"
+		"offset"			"0 0 0"
+		"mass"				"1000"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+		"buoyancy"			"0.02"
+	}
+
+	part {
+		"cm_model"		"models/vehicles/gdf_bumblebee/parts/collision_3.lwo"
+		"offset"			"0 0 0"
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+	}
+
+	part {
+		"cm_model"		"models/vehicles/gdf_bumblebee/parts/collision_4.lwo"
+		"offset"			"0 0 0"
+		"mass"				"1"
+		"contactFriction"	"0.4 0.4 0.4"
+		"health"			"-1"
+	}
+
+	hurtzone {
+		"mins"				"20 -90 0"
+		"maxs"				"60 90 96"
+	}
+	hurtzone {
+		"mins"				"-140 -16 0"
+		"maxs"				"190 16 64"
+	}
+
+	mass {
+		"origin"			"-49.5 127.99945 -26.1965"
+		"mass"				"2500"
+	}
+	mass {
+		"origin"			"-49.5 -128 -26.1965"
+		"mass"				"2500"
+	}
+
+	rotor {
+		"health"			"-1"
+
+		"joint"				"front_rotor_joint"
+
+		"rotortype"			"main"
+		"lift"				"1"
+
+		"num_blades"		"1"
+
+		"blade1_joint"		"front_rotor_joint"
+		"blade1_speedScale"	"0.00004"
+
+		"cyclicPitchRate"	"200000"
+		"cyclicBankRate"	"130000"
+
+		// dead zone
+		"maxPitchDeflect"	"3"
+		"maxYawDeflect"		"3"
+
+		"noCollision"		"1"
+	}
+
+	// tail rotor section
+	rotor {
+		"health"			"-1"
+		"joint"				"rear_rotor_joint"
+
+		"num_blades"		"1"
+
+		"blade1_joint"		"rear_rotor_joint"
+		"blade1_speedScale"	"0.4"
+		"blade1_yaw"		"1"
+
+		"rotortype"			"tail"
+		"lift"				"-4000000"
+		"z_offset"			"-130"
+
+		"noCollision"		"1"
+	}
+
+	positionDef {
+		name				"guis/vehicles/bee_driver"
+		hudname				"guis/vehicles/bee_driver"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"player_pos00"
+			"player_anim"			"VehicleBumblebeePilot"
+			"show_player"			"1"
+			"cockpit"				"main"
+			"stat_name"				"bumblebee_driver"
+			"joint_icon"			"carrier_driver"
+			"ability1"				"transport_player"
+		}
+
+		// first-person + cockpit
+		view {
+			eyeJoint			"pilot_camera"
+			sensitivityPitch	"m_helicopterPitch"
+			sensitivityYaw		"m_helicopterYaw"
+			sensitivityPitchScale	"m_bumblebeePitchScale"
+			sensitivityYawScale		"m_bumblebeeYawScale"
+			hidevehicle
+			tophatRequired
+			showCockpit
+			autoCenter
+			interior
+			zoomTable			"vehicle_default_zoom"
+			foliageDepthHack 200
+
+			clamp pitch {
+				min		-45
+				max		22
+			}
+
+			clamp yaw {
+				min		-45
+				max		45
+			}
+		}
+
+		view {
+			eyeJoint			"pilot_camera"
+			sensitivityPitch	"m_helicopterPitch"
+			sensitivityYaw		"m_helicopterYaw"
+			sensitivityPitchScale	"m_bumblebeePitchScale"
+			sensitivityYawScale		"m_bumblebeeYawScale"
+			cameraDistance 		800
+			cameraHeight		250
+			cameraFocusHeight	250
+			thirdperson
+			tophatRequired
+
+			clamp pitch {
+				min		-60
+				max		60
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_bumblebee_weapon1"
+			type			"sdVehicleWeaponLocked"
+		}
+
+		ik {
+			type		"sdVehicleIKArms"
+			parms {
+				"jointElbow"		"front_gun_mount_joint"
+				"jointWrist"		"front_gun_joint"
+				"jointMuzzle"		"muzzle"
+				"weapon"			"minigun_front"
+			}
+
+			clamp pitch {
+				min		-12
+				max		22
+				rate	360
+			}
+
+			clamp yaw {
+				min		-90
+				max		90
+				rate	360
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/bee_left_gunner"
+		hudname				"guis/vehicles/bee_left_gunner"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"player_pos03"
+			"player_anim"			"VehicleBumblebeeGunnerLeft"
+			"show_player"			"1"
+			"take_damage"			"1"
+			"cockpit"				"minigun_gunner_left"
+			"stat_name"				"bumblebee_gunner"
+			"joint_icon"			"carrier_gunner1"
+			"damage_scale"			"0.5"
+		}
+
+		ik {
+			type		"sdVehicleIK_Steering"
+			parms {
+				"joint_left"		"left_gunner_lefthand_ik"
+				"joint_right"		"left_gunner_righthand_ik"
+			}
+		}
+
+		view {
+			eyeJoint		"gunner_left_camera"
+			type			"freepivot"
+			followYaw
+			followPitch
+			showcockpit
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-40
+				max		60
+			}
+
+			clamp yaw {
+				min		30
+				max		160
+			}
+		}
+
+		view {
+			eyeJoint			"carrier_gunner1"
+			cameraDistance 		600
+			cameraHeight		150
+			thirdperson
+			followYaw
+			followPitch
+			hideDecoyInfo
+
+
+			clamp pitch {
+				min		-40
+				max		60
+			}
+
+			clamp yaw {
+				min		30
+				max		160
+			}
+		}
+
+		ik {
+			type		"sdVehicleIKArms"
+
+			parms {
+				"jointElbow"		"gun_left_joint03"
+				"jointWrist"		"gun_left_joint"
+				"jointMuzzle"		"muzzle_left"
+				"weapon"			"minigun_left"
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_bumblebee_weapon2"
+			type			"sdVehicleWeaponLocked"
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/bee_right_gunner"
+		hudname				"guis/vehicles/bee_right_gunner"
+
+		data {
+			"max_view_offset"		"0"
+			"view_offset_rate"		"30"
+			"joint_attach"			"player_pos04"
+			"player_anim"			"VehicleBumblebeeGunnerRight"
+			"show_player"			"1"
+			"take_damage"			"1"
+			"cockpit"				"minigun_gunner_right"
+			"stat_name"				"bumblebee_gunner"
+			"joint_icon"			"carrier_gunner2"
+			"damage_scale"			"0.5"
+		}
+
+		ik {
+			type					"sdVehicleIK_Steering"
+			parms {
+				"joint_left"		"right_gunner_lefthand_ik"
+				"joint_right"		"right_gunner_righthand_ik"
+			}
+		}
+
+		view {
+			eyeJoint				"gunner_right_camera"
+			type					"freepivot"
+			followYaw
+			followPitch
+			showcockpit
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-40
+				max		60
+			}
+
+			clamp yaw {
+				min		-160
+				max		-30
+			}
+		}
+
+		view {
+			eyeJoint			"carrier_gunner2"
+			cameraDistance 		600
+			cameraHeight		150
+			thirdperson
+			followYaw
+			followPitch
+			hideDecoyInfo
+
+
+			clamp pitch {
+				min		-40
+				max		60
+			}
+
+			clamp yaw {
+				min		-160
+				max		-30
+			}
+		}
+
+		ik {
+			type		"sdVehicleIKArms"
+
+			parms {
+				"jointElbow"		"gun_right_joint03"
+				"jointWrist"		"gun_right_joint"
+				"jointMuzzle"		"muzzle_right"
+				"weapon"			"minigun_right"
+			}
+		}
+
+		weapon {
+			weapon			"vehicle_bumblebee_weapon3"
+			type			"sdVehicleWeaponLocked"
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/bee_left_passenger"
+		hudname				"guis/vehicles/bee_left_passenger"
+
+		data {
+			"joint_attach"			"player_pos01"
+			"player_anim"			"VehicleBumblebeeLeftPassenger"
+			"show_player"			"1"
+			"allow_weapon"			"1"
+			"stat_name"				"bumblebee_passenger"
+			"joint_icon"			"carrier_passenger1"
+			"take_damage"			"1"
+			"adjust_body_angles"	"1"
+			"damage_scale"			"0.5"
+		}
+
+		view {
+			eyeJoint		"left_passenger_camera"
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-50
+				max		60
+			}
+
+			clamp yaw {
+				min		-90
+				max		16
+			}
+		}
+	}
+
+	positionDef {
+		name				"guis/vehicles/bee_right_passenger"
+		hudname				"guis/vehicles/bee_right_passenger"
+
+		data {
+			"joint_attach"			"player_pos02"
+			"player_anim"			"VehicleBumblebeeRightPassenger"
+			"show_player"			"1"
+			"take_damage"			"1"
+			"allow_weapon"			"1"
+			"stat_name"				"bumblebee_passenger"
+			"joint_icon"			"carrier_passenger2"
+			"adjust_body_angles"	"1"
+			"damage_scale"			"0.5"
+		}
+
+		view {
+			eyeJoint		"right_passenger_camera"
+			hideDecoyInfo
+
+			clamp pitch {
+				min		-50
+				max		60
+			}
+
+			clamp yaw {
+				min		-10
+				max		96
+			}
+		}
+	}
+
+	// front right wheel
+	wheel {
+		"name"							"Front Right Wheel"
+		"joint"							"front_right_wheel_joint"
+		"suspension"					"vehicle_bumblebee_front_right_suspension"
+		"brakingFriction"				"0.8 0.8 0.8"
+		"brakingFrictionTime"			"0.1"
+
+		"contactFriction"				"0.005 0.8 0.005"
+
+		"health"						"-1"
+		"noRotation"					"1"
+
+		"radius"						"15"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"48"
+		"suspensionDownTrace"			"6"
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"200000"
+		"suspensionVelocityScale"		"100"
+		"suspensionBase"				"500000"
+		"suspensionRange"				"16"
+		"aggressiveDampening"			"1"
+	}
+
+	// front left wheel
+	wheel {
+		"name"							"Front Left Wheel"
+		"joint"							"front_left_wheel_joint"
+		"suspension"					"vehicle_bumblebee_front_left_suspension"
+
+		"brakingFriction"				"0.8 0.8 0.8"
+		"brakingFrictionTime"			"0.1"
+
+		"contactFriction"				"0.005 0.8 0.005"
+
+		"health"						"-1"
+		"noRotation"					"1"
+
+		"radius"						"15"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"48"
+		"suspensionDownTrace"			"6"
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"200000"
+		"suspensionVelocityScale"		"100"
+		"suspensionBase"				"500000"
+		"suspensionRange"				"16"
+		"aggressiveDampening"			"1"
+	}
+
+	// rear wheel
+	wheel {
+		"name"							"Rear Wheel"
+		"joint"							"joint2"
+		"suspension"					"vehicle_bumblebee_rear_suspension"
+
+		"contactFriction"				"0.005 0.8 0.005"
+		"brakingFriction"				"0.8 0.8 0.8"
+		"brakingFrictionTime"			"0.1"
+
+		"health"						"-1"
+
+		"radius"						"10"
+		"footprint"						"12"
+
+		"suspensionUpTrace"				"48"
+		"suspensionDownTrace"			"8"
+		"suspensionKCompress"			"50000"
+		"suspensionDamping"				"200000"
+		"suspensionVelocityScale"		"100"
+		"suspensionBase"				"500000"
+		"suspensionRange"				"16"
+		"aggressiveDampening"			"1"
+	}
+
+	exitDef {
+		joint					"player_exit_left"
+	}
+
+	exitDef {
+		joint					"player_exit_right"
+	}
+
+	simplePart {
+		"name"				"Main Body"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_main"
+		"health" 			"0"
+		"flip_master"		"1"
+		"flip_power"		"20"
+	}
+
+	simplePart {
+		"name"				"Gear Left"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_gear_left"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Gun Right"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_gun_right"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Jet"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_jet"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Wing Right"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_right_wing"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Gear Back"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_wheel_back"
+		"health" 			"0"
+	}
+
+	simplePart {
+		"name"				"Wheel Right"
+		"joint"				"origin"
+		"def_brokenPart"	"part_vehicle_bumblebee_wheel_right"
+		"health" 			"0"
+	}
+
+	thruster {
+		"direction"				"1 0 0"
+		"origin"				"-28 64 51"
+		"force"					"400000"
+		"name"					"left_thruster"
+	}
+
+	thruster {
+		"direction"				"1 0 0"
+		"origin"				"-28 -64 51"
+		"force"					"400000"
+		"name"					"right_thruster"
+	}
+
+	cockpit main {
+		"def_cockpit"		"vehicle_bumblebee_cockpit"
+		"scriptobject"		"vehicle_anansi_cockpit"
+	}
+
+	cockpit minigun_gunner_right {
+		"def_cockpit"		"vehicle_bumblebee_minigun_cockpit_right"
+		"scriptobject"		"vehicle_gatling_cockpit"
+	}
+
+	cockpit minigun_gunner_left {
+		"def_cockpit"		"vehicle_bumblebee_minigun_cockpit_left"
+		"scriptobject"		"vehicle_gatling_cockpit"
+	}
+}
+
+stringMap vehicle_bumblebee_front_left_suspension {
+	"type"						"vertical"
+	"joint"						"left_wheel_shock_joint"
+}
+
+stringMap vehicle_bumblebee_front_right_suspension {
+	"type"						"vertical"
+	"joint"						"right_wheel_shock_joint"
+}
+
+stringMap vehicle_bumblebee_rear_suspension {
+	"type"						"2jointleg"
+	"joint_knee"				"rear_wheel_arm2"
+	"joint_hip"					"rear_wheel_arm1"
+	"lerp_scale"				"0.08"
+	"reverse"					"1"
+}
+
+stringMap vehicle_bumblebee_weapon1 {
+	"gunName"					"game/weapons/gatling"
+	"weapon_name"				"minigun_front"
+
+	"surface_name"				"minigun_front"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"realistic_charge_per_use"	"1"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"muzzle"					"muzzle"
+	"muzzle_flash"				"fx_gatling_muzzle"
+
+	"fire_start_sound"			"snd_gatling_fire_start"
+	"fire_stop_sound"			"snd_gatling_fire_stop"
+	"barrel_loop_sound"			"snd_gatling_barrel_loop"
+	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
+	"brass_start_sound"			"snd_gatling_brass_start"
+	"brass_stop_sound"			"snd_gatling_brass_stop"
+
+	"spin_fire"					"720"
+	"spin_stop"					"30"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08" // 12.5 RPS // 750 RPM
+	"realistic_fire_rate"		"0.04" // 25.0 RPS // 1500 RPM
+	"trigger_delay"				"0.5"
+	"spread"					"0.5"
+	"scriptobject"				"vehicle_weapon_gatling"
+	"def_projectile"			"projectile_gatling_bumblebee"
+	"client_projectile"			"projectile_gatling_bumblebee"
+
+	"sound_channel_barrel"		"109"
+	"sound_channel_fire"		"110"
+	"sound_channel_brass"		"111"
+	"sound_channel_barrel_low"	"112"
+
+	"crosshair"					"nospread"
+	"disabled_crosshair"		"nospread"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
+	"low_ammo"					"10"
+}
+
+stringMap vehicle_bumblebee_weapon2 {
+	"gunName"					"game/weapons/gatling"
+	"weapon_name"				"minigun_left"
+
+	"surface_name"				"minigun_left"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"realistic_charge_per_use"	"1"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"muzzle"					"muzzle_left"
+	"spin_joint"				"barrel_left"
+
+	"muzzle_flash"				"fx_gatling_muzzle"
+
+	"fire_start_sound"			"snd_gatling_fire_start"
+	"fire_stop_sound"			"snd_gatling_fire_stop"
+	"barrel_loop_sound"			"snd_gatling_barrel_loop"
+	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
+	"brass_start_sound"			"snd_gatling_brass_start"
+	"brass_stop_sound"			"snd_gatling_brass_stop"
+
+	"spin_fire"					"720"
+	"spin_stop"					"30"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08" // 12.5 RPS // 750 RPM
+	"realistic_fire_rate"		"0.04" // 25.0 RPS // 1500 RPM
+	"spread"					"0.5"
+	"trigger_delay"				"0.5"
+	"scriptobject"				"vehicle_weapon_gatling"
+	"def_projectile"			"projectile_gatling_bumblebee"
+	"client_projectile"			"projectile_gatling_bumblebee"
+
+	"sound_channel_barrel"		"101"
+	"sound_channel_fire"		"102"
+	"sound_channel_brass"		"103"
+	"sound_channel_barrel_low"	"104"
+
+	"crosshair"					"nospread"
+	"disabled_crosshair"		"blank"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
+	"low_ammo"					"10"
+}
+
+stringMap vehicle_bumblebee_weapon3 {
+	"gunName"					"game/weapons/gatling"
+	"weapon_name"				"minigun_right"
+
+	"surface_name"				"minigun_right"
+
+	"charge_max"				"10"
+	"charge_per_use"			"2"
+	"realistic_charge_per_use"	"1"
+	"overheat_penalty"			"1"
+	"use_heat_bar"				"1"
+
+	"muzzle"					"muzzle_right"
+	"spin_joint"				"barrel_right"
+
+	"muzzle_flash"				"fx_gatling_muzzle"
+
+	"fire_start_sound"			"snd_gatling_fire_start"
+	"fire_stop_sound"			"snd_gatling_fire_stop"
+	"barrel_loop_sound"			"snd_gatling_barrel_loop"
+	"barrel_loop_low_sound"		"snd_gatling_barrel_loop_low"
+	"brass_start_sound"			"snd_gatling_brass_start"
+	"brass_stop_sound"			"snd_gatling_brass_stop"
+
+	"spin_fire"					"720"
+	"spin_stop"					"30"
+
+	"velocity"					"1 0 0"
+	"fire_rate"					"0.08" // 12.5 RPS // 750 RPM
+	"realistic_fire_rate"		"0.04" // 25.0 RPS // 1500 RPM
+	"spread"					"0.5"
+	"trigger_delay"				"0.5"
+	"scriptobject"				"vehicle_weapon_gatling"
+	"def_projectile"			"projectile_gatling_bumblebee"
+	"client_projectile"			"projectile_gatling_bumblebee"
+
+	"sound_channel_barrel"		"105"
+	"sound_channel_fire"		"106"
+	"sound_channel_brass"		"107"
+	"sound_channel_barrel_low"	"108"
+
+	"crosshair"					"nospread"
+	"disabled_crosshair"		"blank"
+	
+	"ammo_max"					"1200"
+	"ammo_per_use"				"1"
+	"low_ammo"					"10"
+}
+
+entityDef vehicle_bumblebee_cockpit {
+	"model"				"vehicle_bumblebee_pilot_cockpit"
+	"joint_attach"		"pilot_camera"
+
+	"gui"				"guis/models/vehicles/bumblebee/cockpit"
+	"gui2"				"guis/models/vehicles/bumblebee/cockpit_cm"
+	"gui3"				"guis/models/vehicles/bumblebee/cockpit_center"
+
+	"climate_skin_key"	"weapon_gdf"
+
+	"joint_stick"		"Bumblebee_main_control"
+
+	"offset" 			"0 -0.6 -2"
+}
+
+entityDef vehicle_bumblebee_minigun_cockpit_right {
+	"model"				"viewmodel_minigun"
+
+	"passenger_id"		"3"
+	"offset"			"1 0 0"
+
+	"climate_skin_key"	"weapon_gdf"
+
+	"joint_muzzle"		"muzzle"
+	"fx_muzzle"			"effects/weapons/gatling_muzzleflash"
+	"fx_gatling_tracer"	"effects/base/bullets/tracer"
+	"effectschance fx_gatling_tracer" "0.1"
+
+	"joint_barrel"		"barrel"
+
+	"surface_name"		"minigun_right"
+}
+
+entityDef vehicle_bumblebee_minigun_cockpit_left {
+	"model"				"viewmodel_minigun"
+
+	"passenger_id"		"2"
+	"offset"			"1 0 0"
+
+	"climate_skin_key"	"weapon_gdf"
+
+	"joint_muzzle"		"muzzle"
+	"fx_muzzle"			"effects/weapons/gatling_muzzleflash"
+	"fx_gatling_tracer"	"effects/base/bullets/tracer"
+	"effectchance fx_gatling_tracer" "0.1"
+
+	"joint_barrel"		"barrel"
+
+	"surface_name"		"minigun_left"
+}
+
+entityDef part_vehicle_bumblebee_main {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/base.lwo",
+			"0 0 2000",
+			"0 10 20",
+			"vehicles/misc/debris/metal_large",
+			"0.25",
+			"0.5",
+			"0.01",
+			"effects/vehicles/generic_debris_large"
+		>
+
+	"fx_firstbounce"				"effects/vehicles/anansi_explosion_impact"
+	"gravity"						"600"
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"3"
+}
+
+entityDef part_vehicle_bumblebee_gear_left {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/gear_left.lwo",
+			"500 0 2000",
+			"20 0 10",
+			>
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"1"
+}
+
+entityDef part_vehicle_bumblebee_gun_right {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/gun_right.lwo",
+			"-5000 0 2000",
+			"0 0 10",
+			>
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_bumblebee_jet {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/jet.lwo",
+			"2000 0 1500",
+			"0 0 2",
+			>
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"2"
+}
+
+entityDef part_vehicle_bumblebee_right_wing {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/right_wing.lwo",
+			"-3000 0 100",
+			"0 0 5",
+			>
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"10"
+}
+
+entityDef part_vehicle_bumblebee_wheel_back {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/wheel_back.lwo",
+			"500 0 1500",
+			"50 0 5",
+			>
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"0"
+}
+
+entityDef part_vehicle_bumblebee_wheel_right {
+	useTemplate templates/vehicles/destroyedParts <
+			"models/vehicles/gdf_bumblebee/parts/wheel_right.lwo",
+			"2000 0 600",
+			"0 0 3",
+			>
+	"climate_skin_key"				"bumblebee"
+
+	"priority"						"1"
+}
