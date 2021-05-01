@@ -1,5 +1,6 @@
 # QWTA
 Quake Wars: Tactical Assault
+(Mod for Enemy Territory: Quake Wars)
 
 This is just a mirror of my private git(and previously svn!) repository for QWTA.
 There hasn't been active development here for some time, and there's unlikely to be again by me, but rather than just having a .zip file of source code, making the repository available publicly makes sense to me.
